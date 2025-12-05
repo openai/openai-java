@@ -24,8 +24,10 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
+import com.openai.models.responses.CompactedResponse
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCancelParams
+import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -109,6 +111,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     ): CompletableFuture<Response> =
         // post /responses/{response_id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+
+    override fun compact(
+        params: ResponseCompactParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<CompactedResponse> =
+        // post /responses/compact
+        withRawResponse().compact(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseServiceAsync.WithRawResponse {
@@ -329,6 +338,37 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val compactHandler: Handler<CompactedResponse> =
+            jsonHandler<CompactedResponse>(clientOptions.jsonMapper)
+
+        override fun compact(
+            params: ResponseCompactParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<CompactedResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("responses", "compact")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { compactHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

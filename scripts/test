@@ -54,9 +54,4 @@ fi
 
 echo "==> Running tests"
 
-./gradlew \
-  --no-daemon \
-  -Dkotlin.daemon.enabled=false \
-  -Dkotlin.compiler.execution.strategy=in-process \
-  -Dkotlin.incremental=false \
-  test "$@"
+./gradlew test "$@"

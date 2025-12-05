@@ -24,10 +24,10 @@ class ResponseApplyPatchToolCallOutput
 private constructor(
     private val id: JsonField<String>,
     private val callId: JsonField<String>,
-    private val output: JsonField<String>,
     private val status: JsonField<Status>,
     private val type: JsonValue,
     private val createdBy: JsonField<String>,
+    private val output: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -35,11 +35,11 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
-    ) : this(id, callId, output, status, type, createdBy, mutableMapOf())
+        @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+    ) : this(id, callId, status, type, createdBy, output, mutableMapOf())
 
     /**
      * The unique ID of the apply patch tool call output. Populated when this item is returned via
@@ -57,14 +57,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun callId(): String = callId.getRequired("call_id")
-
-    /**
-     * Optional textual output returned by the apply patch tool.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun output(): Optional<String> = output.getOptional("output")
 
     /**
      * The status of the apply patch tool call output. One of `completed` or `failed`.
@@ -96,6 +88,14 @@ private constructor(
     fun createdBy(): Optional<String> = createdBy.getOptional("created_by")
 
     /**
+     * Optional textual output returned by the apply patch tool.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun output(): Optional<String> = output.getOptional("output")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -110,13 +110,6 @@ private constructor(
     @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
 
     /**
-     * Returns the raw JSON value of [output].
-     *
-     * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
-
-    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
@@ -129,6 +122,13 @@ private constructor(
      * Unlike [createdBy], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("created_by") @ExcludeMissing fun _createdBy(): JsonField<String> = createdBy
+
+    /**
+     * Returns the raw JSON value of [output].
+     *
+     * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -152,7 +152,6 @@ private constructor(
          * ```java
          * .id()
          * .callId()
-         * .output()
          * .status()
          * ```
          */
@@ -164,10 +163,10 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var callId: JsonField<String>? = null
-        private var output: JsonField<String>? = null
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("apply_patch_call_output")
         private var createdBy: JsonField<String> = JsonMissing.of()
+        private var output: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -175,10 +174,10 @@ private constructor(
             apply {
                 id = responseApplyPatchToolCallOutput.id
                 callId = responseApplyPatchToolCallOutput.callId
-                output = responseApplyPatchToolCallOutput.output
                 status = responseApplyPatchToolCallOutput.status
                 type = responseApplyPatchToolCallOutput.type
                 createdBy = responseApplyPatchToolCallOutput.createdBy
+                output = responseApplyPatchToolCallOutput.output
                 additionalProperties =
                     responseApplyPatchToolCallOutput.additionalProperties.toMutableMap()
             }
@@ -207,20 +206,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun callId(callId: JsonField<String>) = apply { this.callId = callId }
-
-        /** Optional textual output returned by the apply patch tool. */
-        fun output(output: String?) = output(JsonField.ofNullable(output))
-
-        /** Alias for calling [Builder.output] with `output.orElse(null)`. */
-        fun output(output: Optional<String>) = output(output.getOrNull())
-
-        /**
-         * Sets [Builder.output] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.output] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun output(output: JsonField<String>) = apply { this.output = output }
 
         /** The status of the apply patch tool call output. One of `completed` or `failed`. */
         fun status(status: Status) = status(JsonField.of(status))
@@ -259,6 +244,20 @@ private constructor(
          */
         fun createdBy(createdBy: JsonField<String>) = apply { this.createdBy = createdBy }
 
+        /** Optional textual output returned by the apply patch tool. */
+        fun output(output: String?) = output(JsonField.ofNullable(output))
+
+        /** Alias for calling [Builder.output] with `output.orElse(null)`. */
+        fun output(output: Optional<String>) = output(output.getOrNull())
+
+        /**
+         * Sets [Builder.output] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.output] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun output(output: JsonField<String>) = apply { this.output = output }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -287,7 +286,6 @@ private constructor(
          * ```java
          * .id()
          * .callId()
-         * .output()
          * .status()
          * ```
          *
@@ -297,10 +295,10 @@ private constructor(
             ResponseApplyPatchToolCallOutput(
                 checkRequired("id", id),
                 checkRequired("callId", callId),
-                checkRequired("output", output),
                 checkRequired("status", status),
                 type,
                 createdBy,
+                output,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -314,7 +312,6 @@ private constructor(
 
         id()
         callId()
-        output()
         status().validate()
         _type().let {
             if (it != JsonValue.from("apply_patch_call_output")) {
@@ -322,6 +319,7 @@ private constructor(
             }
         }
         createdBy()
+        output()
         validated = true
     }
 
@@ -342,10 +340,10 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (callId.asKnown().isPresent) 1 else 0) +
-            (if (output.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("apply_patch_call_output")) 1 else 0 } +
-            (if (createdBy.asKnown().isPresent) 1 else 0)
+            (if (createdBy.asKnown().isPresent) 1 else 0) +
+            (if (output.asKnown().isPresent) 1 else 0)
 
     /** The status of the apply patch tool call output. One of `completed` or `failed`. */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -481,19 +479,19 @@ private constructor(
         return other is ResponseApplyPatchToolCallOutput &&
             id == other.id &&
             callId == other.callId &&
-            output == other.output &&
             status == other.status &&
             type == other.type &&
             createdBy == other.createdBy &&
+            output == other.output &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, callId, output, status, type, createdBy, additionalProperties)
+        Objects.hash(id, callId, status, type, createdBy, output, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseApplyPatchToolCallOutput{id=$id, callId=$callId, output=$output, status=$status, type=$type, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseApplyPatchToolCallOutput{id=$id, callId=$callId, status=$status, type=$type, createdBy=$createdBy, output=$output, additionalProperties=$additionalProperties}"
 }

@@ -19,6 +19,7 @@ internal class ContainerCreateParamsTest {
                     .build()
             )
             .addFileId("string")
+            .memoryLimit(ContainerCreateParams.MemoryLimit._1G)
             .build()
     }
 
@@ -34,6 +35,7 @@ internal class ContainerCreateParamsTest {
                         .build()
                 )
                 .addFileId("string")
+                .memoryLimit(ContainerCreateParams.MemoryLimit._1G)
                 .build()
 
         val body = params._body()
@@ -47,6 +49,7 @@ internal class ContainerCreateParamsTest {
                     .build()
             )
         assertThat(body.fileIds().getOrNull()).containsExactly("string")
+        assertThat(body.memoryLimit()).contains(ContainerCreateParams.MemoryLimit._1G)
     }
 
     @Test

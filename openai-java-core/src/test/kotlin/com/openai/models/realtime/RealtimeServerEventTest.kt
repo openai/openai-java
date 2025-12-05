@@ -42,6 +42,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -140,6 +141,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -231,6 +233,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -332,6 +335,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -441,6 +445,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -536,6 +541,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -636,6 +642,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -732,6 +739,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -819,6 +827,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).contains(error)
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -902,6 +911,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).contains(inputAudioBufferCleared)
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -979,6 +989,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted())
             .contains(inputAudioBufferCommitted)
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1037,6 +1048,85 @@ internal class RealtimeServerEventTest {
     }
 
     @Test
+    fun ofInputAudioBufferDtmfEventReceived() {
+        val inputAudioBufferDtmfEventReceived =
+            InputAudioBufferDtmfEventReceivedEvent.builder().event("event").receivedAt(0L).build()
+
+        val realtimeServerEvent =
+            RealtimeServerEvent.ofInputAudioBufferDtmfEventReceived(
+                inputAudioBufferDtmfEventReceived
+            )
+
+        assertThat(realtimeServerEvent.conversationCreated()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemCreated()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemDeleted()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionCompleted()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionDelta()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionFailed()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemRetrieved()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemTruncated()).isEmpty
+        assertThat(realtimeServerEvent.error()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived())
+            .contains(inputAudioBufferDtmfEventReceived)
+        assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
+        assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputAudioDelta()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputAudioDone()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputAudioTranscriptDelta()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputAudioTranscriptDone()).isEmpty
+        assertThat(realtimeServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(realtimeServerEvent.responseContentPartDone()).isEmpty
+        assertThat(realtimeServerEvent.responseCreated()).isEmpty
+        assertThat(realtimeServerEvent.responseDone()).isEmpty
+        assertThat(realtimeServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(realtimeServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(realtimeServerEvent.sessionCreated()).isEmpty
+        assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
+        assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
+        assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
+        assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemAdded()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemDone()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferTimeoutTriggered()).isEmpty
+        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionSegment()).isEmpty
+        assertThat(realtimeServerEvent.mcpListToolsInProgress()).isEmpty
+        assertThat(realtimeServerEvent.mcpListToolsCompleted()).isEmpty
+        assertThat(realtimeServerEvent.mcpListToolsFailed()).isEmpty
+        assertThat(realtimeServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(realtimeServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(realtimeServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(realtimeServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(realtimeServerEvent.responseMcpCallFailed()).isEmpty
+    }
+
+    @Test
+    fun ofInputAudioBufferDtmfEventReceivedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val realtimeServerEvent =
+            RealtimeServerEvent.ofInputAudioBufferDtmfEventReceived(
+                InputAudioBufferDtmfEventReceivedEvent.builder()
+                    .event("event")
+                    .receivedAt(0L)
+                    .build()
+            )
+
+        val roundtrippedRealtimeServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(realtimeServerEvent),
+                jacksonTypeRef<RealtimeServerEvent>(),
+            )
+
+        assertThat(roundtrippedRealtimeServerEvent).isEqualTo(realtimeServerEvent)
+    }
+
+    @Test
     fun ofInputAudioBufferSpeechStarted() {
         val inputAudioBufferSpeechStarted =
             InputAudioBufferSpeechStartedEvent.builder()
@@ -1059,6 +1149,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted())
             .contains(inputAudioBufferSpeechStarted)
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
@@ -1140,6 +1231,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped())
             .contains(inputAudioBufferSpeechStopped)
@@ -1226,6 +1318,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).contains(rateLimitsUpdated)
@@ -1315,6 +1408,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1401,6 +1495,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1488,6 +1583,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1577,6 +1673,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1671,6 +1768,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1772,6 +1870,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -1947,6 +2046,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2202,6 +2302,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2377,6 +2478,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2466,6 +2568,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2563,6 +2666,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2672,6 +2776,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2771,6 +2876,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -2857,6 +2963,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3019,6 +3126,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3262,6 +3370,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3425,6 +3534,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3504,6 +3614,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3583,6 +3694,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3674,6 +3786,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3780,6 +3893,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3876,6 +3990,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -3965,6 +4080,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4047,6 +4163,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4118,6 +4235,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4189,6 +4307,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4268,6 +4387,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4354,6 +4474,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4437,6 +4558,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4518,6 +4640,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
@@ -4598,6 +4721,7 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.error()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
+        assertThat(realtimeServerEvent.inputAudioBufferDtmfEventReceived()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
         assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
         assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty

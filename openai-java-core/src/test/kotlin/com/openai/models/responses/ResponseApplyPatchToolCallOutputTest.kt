@@ -15,17 +15,17 @@ internal class ResponseApplyPatchToolCallOutputTest {
             ResponseApplyPatchToolCallOutput.builder()
                 .id("id")
                 .callId("call_id")
-                .output("output")
                 .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
                 .createdBy("created_by")
+                .output("output")
                 .build()
 
         assertThat(responseApplyPatchToolCallOutput.id()).isEqualTo("id")
         assertThat(responseApplyPatchToolCallOutput.callId()).isEqualTo("call_id")
-        assertThat(responseApplyPatchToolCallOutput.output()).contains("output")
         assertThat(responseApplyPatchToolCallOutput.status())
             .isEqualTo(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
         assertThat(responseApplyPatchToolCallOutput.createdBy()).contains("created_by")
+        assertThat(responseApplyPatchToolCallOutput.output()).contains("output")
     }
 
     @Test
@@ -35,9 +35,9 @@ internal class ResponseApplyPatchToolCallOutputTest {
             ResponseApplyPatchToolCallOutput.builder()
                 .id("id")
                 .callId("call_id")
-                .output("output")
                 .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
                 .createdBy("created_by")
+                .output("output")
                 .build()
 
         val roundtrippedResponseApplyPatchToolCallOutput =

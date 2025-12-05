@@ -41,6 +41,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.reasoning */
     fun reasoning(): Optional<ResponseReasoningItem> = rawOutputItem.reasoning()
 
+    /** @see ResponseOutputItem.compaction */
+    fun compaction(): Optional<ResponseCompactionItem> = rawOutputItem.compaction()
+
     /** @see ResponseOutputItem.codeInterpreterCall */
     fun codeInterpreterCall(): Optional<ResponseCodeInterpreterToolCall> =
         rawOutputItem.codeInterpreterCall()
@@ -98,6 +101,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isReasoning */
     fun isReasoning(): Boolean = rawOutputItem.isReasoning()
 
+    /** @see ResponseOutputItem.isCompaction */
+    fun isCompaction(): Boolean = rawOutputItem.isCompaction()
+
     /** @see ResponseOutputItem.isCodeInterpreterCall */
     fun isCodeInterpreterCall(): Boolean = rawOutputItem.isCodeInterpreterCall()
 
@@ -153,6 +159,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asReasoning */
     fun asReasoning(): ResponseReasoningItem = rawOutputItem.asReasoning()
 
+    /** @see ResponseOutputItem.asCompaction */
+    fun asCompaction(): ResponseCompactionItem = rawOutputItem.asCompaction()
+
     /** @see ResponseOutputItem.asCodeInterpreterCall */
     fun asCodeInterpreterCall(): ResponseCodeInterpreterToolCall =
         rawOutputItem.asCodeInterpreterCall()
@@ -202,6 +211,7 @@ class StructuredResponseOutputItem<T : Any>(
             isWebSearchCall() -> visitor.visitWebSearchCall(asWebSearchCall())
             isComputerCall() -> visitor.visitComputerCall(asComputerCall())
             isReasoning() -> visitor.visitReasoning(asReasoning())
+            isCompaction() -> visitor.visitCompaction(asCompaction())
             isCodeInterpreterCall() -> visitor.visitCodeInterpreterCall(asCodeInterpreterCall())
             isImageGenerationCall() -> visitor.visitImageGenerationCall(asImageGenerationCall())
             isLocalShellCall() -> visitor.visitLocalShellCall(asLocalShellCall())
@@ -247,6 +257,10 @@ class StructuredResponseOutputItem<T : Any>(
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
                     reasoning.validate()
+                }
+
+                override fun visitCompaction(compaction: ResponseCompactionItem) {
+                    compaction.validate()
                 }
 
                 override fun visitCodeInterpreterCall(
@@ -351,6 +365,9 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitReasoning */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
+
+        /** @see ResponseOutputItem.Visitor.visitCompaction */
+        fun visitCompaction(compaction: ResponseCompactionItem): T
 
         /** @see ResponseOutputItem.Visitor.visitCodeInterpreterCall */
         fun visitCodeInterpreterCall(codeInterpreterCall: ResponseCodeInterpreterToolCall): T

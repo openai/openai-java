@@ -38,7 +38,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_4O)
+                .model(ChatModel.GPT_5_1)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -161,7 +161,7 @@ internal class ResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
+        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_5_1))
         assertThat(response.output())
             .containsExactly(
                 ResponseOutputItem.ofMessage(
@@ -299,7 +299,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_4O)
+                .model(ChatModel.GPT_5_1)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")

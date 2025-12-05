@@ -24,6 +24,8 @@ internal class ContainerRetrieveResponseTest {
                         .minutes(0L)
                         .build()
                 )
+                .lastActiveAt(0L)
+                .memoryLimit(ContainerRetrieveResponse.MemoryLimit._1G)
                 .build()
 
         assertThat(containerRetrieveResponse.id()).isEqualTo("id")
@@ -38,6 +40,9 @@ internal class ContainerRetrieveResponseTest {
                     .minutes(0L)
                     .build()
             )
+        assertThat(containerRetrieveResponse.lastActiveAt()).contains(0L)
+        assertThat(containerRetrieveResponse.memoryLimit())
+            .contains(ContainerRetrieveResponse.MemoryLimit._1G)
     }
 
     @Test
@@ -56,6 +61,8 @@ internal class ContainerRetrieveResponseTest {
                         .minutes(0L)
                         .build()
                 )
+                .lastActiveAt(0L)
+                .memoryLimit(ContainerRetrieveResponse.MemoryLimit._1G)
                 .build()
 
         val roundtrippedContainerRetrieveResponse =

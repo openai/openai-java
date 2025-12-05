@@ -664,7 +664,7 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            /** Indicates that the function shell call exceeded its configured time limit. */
+            /** Indicates that the shell call exceeded its configured time limit. */
             fun timeout(): Optional<JsonValue> = Optional.ofNullable(timeout)
 
             /** Indicates that the shell commands finished and returned an exit code. */
@@ -674,7 +674,7 @@ private constructor(
 
             fun isExit(): Boolean = exit != null
 
-            /** Indicates that the function shell call exceeded its configured time limit. */
+            /** Indicates that the shell call exceeded its configured time limit. */
             fun asTimeout(): JsonValue = timeout.getOrThrow("timeout")
 
             /** Indicates that the shell commands finished and returned an exit code. */
@@ -765,7 +765,7 @@ private constructor(
 
             companion object {
 
-                /** Indicates that the function shell call exceeded its configured time limit. */
+                /** Indicates that the shell call exceeded its configured time limit. */
                 @JvmStatic
                 fun ofTimeout() = Outcome(timeout = JsonValue.from(mapOf("type" to "timeout")))
 
@@ -779,7 +779,7 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                /** Indicates that the function shell call exceeded its configured time limit. */
+                /** Indicates that the shell call exceeded its configured time limit. */
                 fun visitTimeout(timeout: JsonValue): T
 
                 /** Indicates that the shell commands finished and returned an exit code. */

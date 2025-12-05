@@ -19,6 +19,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
+import com.openai.models.responses.ResponseCompactionItemParam
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
@@ -217,6 +218,21 @@ private constructor(
 
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
         fun addItem(reasoning: ResponseReasoningItem) = apply { body.addItem(reasoning) }
+
+        /** Alias for calling [addItem] with `ResponseInputItem.ofCompaction(compaction)`. */
+        fun addItem(compaction: ResponseCompactionItemParam) = apply { body.addItem(compaction) }
+
+        /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseCompactionItemParam.builder()
+         *     .encryptedContent(encryptedContent)
+         *     .build()
+         * ```
+         */
+        fun addCompactionItem(encryptedContent: String) = apply {
+            body.addCompactionItem(encryptedContent)
+        }
 
         /**
          * Alias for calling [addItem] with
@@ -638,6 +654,23 @@ private constructor(
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =
                 addItem(ResponseInputItem.ofReasoning(reasoning))
+
+            /** Alias for calling [addItem] with `ResponseInputItem.ofCompaction(compaction)`. */
+            fun addItem(compaction: ResponseCompactionItemParam) =
+                addItem(ResponseInputItem.ofCompaction(compaction))
+
+            /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseCompactionItemParam.builder()
+             *     .encryptedContent(encryptedContent)
+             *     .build()
+             * ```
+             */
+            fun addCompactionItem(encryptedContent: String) =
+                addItem(
+                    ResponseCompactionItemParam.builder().encryptedContent(encryptedContent).build()
+                )
 
             /**
              * Alias for calling [addItem] with

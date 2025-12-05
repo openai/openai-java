@@ -47,7 +47,7 @@ private constructor(
     fun inputReference(): Optional<InputStream> = body.inputReference()
 
     /**
-     * The video generation model to use. Defaults to `sora-2`.
+     * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to `sora-2`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -55,7 +55,7 @@ private constructor(
     fun model(): Optional<VideoModel> = body.model()
 
     /**
-     * Clip duration in seconds. Defaults to 4 seconds.
+     * Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -63,7 +63,8 @@ private constructor(
     fun seconds(): Optional<VideoSeconds> = body.seconds()
 
     /**
-     * Output resolution formatted as width x height. Defaults to 720x1280.
+     * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720, 1024x1792,
+     * 1792x1024). Defaults to 720x1280.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -192,7 +193,10 @@ private constructor(
         /** Optional image reference that guides generation. */
         fun inputReference(path: Path) = apply { body.inputReference(path) }
 
-        /** The video generation model to use. Defaults to `sora-2`. */
+        /**
+         * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
+         * `sora-2`.
+         */
         fun model(model: VideoModel) = apply { body.model(model) }
 
         /**
@@ -204,7 +208,7 @@ private constructor(
          */
         fun model(model: MultipartField<VideoModel>) = apply { body.model(model) }
 
-        /** Clip duration in seconds. Defaults to 4 seconds. */
+        /** Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds. */
         fun seconds(seconds: VideoSeconds) = apply { body.seconds(seconds) }
 
         /**
@@ -216,7 +220,10 @@ private constructor(
          */
         fun seconds(seconds: MultipartField<VideoSeconds>) = apply { body.seconds(seconds) }
 
-        /** Output resolution formatted as width x height. Defaults to 720x1280. */
+        /**
+         * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720,
+         * 1024x1792, 1792x1024). Defaults to 720x1280.
+         */
         fun size(size: VideoSize) = apply { body.size(size) }
 
         /**
@@ -407,7 +414,8 @@ private constructor(
             inputReference.value.getOptional("input_reference")
 
         /**
-         * The video generation model to use. Defaults to `sora-2`.
+         * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
+         * `sora-2`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -415,7 +423,7 @@ private constructor(
         fun model(): Optional<VideoModel> = model.value.getOptional("model")
 
         /**
-         * Clip duration in seconds. Defaults to 4 seconds.
+         * Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -423,7 +431,8 @@ private constructor(
         fun seconds(): Optional<VideoSeconds> = seconds.value.getOptional("seconds")
 
         /**
-         * Output resolution formatted as width x height. Defaults to 720x1280.
+         * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720,
+         * 1024x1792, 1792x1024). Defaults to 720x1280.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -556,7 +565,10 @@ private constructor(
                         .build()
                 )
 
-            /** The video generation model to use. Defaults to `sora-2`. */
+            /**
+             * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
+             * `sora-2`.
+             */
             fun model(model: VideoModel) = model(MultipartField.of(model))
 
             /**
@@ -568,7 +580,7 @@ private constructor(
              */
             fun model(model: MultipartField<VideoModel>) = apply { this.model = model }
 
-            /** Clip duration in seconds. Defaults to 4 seconds. */
+            /** Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds. */
             fun seconds(seconds: VideoSeconds) = seconds(MultipartField.of(seconds))
 
             /**
@@ -580,7 +592,10 @@ private constructor(
              */
             fun seconds(seconds: MultipartField<VideoSeconds>) = apply { this.seconds = seconds }
 
-            /** Output resolution formatted as width x height. Defaults to 720x1280. */
+            /**
+             * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720,
+             * 1024x1792, 1792x1024). Defaults to 720x1280.
+             */
             fun size(size: VideoSize) = size(MultipartField.of(size))
 
             /**

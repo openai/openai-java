@@ -39,7 +39,7 @@ internal class ResponseCreatedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_4O)
+                        .model(ChatModel.GPT_5_1)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -169,7 +169,7 @@ internal class ResponseCreatedEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_4O)
+                    .model(ChatModel.GPT_5_1)
                     .addOutput(
                         ResponseOutputMessage.builder()
                             .id("id")
@@ -301,7 +301,7 @@ internal class ResponseCreatedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_4O)
+                        .model(ChatModel.GPT_5_1)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")

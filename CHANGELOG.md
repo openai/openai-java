@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.9.0 (2025-12-04)
+
+Full Changelog: [v4.8.0...v4.9.0](https://github.com/openai/openai-java/compare/v4.8.0...v4.9.0)
+
+### Features
+
+* **api:** gpt-5.1-codex-max and responses/compact ([651c44f](https://github.com/openai/openai-java/commit/651c44f570ba07784d715a382d94b255fd3afa60))
+
+
+### Bug Fixes
+
+* **api:** align types of input items / output items for typescript ([9202c69](https://github.com/openai/openai-java/commit/9202c695d939def7c9598e9ee75999b8ebd87e32))
+* **client:** cancel okhttp call when future cancelled ([c665e21](https://github.com/openai/openai-java/commit/c665e21c83123931baed5b21b9bbaa96a4d77495))
+
+
+### Documentation
+
+* remove `$` for better copy-pasteabality ([66f7a4b](https://github.com/openai/openai-java/commit/66f7a4b3d2b88fc3e80c1552d0a0df86cd45c1ff))
+
 ## 4.8.0 (2025-11-13)
 
 Full Changelog: [v4.7.2...v4.8.0](https://github.com/openai/openai-java/compare/v4.7.2...v4.8.0)
