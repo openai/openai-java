@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -39,6 +40,17 @@ private constructor(
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
+
+    /**
+     * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range of
+     * models with different capabilities, performance characteristics, and price points. Refer to
+     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun model(): Optional<Model> = body.model()
 
     /**
      * Text, image, or file inputs to the model, used to generate a response
@@ -60,17 +72,6 @@ private constructor(
     fun instructions(): Optional<String> = body.instructions()
 
     /**
-     * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun model(): Optional<Model> = body.model()
-
-    /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
      * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
@@ -80,6 +81,13 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun previousResponseId(): Optional<String> = body.previousResponseId()
+
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _model(): JsonField<Model> = body._model()
 
     /**
      * Returns the raw JSON value of [input].
@@ -94,13 +102,6 @@ private constructor(
      * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _instructions(): JsonField<String> = body._instructions()
-
-    /**
-     * Returns the raw JSON value of [model].
-     *
-     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _model(): JsonField<Model> = body._model()
 
     /**
      * Returns the raw JSON value of [previousResponseId].
@@ -122,9 +123,14 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): ResponseCompactParams = builder().build()
-
-        /** Returns a mutable builder for constructing an instance of [ResponseCompactParams]. */
+        /**
+         * Returns a mutable builder for constructing an instance of [ResponseCompactParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -147,12 +153,39 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [model]
          * - [input]
          * - [instructions]
-         * - [model]
          * - [previousResponseId]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
+         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
+         */
+        fun model(model: Model?) = apply { body.model(model) }
+
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+        fun model(model: Optional<Model>) = model(model.getOrNull())
+
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [Model] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(model: JsonField<Model>) = apply { body.model(model) }
+
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [Model] constant instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = apply { body.model(value) }
 
         /** Text, image, or file inputs to the model, used to generate a response */
         fun input(input: Input?) = apply { body.input(input) }
@@ -197,33 +230,6 @@ private constructor(
         fun instructions(instructions: JsonField<String>) = apply {
             body.instructions(instructions)
         }
-
-        /**
-         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
-         */
-        fun model(model: Model?) = apply { body.model(model) }
-
-        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
-        fun model(model: Optional<Model>) = model(model.getOrNull())
-
-        /**
-         * Sets [Builder.model] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.model] with a well-typed [Model] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(model: JsonField<Model>) = apply { body.model(model) }
-
-        /**
-         * Sets [model] to an arbitrary [String].
-         *
-         * You should usually call [model] with a well-typed [Model] constant instead. This method
-         * is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(value: String) = apply { body.model(value) }
 
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -373,6 +379,13 @@ private constructor(
          * Returns an immutable instance of [ResponseCompactParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ResponseCompactParams =
             ResponseCompactParams(
@@ -391,24 +404,35 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val model: JsonField<Model>,
         private val input: JsonField<Input>,
         private val instructions: JsonField<String>,
-        private val model: JsonField<Model>,
         private val previousResponseId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
+            @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
             @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
             @JsonProperty("instructions")
             @ExcludeMissing
             instructions: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
             @JsonProperty("previous_response_id")
             @ExcludeMissing
             previousResponseId: JsonField<String> = JsonMissing.of(),
-        ) : this(input, instructions, model, previousResponseId, mutableMapOf())
+        ) : this(model, input, instructions, previousResponseId, mutableMapOf())
+
+        /**
+         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<Model> = model.getOptional("model")
 
         /**
          * Text, image, or file inputs to the model, used to generate a response
@@ -430,17 +454,6 @@ private constructor(
         fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
         /**
-         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun model(): Optional<Model> = model.getOptional("model")
-
-        /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
@@ -451,6 +464,13 @@ private constructor(
          */
         fun previousResponseId(): Optional<String> =
             previousResponseId.getOptional("previous_response_id")
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
 
         /**
          * Returns the raw JSON value of [input].
@@ -468,13 +488,6 @@ private constructor(
         @JsonProperty("instructions")
         @ExcludeMissing
         fun _instructions(): JsonField<String> = instructions
-
-        /**
-         * Returns the raw JSON value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
 
         /**
          * Returns the raw JSON value of [previousResponseId].
@@ -500,27 +513,63 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Body]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var model: JsonField<Model>? = null
             private var input: JsonField<Input> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
-            private var model: JsonField<Model> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                model = body.model
                 input = body.input
                 instructions = body.instructions
-                model = body.model
                 previousResponseId = body.previousResponseId
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
+
+            /**
+             * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide
+             * range of models with different capabilities, performance characteristics, and price
+             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
+             * and compare available models.
+             */
+            fun model(model: Model?) = model(JsonField.ofNullable(model))
+
+            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+            fun model(model: Optional<Model>) = model(model.getOrNull())
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [Model] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(model: JsonField<Model>) = apply { this.model = model }
+
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [Model] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(value: String) = model(Model.of(value))
 
             /** Text, image, or file inputs to the model, used to generate a response */
             fun input(input: Input?) = input(JsonField.ofNullable(input))
@@ -567,35 +616,6 @@ private constructor(
             fun instructions(instructions: JsonField<String>) = apply {
                 this.instructions = instructions
             }
-
-            /**
-             * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide
-             * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
-             */
-            fun model(model: Model?) = model(JsonField.ofNullable(model))
-
-            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
-            fun model(model: Optional<Model>) = model(model.getOrNull())
-
-            /**
-             * Sets [Builder.model] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.model] with a well-typed [Model] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun model(model: JsonField<Model>) = apply { this.model = model }
-
-            /**
-             * Sets [model] to an arbitrary [String].
-             *
-             * You should usually call [model] with a well-typed [Model] constant instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun model(value: String) = model(Model.of(value))
 
             /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -647,12 +667,19 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
+                    checkRequired("model", model),
                     input,
                     instructions,
-                    model,
                     previousResponseId,
                     additionalProperties.toMutableMap(),
                 )
@@ -665,9 +692,9 @@ private constructor(
                 return@apply
             }
 
+            model()
             input().ifPresent { it.validate() }
             instructions()
-            model()
             previousResponseId()
             validated = true
         }
@@ -688,9 +715,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (input.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (model.asKnown().isPresent) 1 else 0) +
+                (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
-                (if (model.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -699,206 +726,21 @@ private constructor(
             }
 
             return other is Body &&
+                model == other.model &&
                 input == other.input &&
                 instructions == other.instructions &&
-                model == other.model &&
                 previousResponseId == other.previousResponseId &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(input, instructions, model, previousResponseId, additionalProperties)
+            Objects.hash(model, input, instructions, previousResponseId, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, instructions=$instructions, model=$model, previousResponseId=$previousResponseId, additionalProperties=$additionalProperties}"
-    }
-
-    /** Text, image, or file inputs to the model, used to generate a response */
-    @JsonDeserialize(using = Input.Deserializer::class)
-    @JsonSerialize(using = Input.Serializer::class)
-    class Input
-    private constructor(
-        private val string: String? = null,
-        private val responseInputItems: List<ResponseInputItem>? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        /** A text input to the model, equivalent to a text input with the `user` role. */
-        fun string(): Optional<String> = Optional.ofNullable(string)
-
-        fun responseInputItems(): Optional<List<ResponseInputItem>> =
-            Optional.ofNullable(responseInputItems)
-
-        fun isString(): Boolean = string != null
-
-        fun isResponseInputItems(): Boolean = responseInputItems != null
-
-        /** A text input to the model, equivalent to a text input with the `user` role. */
-        fun asString(): String = string.getOrThrow("string")
-
-        fun asResponseInputItems(): List<ResponseInputItem> =
-            responseInputItems.getOrThrow("responseInputItems")
-
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                string != null -> visitor.visitString(string)
-                responseInputItems != null -> visitor.visitResponseInputItems(responseInputItems)
-                else -> visitor.unknown(_json)
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Input = apply {
-            if (validated) {
-                return@apply
-            }
-
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitString(string: String) {}
-
-                    override fun visitResponseInputItems(
-                        responseInputItems: List<ResponseInputItem>
-                    ) {
-                        responseInputItems.forEach { it.validate() }
-                    }
-                }
-            )
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitString(string: String) = 1
-
-                    override fun visitResponseInputItems(
-                        responseInputItems: List<ResponseInputItem>
-                    ) = responseInputItems.sumOf { it.validity().toInt() }
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Input &&
-                string == other.string &&
-                responseInputItems == other.responseInputItems
-        }
-
-        override fun hashCode(): Int = Objects.hash(string, responseInputItems)
-
-        override fun toString(): String =
-            when {
-                string != null -> "Input{string=$string}"
-                responseInputItems != null -> "Input{responseInputItems=$responseInputItems}"
-                _json != null -> "Input{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Input")
-            }
-
-        companion object {
-
-            /** A text input to the model, equivalent to a text input with the `user` role. */
-            @JvmStatic fun ofString(string: String) = Input(string = string)
-
-            @JvmStatic
-            fun ofResponseInputItems(responseInputItems: List<ResponseInputItem>) =
-                Input(responseInputItems = responseInputItems.toImmutable())
-        }
-
-        /** An interface that defines how to map each variant of [Input] to a value of type [T]. */
-        interface Visitor<out T> {
-
-            /** A text input to the model, equivalent to a text input with the `user` role. */
-            fun visitString(string: String): T
-
-            fun visitResponseInputItems(responseInputItems: List<ResponseInputItem>): T
-
-            /**
-             * Maps an unknown variant of [Input] to a value of type [T].
-             *
-             * An instance of [Input] can contain an unknown variant if it was deserialized from
-             * data that doesn't match any known variant. For example, if the SDK is on an older
-             * version than the API, then the API may respond with new variants that the SDK is
-             * unaware of.
-             *
-             * @throws OpenAIInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Input: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<Input>(Input::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Input {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                Input(string = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<ResponseInputItem>>())?.let {
-                                Input(responseInputItems = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from object).
-                    0 -> Input(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<Input>(Input::class) {
-
-            override fun serialize(
-                value: Input,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.responseInputItems != null ->
-                        generator.writeObject(value.responseInputItems)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Input")
-                }
-            }
-        }
+            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1506,6 +1348,191 @@ private constructor(
         override fun hashCode() = value.hashCode()
 
         override fun toString() = value.toString()
+    }
+
+    /** Text, image, or file inputs to the model, used to generate a response */
+    @JsonDeserialize(using = Input.Deserializer::class)
+    @JsonSerialize(using = Input.Serializer::class)
+    class Input
+    private constructor(
+        private val string: String? = null,
+        private val responseInputItems: List<ResponseInputItem>? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** A text input to the model, equivalent to a text input with the `user` role. */
+        fun string(): Optional<String> = Optional.ofNullable(string)
+
+        fun responseInputItems(): Optional<List<ResponseInputItem>> =
+            Optional.ofNullable(responseInputItems)
+
+        fun isString(): Boolean = string != null
+
+        fun isResponseInputItems(): Boolean = responseInputItems != null
+
+        /** A text input to the model, equivalent to a text input with the `user` role. */
+        fun asString(): String = string.getOrThrow("string")
+
+        fun asResponseInputItems(): List<ResponseInputItem> =
+            responseInputItems.getOrThrow("responseInputItems")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                string != null -> visitor.visitString(string)
+                responseInputItems != null -> visitor.visitResponseInputItems(responseInputItems)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Input = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitResponseInputItems(
+                        responseInputItems: List<ResponseInputItem>
+                    ) {
+                        responseInputItems.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitString(string: String) = 1
+
+                    override fun visitResponseInputItems(
+                        responseInputItems: List<ResponseInputItem>
+                    ) = responseInputItems.sumOf { it.validity().toInt() }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Input &&
+                string == other.string &&
+                responseInputItems == other.responseInputItems
+        }
+
+        override fun hashCode(): Int = Objects.hash(string, responseInputItems)
+
+        override fun toString(): String =
+            when {
+                string != null -> "Input{string=$string}"
+                responseInputItems != null -> "Input{responseInputItems=$responseInputItems}"
+                _json != null -> "Input{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Input")
+            }
+
+        companion object {
+
+            /** A text input to the model, equivalent to a text input with the `user` role. */
+            @JvmStatic fun ofString(string: String) = Input(string = string)
+
+            @JvmStatic
+            fun ofResponseInputItems(responseInputItems: List<ResponseInputItem>) =
+                Input(responseInputItems = responseInputItems.toImmutable())
+        }
+
+        /** An interface that defines how to map each variant of [Input] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            /** A text input to the model, equivalent to a text input with the `user` role. */
+            fun visitString(string: String): T
+
+            fun visitResponseInputItems(responseInputItems: List<ResponseInputItem>): T
+
+            /**
+             * Maps an unknown variant of [Input] to a value of type [T].
+             *
+             * An instance of [Input] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Input: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Input>(Input::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Input {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Input(string = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<ResponseInputItem>>())?.let {
+                                Input(responseInputItems = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from object).
+                    0 -> Input(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Input>(Input::class) {
+
+            override fun serialize(
+                value: Input,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.responseInputItems != null ->
+                        generator.writeObject(value.responseInputItems)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Input")
+                }
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {

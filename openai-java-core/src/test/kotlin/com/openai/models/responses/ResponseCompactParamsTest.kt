@@ -10,9 +10,9 @@ internal class ResponseCompactParamsTest {
     @Test
     fun create() {
         ResponseCompactParams.builder()
+            .model(ResponseCompactParams.Model.GPT_5_1)
             .input("string")
             .instructions("instructions")
-            .model(ResponseCompactParams.Model.GPT_5_1)
             .previousResponseId("resp_123")
             .build()
     }
@@ -21,24 +21,27 @@ internal class ResponseCompactParamsTest {
     fun body() {
         val params =
             ResponseCompactParams.builder()
+                .model(ResponseCompactParams.Model.GPT_5_1)
                 .input("string")
                 .instructions("instructions")
-                .model(ResponseCompactParams.Model.GPT_5_1)
                 .previousResponseId("resp_123")
                 .build()
 
         val body = params._body()
 
+        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_1)
         assertThat(body.input()).contains(ResponseCompactParams.Input.ofString("string"))
         assertThat(body.instructions()).contains("instructions")
-        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_1)
         assertThat(body.previousResponseId()).contains("resp_123")
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = ResponseCompactParams.builder().build()
+        val params =
+            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_5_1).build()
 
         val body = params._body()
+
+        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_1)
     }
 }
