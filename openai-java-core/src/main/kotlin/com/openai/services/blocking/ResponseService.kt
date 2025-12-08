@@ -227,21 +227,14 @@ interface ResponseService {
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /** Compact conversation */
-    fun compact(): CompactedResponse = compact(ResponseCompactParams.none())
-
-    /** @see compact */
-    fun compact(
-        params: ResponseCompactParams = ResponseCompactParams.none(),
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompactedResponse
-
-    /** @see compact */
-    fun compact(params: ResponseCompactParams = ResponseCompactParams.none()): CompactedResponse =
+    fun compact(params: ResponseCompactParams): CompactedResponse =
         compact(params, RequestOptions.none())
 
     /** @see compact */
-    fun compact(requestOptions: RequestOptions): CompactedResponse =
-        compact(ResponseCompactParams.none(), requestOptions)
+    fun compact(
+        params: ResponseCompactParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompactedResponse
 
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -489,24 +482,14 @@ interface ResponseService {
          * [ResponseService.compact].
          */
         @MustBeClosed
-        fun compact(): HttpResponseFor<CompactedResponse> = compact(ResponseCompactParams.none())
+        fun compact(params: ResponseCompactParams): HttpResponseFor<CompactedResponse> =
+            compact(params, RequestOptions.none())
 
         /** @see compact */
         @MustBeClosed
         fun compact(
-            params: ResponseCompactParams = ResponseCompactParams.none(),
+            params: ResponseCompactParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<CompactedResponse>
-
-        /** @see compact */
-        @MustBeClosed
-        fun compact(
-            params: ResponseCompactParams = ResponseCompactParams.none()
-        ): HttpResponseFor<CompactedResponse> = compact(params, RequestOptions.none())
-
-        /** @see compact */
-        @MustBeClosed
-        fun compact(requestOptions: RequestOptions): HttpResponseFor<CompactedResponse> =
-            compact(ResponseCompactParams.none(), requestOptions)
     }
 }

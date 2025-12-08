@@ -235,22 +235,14 @@ interface ResponseServiceAsync {
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /** Compact conversation */
-    fun compact(): CompletableFuture<CompactedResponse> = compact(ResponseCompactParams.none())
+    fun compact(params: ResponseCompactParams): CompletableFuture<CompactedResponse> =
+        compact(params, RequestOptions.none())
 
     /** @see compact */
     fun compact(
-        params: ResponseCompactParams = ResponseCompactParams.none(),
+        params: ResponseCompactParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<CompactedResponse>
-
-    /** @see compact */
-    fun compact(
-        params: ResponseCompactParams = ResponseCompactParams.none()
-    ): CompletableFuture<CompactedResponse> = compact(params, RequestOptions.none())
-
-    /** @see compact */
-    fun compact(requestOptions: RequestOptions): CompletableFuture<CompactedResponse> =
-        compact(ResponseCompactParams.none(), requestOptions)
 
     /**
      * A view of [ResponseServiceAsync] that provides access to raw HTTP responses for each method.
@@ -491,25 +483,15 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `post /responses/compact`, but is otherwise the same as
          * [ResponseServiceAsync.compact].
          */
-        fun compact(): CompletableFuture<HttpResponseFor<CompactedResponse>> =
-            compact(ResponseCompactParams.none())
-
-        /** @see compact */
         fun compact(
-            params: ResponseCompactParams = ResponseCompactParams.none(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<CompactedResponse>>
-
-        /** @see compact */
-        fun compact(
-            params: ResponseCompactParams = ResponseCompactParams.none()
+            params: ResponseCompactParams
         ): CompletableFuture<HttpResponseFor<CompactedResponse>> =
             compact(params, RequestOptions.none())
 
         /** @see compact */
         fun compact(
-            requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<CompactedResponse>> =
-            compact(ResponseCompactParams.none(), requestOptions)
+            params: ResponseCompactParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<CompactedResponse>>
     }
 }
