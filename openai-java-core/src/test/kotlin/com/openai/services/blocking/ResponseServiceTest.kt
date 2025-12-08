@@ -279,9 +279,9 @@ internal class ResponseServiceTest {
         val compactedResponse =
             responseService.compact(
                 ResponseCompactParams.builder()
+                    .model(ResponseCompactParams.Model.GPT_5_1)
                     .input("string")
                     .instructions("instructions")
-                    .model(ResponseCompactParams.Model.GPT_5_1)
                     .previousResponseId("resp_123")
                     .build()
             )
