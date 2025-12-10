@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.10.0 (2025-12-10)
+
+Full Changelog: [v4.9.0...v4.10.0](https://github.com/openai/openai-java/compare/v4.9.0...v4.10.0)
+
+### Features
+
+* **api:** make model required for the responses/compact endpoint ([904f55a](https://github.com/openai/openai-java/commit/904f55aba8bacfbaa1bff9e1d96a747db2020775))
+
 ## 4.9.0 (2025-12-04)
 
 Full Changelog: [v4.8.0...v4.9.0](https://github.com/openai/openai-java/compare/v4.8.0...v4.9.0)
