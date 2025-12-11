@@ -10,7 +10,7 @@ internal class ResponseCompactParamsTest {
     @Test
     fun create() {
         ResponseCompactParams.builder()
-            .model(ResponseCompactParams.Model.GPT_5_1)
+            .model(ResponseCompactParams.Model.GPT_5_2)
             .input("string")
             .instructions("instructions")
             .previousResponseId("resp_123")
@@ -21,7 +21,7 @@ internal class ResponseCompactParamsTest {
     fun body() {
         val params =
             ResponseCompactParams.builder()
-                .model(ResponseCompactParams.Model.GPT_5_1)
+                .model(ResponseCompactParams.Model.GPT_5_2)
                 .input("string")
                 .instructions("instructions")
                 .previousResponseId("resp_123")
@@ -29,7 +29,7 @@ internal class ResponseCompactParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_1)
+        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_2)
         assertThat(body.input()).contains(ResponseCompactParams.Input.ofString("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.previousResponseId()).contains("resp_123")
@@ -38,10 +38,10 @@ internal class ResponseCompactParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params =
-            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_5_1).build()
+            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_5_2).build()
 
         val body = params._body()
 
-        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_1)
+        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_2)
     }
 }

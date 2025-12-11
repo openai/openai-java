@@ -763,6 +763,16 @@ private constructor(
 
         companion object {
 
+            @JvmField val GPT_5_2 = of("gpt-5.2")
+
+            @JvmField val GPT_5_2_2025_12_11 = of("gpt-5.2-2025-12-11")
+
+            @JvmField val GPT_5_2_CHAT_LATEST = of("gpt-5.2-chat-latest")
+
+            @JvmField val GPT_5_2_PRO = of("gpt-5.2-pro")
+
+            @JvmField val GPT_5_2_PRO_2025_12_11 = of("gpt-5.2-pro-2025-12-11")
+
             @JvmField val GPT_5_1 = of("gpt-5.1")
 
             @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
@@ -932,6 +942,11 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_5_2,
+            GPT_5_2_2025_12_11,
+            GPT_5_2_CHAT_LATEST,
+            GPT_5_2_PRO,
+            GPT_5_2_PRO_2025_12_11,
             GPT_5_1,
             GPT_5_1_2025_11_13,
             GPT_5_1_CODEX,
@@ -1025,6 +1040,11 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_5_2,
+            GPT_5_2_2025_12_11,
+            GPT_5_2_CHAT_LATEST,
+            GPT_5_2_PRO,
+            GPT_5_2_PRO_2025_12_11,
             GPT_5_1,
             GPT_5_1_2025_11_13,
             GPT_5_1_CODEX,
@@ -1119,6 +1139,11 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_5_2 -> Value.GPT_5_2
+                GPT_5_2_2025_12_11 -> Value.GPT_5_2_2025_12_11
+                GPT_5_2_CHAT_LATEST -> Value.GPT_5_2_CHAT_LATEST
+                GPT_5_2_PRO -> Value.GPT_5_2_PRO
+                GPT_5_2_PRO_2025_12_11 -> Value.GPT_5_2_PRO_2025_12_11
                 GPT_5_1 -> Value.GPT_5_1
                 GPT_5_1_2025_11_13 -> Value.GPT_5_1_2025_11_13
                 GPT_5_1_CODEX -> Value.GPT_5_1_CODEX
@@ -1214,6 +1239,11 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_5_2 -> Known.GPT_5_2
+                GPT_5_2_2025_12_11 -> Known.GPT_5_2_2025_12_11
+                GPT_5_2_CHAT_LATEST -> Known.GPT_5_2_CHAT_LATEST
+                GPT_5_2_PRO -> Known.GPT_5_2_PRO
+                GPT_5_2_PRO_2025_12_11 -> Known.GPT_5_2_PRO_2025_12_11
                 GPT_5_1 -> Known.GPT_5_1
                 GPT_5_1_2025_11_13 -> Known.GPT_5_1_2025_11_13
                 GPT_5_1_CODEX -> Known.GPT_5_1_CODEX

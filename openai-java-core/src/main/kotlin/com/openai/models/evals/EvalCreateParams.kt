@@ -5478,7 +5478,8 @@ private constructor(
                     .build()
 
             /**
-             * The input text. This may include template strings.
+             * The input messages evaluated by the grader. Supports text, output text, input image,
+             * and input audio content blocks, and may include template strings.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -5644,7 +5645,10 @@ private constructor(
                     additionalProperties = scoreModel.additionalProperties.toMutableMap()
                 }
 
-                /** The input text. This may include template strings. */
+                /**
+                 * The input messages evaluated by the grader. Supports text, output text, input
+                 * image, and input audio content blocks, and may include template strings.
+                 */
                 fun input(input: List<ScoreModelGrader.Input>) = input(JsonField.of(input))
 
                 /**
