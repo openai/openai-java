@@ -284,7 +284,7 @@ private constructor(
      * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
      *   `none`.
      * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-     * - `xhigh` is currently only supported for `gpt-5.1-codex-max`.
+     * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1431,7 +1431,7 @@ private constructor(
          * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
          *   `none`.
          * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is currently only supported for `gpt-5.1-codex-max`.
+         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -2430,7 +2430,7 @@ private constructor(
          * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
          *   `none`.
          * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is currently only supported for `gpt-5.1-codex-max`.
+         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3758,7 +3758,7 @@ private constructor(
              * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
              *   support `none`.
              * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-             * - `xhigh` is currently only supported for `gpt-5.1-codex-max`.
+             * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))

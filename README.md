@@ -58,7 +58,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_5_1)
+    .model(ChatModel.GPT_5_2)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
@@ -164,7 +164,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_5_1)
+    .model(ChatModel.GPT_5_2)
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = client.async().chat().completions().create(params);
 ```
@@ -185,7 +185,7 @@ OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_5_1)
+    .model(ChatModel.GPT_5_2)
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = client.chat().completions().create(params);
 ```
@@ -415,7 +415,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_5_1)
+    .model(ChatModel.GPT_5_2)
     .build();
 HttpResponseFor<ChatCompletion> chatCompletion = client.chat().completions().withRawResponse().create(params);
 
@@ -847,7 +847,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .messages(JsonValue.from(42))
-    .model(ChatModel.GPT_5_1)
+    .model(ChatModel.GPT_5_2)
     .build();
 ```
 
@@ -900,7 +900,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .model(ChatModel.GPT_5_1)
+    .model(ChatModel.GPT_5_2)
     .messages(JsonMissing.of())
     .build();
 ```
