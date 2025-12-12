@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.11.0 (2025-12-12)
+
+Full Changelog: [v4.10.0...v4.11.0](https://github.com/openai/openai-java/compare/v4.10.0...v4.11.0)
+
+### Features
+
+* **api:** gpt 5.2 ([de55bd3](https://github.com/openai/openai-java/commit/de55bd3ecfcf1c325a6908b8521b4fc06ed6fc7c))
+
 ## 4.10.0 (2025-12-10)
 
 Full Changelog: [v4.9.0...v4.10.0](https://github.com/openai/openai-java/compare/v4.9.0...v4.10.0)
