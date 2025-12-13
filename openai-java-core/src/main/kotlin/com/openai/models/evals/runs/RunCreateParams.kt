@@ -4115,7 +4115,9 @@ private constructor(
                             ) : this(content, role, type, mutableMapOf())
 
                             /**
-                             * Inputs to the model - can contain template strings.
+                             * Inputs to the model - can contain template strings. Supports text,
+                             * output text, input images, and input audio, either as a single item
+                             * or an array of items.
                              *
                              * @throws OpenAIInvalidDataException if the JSON field has an
                              *   unexpected type or is unexpectedly missing or null (e.g. if the
@@ -4217,7 +4219,11 @@ private constructor(
                                         evalItem.additionalProperties.toMutableMap()
                                 }
 
-                                /** Inputs to the model - can contain template strings. */
+                                /**
+                                 * Inputs to the model - can contain template strings. Supports
+                                 * text, output text, input images, and input audio, either as a
+                                 * single item or an array of items.
+                                 */
                                 fun content(content: Content) = content(JsonField.of(content))
 
                                 /**
@@ -4254,10 +4260,10 @@ private constructor(
 
                                 /**
                                  * Alias for calling [content] with
-                                 * `Content.ofInputImage(inputImage)`.
+                                 * `Content.ofEvalItemInputImage(evalItemInputImage)`.
                                  */
-                                fun content(inputImage: Content.InputImage) =
-                                    content(Content.ofInputImage(inputImage))
+                                fun content(evalItemInputImage: Content.EvalItemInputImage) =
+                                    content(Content.ofEvalItemInputImage(evalItemInputImage))
 
                                 /**
                                  * Alias for calling [content] with
@@ -4268,15 +4274,17 @@ private constructor(
 
                                 /**
                                  * Alias for calling [content] with
-                                 * `Content.ofAnArrayOfInputTextInputImageAndInputAudio(anArrayOfInputTextInputImageAndInputAudio)`.
+                                 * `Content.ofAnArrayOfInputTextOutputTextInputImageAndInputAudio(anArrayOfInputTextOutputTextInputImageAndInputAudio)`.
                                  */
-                                fun contentOfAnArrayOfInputTextInputImageAndInputAudio(
-                                    anArrayOfInputTextInputImageAndInputAudio: List<JsonValue>
+                                fun contentOfAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                    anArrayOfInputTextOutputTextInputImageAndInputAudio:
+                                        List<Content.UnnamedSchemaWithArrayParent8>
                                 ) =
                                     content(
-                                        Content.ofAnArrayOfInputTextInputImageAndInputAudio(
-                                            anArrayOfInputTextInputImageAndInputAudio
-                                        )
+                                        Content
+                                            .ofAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                                anArrayOfInputTextOutputTextInputImageAndInputAudio
+                                            )
                                     )
 
                                 /**
@@ -4385,7 +4393,11 @@ private constructor(
                                     (role.asKnown().getOrNull()?.validity() ?: 0) +
                                     (type.asKnown().getOrNull()?.validity() ?: 0)
 
-                            /** Inputs to the model - can contain template strings. */
+                            /**
+                             * Inputs to the model - can contain template strings. Supports text,
+                             * output text, input images, and input audio, either as a single item
+                             * or an array of items.
+                             */
                             @JsonDeserialize(using = Content.Deserializer::class)
                             @JsonSerialize(using = Content.Serializer::class)
                             class Content
@@ -4393,10 +4405,10 @@ private constructor(
                                 private val textInput: String? = null,
                                 private val responseInputText: ResponseInputText? = null,
                                 private val outputText: OutputText? = null,
-                                private val inputImage: InputImage? = null,
+                                private val evalItemInputImage: EvalItemInputImage? = null,
                                 private val responseInputAudio: ResponseInputAudio? = null,
-                                private val anArrayOfInputTextInputImageAndInputAudio:
-                                    List<JsonValue>? =
+                                private val anArrayOfInputTextOutputTextInputImageAndInputAudio:
+                                    List<UnnamedSchemaWithArrayParent8>? =
                                     null,
                                 private val _json: JsonValue? = null,
                             ) {
@@ -4412,9 +4424,9 @@ private constructor(
                                 fun outputText(): Optional<OutputText> =
                                     Optional.ofNullable(outputText)
 
-                                /** An image input to the model. */
-                                fun inputImage(): Optional<InputImage> =
-                                    Optional.ofNullable(inputImage)
+                                /** An image input block used within EvalItem content arrays. */
+                                fun evalItemInputImage(): Optional<EvalItemInputImage> =
+                                    Optional.ofNullable(evalItemInputImage)
 
                                 /** An audio input to the model. */
                                 fun responseInputAudio(): Optional<ResponseInputAudio> =
@@ -4422,11 +4434,13 @@ private constructor(
 
                                 /**
                                  * A list of inputs, each of which may be either an input text,
-                                 * input image, or input audio object.
+                                 * output text, input image, or input audio object.
                                  */
-                                fun anArrayOfInputTextInputImageAndInputAudio():
-                                    Optional<List<JsonValue>> =
-                                    Optional.ofNullable(anArrayOfInputTextInputImageAndInputAudio)
+                                fun anArrayOfInputTextOutputTextInputImageAndInputAudio():
+                                    Optional<List<UnnamedSchemaWithArrayParent8>> =
+                                    Optional.ofNullable(
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio
+                                    )
 
                                 fun isTextInput(): Boolean = textInput != null
 
@@ -4434,12 +4448,13 @@ private constructor(
 
                                 fun isOutputText(): Boolean = outputText != null
 
-                                fun isInputImage(): Boolean = inputImage != null
+                                fun isEvalItemInputImage(): Boolean = evalItemInputImage != null
 
                                 fun isResponseInputAudio(): Boolean = responseInputAudio != null
 
-                                fun isAnArrayOfInputTextInputImageAndInputAudio(): Boolean =
-                                    anArrayOfInputTextInputImageAndInputAudio != null
+                                fun isAnArrayOfInputTextOutputTextInputImageAndInputAudio():
+                                    Boolean =
+                                    anArrayOfInputTextOutputTextInputImageAndInputAudio != null
 
                                 /** A text input to the model. */
                                 fun asTextInput(): String = textInput.getOrThrow("textInput")
@@ -4451,8 +4466,9 @@ private constructor(
                                 /** A text output from the model. */
                                 fun asOutputText(): OutputText = outputText.getOrThrow("outputText")
 
-                                /** An image input to the model. */
-                                fun asInputImage(): InputImage = inputImage.getOrThrow("inputImage")
+                                /** An image input block used within EvalItem content arrays. */
+                                fun asEvalItemInputImage(): EvalItemInputImage =
+                                    evalItemInputImage.getOrThrow("evalItemInputImage")
 
                                 /** An audio input to the model. */
                                 fun asResponseInputAudio(): ResponseInputAudio =
@@ -4460,11 +4476,12 @@ private constructor(
 
                                 /**
                                  * A list of inputs, each of which may be either an input text,
-                                 * input image, or input audio object.
+                                 * output text, input image, or input audio object.
                                  */
-                                fun asAnArrayOfInputTextInputImageAndInputAudio(): List<JsonValue> =
-                                    anArrayOfInputTextInputImageAndInputAudio.getOrThrow(
-                                        "anArrayOfInputTextInputImageAndInputAudio"
+                                fun asAnArrayOfInputTextOutputTextInputImageAndInputAudio():
+                                    List<UnnamedSchemaWithArrayParent8> =
+                                    anArrayOfInputTextOutputTextInputImageAndInputAudio.getOrThrow(
+                                        "anArrayOfInputTextOutputTextInputImageAndInputAudio"
                                     )
 
                                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -4475,13 +4492,16 @@ private constructor(
                                         responseInputText != null ->
                                             visitor.visitResponseInputText(responseInputText)
                                         outputText != null -> visitor.visitOutputText(outputText)
-                                        inputImage != null -> visitor.visitInputImage(inputImage)
+                                        evalItemInputImage != null ->
+                                            visitor.visitEvalItemInputImage(evalItemInputImage)
                                         responseInputAudio != null ->
                                             visitor.visitResponseInputAudio(responseInputAudio)
-                                        anArrayOfInputTextInputImageAndInputAudio != null ->
-                                            visitor.visitAnArrayOfInputTextInputImageAndInputAudio(
-                                                anArrayOfInputTextInputImageAndInputAudio
-                                            )
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio !=
+                                            null ->
+                                            visitor
+                                                .visitAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                                    anArrayOfInputTextOutputTextInputImageAndInputAudio
+                                                )
                                         else -> visitor.unknown(_json)
                                     }
 
@@ -4506,8 +4526,10 @@ private constructor(
                                                 outputText.validate()
                                             }
 
-                                            override fun visitInputImage(inputImage: InputImage) {
-                                                inputImage.validate()
+                                            override fun visitEvalItemInputImage(
+                                                evalItemInputImage: EvalItemInputImage
+                                            ) {
+                                                evalItemInputImage.validate()
                                             }
 
                                             override fun visitResponseInputAudio(
@@ -4516,10 +4538,13 @@ private constructor(
                                                 responseInputAudio.validate()
                                             }
 
-                                            override fun visitAnArrayOfInputTextInputImageAndInputAudio(
-                                                anArrayOfInputTextInputImageAndInputAudio:
-                                                    List<JsonValue>
-                                            ) {}
+                                            override fun visitAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                                anArrayOfInputTextOutputTextInputImageAndInputAudio:
+                                                    List<UnnamedSchemaWithArrayParent8>
+                                            ) {
+                                                anArrayOfInputTextOutputTextInputImageAndInputAudio
+                                                    .forEach { it.validate() }
+                                            }
                                         }
                                     )
                                     validated = true
@@ -4552,17 +4577,20 @@ private constructor(
                                             override fun visitOutputText(outputText: OutputText) =
                                                 outputText.validity()
 
-                                            override fun visitInputImage(inputImage: InputImage) =
-                                                inputImage.validity()
+                                            override fun visitEvalItemInputImage(
+                                                evalItemInputImage: EvalItemInputImage
+                                            ) = evalItemInputImage.validity()
 
                                             override fun visitResponseInputAudio(
                                                 responseInputAudio: ResponseInputAudio
                                             ) = responseInputAudio.validity()
 
-                                            override fun visitAnArrayOfInputTextInputImageAndInputAudio(
-                                                anArrayOfInputTextInputImageAndInputAudio:
-                                                    List<JsonValue>
-                                            ) = anArrayOfInputTextInputImageAndInputAudio.size
+                                            override fun visitAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                                anArrayOfInputTextOutputTextInputImageAndInputAudio:
+                                                    List<UnnamedSchemaWithArrayParent8>
+                                            ) =
+                                                anArrayOfInputTextOutputTextInputImageAndInputAudio
+                                                    .sumOf { it.validity().toInt() }
 
                                             override fun unknown(json: JsonValue?) = 0
                                         }
@@ -4577,10 +4605,11 @@ private constructor(
                                         textInput == other.textInput &&
                                         responseInputText == other.responseInputText &&
                                         outputText == other.outputText &&
-                                        inputImage == other.inputImage &&
+                                        evalItemInputImage == other.evalItemInputImage &&
                                         responseInputAudio == other.responseInputAudio &&
-                                        anArrayOfInputTextInputImageAndInputAudio ==
-                                            other.anArrayOfInputTextInputImageAndInputAudio
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio ==
+                                            other
+                                                .anArrayOfInputTextOutputTextInputImageAndInputAudio
                                 }
 
                                 override fun hashCode(): Int =
@@ -4588,9 +4617,9 @@ private constructor(
                                         textInput,
                                         responseInputText,
                                         outputText,
-                                        inputImage,
+                                        evalItemInputImage,
                                         responseInputAudio,
-                                        anArrayOfInputTextInputImageAndInputAudio,
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio,
                                     )
 
                                 override fun toString(): String =
@@ -4599,11 +4628,13 @@ private constructor(
                                         responseInputText != null ->
                                             "Content{responseInputText=$responseInputText}"
                                         outputText != null -> "Content{outputText=$outputText}"
-                                        inputImage != null -> "Content{inputImage=$inputImage}"
+                                        evalItemInputImage != null ->
+                                            "Content{evalItemInputImage=$evalItemInputImage}"
                                         responseInputAudio != null ->
                                             "Content{responseInputAudio=$responseInputAudio}"
-                                        anArrayOfInputTextInputImageAndInputAudio != null ->
-                                            "Content{anArrayOfInputTextInputImageAndInputAudio=$anArrayOfInputTextInputImageAndInputAudio}"
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio !=
+                                            null ->
+                                            "Content{anArrayOfInputTextOutputTextInputImageAndInputAudio=$anArrayOfInputTextOutputTextInputImageAndInputAudio}"
                                         _json != null -> "Content{_unknown=$_json}"
                                         else -> throw IllegalStateException("Invalid Content")
                                     }
@@ -4625,10 +4656,11 @@ private constructor(
                                     fun ofOutputText(outputText: OutputText) =
                                         Content(outputText = outputText)
 
-                                    /** An image input to the model. */
+                                    /** An image input block used within EvalItem content arrays. */
                                     @JvmStatic
-                                    fun ofInputImage(inputImage: InputImage) =
-                                        Content(inputImage = inputImage)
+                                    fun ofEvalItemInputImage(
+                                        evalItemInputImage: EvalItemInputImage
+                                    ) = Content(evalItemInputImage = evalItemInputImage)
 
                                     /** An audio input to the model. */
                                     @JvmStatic
@@ -4638,15 +4670,16 @@ private constructor(
 
                                     /**
                                      * A list of inputs, each of which may be either an input text,
-                                     * input image, or input audio object.
+                                     * output text, input image, or input audio object.
                                      */
                                     @JvmStatic
-                                    fun ofAnArrayOfInputTextInputImageAndInputAudio(
-                                        anArrayOfInputTextInputImageAndInputAudio: List<JsonValue>
+                                    fun ofAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio:
+                                            List<UnnamedSchemaWithArrayParent8>
                                     ) =
                                         Content(
-                                            anArrayOfInputTextInputImageAndInputAudio =
-                                                anArrayOfInputTextInputImageAndInputAudio
+                                            anArrayOfInputTextOutputTextInputImageAndInputAudio =
+                                                anArrayOfInputTextOutputTextInputImageAndInputAudio
                                                     .toImmutable()
                                         )
                                 }
@@ -4668,8 +4701,10 @@ private constructor(
                                     /** A text output from the model. */
                                     fun visitOutputText(outputText: OutputText): T
 
-                                    /** An image input to the model. */
-                                    fun visitInputImage(inputImage: InputImage): T
+                                    /** An image input block used within EvalItem content arrays. */
+                                    fun visitEvalItemInputImage(
+                                        evalItemInputImage: EvalItemInputImage
+                                    ): T
 
                                     /** An audio input to the model. */
                                     fun visitResponseInputAudio(
@@ -4678,10 +4713,11 @@ private constructor(
 
                                     /**
                                      * A list of inputs, each of which may be either an input text,
-                                     * input image, or input audio object.
+                                     * output text, input image, or input audio object.
                                      */
-                                    fun visitAnArrayOfInputTextInputImageAndInputAudio(
-                                        anArrayOfInputTextInputImageAndInputAudio: List<JsonValue>
+                                    fun visitAnArrayOfInputTextOutputTextInputImageAndInputAudio(
+                                        anArrayOfInputTextOutputTextInputImageAndInputAudio:
+                                            List<UnnamedSchemaWithArrayParent8>
                                     ): T
 
                                     /**
@@ -4728,10 +4764,13 @@ private constructor(
                                                         },
                                                     tryDeserialize(
                                                             node,
-                                                            jacksonTypeRef<InputImage>(),
+                                                            jacksonTypeRef<EvalItemInputImage>(),
                                                         )
                                                         ?.let {
-                                                            Content(inputImage = it, _json = json)
+                                                            Content(
+                                                                evalItemInputImage = it,
+                                                                _json = json,
+                                                            )
                                                         },
                                                     tryDeserialize(
                                                             node,
@@ -4749,11 +4788,13 @@ private constructor(
                                                         },
                                                     tryDeserialize(
                                                             node,
-                                                            jacksonTypeRef<List<JsonValue>>(),
+                                                            jacksonTypeRef<
+                                                                List<UnnamedSchemaWithArrayParent8>
+                                                            >(),
                                                         )
                                                         ?.let {
                                                             Content(
-                                                                anArrayOfInputTextInputImageAndInputAudio =
+                                                                anArrayOfInputTextOutputTextInputImageAndInputAudio =
                                                                     it,
                                                                 _json = json,
                                                             )
@@ -4794,14 +4835,16 @@ private constructor(
                                                 generator.writeObject(value.responseInputText)
                                             value.outputText != null ->
                                                 generator.writeObject(value.outputText)
-                                            value.inputImage != null ->
-                                                generator.writeObject(value.inputImage)
+                                            value.evalItemInputImage != null ->
+                                                generator.writeObject(value.evalItemInputImage)
                                             value.responseInputAudio != null ->
                                                 generator.writeObject(value.responseInputAudio)
-                                            value.anArrayOfInputTextInputImageAndInputAudio !=
+                                            value
+                                                .anArrayOfInputTextOutputTextInputImageAndInputAudio !=
                                                 null ->
                                                 generator.writeObject(
-                                                    value.anArrayOfInputTextInputImageAndInputAudio
+                                                    value
+                                                        .anArrayOfInputTextOutputTextInputImageAndInputAudio
                                                 )
                                             value._json != null ->
                                                 generator.writeObject(value._json)
@@ -5047,8 +5090,8 @@ private constructor(
                                         "OutputText{text=$text, type=$type, additionalProperties=$additionalProperties}"
                                 }
 
-                                /** An image input to the model. */
-                                class InputImage
+                                /** An image input block used within EvalItem content arrays. */
+                                class EvalItemInputImage
                                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                                 private constructor(
                                     private val imageUrl: JsonField<String>,
@@ -5143,7 +5186,7 @@ private constructor(
 
                                         /**
                                          * Returns a mutable builder for constructing an instance of
-                                         * [InputImage].
+                                         * [EvalItemInputImage].
                                          *
                                          * The following fields are required:
                                          * ```java
@@ -5153,7 +5196,7 @@ private constructor(
                                         @JvmStatic fun builder() = Builder()
                                     }
 
-                                    /** A builder for [InputImage]. */
+                                    /** A builder for [EvalItemInputImage]. */
                                     class Builder internal constructor() {
 
                                         private var imageUrl: JsonField<String>? = null
@@ -5164,13 +5207,15 @@ private constructor(
                                             mutableMapOf()
 
                                         @JvmSynthetic
-                                        internal fun from(inputImage: InputImage) = apply {
-                                            imageUrl = inputImage.imageUrl
-                                            type = inputImage.type
-                                            detail = inputImage.detail
-                                            additionalProperties =
-                                                inputImage.additionalProperties.toMutableMap()
-                                        }
+                                        internal fun from(evalItemInputImage: EvalItemInputImage) =
+                                            apply {
+                                                imageUrl = evalItemInputImage.imageUrl
+                                                type = evalItemInputImage.type
+                                                detail = evalItemInputImage.detail
+                                                additionalProperties =
+                                                    evalItemInputImage.additionalProperties
+                                                        .toMutableMap()
+                                            }
 
                                         /** The URL of the image input. */
                                         fun imageUrl(imageUrl: String) =
@@ -5248,7 +5293,7 @@ private constructor(
                                             }
 
                                         /**
-                                         * Returns an immutable instance of [InputImage].
+                                         * Returns an immutable instance of [EvalItemInputImage].
                                          *
                                          * Further updates to this [Builder] will not mutate the
                                          * returned instance.
@@ -5261,8 +5306,8 @@ private constructor(
                                          * @throws IllegalStateException if any required field is
                                          *   unset.
                                          */
-                                        fun build(): InputImage =
-                                            InputImage(
+                                        fun build(): EvalItemInputImage =
+                                            EvalItemInputImage(
                                                 checkRequired("imageUrl", imageUrl),
                                                 type,
                                                 detail,
@@ -5272,7 +5317,7 @@ private constructor(
 
                                     private var validated: Boolean = false
 
-                                    fun validate(): InputImage = apply {
+                                    fun validate(): EvalItemInputImage = apply {
                                         if (validated) {
                                             return@apply
                                         }
@@ -5316,7 +5361,7 @@ private constructor(
                                             return true
                                         }
 
-                                        return other is InputImage &&
+                                        return other is EvalItemInputImage &&
                                             imageUrl == other.imageUrl &&
                                             type == other.type &&
                                             detail == other.detail &&
@@ -5330,7 +5375,966 @@ private constructor(
                                     override fun hashCode(): Int = hashCode
 
                                     override fun toString() =
-                                        "InputImage{imageUrl=$imageUrl, type=$type, detail=$detail, additionalProperties=$additionalProperties}"
+                                        "EvalItemInputImage{imageUrl=$imageUrl, type=$type, detail=$detail, additionalProperties=$additionalProperties}"
+                                }
+
+                                /** A text input to the model. */
+                                @JsonDeserialize(
+                                    using = UnnamedSchemaWithArrayParent8.Deserializer::class
+                                )
+                                @JsonSerialize(
+                                    using = UnnamedSchemaWithArrayParent8.Serializer::class
+                                )
+                                class UnnamedSchemaWithArrayParent8
+                                private constructor(
+                                    private val textInput: String? = null,
+                                    private val responseInputText: ResponseInputText? = null,
+                                    private val outputText: OutputText? = null,
+                                    private val evalItemInputImage: EvalItemInputImage? = null,
+                                    private val responseInputAudio: ResponseInputAudio? = null,
+                                    private val _json: JsonValue? = null,
+                                ) {
+
+                                    /** A text input to the model. */
+                                    fun textInput(): Optional<String> =
+                                        Optional.ofNullable(textInput)
+
+                                    /** A text input to the model. */
+                                    fun responseInputText(): Optional<ResponseInputText> =
+                                        Optional.ofNullable(responseInputText)
+
+                                    /** A text output from the model. */
+                                    fun outputText(): Optional<OutputText> =
+                                        Optional.ofNullable(outputText)
+
+                                    /** An image input block used within EvalItem content arrays. */
+                                    fun evalItemInputImage(): Optional<EvalItemInputImage> =
+                                        Optional.ofNullable(evalItemInputImage)
+
+                                    /** An audio input to the model. */
+                                    fun responseInputAudio(): Optional<ResponseInputAudio> =
+                                        Optional.ofNullable(responseInputAudio)
+
+                                    fun isTextInput(): Boolean = textInput != null
+
+                                    fun isResponseInputText(): Boolean = responseInputText != null
+
+                                    fun isOutputText(): Boolean = outputText != null
+
+                                    fun isEvalItemInputImage(): Boolean = evalItemInputImage != null
+
+                                    fun isResponseInputAudio(): Boolean = responseInputAudio != null
+
+                                    /** A text input to the model. */
+                                    fun asTextInput(): String = textInput.getOrThrow("textInput")
+
+                                    /** A text input to the model. */
+                                    fun asResponseInputText(): ResponseInputText =
+                                        responseInputText.getOrThrow("responseInputText")
+
+                                    /** A text output from the model. */
+                                    fun asOutputText(): OutputText =
+                                        outputText.getOrThrow("outputText")
+
+                                    /** An image input block used within EvalItem content arrays. */
+                                    fun asEvalItemInputImage(): EvalItemInputImage =
+                                        evalItemInputImage.getOrThrow("evalItemInputImage")
+
+                                    /** An audio input to the model. */
+                                    fun asResponseInputAudio(): ResponseInputAudio =
+                                        responseInputAudio.getOrThrow("responseInputAudio")
+
+                                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                                    fun <T> accept(visitor: Visitor<T>): T =
+                                        when {
+                                            textInput != null -> visitor.visitTextInput(textInput)
+                                            responseInputText != null ->
+                                                visitor.visitResponseInputText(responseInputText)
+                                            outputText != null ->
+                                                visitor.visitOutputText(outputText)
+                                            evalItemInputImage != null ->
+                                                visitor.visitEvalItemInputImage(evalItemInputImage)
+                                            responseInputAudio != null ->
+                                                visitor.visitResponseInputAudio(responseInputAudio)
+                                            else -> visitor.unknown(_json)
+                                        }
+
+                                    private var validated: Boolean = false
+
+                                    fun validate(): UnnamedSchemaWithArrayParent8 = apply {
+                                        if (validated) {
+                                            return@apply
+                                        }
+
+                                        accept(
+                                            object : Visitor<Unit> {
+                                                override fun visitTextInput(textInput: String) {}
+
+                                                override fun visitResponseInputText(
+                                                    responseInputText: ResponseInputText
+                                                ) {
+                                                    responseInputText.validate()
+                                                }
+
+                                                override fun visitOutputText(
+                                                    outputText: OutputText
+                                                ) {
+                                                    outputText.validate()
+                                                }
+
+                                                override fun visitEvalItemInputImage(
+                                                    evalItemInputImage: EvalItemInputImage
+                                                ) {
+                                                    evalItemInputImage.validate()
+                                                }
+
+                                                override fun visitResponseInputAudio(
+                                                    responseInputAudio: ResponseInputAudio
+                                                ) {
+                                                    responseInputAudio.validate()
+                                                }
+                                            }
+                                        )
+                                        validated = true
+                                    }
+
+                                    fun isValid(): Boolean =
+                                        try {
+                                            validate()
+                                            true
+                                        } catch (e: OpenAIInvalidDataException) {
+                                            false
+                                        }
+
+                                    /**
+                                     * Returns a score indicating how many valid values are
+                                     * contained in this object recursively.
+                                     *
+                                     * Used for best match union deserialization.
+                                     */
+                                    @JvmSynthetic
+                                    internal fun validity(): Int =
+                                        accept(
+                                            object : Visitor<Int> {
+                                                override fun visitTextInput(textInput: String) = 1
+
+                                                override fun visitResponseInputText(
+                                                    responseInputText: ResponseInputText
+                                                ) = responseInputText.validity()
+
+                                                override fun visitOutputText(
+                                                    outputText: OutputText
+                                                ) = outputText.validity()
+
+                                                override fun visitEvalItemInputImage(
+                                                    evalItemInputImage: EvalItemInputImage
+                                                ) = evalItemInputImage.validity()
+
+                                                override fun visitResponseInputAudio(
+                                                    responseInputAudio: ResponseInputAudio
+                                                ) = responseInputAudio.validity()
+
+                                                override fun unknown(json: JsonValue?) = 0
+                                            }
+                                        )
+
+                                    override fun equals(other: Any?): Boolean {
+                                        if (this === other) {
+                                            return true
+                                        }
+
+                                        return other is UnnamedSchemaWithArrayParent8 &&
+                                            textInput == other.textInput &&
+                                            responseInputText == other.responseInputText &&
+                                            outputText == other.outputText &&
+                                            evalItemInputImage == other.evalItemInputImage &&
+                                            responseInputAudio == other.responseInputAudio
+                                    }
+
+                                    override fun hashCode(): Int =
+                                        Objects.hash(
+                                            textInput,
+                                            responseInputText,
+                                            outputText,
+                                            evalItemInputImage,
+                                            responseInputAudio,
+                                        )
+
+                                    override fun toString(): String =
+                                        when {
+                                            textInput != null ->
+                                                "UnnamedSchemaWithArrayParent8{textInput=$textInput}"
+                                            responseInputText != null ->
+                                                "UnnamedSchemaWithArrayParent8{responseInputText=$responseInputText}"
+                                            outputText != null ->
+                                                "UnnamedSchemaWithArrayParent8{outputText=$outputText}"
+                                            evalItemInputImage != null ->
+                                                "UnnamedSchemaWithArrayParent8{evalItemInputImage=$evalItemInputImage}"
+                                            responseInputAudio != null ->
+                                                "UnnamedSchemaWithArrayParent8{responseInputAudio=$responseInputAudio}"
+                                            _json != null ->
+                                                "UnnamedSchemaWithArrayParent8{_unknown=$_json}"
+                                            else ->
+                                                throw IllegalStateException(
+                                                    "Invalid UnnamedSchemaWithArrayParent8"
+                                                )
+                                        }
+
+                                    companion object {
+
+                                        /** A text input to the model. */
+                                        @JvmStatic
+                                        fun ofTextInput(textInput: String) =
+                                            UnnamedSchemaWithArrayParent8(textInput = textInput)
+
+                                        /** A text input to the model. */
+                                        @JvmStatic
+                                        fun ofResponseInputText(
+                                            responseInputText: ResponseInputText
+                                        ) =
+                                            UnnamedSchemaWithArrayParent8(
+                                                responseInputText = responseInputText
+                                            )
+
+                                        /** A text output from the model. */
+                                        @JvmStatic
+                                        fun ofOutputText(outputText: OutputText) =
+                                            UnnamedSchemaWithArrayParent8(outputText = outputText)
+
+                                        /**
+                                         * An image input block used within EvalItem content arrays.
+                                         */
+                                        @JvmStatic
+                                        fun ofEvalItemInputImage(
+                                            evalItemInputImage: EvalItemInputImage
+                                        ) =
+                                            UnnamedSchemaWithArrayParent8(
+                                                evalItemInputImage = evalItemInputImage
+                                            )
+
+                                        /** An audio input to the model. */
+                                        @JvmStatic
+                                        fun ofResponseInputAudio(
+                                            responseInputAudio: ResponseInputAudio
+                                        ) =
+                                            UnnamedSchemaWithArrayParent8(
+                                                responseInputAudio = responseInputAudio
+                                            )
+                                    }
+
+                                    /**
+                                     * An interface that defines how to map each variant of
+                                     * [UnnamedSchemaWithArrayParent8] to a value of type [T].
+                                     */
+                                    interface Visitor<out T> {
+
+                                        /** A text input to the model. */
+                                        fun visitTextInput(textInput: String): T
+
+                                        /** A text input to the model. */
+                                        fun visitResponseInputText(
+                                            responseInputText: ResponseInputText
+                                        ): T
+
+                                        /** A text output from the model. */
+                                        fun visitOutputText(outputText: OutputText): T
+
+                                        /**
+                                         * An image input block used within EvalItem content arrays.
+                                         */
+                                        fun visitEvalItemInputImage(
+                                            evalItemInputImage: EvalItemInputImage
+                                        ): T
+
+                                        /** An audio input to the model. */
+                                        fun visitResponseInputAudio(
+                                            responseInputAudio: ResponseInputAudio
+                                        ): T
+
+                                        /**
+                                         * Maps an unknown variant of
+                                         * [UnnamedSchemaWithArrayParent8] to a value of type [T].
+                                         *
+                                         * An instance of [UnnamedSchemaWithArrayParent8] can
+                                         * contain an unknown variant if it was deserialized from
+                                         * data that doesn't match any known variant. For example,
+                                         * if the SDK is on an older version than the API, then the
+                                         * API may respond with new variants that the SDK is unaware
+                                         * of.
+                                         *
+                                         * @throws OpenAIInvalidDataException in the default
+                                         *   implementation.
+                                         */
+                                        fun unknown(json: JsonValue?): T {
+                                            throw OpenAIInvalidDataException(
+                                                "Unknown UnnamedSchemaWithArrayParent8: $json"
+                                            )
+                                        }
+                                    }
+
+                                    internal class Deserializer :
+                                        BaseDeserializer<UnnamedSchemaWithArrayParent8>(
+                                            UnnamedSchemaWithArrayParent8::class
+                                        ) {
+
+                                        override fun ObjectCodec.deserialize(
+                                            node: JsonNode
+                                        ): UnnamedSchemaWithArrayParent8 {
+                                            val json = JsonValue.fromJsonNode(node)
+
+                                            val bestMatches =
+                                                sequenceOf(
+                                                        tryDeserialize(
+                                                                node,
+                                                                jacksonTypeRef<ResponseInputText>(),
+                                                            )
+                                                            ?.let {
+                                                                UnnamedSchemaWithArrayParent8(
+                                                                    responseInputText = it,
+                                                                    _json = json,
+                                                                )
+                                                            },
+                                                        tryDeserialize(
+                                                                node,
+                                                                jacksonTypeRef<OutputText>(),
+                                                            )
+                                                            ?.let {
+                                                                UnnamedSchemaWithArrayParent8(
+                                                                    outputText = it,
+                                                                    _json = json,
+                                                                )
+                                                            },
+                                                        tryDeserialize(
+                                                                node,
+                                                                jacksonTypeRef<EvalItemInputImage>(),
+                                                            )
+                                                            ?.let {
+                                                                UnnamedSchemaWithArrayParent8(
+                                                                    evalItemInputImage = it,
+                                                                    _json = json,
+                                                                )
+                                                            },
+                                                        tryDeserialize(
+                                                                node,
+                                                                jacksonTypeRef<ResponseInputAudio>(),
+                                                            )
+                                                            ?.let {
+                                                                UnnamedSchemaWithArrayParent8(
+                                                                    responseInputAudio = it,
+                                                                    _json = json,
+                                                                )
+                                                            },
+                                                        tryDeserialize(
+                                                                node,
+                                                                jacksonTypeRef<String>(),
+                                                            )
+                                                            ?.let {
+                                                                UnnamedSchemaWithArrayParent8(
+                                                                    textInput = it,
+                                                                    _json = json,
+                                                                )
+                                                            },
+                                                    )
+                                                    .filterNotNull()
+                                                    .allMaxBy { it.validity() }
+                                                    .toList()
+                                            return when (bestMatches.size) {
+                                                // This can happen if what we're deserializing is
+                                                // completely incompatible with all the possible
+                                                // variants (e.g. deserializing from array).
+                                                0 -> UnnamedSchemaWithArrayParent8(_json = json)
+                                                1 -> bestMatches.single()
+                                                // If there's more than one match with the highest
+                                                // validity, then use the first completely valid
+                                                // match, or simply the first match if none are
+                                                // completely valid.
+                                                else ->
+                                                    bestMatches.firstOrNull { it.isValid() }
+                                                        ?: bestMatches.first()
+                                            }
+                                        }
+                                    }
+
+                                    internal class Serializer :
+                                        BaseSerializer<UnnamedSchemaWithArrayParent8>(
+                                            UnnamedSchemaWithArrayParent8::class
+                                        ) {
+
+                                        override fun serialize(
+                                            value: UnnamedSchemaWithArrayParent8,
+                                            generator: JsonGenerator,
+                                            provider: SerializerProvider,
+                                        ) {
+                                            when {
+                                                value.textInput != null ->
+                                                    generator.writeObject(value.textInput)
+                                                value.responseInputText != null ->
+                                                    generator.writeObject(value.responseInputText)
+                                                value.outputText != null ->
+                                                    generator.writeObject(value.outputText)
+                                                value.evalItemInputImage != null ->
+                                                    generator.writeObject(value.evalItemInputImage)
+                                                value.responseInputAudio != null ->
+                                                    generator.writeObject(value.responseInputAudio)
+                                                value._json != null ->
+                                                    generator.writeObject(value._json)
+                                                else ->
+                                                    throw IllegalStateException(
+                                                        "Invalid UnnamedSchemaWithArrayParent8"
+                                                    )
+                                            }
+                                        }
+                                    }
+
+                                    /** A text output from the model. */
+                                    class OutputText
+                                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                                    private constructor(
+                                        private val text: JsonField<String>,
+                                        private val type: JsonValue,
+                                        private val additionalProperties:
+                                            MutableMap<String, JsonValue>,
+                                    ) {
+
+                                        @JsonCreator
+                                        private constructor(
+                                            @JsonProperty("text")
+                                            @ExcludeMissing
+                                            text: JsonField<String> = JsonMissing.of(),
+                                            @JsonProperty("type")
+                                            @ExcludeMissing
+                                            type: JsonValue = JsonMissing.of(),
+                                        ) : this(text, type, mutableMapOf())
+
+                                        /**
+                                         * The text output from the model.
+                                         *
+                                         * @throws OpenAIInvalidDataException if the JSON field has
+                                         *   an unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
+                                        fun text(): String = text.getRequired("text")
+
+                                        /**
+                                         * The type of the output text. Always `output_text`.
+                                         *
+                                         * Expected to always return the following:
+                                         * ```java
+                                         * JsonValue.from("output_text")
+                                         * ```
+                                         *
+                                         * However, this method can be useful for debugging and
+                                         * logging (e.g. if the server responded with an unexpected
+                                         * value).
+                                         */
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        fun _type(): JsonValue = type
+
+                                        /**
+                                         * Returns the raw JSON value of [text].
+                                         *
+                                         * Unlike [text], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
+                                        @JsonProperty("text")
+                                        @ExcludeMissing
+                                        fun _text(): JsonField<String> = text
+
+                                        @JsonAnySetter
+                                        private fun putAdditionalProperty(
+                                            key: String,
+                                            value: JsonValue,
+                                        ) {
+                                            additionalProperties.put(key, value)
+                                        }
+
+                                        @JsonAnyGetter
+                                        @ExcludeMissing
+                                        fun _additionalProperties(): Map<String, JsonValue> =
+                                            Collections.unmodifiableMap(additionalProperties)
+
+                                        fun toBuilder() = Builder().from(this)
+
+                                        companion object {
+
+                                            /**
+                                             * Returns a mutable builder for constructing an
+                                             * instance of [OutputText].
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .text()
+                                             * ```
+                                             */
+                                            @JvmStatic fun builder() = Builder()
+                                        }
+
+                                        /** A builder for [OutputText]. */
+                                        class Builder internal constructor() {
+
+                                            private var text: JsonField<String>? = null
+                                            private var type: JsonValue =
+                                                JsonValue.from("output_text")
+                                            private var additionalProperties:
+                                                MutableMap<String, JsonValue> =
+                                                mutableMapOf()
+
+                                            @JvmSynthetic
+                                            internal fun from(outputText: OutputText) = apply {
+                                                text = outputText.text
+                                                type = outputText.type
+                                                additionalProperties =
+                                                    outputText.additionalProperties.toMutableMap()
+                                            }
+
+                                            /** The text output from the model. */
+                                            fun text(text: String) = text(JsonField.of(text))
+
+                                            /**
+                                             * Sets [Builder.text] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.text] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
+                                            fun text(text: JsonField<String>) = apply {
+                                                this.text = text
+                                            }
+
+                                            /**
+                                             * Sets the field to an arbitrary JSON value.
+                                             *
+                                             * It is usually unnecessary to call this method because
+                                             * the field defaults to the following:
+                                             * ```java
+                                             * JsonValue.from("output_text")
+                                             * ```
+                                             *
+                                             * This method is primarily for setting the field to an
+                                             * undocumented or not yet supported value.
+                                             */
+                                            fun type(type: JsonValue) = apply { this.type = type }
+
+                                            fun additionalProperties(
+                                                additionalProperties: Map<String, JsonValue>
+                                            ) = apply {
+                                                this.additionalProperties.clear()
+                                                putAllAdditionalProperties(additionalProperties)
+                                            }
+
+                                            fun putAdditionalProperty(
+                                                key: String,
+                                                value: JsonValue,
+                                            ) = apply { additionalProperties.put(key, value) }
+
+                                            fun putAllAdditionalProperties(
+                                                additionalProperties: Map<String, JsonValue>
+                                            ) = apply {
+                                                this.additionalProperties.putAll(
+                                                    additionalProperties
+                                                )
+                                            }
+
+                                            fun removeAdditionalProperty(key: String) = apply {
+                                                additionalProperties.remove(key)
+                                            }
+
+                                            fun removeAllAdditionalProperties(keys: Set<String>) =
+                                                apply {
+                                                    keys.forEach(::removeAdditionalProperty)
+                                                }
+
+                                            /**
+                                             * Returns an immutable instance of [OutputText].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .text()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
+                                            fun build(): OutputText =
+                                                OutputText(
+                                                    checkRequired("text", text),
+                                                    type,
+                                                    additionalProperties.toMutableMap(),
+                                                )
+                                        }
+
+                                        private var validated: Boolean = false
+
+                                        fun validate(): OutputText = apply {
+                                            if (validated) {
+                                                return@apply
+                                            }
+
+                                            text()
+                                            _type().let {
+                                                if (it != JsonValue.from("output_text")) {
+                                                    throw OpenAIInvalidDataException(
+                                                        "'type' is invalid, received $it"
+                                                    )
+                                                }
+                                            }
+                                            validated = true
+                                        }
+
+                                        fun isValid(): Boolean =
+                                            try {
+                                                validate()
+                                                true
+                                            } catch (e: OpenAIInvalidDataException) {
+                                                false
+                                            }
+
+                                        /**
+                                         * Returns a score indicating how many valid values are
+                                         * contained in this object recursively.
+                                         *
+                                         * Used for best match union deserialization.
+                                         */
+                                        @JvmSynthetic
+                                        internal fun validity(): Int =
+                                            (if (text.asKnown().isPresent) 1 else 0) +
+                                                type.let {
+                                                    if (it == JsonValue.from("output_text")) 1
+                                                    else 0
+                                                }
+
+                                        override fun equals(other: Any?): Boolean {
+                                            if (this === other) {
+                                                return true
+                                            }
+
+                                            return other is OutputText &&
+                                                text == other.text &&
+                                                type == other.type &&
+                                                additionalProperties == other.additionalProperties
+                                        }
+
+                                        private val hashCode: Int by lazy {
+                                            Objects.hash(text, type, additionalProperties)
+                                        }
+
+                                        override fun hashCode(): Int = hashCode
+
+                                        override fun toString() =
+                                            "OutputText{text=$text, type=$type, additionalProperties=$additionalProperties}"
+                                    }
+
+                                    /** An image input block used within EvalItem content arrays. */
+                                    class EvalItemInputImage
+                                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                                    private constructor(
+                                        private val imageUrl: JsonField<String>,
+                                        private val type: JsonValue,
+                                        private val detail: JsonField<String>,
+                                        private val additionalProperties:
+                                            MutableMap<String, JsonValue>,
+                                    ) {
+
+                                        @JsonCreator
+                                        private constructor(
+                                            @JsonProperty("image_url")
+                                            @ExcludeMissing
+                                            imageUrl: JsonField<String> = JsonMissing.of(),
+                                            @JsonProperty("type")
+                                            @ExcludeMissing
+                                            type: JsonValue = JsonMissing.of(),
+                                            @JsonProperty("detail")
+                                            @ExcludeMissing
+                                            detail: JsonField<String> = JsonMissing.of(),
+                                        ) : this(imageUrl, type, detail, mutableMapOf())
+
+                                        /**
+                                         * The URL of the image input.
+                                         *
+                                         * @throws OpenAIInvalidDataException if the JSON field has
+                                         *   an unexpected type or is unexpectedly missing or null
+                                         *   (e.g. if the server responded with an unexpected
+                                         *   value).
+                                         */
+                                        fun imageUrl(): String = imageUrl.getRequired("image_url")
+
+                                        /**
+                                         * The type of the image input. Always `input_image`.
+                                         *
+                                         * Expected to always return the following:
+                                         * ```java
+                                         * JsonValue.from("input_image")
+                                         * ```
+                                         *
+                                         * However, this method can be useful for debugging and
+                                         * logging (e.g. if the server responded with an unexpected
+                                         * value).
+                                         */
+                                        @JsonProperty("type")
+                                        @ExcludeMissing
+                                        fun _type(): JsonValue = type
+
+                                        /**
+                                         * The detail level of the image to be sent to the model.
+                                         * One of `high`, `low`, or `auto`. Defaults to `auto`.
+                                         *
+                                         * @throws OpenAIInvalidDataException if the JSON field has
+                                         *   an unexpected type (e.g. if the server responded with
+                                         *   an unexpected value).
+                                         */
+                                        fun detail(): Optional<String> =
+                                            detail.getOptional("detail")
+
+                                        /**
+                                         * Returns the raw JSON value of [imageUrl].
+                                         *
+                                         * Unlike [imageUrl], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
+                                        @JsonProperty("image_url")
+                                        @ExcludeMissing
+                                        fun _imageUrl(): JsonField<String> = imageUrl
+
+                                        /**
+                                         * Returns the raw JSON value of [detail].
+                                         *
+                                         * Unlike [detail], this method doesn't throw if the JSON
+                                         * field has an unexpected type.
+                                         */
+                                        @JsonProperty("detail")
+                                        @ExcludeMissing
+                                        fun _detail(): JsonField<String> = detail
+
+                                        @JsonAnySetter
+                                        private fun putAdditionalProperty(
+                                            key: String,
+                                            value: JsonValue,
+                                        ) {
+                                            additionalProperties.put(key, value)
+                                        }
+
+                                        @JsonAnyGetter
+                                        @ExcludeMissing
+                                        fun _additionalProperties(): Map<String, JsonValue> =
+                                            Collections.unmodifiableMap(additionalProperties)
+
+                                        fun toBuilder() = Builder().from(this)
+
+                                        companion object {
+
+                                            /**
+                                             * Returns a mutable builder for constructing an
+                                             * instance of [EvalItemInputImage].
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .imageUrl()
+                                             * ```
+                                             */
+                                            @JvmStatic fun builder() = Builder()
+                                        }
+
+                                        /** A builder for [EvalItemInputImage]. */
+                                        class Builder internal constructor() {
+
+                                            private var imageUrl: JsonField<String>? = null
+                                            private var type: JsonValue =
+                                                JsonValue.from("input_image")
+                                            private var detail: JsonField<String> = JsonMissing.of()
+                                            private var additionalProperties:
+                                                MutableMap<String, JsonValue> =
+                                                mutableMapOf()
+
+                                            @JvmSynthetic
+                                            internal fun from(
+                                                evalItemInputImage: EvalItemInputImage
+                                            ) = apply {
+                                                imageUrl = evalItemInputImage.imageUrl
+                                                type = evalItemInputImage.type
+                                                detail = evalItemInputImage.detail
+                                                additionalProperties =
+                                                    evalItemInputImage.additionalProperties
+                                                        .toMutableMap()
+                                            }
+
+                                            /** The URL of the image input. */
+                                            fun imageUrl(imageUrl: String) =
+                                                imageUrl(JsonField.of(imageUrl))
+
+                                            /**
+                                             * Sets [Builder.imageUrl] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.imageUrl] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
+                                            fun imageUrl(imageUrl: JsonField<String>) = apply {
+                                                this.imageUrl = imageUrl
+                                            }
+
+                                            /**
+                                             * Sets the field to an arbitrary JSON value.
+                                             *
+                                             * It is usually unnecessary to call this method because
+                                             * the field defaults to the following:
+                                             * ```java
+                                             * JsonValue.from("input_image")
+                                             * ```
+                                             *
+                                             * This method is primarily for setting the field to an
+                                             * undocumented or not yet supported value.
+                                             */
+                                            fun type(type: JsonValue) = apply { this.type = type }
+
+                                            /**
+                                             * The detail level of the image to be sent to the
+                                             * model. One of `high`, `low`, or `auto`. Defaults to
+                                             * `auto`.
+                                             */
+                                            fun detail(detail: String) =
+                                                detail(JsonField.of(detail))
+
+                                            /**
+                                             * Sets [Builder.detail] to an arbitrary JSON value.
+                                             *
+                                             * You should usually call [Builder.detail] with a
+                                             * well-typed [String] value instead. This method is
+                                             * primarily for setting the field to an undocumented or
+                                             * not yet supported value.
+                                             */
+                                            fun detail(detail: JsonField<String>) = apply {
+                                                this.detail = detail
+                                            }
+
+                                            fun additionalProperties(
+                                                additionalProperties: Map<String, JsonValue>
+                                            ) = apply {
+                                                this.additionalProperties.clear()
+                                                putAllAdditionalProperties(additionalProperties)
+                                            }
+
+                                            fun putAdditionalProperty(
+                                                key: String,
+                                                value: JsonValue,
+                                            ) = apply { additionalProperties.put(key, value) }
+
+                                            fun putAllAdditionalProperties(
+                                                additionalProperties: Map<String, JsonValue>
+                                            ) = apply {
+                                                this.additionalProperties.putAll(
+                                                    additionalProperties
+                                                )
+                                            }
+
+                                            fun removeAdditionalProperty(key: String) = apply {
+                                                additionalProperties.remove(key)
+                                            }
+
+                                            fun removeAllAdditionalProperties(keys: Set<String>) =
+                                                apply {
+                                                    keys.forEach(::removeAdditionalProperty)
+                                                }
+
+                                            /**
+                                             * Returns an immutable instance of
+                                             * [EvalItemInputImage].
+                                             *
+                                             * Further updates to this [Builder] will not mutate the
+                                             * returned instance.
+                                             *
+                                             * The following fields are required:
+                                             * ```java
+                                             * .imageUrl()
+                                             * ```
+                                             *
+                                             * @throws IllegalStateException if any required field
+                                             *   is unset.
+                                             */
+                                            fun build(): EvalItemInputImage =
+                                                EvalItemInputImage(
+                                                    checkRequired("imageUrl", imageUrl),
+                                                    type,
+                                                    detail,
+                                                    additionalProperties.toMutableMap(),
+                                                )
+                                        }
+
+                                        private var validated: Boolean = false
+
+                                        fun validate(): EvalItemInputImage = apply {
+                                            if (validated) {
+                                                return@apply
+                                            }
+
+                                            imageUrl()
+                                            _type().let {
+                                                if (it != JsonValue.from("input_image")) {
+                                                    throw OpenAIInvalidDataException(
+                                                        "'type' is invalid, received $it"
+                                                    )
+                                                }
+                                            }
+                                            detail()
+                                            validated = true
+                                        }
+
+                                        fun isValid(): Boolean =
+                                            try {
+                                                validate()
+                                                true
+                                            } catch (e: OpenAIInvalidDataException) {
+                                                false
+                                            }
+
+                                        /**
+                                         * Returns a score indicating how many valid values are
+                                         * contained in this object recursively.
+                                         *
+                                         * Used for best match union deserialization.
+                                         */
+                                        @JvmSynthetic
+                                        internal fun validity(): Int =
+                                            (if (imageUrl.asKnown().isPresent) 1 else 0) +
+                                                type.let {
+                                                    if (it == JsonValue.from("input_image")) 1
+                                                    else 0
+                                                } +
+                                                (if (detail.asKnown().isPresent) 1 else 0)
+
+                                        override fun equals(other: Any?): Boolean {
+                                            if (this === other) {
+                                                return true
+                                            }
+
+                                            return other is EvalItemInputImage &&
+                                                imageUrl == other.imageUrl &&
+                                                type == other.type &&
+                                                detail == other.detail &&
+                                                additionalProperties == other.additionalProperties
+                                        }
+
+                                        private val hashCode: Int by lazy {
+                                            Objects.hash(
+                                                imageUrl,
+                                                type,
+                                                detail,
+                                                additionalProperties,
+                                            )
+                                        }
+
+                                        override fun hashCode(): Int = hashCode
+
+                                        override fun toString() =
+                                            "EvalItemInputImage{imageUrl=$imageUrl, type=$type, detail=$detail, additionalProperties=$additionalProperties}"
+                                    }
                                 }
                             }
 
