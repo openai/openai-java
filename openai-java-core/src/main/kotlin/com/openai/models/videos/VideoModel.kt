@@ -24,6 +24,12 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
 
         @JvmField val SORA_2_PRO = of("sora-2-pro")
 
+        @JvmField val SORA_2_2025_10_06 = of("sora-2-2025-10-06")
+
+        @JvmField val SORA_2_PRO_2025_10_06 = of("sora-2-pro-2025-10-06")
+
+        @JvmField val SORA_2_2025_12_08 = of("sora-2-2025-12-08")
+
         @JvmStatic fun of(value: String) = VideoModel(JsonField.of(value))
     }
 
@@ -31,6 +37,9 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
     enum class Known {
         SORA_2,
         SORA_2_PRO,
+        SORA_2_2025_10_06,
+        SORA_2_PRO_2025_10_06,
+        SORA_2_2025_12_08,
     }
 
     /**
@@ -45,6 +54,9 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
     enum class Value {
         SORA_2,
         SORA_2_PRO,
+        SORA_2_2025_10_06,
+        SORA_2_PRO_2025_10_06,
+        SORA_2_2025_12_08,
         /** An enum member indicating that [VideoModel] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -60,6 +72,9 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
         when (this) {
             SORA_2 -> Value.SORA_2
             SORA_2_PRO -> Value.SORA_2_PRO
+            SORA_2_2025_10_06 -> Value.SORA_2_2025_10_06
+            SORA_2_PRO_2025_10_06 -> Value.SORA_2_PRO_2025_10_06
+            SORA_2_2025_12_08 -> Value.SORA_2_2025_12_08
             else -> Value._UNKNOWN
         }
 
@@ -75,6 +90,9 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
         when (this) {
             SORA_2 -> Known.SORA_2
             SORA_2_PRO -> Known.SORA_2_PRO
+            SORA_2_2025_10_06 -> Known.SORA_2_2025_10_06
+            SORA_2_PRO_2025_10_06 -> Known.SORA_2_PRO_2025_10_06
+            SORA_2_2025_12_08 -> Known.SORA_2_2025_12_08
             else -> throw OpenAIInvalidDataException("Unknown VideoModel: $value")
         }
 
