@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.12.0 (2025-12-15)
+
+Full Changelog: [v4.11.0...v4.12.0](https://github.com/openai/openai-java/compare/v4.11.0...v4.12.0)
+
+### Features
+
+* **api:** api update ([29174d7](https://github.com/openai/openai-java/commit/29174d7275d95ef5a6d4f88d4ebe2bcd178746b5))
+* **api:** fix grader input list, add dated slugs for sora-2 ([f75af83](https://github.com/openai/openai-java/commit/f75af830fdaf2874313c125a8de0aecde6f447b7))
+* **api:** manual updates for java ([ffd07a2](https://github.com/openai/openai-java/commit/ffd07a2ad1ae064e65f4564c663502fe3901c21e))
+
 ## 4.11.0 (2025-12-12)
 
 Full Changelog: [v4.10.0...v4.11.0](https://github.com/openai/openai-java/compare/v4.10.0...v4.11.0)
