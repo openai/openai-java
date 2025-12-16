@@ -924,6 +924,7 @@ private constructor(
         private val inputTokensDetails: JsonField<InputTokensDetails>,
         private val outputTokens: JsonField<Long>,
         private val totalTokens: JsonField<Long>,
+        private val outputTokensDetails: JsonField<OutputTokensDetails>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -941,7 +942,17 @@ private constructor(
             @JsonProperty("total_tokens")
             @ExcludeMissing
             totalTokens: JsonField<Long> = JsonMissing.of(),
-        ) : this(inputTokens, inputTokensDetails, outputTokens, totalTokens, mutableMapOf())
+            @JsonProperty("output_tokens_details")
+            @ExcludeMissing
+            outputTokensDetails: JsonField<OutputTokensDetails> = JsonMissing.of(),
+        ) : this(
+            inputTokens,
+            inputTokensDetails,
+            outputTokens,
+            totalTokens,
+            outputTokensDetails,
+            mutableMapOf(),
+        )
 
         /**
          * The number of tokens (images and text) in the input prompt.
@@ -975,6 +986,15 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+
+        /**
+         * The output token details for the image generation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun outputTokensDetails(): Optional<OutputTokensDetails> =
+            outputTokensDetails.getOptional("output_tokens_details")
 
         /**
          * Returns the raw JSON value of [inputTokens].
@@ -1014,6 +1034,16 @@ private constructor(
         @ExcludeMissing
         fun _totalTokens(): JsonField<Long> = totalTokens
 
+        /**
+         * Returns the raw JSON value of [outputTokensDetails].
+         *
+         * Unlike [outputTokensDetails], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("output_tokens_details")
+        @ExcludeMissing
+        fun _outputTokensDetails(): JsonField<OutputTokensDetails> = outputTokensDetails
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -1049,6 +1079,7 @@ private constructor(
             private var inputTokensDetails: JsonField<InputTokensDetails>? = null
             private var outputTokens: JsonField<Long>? = null
             private var totalTokens: JsonField<Long>? = null
+            private var outputTokensDetails: JsonField<OutputTokensDetails> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1057,6 +1088,7 @@ private constructor(
                 inputTokensDetails = usage.inputTokensDetails
                 outputTokens = usage.outputTokens
                 totalTokens = usage.totalTokens
+                outputTokensDetails = usage.outputTokensDetails
                 additionalProperties = usage.additionalProperties.toMutableMap()
             }
 
@@ -1113,6 +1145,21 @@ private constructor(
              */
             fun totalTokens(totalTokens: JsonField<Long>) = apply { this.totalTokens = totalTokens }
 
+            /** The output token details for the image generation. */
+            fun outputTokensDetails(outputTokensDetails: OutputTokensDetails) =
+                outputTokensDetails(JsonField.of(outputTokensDetails))
+
+            /**
+             * Sets [Builder.outputTokensDetails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.outputTokensDetails] with a well-typed
+             * [OutputTokensDetails] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun outputTokensDetails(outputTokensDetails: JsonField<OutputTokensDetails>) = apply {
+                this.outputTokensDetails = outputTokensDetails
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1153,6 +1200,7 @@ private constructor(
                     checkRequired("inputTokensDetails", inputTokensDetails),
                     checkRequired("outputTokens", outputTokens),
                     checkRequired("totalTokens", totalTokens),
+                    outputTokensDetails,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1168,6 +1216,7 @@ private constructor(
             inputTokensDetails().validate()
             outputTokens()
             totalTokens()
+            outputTokensDetails().ifPresent { it.validate() }
             validated = true
         }
 
@@ -1190,7 +1239,8 @@ private constructor(
             (if (inputTokens.asKnown().isPresent) 1 else 0) +
                 (inputTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (outputTokens.asKnown().isPresent) 1 else 0) +
-                (if (totalTokens.asKnown().isPresent) 1 else 0)
+                (if (totalTokens.asKnown().isPresent) 1 else 0) +
+                (outputTokensDetails.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The input tokens detailed information for the image generation. */
         class InputTokensDetails
@@ -1410,6 +1460,224 @@ private constructor(
                 "InputTokensDetails{imageTokens=$imageTokens, textTokens=$textTokens, additionalProperties=$additionalProperties}"
         }
 
+        /** The output token details for the image generation. */
+        class OutputTokensDetails
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val imageTokens: JsonField<Long>,
+            private val textTokens: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("image_tokens")
+                @ExcludeMissing
+                imageTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("text_tokens")
+                @ExcludeMissing
+                textTokens: JsonField<Long> = JsonMissing.of(),
+            ) : this(imageTokens, textTokens, mutableMapOf())
+
+            /**
+             * The number of image output tokens generated by the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun imageTokens(): Long = imageTokens.getRequired("image_tokens")
+
+            /**
+             * The number of text output tokens generated by the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun textTokens(): Long = textTokens.getRequired("text_tokens")
+
+            /**
+             * Returns the raw JSON value of [imageTokens].
+             *
+             * Unlike [imageTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("image_tokens")
+            @ExcludeMissing
+            fun _imageTokens(): JsonField<Long> = imageTokens
+
+            /**
+             * Returns the raw JSON value of [textTokens].
+             *
+             * Unlike [textTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("text_tokens")
+            @ExcludeMissing
+            fun _textTokens(): JsonField<Long> = textTokens
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [OutputTokensDetails].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .imageTokens()
+                 * .textTokens()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [OutputTokensDetails]. */
+            class Builder internal constructor() {
+
+                private var imageTokens: JsonField<Long>? = null
+                private var textTokens: JsonField<Long>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(outputTokensDetails: OutputTokensDetails) = apply {
+                    imageTokens = outputTokensDetails.imageTokens
+                    textTokens = outputTokensDetails.textTokens
+                    additionalProperties = outputTokensDetails.additionalProperties.toMutableMap()
+                }
+
+                /** The number of image output tokens generated by the model. */
+                fun imageTokens(imageTokens: Long) = imageTokens(JsonField.of(imageTokens))
+
+                /**
+                 * Sets [Builder.imageTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.imageTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun imageTokens(imageTokens: JsonField<Long>) = apply {
+                    this.imageTokens = imageTokens
+                }
+
+                /** The number of text output tokens generated by the model. */
+                fun textTokens(textTokens: Long) = textTokens(JsonField.of(textTokens))
+
+                /**
+                 * Sets [Builder.textTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.textTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun textTokens(textTokens: JsonField<Long>) = apply { this.textTokens = textTokens }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [OutputTokensDetails].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .imageTokens()
+                 * .textTokens()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): OutputTokensDetails =
+                    OutputTokensDetails(
+                        checkRequired("imageTokens", imageTokens),
+                        checkRequired("textTokens", textTokens),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): OutputTokensDetails = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                imageTokens()
+                textTokens()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (imageTokens.asKnown().isPresent) 1 else 0) +
+                    (if (textTokens.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is OutputTokensDetails &&
+                    imageTokens == other.imageTokens &&
+                    textTokens == other.textTokens &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(imageTokens, textTokens, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "OutputTokensDetails{imageTokens=$imageTokens, textTokens=$textTokens, additionalProperties=$additionalProperties}"
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1420,6 +1688,7 @@ private constructor(
                 inputTokensDetails == other.inputTokensDetails &&
                 outputTokens == other.outputTokens &&
                 totalTokens == other.totalTokens &&
+                outputTokensDetails == other.outputTokensDetails &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -1429,6 +1698,7 @@ private constructor(
                 inputTokensDetails,
                 outputTokens,
                 totalTokens,
+                outputTokensDetails,
                 additionalProperties,
             )
         }
@@ -1436,7 +1706,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Usage{inputTokens=$inputTokens, inputTokensDetails=$inputTokensDetails, outputTokens=$outputTokens, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
+            "Usage{inputTokens=$inputTokens, inputTokensDetails=$inputTokensDetails, outputTokens=$outputTokens, totalTokens=$totalTokens, outputTokensDetails=$outputTokensDetails, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

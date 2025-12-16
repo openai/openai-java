@@ -84,7 +84,7 @@ private constructor(
     /** A tool that runs Python code to help generate a response to a prompt. */
     fun codeInterpreter(): Optional<CodeInterpreter> = Optional.ofNullable(codeInterpreter)
 
-    /** A tool that generates images using a model like `gpt-image-1`. */
+    /** A tool that generates images using the GPT image models. */
     fun imageGeneration(): Optional<ImageGeneration> = Optional.ofNullable(imageGeneration)
 
     /** A tool that allows the model to execute shell commands in a local environment. */
@@ -165,7 +165,7 @@ private constructor(
     /** A tool that runs Python code to help generate a response to a prompt. */
     fun asCodeInterpreter(): CodeInterpreter = codeInterpreter.getOrThrow("codeInterpreter")
 
-    /** A tool that generates images using a model like `gpt-image-1`. */
+    /** A tool that generates images using the GPT image models. */
     fun asImageGeneration(): ImageGeneration = imageGeneration.getOrThrow("imageGeneration")
 
     /** A tool that allows the model to execute shell commands in a local environment. */
@@ -421,7 +421,7 @@ private constructor(
         fun ofCodeInterpreter(codeInterpreter: CodeInterpreter) =
             Tool(codeInterpreter = codeInterpreter)
 
-        /** A tool that generates images using a model like `gpt-image-1`. */
+        /** A tool that generates images using the GPT image models. */
         @JvmStatic
         fun ofImageGeneration(imageGeneration: ImageGeneration) =
             Tool(imageGeneration = imageGeneration)
@@ -488,7 +488,7 @@ private constructor(
         /** A tool that runs Python code to help generate a response to a prompt. */
         fun visitCodeInterpreter(codeInterpreter: CodeInterpreter): T
 
-        /** A tool that generates images using a model like `gpt-image-1`. */
+        /** A tool that generates images using the GPT image models. */
         fun visitImageGeneration(imageGeneration: ImageGeneration): T
 
         /** A tool that allows the model to execute shell commands in a local environment. */
@@ -3790,7 +3790,7 @@ private constructor(
             "CodeInterpreter{container=$container, type=$type, additionalProperties=$additionalProperties}"
     }
 
-    /** A tool that generates images using a model like `gpt-image-1`. */
+    /** A tool that generates images using the GPT image models. */
     class ImageGeneration
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -4176,6 +4176,15 @@ private constructor(
              */
             fun model(model: JsonField<Model>) = apply { this.model = model }
 
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [Model] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(value: String) = model(Model.of(value))
+
             /** Moderation level for the generated image. Default: `auto`. */
             fun moderation(moderation: Moderation) = moderation(JsonField.of(moderation))
 
@@ -4324,7 +4333,7 @@ private constructor(
             background().ifPresent { it.validate() }
             inputFidelity().ifPresent { it.validate() }
             inputImageMask().ifPresent { it.validate() }
-            model().ifPresent { it.validate() }
+            model()
             moderation().ifPresent { it.validate() }
             outputCompression()
             outputFormat().ifPresent { it.validate() }
@@ -4354,7 +4363,7 @@ private constructor(
                 (background.asKnown().getOrNull()?.validity() ?: 0) +
                 (inputFidelity.asKnown().getOrNull()?.validity() ?: 0) +
                 (inputImageMask.asKnown().getOrNull()?.validity() ?: 0) +
-                (model.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (model.asKnown().isPresent) 1 else 0) +
                 (moderation.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (outputCompression.asKnown().isPresent) 1 else 0) +
                 (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
