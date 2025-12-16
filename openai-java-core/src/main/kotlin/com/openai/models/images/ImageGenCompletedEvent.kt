@@ -120,7 +120,7 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * For `gpt-image-1` only, the token usage information for the image generation.
+     * For the GPT image models only, the token usage information for the image generation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -321,7 +321,7 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
-        /** For `gpt-image-1` only, the token usage information for the image generation. */
+        /** For the GPT image models only, the token usage information for the image generation. */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
 
         /**
@@ -974,7 +974,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** For `gpt-image-1` only, the token usage information for the image generation. */
+    /** For the GPT image models only, the token usage information for the image generation. */
     class Usage
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
