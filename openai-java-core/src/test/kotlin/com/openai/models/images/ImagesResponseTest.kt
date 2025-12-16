@@ -37,6 +37,12 @@ internal class ImagesResponseTest {
                         )
                         .outputTokens(0L)
                         .totalTokens(0L)
+                        .outputTokensDetails(
+                            ImagesResponse.Usage.OutputTokensDetails.builder()
+                                .imageTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -66,6 +72,12 @@ internal class ImagesResponseTest {
                     )
                     .outputTokens(0L)
                     .totalTokens(0L)
+                    .outputTokensDetails(
+                        ImagesResponse.Usage.OutputTokensDetails.builder()
+                            .imageTokens(0L)
+                            .textTokens(0L)
+                            .build()
+                    )
                     .build()
             )
     }
@@ -98,6 +110,12 @@ internal class ImagesResponseTest {
                         )
                         .outputTokens(0L)
                         .totalTokens(0L)
+                        .outputTokensDetails(
+                            ImagesResponse.Usage.OutputTokensDetails.builder()
+                                .imageTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
                         .build()
                 )
                 .build()

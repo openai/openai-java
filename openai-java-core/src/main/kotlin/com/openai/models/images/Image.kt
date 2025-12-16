@@ -35,8 +35,8 @@ private constructor(
     ) : this(b64Json, revisedPrompt, url, mutableMapOf())
 
     /**
-     * The base64-encoded JSON of the generated image. Default value for `gpt-image-1`, and only
-     * present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`.
+     * The base64-encoded JSON of the generated image. Returned by default for the GPT image models,
+     * and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -53,7 +53,7 @@ private constructor(
 
     /**
      * When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is
-     * set to `url` (default value). Unsupported for `gpt-image-1`.
+     * set to `url` (default value). Unsupported for the GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -118,8 +118,9 @@ private constructor(
         }
 
         /**
-         * The base64-encoded JSON of the generated image. Default value for `gpt-image-1`, and only
-         * present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`.
+         * The base64-encoded JSON of the generated image. Returned by default for the GPT image
+         * models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and
+         * `dall-e-3`.
          */
         fun b64Json(b64Json: String) = b64Json(JsonField.of(b64Json))
 
@@ -147,7 +148,7 @@ private constructor(
 
         /**
          * When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format`
-         * is set to `url` (default value). Unsupported for `gpt-image-1`.
+         * is set to `url` (default value). Unsupported for the GPT image models.
          */
         fun url(url: String) = url(JsonField.of(url))
 
