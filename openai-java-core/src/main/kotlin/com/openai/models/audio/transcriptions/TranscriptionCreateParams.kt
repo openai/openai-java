@@ -53,8 +53,8 @@ private constructor(
 
     /**
      * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-     * `whisper-1` (which is powered by our open source Whisper V2 model), and
-     * `gpt-4o-transcribe-diarize`.
+     * `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source Whisper
+     * V2 model), and `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -77,8 +77,9 @@ private constructor(
      * Additional information to include in the transcription response. `logprobs` will return the
      * log probabilities of the tokens in the response to understand the model's confidence in the
      * transcription. `logprobs` only works with response_format set to `json` and only with the
-     * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. This field is not supported when
-     * using `gpt-4o-transcribe-diarize`.
+     * models `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
+     * `gpt-4o-mini-transcribe-2025-12-15`. This field is not supported when using
+     * `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -328,8 +329,8 @@ private constructor(
 
         /**
          * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * `whisper-1` (which is powered by our open source Whisper V2 model), and
-         * `gpt-4o-transcribe-diarize`.
+         * `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source
+         * Whisper V2 model), and `gpt-4o-transcribe-diarize`.
          */
         fun model(model: AudioModel) = apply { body.model(model) }
 
@@ -388,8 +389,9 @@ private constructor(
          * Additional information to include in the transcription response. `logprobs` will return
          * the log probabilities of the tokens in the response to understand the model's confidence
          * in the transcription. `logprobs` only works with response_format set to `json` and only
-         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. This field is not
-         * supported when using `gpt-4o-transcribe-diarize`.
+         * with the models `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
+         * `gpt-4o-mini-transcribe-2025-12-15`. This field is not supported when using
+         * `gpt-4o-transcribe-diarize`.
          */
         fun include(include: List<TranscriptionInclude>) = apply { body.include(include) }
 
@@ -759,8 +761,8 @@ private constructor(
 
         /**
          * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * `whisper-1` (which is powered by our open source Whisper V2 model), and
-         * `gpt-4o-transcribe-diarize`.
+         * `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source
+         * Whisper V2 model), and `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -784,8 +786,9 @@ private constructor(
          * Additional information to include in the transcription response. `logprobs` will return
          * the log probabilities of the tokens in the response to understand the model's confidence
          * in the transcription. `logprobs` only works with response_format set to `json` and only
-         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. This field is not
-         * supported when using `gpt-4o-transcribe-diarize`.
+         * with the models `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
+         * `gpt-4o-mini-transcribe-2025-12-15`. This field is not supported when using
+         * `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1069,8 +1072,8 @@ private constructor(
 
             /**
              * ID of the model to use. The options are `gpt-4o-transcribe`,
-             * `gpt-4o-mini-transcribe`, `whisper-1` (which is powered by our open source Whisper V2
-             * model), and `gpt-4o-transcribe-diarize`.
+             * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is
+             * powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
              */
             fun model(model: AudioModel) = model(MultipartField.of(model))
 
@@ -1132,8 +1135,9 @@ private constructor(
              * Additional information to include in the transcription response. `logprobs` will
              * return the log probabilities of the tokens in the response to understand the model's
              * confidence in the transcription. `logprobs` only works with response_format set to
-             * `json` and only with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
-             * This field is not supported when using `gpt-4o-transcribe-diarize`.
+             * `json` and only with the models `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
+             * `gpt-4o-mini-transcribe-2025-12-15`. This field is not supported when using
+             * `gpt-4o-transcribe-diarize`.
              */
             fun include(include: List<TranscriptionInclude>) = include(MultipartField.of(include))
 

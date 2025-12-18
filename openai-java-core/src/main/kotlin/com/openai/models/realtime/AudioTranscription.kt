@@ -15,7 +15,6 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 class AudioTranscription
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -45,8 +44,9 @@ private constructor(
 
     /**
      * The model to use for transcription. Current options are `whisper-1`,
-     * `gpt-4o-mini-transcribe`, `gpt-4o-transcribe`, and `gpt-4o-transcribe-diarize`. Use
-     * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
+     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, and
+     * `gpt-4o-transcribe-diarize`. Use `gpt-4o-transcribe-diarize` when you need diarization with
+     * speaker labels.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -137,8 +137,9 @@ private constructor(
 
         /**
          * The model to use for transcription. Current options are `whisper-1`,
-         * `gpt-4o-mini-transcribe`, `gpt-4o-transcribe`, and `gpt-4o-transcribe-diarize`. Use
-         * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
+         * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, and
+         * `gpt-4o-transcribe-diarize`. Use `gpt-4o-transcribe-diarize` when you need diarization
+         * with speaker labels.
          */
         fun model(model: Model) = model(JsonField.of(model))
 
@@ -149,6 +150,14 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(model: JsonField<Model>) = apply { this.model = model }
+
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [Model] constant instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = model(Model.of(value))
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. For
@@ -203,7 +212,7 @@ private constructor(
         }
 
         language()
-        model().ifPresent { it.validate() }
+        model()
         prompt()
         validated = true
     }
@@ -224,13 +233,14 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (language.asKnown().isPresent) 1 else 0) +
-            (model.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (model.asKnown().isPresent) 1 else 0) +
             (if (prompt.asKnown().isPresent) 1 else 0)
 
     /**
      * The model to use for transcription. Current options are `whisper-1`,
-     * `gpt-4o-mini-transcribe`, `gpt-4o-transcribe`, and `gpt-4o-transcribe-diarize`. Use
-     * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
+     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, and
+     * `gpt-4o-transcribe-diarize`. Use `gpt-4o-transcribe-diarize` when you need diarization with
+     * speaker labels.
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -250,6 +260,9 @@ private constructor(
 
             @JvmField val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
 
+            @JvmField
+            val GPT_4O_MINI_TRANSCRIBE_2025_12_15 = of("gpt-4o-mini-transcribe-2025-12-15")
+
             @JvmField val GPT_4O_TRANSCRIBE = of("gpt-4o-transcribe")
 
             @JvmField val GPT_4O_TRANSCRIBE_DIARIZE = of("gpt-4o-transcribe-diarize")
@@ -261,6 +274,7 @@ private constructor(
         enum class Known {
             WHISPER_1,
             GPT_4O_MINI_TRANSCRIBE,
+            GPT_4O_MINI_TRANSCRIBE_2025_12_15,
             GPT_4O_TRANSCRIBE,
             GPT_4O_TRANSCRIBE_DIARIZE,
         }
@@ -277,6 +291,7 @@ private constructor(
         enum class Value {
             WHISPER_1,
             GPT_4O_MINI_TRANSCRIBE,
+            GPT_4O_MINI_TRANSCRIBE_2025_12_15,
             GPT_4O_TRANSCRIBE,
             GPT_4O_TRANSCRIBE_DIARIZE,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
@@ -294,6 +309,7 @@ private constructor(
             when (this) {
                 WHISPER_1 -> Value.WHISPER_1
                 GPT_4O_MINI_TRANSCRIBE -> Value.GPT_4O_MINI_TRANSCRIBE
+                GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Value.GPT_4O_MINI_TRANSCRIBE_2025_12_15
                 GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
                 GPT_4O_TRANSCRIBE_DIARIZE -> Value.GPT_4O_TRANSCRIBE_DIARIZE
                 else -> Value._UNKNOWN
@@ -312,6 +328,7 @@ private constructor(
             when (this) {
                 WHISPER_1 -> Known.WHISPER_1
                 GPT_4O_MINI_TRANSCRIBE -> Known.GPT_4O_MINI_TRANSCRIBE
+                GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Known.GPT_4O_MINI_TRANSCRIBE_2025_12_15
                 GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
                 GPT_4O_TRANSCRIBE_DIARIZE -> Known.GPT_4O_TRANSCRIBE_DIARIZE
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
