@@ -208,6 +208,14 @@ private constructor(
          */
         fun model(model: MultipartField<VideoModel>) = apply { body.model(model) }
 
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [VideoModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = apply { body.model(value) }
+
         /** Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds. */
         fun seconds(seconds: VideoSeconds) = apply { body.seconds(seconds) }
 
@@ -580,6 +588,15 @@ private constructor(
              */
             fun model(model: MultipartField<VideoModel>) = apply { this.model = model }
 
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [VideoModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(value: String) = model(VideoModel.of(value))
+
             /** Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds. */
             fun seconds(seconds: VideoSeconds) = seconds(MultipartField.of(seconds))
 
@@ -658,7 +675,7 @@ private constructor(
 
             prompt()
             inputReference()
-            model().ifPresent { it.validate() }
+            model()
             seconds().ifPresent { it.validate() }
             size().ifPresent { it.validate() }
             validated = true

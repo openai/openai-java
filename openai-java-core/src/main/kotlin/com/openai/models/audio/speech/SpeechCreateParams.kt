@@ -39,7 +39,7 @@ private constructor(
 
     /**
      * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
-     * `tts-1-hd` or `gpt-4o-mini-tts`.
+     * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -206,7 +206,7 @@ private constructor(
 
         /**
          * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
-         * `tts-1-hd` or `gpt-4o-mini-tts`.
+         * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
          */
         fun model(model: SpeechModel) = apply { body.model(model) }
 
@@ -512,7 +512,7 @@ private constructor(
 
         /**
          * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
-         * `tts-1-hd` or `gpt-4o-mini-tts`.
+         * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -690,7 +690,7 @@ private constructor(
 
             /**
              * One of the available [TTS models](https://platform.openai.com/docs/models#tts):
-             * `tts-1`, `tts-1-hd` or `gpt-4o-mini-tts`.
+             * `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
              */
             fun model(model: SpeechModel) = model(JsonField.of(model))
 
