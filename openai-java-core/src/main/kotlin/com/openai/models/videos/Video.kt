@@ -440,6 +440,14 @@ private constructor(
         fun model(model: JsonField<VideoModel>) = apply { this.model = model }
 
         /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [VideoModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = model(VideoModel.of(value))
+
+        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
@@ -606,7 +614,7 @@ private constructor(
         createdAt()
         error().ifPresent { it.validate() }
         expiresAt()
-        model().validate()
+        model()
         _object_().let {
             if (it != JsonValue.from("video")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -641,7 +649,7 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (error.asKnown().getOrNull()?.validity() ?: 0) +
             (if (expiresAt.asKnown().isPresent) 1 else 0) +
-            (model.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (model.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("video")) 1 else 0 } +
             (if (progress.asKnown().isPresent) 1 else 0) +
             (if (prompt.asKnown().isPresent) 1 else 0) +

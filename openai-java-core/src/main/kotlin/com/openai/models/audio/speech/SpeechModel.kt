@@ -26,6 +26,8 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
 
         @JvmField val GPT_4O_MINI_TTS = of("gpt-4o-mini-tts")
 
+        @JvmField val GPT_4O_MINI_TTS_2025_12_15 = of("gpt-4o-mini-tts-2025-12-15")
+
         @JvmStatic fun of(value: String) = SpeechModel(JsonField.of(value))
     }
 
@@ -34,6 +36,7 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
         TTS_1,
         TTS_1_HD,
         GPT_4O_MINI_TTS,
+        GPT_4O_MINI_TTS_2025_12_15,
     }
 
     /**
@@ -49,6 +52,7 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
         TTS_1,
         TTS_1_HD,
         GPT_4O_MINI_TTS,
+        GPT_4O_MINI_TTS_2025_12_15,
         /** An enum member indicating that [SpeechModel] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -65,6 +69,7 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
             TTS_1 -> Value.TTS_1
             TTS_1_HD -> Value.TTS_1_HD
             GPT_4O_MINI_TTS -> Value.GPT_4O_MINI_TTS
+            GPT_4O_MINI_TTS_2025_12_15 -> Value.GPT_4O_MINI_TTS_2025_12_15
             else -> Value._UNKNOWN
         }
 
@@ -81,6 +86,7 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
             TTS_1 -> Known.TTS_1
             TTS_1_HD -> Known.TTS_1_HD
             GPT_4O_MINI_TTS -> Known.GPT_4O_MINI_TTS
+            GPT_4O_MINI_TTS_2025_12_15 -> Known.GPT_4O_MINI_TTS_2025_12_15
             else -> throw OpenAIInvalidDataException("Unknown SpeechModel: $value")
         }
 

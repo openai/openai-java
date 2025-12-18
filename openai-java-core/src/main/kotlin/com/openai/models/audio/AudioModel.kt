@@ -26,6 +26,8 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
 
         @JvmField val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
 
+        @JvmField val GPT_4O_MINI_TRANSCRIBE_2025_12_15 = of("gpt-4o-mini-transcribe-2025-12-15")
+
         @JvmField val GPT_4O_TRANSCRIBE_DIARIZE = of("gpt-4o-transcribe-diarize")
 
         @JvmStatic fun of(value: String) = AudioModel(JsonField.of(value))
@@ -36,6 +38,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
         WHISPER_1,
         GPT_4O_TRANSCRIBE,
         GPT_4O_MINI_TRANSCRIBE,
+        GPT_4O_MINI_TRANSCRIBE_2025_12_15,
         GPT_4O_TRANSCRIBE_DIARIZE,
     }
 
@@ -52,6 +55,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
         WHISPER_1,
         GPT_4O_TRANSCRIBE,
         GPT_4O_MINI_TRANSCRIBE,
+        GPT_4O_MINI_TRANSCRIBE_2025_12_15,
         GPT_4O_TRANSCRIBE_DIARIZE,
         /** An enum member indicating that [AudioModel] was instantiated with an unknown value. */
         _UNKNOWN,
@@ -69,6 +73,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
             WHISPER_1 -> Value.WHISPER_1
             GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
             GPT_4O_MINI_TRANSCRIBE -> Value.GPT_4O_MINI_TRANSCRIBE
+            GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Value.GPT_4O_MINI_TRANSCRIBE_2025_12_15
             GPT_4O_TRANSCRIBE_DIARIZE -> Value.GPT_4O_TRANSCRIBE_DIARIZE
             else -> Value._UNKNOWN
         }
@@ -86,6 +91,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
             WHISPER_1 -> Known.WHISPER_1
             GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
             GPT_4O_MINI_TRANSCRIBE -> Known.GPT_4O_MINI_TRANSCRIBE
+            GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Known.GPT_4O_MINI_TRANSCRIBE_2025_12_15
             GPT_4O_TRANSCRIBE_DIARIZE -> Known.GPT_4O_TRANSCRIBE_DIARIZE
             else -> throw OpenAIInvalidDataException("Unknown AudioModel: $value")
         }
