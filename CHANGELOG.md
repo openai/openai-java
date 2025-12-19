@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.13.0 (2025-12-19)
+
+Full Changelog: [v4.12.0...v4.13.0](https://github.com/openai/openai-java/compare/v4.12.0...v4.13.0)
+
+### Features
+
+* **api:** gpt-image-1.5 ([165b588](https://github.com/openai/openai-java/commit/165b588743c301493e0dc8126cfe32c549bdc4ad))
+* **api:** slugs for new audio models; make all `model` params accept strings ([cf46781](https://github.com/openai/openai-java/commit/cf4678180c4c2d4f79356a0dd5228db0a2e4cd84))
+
 ## 4.12.0 (2025-12-15)
 
 Full Changelog: [v4.11.0...v4.12.0](https://github.com/openai/openai-java/compare/v4.11.0...v4.12.0)
