@@ -534,7 +534,7 @@ private constructor(
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
             organization?.let { headers.put("OpenAI-Organization", it) }
             project?.let { headers.put("OpenAI-Project", it) }
-         
+
             headers.replaceAll(this.headers.build())
             when (credential) {
                 is AzureApiKeyCredential -> {
@@ -547,7 +547,7 @@ private constructor(
                     throw IllegalArgumentException("Invalid credential type")
                 }
             }
-            
+
             baseUrl?.let {
                 when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
                     // Legacy Azure routes will still require an api-version value.
