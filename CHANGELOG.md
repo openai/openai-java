@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.14.0 (2026-01-06)
+
+Full Changelog: [v4.13.0...v4.14.0](https://github.com/openai/openai-java/compare/v4.13.0...v4.14.0)
+
+### Features
+
+* **client:** add `HttpRequest#url()` method ([cf7d459](https://github.com/openai/openai-java/commit/cf7d459019625c6e08f376efb588c8aff332bf8c))
+
 ## 4.13.0 (2025-12-19)
 
 Full Changelog: [v4.12.0...v4.13.0](https://github.com/openai/openai-java/compare/v4.12.0...v4.13.0)
