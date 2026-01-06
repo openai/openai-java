@@ -13,7 +13,7 @@ internal class ImageCreateVariationParamsTest {
     fun create() {
         ImageCreateVariationParams.builder()
             .image("some content".byteInputStream())
-            .model(ImageModel.GPT_IMAGE_1_5)
+            .model(ImageModel.of("string"))
             .n(1L)
             .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
             .size(ImageCreateVariationParams.Size._1024X1024)
@@ -26,7 +26,7 @@ internal class ImageCreateVariationParamsTest {
         val params =
             ImageCreateVariationParams.builder()
                 .image("some content".byteInputStream())
-                .model(ImageModel.GPT_IMAGE_1_5)
+                .model(ImageModel.of("string"))
                 .n(1L)
                 .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
                 .size(ImageCreateVariationParams.Size._1024X1024)
@@ -46,7 +46,7 @@ internal class ImageCreateVariationParamsTest {
             .isEqualTo(
                 mapOf(
                         "image" to MultipartField.of("some content".byteInputStream()),
-                        "model" to MultipartField.of(ImageModel.GPT_IMAGE_1_5),
+                        "model" to MultipartField.of(ImageModel.of("string")),
                         "n" to MultipartField.of(1L),
                         "response_format" to
                             MultipartField.of(ImageCreateVariationParams.ResponseFormat.URL),

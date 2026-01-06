@@ -12,7 +12,7 @@ internal class CompletionCreateParamsTest {
     @Test
     fun create() {
         CompletionCreateParams.builder()
-            .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+            .model(CompletionCreateParams.Model.of("string"))
             .prompt("This is a test.")
             .bestOf(0L)
             .echo(true)
@@ -45,7 +45,7 @@ internal class CompletionCreateParamsTest {
     fun body() {
         val params =
             CompletionCreateParams.builder()
-                .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+                .model(CompletionCreateParams.Model.of("string"))
                 .prompt("This is a test.")
                 .bestOf(0L)
                 .echo(true)
@@ -75,7 +75,7 @@ internal class CompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+        assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.of("string"))
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
         assertThat(body.bestOf()).contains(0L)
@@ -110,13 +110,13 @@ internal class CompletionCreateParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             CompletionCreateParams.builder()
-                .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+                .model(CompletionCreateParams.Model.of("string"))
                 .prompt("This is a test.")
                 .build()
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+        assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.of("string"))
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
     }

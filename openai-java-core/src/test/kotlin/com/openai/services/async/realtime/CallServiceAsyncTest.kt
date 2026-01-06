@@ -61,7 +61,7 @@ internal class CallServiceAsyncTest {
                                             .transcription(
                                                 AudioTranscription.builder()
                                                     .language("language")
-                                                    .model(AudioTranscription.Model.WHISPER_1)
+                                                    .model(AudioTranscription.Model.of("string"))
                                                     .prompt("prompt")
                                                     .build()
                                             )
@@ -88,7 +88,7 @@ internal class CallServiceAsyncTest {
                                                     .build()
                                             )
                                             .speed(0.25)
-                                            .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
+                                            .voice(RealtimeAudioConfigOutput.Voice.ASH)
                                             .build()
                                     )
                                     .build()
@@ -99,7 +99,7 @@ internal class CallServiceAsyncTest {
                             )
                             .instructions("instructions")
                             .maxOutputTokens(0L)
-                            .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
+                            .model(RealtimeSessionCreateRequest.Model.of("string"))
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                             .prompt(
                                 ResponsePrompt.builder()

@@ -29,7 +29,7 @@ internal class RealtimeAudioConfigTest {
                         .transcription(
                             AudioTranscription.builder()
                                 .language("language")
-                                .model(AudioTranscription.Model.WHISPER_1)
+                                .model(AudioTranscription.Model.of("string"))
                                 .prompt("prompt")
                                 .build()
                         )
@@ -54,7 +54,7 @@ internal class RealtimeAudioConfigTest {
                                 .build()
                         )
                         .speed(0.25)
-                        .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
+                        .voice(RealtimeAudioConfigOutput.Voice.ASH)
                         .build()
                 )
                 .build()
@@ -76,7 +76,7 @@ internal class RealtimeAudioConfigTest {
                     .transcription(
                         AudioTranscription.builder()
                             .language("language")
-                            .model(AudioTranscription.Model.WHISPER_1)
+                            .model(AudioTranscription.Model.of("string"))
                             .prompt("prompt")
                             .build()
                     )
@@ -102,7 +102,7 @@ internal class RealtimeAudioConfigTest {
                             .build()
                     )
                     .speed(0.25)
-                    .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
+                    .voice(RealtimeAudioConfigOutput.Voice.ASH)
                     .build()
             )
     }
@@ -128,7 +128,7 @@ internal class RealtimeAudioConfigTest {
                         .transcription(
                             AudioTranscription.builder()
                                 .language("language")
-                                .model(AudioTranscription.Model.WHISPER_1)
+                                .model(AudioTranscription.Model.of("string"))
                                 .prompt("prompt")
                                 .build()
                         )
@@ -153,7 +153,7 @@ internal class RealtimeAudioConfigTest {
                                 .build()
                         )
                         .speed(0.25)
-                        .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
+                        .voice(RealtimeAudioConfigOutput.Voice.ASH)
                         .build()
                 )
                 .build()

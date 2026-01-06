@@ -28,14 +28,14 @@ internal class RealtimeSessionTest {
                 .inputAudioTranscription(
                     AudioTranscription.builder()
                         .language("language")
-                        .model(AudioTranscription.Model.WHISPER_1)
+                        .model(AudioTranscription.Model.of("string"))
                         .prompt("prompt")
                         .build()
                 )
                 .instructions("instructions")
                 .maxResponseOutputTokens(0L)
                 .addModality(RealtimeSession.Modality.TEXT)
-                .model(RealtimeSession.Model.GPT_REALTIME)
+                .model(RealtimeSession.Model.of("string"))
                 .object_(RealtimeSession.Object.REALTIME_SESSION)
                 .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
                 .prompt(
@@ -71,7 +71,7 @@ internal class RealtimeSessionTest {
                         .threshold(0.0)
                         .build()
                 )
-                .voice(RealtimeSession.Voice.ALLOY)
+                .voice(RealtimeSession.Voice.ASH)
                 .build()
 
         assertThat(realtimeSession.id()).contains("id")
@@ -90,7 +90,7 @@ internal class RealtimeSessionTest {
             .contains(
                 AudioTranscription.builder()
                     .language("language")
-                    .model(AudioTranscription.Model.WHISPER_1)
+                    .model(AudioTranscription.Model.of("string"))
                     .prompt("prompt")
                     .build()
             )
@@ -99,7 +99,7 @@ internal class RealtimeSessionTest {
             .contains(RealtimeSession.MaxResponseOutputTokens.ofInteger(0L))
         assertThat(realtimeSession.modalities().getOrNull())
             .containsExactly(RealtimeSession.Modality.TEXT)
-        assertThat(realtimeSession.model()).contains(RealtimeSession.Model.GPT_REALTIME)
+        assertThat(realtimeSession.model()).contains(RealtimeSession.Model.of("string"))
         assertThat(realtimeSession.object_()).contains(RealtimeSession.Object.REALTIME_SESSION)
         assertThat(realtimeSession.outputAudioFormat())
             .contains(RealtimeSession.OutputAudioFormat.PCM16)
@@ -141,7 +141,7 @@ internal class RealtimeSessionTest {
                         .build()
                 )
             )
-        assertThat(realtimeSession.voice()).contains(RealtimeSession.Voice.ALLOY)
+        assertThat(realtimeSession.voice()).contains(RealtimeSession.Voice.ASH)
     }
 
     @Test
@@ -161,14 +161,14 @@ internal class RealtimeSessionTest {
                 .inputAudioTranscription(
                     AudioTranscription.builder()
                         .language("language")
-                        .model(AudioTranscription.Model.WHISPER_1)
+                        .model(AudioTranscription.Model.of("string"))
                         .prompt("prompt")
                         .build()
                 )
                 .instructions("instructions")
                 .maxResponseOutputTokens(0L)
                 .addModality(RealtimeSession.Modality.TEXT)
-                .model(RealtimeSession.Model.GPT_REALTIME)
+                .model(RealtimeSession.Model.of("string"))
                 .object_(RealtimeSession.Object.REALTIME_SESSION)
                 .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
                 .prompt(
@@ -204,7 +204,7 @@ internal class RealtimeSessionTest {
                         .threshold(0.0)
                         .build()
                 )
-                .voice(RealtimeSession.Voice.ALLOY)
+                .voice(RealtimeSession.Voice.ASH)
                 .build()
 
         val roundtrippedRealtimeSession =

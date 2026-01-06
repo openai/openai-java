@@ -49,7 +49,7 @@ internal class ClientSecretCreateResponseTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .language("language")
-                                                .model(AudioTranscription.Model.WHISPER_1)
+                                                .model(AudioTranscription.Model.of("string"))
                                                 .prompt("prompt")
                                                 .build()
                                         )
@@ -76,9 +76,7 @@ internal class ClientSecretCreateResponseTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice(
-                                            RealtimeSessionCreateResponse.Audio.Output.Voice.ALLOY
-                                        )
+                                        .voice(RealtimeSessionCreateResponse.Audio.Output.Voice.ASH)
                                         .build()
                                 )
                                 .build()
@@ -89,7 +87,7 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateResponse.Model.of("string"))
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -148,7 +146,7 @@ internal class ClientSecretCreateResponseTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .language("language")
-                                                .model(AudioTranscription.Model.WHISPER_1)
+                                                .model(AudioTranscription.Model.of("string"))
                                                 .prompt("prompt")
                                                 .build()
                                         )
@@ -175,9 +173,7 @@ internal class ClientSecretCreateResponseTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice(
-                                            RealtimeSessionCreateResponse.Audio.Output.Voice.ALLOY
-                                        )
+                                        .voice(RealtimeSessionCreateResponse.Audio.Output.Voice.ASH)
                                         .build()
                                 )
                                 .build()
@@ -188,7 +184,7 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateResponse.Model.of("string"))
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -251,7 +247,7 @@ internal class ClientSecretCreateResponseTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .language("language")
-                                                .model(AudioTranscription.Model.WHISPER_1)
+                                                .model(AudioTranscription.Model.of("string"))
                                                 .prompt("prompt")
                                                 .build()
                                         )
@@ -278,9 +274,7 @@ internal class ClientSecretCreateResponseTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice(
-                                            RealtimeSessionCreateResponse.Audio.Output.Voice.ALLOY
-                                        )
+                                        .voice(RealtimeSessionCreateResponse.Audio.Output.Voice.ASH)
                                         .build()
                                 )
                                 .build()
@@ -291,7 +285,7 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateResponse.Model.of("string"))
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()

@@ -20,11 +20,11 @@ internal class ChatCompletionCreateParamsTest {
             .addMessage(
                 ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
             )
-            .model(ChatModel.GPT_5_2)
+            .model(ChatModel.GPT_4O)
             .audio(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
-                    .voice(ChatCompletionAudioParam.Voice.ALLOY)
+                    .voice(ChatCompletionAudioParam.Voice.ASH)
                     .build()
             )
             .frequencyPenalty(-2.0)
@@ -124,11 +124,11 @@ internal class ChatCompletionCreateParamsTest {
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.GPT_5_2)
+                .model(ChatModel.GPT_4O)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
-                        .voice(ChatCompletionAudioParam.Voice.ALLOY)
+                        .voice(ChatCompletionAudioParam.Voice.ASH)
                         .build()
                 )
                 .frequencyPenalty(-2.0)
@@ -229,12 +229,12 @@ internal class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_5_2)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
         assertThat(body.audio())
             .contains(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
-                    .voice(ChatCompletionAudioParam.Voice.ALLOY)
+                    .voice(ChatCompletionAudioParam.Voice.ASH)
                     .build()
             )
         assertThat(body.frequencyPenalty()).contains(-2.0)
@@ -356,7 +356,7 @@ internal class ChatCompletionCreateParamsTest {
         val params =
             ChatCompletionCreateParams.builder()
                 .addDeveloperMessage("string")
-                .model(ChatModel.GPT_5_2)
+                .model(ChatModel.GPT_4O)
                 .build()
 
         val body = params._body()
@@ -367,7 +367,7 @@ internal class ChatCompletionCreateParamsTest {
                     ChatCompletionDeveloperMessageParam.builder().content("string").build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_5_2)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
     }
 
     @Test

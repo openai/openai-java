@@ -29,7 +29,7 @@ internal class RealtimeTranscriptionSessionAudioTest {
                         .transcription(
                             AudioTranscription.builder()
                                 .language("language")
-                                .model(AudioTranscription.Model.WHISPER_1)
+                                .model(AudioTranscription.Model.of("string"))
                                 .prompt("prompt")
                                 .build()
                         )
@@ -64,7 +64,7 @@ internal class RealtimeTranscriptionSessionAudioTest {
                     .transcription(
                         AudioTranscription.builder()
                             .language("language")
-                            .model(AudioTranscription.Model.WHISPER_1)
+                            .model(AudioTranscription.Model.of("string"))
                             .prompt("prompt")
                             .build()
                     )
@@ -103,7 +103,7 @@ internal class RealtimeTranscriptionSessionAudioTest {
                         .transcription(
                             AudioTranscription.builder()
                                 .language("language")
-                                .model(AudioTranscription.Model.WHISPER_1)
+                                .model(AudioTranscription.Model.of("string"))
                                 .prompt("prompt")
                                 .build()
                         )
