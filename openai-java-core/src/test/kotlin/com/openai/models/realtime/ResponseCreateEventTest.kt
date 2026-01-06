@@ -29,12 +29,12 @@ internal class ResponseCreateEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ASH)
                                         .build()
                                 )
                                 .build()
                         )
-                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
+                        .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(
@@ -97,12 +97,12 @@ internal class ResponseCreateEventTest {
                                             .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                             .build()
                                     )
-                                    .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                    .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ASH)
                                     .build()
                             )
                             .build()
                     )
-                    .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
+                    .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
                     .addInput(
                         RealtimeConversationItemSystemMessage.builder()
                             .addContent(
@@ -169,12 +169,12 @@ internal class ResponseCreateEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ASH)
                                         .build()
                                 )
                                 .build()
                         )
-                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
+                        .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(

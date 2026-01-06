@@ -36,8 +36,8 @@ internal class SpeechServiceTest {
             speechService.create(
                 SpeechCreateParams.builder()
                     .input("input")
-                    .model(SpeechModel.TTS_1)
-                    .voice(SpeechCreateParams.Voice.ALLOY)
+                    .model(SpeechModel.of("string"))
+                    .voice(SpeechCreateParams.Voice.ASH)
                     .instructions("instructions")
                     .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                     .speed(0.25)

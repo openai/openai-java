@@ -27,7 +27,7 @@ internal class TranscriptionServiceTest {
             transcriptionService.create(
                 TranscriptionCreateParams.builder()
                     .file("some content".byteInputStream())
-                    .model(AudioModel.WHISPER_1)
+                    .model(AudioModel.GPT_4O_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .addKnownSpeakerName("string")
@@ -56,7 +56,7 @@ internal class TranscriptionServiceTest {
             transcriptionService.createStreaming(
                 TranscriptionCreateParams.builder()
                     .file("some content".byteInputStream())
-                    .model(AudioModel.WHISPER_1)
+                    .model(AudioModel.GPT_4O_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .addKnownSpeakerName("string")

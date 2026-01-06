@@ -15,7 +15,7 @@ internal class TranscriptionCreateParamsTest {
     fun create() {
         TranscriptionCreateParams.builder()
             .file("some content".byteInputStream())
-            .model(AudioModel.WHISPER_1)
+            .model(AudioModel.GPT_4O_TRANSCRIBE)
             .chunkingStrategyAuto()
             .addInclude(TranscriptionInclude.LOGPROBS)
             .addKnownSpeakerName("string")
@@ -33,7 +33,7 @@ internal class TranscriptionCreateParamsTest {
         val params =
             TranscriptionCreateParams.builder()
                 .file("some content".byteInputStream())
-                .model(AudioModel.WHISPER_1)
+                .model(AudioModel.GPT_4O_TRANSCRIBE)
                 .chunkingStrategyAuto()
                 .addInclude(TranscriptionInclude.LOGPROBS)
                 .addKnownSpeakerName("string")
@@ -58,7 +58,7 @@ internal class TranscriptionCreateParamsTest {
             .isEqualTo(
                 mapOf(
                         "file" to MultipartField.of("some content".byteInputStream()),
-                        "model" to MultipartField.of(AudioModel.WHISPER_1),
+                        "model" to MultipartField.of(AudioModel.GPT_4O_TRANSCRIBE),
                         "chunking_strategy" to
                             MultipartField.of(TranscriptionCreateParams.ChunkingStrategy.ofAuto()),
                         "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
@@ -84,7 +84,7 @@ internal class TranscriptionCreateParamsTest {
         val params =
             TranscriptionCreateParams.builder()
                 .file("some content".byteInputStream())
-                .model(AudioModel.WHISPER_1)
+                .model(AudioModel.GPT_4O_TRANSCRIBE)
                 .build()
 
         val body = params._body()
@@ -100,7 +100,7 @@ internal class TranscriptionCreateParamsTest {
             .isEqualTo(
                 mapOf(
                         "file" to MultipartField.of("some content".byteInputStream()),
-                        "model" to MultipartField.of(AudioModel.WHISPER_1),
+                        "model" to MultipartField.of(AudioModel.GPT_4O_TRANSCRIBE),
                     )
                     .mapValues { (_, field) ->
                         field.map { (it as? ByteArray)?.inputStream() ?: it }
