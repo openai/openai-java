@@ -40,7 +40,7 @@ internal class VideoServiceTest {
                 VideoCreateParams.builder()
                     .prompt("x")
                     .inputReference("some content".byteInputStream())
-                    .model(VideoModel.SORA_2)
+                    .model(VideoModel.of("string"))
                     .seconds(VideoSeconds._4)
                     .size(VideoSize._720X1280)
                     .build()

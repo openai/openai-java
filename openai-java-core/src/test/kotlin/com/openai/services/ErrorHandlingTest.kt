@@ -90,7 +90,7 @@ internal class ErrorHandlingTest {
             assertThrows<BadRequestException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -206,7 +206,7 @@ internal class ErrorHandlingTest {
             assertThrows<BadRequestException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -322,7 +322,7 @@ internal class ErrorHandlingTest {
             assertThrows<UnauthorizedException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -438,7 +438,7 @@ internal class ErrorHandlingTest {
             assertThrows<UnauthorizedException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -554,7 +554,7 @@ internal class ErrorHandlingTest {
             assertThrows<PermissionDeniedException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -670,7 +670,7 @@ internal class ErrorHandlingTest {
             assertThrows<PermissionDeniedException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -786,7 +786,7 @@ internal class ErrorHandlingTest {
             assertThrows<NotFoundException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -902,7 +902,7 @@ internal class ErrorHandlingTest {
             assertThrows<NotFoundException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1018,7 +1018,7 @@ internal class ErrorHandlingTest {
             assertThrows<UnprocessableEntityException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1134,7 +1134,7 @@ internal class ErrorHandlingTest {
             assertThrows<UnprocessableEntityException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1250,7 +1250,7 @@ internal class ErrorHandlingTest {
             assertThrows<RateLimitException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1366,7 +1366,7 @@ internal class ErrorHandlingTest {
             assertThrows<RateLimitException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1482,7 +1482,7 @@ internal class ErrorHandlingTest {
             assertThrows<InternalServerException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1598,7 +1598,7 @@ internal class ErrorHandlingTest {
             assertThrows<InternalServerException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1714,7 +1714,7 @@ internal class ErrorHandlingTest {
             assertThrows<UnexpectedStatusCodeException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1830,7 +1830,7 @@ internal class ErrorHandlingTest {
             assertThrows<UnexpectedStatusCodeException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()
@@ -1944,7 +1944,7 @@ internal class ErrorHandlingTest {
             assertThrows<OpenAIException> {
                 jobService.create(
                     JobCreateParams.builder()
-                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .model(JobCreateParams.Model.GPT_4O_MINI)
                         .trainingFile("file-abc123")
                         .hyperparameters(
                             JobCreateParams.Hyperparameters.builder()

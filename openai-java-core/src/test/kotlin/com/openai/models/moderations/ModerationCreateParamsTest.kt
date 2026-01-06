@@ -11,7 +11,7 @@ internal class ModerationCreateParamsTest {
     fun create() {
         ModerationCreateParams.builder()
             .input("I want to kill them.")
-            .model(ModerationModel.OMNI_MODERATION_LATEST)
+            .model(ModerationModel.of("string"))
             .build()
     }
 
@@ -20,14 +20,14 @@ internal class ModerationCreateParamsTest {
         val params =
             ModerationCreateParams.builder()
                 .input("I want to kill them.")
-                .model(ModerationModel.OMNI_MODERATION_LATEST)
+                .model(ModerationModel.of("string"))
                 .build()
 
         val body = params._body()
 
         assertThat(body.input())
             .isEqualTo(ModerationCreateParams.Input.ofString("I want to kill them."))
-        assertThat(body.model()).contains(ModerationModel.OMNI_MODERATION_LATEST)
+        assertThat(body.model()).contains(ModerationModel.of("string"))
     }
 
     @Test

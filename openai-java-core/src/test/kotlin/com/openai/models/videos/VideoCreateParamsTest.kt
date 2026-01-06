@@ -14,7 +14,7 @@ internal class VideoCreateParamsTest {
         VideoCreateParams.builder()
             .prompt("x")
             .inputReference("some content".byteInputStream())
-            .model(VideoModel.SORA_2)
+            .model(VideoModel.of("string"))
             .seconds(VideoSeconds._4)
             .size(VideoSize._720X1280)
             .build()
@@ -26,7 +26,7 @@ internal class VideoCreateParamsTest {
             VideoCreateParams.builder()
                 .prompt("x")
                 .inputReference("some content".byteInputStream())
-                .model(VideoModel.SORA_2)
+                .model(VideoModel.of("string"))
                 .seconds(VideoSeconds._4)
                 .size(VideoSize._720X1280)
                 .build()
@@ -45,7 +45,7 @@ internal class VideoCreateParamsTest {
                 mapOf(
                         "prompt" to MultipartField.of("x"),
                         "input_reference" to MultipartField.of("some content".byteInputStream()),
-                        "model" to MultipartField.of(VideoModel.SORA_2),
+                        "model" to MultipartField.of(VideoModel.of("string")),
                         "seconds" to MultipartField.of(VideoSeconds._4),
                         "size" to MultipartField.of(VideoSize._720X1280),
                     )

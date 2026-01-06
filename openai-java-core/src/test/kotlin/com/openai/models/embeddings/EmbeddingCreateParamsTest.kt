@@ -11,7 +11,7 @@ internal class EmbeddingCreateParamsTest {
     fun create() {
         EmbeddingCreateParams.builder()
             .input("The quick brown fox jumped over the lazy dog")
-            .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
+            .model(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
             .dimensions(1L)
             .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
             .user("user-1234")
@@ -23,7 +23,7 @@ internal class EmbeddingCreateParamsTest {
         val params =
             EmbeddingCreateParams.builder()
                 .input("The quick brown fox jumped over the lazy dog")
-                .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
+                .model(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
                 .dimensions(1L)
                 .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
                 .user("user-1234")
@@ -35,7 +35,7 @@ internal class EmbeddingCreateParamsTest {
             .isEqualTo(
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
             )
-        assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
+        assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
         assertThat(body.dimensions()).contains(1L)
         assertThat(body.encodingFormat()).contains(EmbeddingCreateParams.EncodingFormat.FLOAT)
         assertThat(body.user()).contains("user-1234")
@@ -46,7 +46,7 @@ internal class EmbeddingCreateParamsTest {
         val params =
             EmbeddingCreateParams.builder()
                 .input("The quick brown fox jumped over the lazy dog")
-                .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
+                .model(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
                 .build()
 
         val body = params._body()
@@ -55,6 +55,6 @@ internal class EmbeddingCreateParamsTest {
             .isEqualTo(
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
             )
-        assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
+        assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
     }
 }

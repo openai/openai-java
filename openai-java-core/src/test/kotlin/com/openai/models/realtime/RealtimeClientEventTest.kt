@@ -422,12 +422,12 @@ internal class RealtimeClientEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ASH)
                                         .build()
                                 )
                                 .build()
                         )
-                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
+                        .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(
@@ -513,13 +513,13 @@ internal class RealtimeClientEventTest {
                                                     .build()
                                             )
                                             .voice(
-                                                RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY
+                                                RealtimeResponseCreateAudioOutput.Output.Voice.ASH
                                             )
                                             .build()
                                     )
                                     .build()
                             )
-                            .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
+                            .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
                             .addInput(
                                 RealtimeConversationItemSystemMessage.builder()
                                     .addContent(
@@ -604,7 +604,7 @@ internal class RealtimeClientEventTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .language("language")
-                                                .model(AudioTranscription.Model.WHISPER_1)
+                                                .model(AudioTranscription.Model.of("string"))
                                                 .prompt("prompt")
                                                 .build()
                                         )
@@ -629,7 +629,7 @@ internal class RealtimeClientEventTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
+                                        .voice(RealtimeAudioConfigOutput.Voice.ASH)
                                         .build()
                                 )
                                 .build()
@@ -640,7 +640,7 @@ internal class RealtimeClientEventTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateRequest.Model.of("string"))
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -712,7 +712,7 @@ internal class RealtimeClientEventTest {
                                             .transcription(
                                                 AudioTranscription.builder()
                                                     .language("language")
-                                                    .model(AudioTranscription.Model.WHISPER_1)
+                                                    .model(AudioTranscription.Model.of("string"))
                                                     .prompt("prompt")
                                                     .build()
                                             )
@@ -739,7 +739,7 @@ internal class RealtimeClientEventTest {
                                                     .build()
                                             )
                                             .speed(0.25)
-                                            .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
+                                            .voice(RealtimeAudioConfigOutput.Voice.ASH)
                                             .build()
                                     )
                                     .build()
@@ -750,7 +750,7 @@ internal class RealtimeClientEventTest {
                             )
                             .instructions("instructions")
                             .maxOutputTokens(0L)
-                            .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
+                            .model(RealtimeSessionCreateRequest.Model.of("string"))
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                             .prompt(
                                 ResponsePrompt.builder()

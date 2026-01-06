@@ -31,7 +31,7 @@ internal class JobServiceTest {
         val fineTuningJob =
             jobService.create(
                 JobCreateParams.builder()
-                    .model(JobCreateParams.Model.BABBAGE_002)
+                    .model(JobCreateParams.Model.GPT_4O_MINI)
                     .trainingFile("file-abc123")
                     .hyperparameters(
                         JobCreateParams.Hyperparameters.builder()

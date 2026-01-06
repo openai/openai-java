@@ -28,7 +28,7 @@ internal class AssistantServiceTest {
         val assistant =
             assistantService.create(
                 AssistantCreateParams.builder()
-                    .model(ChatModel.GPT_5_2)
+                    .model(ChatModel.GPT_4O)
                     .description("description")
                     .instructions("instructions")
                     .metadata(
@@ -114,7 +114,7 @@ internal class AssistantServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(AssistantUpdateParams.Model.GPT_5)
+                    .model(AssistantUpdateParams.Model.of("string"))
                     .name("name")
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()
