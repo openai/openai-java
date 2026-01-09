@@ -535,12 +535,13 @@ private constructor(
             organization?.let { headers.put("OpenAI-Organization", it) }
             project?.let { headers.put("OpenAI-Project", it) }
 
+            headers.replaceAll(this.headers.build())
             when (credential) {
                 is AzureApiKeyCredential -> {
-                    headers.put("api-key", credential.apiKey())
+                    headers.replace("api-key", credential.apiKey())
                 }
                 is BearerTokenCredential -> {
-                    headers.put("Authorization", "Bearer ${credential.token()}")
+                    headers.replace("Authorization", "Bearer ${credential.token()}")
                 }
                 else -> {
                     throw IllegalArgumentException("Invalid credential type")
@@ -565,7 +566,6 @@ private constructor(
                 }
             }
 
-            headers.replaceAll(this.headers.build())
             queryParams.replaceAll(this.queryParams.build())
 
             return ClientOptions(
