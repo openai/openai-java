@@ -57,9 +57,9 @@ private constructor(
     fun speed(): Optional<Double> = speed.getOptional("speed")
 
     /**
-     * The voice the model uses to respond. Voice cannot be changed during the session once the
-     * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-     * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. We recommend
+     * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
+     * `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. Voice cannot be changed
+     * during the session once the model has responded with audio at least once. We recommend
      * `marin` and `cedar` for best quality.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -167,10 +167,10 @@ private constructor(
         fun speed(speed: JsonField<Double>) = apply { this.speed = speed }
 
         /**
-         * The voice the model uses to respond. Voice cannot be changed during the session once the
-         * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. We recommend
-         * `marin` and `cedar` for best quality.
+         * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. Voice cannot
+         * be changed during the session once the model has responded with audio at least once. We
+         * recommend `marin` and `cedar` for best quality.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -251,9 +251,9 @@ private constructor(
             (if (voice.asKnown().isPresent) 1 else 0)
 
     /**
-     * The voice the model uses to respond. Voice cannot be changed during the session once the
-     * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-     * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. We recommend
+     * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
+     * `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. Voice cannot be changed
+     * during the session once the model has responded with audio at least once. We recommend
      * `marin` and `cedar` for best quality.
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {

@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A text input to the model. */
+/** A piece of message content, such as text, an image, or a file. */
 @JsonDeserialize(using = ResponseFunctionCallOutputItem.Deserializer::class)
 @JsonSerialize(using = ResponseFunctionCallOutputItem.Serializer::class)
 class ResponseFunctionCallOutputItem

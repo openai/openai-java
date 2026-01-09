@@ -115,7 +115,7 @@ private constructor(
     /** A tool call that executes one or more shell commands in a managed environment. */
     fun shellCall(): Optional<ResponseFunctionShellToolCall> = Optional.ofNullable(shellCall)
 
-    /** The output of a shell tool call. */
+    /** The output of a shell tool call that was emitted. */
     fun shellCallOutput(): Optional<ResponseFunctionShellToolCallOutput> =
         Optional.ofNullable(shellCallOutput)
 
@@ -233,7 +233,7 @@ private constructor(
     /** A tool call that executes one or more shell commands in a managed environment. */
     fun asShellCall(): ResponseFunctionShellToolCall = shellCall.getOrThrow("shellCall")
 
-    /** The output of a shell tool call. */
+    /** The output of a shell tool call that was emitted. */
     fun asShellCallOutput(): ResponseFunctionShellToolCallOutput =
         shellCallOutput.getOrThrow("shellCallOutput")
 
@@ -603,7 +603,7 @@ private constructor(
         fun ofShellCall(shellCall: ResponseFunctionShellToolCall) =
             ResponseOutputItem(shellCall = shellCall)
 
-        /** The output of a shell tool call. */
+        /** The output of a shell tool call that was emitted. */
         @JvmStatic
         fun ofShellCallOutput(shellCallOutput: ResponseFunctionShellToolCallOutput) =
             ResponseOutputItem(shellCallOutput = shellCallOutput)
@@ -700,7 +700,7 @@ private constructor(
         /** A tool call that executes one or more shell commands in a managed environment. */
         fun visitShellCall(shellCall: ResponseFunctionShellToolCall): T
 
-        /** The output of a shell tool call. */
+        /** The output of a shell tool call that was emitted. */
         fun visitShellCallOutput(shellCallOutput: ResponseFunctionShellToolCallOutput): T
 
         /** A tool call that applies file diffs by creating, deleting, or updating files. */

@@ -49,6 +49,8 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
+     * The encrypted content that was produced by compaction.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -68,6 +70,8 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The identifier of the actor that created the item.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -152,6 +156,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** The encrypted content that was produced by compaction. */
         fun encryptedContent(encryptedContent: String) =
             encryptedContent(JsonField.of(encryptedContent))
 
@@ -180,6 +185,7 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** The identifier of the actor that created the item. */
         fun createdBy(createdBy: String) = createdBy(JsonField.of(createdBy))
 
         /**

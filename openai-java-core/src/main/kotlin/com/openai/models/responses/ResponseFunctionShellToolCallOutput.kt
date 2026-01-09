@@ -29,7 +29,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** The output of a shell tool call. */
+/** The output of a shell tool call that was emitted. */
 class ResponseFunctionShellToolCallOutput
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -101,6 +101,8 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The identifier of the actor that created the item.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -288,6 +290,7 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** The identifier of the actor that created the item. */
         fun createdBy(createdBy: String) = createdBy(JsonField.of(createdBy))
 
         /**
@@ -387,7 +390,7 @@ private constructor(
             type.let { if (it == JsonValue.from("shell_call_output")) 1 else 0 } +
             (if (createdBy.asKnown().isPresent) 1 else 0)
 
-    /** The content of a shell call output. */
+    /** The content of a shell tool call output that was emitted. */
     class Output
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -418,18 +421,24 @@ private constructor(
         fun outcome(): Outcome = outcome.getRequired("outcome")
 
         /**
+         * The standard error output that was captured.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun stderr(): String = stderr.getRequired("stderr")
 
         /**
+         * The standard output that was captured.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun stdout(): String = stdout.getRequired("stdout")
 
         /**
+         * The identifier of the actor that created the item.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -540,6 +549,7 @@ private constructor(
             fun exitOutcome(exitCode: Long) =
                 outcome(Outcome.Exit.builder().exitCode(exitCode).build())
 
+            /** The standard error output that was captured. */
             fun stderr(stderr: String) = stderr(JsonField.of(stderr))
 
             /**
@@ -551,6 +561,7 @@ private constructor(
              */
             fun stderr(stderr: JsonField<String>) = apply { this.stderr = stderr }
 
+            /** The standard output that was captured. */
             fun stdout(stdout: String) = stdout(JsonField.of(stdout))
 
             /**
@@ -562,6 +573,7 @@ private constructor(
              */
             fun stdout(stdout: JsonField<String>) = apply { this.stdout = stdout }
 
+            /** The identifier of the actor that created the item. */
             fun createdBy(createdBy: String) = createdBy(JsonField.of(createdBy))
 
             /**

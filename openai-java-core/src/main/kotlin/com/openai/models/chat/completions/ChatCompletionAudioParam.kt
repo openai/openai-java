@@ -44,8 +44,8 @@ private constructor(
     fun format(): Format = format.getRequired("format")
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `fable`, `nova`, `onyx`, `sage`, and `shimmer`.
+     * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
+     * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -121,8 +121,9 @@ private constructor(
         fun format(format: JsonField<Format>) = apply { this.format = format }
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, and `shimmer`.
+         * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and
+         * `cedar`.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -364,8 +365,8 @@ private constructor(
     }
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `fable`, `nova`, `onyx`, `sage`, and `shimmer`.
+     * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
+     * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`.
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
