@@ -20,6 +20,7 @@ import java.time.Clock
 import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
@@ -48,10 +49,30 @@ class OpenAIOkHttpClient private constructor() {
     class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
+        private var dispatcherExecutorService: ExecutorService? = null
         private var proxy: Proxy? = null
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
+
+        /**
+         * The executor service to use for running HTTP requests.
+         *
+         * Defaults to OkHttp's
+         * [default executor service](https://github.com/square/okhttp/blob/ace792f443b2ffb17974f5c0d1cecdf589309f26/okhttp/src/commonJvmAndroid/kotlin/okhttp3/Dispatcher.kt#L98-L104).
+         *
+         * This class takes ownership of the executor service and shuts it down when closed.
+         */
+        fun dispatcherExecutorService(dispatcherExecutorService: ExecutorService?) = apply {
+            this.dispatcherExecutorService = dispatcherExecutorService
+        }
+
+        /**
+         * Alias for calling [Builder.dispatcherExecutorService] with
+         * `dispatcherExecutorService.orElse(null)`.
+         */
+        fun dispatcherExecutorService(dispatcherExecutorService: Optional<ExecutorService>) =
+            dispatcherExecutorService(dispatcherExecutorService.getOrNull())
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
 
@@ -339,6 +360,7 @@ class OpenAIOkHttpClient private constructor() {
                         OkHttpClient.builder()
                             .timeout(clientOptions.timeout())
                             .proxy(proxy)
+                            .dispatcherExecutorService(dispatcherExecutorService)
                             .sslSocketFactory(sslSocketFactory)
                             .trustManager(trustManager)
                             .hostnameVerifier(hostnameVerifier)
