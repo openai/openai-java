@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.15.0 (2026-01-09)
+
+Full Changelog: [v4.14.0...v4.15.0](https://github.com/openai/openai-java/compare/v4.14.0...v4.15.0)
+
+### Features
+
+* **api:** add new Response completed_at prop ([703a651](https://github.com/openai/openai-java/commit/703a6511f98fd016a0a27e0694fccf1d81cc3280))
+* **client:** allow configuring dispatcher executor service ([8e579d9](https://github.com/openai/openai-java/commit/8e579d9db0c7fde0da3abb180f5bc72c2798ede4))
+
+
+### Bug Fixes
+
+* **client:** allow `withOptions` to modify credentials ([#674](https://github.com/openai/openai-java/issues/674)) ([1d5a8f9](https://github.com/openai/openai-java/commit/1d5a8f9dda2420d3dfe916bb90f07ee596886511))
+
+
+### Chores
+
+* **internal:** use different example values for some enums ([d8c6ed4](https://github.com/openai/openai-java/commit/d8c6ed431b65bbf6746731de3052a3a2f3a6aaa8))
+
 ## 4.14.0 (2026-01-06)
 
 Full Changelog: [v4.13.0...v4.14.0](https://github.com/openai/openai-java/compare/v4.13.0...v4.14.0)
