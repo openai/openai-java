@@ -444,7 +444,7 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("message")) 1 else 0 }
 
-    /** A text input to the model. */
+    /** A content part that makes up an input or output item. */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content

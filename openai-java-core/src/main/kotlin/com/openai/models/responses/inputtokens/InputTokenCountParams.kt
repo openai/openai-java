@@ -145,8 +145,7 @@ private constructor(
     fun text(): Optional<Text> = body.text()
 
     /**
-     * How the model should select which tool (or tools) to use when generating a response. See the
-     * `tools` parameter to see how to specify which tools the model can call.
+     * Controls which tool the model should use, if any.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -487,10 +486,7 @@ private constructor(
          */
         fun text(text: JsonField<Text>) = apply { body.text(text) }
 
-        /**
-         * How the model should select which tool (or tools) to use when generating a response. See
-         * the `tools` parameter to see how to specify which tools the model can call.
-         */
+        /** Controls which tool the model should use, if any. */
         fun toolChoice(toolChoice: ToolChoice?) = apply { body.toolChoice(toolChoice) }
 
         /** Alias for calling [Builder.toolChoice] with `toolChoice.orElse(null)`. */
@@ -945,8 +941,7 @@ private constructor(
         fun text(): Optional<Text> = text.getOptional("text")
 
         /**
-         * How the model should select which tool (or tools) to use when generating a response. See
-         * the `tools` parameter to see how to specify which tools the model can call.
+         * Controls which tool the model should use, if any.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1313,10 +1308,7 @@ private constructor(
              */
             fun text(text: JsonField<Text>) = apply { this.text = text }
 
-            /**
-             * How the model should select which tool (or tools) to use when generating a response.
-             * See the `tools` parameter to see how to specify which tools the model can call.
-             */
+            /** Controls which tool the model should use, if any. */
             fun toolChoice(toolChoice: ToolChoice?) = toolChoice(JsonField.ofNullable(toolChoice))
 
             /** Alias for calling [Builder.toolChoice] with `toolChoice.orElse(null)`. */
@@ -1860,6 +1852,7 @@ private constructor(
         /** A text input to the model, equivalent to a text input with the `user` role. */
         fun string(): Optional<String> = Optional.ofNullable(string)
 
+        /** A list of one or many input items to the model, containing different content types. */
         fun responseInputItems(): Optional<List<ResponseInputItem>> =
             Optional.ofNullable(responseInputItems)
 
@@ -1870,6 +1863,7 @@ private constructor(
         /** A text input to the model, equivalent to a text input with the `user` role. */
         fun asString(): String = string.getOrThrow("string")
 
+        /** A list of one or many input items to the model, containing different content types. */
         fun asResponseInputItems(): List<ResponseInputItem> =
             responseInputItems.getOrThrow("responseInputItems")
 
@@ -1956,6 +1950,9 @@ private constructor(
             /** A text input to the model, equivalent to a text input with the `user` role. */
             @JvmStatic fun ofString(string: String) = Input(string = string)
 
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
             @JvmStatic
             fun ofResponseInputItems(responseInputItems: List<ResponseInputItem>) =
                 Input(responseInputItems = responseInputItems.toImmutable())
@@ -1967,6 +1964,9 @@ private constructor(
             /** A text input to the model, equivalent to a text input with the `user` role. */
             fun visitString(string: String): T
 
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
             fun visitResponseInputItems(responseInputItems: List<ResponseInputItem>): T
 
             /**
@@ -2415,10 +2415,7 @@ private constructor(
             "Text{format=$format, verbosity=$verbosity, additionalProperties=$additionalProperties}"
     }
 
-    /**
-     * How the model should select which tool (or tools) to use when generating a response. See the
-     * `tools` parameter to see how to specify which tools the model can call.
-     */
+    /** Controls which tool the model should use, if any. */
     @JsonDeserialize(using = ToolChoice.Deserializer::class)
     @JsonSerialize(using = ToolChoice.Serializer::class)
     class ToolChoice

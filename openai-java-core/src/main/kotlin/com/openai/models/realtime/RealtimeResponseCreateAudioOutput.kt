@@ -167,10 +167,9 @@ private constructor(
         fun format(): Optional<RealtimeAudioFormats> = format.getOptional("format")
 
         /**
-         * The voice the model uses to respond. Voice cannot be changed during the session once the
-         * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. We recommend
-         * `marin` and `cedar` for best quality.
+         * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. Voice cannot
+         * be changed during the session once the model has responded with audio at least once.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -250,10 +249,10 @@ private constructor(
                 format(RealtimeAudioFormats.ofAudioPcma(audioPcma))
 
             /**
-             * The voice the model uses to respond. Voice cannot be changed during the session once
-             * the model has responded with audio at least once. Current voice options are `alloy`,
-             * `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`.
-             * We recommend `marin` and `cedar` for best quality.
+             * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
+             * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. Voice
+             * cannot be changed during the session once the model has responded with audio at least
+             * once.
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -334,10 +333,9 @@ private constructor(
                 (if (voice.asKnown().isPresent) 1 else 0)
 
         /**
-         * The voice the model uses to respond. Voice cannot be changed during the session once the
-         * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. We recommend
-         * `marin` and `cedar` for best quality.
+         * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. Voice cannot
+         * be changed during the session once the model has responded with audio at least once.
          */
         class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

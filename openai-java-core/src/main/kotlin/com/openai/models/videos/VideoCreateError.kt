@@ -15,6 +15,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
+/** An error that occurred while generating the response. */
 class VideoCreateError
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -30,12 +31,16 @@ private constructor(
     ) : this(code, message, mutableMapOf())
 
     /**
+     * A machine-readable error code that was returned.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun code(): String = code.getRequired("code")
 
     /**
+     * A human-readable description of the error that was returned.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -95,6 +100,7 @@ private constructor(
             additionalProperties = videoCreateError.additionalProperties.toMutableMap()
         }
 
+        /** A machine-readable error code that was returned. */
         fun code(code: String) = code(JsonField.of(code))
 
         /**
@@ -105,6 +111,7 @@ private constructor(
          */
         fun code(code: JsonField<String>) = apply { this.code = code }
 
+        /** A human-readable description of the error that was returned. */
         fun message(message: String) = message(JsonField.of(message))
 
         /**

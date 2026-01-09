@@ -3084,6 +3084,7 @@ private constructor(
             /** A JSON string of the output of the function tool call. */
             fun string(): Optional<String> = Optional.ofNullable(string)
 
+            /** An array of content outputs (text, image, file) for the function tool call. */
             fun responseFunctionCallOutputItemList():
                 Optional<List<ResponseFunctionCallOutputItem>> =
                 Optional.ofNullable(responseFunctionCallOutputItemList)
@@ -3096,6 +3097,7 @@ private constructor(
             /** A JSON string of the output of the function tool call. */
             fun asString(): String = string.getOrThrow("string")
 
+            /** An array of content outputs (text, image, file) for the function tool call. */
             fun asResponseFunctionCallOutputItemList(): List<ResponseFunctionCallOutputItem> =
                 responseFunctionCallOutputItemList.getOrThrow("responseFunctionCallOutputItemList")
 
@@ -3186,6 +3188,7 @@ private constructor(
                 /** A JSON string of the output of the function tool call. */
                 @JvmStatic fun ofString(string: String) = Output(string = string)
 
+                /** An array of content outputs (text, image, file) for the function tool call. */
                 @JvmStatic
                 fun ofResponseFunctionCallOutputItemList(
                     responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
@@ -3204,6 +3207,7 @@ private constructor(
                 /** A JSON string of the output of the function tool call. */
                 fun visitString(string: String): T
 
+                /** An array of content outputs (text, image, file) for the function tool call. */
                 fun visitResponseFunctionCallOutputItemList(
                     responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
                 ): T

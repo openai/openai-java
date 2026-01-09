@@ -329,7 +329,7 @@ private constructor(
             type.let { if (it == JsonValue.from("output_text")) 1 else 0 } +
             (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
-    /** A citation to a file. */
+    /** An annotation that applies to a span of output text. */
     @JsonDeserialize(using = Annotation.Deserializer::class)
     @JsonSerialize(using = Annotation.Serializer::class)
     class Annotation

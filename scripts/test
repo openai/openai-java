@@ -54,4 +54,11 @@ fi
 
 echo "==> Running tests"
 
+# Clear OpenAI-related env vars to keep test expectations consistent between laptop and CI.
+unset OPENAI_API_KEY
+unset OPENAI_ORG_ID
+unset OPENAI_PROJECT_ID
+unset OPENAI_WEBHOOK_SECRET
+unset OPENAI_BASE_URL
+
 ./gradlew test "$@"

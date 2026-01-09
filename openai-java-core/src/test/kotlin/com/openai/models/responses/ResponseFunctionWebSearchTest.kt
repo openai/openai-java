@@ -17,6 +17,7 @@ internal class ResponseFunctionWebSearchTest {
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
                         .query("query")
+                        .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("url")
@@ -33,6 +34,7 @@ internal class ResponseFunctionWebSearchTest {
                 ResponseFunctionWebSearch.Action.ofSearch(
                     ResponseFunctionWebSearch.Action.Search.builder()
                         .query("query")
+                        .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("url")
@@ -54,6 +56,7 @@ internal class ResponseFunctionWebSearchTest {
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
                         .query("query")
+                        .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("url")
