@@ -40,6 +40,8 @@ private constructor(
     ) : this(encryptedContent, type, id, mutableMapOf())
 
     /**
+     * The encrypted content of the compaction summary.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -124,6 +126,7 @@ private constructor(
             additionalProperties = responseCompactionItemParam.additionalProperties.toMutableMap()
         }
 
+        /** The encrypted content of the compaction summary. */
         fun encryptedContent(encryptedContent: String) =
             encryptedContent(JsonField.of(encryptedContent))
 

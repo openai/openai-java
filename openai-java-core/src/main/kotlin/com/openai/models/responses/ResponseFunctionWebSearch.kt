@@ -530,6 +530,7 @@ private constructor(
         private constructor(
             private val query: JsonField<String>,
             private val type: JsonValue,
+            private val queries: JsonField<List<String>>,
             private val sources: JsonField<List<Source>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
@@ -538,13 +539,16 @@ private constructor(
             private constructor(
                 @JsonProperty("query") @ExcludeMissing query: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("queries")
+                @ExcludeMissing
+                queries: JsonField<List<String>> = JsonMissing.of(),
                 @JsonProperty("sources")
                 @ExcludeMissing
                 sources: JsonField<List<Source>> = JsonMissing.of(),
-            ) : this(query, type, sources, mutableMapOf())
+            ) : this(query, type, queries, sources, mutableMapOf())
 
             /**
-             * The search query.
+             * [DEPRECATED] The search query.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -566,6 +570,14 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * The search queries.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun queries(): Optional<List<String>> = queries.getOptional("queries")
+
+            /**
              * The sources used in the search.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -579,6 +591,15 @@ private constructor(
              * Unlike [query], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("query") @ExcludeMissing fun _query(): JsonField<String> = query
+
+            /**
+             * Returns the raw JSON value of [queries].
+             *
+             * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("queries")
+            @ExcludeMissing
+            fun _queries(): JsonField<List<String>> = queries
 
             /**
              * Returns the raw JSON value of [sources].
@@ -619,6 +640,7 @@ private constructor(
 
                 private var query: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("search")
+                private var queries: JsonField<MutableList<String>>? = null
                 private var sources: JsonField<MutableList<Source>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -626,11 +648,12 @@ private constructor(
                 internal fun from(search: Search) = apply {
                     query = search.query
                     type = search.type
+                    queries = search.queries.map { it.toMutableList() }
                     sources = search.sources.map { it.toMutableList() }
                     additionalProperties = search.additionalProperties.toMutableMap()
                 }
 
-                /** The search query. */
+                /** [DEPRECATED] The search query. */
                 fun query(query: String) = query(JsonField.of(query))
 
                 /**
@@ -655,6 +678,32 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The search queries. */
+                fun queries(queries: List<String>) = queries(JsonField.of(queries))
+
+                /**
+                 * Sets [Builder.queries] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.queries] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun queries(queries: JsonField<List<String>>) = apply {
+                    this.queries = queries.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [queries].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addQuery(query: String) = apply {
+                    queries =
+                        (queries ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("queries", it).add(query)
+                        }
+                }
 
                 /** The sources used in the search. */
                 fun sources(sources: List<Source>) = sources(JsonField.of(sources))
@@ -720,6 +769,7 @@ private constructor(
                     Search(
                         checkRequired("query", query),
                         type,
+                        (queries ?: JsonMissing.of()).map { it.toImmutable() },
                         (sources ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
@@ -738,6 +788,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
+                queries()
                 sources().ifPresent { it.forEach { it.validate() } }
                 validated = true
             }
@@ -760,6 +811,7 @@ private constructor(
             internal fun validity(): Int =
                 (if (query.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("search")) 1 else 0 } +
+                    (queries.asKnown().getOrNull()?.size ?: 0) +
                     (sources.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
             /** A source used in the search. */
@@ -971,18 +1023,19 @@ private constructor(
                 return other is Search &&
                     query == other.query &&
                     type == other.type &&
+                    queries == other.queries &&
                     sources == other.sources &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(query, type, sources, additionalProperties)
+                Objects.hash(query, type, queries, sources, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Search{query=$query, type=$type, sources=$sources, additionalProperties=$additionalProperties}"
+                "Search{query=$query, type=$type, queries=$queries, sources=$sources, additionalProperties=$additionalProperties}"
         }
 
         /** Action type "open_page" - Opens a specific URL from search results. */

@@ -1393,6 +1393,7 @@ private constructor(
         /** A text input to the model, equivalent to a text input with the `user` role. */
         fun string(): Optional<String> = Optional.ofNullable(string)
 
+        /** A list of one or many input items to the model, containing different content types. */
         fun responseInputItems(): Optional<List<ResponseInputItem>> =
             Optional.ofNullable(responseInputItems)
 
@@ -1403,6 +1404,7 @@ private constructor(
         /** A text input to the model, equivalent to a text input with the `user` role. */
         fun asString(): String = string.getOrThrow("string")
 
+        /** A list of one or many input items to the model, containing different content types. */
         fun asResponseInputItems(): List<ResponseInputItem> =
             responseInputItems.getOrThrow("responseInputItems")
 
@@ -1489,6 +1491,9 @@ private constructor(
             /** A text input to the model, equivalent to a text input with the `user` role. */
             @JvmStatic fun ofString(string: String) = Input(string = string)
 
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
             @JvmStatic
             fun ofResponseInputItems(responseInputItems: List<ResponseInputItem>) =
                 Input(responseInputItems = responseInputItems.toImmutable())
@@ -1500,6 +1505,9 @@ private constructor(
             /** A text input to the model, equivalent to a text input with the `user` role. */
             fun visitString(string: String): T
 
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
             fun visitResponseInputItems(responseInputItems: List<ResponseInputItem>): T
 
             /**

@@ -3406,6 +3406,8 @@ private constructor(
                 fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
                 /**
+                 * The memory limit for the code interpreter container.
+                 *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
@@ -3509,6 +3511,7 @@ private constructor(
                             }
                     }
 
+                    /** The memory limit for the code interpreter container. */
                     fun memoryLimit(memoryLimit: MemoryLimit?) =
                         memoryLimit(JsonField.ofNullable(memoryLimit))
 
@@ -3600,6 +3603,7 @@ private constructor(
                         (fileIds.asKnown().getOrNull()?.size ?: 0) +
                         (memoryLimit.asKnown().getOrNull()?.validity() ?: 0)
 
+                /** The memory limit for the code interpreter container. */
                 class MemoryLimit
                 @JsonCreator
                 private constructor(private val value: JsonField<String>) : Enum {

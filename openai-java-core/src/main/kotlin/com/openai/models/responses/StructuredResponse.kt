@@ -116,6 +116,9 @@ class StructuredResponse<T : Any>(
     /** @see Response.background */
     fun background(): Optional<Boolean> = rawResponse.background()
 
+    /** @see Response.completedAt */
+    fun completedAt(): Optional<Double> = rawResponse.completedAt()
+
     /** @see Response.conversation */
     fun conversation(): Optional<Response.Conversation> = rawResponse.conversation()
 
@@ -207,6 +210,9 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._background */
     fun _background(): JsonField<Boolean> = rawResponse._background()
+
+    /** @see Response._completedAt */
+    fun _completedAt(): JsonField<Double> = rawResponse._completedAt()
 
     /** @see Response._conversation() */
     fun _conversation(): JsonField<Response.Conversation> = rawResponse._conversation()

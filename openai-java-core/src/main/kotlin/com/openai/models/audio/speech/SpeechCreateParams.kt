@@ -47,9 +47,9 @@ private constructor(
     fun model(): SpeechModel = body.model()
 
     /**
-     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `ballad`,
-     * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`. Previews of the
-     * voices are available in the
+     * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+     * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
+     * `cedar`. Previews of the voices are available in the
      * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -228,9 +228,9 @@ private constructor(
         fun model(value: String) = apply { body.model(value) }
 
         /**
-         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
-         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
-         * Previews of the voices are available in the
+         * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
+         * and `cedar`. Previews of the voices are available in the
          * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
          */
         fun voice(voice: Voice) = apply { body.voice(voice) }
@@ -520,9 +520,9 @@ private constructor(
         fun model(): SpeechModel = model.getRequired("model")
 
         /**
-         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
-         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
-         * Previews of the voices are available in the
+         * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
+         * and `cedar`. Previews of the voices are available in the
          * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -713,9 +713,9 @@ private constructor(
             fun model(value: String) = model(SpeechModel.of(value))
 
             /**
-             * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
-             * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
-             * Previews of the voices are available in the
+             * The voice to use when generating the audio. Supported built-in voices are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`,
+             * `verse`, `marin`, and `cedar`. Previews of the voices are available in the
              * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
@@ -928,9 +928,9 @@ private constructor(
     }
 
     /**
-     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `ballad`,
-     * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`. Previews of the
-     * voices are available in the
+     * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+     * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
+     * `cedar`. Previews of the voices are available in the
      * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {

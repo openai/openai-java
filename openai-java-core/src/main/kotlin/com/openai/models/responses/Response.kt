@@ -52,6 +52,7 @@ private constructor(
     private val tools: JsonField<List<Tool>>,
     private val topP: JsonField<Double>,
     private val background: JsonField<Boolean>,
+    private val completedAt: JsonField<Double>,
     private val conversation: JsonField<Conversation>,
     private val maxOutputTokens: JsonField<Long>,
     private val maxToolCalls: JsonField<Long>,
@@ -102,6 +103,9 @@ private constructor(
         @JsonProperty("background")
         @ExcludeMissing
         background: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("completed_at")
+        @ExcludeMissing
+        completedAt: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("conversation")
         @ExcludeMissing
         conversation: JsonField<Conversation> = JsonMissing.of(),
@@ -162,6 +166,7 @@ private constructor(
         tools,
         topP,
         background,
+        completedAt,
         conversation,
         maxOutputTokens,
         maxToolCalls,
@@ -346,8 +351,17 @@ private constructor(
     fun background(): Optional<Boolean> = background.getOptional("background")
 
     /**
-     * The conversation that this response belongs to. Input items and output items from this
-     * response are automatically added to this conversation.
+     * Unix timestamp (in seconds) of when this Response was completed. Only present when the status
+     * is `completed`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun completedAt(): Optional<Double> = completedAt.getOptional("completed_at")
+
+    /**
+     * The conversation that this response belonged to. Input items and output items from this
+     * response were automatically added to this conversation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -633,6 +647,15 @@ private constructor(
     @JsonProperty("background") @ExcludeMissing fun _background(): JsonField<Boolean> = background
 
     /**
+     * Returns the raw JSON value of [completedAt].
+     *
+     * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("completed_at")
+    @ExcludeMissing
+    fun _completedAt(): JsonField<Double> = completedAt
+
+    /**
      * Returns the raw JSON value of [conversation].
      *
      * Unlike [conversation], this method doesn't throw if the JSON field has an unexpected type.
@@ -823,6 +846,7 @@ private constructor(
         private var tools: JsonField<MutableList<Tool>>? = null
         private var topP: JsonField<Double>? = null
         private var background: JsonField<Boolean> = JsonMissing.of()
+        private var completedAt: JsonField<Double> = JsonMissing.of()
         private var conversation: JsonField<Conversation> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
         private var maxToolCalls: JsonField<Long> = JsonMissing.of()
@@ -858,6 +882,7 @@ private constructor(
             tools = response.tools.map { it.toMutableList() }
             topP = response.topP
             background = response.background
+            completedAt = response.completedAt
             conversation = response.conversation
             maxOutputTokens = response.maxOutputTokens
             maxToolCalls = response.maxToolCalls
@@ -1434,8 +1459,33 @@ private constructor(
         fun background(background: JsonField<Boolean>) = apply { this.background = background }
 
         /**
-         * The conversation that this response belongs to. Input items and output items from this
-         * response are automatically added to this conversation.
+         * Unix timestamp (in seconds) of when this Response was completed. Only present when the
+         * status is `completed`.
+         */
+        fun completedAt(completedAt: Double?) = completedAt(JsonField.ofNullable(completedAt))
+
+        /**
+         * Alias for [Builder.completedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun completedAt(completedAt: Double) = completedAt(completedAt as Double?)
+
+        /** Alias for calling [Builder.completedAt] with `completedAt.orElse(null)`. */
+        fun completedAt(completedAt: Optional<Double>) = completedAt(completedAt.getOrNull())
+
+        /**
+         * Sets [Builder.completedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completedAt] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun completedAt(completedAt: JsonField<Double>) = apply { this.completedAt = completedAt }
+
+        /**
+         * The conversation that this response belonged to. Input items and output items from this
+         * response were automatically added to this conversation.
          */
         fun conversation(conversation: Conversation?) =
             conversation(JsonField.ofNullable(conversation))
@@ -1842,6 +1892,7 @@ private constructor(
                 checkRequired("tools", tools).map { it.toImmutable() },
                 checkRequired("topP", topP),
                 background,
+                completedAt,
                 conversation,
                 maxOutputTokens,
                 maxToolCalls,
@@ -1888,6 +1939,7 @@ private constructor(
         tools().forEach { it.validate() }
         topP()
         background()
+        completedAt()
         conversation().ifPresent { it.validate() }
         maxOutputTokens()
         maxToolCalls()
@@ -1937,6 +1989,7 @@ private constructor(
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (topP.asKnown().isPresent) 1 else 0) +
             (if (background.asKnown().isPresent) 1 else 0) +
+            (if (completedAt.asKnown().isPresent) 1 else 0) +
             (conversation.asKnown().getOrNull()?.validity() ?: 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
             (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
@@ -2942,8 +2995,8 @@ private constructor(
     }
 
     /**
-     * The conversation that this response belongs to. Input items and output items from this
-     * response are automatically added to this conversation.
+     * The conversation that this response belonged to. Input items and output items from this
+     * response were automatically added to this conversation.
      */
     class Conversation
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -2958,7 +3011,7 @@ private constructor(
         ) : this(id, mutableMapOf())
 
         /**
-         * The unique ID of the conversation.
+         * The unique ID of the conversation that this response was associated with.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -3009,7 +3062,7 @@ private constructor(
                 additionalProperties = conversation.additionalProperties.toMutableMap()
             }
 
-            /** The unique ID of the conversation. */
+            /** The unique ID of the conversation that this response was associated with. */
             fun id(id: String) = id(JsonField.of(id))
 
             /**
@@ -3553,6 +3606,7 @@ private constructor(
             tools == other.tools &&
             topP == other.topP &&
             background == other.background &&
+            completedAt == other.completedAt &&
             conversation == other.conversation &&
             maxOutputTokens == other.maxOutputTokens &&
             maxToolCalls == other.maxToolCalls &&
@@ -3589,6 +3643,7 @@ private constructor(
             tools,
             topP,
             background,
+            completedAt,
             conversation,
             maxOutputTokens,
             maxToolCalls,
@@ -3612,5 +3667,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

@@ -41,7 +41,8 @@ interface ImageService {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint only supports `gpt-image-1` and `dall-e-2`.
+     * endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, and `gpt-image-1-mini`)
+     * and `dall-e-2`.
      */
     fun edit(params: ImageEditParams): ImagesResponse = edit(params, RequestOptions.none())
 
@@ -53,7 +54,8 @@ interface ImageService {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint only supports `gpt-image-1` and `dall-e-2`.
+     * endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, and `gpt-image-1-mini`)
+     * and `dall-e-2`.
      */
     @MustBeClosed
     fun editStreaming(params: ImageEditParams): StreamResponse<ImageEditStreamEvent> =
