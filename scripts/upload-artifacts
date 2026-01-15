@@ -7,6 +7,8 @@ GREEN='\033[32m'
 RED='\033[31m'
 NC='\033[0m' # No Color
 
+MAVEN_REPO_PATH="./build/local-maven-repo"
+
 log_error() {
     local msg="$1"
     local headers="$2"
@@ -24,7 +26,7 @@ upload_file() {
 
     if [ -f "$file_name" ]; then
         echo -e "${GREEN}Processing file: $file_name${NC}"
-        pkg_file_name="mvn${file_name#./build/local-maven-repo}"
+        pkg_file_name="mvn${file_name#"${MAVEN_REPO_PATH}"}"
 
         # Get signed URL for uploading artifact file
         signed_url_response=$(curl -X POST -G "$URL" \
@@ -47,6 +49,7 @@ upload_file() {
             md5|sha1|sha256|sha512) content_type="text/plain" ;;
             module)                 content_type="application/json" ;;
             pom|xml)                content_type="application/xml" ;;
+            html)                   content_type="text/html" ;;
             *)                      content_type="application/octet-stream" ;;
         esac
 
@@ -81,6 +84,41 @@ walk_tree() {
     done
 }
 
+generate_instructions() {
+    cat << EOF > "$MAVEN_REPO_PATH/index.html"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maven Repo</title>
+</head>
+<body>
+    <h1>Stainless SDK Maven Repository</h1>
+    <p>This is the Maven repository for your Stainless Java SDK build.</p>
+
+    <h1>Directions</h1>
+    <p>To use the uploaded Maven repository, add the following to your project's <code>pom.xml</code>:</p>
+    <pre>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
+        &lt;url&gt;https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</pre>
+
+    <p>If you're using Gradle, add the following to your <code>build.gradle</code> file:</p>
+    <pre>repositories {
+    maven {
+        url 'https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn'
+    }
+}</pre>
+</body>
+</html>
+EOF
+    upload_file "${MAVEN_REPO_PATH}/index.html"
+
+    echo "Configure maven or gradle to use the repo located at 'https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn'"
+    echo "For more details, see the directions in https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn/index.html"
+}
+
 cd "$(dirname "$0")/.."
 
 echo "::group::Creating local Maven content"
@@ -88,9 +126,9 @@ echo "::group::Creating local Maven content"
 echo "::endgroup::"
 
 echo "::group::Uploading to pkg.stainless.com"
-walk_tree "./build/local-maven-repo"
+walk_tree "$MAVEN_REPO_PATH"
 echo "::endgroup::"
 
 echo "::group::Generating instructions"
-echo "Configure maven or gradle to use the repo located at 'https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn'"
+generate_instructions
 echo "::endgroup::"
