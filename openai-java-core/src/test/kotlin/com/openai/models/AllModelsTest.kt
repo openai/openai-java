@@ -90,6 +90,9 @@ internal class AllModelsTest {
     }
 
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
         OBJECT(JsonValue.from(mapOf("invalid" to "object"))),
         ARRAY(JsonValue.from(listOf("invalid", "array"))),
     }
