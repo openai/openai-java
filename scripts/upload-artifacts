@@ -56,12 +56,13 @@ upload_file() {
         # Upload file
         upload_response=$(curl -v -X PUT \
             --retry 5 \
+            --retry-all-errors \
             -D "$tmp_headers" \
             -H "Content-Type: $content_type" \
             --data-binary "@${file_name}" "$signed_url" 2>&1)
 
         if ! echo "$upload_response" | grep -q "HTTP/[0-9.]* 200"; then
-            log_error "Failed upload artifact file" "$tmp_headers" "$upload_response"
+            log_error "Failed to upload artifact file" "$tmp_headers" "$upload_response"
         fi
 
         # Insert small throttle to reduce rate limiting risk
@@ -110,6 +111,10 @@ generate_instructions() {
         url 'https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn'
     }
 }</pre>
+
+    <p>Once you've added the repository, you can include dependencies from it as usual. See your
+    <a href="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/README.md">project README</a>
+    for more details.</p>
 </body>
 </html>
 EOF
