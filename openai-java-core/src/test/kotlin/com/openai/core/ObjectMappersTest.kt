@@ -46,11 +46,7 @@ internal class ObjectMappersTest {
             val VALID_CONVERSIONS =
                 listOf(
                     FLOAT to DOUBLE,
-                    FLOAT to INTEGER,
-                    FLOAT to LONG,
                     DOUBLE to FLOAT,
-                    DOUBLE to INTEGER,
-                    DOUBLE to LONG,
                     INTEGER to FLOAT,
                     INTEGER to DOUBLE,
                     INTEGER to LONG,
