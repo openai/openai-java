@@ -9,6 +9,8 @@ import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class ChatCompletionToolChoiceOptionTest {
 
@@ -169,11 +171,19 @@ internal class ChatCompletionToolChoiceOptionTest {
             .isEqualTo(chatCompletionToolChoiceOption)
     }
 
-    @Test
-    fun incompatibleJsonShapeDeserializesToUnknown() {
-        val value = JsonValue.from(listOf("invalid", "array"))
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
         val chatCompletionToolChoiceOption =
-            jsonMapper().convertValue(value, jacksonTypeRef<ChatCompletionToolChoiceOption>())
+            jsonMapper()
+                .convertValue(testCase.value, jacksonTypeRef<ChatCompletionToolChoiceOption>())
 
         val e =
             assertThrows<OpenAIInvalidDataException> { chatCompletionToolChoiceOption.validate() }

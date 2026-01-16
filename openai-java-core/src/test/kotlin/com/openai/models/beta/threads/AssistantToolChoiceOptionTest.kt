@@ -9,6 +9,8 @@ import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class AssistantToolChoiceOptionTest {
 
@@ -72,11 +74,18 @@ internal class AssistantToolChoiceOptionTest {
         assertThat(roundtrippedAssistantToolChoiceOption).isEqualTo(assistantToolChoiceOption)
     }
 
-    @Test
-    fun incompatibleJsonShapeDeserializesToUnknown() {
-        val value = JsonValue.from(listOf("invalid", "array"))
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
         val assistantToolChoiceOption =
-            jsonMapper().convertValue(value, jacksonTypeRef<AssistantToolChoiceOption>())
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<AssistantToolChoiceOption>())
 
         val e = assertThrows<OpenAIInvalidDataException> { assistantToolChoiceOption.validate() }
         assertThat(e).hasMessageStartingWith("Unknown ")
