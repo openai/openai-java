@@ -31,10 +31,6 @@ private constructor(
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
-        if (!isRetryable(request) || maxRetries <= 0) {
-            return httpClient.execute(request, requestOptions)
-        }
-
         var modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
@@ -46,6 +42,10 @@ private constructor(
         while (true) {
             if (shouldSendRetryCount) {
                 modifiedRequest = setRetryCountHeader(modifiedRequest, retries)
+            }
+
+            if (!isRetryable(modifiedRequest)) {
+                return httpClient.execute(modifiedRequest, requestOptions)
             }
 
             val response =
@@ -75,10 +75,6 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
-        if (!isRetryable(request) || maxRetries <= 0) {
-            return httpClient.executeAsync(request, requestOptions)
-        }
-
         val modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
@@ -94,8 +90,12 @@ private constructor(
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            return httpClient
-                .executeAsync(requestWithRetryCount, requestOptions)
+            val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            if (!isRetryable(requestWithRetryCount)) {
+                return responseFuture
+            }
+
+            return responseFuture
                 .handleAsync(
                     fun(
                         response: HttpResponse?,
