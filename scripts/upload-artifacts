@@ -96,8 +96,13 @@ generate_instructions() {
     <h1>Stainless SDK Maven Repository</h1>
     <p>This is the Maven repository for your Stainless Java SDK build.</p>
 
-    <h1>Directions</h1>
-    <p>To use the uploaded Maven repository, add the following to your project's <code>pom.xml</code>:</p>
+    <h2>Project configuration</h2>
+
+    <p>The details depend on whether you're using Maven or Gradle as your build tool.</p>
+
+    <h3>Maven</h3>
+
+    <p>Add the following to your project's <code>pom.xml</code>:</p>
     <pre>&lt;repositories&gt;
     &lt;repository&gt;
         &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
@@ -105,14 +110,63 @@ generate_instructions() {
     &lt;/repository&gt;
 &lt;/repositories&gt;</pre>
 
-    <p>If you're using Gradle, add the following to your <code>build.gradle</code> file:</p>
+    <h3>Gradle</h3>
+    <p>Add the following to your <code>build.gradle</code> file:</p>
     <pre>repositories {
     maven {
-        url 'https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn'
+        url "https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn"
     }
 }</pre>
 
-    <p>Once you've added the repository, you can include dependencies from it as usual. See your
+    <details>
+    <summary><h3 style="display:inline-block">Configuring authentication (if required)<h3></summary>
+
+    <p>Some accounts may require authentication to access the repository. If so, use the
+    following instructions, replacing <code>YOUR_STAINLESS_API_TOKEN</code> with your actual token.</p>
+
+    <h3>Maven with authentication</h3>
+
+    <p>First, ensure you have the following in your Maven <code>settings.xml</code> for repo authentication:</p>
+    <pre>&lt;servers&gt;
+    &lt;server&gt;
+        &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
+        &lt;configuration&gt;
+            &lt;httpHeaders&gt;
+                &lt;property&gt;
+                    &lt;name&gt;Authorization&lt;/name&gt;
+                    &lt;value&gt;Bearer YOUR_STAINLESS_API_TOKEN&lt;/value&gt;
+                &lt;/property&gt;
+            &lt;/httpHeaders&gt;
+        &lt;/configuration&gt;
+    &lt;/server&gt;
+&lt;/servers&gt;</pre>
+
+    <p>Then, add the following to your project's <code>pom.xml</code>:</p>
+    <pre>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
+        &lt;url&gt;https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</pre>
+
+    <h3>Gradle with authentication</h3>
+    <p>Add the following to your <code>build.gradle</code> file:</p>
+    <pre>repositories {
+    maven {
+        url "https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn"
+        credentials(HttpHeaderCredentials) {
+            name = "Authorization"
+            value = "Bearer YOUR_STAINLESS_API_TOKEN"
+        }
+        authentication {
+            header(HttpHeaderAuthentication)
+        }
+    }
+}</pre>
+    </details>
+
+    <h2>Using the repository</h2>
+    <p>Once you've configured the repository, you can include dependencies from it as usual. See your
     <a href="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/README.md">project README</a>
     for more details.</p>
 </body>
