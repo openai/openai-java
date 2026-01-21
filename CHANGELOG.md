@@ -1,5 +1,35 @@
 # Changelog
 
+## 4.16.0 (2026-01-21)
+
+Full Changelog: [v4.15.0...v4.16.0](https://github.com/openai/openai-java/compare/v4.15.0...v4.16.0)
+
+### Features
+
+* **api:** api update ([e5203e2](https://github.com/openai/openai-java/commit/e5203e29d3a2c8e74c976ecf3e1db93102953870))
+* **client:** send `X-Stainless-Kotlin-Version` header ([d77a171](https://github.com/openai/openai-java/commit/d77a1713511e9b30abd2df66a3ecc95ad811e276))
+
+
+### Bug Fixes
+
+* **client:** disallow coercion from float to int ([4332495](https://github.com/openai/openai-java/commit/4332495f9d237a854ef0fc64bfa523a342eb7d98))
+* **client:** fully respect max retries ([b2ac5ce](https://github.com/openai/openai-java/commit/b2ac5cecb0819e6e5165f727cc76551654c0d680))
+* **client:** send retry count header for max retries 0 ([b2ac5ce](https://github.com/openai/openai-java/commit/b2ac5cecb0819e6e5165f727cc76551654c0d680))
+* date time deserialization leniency ([35a4662](https://github.com/openai/openai-java/commit/35a4662ed2657f9a0b22487d1c5c4da8f27f0f96))
+* make ResponseAccumulator forwards compatible with new event types ([d9dc902](https://github.com/openai/openai-java/commit/d9dc902beb83a9b3ec8e6d6fdc6ec59be580ec39))
+
+
+### Chores
+
+* **ci:** upgrade `actions/setup-java` ([d739c6a](https://github.com/openai/openai-java/commit/d739c6ab75bc155fdb44f4a49be8cb61a2807888))
+* **internal:** clean up maven repo artifact script and add html documentation to repo root ([763df3f](https://github.com/openai/openai-java/commit/763df3fcd6c64ad48f8b1c2391fa22010ebfd9ec))
+* **internal:** depend on packages directly in example ([b2ac5ce](https://github.com/openai/openai-java/commit/b2ac5cecb0819e6e5165f727cc76551654c0d680))
+* **internal:** improve maven repo docs ([005acfc](https://github.com/openai/openai-java/commit/005acfc499a7c2d26926ec95a3f9b2a7ad7cff47))
+* **internal:** support uploading Maven repo artifacts to stainless package server ([24dd88f](https://github.com/openai/openai-java/commit/24dd88f2fba4594b1c317b9840ca24e5aa6379bb))
+* **internal:** update `actions/checkout` version ([64b074f](https://github.com/openai/openai-java/commit/64b074fe39e628ba11b4d36e182b4156e656566f))
+* **internal:** update maven repo doc to include authentication ([c00b703](https://github.com/openai/openai-java/commit/c00b70307b9bdd6a9f94cf63551a15352b58352e))
+* test on Jackson 2.14.0 to avoid encountering FasterXML/jackson-databind[#3240](https://github.com/openai/openai-java/issues/3240) in tests ([35a4662](https://github.com/openai/openai-java/commit/35a4662ed2657f9a0b22487d1c5c4da8f27f0f96))
+
 ## 4.15.0 (2026-01-09)
 
 Full Changelog: [v4.14.0...v4.15.0](https://github.com/openai/openai-java/compare/v4.14.0...v4.15.0)
