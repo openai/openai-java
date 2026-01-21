@@ -12,6 +12,8 @@ import com.openai.models.responses.ToolChoiceOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class RealtimeToolChoiceConfigTest {
 
@@ -99,11 +101,18 @@ internal class RealtimeToolChoiceConfigTest {
         assertThat(roundtrippedRealtimeToolChoiceConfig).isEqualTo(realtimeToolChoiceConfig)
     }
 
-    @Test
-    fun incompatibleJsonShapeDeserializesToUnknown() {
-        val value = JsonValue.from(listOf("invalid", "array"))
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
         val realtimeToolChoiceConfig =
-            jsonMapper().convertValue(value, jacksonTypeRef<RealtimeToolChoiceConfig>())
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<RealtimeToolChoiceConfig>())
 
         val e = assertThrows<OpenAIInvalidDataException> { realtimeToolChoiceConfig.validate() }
         assertThat(e).hasMessageStartingWith("Unknown ")

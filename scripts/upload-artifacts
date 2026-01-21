@@ -1,0 +1,193 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ANSI Color Codes
+GREEN='\033[32m'
+RED='\033[31m'
+NC='\033[0m' # No Color
+
+MAVEN_REPO_PATH="./build/local-maven-repo"
+
+log_error() {
+    local msg="$1"
+    local headers="$2"
+    local body="$3"
+    echo -e "${RED}${msg}${NC}"
+    [[ -f "$headers" ]] && echo -e "${RED}Headers:$(cat "$headers")${NC}"
+    echo -e "${RED}Body: ${body}${NC}"
+    exit 1
+}
+
+upload_file() {
+    local file_name="$1"
+    local tmp_headers
+    tmp_headers=$(mktemp)
+
+    if [ -f "$file_name" ]; then
+        echo -e "${GREEN}Processing file: $file_name${NC}"
+        pkg_file_name="mvn${file_name#"${MAVEN_REPO_PATH}"}"
+
+        # Get signed URL for uploading artifact file
+        signed_url_response=$(curl -X POST -G "$URL" \
+            -sS --retry 5 \
+            -D "$tmp_headers" \
+            --data-urlencode "filename=$pkg_file_name" \
+            -H "Authorization: Bearer $AUTH" \
+            -H "Content-Type: application/json")
+
+        # Validate JSON and extract URL
+        if ! signed_url=$(echo "$signed_url_response" | jq -e -r '.url' 2>/dev/null) || [[ "$signed_url" == "null" ]]; then
+            log_error "Failed to get valid signed URL" "$tmp_headers" "$signed_url_response"
+        fi
+
+        # Set content-type based on file extension
+        local extension="${file_name##*.}"
+        local content_type
+        case "$extension" in
+            jar)                    content_type="application/java-archive" ;;
+            md5|sha1|sha256|sha512) content_type="text/plain" ;;
+            module)                 content_type="application/json" ;;
+            pom|xml)                content_type="application/xml" ;;
+            html)                   content_type="text/html" ;;
+            *)                      content_type="application/octet-stream" ;;
+        esac
+
+        # Upload file
+        upload_response=$(curl -v -X PUT \
+            --retry 5 \
+            --retry-all-errors \
+            -D "$tmp_headers" \
+            -H "Content-Type: $content_type" \
+            --data-binary "@${file_name}" "$signed_url" 2>&1)
+
+        if ! echo "$upload_response" | grep -q "HTTP/[0-9.]* 200"; then
+            log_error "Failed to upload artifact file" "$tmp_headers" "$upload_response"
+        fi
+
+        # Insert small throttle to reduce rate limiting risk
+        sleep 0.1
+    fi
+}
+
+walk_tree() {
+    local current_dir="$1"
+
+    for entry in "$current_dir"/*; do
+        # Check that entry is valid
+        [ -e "$entry" ] || [ -h "$entry" ] || continue
+
+        if [ -d "$entry" ]; then
+            walk_tree "$entry"
+        else
+            upload_file "$entry"
+        fi
+    done
+}
+
+generate_instructions() {
+    cat << EOF > "$MAVEN_REPO_PATH/index.html"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maven Repo</title>
+</head>
+<body>
+    <h1>Stainless SDK Maven Repository</h1>
+    <p>This is the Maven repository for your Stainless Java SDK build.</p>
+
+    <h2>Project configuration</h2>
+
+    <p>The details depend on whether you're using Maven or Gradle as your build tool.</p>
+
+    <h3>Maven</h3>
+
+    <p>Add the following to your project's <code>pom.xml</code>:</p>
+    <pre>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
+        &lt;url&gt;https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</pre>
+
+    <h3>Gradle</h3>
+    <p>Add the following to your <code>build.gradle</code> file:</p>
+    <pre>repositories {
+    maven {
+        url "https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn"
+    }
+}</pre>
+
+    <details>
+    <summary><h3 style="display:inline-block">Configuring authentication (if required)<h3></summary>
+
+    <p>Some accounts may require authentication to access the repository. If so, use the
+    following instructions, replacing <code>YOUR_STAINLESS_API_TOKEN</code> with your actual token.</p>
+
+    <h3>Maven with authentication</h3>
+
+    <p>First, ensure you have the following in your Maven <code>settings.xml</code> for repo authentication:</p>
+    <pre>&lt;servers&gt;
+    &lt;server&gt;
+        &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
+        &lt;configuration&gt;
+            &lt;httpHeaders&gt;
+                &lt;property&gt;
+                    &lt;name&gt;Authorization&lt;/name&gt;
+                    &lt;value&gt;Bearer YOUR_STAINLESS_API_TOKEN&lt;/value&gt;
+                &lt;/property&gt;
+            &lt;/httpHeaders&gt;
+        &lt;/configuration&gt;
+    &lt;/server&gt;
+&lt;/servers&gt;</pre>
+
+    <p>Then, add the following to your project's <code>pom.xml</code>:</p>
+    <pre>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;stainless-sdk-repo&lt;/id&gt;
+        &lt;url&gt;https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</pre>
+
+    <h3>Gradle with authentication</h3>
+    <p>Add the following to your <code>build.gradle</code> file:</p>
+    <pre>repositories {
+    maven {
+        url "https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn"
+        credentials(HttpHeaderCredentials) {
+            name = "Authorization"
+            value = "Bearer YOUR_STAINLESS_API_TOKEN"
+        }
+        authentication {
+            header(HttpHeaderAuthentication)
+        }
+    }
+}</pre>
+    </details>
+
+    <h2>Using the repository</h2>
+    <p>Once you've configured the repository, you can include dependencies from it as usual. See your
+    <a href="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/README.md">project README</a>
+    for more details.</p>
+</body>
+</html>
+EOF
+    upload_file "${MAVEN_REPO_PATH}/index.html"
+
+    echo "Configure maven or gradle to use the repo located at 'https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn'"
+    echo "For more details, see the directions in https://pkg.stainless.com/s/${PROJECT}/${SHA}/mvn/index.html"
+}
+
+cd "$(dirname "$0")/.."
+
+echo "::group::Creating local Maven content"
+./gradlew publishMavenPublicationToLocalFileSystemRepository -PpublishLocal
+echo "::endgroup::"
+
+echo "::group::Uploading to pkg.stainless.com"
+walk_tree "$MAVEN_REPO_PATH"
+echo "::endgroup::"
+
+echo "::group::Generating instructions"
+generate_instructions
+echo "::endgroup::"

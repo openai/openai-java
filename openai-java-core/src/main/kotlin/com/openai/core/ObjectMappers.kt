@@ -24,6 +24,7 @@ import java.io.InputStream
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
@@ -36,7 +37,7 @@ fun jsonMapper(): JsonMapper =
         .addModule(
             SimpleModule()
                 .addSerializer(InputStreamSerializer)
-                .addDeserializer(LocalDateTime::class.java, LenientLocalDateTimeDeserializer())
+                .addDeserializer(OffsetDateTime::class.java, LenientOffsetDateTimeDeserializer())
         )
         .withCoercionConfig(LogicalType.Boolean) {
             it.setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
@@ -47,6 +48,7 @@ fun jsonMapper(): JsonMapper =
         }
         .withCoercionConfig(LogicalType.Integer) {
             it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
@@ -60,6 +62,12 @@ fun jsonMapper(): JsonMapper =
         .withCoercionConfig(LogicalType.Textual) {
             it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.DateTime) {
+            it.setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
@@ -124,10 +132,10 @@ private object InputStreamSerializer : BaseSerializer<InputStream>(InputStream::
 }
 
 /**
- * A deserializer that can deserialize [LocalDateTime] from datetimes, dates, and zoned datetimes.
+ * A deserializer that can deserialize [OffsetDateTime] from datetimes, dates, and zoned datetimes.
  */
-private class LenientLocalDateTimeDeserializer :
-    StdDeserializer<LocalDateTime>(LocalDateTime::class.java) {
+private class LenientOffsetDateTimeDeserializer :
+    StdDeserializer<OffsetDateTime>(OffsetDateTime::class.java) {
 
     companion object {
 
@@ -141,7 +149,7 @@ private class LenientLocalDateTimeDeserializer :
 
     override fun logicalType(): LogicalType = LogicalType.DateTime
 
-    override fun deserialize(p: JsonParser, context: DeserializationContext?): LocalDateTime {
+    override fun deserialize(p: JsonParser, context: DeserializationContext): OffsetDateTime {
         val exceptions = mutableListOf<Exception>()
 
         for (formatter in DATE_TIME_FORMATTERS) {
@@ -149,18 +157,20 @@ private class LenientLocalDateTimeDeserializer :
                 val temporal = formatter.parse(p.text)
 
                 return when {
-                    !temporal.isSupported(ChronoField.HOUR_OF_DAY) ->
-                        LocalDate.from(temporal).atStartOfDay()
-                    !temporal.isSupported(ChronoField.OFFSET_SECONDS) ->
-                        LocalDateTime.from(temporal)
-                    else -> ZonedDateTime.from(temporal).toLocalDateTime()
-                }
+                        !temporal.isSupported(ChronoField.HOUR_OF_DAY) ->
+                            LocalDate.from(temporal).atStartOfDay()
+                        !temporal.isSupported(ChronoField.OFFSET_SECONDS) ->
+                            LocalDateTime.from(temporal)
+                        else -> ZonedDateTime.from(temporal).toLocalDateTime()
+                    }
+                    .atZone(context.timeZone.toZoneId())
+                    .toOffsetDateTime()
             } catch (e: DateTimeException) {
                 exceptions.add(e)
             }
         }
 
-        throw JsonParseException(p, "Cannot parse `LocalDateTime` from value: ${p.text}").apply {
+        throw JsonParseException(p, "Cannot parse `OffsetDateTime` from value: ${p.text}").apply {
             exceptions.forEach { addSuppressed(it) }
         }
     }

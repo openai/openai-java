@@ -1,5 +1,6 @@
 package com.openai.helpers
 
+import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseAudioDeltaEvent
@@ -321,6 +322,9 @@ class ResponseAccumulator private constructor() {
                 override fun visitOutputTextAnnotationAdded(
                     outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
                 ) {}
+
+                // Ignore unknown variants for forwards compatibility.
+                override fun unknown(json: JsonValue?) {}
             }
         )
 

@@ -12,6 +12,8 @@ import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class AssistantResponseFormatOptionTest {
 
@@ -160,11 +162,19 @@ internal class AssistantResponseFormatOptionTest {
             .isEqualTo(assistantResponseFormatOption)
     }
 
-    @Test
-    fun incompatibleJsonShapeDeserializesToUnknown() {
-        val value = JsonValue.from(listOf("invalid", "array"))
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
         val assistantResponseFormatOption =
-            jsonMapper().convertValue(value, jacksonTypeRef<AssistantResponseFormatOption>())
+            jsonMapper()
+                .convertValue(testCase.value, jacksonTypeRef<AssistantResponseFormatOption>())
 
         val e =
             assertThrows<OpenAIInvalidDataException> { assistantResponseFormatOption.validate() }

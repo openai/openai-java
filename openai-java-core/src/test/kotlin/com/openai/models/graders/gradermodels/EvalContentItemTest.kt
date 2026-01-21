@@ -11,6 +11,8 @@ import com.openai.models.responses.ResponseInputText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class EvalContentItemTest {
 
@@ -173,10 +175,18 @@ internal class EvalContentItemTest {
         assertThat(roundtrippedEvalContentItem).isEqualTo(evalContentItem)
     }
 
-    @Test
-    fun incompatibleJsonShapeDeserializesToUnknown() {
-        val value = JsonValue.from(listOf("invalid", "array"))
-        val evalContentItem = jsonMapper().convertValue(value, jacksonTypeRef<EvalContentItem>())
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val evalContentItem =
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<EvalContentItem>())
 
         val e = assertThrows<OpenAIInvalidDataException> { evalContentItem.validate() }
         assertThat(e).hasMessageStartingWith("Unknown ")
