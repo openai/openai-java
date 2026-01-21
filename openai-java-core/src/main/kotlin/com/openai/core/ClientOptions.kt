@@ -492,6 +492,7 @@ private constructor(
             headers.put("X-Stainless-Package-Version", getPackageVersion())
             headers.put("X-Stainless-Runtime", "JRE")
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
+            headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
             organization?.let { headers.put("OpenAI-Organization", it) }
             project?.let { headers.put("OpenAI-Project", it) }
             apiKey.let {
