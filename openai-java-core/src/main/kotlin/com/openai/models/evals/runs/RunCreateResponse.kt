@@ -2721,6 +2721,12 @@ private constructor(
                     /**
                      * Metadata filter for the responses. This is a query parameter used to select
                      * responses.
+                     *
+                     * This arbitrary value can be deserialized into a custom type using the
+                     * `convert` method:
+                     * ```java
+                     * MyClass myObject = innerResponses.metadata().convert(MyClass.class);
+                     * ```
                      */
                     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 

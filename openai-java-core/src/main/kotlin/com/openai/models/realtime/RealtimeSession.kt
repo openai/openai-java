@@ -2540,6 +2540,12 @@ private constructor(
             /**
              * The arbitrary metadata to attach to this trace to enable filtering in the traces
              * dashboard.
+             *
+             * This arbitrary value can be deserialized into a custom type using the `convert`
+             * method:
+             * ```java
+             * MyClass myObject = tracingConfiguration.metadata().convert(MyClass.class);
+             * ```
              */
             @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 

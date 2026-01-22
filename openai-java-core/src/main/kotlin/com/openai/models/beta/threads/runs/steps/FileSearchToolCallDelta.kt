@@ -34,7 +34,14 @@ private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
     ) : this(fileSearch, index, type, id, mutableMapOf())
 
-    /** For now, this is always going to be an empty object. */
+    /**
+     * For now, this is always going to be an empty object.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = fileSearchToolCallDelta.fileSearch().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("file_search") @ExcludeMissing fun _fileSearch(): JsonValue = fileSearch
 
     /**

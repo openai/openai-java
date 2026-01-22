@@ -57,7 +57,14 @@ private constructor(
         mutableMapOf(),
     )
 
-    /** The annotation object being added. (See annotation schema for details.) */
+    /**
+     * The annotation object being added. (See annotation schema for details.)
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = responseOutputTextAnnotationAddedEvent.annotation().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("annotation") @ExcludeMissing fun _annotation(): JsonValue = annotation
 
     /**
