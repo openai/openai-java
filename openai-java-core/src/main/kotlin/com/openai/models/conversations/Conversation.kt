@@ -54,6 +54,11 @@ private constructor(
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = conversation.metadata().convert(MyClass.class);
+     * ```
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 

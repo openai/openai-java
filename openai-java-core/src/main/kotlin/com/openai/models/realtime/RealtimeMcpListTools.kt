@@ -306,7 +306,14 @@ private constructor(
             description: JsonField<String> = JsonMissing.of(),
         ) : this(inputSchema, name, annotations, description, mutableMapOf())
 
-        /** The JSON schema describing the tool's input. */
+        /**
+         * The JSON schema describing the tool's input.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = tool.inputSchema().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("input_schema") @ExcludeMissing fun _inputSchema(): JsonValue = inputSchema
 
         /**
@@ -317,7 +324,14 @@ private constructor(
          */
         fun name(): String = name.getRequired("name")
 
-        /** Additional annotations about the tool. */
+        /**
+         * Additional annotations about the tool.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = tool.annotations().convert(MyClass.class);
+         * ```
+         */
         @JsonProperty("annotations") @ExcludeMissing fun _annotations(): JsonValue = annotations
 
         /**

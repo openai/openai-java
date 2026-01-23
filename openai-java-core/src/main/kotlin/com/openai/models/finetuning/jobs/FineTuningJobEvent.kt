@@ -88,7 +88,14 @@ private constructor(
      */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The data associated with the event. */
+    /**
+     * The data associated with the event.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = fineTuningJobEvent.data().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
 
     /**

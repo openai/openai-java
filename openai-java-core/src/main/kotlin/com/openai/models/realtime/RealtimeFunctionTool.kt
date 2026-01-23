@@ -54,7 +54,14 @@ private constructor(
      */
     fun name(): Optional<String> = name.getOptional("name")
 
-    /** Parameters of the function in JSON Schema. */
+    /**
+     * Parameters of the function in JSON Schema.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = realtimeFunctionTool.parameters().convert(MyClass.class);
+     * ```
+     */
     @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonValue = parameters
 
     /**

@@ -64,6 +64,11 @@ private constructor(
     /**
      * The dataset item provided to the grader. This will be used to populate the `item` namespace.
      * See [the guide](https://platform.openai.com/docs/guides/graders) for more details.
+     *
+     * This arbitrary value can be deserialized into a custom type using the `convert` method:
+     * ```java
+     * MyClass myObject = graderRunParams.item().convert(MyClass.class);
+     * ```
      */
     fun _item(): JsonValue = body._item()
 
@@ -361,6 +366,11 @@ private constructor(
          * The dataset item provided to the grader. This will be used to populate the `item`
          * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
          * details.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = body.item().convert(MyClass.class);
+         * ```
          */
         @JsonProperty("item") @ExcludeMissing fun _item(): JsonValue = item
 

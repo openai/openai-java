@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.16.1 (2026-01-23)
+
+Full Changelog: [v4.16.0...v4.16.1](https://github.com/openai/openai-java/compare/v4.16.0...v4.16.1)
+
+### Bug Fixes
+
+* **client:** preserve time zone in lenient date-time parsing ([2dcc893](https://github.com/openai/openai-java/commit/2dcc893a155d1170f361ee7a64f79f75f88a10a1))
+
+
+### Chores
+
+* **internal:** correct cache invalidation for `SKIP_MOCK_TESTS` ([4f7b317](https://github.com/openai/openai-java/commit/4f7b317dcfb66644e58be5d056e058e8c8cb866a))
+
+
+### Documentation
+
+* add comment for arbitrary value fields ([2d87940](https://github.com/openai/openai-java/commit/2d87940031547ea6fe48a75f266f560297e210b9))
+
 ## 4.16.0 (2026-01-21)
 
 Full Changelog: [v4.15.0...v4.16.0](https://github.com/openai/openai-java/compare/v4.15.0...v4.16.0)
