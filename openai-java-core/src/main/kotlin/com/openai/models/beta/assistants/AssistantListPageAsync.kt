@@ -13,6 +13,7 @@ import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
 /** @see AssistantServiceAsync.list */
+@Deprecated("deprecated")
 class AssistantListPageAsync
 private constructor(
     private val service: AssistantServiceAsync,

@@ -40,6 +40,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Create an assistant with a model and instructions. */
+@Deprecated("deprecated")
 class AssistantCreateParams
 private constructor(
     private val body: Body,

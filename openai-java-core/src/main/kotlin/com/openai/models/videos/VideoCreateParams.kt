@@ -9,6 +9,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -37,6 +38,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun prompt(): String = body.prompt()
+
+    /**
+     * Character IDs to include in the generation.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun characterIds(): Optional<List<String>> = body.characterIds()
 
     /**
      * Optional image reference that guides generation.
@@ -77,6 +86,14 @@ private constructor(
      * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _prompt(): MultipartField<String> = body._prompt()
+
+    /**
+     * Returns the raw multipart value of [characterIds].
+     *
+     * Unlike [characterIds], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _characterIds(): MultipartField<List<String>> = body._characterIds()
 
     /**
      * Returns the raw multipart value of [inputReference].
@@ -150,10 +167,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [prompt]
+         * - [characterIds]
          * - [inputReference]
          * - [model]
          * - [seconds]
-         * - [size]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -168,6 +185,27 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
+
+        /** Character IDs to include in the generation. */
+        fun characterIds(characterIds: List<String>) = apply { body.characterIds(characterIds) }
+
+        /**
+         * Sets [Builder.characterIds] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.characterIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun characterIds(characterIds: MultipartField<List<String>>) = apply {
+            body.characterIds(characterIds)
+        }
+
+        /**
+         * Adds a single [String] to [characterIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addCharacterId(characterId: String) = apply { body.addCharacterId(characterId) }
 
         /** Optional image reference that guides generation. */
         fun inputReference(inputReference: InputStream) = apply {
@@ -382,6 +420,7 @@ private constructor(
     fun _body(): Map<String, MultipartField<*>> =
         (mapOf(
                 "prompt" to _prompt(),
+                "character_ids" to _characterIds(),
                 "input_reference" to _inputReference(),
                 "model" to _model(),
                 "seconds" to _seconds(),
@@ -397,6 +436,7 @@ private constructor(
     class Body
     private constructor(
         private val prompt: MultipartField<String>,
+        private val characterIds: MultipartField<List<String>>,
         private val inputReference: MultipartField<InputStream>,
         private val model: MultipartField<VideoModel>,
         private val seconds: MultipartField<VideoSeconds>,
@@ -411,6 +451,14 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun prompt(): String = prompt.value.getRequired("prompt")
+
+        /**
+         * Character IDs to include in the generation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun characterIds(): Optional<List<String>> = characterIds.value.getOptional("character_ids")
 
         /**
          * Optional image reference that guides generation.
@@ -453,6 +501,16 @@ private constructor(
          * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
          */
         @JsonProperty("prompt") @ExcludeMissing fun _prompt(): MultipartField<String> = prompt
+
+        /**
+         * Returns the raw multipart value of [characterIds].
+         *
+         * Unlike [characterIds], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("character_ids")
+        @ExcludeMissing
+        fun _characterIds(): MultipartField<List<String>> = characterIds
 
         /**
          * Returns the raw multipart value of [inputReference].
@@ -517,6 +575,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var prompt: MultipartField<String>? = null
+            private var characterIds: MultipartField<MutableList<String>>? = null
             private var inputReference: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<VideoModel> = MultipartField.of(null)
             private var seconds: MultipartField<VideoSeconds> = MultipartField.of(null)
@@ -526,6 +585,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 prompt = body.prompt
+                characterIds = body.characterIds.map { it.toMutableList() }
                 inputReference = body.inputReference
                 model = body.model
                 seconds = body.seconds
@@ -544,6 +604,33 @@ private constructor(
              * supported value.
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
+
+            /** Character IDs to include in the generation. */
+            fun characterIds(characterIds: List<String>) =
+                characterIds(MultipartField.of(characterIds))
+
+            /**
+             * Sets [Builder.characterIds] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.characterIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun characterIds(characterIds: MultipartField<List<String>>) = apply {
+                this.characterIds = characterIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [characterIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addCharacterId(characterId: String) = apply {
+                characterIds =
+                    (characterIds ?: MultipartField.of(mutableListOf())).also {
+                        checkKnown("characterIds", it).add(characterId)
+                    }
+            }
 
             /** Optional image reference that guides generation. */
             fun inputReference(inputReference: InputStream) =
@@ -658,6 +745,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("prompt", prompt),
+                    (characterIds ?: MultipartField.of(null)).map { it.toImmutable() },
                     inputReference,
                     model,
                     seconds,
@@ -674,6 +762,7 @@ private constructor(
             }
 
             prompt()
+            characterIds()
             inputReference()
             model()
             seconds().ifPresent { it.validate() }
@@ -696,6 +785,7 @@ private constructor(
 
             return other is Body &&
                 prompt == other.prompt &&
+                characterIds == other.characterIds &&
                 inputReference == other.inputReference &&
                 model == other.model &&
                 seconds == other.seconds &&
@@ -704,13 +794,21 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(prompt, inputReference, model, seconds, size, additionalProperties)
+            Objects.hash(
+                prompt,
+                characterIds,
+                inputReference,
+                model,
+                seconds,
+                size,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{prompt=$prompt, inputReference=$inputReference, model=$model, seconds=$seconds, size=$size, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, characterIds=$characterIds, inputReference=$inputReference, model=$model, seconds=$seconds, size=$size, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

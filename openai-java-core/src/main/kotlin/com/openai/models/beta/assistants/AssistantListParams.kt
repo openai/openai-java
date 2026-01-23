@@ -14,6 +14,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Returns a list of assistants. */
+@Deprecated("deprecated")
 class AssistantListParams
 private constructor(
     private val after: String?,
