@@ -25,6 +25,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Represents an `assistant` that can call the model and use tools. */
+@Deprecated("deprecated")
 class Assistant
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

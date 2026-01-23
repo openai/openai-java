@@ -29,6 +29,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Modifies an assistant. */
+@Deprecated("deprecated")
 class AssistantUpdateParams
 private constructor(
     private val assistantId: String?,
