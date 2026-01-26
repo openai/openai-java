@@ -3090,7 +3090,6 @@ private constructor(
             /** A JSON string of the output of the function tool call. */
             fun string(): Optional<String> = Optional.ofNullable(string)
 
-            /** An array of content outputs (text, image, file) for the function tool call. */
             fun responseFunctionCallOutputItemList():
                 Optional<List<ResponseFunctionCallOutputItem>> =
                 Optional.ofNullable(responseFunctionCallOutputItemList)
@@ -3103,7 +3102,6 @@ private constructor(
             /** A JSON string of the output of the function tool call. */
             fun asString(): String = string.getOrThrow("string")
 
-            /** An array of content outputs (text, image, file) for the function tool call. */
             fun asResponseFunctionCallOutputItemList(): List<ResponseFunctionCallOutputItem> =
                 responseFunctionCallOutputItemList.getOrThrow("responseFunctionCallOutputItemList")
 
@@ -3194,7 +3192,6 @@ private constructor(
                 /** A JSON string of the output of the function tool call. */
                 @JvmStatic fun ofString(string: String) = Output(string = string)
 
-                /** An array of content outputs (text, image, file) for the function tool call. */
                 @JvmStatic
                 fun ofResponseFunctionCallOutputItemList(
                     responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
@@ -3213,7 +3210,6 @@ private constructor(
                 /** A JSON string of the output of the function tool call. */
                 fun visitString(string: String): T
 
-                /** An array of content outputs (text, image, file) for the function tool call. */
                 fun visitResponseFunctionCallOutputItemList(
                     responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
                 ): T
@@ -3259,7 +3255,7 @@ private constructor(
                             .toList()
                     return when (bestMatches.size) {
                         // This can happen if what we're deserializing is completely incompatible
-                        // with all the possible variants (e.g. deserializing from boolean).
+                        // with all the possible variants (e.g. deserializing from object).
                         0 -> Output(_json = json)
                         1 -> bestMatches.single()
                         // If there's more than one match with the highest validity, then use the
@@ -8550,15 +8546,7 @@ private constructor(
                 description: JsonField<String> = JsonMissing.of(),
             ) : this(inputSchema, name, annotations, description, mutableMapOf())
 
-            /**
-             * The JSON schema describing the tool's input.
-             *
-             * This arbitrary value can be deserialized into a custom type using the `convert`
-             * method:
-             * ```java
-             * MyClass myObject = tool.inputSchema().convert(MyClass.class);
-             * ```
-             */
+            /** The JSON schema describing the tool's input. */
             @JsonProperty("input_schema")
             @ExcludeMissing
             fun _inputSchema(): JsonValue = inputSchema
@@ -8572,15 +8560,7 @@ private constructor(
              */
             fun name(): String = name.getRequired("name")
 
-            /**
-             * Additional annotations about the tool.
-             *
-             * This arbitrary value can be deserialized into a custom type using the `convert`
-             * method:
-             * ```java
-             * MyClass myObject = tool.annotations().convert(MyClass.class);
-             * ```
-             */
+            /** Additional annotations about the tool. */
             @JsonProperty("annotations") @ExcludeMissing fun _annotations(): JsonValue = annotations
 
             /**
