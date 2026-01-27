@@ -13,7 +13,6 @@ internal class VideoCreateParamsTest {
     fun create() {
         VideoCreateParams.builder()
             .prompt("x")
-            .addCharacterId("char_123")
             .inputReference("some content".byteInputStream())
             .model(VideoModel.of("string"))
             .seconds(VideoSeconds._4)
@@ -26,7 +25,6 @@ internal class VideoCreateParamsTest {
         val params =
             VideoCreateParams.builder()
                 .prompt("x")
-                .addCharacterId("char_123")
                 .inputReference("some content".byteInputStream())
                 .model(VideoModel.of("string"))
                 .seconds(VideoSeconds._4)
@@ -46,7 +44,6 @@ internal class VideoCreateParamsTest {
             .isEqualTo(
                 mapOf(
                         "prompt" to MultipartField.of("x"),
-                        "character_ids" to MultipartField.of(listOf("char_123")),
                         "input_reference" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(VideoModel.of("string")),
                         "seconds" to MultipartField.of(VideoSeconds._4),

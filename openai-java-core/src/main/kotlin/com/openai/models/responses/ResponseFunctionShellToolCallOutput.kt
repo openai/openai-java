@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -37,6 +38,7 @@ private constructor(
     private val callId: JsonField<String>,
     private val maxOutputLength: JsonField<Long>,
     private val output: JsonField<List<Output>>,
+    private val status: JsonField<Status>,
     private val type: JsonValue,
     private val createdBy: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -50,9 +52,10 @@ private constructor(
         @ExcludeMissing
         maxOutputLength: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("output") @ExcludeMissing output: JsonField<List<Output>> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
-    ) : this(id, callId, maxOutputLength, output, type, createdBy, mutableMapOf())
+    ) : this(id, callId, maxOutputLength, output, status, type, createdBy, mutableMapOf())
 
     /**
      * The unique ID of the shell call output. Populated when this item is returned via API.
@@ -86,6 +89,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun output(): List<Output> = output.getRequired("output")
+
+    /**
+     * The status of the shell call output. One of `in_progress`, `completed`, or `incomplete`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun status(): Status = status.getRequired("status")
 
     /**
      * The type of the shell call output. Always `shell_call_output`.
@@ -139,6 +150,13 @@ private constructor(
     @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<List<Output>> = output
 
     /**
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
      * Returns the raw JSON value of [createdBy].
      *
      * Unlike [createdBy], this method doesn't throw if the JSON field has an unexpected type.
@@ -169,6 +187,7 @@ private constructor(
          * .callId()
          * .maxOutputLength()
          * .output()
+         * .status()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -181,6 +200,7 @@ private constructor(
         private var callId: JsonField<String>? = null
         private var maxOutputLength: JsonField<Long>? = null
         private var output: JsonField<MutableList<Output>>? = null
+        private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("shell_call_output")
         private var createdBy: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -193,6 +213,7 @@ private constructor(
             callId = responseFunctionShellToolCallOutput.callId
             maxOutputLength = responseFunctionShellToolCallOutput.maxOutputLength
             output = responseFunctionShellToolCallOutput.output.map { it.toMutableList() }
+            status = responseFunctionShellToolCallOutput.status
             type = responseFunctionShellToolCallOutput.type
             createdBy = responseFunctionShellToolCallOutput.createdBy
             additionalProperties =
@@ -277,6 +298,19 @@ private constructor(
         }
 
         /**
+         * The status of the shell call output. One of `in_progress`, `completed`, or `incomplete`.
+         */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
@@ -332,6 +366,7 @@ private constructor(
          * .callId()
          * .maxOutputLength()
          * .output()
+         * .status()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -342,6 +377,7 @@ private constructor(
                 checkRequired("callId", callId),
                 checkRequired("maxOutputLength", maxOutputLength),
                 checkRequired("output", output).map { it.toImmutable() },
+                checkRequired("status", status),
                 type,
                 createdBy,
                 additionalProperties.toMutableMap(),
@@ -359,6 +395,7 @@ private constructor(
         callId()
         maxOutputLength()
         output().forEach { it.validate() }
+        status().validate()
         _type().let {
             if (it != JsonValue.from("shell_call_output")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -387,6 +424,7 @@ private constructor(
             (if (callId.asKnown().isPresent) 1 else 0) +
             (if (maxOutputLength.asKnown().isPresent) 1 else 0) +
             (output.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("shell_call_output")) 1 else 0 } +
             (if (createdBy.asKnown().isPresent) 1 else 0)
 
@@ -1087,6 +1125,138 @@ private constructor(
             "Output{outcome=$outcome, stderr=$stderr, stdout=$stdout, createdBy=$createdBy, additionalProperties=$additionalProperties}"
     }
 
+    /** The status of the shell call output. One of `in_progress`, `completed`, or `incomplete`. */
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_PROGRESS = of("in_progress")
+
+            @JvmField val COMPLETED = of("completed")
+
+            @JvmField val INCOMPLETE = of("incomplete")
+
+            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+        }
+
+        /** An enum containing [Status]'s known values. */
+        enum class Known {
+            IN_PROGRESS,
+            COMPLETED,
+            INCOMPLETE,
+        }
+
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            IN_PROGRESS,
+            COMPLETED,
+            INCOMPLETE,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                IN_PROGRESS -> Value.IN_PROGRESS
+                COMPLETED -> Value.COMPLETED
+                INCOMPLETE -> Value.INCOMPLETE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                IN_PROGRESS -> Known.IN_PROGRESS
+                COMPLETED -> Known.COMPLETED
+                INCOMPLETE -> Known.INCOMPLETE
+                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Status && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1097,17 +1267,27 @@ private constructor(
             callId == other.callId &&
             maxOutputLength == other.maxOutputLength &&
             output == other.output &&
+            status == other.status &&
             type == other.type &&
             createdBy == other.createdBy &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, callId, maxOutputLength, output, type, createdBy, additionalProperties)
+        Objects.hash(
+            id,
+            callId,
+            maxOutputLength,
+            output,
+            status,
+            type,
+            createdBy,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionShellToolCallOutput{id=$id, callId=$callId, maxOutputLength=$maxOutputLength, output=$output, type=$type, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseFunctionShellToolCallOutput{id=$id, callId=$callId, maxOutputLength=$maxOutputLength, output=$output, status=$status, type=$type, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

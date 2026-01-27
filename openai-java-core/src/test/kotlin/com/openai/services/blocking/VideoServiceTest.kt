@@ -39,7 +39,6 @@ internal class VideoServiceTest {
             videoService.create(
                 VideoCreateParams.builder()
                     .prompt("x")
-                    .addCharacterId("char_123")
                     .inputReference("some content".byteInputStream())
                     .model(VideoModel.of("string"))
                     .seconds(VideoSeconds._4)
