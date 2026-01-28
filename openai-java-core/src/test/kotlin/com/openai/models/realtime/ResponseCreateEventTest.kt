@@ -34,7 +34,7 @@ internal class ResponseCreateEventTest {
                                 )
                                 .build()
                         )
-                        .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
+                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(
@@ -102,7 +102,7 @@ internal class ResponseCreateEventTest {
                             )
                             .build()
                     )
-                    .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
+                    .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                     .addInput(
                         RealtimeConversationItemSystemMessage.builder()
                             .addContent(
@@ -174,7 +174,7 @@ internal class ResponseCreateEventTest {
                                 )
                                 .build()
                         )
-                        .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
+                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(

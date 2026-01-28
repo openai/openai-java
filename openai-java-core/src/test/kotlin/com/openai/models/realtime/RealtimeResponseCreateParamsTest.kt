@@ -32,7 +32,7 @@ internal class RealtimeResponseCreateParamsTest {
                         )
                         .build()
                 )
-                .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
+                .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                 .addInput(
                     RealtimeConversationItemSystemMessage.builder()
                         .addContent(
@@ -93,7 +93,7 @@ internal class RealtimeResponseCreateParamsTest {
                     .build()
             )
         assertThat(realtimeResponseCreateParams.conversation())
-            .contains(RealtimeResponseCreateParams.Conversation.of("string"))
+            .contains(RealtimeResponseCreateParams.Conversation.AUTO)
         assertThat(realtimeResponseCreateParams.input().getOrNull())
             .containsExactly(
                 ConversationItem.ofRealtimeConversationItemSystemMessage(
@@ -168,7 +168,7 @@ internal class RealtimeResponseCreateParamsTest {
                         )
                         .build()
                 )
-                .conversation(RealtimeResponseCreateParams.Conversation.of("string"))
+                .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                 .addInput(
                     RealtimeConversationItemSystemMessage.builder()
                         .addContent(
