@@ -11,6 +11,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** @see AssistantService.list */
+@Deprecated("deprecated")
 class AssistantListPage
 private constructor(
     private val service: AssistantService,

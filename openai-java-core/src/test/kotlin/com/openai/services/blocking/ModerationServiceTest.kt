@@ -25,7 +25,7 @@ internal class ModerationServiceTest {
             moderationService.create(
                 ModerationCreateParams.builder()
                     .input("I want to kill them.")
-                    .model(ModerationModel.of("string"))
+                    .model(ModerationModel.OMNI_MODERATION_LATEST)
                     .build()
             )
 

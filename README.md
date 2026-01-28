@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.16.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.16.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.16.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.17.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.17.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.17.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.16.1).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.17.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.16.1")
+implementation("com.openai:openai-java:4.17.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:4.16.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.16.1</version>
+  <version>4.17.0</version>
 </dependency>
 ```
 
@@ -62,7 +62,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ResponseCreateParams params = ResponseCreateParams.builder()
         .input("Say this is a test")
-        .model(ChatModel.GPT_4_1)
+        .model(ChatModel.GPT_5_2)
         .build();
 Response response = client.responses().create(params);
 ```
@@ -82,7 +82,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_2)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
@@ -188,7 +188,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_2)
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = client.async().chat().completions().create(params);
 ```
@@ -209,7 +209,7 @@ OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_2)
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = client.chat().completions().create(params);
 ```
@@ -452,7 +452,7 @@ import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 
 StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
         .addUserMessage("List some famous late twentieth century novels.")
-        .model(ChatModel.GPT_4_1)
+        .model(ChatModel.GPT_5_2)
         .responseFormat(BookList.class)
         .build();
 
@@ -540,7 +540,7 @@ import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 
 StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
         .addUserMessage("List some famous late twentieth century novels.")
-        .model(ChatModel.GPT_4_1)
+        .model(ChatModel.GPT_5_2)
         .responseFormat(BookList.class, JsonSchemaLocalValidation.NO)
         .build();
 ```
@@ -1143,7 +1143,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_2)
     .build();
 HttpResponseFor<ChatCompletion> chatCompletion = client.chat().completions().withRawResponse().create(params);
 
@@ -1342,7 +1342,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:4.16.1")
+implementation("com.openai:openai-java-spring-boot-starter:4.17.0")
 ```
 
 #### Maven
@@ -1351,7 +1351,7 @@ implementation("com.openai:openai-java-spring-boot-starter:4.16.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>4.16.1</version>
+  <version>4.17.0</version>
 </dependency>
 ```
 
@@ -1618,7 +1618,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .messages(JsonValue.from(42))
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_2)
     .build();
 ```
 
@@ -1671,7 +1671,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_2)
     .messages(JsonMissing.of())
     .build();
 ```

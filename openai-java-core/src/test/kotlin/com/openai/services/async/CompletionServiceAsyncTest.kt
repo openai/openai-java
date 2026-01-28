@@ -25,7 +25,7 @@ internal class CompletionServiceAsyncTest {
         val completionFuture =
             completionServiceAsync.create(
                 CompletionCreateParams.builder()
-                    .model(CompletionCreateParams.Model.of("string"))
+                    .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                     .prompt("This is a test.")
                     .bestOf(0L)
                     .echo(true)
@@ -70,7 +70,7 @@ internal class CompletionServiceAsyncTest {
         val completionStreamResponse =
             completionServiceAsync.createStreaming(
                 CompletionCreateParams.builder()
-                    .model(CompletionCreateParams.Model.of("string"))
+                    .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                     .prompt("This is a test.")
                     .bestOf(0L)
                     .echo(true)

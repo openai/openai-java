@@ -31,19 +31,23 @@ interface AssistantService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AssistantService
 
     /** Create an assistant with a model and instructions. */
+    @Deprecated("deprecated")
     fun create(params: AssistantCreateParams): Assistant = create(params, RequestOptions.none())
 
     /** @see create */
+    @Deprecated("deprecated")
     fun create(
         params: AssistantCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Retrieves an assistant. */
+    @Deprecated("deprecated")
     fun retrieve(assistantId: String): Assistant =
         retrieve(assistantId, AssistantRetrieveParams.none())
 
     /** @see retrieve */
+    @Deprecated("deprecated")
     fun retrieve(
         assistantId: String,
         params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
@@ -51,29 +55,35 @@ interface AssistantService {
     ): Assistant = retrieve(params.toBuilder().assistantId(assistantId).build(), requestOptions)
 
     /** @see retrieve */
+    @Deprecated("deprecated")
     fun retrieve(
         assistantId: String,
         params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
     ): Assistant = retrieve(assistantId, params, RequestOptions.none())
 
     /** @see retrieve */
+    @Deprecated("deprecated")
     fun retrieve(
         params: AssistantRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** @see retrieve */
+    @Deprecated("deprecated")
     fun retrieve(params: AssistantRetrieveParams): Assistant =
         retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
+    @Deprecated("deprecated")
     fun retrieve(assistantId: String, requestOptions: RequestOptions): Assistant =
         retrieve(assistantId, AssistantRetrieveParams.none(), requestOptions)
 
     /** Modifies an assistant. */
+    @Deprecated("deprecated")
     fun update(assistantId: String): Assistant = update(assistantId, AssistantUpdateParams.none())
 
     /** @see update */
+    @Deprecated("deprecated")
     fun update(
         assistantId: String,
         params: AssistantUpdateParams = AssistantUpdateParams.none(),
@@ -81,46 +91,55 @@ interface AssistantService {
     ): Assistant = update(params.toBuilder().assistantId(assistantId).build(), requestOptions)
 
     /** @see update */
+    @Deprecated("deprecated")
     fun update(
         assistantId: String,
         params: AssistantUpdateParams = AssistantUpdateParams.none(),
     ): Assistant = update(assistantId, params, RequestOptions.none())
 
     /** @see update */
+    @Deprecated("deprecated")
     fun update(
         params: AssistantUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** @see update */
+    @Deprecated("deprecated")
     fun update(params: AssistantUpdateParams): Assistant = update(params, RequestOptions.none())
 
     /** @see update */
+    @Deprecated("deprecated")
     fun update(assistantId: String, requestOptions: RequestOptions): Assistant =
         update(assistantId, AssistantUpdateParams.none(), requestOptions)
 
     /** Returns a list of assistants. */
-    fun list(): AssistantListPage = list(AssistantListParams.none())
+    @Deprecated("deprecated") fun list(): AssistantListPage = list(AssistantListParams.none())
 
     /** @see list */
+    @Deprecated("deprecated")
     fun list(
         params: AssistantListParams = AssistantListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AssistantListPage
 
     /** @see list */
+    @Deprecated("deprecated")
     fun list(params: AssistantListParams = AssistantListParams.none()): AssistantListPage =
         list(params, RequestOptions.none())
 
     /** @see list */
+    @Deprecated("deprecated")
     fun list(requestOptions: RequestOptions): AssistantListPage =
         list(AssistantListParams.none(), requestOptions)
 
     /** Delete an assistant. */
+    @Deprecated("deprecated")
     fun delete(assistantId: String): AssistantDeleted =
         delete(assistantId, AssistantDeleteParams.none())
 
     /** @see delete */
+    @Deprecated("deprecated")
     fun delete(
         assistantId: String,
         params: AssistantDeleteParams = AssistantDeleteParams.none(),
@@ -129,22 +148,26 @@ interface AssistantService {
         delete(params.toBuilder().assistantId(assistantId).build(), requestOptions)
 
     /** @see delete */
+    @Deprecated("deprecated")
     fun delete(
         assistantId: String,
         params: AssistantDeleteParams = AssistantDeleteParams.none(),
     ): AssistantDeleted = delete(assistantId, params, RequestOptions.none())
 
     /** @see delete */
+    @Deprecated("deprecated")
     fun delete(
         params: AssistantDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AssistantDeleted
 
     /** @see delete */
+    @Deprecated("deprecated")
     fun delete(params: AssistantDeleteParams): AssistantDeleted =
         delete(params, RequestOptions.none())
 
     /** @see delete */
+    @Deprecated("deprecated")
     fun delete(assistantId: String, requestOptions: RequestOptions): AssistantDeleted =
         delete(assistantId, AssistantDeleteParams.none(), requestOptions)
 
@@ -162,11 +185,13 @@ interface AssistantService {
          * Returns a raw HTTP response for `post /assistants`, but is otherwise the same as
          * [AssistantService.create].
          */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun create(params: AssistantCreateParams): HttpResponseFor<Assistant> =
             create(params, RequestOptions.none())
 
         /** @see create */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun create(
             params: AssistantCreateParams,
@@ -177,11 +202,13 @@ interface AssistantService {
          * Returns a raw HTTP response for `get /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.retrieve].
          */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun retrieve(assistantId: String): HttpResponseFor<Assistant> =
             retrieve(assistantId, AssistantRetrieveParams.none())
 
         /** @see retrieve */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun retrieve(
             assistantId: String,
@@ -191,6 +218,7 @@ interface AssistantService {
             retrieve(params.toBuilder().assistantId(assistantId).build(), requestOptions)
 
         /** @see retrieve */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun retrieve(
             assistantId: String,
@@ -198,6 +226,7 @@ interface AssistantService {
         ): HttpResponseFor<Assistant> = retrieve(assistantId, params, RequestOptions.none())
 
         /** @see retrieve */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun retrieve(
             params: AssistantRetrieveParams,
@@ -205,11 +234,13 @@ interface AssistantService {
         ): HttpResponseFor<Assistant>
 
         /** @see retrieve */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun retrieve(params: AssistantRetrieveParams): HttpResponseFor<Assistant> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun retrieve(
             assistantId: String,
@@ -221,11 +252,13 @@ interface AssistantService {
          * Returns a raw HTTP response for `post /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.update].
          */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun update(assistantId: String): HttpResponseFor<Assistant> =
             update(assistantId, AssistantUpdateParams.none())
 
         /** @see update */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun update(
             assistantId: String,
@@ -235,6 +268,7 @@ interface AssistantService {
             update(params.toBuilder().assistantId(assistantId).build(), requestOptions)
 
         /** @see update */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun update(
             assistantId: String,
@@ -242,6 +276,7 @@ interface AssistantService {
         ): HttpResponseFor<Assistant> = update(assistantId, params, RequestOptions.none())
 
         /** @see update */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun update(
             params: AssistantUpdateParams,
@@ -249,11 +284,13 @@ interface AssistantService {
         ): HttpResponseFor<Assistant>
 
         /** @see update */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun update(params: AssistantUpdateParams): HttpResponseFor<Assistant> =
             update(params, RequestOptions.none())
 
         /** @see update */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun update(
             assistantId: String,
@@ -265,10 +302,12 @@ interface AssistantService {
          * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
          * [AssistantService.list].
          */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun list(): HttpResponseFor<AssistantListPage> = list(AssistantListParams.none())
 
         /** @see list */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun list(
             params: AssistantListParams = AssistantListParams.none(),
@@ -276,12 +315,14 @@ interface AssistantService {
         ): HttpResponseFor<AssistantListPage>
 
         /** @see list */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun list(
             params: AssistantListParams = AssistantListParams.none()
         ): HttpResponseFor<AssistantListPage> = list(params, RequestOptions.none())
 
         /** @see list */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<AssistantListPage> =
             list(AssistantListParams.none(), requestOptions)
@@ -290,11 +331,13 @@ interface AssistantService {
          * Returns a raw HTTP response for `delete /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.delete].
          */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun delete(assistantId: String): HttpResponseFor<AssistantDeleted> =
             delete(assistantId, AssistantDeleteParams.none())
 
         /** @see delete */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun delete(
             assistantId: String,
@@ -304,6 +347,7 @@ interface AssistantService {
             delete(params.toBuilder().assistantId(assistantId).build(), requestOptions)
 
         /** @see delete */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun delete(
             assistantId: String,
@@ -311,6 +355,7 @@ interface AssistantService {
         ): HttpResponseFor<AssistantDeleted> = delete(assistantId, params, RequestOptions.none())
 
         /** @see delete */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun delete(
             params: AssistantDeleteParams,
@@ -318,11 +363,13 @@ interface AssistantService {
         ): HttpResponseFor<AssistantDeleted>
 
         /** @see delete */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun delete(params: AssistantDeleteParams): HttpResponseFor<AssistantDeleted> =
             delete(params, RequestOptions.none())
 
         /** @see delete */
+        @Deprecated("deprecated")
         @MustBeClosed
         fun delete(
             assistantId: String,

@@ -781,6 +781,7 @@ internal class ResponseOutputItemTest {
                         .createdBy("created_by")
                         .build()
                 )
+                .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
                 .createdBy("created_by")
                 .build()
 
@@ -823,6 +824,7 @@ internal class ResponseOutputItemTest {
                             .createdBy("created_by")
                             .build()
                     )
+                    .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
                     .createdBy("created_by")
                     .build()
             )

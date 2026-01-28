@@ -10,6 +10,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Retrieves an assistant. */
+@Deprecated("deprecated")
 class AssistantRetrieveParams
 private constructor(
     private val assistantId: String?,

@@ -114,7 +114,7 @@ internal class AssistantServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(AssistantUpdateParams.Model.of("string"))
+                    .model(AssistantUpdateParams.Model.GPT_5)
                     .name("name")
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()

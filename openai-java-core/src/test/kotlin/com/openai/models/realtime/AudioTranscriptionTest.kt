@@ -14,12 +14,12 @@ internal class AudioTranscriptionTest {
         val audioTranscription =
             AudioTranscription.builder()
                 .language("language")
-                .model(AudioTranscription.Model.of("string"))
+                .model(AudioTranscription.Model.WHISPER_1)
                 .prompt("prompt")
                 .build()
 
         assertThat(audioTranscription.language()).contains("language")
-        assertThat(audioTranscription.model()).contains(AudioTranscription.Model.of("string"))
+        assertThat(audioTranscription.model()).contains(AudioTranscription.Model.WHISPER_1)
         assertThat(audioTranscription.prompt()).contains("prompt")
     }
 
@@ -29,7 +29,7 @@ internal class AudioTranscriptionTest {
         val audioTranscription =
             AudioTranscription.builder()
                 .language("language")
-                .model(AudioTranscription.Model.of("string"))
+                .model(AudioTranscription.Model.WHISPER_1)
                 .prompt("prompt")
                 .build()
 

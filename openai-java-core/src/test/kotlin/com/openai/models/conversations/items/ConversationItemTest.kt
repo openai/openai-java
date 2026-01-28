@@ -934,6 +934,7 @@ internal class ConversationItemTest {
                         .createdBy("created_by")
                         .build()
                 )
+                .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
                 .createdBy("created_by")
                 .build()
 
@@ -980,6 +981,7 @@ internal class ConversationItemTest {
                             .createdBy("created_by")
                             .build()
                     )
+                    .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
                     .createdBy("created_by")
                     .build()
             )

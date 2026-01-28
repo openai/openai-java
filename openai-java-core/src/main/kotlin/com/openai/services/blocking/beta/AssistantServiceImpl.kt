@@ -46,10 +46,12 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AssistantService =
         AssistantServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    @Deprecated("deprecated")
     override fun create(params: AssistantCreateParams, requestOptions: RequestOptions): Assistant =
         // post /assistants
         withRawResponse().create(params, requestOptions).parse()
 
+    @Deprecated("deprecated")
     override fun retrieve(
         params: AssistantRetrieveParams,
         requestOptions: RequestOptions,
@@ -57,10 +59,12 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         // get /assistants/{assistant_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
+    @Deprecated("deprecated")
     override fun update(params: AssistantUpdateParams, requestOptions: RequestOptions): Assistant =
         // post /assistants/{assistant_id}
         withRawResponse().update(params, requestOptions).parse()
 
+    @Deprecated("deprecated")
     override fun list(
         params: AssistantListParams,
         requestOptions: RequestOptions,
@@ -68,6 +72,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         // get /assistants
         withRawResponse().list(params, requestOptions).parse()
 
+    @Deprecated("deprecated")
     override fun delete(
         params: AssistantDeleteParams,
         requestOptions: RequestOptions,
@@ -91,6 +96,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         private val createHandler: Handler<Assistant> =
             jsonHandler<Assistant>(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun create(
             params: AssistantCreateParams,
             requestOptions: RequestOptions,
@@ -120,6 +126,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         private val retrieveHandler: Handler<Assistant> =
             jsonHandler<Assistant>(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun retrieve(
             params: AssistantRetrieveParams,
             requestOptions: RequestOptions,
@@ -151,6 +158,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         private val updateHandler: Handler<Assistant> =
             jsonHandler<Assistant>(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun update(
             params: AssistantUpdateParams,
             requestOptions: RequestOptions,
@@ -183,6 +191,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         private val listHandler: Handler<AssistantListPageResponse> =
             jsonHandler<AssistantListPageResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun list(
             params: AssistantListParams,
             requestOptions: RequestOptions,
@@ -218,6 +227,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
         private val deleteHandler: Handler<AssistantDeleted> =
             jsonHandler<AssistantDeleted>(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun delete(
             params: AssistantDeleteParams,
             requestOptions: RequestOptions,

@@ -3049,7 +3049,7 @@ internal class RealtimeServerEventTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .language("language")
-                                                .model(AudioTranscription.Model.of("string"))
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
@@ -3085,7 +3085,7 @@ internal class RealtimeServerEventTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model(RealtimeSessionCreateRequest.Model.of("string"))
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -3192,7 +3192,7 @@ internal class RealtimeServerEventTest {
                                             .transcription(
                                                 AudioTranscription.builder()
                                                     .language("language")
-                                                    .model(AudioTranscription.Model.of("string"))
+                                                    .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
                                                     .build()
                                             )
@@ -3230,7 +3230,7 @@ internal class RealtimeServerEventTest {
                             )
                             .instructions("instructions")
                             .maxOutputTokens(0L)
-                            .model(RealtimeSessionCreateRequest.Model.of("string"))
+                            .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                             .prompt(
                                 ResponsePrompt.builder()
@@ -3293,7 +3293,7 @@ internal class RealtimeServerEventTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .language("language")
-                                                .model(AudioTranscription.Model.of("string"))
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
@@ -3329,7 +3329,7 @@ internal class RealtimeServerEventTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model(RealtimeSessionCreateRequest.Model.of("string"))
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -3436,7 +3436,7 @@ internal class RealtimeServerEventTest {
                                             .transcription(
                                                 AudioTranscription.builder()
                                                     .language("language")
-                                                    .model(AudioTranscription.Model.of("string"))
+                                                    .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
                                                     .build()
                                             )
@@ -3474,7 +3474,7 @@ internal class RealtimeServerEventTest {
                             )
                             .instructions("instructions")
                             .maxOutputTokens(0L)
-                            .model(RealtimeSessionCreateRequest.Model.of("string"))
+                            .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                             .prompt(
                                 ResponsePrompt.builder()

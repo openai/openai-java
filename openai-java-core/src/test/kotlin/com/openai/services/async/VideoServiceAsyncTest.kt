@@ -40,7 +40,7 @@ internal class VideoServiceAsyncTest {
                 VideoCreateParams.builder()
                     .prompt("x")
                     .inputReference("some content".byteInputStream())
-                    .model(VideoModel.of("string"))
+                    .model(VideoModel.SORA_2)
                     .seconds(VideoSeconds._4)
                     .size(VideoSize._720X1280)
                     .build()

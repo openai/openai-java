@@ -11,7 +11,7 @@ internal class SpeechCreateParamsTest {
     fun create() {
         SpeechCreateParams.builder()
             .input("input")
-            .model(SpeechModel.of("string"))
+            .model(SpeechModel.TTS_1)
             .voice(SpeechCreateParams.Voice.ASH)
             .instructions("instructions")
             .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
@@ -25,7 +25,7 @@ internal class SpeechCreateParamsTest {
         val params =
             SpeechCreateParams.builder()
                 .input("input")
-                .model(SpeechModel.of("string"))
+                .model(SpeechModel.TTS_1)
                 .voice(SpeechCreateParams.Voice.ASH)
                 .instructions("instructions")
                 .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
@@ -36,7 +36,7 @@ internal class SpeechCreateParamsTest {
         val body = params._body()
 
         assertThat(body.input()).isEqualTo("input")
-        assertThat(body.model()).isEqualTo(SpeechModel.of("string"))
+        assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
         assertThat(body.voice()).isEqualTo(SpeechCreateParams.Voice.ASH)
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.responseFormat()).contains(SpeechCreateParams.ResponseFormat.MP3)
@@ -49,14 +49,14 @@ internal class SpeechCreateParamsTest {
         val params =
             SpeechCreateParams.builder()
                 .input("input")
-                .model(SpeechModel.of("string"))
+                .model(SpeechModel.TTS_1)
                 .voice(SpeechCreateParams.Voice.ASH)
                 .build()
 
         val body = params._body()
 
         assertThat(body.input()).isEqualTo("input")
-        assertThat(body.model()).isEqualTo(SpeechModel.of("string"))
+        assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
         assertThat(body.voice()).isEqualTo(SpeechCreateParams.Voice.ASH)
     }
 }

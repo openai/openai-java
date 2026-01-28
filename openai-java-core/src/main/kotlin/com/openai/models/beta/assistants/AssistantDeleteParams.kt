@@ -12,6 +12,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Delete an assistant. */
+@Deprecated("deprecated")
 class AssistantDeleteParams
 private constructor(
     private val assistantId: String?,
