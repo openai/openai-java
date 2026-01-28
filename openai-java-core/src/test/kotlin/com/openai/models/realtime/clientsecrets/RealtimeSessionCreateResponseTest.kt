@@ -44,7 +44,7 @@ internal class RealtimeSessionCreateResponseTest {
                                 .transcription(
                                     AudioTranscription.builder()
                                         .language("language")
-                                        .model(AudioTranscription.Model.of("string"))
+                                        .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
                                         .build()
                                 )
@@ -81,7 +81,7 @@ internal class RealtimeSessionCreateResponseTest {
                 )
                 .instructions("instructions")
                 .maxOutputTokens(0L)
-                .model(RealtimeSessionCreateResponse.Model.of("string"))
+                .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(
                     ResponsePrompt.builder()
@@ -128,7 +128,7 @@ internal class RealtimeSessionCreateResponseTest {
                             .transcription(
                                 AudioTranscription.builder()
                                     .language("language")
-                                    .model(AudioTranscription.Model.of("string"))
+                                    .model(AudioTranscription.Model.WHISPER_1)
                                     .prompt("prompt")
                                     .build()
                             )
@@ -167,7 +167,7 @@ internal class RealtimeSessionCreateResponseTest {
         assertThat(realtimeSessionCreateResponse.maxOutputTokens())
             .contains(RealtimeSessionCreateResponse.MaxOutputTokens.ofInteger(0L))
         assertThat(realtimeSessionCreateResponse.model())
-            .contains(RealtimeSessionCreateResponse.Model.of("string"))
+            .contains(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateResponse.outputModalities().getOrNull())
             .containsExactly(RealtimeSessionCreateResponse.OutputModality.TEXT)
         assertThat(realtimeSessionCreateResponse.prompt())
@@ -230,7 +230,7 @@ internal class RealtimeSessionCreateResponseTest {
                                 .transcription(
                                     AudioTranscription.builder()
                                         .language("language")
-                                        .model(AudioTranscription.Model.of("string"))
+                                        .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
                                         .build()
                                 )
@@ -267,7 +267,7 @@ internal class RealtimeSessionCreateResponseTest {
                 )
                 .instructions("instructions")
                 .maxOutputTokens(0L)
-                .model(RealtimeSessionCreateResponse.Model.of("string"))
+                .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(
                     ResponsePrompt.builder()
