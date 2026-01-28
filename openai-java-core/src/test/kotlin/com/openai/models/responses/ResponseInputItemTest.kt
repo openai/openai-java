@@ -1194,6 +1194,7 @@ internal class ResponseInputItemTest {
                 )
                 .id("sho_123")
                 .maxOutputLength(0L)
+                .status(ResponseInputItem.ShellCallOutput.Status.IN_PROGRESS)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofShellCallOutput(shellCallOutput)
@@ -1242,6 +1243,7 @@ internal class ResponseInputItemTest {
                     )
                     .id("sho_123")
                     .maxOutputLength(0L)
+                    .status(ResponseInputItem.ShellCallOutput.Status.IN_PROGRESS)
                     .build()
             )
 
