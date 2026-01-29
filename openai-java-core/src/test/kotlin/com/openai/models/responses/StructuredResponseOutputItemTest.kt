@@ -116,6 +116,7 @@ internal class StructuredResponseOutputItemTest {
                             .build()
                     )
                 )
+                .status(ResponseFunctionShellToolCallOutput.Status.COMPLETED)
                 .build()
         private val APPLY_PATCH_TOOL_CALL =
             ResponseApplyPatchToolCall.builder()
