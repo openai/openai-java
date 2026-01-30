@@ -1,5 +1,25 @@
 # Changelog
 
+## 4.17.0 (2026-01-30)
+
+Full Changelog: [v4.16.1...v4.17.0](https://github.com/openai/openai-java/compare/v4.16.1...v4.17.0)
+
+### Features
+
+* **api:** add shell_call_output status field ([1e8a078](https://github.com/openai/openai-java/commit/1e8a0786f54b7e618a93ce1eb7a42a9b851d1ad0))
+* **api:** api updates ([23a49f6](https://github.com/openai/openai-java/commit/23a49f68f655658c07bdd98f3d603d2aaf8f5812))
+
+
+### Bug Fixes
+
+* **api:** mark assistants as deprecated ([a21625e](https://github.com/openai/openai-java/commit/a21625e3378eb635a6045e59746a62ffc846ee6f))
+
+
+### Chores
+
+* **ci:** upgrade `actions/github-script` ([ddbc5a1](https://github.com/openai/openai-java/commit/ddbc5a161dd5b1760eae9f70e149b4360f1b9203))
+* **client:** improve example values ([f5941b5](https://github.com/openai/openai-java/commit/f5941b53a08e457368895735cc3f265fa09415cb))
+
 ## 4.16.1 (2026-01-23)
 
 Full Changelog: [v4.16.0...v4.16.1](https://github.com/openai/openai-java/compare/v4.16.0...v4.16.1)
