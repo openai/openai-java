@@ -5,4 +5,4 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "==> Building classes"
-./gradlew build testClasses -x test
+./gradlew build testClasses "$@" -x test
