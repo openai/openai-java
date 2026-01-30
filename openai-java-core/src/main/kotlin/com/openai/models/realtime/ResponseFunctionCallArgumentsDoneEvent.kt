@@ -26,6 +26,7 @@ private constructor(
     private val callId: JsonField<String>,
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,
+    private val name: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val responseId: JsonField<String>,
     private val type: JsonValue,
@@ -38,6 +39,7 @@ private constructor(
         @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
@@ -45,7 +47,17 @@ private constructor(
         @ExcludeMissing
         responseId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(arguments, callId, eventId, itemId, outputIndex, responseId, type, mutableMapOf())
+    ) : this(
+        arguments,
+        callId,
+        eventId,
+        itemId,
+        name,
+        outputIndex,
+        responseId,
+        type,
+        mutableMapOf(),
+    )
 
     /**
      * The final arguments as a JSON string.
@@ -78,6 +90,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun itemId(): String = itemId.getRequired("item_id")
+
+    /**
+     * The name of the function that was called.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun name(): String = name.getRequired("name")
 
     /**
      * The index of the output item in the response.
@@ -137,6 +157,13 @@ private constructor(
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
     /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /**
      * Returns the raw JSON value of [outputIndex].
      *
      * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
@@ -174,6 +201,7 @@ private constructor(
          * .callId()
          * .eventId()
          * .itemId()
+         * .name()
          * .outputIndex()
          * .responseId()
          * ```
@@ -188,6 +216,7 @@ private constructor(
         private var callId: JsonField<String>? = null
         private var eventId: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
+        private var name: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var responseId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("response.function_call_arguments.done")
@@ -201,6 +230,7 @@ private constructor(
             callId = responseFunctionCallArgumentsDoneEvent.callId
             eventId = responseFunctionCallArgumentsDoneEvent.eventId
             itemId = responseFunctionCallArgumentsDoneEvent.itemId
+            name = responseFunctionCallArgumentsDoneEvent.name
             outputIndex = responseFunctionCallArgumentsDoneEvent.outputIndex
             responseId = responseFunctionCallArgumentsDoneEvent.responseId
             type = responseFunctionCallArgumentsDoneEvent.type
@@ -252,6 +282,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
+
+        /** The name of the function that was called. */
+        fun name(name: String) = name(JsonField.of(name))
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** The index of the output item in the response. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
@@ -321,6 +362,7 @@ private constructor(
          * .callId()
          * .eventId()
          * .itemId()
+         * .name()
          * .outputIndex()
          * .responseId()
          * ```
@@ -333,6 +375,7 @@ private constructor(
                 checkRequired("callId", callId),
                 checkRequired("eventId", eventId),
                 checkRequired("itemId", itemId),
+                checkRequired("name", name),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("responseId", responseId),
                 type,
@@ -351,6 +394,7 @@ private constructor(
         callId()
         eventId()
         itemId()
+        name()
         outputIndex()
         responseId()
         _type().let {
@@ -380,6 +424,7 @@ private constructor(
             (if (callId.asKnown().isPresent) 1 else 0) +
             (if (eventId.asKnown().isPresent) 1 else 0) +
             (if (itemId.asKnown().isPresent) 1 else 0) +
+            (if (name.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (responseId.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.function_call_arguments.done")) 1 else 0 }
@@ -394,6 +439,7 @@ private constructor(
             callId == other.callId &&
             eventId == other.eventId &&
             itemId == other.itemId &&
+            name == other.name &&
             outputIndex == other.outputIndex &&
             responseId == other.responseId &&
             type == other.type &&
@@ -406,6 +452,7 @@ private constructor(
             callId,
             eventId,
             itemId,
+            name,
             outputIndex,
             responseId,
             type,
@@ -416,5 +463,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionCallArgumentsDoneEvent{arguments=$arguments, callId=$callId, eventId=$eventId, itemId=$itemId, outputIndex=$outputIndex, responseId=$responseId, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseFunctionCallArgumentsDoneEvent{arguments=$arguments, callId=$callId, eventId=$eventId, itemId=$itemId, name=$name, outputIndex=$outputIndex, responseId=$responseId, type=$type, additionalProperties=$additionalProperties}"
 }
