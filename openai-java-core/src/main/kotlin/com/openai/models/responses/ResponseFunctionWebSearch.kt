@@ -63,7 +63,7 @@ private constructor(
 
     /**
      * An object describing the specific action taken in this web search call. Includes details on
-     * how the model used the web (search, open_page, find).
+     * how the model used the web (search, open_page, find_in_page).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -170,7 +170,7 @@ private constructor(
 
         /**
          * An object describing the specific action taken in this web search call. Includes details
-         * on how the model used the web (search, open_page, find).
+         * on how the model used the web (search, open_page, find_in_page).
          */
         fun action(action: Action) = action(JsonField.of(action))
 
@@ -197,16 +197,6 @@ private constructor(
 
         /** Alias for calling [action] with `Action.ofOpenPage(openPage)`. */
         fun action(openPage: Action.OpenPage) = action(Action.ofOpenPage(openPage))
-
-        /**
-         * Alias for calling [action] with the following:
-         * ```java
-         * Action.OpenPage.builder()
-         *     .url(url)
-         *     .build()
-         * ```
-         */
-        fun openPageAction(url: String) = action(Action.OpenPage.builder().url(url).build())
 
         /** Alias for calling [action] with `Action.ofFind(find)`. */
         fun action(find: Action.Find) = action(Action.ofFind(find))
@@ -319,7 +309,7 @@ private constructor(
 
     /**
      * An object describing the specific action taken in this web search call. Includes details on
-     * how the model used the web (search, open_page, find).
+     * how the model used the web (search, open_page, find_in_page).
      */
     @JsonDeserialize(using = Action.Deserializer::class)
     @JsonSerialize(using = Action.Serializer::class)
@@ -1069,11 +1059,10 @@ private constructor(
             /**
              * The URL opened by the model.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
-            fun url(): String = url.getRequired("url")
+            fun url(): Optional<String> = url.getOptional("url")
 
             /**
              * Returns the raw JSON value of [url].
@@ -1096,14 +1085,7 @@ private constructor(
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [OpenPage].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .url()
-                 * ```
-                 */
+                /** Returns a mutable builder for constructing an instance of [OpenPage]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1111,7 +1093,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var type: JsonValue = JsonValue.from("open_page")
-                private var url: JsonField<String>? = null
+                private var url: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -1136,7 +1118,10 @@ private constructor(
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The URL opened by the model. */
-                fun url(url: String) = url(JsonField.of(url))
+                fun url(url: String?) = url(JsonField.ofNullable(url))
+
+                /** Alias for calling [Builder.url] with `url.orElse(null)`. */
+                fun url(url: Optional<String>) = url(url.getOrNull())
 
                 /**
                  * Sets [Builder.url] to an arbitrary JSON value.
@@ -1173,16 +1158,8 @@ private constructor(
                  * Returns an immutable instance of [OpenPage].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .url()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): OpenPage =
-                    OpenPage(type, checkRequired("url", url), additionalProperties.toMutableMap())
+                fun build(): OpenPage = OpenPage(type, url, additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
