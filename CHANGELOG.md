@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.18.0 (2026-01-31)
+
+Full Changelog: [v4.17.0...v4.18.0](https://github.com/openai/openai-java/compare/v4.17.0...v4.18.0)
+
+### Features
+
+* **api:** image generation actions for responses; ResponseFunctionCallArgumentsDoneEvent.name ([a0cc1d8](https://github.com/openai/openai-java/commit/a0cc1d81ca67e8618f51df4359b2877d27cba572))
+
 ## 4.17.0 (2026-01-30)
 
 Full Changelog: [v4.16.1...v4.17.0](https://github.com/openai/openai-java/compare/v4.16.1...v4.17.0)

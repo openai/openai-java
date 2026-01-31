@@ -17,6 +17,7 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
                 .callId("call_id")
                 .eventId("event_id")
                 .itemId("item_id")
+                .name("name")
                 .outputIndex(0L)
                 .responseId("response_id")
                 .build()
@@ -25,6 +26,7 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
         assertThat(responseFunctionCallArgumentsDoneEvent.callId()).isEqualTo("call_id")
         assertThat(responseFunctionCallArgumentsDoneEvent.eventId()).isEqualTo("event_id")
         assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.name()).isEqualTo("name")
         assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseFunctionCallArgumentsDoneEvent.responseId()).isEqualTo("response_id")
     }
@@ -38,6 +40,7 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
                 .callId("call_id")
                 .eventId("event_id")
                 .itemId("item_id")
+                .name("name")
                 .outputIndex(0L)
                 .responseId("response_id")
                 .build()

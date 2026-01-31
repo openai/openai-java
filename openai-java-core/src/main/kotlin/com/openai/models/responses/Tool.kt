@@ -3799,6 +3799,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
+        private val action: JsonField<Action>,
         private val background: JsonField<Background>,
         private val inputFidelity: JsonField<InputFidelity>,
         private val inputImageMask: JsonField<InputImageMask>,
@@ -3815,6 +3816,7 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Background> = JsonMissing.of(),
@@ -3841,6 +3843,7 @@ private constructor(
             @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
         ) : this(
             type,
+            action,
             background,
             inputFidelity,
             inputImageMask,
@@ -3866,6 +3869,14 @@ private constructor(
          * responded with an unexpected value).
          */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Whether to generate a new image or edit an existing image. Default: `auto`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun action(): Optional<Action> = action.getOptional("action")
 
         /**
          * Background type for the generated image. One of `transparent`, `opaque`, or `auto`.
@@ -3955,6 +3966,13 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun size(): Optional<Size> = size.getOptional("size")
+
+        /**
+         * Returns the raw JSON value of [action].
+         *
+         * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
 
         /**
          * Returns the raw JSON value of [background].
@@ -4067,6 +4085,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var type: JsonValue = JsonValue.from("image_generation")
+            private var action: JsonField<Action> = JsonMissing.of()
             private var background: JsonField<Background> = JsonMissing.of()
             private var inputFidelity: JsonField<InputFidelity> = JsonMissing.of()
             private var inputImageMask: JsonField<InputImageMask> = JsonMissing.of()
@@ -4082,6 +4101,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(imageGeneration: ImageGeneration) = apply {
                 type = imageGeneration.type
+                action = imageGeneration.action
                 background = imageGeneration.background
                 inputFidelity = imageGeneration.inputFidelity
                 inputImageMask = imageGeneration.inputImageMask
@@ -4108,6 +4128,18 @@ private constructor(
              * supported value.
              */
             fun type(type: JsonValue) = apply { this.type = type }
+
+            /** Whether to generate a new image or edit an existing image. Default: `auto`. */
+            fun action(action: Action) = action(JsonField.of(action))
+
+            /**
+             * Sets [Builder.action] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.action] with a well-typed [Action] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun action(action: JsonField<Action>) = apply { this.action = action }
 
             /**
              * Background type for the generated image. One of `transparent`, `opaque`, or `auto`.
@@ -4308,6 +4340,7 @@ private constructor(
             fun build(): ImageGeneration =
                 ImageGeneration(
                     type,
+                    action,
                     background,
                     inputFidelity,
                     inputImageMask,
@@ -4334,6 +4367,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            action().ifPresent { it.validate() }
             background().ifPresent { it.validate() }
             inputFidelity().ifPresent { it.validate() }
             inputImageMask().ifPresent { it.validate() }
@@ -4364,6 +4398,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             type.let { if (it == JsonValue.from("image_generation")) 1 else 0 } +
+                (action.asKnown().getOrNull()?.validity() ?: 0) +
                 (background.asKnown().getOrNull()?.validity() ?: 0) +
                 (inputFidelity.asKnown().getOrNull()?.validity() ?: 0) +
                 (inputImageMask.asKnown().getOrNull()?.validity() ?: 0) +
@@ -4374,6 +4409,142 @@ private constructor(
                 (if (partialImages.asKnown().isPresent) 1 else 0) +
                 (quality.asKnown().getOrNull()?.validity() ?: 0) +
                 (size.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Whether to generate a new image or edit an existing image. Default: `auto`. */
+        class Action @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val GENERATE = of("generate")
+
+                @JvmField val EDIT = of("edit")
+
+                @JvmField val AUTO = of("auto")
+
+                @JvmStatic fun of(value: String) = Action(JsonField.of(value))
+            }
+
+            /** An enum containing [Action]'s known values. */
+            enum class Known {
+                GENERATE,
+                EDIT,
+                AUTO,
+            }
+
+            /**
+             * An enum containing [Action]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Action] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                GENERATE,
+                EDIT,
+                AUTO,
+                /**
+                 * An enum member indicating that [Action] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    GENERATE -> Value.GENERATE
+                    EDIT -> Value.EDIT
+                    AUTO -> Value.AUTO
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    GENERATE -> Known.GENERATE
+                    EDIT -> Known.EDIT
+                    AUTO -> Known.AUTO
+                    else -> throw OpenAIInvalidDataException("Unknown Action: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Action = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Action && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         /**
          * Background type for the generated image. One of `transparent`, `opaque`, or `auto`.
@@ -4863,6 +5034,8 @@ private constructor(
 
                 @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
 
+                @JvmField val GPT_IMAGE_1_5 = of("gpt-image-1.5")
+
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
 
@@ -4870,6 +5043,7 @@ private constructor(
             enum class Known {
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
+                GPT_IMAGE_1_5,
             }
 
             /**
@@ -4884,6 +5058,7 @@ private constructor(
             enum class Value {
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
+                GPT_IMAGE_1_5,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -4901,6 +5076,7 @@ private constructor(
                 when (this) {
                     GPT_IMAGE_1 -> Value.GPT_IMAGE_1
                     GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
+                    GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
                     else -> Value._UNKNOWN
                 }
 
@@ -4917,6 +5093,7 @@ private constructor(
                 when (this) {
                     GPT_IMAGE_1 -> Known.GPT_IMAGE_1
                     GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
+                    GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 
@@ -5543,6 +5720,7 @@ private constructor(
 
             return other is ImageGeneration &&
                 type == other.type &&
+                action == other.action &&
                 background == other.background &&
                 inputFidelity == other.inputFidelity &&
                 inputImageMask == other.inputImageMask &&
@@ -5559,6 +5737,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 type,
+                action,
                 background,
                 inputFidelity,
                 inputImageMask,
@@ -5576,6 +5755,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ImageGeneration{type=$type, background=$background, inputFidelity=$inputFidelity, inputImageMask=$inputImageMask, model=$model, moderation=$moderation, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
+            "ImageGeneration{type=$type, action=$action, background=$background, inputFidelity=$inputFidelity, inputImageMask=$inputImageMask, model=$model, moderation=$moderation, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
     }
 }

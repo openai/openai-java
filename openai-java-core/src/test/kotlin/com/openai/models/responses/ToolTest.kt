@@ -378,6 +378,7 @@ internal class ToolTest {
     fun ofImageGeneration() {
         val imageGeneration =
             Tool.ImageGeneration.builder()
+                .action(Tool.ImageGeneration.Action.GENERATE)
                 .background(Tool.ImageGeneration.Background.TRANSPARENT)
                 .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                 .inputImageMask(
@@ -417,6 +418,7 @@ internal class ToolTest {
         val tool =
             Tool.ofImageGeneration(
                 Tool.ImageGeneration.builder()
+                    .action(Tool.ImageGeneration.Action.GENERATE)
                     .background(Tool.ImageGeneration.Background.TRANSPARENT)
                     .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                     .inputImageMask(
