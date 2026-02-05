@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.18.0 (2026-02-05)
+
+Full Changelog: [v4.17.0...v4.18.0](https://github.com/openai/openai-java/compare/v4.17.0...v4.18.0)
+
+### Features
+
+* **api:** image generation actions for responses; ResponseFunctionCallArgumentsDoneEvent.name ([a0cc1d8](https://github.com/openai/openai-java/commit/a0cc1d81ca67e8618f51df4359b2877d27cba572))
+
+
+### Bug Fixes
+
+* **client:** undo change to web search Find action ([7b2ebe5](https://github.com/openai/openai-java/commit/7b2ebe54b58b97fbc9ad1bba5cb54cb346606483))
+* **client:** update type for `find_in_page` action ([2cde783](https://github.com/openai/openai-java/commit/2cde783b5d33d7498548074ad45ee04d4d9d7c05))
+
+
+### Chores
+
+* **internal:** allow passing args to `./scripts/test` ([ce2c0ed](https://github.com/openai/openai-java/commit/ce2c0edb51c10779f3c7bb68aef8666057d4e400))
+
 ## 4.17.0 (2026-01-30)
 
 Full Changelog: [v4.16.1...v4.17.0](https://github.com/openai/openai-java/compare/v4.16.1...v4.17.0)
