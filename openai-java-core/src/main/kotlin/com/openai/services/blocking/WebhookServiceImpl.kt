@@ -20,11 +20,6 @@ class WebhookServiceImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): WebhookService =
         WebhookServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    /**
-     * Validates that the given payload was sent by OpenAI and parses the payload.
-     *
-     * @throws OpenAIInvalidDataException if the body could not be parsed.
-     */
     override fun unwrap(body: String): UnwrapWebhookEvent =
         try {
             clientOptions.jsonMapper.readValue(body, jacksonTypeRef<UnwrapWebhookEvent>())
