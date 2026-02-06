@@ -38,7 +38,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.2")
-    testImplementation("org.assertj:assertj-core:3.25.3")
+    testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
     testImplementation("org.junit-pioneer:junit-pioneer:1.9.1")
