@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.19.0 (2026-02-07)
+
+Full Changelog: [v4.18.0...v4.19.0](https://github.com/openai/openai-java/compare/v4.18.0...v4.19.0)
+
+### Features
+
+* **api:** add webhook signature verification ([edd4e7b](https://github.com/openai/openai-java/commit/edd4e7bbd6f1df190eac87daad32a55c0794ac4d))
+
 ## 4.18.0 (2026-02-05)
 
 Full Changelog: [v4.17.0...v4.18.0](https://github.com/openai/openai-java/compare/v4.17.0...v4.18.0)
