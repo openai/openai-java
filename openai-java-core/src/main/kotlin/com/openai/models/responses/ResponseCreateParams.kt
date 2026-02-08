@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -62,6 +63,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun background(): Optional<Boolean> = body.background()
+
+    /**
+     * Context management configuration for this request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun contextManagement(): Optional<List<ContextManagement>> = body.contextManagement()
 
     /**
      * The conversation that this response belongs to. Items from this conversation are prepended to
@@ -377,6 +386,14 @@ private constructor(
     fun _background(): JsonField<Boolean> = body._background()
 
     /**
+     * Returns the raw JSON value of [contextManagement].
+     *
+     * Unlike [contextManagement], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _contextManagement(): JsonField<List<ContextManagement>> = body._contextManagement()
+
+    /**
      * Returns the raw JSON value of [conversation].
      *
      * Unlike [conversation], this method doesn't throw if the JSON field has an unexpected type.
@@ -600,10 +617,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [background]
+         * - [contextManagement]
          * - [conversation]
          * - [include]
          * - [input]
-         * - [instructions]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -632,6 +649,35 @@ private constructor(
          * value.
          */
         fun background(background: JsonField<Boolean>) = apply { body.background(background) }
+
+        /** Context management configuration for this request. */
+        fun contextManagement(contextManagement: List<ContextManagement>?) = apply {
+            body.contextManagement(contextManagement)
+        }
+
+        /** Alias for calling [Builder.contextManagement] with `contextManagement.orElse(null)`. */
+        fun contextManagement(contextManagement: Optional<List<ContextManagement>>) =
+            contextManagement(contextManagement.getOrNull())
+
+        /**
+         * Sets [Builder.contextManagement] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.contextManagement] with a well-typed
+         * `List<ContextManagement>` value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
+        fun contextManagement(contextManagement: JsonField<List<ContextManagement>>) = apply {
+            body.contextManagement(contextManagement)
+        }
+
+        /**
+         * Adds a single [ContextManagement] to [Builder.contextManagement].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addContextManagement(contextManagement: ContextManagement) = apply {
+            body.addContextManagement(contextManagement)
+        }
 
         /**
          * The conversation that this response belongs to. Items from this conversation are
@@ -1537,6 +1583,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val background: JsonField<Boolean>,
+        private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
         private val include: JsonField<List<ResponseIncludable>>,
         private val input: JsonField<Input>,
@@ -1571,6 +1618,9 @@ private constructor(
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("context_management")
+            @ExcludeMissing
+            contextManagement: JsonField<List<ContextManagement>> = JsonMissing.of(),
             @JsonProperty("conversation")
             @ExcludeMissing
             conversation: JsonField<Conversation> = JsonMissing.of(),
@@ -1641,6 +1691,7 @@ private constructor(
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
             background,
+            contextManagement,
             conversation,
             include,
             input,
@@ -1678,6 +1729,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun background(): Optional<Boolean> = background.getOptional("background")
+
+        /**
+         * Context management configuration for this request.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun contextManagement(): Optional<List<ContextManagement>> =
+            contextManagement.getOptional("context_management")
 
         /**
          * The conversation that this response belongs to. Items from this conversation are
@@ -2001,6 +2061,16 @@ private constructor(
         fun _background(): JsonField<Boolean> = background
 
         /**
+         * Returns the raw JSON value of [contextManagement].
+         *
+         * Unlike [contextManagement], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("context_management")
+        @ExcludeMissing
+        fun _contextManagement(): JsonField<List<ContextManagement>> = contextManagement
+
+        /**
          * Returns the raw JSON value of [conversation].
          *
          * Unlike [conversation], this method doesn't throw if the JSON field has an unexpected
@@ -2251,6 +2321,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var background: JsonField<Boolean> = JsonMissing.of()
+            private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
             private var include: JsonField<MutableList<ResponseIncludable>>? = null
             private var input: JsonField<Input> = JsonMissing.of()
@@ -2282,6 +2353,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 background = body.background
+                contextManagement = body.contextManagement.map { it.toMutableList() }
                 conversation = body.conversation
                 include = body.include.map { it.toMutableList() }
                 input = body.input
@@ -2335,6 +2407,39 @@ private constructor(
              * supported value.
              */
             fun background(background: JsonField<Boolean>) = apply { this.background = background }
+
+            /** Context management configuration for this request. */
+            fun contextManagement(contextManagement: List<ContextManagement>?) =
+                contextManagement(JsonField.ofNullable(contextManagement))
+
+            /**
+             * Alias for calling [Builder.contextManagement] with `contextManagement.orElse(null)`.
+             */
+            fun contextManagement(contextManagement: Optional<List<ContextManagement>>) =
+                contextManagement(contextManagement.getOrNull())
+
+            /**
+             * Sets [Builder.contextManagement] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.contextManagement] with a well-typed
+             * `List<ContextManagement>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
+            fun contextManagement(contextManagement: JsonField<List<ContextManagement>>) = apply {
+                this.contextManagement = contextManagement.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [ContextManagement] to [Builder.contextManagement].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addContextManagement(contextManagement: ContextManagement) = apply {
+                this.contextManagement =
+                    (this.contextManagement ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("contextManagement", it).add(contextManagement)
+                    }
+            }
 
             /**
              * The conversation that this response belongs to. Items from this conversation are
@@ -3167,6 +3272,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     background,
+                    (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
                     (include ?: JsonMissing.of()).map { it.toImmutable() },
                     input,
@@ -3205,6 +3311,7 @@ private constructor(
             }
 
             background()
+            contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
             include().ifPresent { it.forEach { it.validate() } }
             input().ifPresent { it.validate() }
@@ -3251,6 +3358,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (background.asKnown().isPresent) 1 else 0) +
+                (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
@@ -3285,6 +3393,7 @@ private constructor(
 
             return other is Body &&
                 background == other.background &&
+                contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
                 include == other.include &&
                 input == other.input &&
@@ -3317,6 +3426,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 background,
+                contextManagement,
                 conversation,
                 include,
                 input,
@@ -3350,7 +3460,227 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+    }
+
+    class ContextManagement
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val type: JsonField<String>,
+        private val compactThreshold: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("compact_threshold")
+            @ExcludeMissing
+            compactThreshold: JsonField<Long> = JsonMissing.of(),
+        ) : this(type, compactThreshold, mutableMapOf())
+
+        /**
+         * The context management entry type. Currently only 'compaction' is supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun type(): String = type.getRequired("type")
+
+        /**
+         * Token threshold at which compaction should be triggered for this entry.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun compactThreshold(): Optional<Long> = compactThreshold.getOptional("compact_threshold")
+
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
+
+        /**
+         * Returns the raw JSON value of [compactThreshold].
+         *
+         * Unlike [compactThreshold], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("compact_threshold")
+        @ExcludeMissing
+        fun _compactThreshold(): JsonField<Long> = compactThreshold
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ContextManagement].
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ContextManagement]. */
+        class Builder internal constructor() {
+
+            private var type: JsonField<String>? = null
+            private var compactThreshold: JsonField<Long> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(contextManagement: ContextManagement) = apply {
+                type = contextManagement.type
+                compactThreshold = contextManagement.compactThreshold
+                additionalProperties = contextManagement.additionalProperties.toMutableMap()
+            }
+
+            /** The context management entry type. Currently only 'compaction' is supported. */
+            fun type(type: String) = type(JsonField.of(type))
+
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun type(type: JsonField<String>) = apply { this.type = type }
+
+            /** Token threshold at which compaction should be triggered for this entry. */
+            fun compactThreshold(compactThreshold: Long?) =
+                compactThreshold(JsonField.ofNullable(compactThreshold))
+
+            /**
+             * Alias for [Builder.compactThreshold].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun compactThreshold(compactThreshold: Long) =
+                compactThreshold(compactThreshold as Long?)
+
+            /**
+             * Alias for calling [Builder.compactThreshold] with `compactThreshold.orElse(null)`.
+             */
+            fun compactThreshold(compactThreshold: Optional<Long>) =
+                compactThreshold(compactThreshold.getOrNull())
+
+            /**
+             * Sets [Builder.compactThreshold] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.compactThreshold] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun compactThreshold(compactThreshold: JsonField<Long>) = apply {
+                this.compactThreshold = compactThreshold
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ContextManagement].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ContextManagement =
+                ContextManagement(
+                    checkRequired("type", type),
+                    compactThreshold,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ContextManagement = apply {
+            if (validated) {
+                return@apply
+            }
+
+            type()
+            compactThreshold()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (type.asKnown().isPresent) 1 else 0) +
+                (if (compactThreshold.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ContextManagement &&
+                type == other.type &&
+                compactThreshold == other.compactThreshold &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(type, compactThreshold, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ContextManagement{type=$type, compactThreshold=$compactThreshold, additionalProperties=$additionalProperties}"
     }
 
     /**
