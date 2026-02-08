@@ -65,6 +65,8 @@ internal class StructuredResponseCreateParamsTest {
         private val RESPONSE_CONVERSATION_PARAM =
             ResponseConversationParam.builder().id(STRING).build()
         private val CONVERSATION = ResponseCreateParams.Conversation.ofId(STRING)
+        private val CONTEXT_MANAGEMENT =
+            ResponseCreateParams.ContextManagement.builder().type(STRING).build()
         private val PROMPT_CACHE_RETENTION = ResponseCreateParams.PromptCacheRetention.IN_MEMORY
         private val PROMPT_CACHE_RETENTION_OPTIONAL = Optional.of(PROMPT_CACHE_RETENTION)
         private val PROMPT_CACHE_RETENTION_JSON_FIELD = JsonField.of(PROMPT_CACHE_RETENTION)
@@ -136,6 +138,10 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("background", BOOLEAN),
                 DelegationWriteTestCase("background", OPTIONAL),
                 DelegationWriteTestCase("background", JSON_FIELD),
+                DelegationWriteTestCase("contextManagement", LIST),
+                DelegationWriteTestCase("contextManagement", OPTIONAL),
+                DelegationWriteTestCase("contextManagement", JSON_FIELD),
+                DelegationWriteTestCase("addContextManagement", CONTEXT_MANAGEMENT),
                 DelegationWriteTestCase("conversation", CONVERSATION),
                 DelegationWriteTestCase("conversation", OPTIONAL),
                 DelegationWriteTestCase("conversation", JSON_FIELD),
