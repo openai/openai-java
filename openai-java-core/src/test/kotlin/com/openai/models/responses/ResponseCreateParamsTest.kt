@@ -18,6 +18,12 @@ internal class ResponseCreateParamsTest {
     fun create() {
         ResponseCreateParams.builder()
             .background(true)
+            .addContextManagement(
+                ResponseCreateParams.ContextManagement.builder()
+                    .type("type")
+                    .compactThreshold(1000L)
+                    .build()
+            )
             .conversation("string")
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
             .input("string")
@@ -90,6 +96,12 @@ internal class ResponseCreateParamsTest {
         val params =
             ResponseCreateParams.builder()
                 .background(true)
+                .addContextManagement(
+                    ResponseCreateParams.ContextManagement.builder()
+                        .type("type")
+                        .compactThreshold(1000L)
+                        .build()
+                )
                 .conversation("string")
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .input("string")
@@ -159,6 +171,13 @@ internal class ResponseCreateParamsTest {
         val body = params._body()
 
         assertThat(body.background()).contains(true)
+        assertThat(body.contextManagement().getOrNull())
+            .containsExactly(
+                ResponseCreateParams.ContextManagement.builder()
+                    .type("type")
+                    .compactThreshold(1000L)
+                    .build()
+            )
         assertThat(body.conversation()).contains(ResponseCreateParams.Conversation.ofId("string"))
         assertThat(body.include().getOrNull())
             .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)

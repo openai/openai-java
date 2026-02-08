@@ -36,6 +36,12 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
                     .background(true)
+                    .addContextManagement(
+                        ResponseCreateParams.ContextManagement.builder()
+                            .type("type")
+                            .compactThreshold(1000L)
+                            .build()
+                    )
                     .conversation("string")
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
@@ -122,6 +128,12 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
                     .background(true)
+                    .addContextManagement(
+                        ResponseCreateParams.ContextManagement.builder()
+                            .type("type")
+                            .compactThreshold(1000L)
+                            .build()
+                    )
                     .conversation("string")
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
