@@ -79,7 +79,7 @@ class WebhookServiceImpl internal constructor(private val clientOptions: ClientO
             try {
                 timestampHeader.toLong()
             } catch (e: NumberFormatException) {
-                throw IllegalArgumentException("Invalid webhook timestamp format", e)
+                throw InvalidWebhookSignatureException("Invalid webhook timestamp format", e)
             }
 
         val now = Instant.now(clientOptions.clock)
@@ -95,7 +95,11 @@ class WebhookServiceImpl internal constructor(private val clientOptions: ClientO
         }
 
         // The signature header can have multiple values, separated by spaces.
-        val signatures = signatureHeader.split(" ").map { it.removePrefix("v1,") }
+        val signatures =
+            signatureHeader
+                .split("\\s+".toRegex())
+                .filter { it.isNotBlank() }
+                .map { it.removePrefix("v1,") }
 
         // Decode the secret if it starts with whsec_
         val decodedSecret =
@@ -119,7 +123,10 @@ class WebhookServiceImpl internal constructor(private val clientOptions: ClientO
         // Accept if any signature matches using timing-safe comparison
         val signatureMatches =
             signatures.any { signature ->
-                MessageDigest.isEqual(expectedSignature.toByteArray(), signature.toByteArray())
+                MessageDigest.isEqual(
+                    expectedSignature.toByteArray(StandardCharsets.UTF_8),
+                    signature.toByteArray(StandardCharsets.UTF_8),
+                )
             }
 
         if (!signatureMatches) {
