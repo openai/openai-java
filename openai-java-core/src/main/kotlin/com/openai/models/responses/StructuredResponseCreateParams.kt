@@ -116,6 +116,28 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.background(background)
         }
 
+        /** @see ResponseCreateParams.Builder.contextManagement */
+        fun contextManagement(contextManagement: List<ResponseCreateParams.ContextManagement>?) =
+            apply {
+                paramsBuilder.contextManagement(contextManagement)
+            }
+
+        /** @see ResponseCreateParams.Builder.contextManagement */
+        fun contextManagement(
+            contextManagement: Optional<List<ResponseCreateParams.ContextManagement>>
+        ) = apply { paramsBuilder.contextManagement(contextManagement) }
+
+        /** @see ResponseCreateParams.Builder.contextManagement */
+        fun contextManagement(
+            contextManagement: JsonField<List<ResponseCreateParams.ContextManagement>>
+        ) = apply { paramsBuilder.contextManagement(contextManagement) }
+
+        /** @see ResponseCreateParams.Builder.addContextManagement */
+        fun addContextManagement(contextManagement: ResponseCreateParams.ContextManagement) =
+            apply {
+                paramsBuilder.addContextManagement(contextManagement)
+            }
+
         /** @see ResponseCreateParams.Builder.conversation */
         fun conversation(conversation: ResponseCreateParams.Conversation?) = apply {
             paramsBuilder.conversation(conversation)
