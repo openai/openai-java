@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.19.0 (2026-02-09)
+
+Full Changelog: [v4.18.0...v4.19.0](https://github.com/openai/openai-java/compare/v4.18.0...v4.19.0)
+
+### Features
+
+* **api:** add context_management to responses ([da0fb59](https://github.com/openai/openai-java/commit/da0fb59b0e0362ee68353829c97ac8b2944cd49b))
+* **api:** add webhook signature verification ([1823eca](https://github.com/openai/openai-java/commit/1823ecab53fd72ef7f7fdc7776e6ecd631307f7c))
+* **api:** responses context_management ([c0f2cd1](https://github.com/openai/openai-java/commit/c0f2cd1c854d6fca90c9000de46f042e64a8cbf5))
+
+
+### Chores
+
+* **internal:** upgrade AssertJ ([5c01787](https://github.com/openai/openai-java/commit/5c017872b071272eff021318dab9a4a774cfcd4c))
+
 ## 4.18.0 (2026-02-05)
 
 Full Changelog: [v4.17.0...v4.18.0](https://github.com/openai/openai-java/compare/v4.17.0...v4.18.0)
