@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.20.0 (2026-02-10)
+
+Full Changelog: [v4.19.0...v4.20.0](https://github.com/openai/openai-java/compare/v4.19.0...v4.20.0)
+
+### Features
+
+* **api:** skills and hosted shell ([fcd724d](https://github.com/openai/openai-java/commit/fcd724d2822b755ef44b9de8f9b5573d82271ce7))
+* **api:** support for images in batch api ([c73908a](https://github.com/openai/openai-java/commit/c73908a19f26fa12350f7a5880401bd260420216))
+
 ## 4.19.0 (2026-02-09)
 
 Full Changelog: [v4.18.0...v4.19.0](https://github.com/openai/openai-java/compare/v4.18.0...v4.19.0)
