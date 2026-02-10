@@ -38,6 +38,8 @@ import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.RealtimeServiceAsyncImpl
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.ResponseServiceAsyncImpl
+import com.openai.services.async.SkillServiceAsync
+import com.openai.services.async.SkillServiceAsyncImpl
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
 import com.openai.services.async.VectorStoreServiceAsync
@@ -137,6 +139,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         ContainerServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val skills: SkillServiceAsync by lazy {
+        SkillServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val videos: VideoServiceAsync by lazy {
         VideoServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -187,6 +193,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun evals(): EvalServiceAsync = evals
 
     override fun containers(): ContainerServiceAsync = containers
+
+    override fun skills(): SkillServiceAsync = skills
 
     override fun videos(): VideoServiceAsync = videos
 
@@ -275,6 +283,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ContainerServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val skills: SkillServiceAsync.WithRawResponse by lazy {
+            SkillServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val videos: VideoServiceAsync.WithRawResponse by lazy {
             VideoServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -325,6 +337,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun evals(): EvalServiceAsync.WithRawResponse = evals
 
         override fun containers(): ContainerServiceAsync.WithRawResponse = containers
+
+        override fun skills(): SkillServiceAsync.WithRawResponse = skills
 
         override fun videos(): VideoServiceAsync.WithRawResponse = videos
     }

@@ -22,6 +22,7 @@ import com.openai.models.responses.ResponseFunctionToolCall
 import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
+import com.openai.models.responses.ResponseLocalEnvironment
 import com.openai.models.responses.ResponseReasoningItem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -860,6 +861,7 @@ internal class ConversationItemTest {
                         .build()
                 )
                 .callId("call_id")
+                .environment(ResponseLocalEnvironment.builder().build())
                 .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
                 .createdBy("created_by")
                 .build()
@@ -905,6 +907,7 @@ internal class ConversationItemTest {
                             .build()
                     )
                     .callId("call_id")
+                    .environment(ResponseLocalEnvironment.builder().build())
                     .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
                     .createdBy("created_by")
                     .build()

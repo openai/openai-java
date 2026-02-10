@@ -1119,6 +1119,17 @@ internal class ResponseInputItemTest {
                 )
                 .callId("x")
                 .id("sh_123")
+                .environment(
+                    LocalEnvironment.builder()
+                        .addSkill(
+                            LocalSkill.builder()
+                                .description("description")
+                                .name("name")
+                                .path("path")
+                                .build()
+                        )
+                        .build()
+                )
                 .status(ResponseInputItem.ShellCall.Status.IN_PROGRESS)
                 .build()
 
@@ -1167,6 +1178,17 @@ internal class ResponseInputItemTest {
                     )
                     .callId("x")
                     .id("sh_123")
+                    .environment(
+                        LocalEnvironment.builder()
+                            .addSkill(
+                                LocalSkill.builder()
+                                    .description("description")
+                                    .name("name")
+                                    .path("path")
+                                    .build()
+                            )
+                            .build()
+                    )
                     .status(ResponseInputItem.ShellCall.Status.IN_PROGRESS)
                     .build()
             )

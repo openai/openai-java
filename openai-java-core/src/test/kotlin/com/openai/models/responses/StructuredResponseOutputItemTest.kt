@@ -93,6 +93,7 @@ internal class StructuredResponseOutputItemTest {
             ResponseFunctionShellToolCall.builder()
                 .id(STRING)
                 .callId(STRING)
+                .environment(ResponseLocalEnvironment.builder().build())
                 .status(ResponseFunctionShellToolCall.Status.COMPLETED)
                 .action(
                     ResponseFunctionShellToolCall.Action.builder()

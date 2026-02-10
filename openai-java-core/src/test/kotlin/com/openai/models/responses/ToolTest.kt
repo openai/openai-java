@@ -474,7 +474,17 @@ internal class ToolTest {
 
     @Test
     fun ofShell() {
-        val shell = FunctionShellTool.builder().build()
+        val shell =
+            FunctionShellTool.builder()
+                .environment(
+                    ContainerAuto.builder()
+                        .addFileId("file-123")
+                        .memoryLimit(ContainerAuto.MemoryLimit._1G)
+                        .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
+                        .addSkill(SkillReference.builder().skillId("x").version("version").build())
+                        .build()
+                )
+                .build()
 
         val tool = Tool.ofShell(shell)
 
@@ -495,7 +505,21 @@ internal class ToolTest {
     @Test
     fun ofShellRoundtrip() {
         val jsonMapper = jsonMapper()
-        val tool = Tool.ofShell(FunctionShellTool.builder().build())
+        val tool =
+            Tool.ofShell(
+                FunctionShellTool.builder()
+                    .environment(
+                        ContainerAuto.builder()
+                            .addFileId("file-123")
+                            .memoryLimit(ContainerAuto.MemoryLimit._1G)
+                            .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
+                            .addSkill(
+                                SkillReference.builder().skillId("x").version("version").build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
