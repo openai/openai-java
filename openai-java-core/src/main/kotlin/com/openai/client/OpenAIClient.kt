@@ -20,6 +20,7 @@ import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.ResponseService
+import com.openai.services.blocking.SkillService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
 import com.openai.services.blocking.VideoService
@@ -102,6 +103,8 @@ interface OpenAIClient {
 
     fun containers(): ContainerService
 
+    fun skills(): SkillService
+
     fun videos(): VideoService
 
     /**
@@ -166,6 +169,8 @@ interface OpenAIClient {
         fun evals(): EvalService.WithRawResponse
 
         fun containers(): ContainerService.WithRawResponse
+
+        fun skills(): SkillService.WithRawResponse
 
         fun videos(): VideoService.WithRawResponse
     }

@@ -38,6 +38,8 @@ import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.RealtimeServiceImpl
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.ResponseServiceImpl
+import com.openai.services.blocking.SkillService
+import com.openai.services.blocking.SkillServiceImpl
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.UploadServiceImpl
 import com.openai.services.blocking.VectorStoreService
@@ -123,6 +125,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         ContainerServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val skills: SkillService by lazy { SkillServiceImpl(clientOptionsWithUserAgent) }
+
     private val videos: VideoService by lazy { VideoServiceImpl(clientOptionsWithUserAgent) }
 
     override fun async(): OpenAIClientAsync = async
@@ -171,6 +175,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun evals(): EvalService = evals
 
     override fun containers(): ContainerService = containers
+
+    override fun skills(): SkillService = skills
 
     override fun videos(): VideoService = videos
 
@@ -259,6 +265,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             ContainerServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val skills: SkillService.WithRawResponse by lazy {
+            SkillServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val videos: VideoService.WithRawResponse by lazy {
             VideoServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -309,6 +319,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun evals(): EvalService.WithRawResponse = evals
 
         override fun containers(): ContainerService.WithRawResponse = containers
+
+        override fun skills(): SkillService.WithRawResponse = skills
 
         override fun videos(): VideoService.WithRawResponse = videos
     }

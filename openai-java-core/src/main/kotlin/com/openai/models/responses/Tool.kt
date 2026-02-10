@@ -3370,6 +3370,7 @@ private constructor(
                 private val type: JsonValue,
                 private val fileIds: JsonField<List<String>>,
                 private val memoryLimit: JsonField<MemoryLimit>,
+                private val networkPolicy: JsonField<NetworkPolicy>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -3382,7 +3383,10 @@ private constructor(
                     @JsonProperty("memory_limit")
                     @ExcludeMissing
                     memoryLimit: JsonField<MemoryLimit> = JsonMissing.of(),
-                ) : this(type, fileIds, memoryLimit, mutableMapOf())
+                    @JsonProperty("network_policy")
+                    @ExcludeMissing
+                    networkPolicy: JsonField<NetworkPolicy> = JsonMissing.of(),
+                ) : this(type, fileIds, memoryLimit, networkPolicy, mutableMapOf())
 
                 /**
                  * Always `auto`.
@@ -3414,6 +3418,15 @@ private constructor(
                 fun memoryLimit(): Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
 
                 /**
+                 * Network access policy for the container.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun networkPolicy(): Optional<NetworkPolicy> =
+                    networkPolicy.getOptional("network_policy")
+
+                /**
                  * Returns the raw JSON value of [fileIds].
                  *
                  * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected
@@ -3432,6 +3445,16 @@ private constructor(
                 @JsonProperty("memory_limit")
                 @ExcludeMissing
                 fun _memoryLimit(): JsonField<MemoryLimit> = memoryLimit
+
+                /**
+                 * Returns the raw JSON value of [networkPolicy].
+                 *
+                 * Unlike [networkPolicy], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("network_policy")
+                @ExcludeMissing
+                fun _networkPolicy(): JsonField<NetworkPolicy> = networkPolicy
 
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3460,6 +3483,7 @@ private constructor(
                     private var type: JsonValue = JsonValue.from("auto")
                     private var fileIds: JsonField<MutableList<String>>? = null
                     private var memoryLimit: JsonField<MemoryLimit> = JsonMissing.of()
+                    private var networkPolicy: JsonField<NetworkPolicy> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -3467,6 +3491,7 @@ private constructor(
                         type = codeInterpreterToolAuto.type
                         fileIds = codeInterpreterToolAuto.fileIds.map { it.toMutableList() }
                         memoryLimit = codeInterpreterToolAuto.memoryLimit
+                        networkPolicy = codeInterpreterToolAuto.networkPolicy
                         additionalProperties =
                             codeInterpreterToolAuto.additionalProperties.toMutableMap()
                     }
@@ -3530,6 +3555,49 @@ private constructor(
                         this.memoryLimit = memoryLimit
                     }
 
+                    /** Network access policy for the container. */
+                    fun networkPolicy(networkPolicy: NetworkPolicy) =
+                        networkPolicy(JsonField.of(networkPolicy))
+
+                    /**
+                     * Sets [Builder.networkPolicy] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.networkPolicy] with a well-typed
+                     * [NetworkPolicy] value instead. This method is primarily for setting the field
+                     * to an undocumented or not yet supported value.
+                     */
+                    fun networkPolicy(networkPolicy: JsonField<NetworkPolicy>) = apply {
+                        this.networkPolicy = networkPolicy
+                    }
+
+                    /**
+                     * Alias for calling [networkPolicy] with `NetworkPolicy.ofDisabled(disabled)`.
+                     */
+                    fun networkPolicy(disabled: ContainerNetworkPolicyDisabled) =
+                        networkPolicy(NetworkPolicy.ofDisabled(disabled))
+
+                    /**
+                     * Alias for calling [networkPolicy] with
+                     * `NetworkPolicy.ofAllowlist(allowlist)`.
+                     */
+                    fun networkPolicy(allowlist: ContainerNetworkPolicyAllowlist) =
+                        networkPolicy(NetworkPolicy.ofAllowlist(allowlist))
+
+                    /**
+                     * Alias for calling [networkPolicy] with the following:
+                     * ```java
+                     * ContainerNetworkPolicyAllowlist.builder()
+                     *     .allowedDomains(allowedDomains)
+                     *     .build()
+                     * ```
+                     */
+                    fun allowlistNetworkPolicy(allowedDomains: List<String>) =
+                        networkPolicy(
+                            ContainerNetworkPolicyAllowlist.builder()
+                                .allowedDomains(allowedDomains)
+                                .build()
+                        )
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -3562,6 +3630,7 @@ private constructor(
                             type,
                             (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                             memoryLimit,
+                            networkPolicy,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -3580,6 +3649,7 @@ private constructor(
                     }
                     fileIds()
                     memoryLimit().ifPresent { it.validate() }
+                    networkPolicy().ifPresent { it.validate() }
                     validated = true
                 }
 
@@ -3601,7 +3671,8 @@ private constructor(
                 internal fun validity(): Int =
                     type.let { if (it == JsonValue.from("auto")) 1 else 0 } +
                         (fileIds.asKnown().getOrNull()?.size ?: 0) +
-                        (memoryLimit.asKnown().getOrNull()?.validity() ?: 0)
+                        (memoryLimit.asKnown().getOrNull()?.validity() ?: 0) +
+                        (networkPolicy.asKnown().getOrNull()?.validity() ?: 0)
 
                 /** The memory limit for the code interpreter container. */
                 class MemoryLimit
@@ -3752,6 +3823,201 @@ private constructor(
                     override fun toString() = value.toString()
                 }
 
+                /** Network access policy for the container. */
+                @JsonDeserialize(using = NetworkPolicy.Deserializer::class)
+                @JsonSerialize(using = NetworkPolicy.Serializer::class)
+                class NetworkPolicy
+                private constructor(
+                    private val disabled: ContainerNetworkPolicyDisabled? = null,
+                    private val allowlist: ContainerNetworkPolicyAllowlist? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    fun disabled(): Optional<ContainerNetworkPolicyDisabled> =
+                        Optional.ofNullable(disabled)
+
+                    fun allowlist(): Optional<ContainerNetworkPolicyAllowlist> =
+                        Optional.ofNullable(allowlist)
+
+                    fun isDisabled(): Boolean = disabled != null
+
+                    fun isAllowlist(): Boolean = allowlist != null
+
+                    fun asDisabled(): ContainerNetworkPolicyDisabled =
+                        disabled.getOrThrow("disabled")
+
+                    fun asAllowlist(): ContainerNetworkPolicyAllowlist =
+                        allowlist.getOrThrow("allowlist")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
+                            disabled != null -> visitor.visitDisabled(disabled)
+                            allowlist != null -> visitor.visitAllowlist(allowlist)
+                            else -> visitor.unknown(_json)
+                        }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): NetworkPolicy = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitDisabled(
+                                    disabled: ContainerNetworkPolicyDisabled
+                                ) {
+                                    disabled.validate()
+                                }
+
+                                override fun visitAllowlist(
+                                    allowlist: ContainerNetworkPolicyAllowlist
+                                ) {
+                                    allowlist.validate()
+                                }
+                            }
+                        )
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitDisabled(
+                                    disabled: ContainerNetworkPolicyDisabled
+                                ) = disabled.validity()
+
+                                override fun visitAllowlist(
+                                    allowlist: ContainerNetworkPolicyAllowlist
+                                ) = allowlist.validity()
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is NetworkPolicy &&
+                            disabled == other.disabled &&
+                            allowlist == other.allowlist
+                    }
+
+                    override fun hashCode(): Int = Objects.hash(disabled, allowlist)
+
+                    override fun toString(): String =
+                        when {
+                            disabled != null -> "NetworkPolicy{disabled=$disabled}"
+                            allowlist != null -> "NetworkPolicy{allowlist=$allowlist}"
+                            _json != null -> "NetworkPolicy{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid NetworkPolicy")
+                        }
+
+                    companion object {
+
+                        @JvmStatic
+                        fun ofDisabled(disabled: ContainerNetworkPolicyDisabled) =
+                            NetworkPolicy(disabled = disabled)
+
+                        @JvmStatic
+                        fun ofAllowlist(allowlist: ContainerNetworkPolicyAllowlist) =
+                            NetworkPolicy(allowlist = allowlist)
+                    }
+
+                    /**
+                     * An interface that defines how to map each variant of [NetworkPolicy] to a
+                     * value of type [T].
+                     */
+                    interface Visitor<out T> {
+
+                        fun visitDisabled(disabled: ContainerNetworkPolicyDisabled): T
+
+                        fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist): T
+
+                        /**
+                         * Maps an unknown variant of [NetworkPolicy] to a value of type [T].
+                         *
+                         * An instance of [NetworkPolicy] can contain an unknown variant if it was
+                         * deserialized from data that doesn't match any known variant. For example,
+                         * if the SDK is on an older version than the API, then the API may respond
+                         * with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown NetworkPolicy: $json")
+                        }
+                    }
+
+                    internal class Deserializer :
+                        BaseDeserializer<NetworkPolicy>(NetworkPolicy::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): NetworkPolicy {
+                            val json = JsonValue.fromJsonNode(node)
+                            val type =
+                                json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                            when (type) {
+                                "disabled" -> {
+                                    return tryDeserialize(
+                                            node,
+                                            jacksonTypeRef<ContainerNetworkPolicyDisabled>(),
+                                        )
+                                        ?.let { NetworkPolicy(disabled = it, _json = json) }
+                                        ?: NetworkPolicy(_json = json)
+                                }
+                                "allowlist" -> {
+                                    return tryDeserialize(
+                                            node,
+                                            jacksonTypeRef<ContainerNetworkPolicyAllowlist>(),
+                                        )
+                                        ?.let { NetworkPolicy(allowlist = it, _json = json) }
+                                        ?: NetworkPolicy(_json = json)
+                                }
+                            }
+
+                            return NetworkPolicy(_json = json)
+                        }
+                    }
+
+                    internal class Serializer :
+                        BaseSerializer<NetworkPolicy>(NetworkPolicy::class) {
+
+                        override fun serialize(
+                            value: NetworkPolicy,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider,
+                        ) {
+                            when {
+                                value.disabled != null -> generator.writeObject(value.disabled)
+                                value.allowlist != null -> generator.writeObject(value.allowlist)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid NetworkPolicy")
+                            }
+                        }
+                    }
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -3761,17 +4027,18 @@ private constructor(
                         type == other.type &&
                         fileIds == other.fileIds &&
                         memoryLimit == other.memoryLimit &&
+                        networkPolicy == other.networkPolicy &&
                         additionalProperties == other.additionalProperties
                 }
 
                 private val hashCode: Int by lazy {
-                    Objects.hash(type, fileIds, memoryLimit, additionalProperties)
+                    Objects.hash(type, fileIds, memoryLimit, networkPolicy, additionalProperties)
                 }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "CodeInterpreterToolAuto{type=$type, fileIds=$fileIds, memoryLimit=$memoryLimit, additionalProperties=$additionalProperties}"
+                    "CodeInterpreterToolAuto{type=$type, fileIds=$fileIds, memoryLimit=$memoryLimit, networkPolicy=$networkPolicy, additionalProperties=$additionalProperties}"
             }
         }
 
