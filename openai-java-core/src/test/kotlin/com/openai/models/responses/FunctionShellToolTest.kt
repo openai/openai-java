@@ -11,13 +11,45 @@ internal class FunctionShellToolTest {
 
     @Test
     fun create() {
-        val functionShellTool = FunctionShellTool.builder().build()
+        val functionShellTool =
+            FunctionShellTool.builder()
+                .environment(
+                    ContainerAuto.builder()
+                        .addFileId("file-123")
+                        .memoryLimit(ContainerAuto.MemoryLimit._1G)
+                        .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
+                        .addSkill(SkillReference.builder().skillId("x").version("version").build())
+                        .build()
+                )
+                .build()
+
+        assertThat(functionShellTool.environment())
+            .contains(
+                FunctionShellTool.Environment.ofContainerAuto(
+                    ContainerAuto.builder()
+                        .addFileId("file-123")
+                        .memoryLimit(ContainerAuto.MemoryLimit._1G)
+                        .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
+                        .addSkill(SkillReference.builder().skillId("x").version("version").build())
+                        .build()
+                )
+            )
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val functionShellTool = FunctionShellTool.builder().build()
+        val functionShellTool =
+            FunctionShellTool.builder()
+                .environment(
+                    ContainerAuto.builder()
+                        .addFileId("file-123")
+                        .memoryLimit(ContainerAuto.MemoryLimit._1G)
+                        .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
+                        .addSkill(SkillReference.builder().skillId("x").version("version").build())
+                        .build()
+                )
+                .build()
 
         val roundtrippedFunctionShellTool =
             jsonMapper.readValue(

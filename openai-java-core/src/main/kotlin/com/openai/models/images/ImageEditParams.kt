@@ -33,8 +33,8 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates an edited or extended image given one or more source images and a prompt. This endpoint
- * supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, and `gpt-image-1-mini`) and
- * `dall-e-2`.
+ * supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, and
+ * `chatgpt-image-latest`) and `dall-e-2`.
  */
 class ImageEditParams
 private constructor(
@@ -48,6 +48,7 @@ private constructor(
      *
      * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each image
      * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+     * `chatgpt-image-latest` follows the same input constraints as GPT image models.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
      * than 4MB.
@@ -103,9 +104,7 @@ private constructor(
     fun mask(): Optional<InputStream> = body.mask()
 
     /**
-     * The model to use for image generation. Only `dall-e-2` and the GPT image models are
-     * supported. Defaults to `dall-e-2` unless a parameter specific to the GPT image models is
-     * used.
+     * The model to use for image generation. Defaults to `gpt-image-1.5`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -152,9 +151,7 @@ private constructor(
     fun partialImages(): Optional<Long> = body.partialImages()
 
     /**
-     * The quality of the image that will be generated. `high`, `medium` and `low` are only
-     * supported for the GPT image models. `dall-e-2` only supports `standard` quality. Defaults to
-     * `auto`.
+     * The quality of the image that will be generated for GPT image models. Defaults to `auto`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -164,7 +161,8 @@ private constructor(
     /**
      * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
      * URLs are only valid for 60 minutes after the image has been generated. This parameter is only
-     * supported for `dall-e-2`, as the GPT image models always return base64-encoded images.
+     * supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT image models always return
+     * base64-encoded images.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -351,7 +349,7 @@ private constructor(
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
          * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images.
+         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -374,7 +372,7 @@ private constructor(
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
          * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images.
+         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -386,7 +384,7 @@ private constructor(
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
          * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images.
+         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -495,11 +493,7 @@ private constructor(
          */
         fun mask(path: Path) = apply { body.mask(path) }
 
-        /**
-         * The model to use for image generation. Only `dall-e-2` and the GPT image models are
-         * supported. Defaults to `dall-e-2` unless a parameter specific to the GPT image models is
-         * used.
-         */
+        /** The model to use for image generation. Defaults to `gpt-image-1.5`. */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -628,9 +622,7 @@ private constructor(
         }
 
         /**
-         * The quality of the image that will be generated. `high`, `medium` and `low` are only
-         * supported for the GPT image models. `dall-e-2` only supports `standard` quality. Defaults
-         * to `auto`.
+         * The quality of the image that will be generated for GPT image models. Defaults to `auto`.
          */
         fun quality(quality: Quality?) = apply { body.quality(quality) }
 
@@ -648,8 +640,8 @@ private constructor(
         /**
          * The format in which the generated images are returned. Must be one of `url` or
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This
-         * parameter is only supported for `dall-e-2`, as the GPT image models always return
-         * base64-encoded images.
+         * parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT
+         * image models always return base64-encoded images.
          */
         fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
@@ -884,7 +876,7 @@ private constructor(
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
          * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images.
+         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -941,9 +933,7 @@ private constructor(
         fun mask(): Optional<InputStream> = mask.value.getOptional("mask")
 
         /**
-         * The model to use for image generation. Only `dall-e-2` and the GPT image models are
-         * supported. Defaults to `dall-e-2` unless a parameter specific to the GPT image models is
-         * used.
+         * The model to use for image generation. Defaults to `gpt-image-1.5`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -992,9 +982,7 @@ private constructor(
         fun partialImages(): Optional<Long> = partialImages.value.getOptional("partial_images")
 
         /**
-         * The quality of the image that will be generated. `high`, `medium` and `low` are only
-         * supported for the GPT image models. `dall-e-2` only supports `standard` quality. Defaults
-         * to `auto`.
+         * The quality of the image that will be generated for GPT image models. Defaults to `auto`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1004,8 +992,8 @@ private constructor(
         /**
          * The format in which the generated images are returned. Must be one of `url` or
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This
-         * parameter is only supported for `dall-e-2`, as the GPT image models always return
-         * base64-encoded images.
+         * parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT
+         * image models always return base64-encoded images.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1219,7 +1207,8 @@ private constructor(
              *
              * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`),
              * each image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide
-             * up to 16 images.
+             * up to 16 images. `chatgpt-image-latest` follows the same input constraints as GPT
+             * image models.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1249,7 +1238,8 @@ private constructor(
              *
              * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`),
              * each image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide
-             * up to 16 images.
+             * up to 16 images. `chatgpt-image-latest` follows the same input constraints as GPT
+             * image models.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1261,7 +1251,8 @@ private constructor(
              *
              * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`),
              * each image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide
-             * up to 16 images.
+             * up to 16 images. `chatgpt-image-latest` follows the same input constraints as GPT
+             * image models.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1382,11 +1373,7 @@ private constructor(
                         .build()
                 )
 
-            /**
-             * The model to use for image generation. Only `dall-e-2` and the GPT image models are
-             * supported. Defaults to `dall-e-2` unless a parameter specific to the GPT image models
-             * is used.
-             */
+            /** The model to use for image generation. Defaults to `gpt-image-1.5`. */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
             /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -1522,9 +1509,8 @@ private constructor(
             }
 
             /**
-             * The quality of the image that will be generated. `high`, `medium` and `low` are only
-             * supported for the GPT image models. `dall-e-2` only supports `standard` quality.
-             * Defaults to `auto`.
+             * The quality of the image that will be generated for GPT image models. Defaults to
+             * `auto`.
              */
             fun quality(quality: Quality?) = quality(MultipartField.of(quality))
 
@@ -1543,8 +1529,8 @@ private constructor(
             /**
              * The format in which the generated images are returned. Must be one of `url` or
              * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-             * This parameter is only supported for `dall-e-2`, as the GPT image models always
-             * return base64-encoded images.
+             * This parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as
+             * GPT image models always return base64-encoded images.
              */
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(MultipartField.of(responseFormat))
@@ -1737,6 +1723,7 @@ private constructor(
      *
      * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each image
      * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+     * `chatgpt-image-latest` follows the same input constraints as GPT image models.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
      * than 4MB.
@@ -2279,11 +2266,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /**
-     * The quality of the image that will be generated. `high`, `medium` and `low` are only
-     * supported for the GPT image models. `dall-e-2` only supports `standard` quality. Defaults to
-     * `auto`.
-     */
+    /** The quality of the image that will be generated for GPT image models. Defaults to `auto`. */
     class Quality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -2430,7 +2413,8 @@ private constructor(
     /**
      * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
      * URLs are only valid for 60 minutes after the image has been generated. This parameter is only
-     * supported for `dall-e-2`, as the GPT image models always return base64-encoded images.
+     * supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT image models always return
+     * base64-encoded images.
      */
     class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {

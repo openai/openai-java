@@ -75,6 +75,7 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.conversations()).isNotNull()
         assertThat(client.evals()).isNotNull()
         assertThat(client.containers()).isNotNull()
+        assertThat(client.skills()).isNotNull()
         assertThat(client.videos()).isNotNull()
     }
 

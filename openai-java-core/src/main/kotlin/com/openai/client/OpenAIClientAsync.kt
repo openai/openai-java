@@ -20,6 +20,7 @@ import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.ResponseServiceAsync
+import com.openai.services.async.SkillServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
 import com.openai.services.async.VideoServiceAsync
@@ -102,6 +103,8 @@ interface OpenAIClientAsync {
 
     fun containers(): ContainerServiceAsync
 
+    fun skills(): SkillServiceAsync
+
     fun videos(): VideoServiceAsync
 
     /**
@@ -168,6 +171,8 @@ interface OpenAIClientAsync {
         fun evals(): EvalServiceAsync.WithRawResponse
 
         fun containers(): ContainerServiceAsync.WithRawResponse
+
+        fun skills(): SkillServiceAsync.WithRawResponse
 
         fun videos(): VideoServiceAsync.WithRawResponse
     }

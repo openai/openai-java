@@ -5245,6 +5245,7 @@ private constructor(
         private val callId: JsonField<String>,
         private val type: JsonValue,
         private val id: JsonField<String>,
+        private val environment: JsonField<Environment>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -5255,8 +5256,11 @@ private constructor(
             @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("environment")
+            @ExcludeMissing
+            environment: JsonField<Environment> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        ) : this(action, callId, type, id, status, mutableMapOf())
+        ) : this(action, callId, type, id, environment, status, mutableMapOf())
 
         /**
          * The shell commands and limits that describe how to run the tool call.
@@ -5296,6 +5300,14 @@ private constructor(
         fun id(): Optional<String> = id.getOptional("id")
 
         /**
+         * The environment to execute the shell commands in.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun environment(): Optional<Environment> = environment.getOptional("environment")
+
+        /**
          * The status of the shell call. One of `in_progress`, `completed`, or `incomplete`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -5323,6 +5335,15 @@ private constructor(
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [environment].
+         *
+         * Unlike [environment], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("environment")
+        @ExcludeMissing
+        fun _environment(): JsonField<Environment> = environment
 
         /**
          * Returns the raw JSON value of [status].
@@ -5364,6 +5385,7 @@ private constructor(
             private var callId: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("shell_call")
             private var id: JsonField<String> = JsonMissing.of()
+            private var environment: JsonField<Environment> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5373,6 +5395,7 @@ private constructor(
                 callId = shellCall.callId
                 type = shellCall.type
                 id = shellCall.id
+                environment = shellCall.environment
                 status = shellCall.status
                 additionalProperties = shellCall.additionalProperties.toMutableMap()
             }
@@ -5432,6 +5455,46 @@ private constructor(
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
+            /** The environment to execute the shell commands in. */
+            fun environment(environment: Environment?) =
+                environment(JsonField.ofNullable(environment))
+
+            /** Alias for calling [Builder.environment] with `environment.orElse(null)`. */
+            fun environment(environment: Optional<Environment>) =
+                environment(environment.getOrNull())
+
+            /**
+             * Sets [Builder.environment] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.environment] with a well-typed [Environment] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun environment(environment: JsonField<Environment>) = apply {
+                this.environment = environment
+            }
+
+            /** Alias for calling [environment] with `Environment.ofLocal(local)`. */
+            fun environment(local: LocalEnvironment) = environment(Environment.ofLocal(local))
+
+            /**
+             * Alias for calling [environment] with
+             * `Environment.ofContainerReference(containerReference)`.
+             */
+            fun environment(containerReference: ContainerReference) =
+                environment(Environment.ofContainerReference(containerReference))
+
+            /**
+             * Alias for calling [environment] with the following:
+             * ```java
+             * ContainerReference.builder()
+             *     .containerId(containerId)
+             *     .build()
+             * ```
+             */
+            fun containerReferenceEnvironment(containerId: String) =
+                environment(ContainerReference.builder().containerId(containerId).build())
+
             /** The status of the shell call. One of `in_progress`, `completed`, or `incomplete`. */
             fun status(status: Status?) = status(JsonField.ofNullable(status))
 
@@ -5485,6 +5548,7 @@ private constructor(
                     checkRequired("callId", callId),
                     type,
                     id,
+                    environment,
                     status,
                     additionalProperties.toMutableMap(),
                 )
@@ -5505,6 +5569,7 @@ private constructor(
                 }
             }
             id()
+            environment().ifPresent { it.validate() }
             status().ifPresent { it.validate() }
             validated = true
         }
@@ -5529,6 +5594,7 @@ private constructor(
                 (if (callId.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("shell_call")) 1 else 0 } +
                 (if (id.asKnown().isPresent) 1 else 0) +
+                (environment.asKnown().getOrNull()?.validity() ?: 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The shell commands and limits that describe how to run the tool call. */
@@ -5828,6 +5894,187 @@ private constructor(
                 "Action{commands=$commands, maxOutputLength=$maxOutputLength, timeoutMs=$timeoutMs, additionalProperties=$additionalProperties}"
         }
 
+        /** The environment to execute the shell commands in. */
+        @JsonDeserialize(using = Environment.Deserializer::class)
+        @JsonSerialize(using = Environment.Serializer::class)
+        class Environment
+        private constructor(
+            private val local: LocalEnvironment? = null,
+            private val containerReference: ContainerReference? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            fun local(): Optional<LocalEnvironment> = Optional.ofNullable(local)
+
+            fun containerReference(): Optional<ContainerReference> =
+                Optional.ofNullable(containerReference)
+
+            fun isLocal(): Boolean = local != null
+
+            fun isContainerReference(): Boolean = containerReference != null
+
+            fun asLocal(): LocalEnvironment = local.getOrThrow("local")
+
+            fun asContainerReference(): ContainerReference =
+                containerReference.getOrThrow("containerReference")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    local != null -> visitor.visitLocal(local)
+                    containerReference != null ->
+                        visitor.visitContainerReference(containerReference)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Environment = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitLocal(local: LocalEnvironment) {
+                            local.validate()
+                        }
+
+                        override fun visitContainerReference(
+                            containerReference: ContainerReference
+                        ) {
+                            containerReference.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitLocal(local: LocalEnvironment) = local.validity()
+
+                        override fun visitContainerReference(
+                            containerReference: ContainerReference
+                        ) = containerReference.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Environment &&
+                    local == other.local &&
+                    containerReference == other.containerReference
+            }
+
+            override fun hashCode(): Int = Objects.hash(local, containerReference)
+
+            override fun toString(): String =
+                when {
+                    local != null -> "Environment{local=$local}"
+                    containerReference != null ->
+                        "Environment{containerReference=$containerReference}"
+                    _json != null -> "Environment{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Environment")
+                }
+
+            companion object {
+
+                @JvmStatic fun ofLocal(local: LocalEnvironment) = Environment(local = local)
+
+                @JvmStatic
+                fun ofContainerReference(containerReference: ContainerReference) =
+                    Environment(containerReference = containerReference)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [Environment] to a value of type
+             * [T].
+             */
+            interface Visitor<out T> {
+
+                fun visitLocal(local: LocalEnvironment): T
+
+                fun visitContainerReference(containerReference: ContainerReference): T
+
+                /**
+                 * Maps an unknown variant of [Environment] to a value of type [T].
+                 *
+                 * An instance of [Environment] can contain an unknown variant if it was
+                 * deserialized from data that doesn't match any known variant. For example, if the
+                 * SDK is on an older version than the API, then the API may respond with new
+                 * variants that the SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown Environment: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Environment>(Environment::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Environment {
+                    val json = JsonValue.fromJsonNode(node)
+                    val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                    when (type) {
+                        "local" -> {
+                            return tryDeserialize(node, jacksonTypeRef<LocalEnvironment>())?.let {
+                                Environment(local = it, _json = json)
+                            } ?: Environment(_json = json)
+                        }
+                        "container_reference" -> {
+                            return tryDeserialize(node, jacksonTypeRef<ContainerReference>())?.let {
+                                Environment(containerReference = it, _json = json)
+                            } ?: Environment(_json = json)
+                        }
+                    }
+
+                    return Environment(_json = json)
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Environment>(Environment::class) {
+
+                override fun serialize(
+                    value: Environment,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.local != null -> generator.writeObject(value.local)
+                        value.containerReference != null ->
+                            generator.writeObject(value.containerReference)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Environment")
+                    }
+                }
+            }
+        }
+
         /** The status of the shell call. One of `in_progress`, `completed`, or `incomplete`. */
         class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -5974,18 +6221,19 @@ private constructor(
                 callId == other.callId &&
                 type == other.type &&
                 id == other.id &&
+                environment == other.environment &&
                 status == other.status &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(action, callId, type, id, status, additionalProperties)
+            Objects.hash(action, callId, type, id, environment, status, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ShellCall{action=$action, callId=$callId, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
+            "ShellCall{action=$action, callId=$callId, type=$type, id=$id, environment=$environment, status=$status, additionalProperties=$additionalProperties}"
     }
 
     /** The streamed output items emitted by a shell tool call. */
