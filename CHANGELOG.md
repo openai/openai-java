@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.21.0 (2026-02-13)
+
+Full Changelog: [v4.20.0...v4.21.0](https://github.com/openai/openai-java/compare/v4.20.0...v4.21.0)
+
+### Features
+
+* **api:** container network_policy and skills ([c248c52](https://github.com/openai/openai-java/commit/c248c522e1ef826aa28c1176dee234ba64bc0550))
+
+
+### Documentation
+
+* update comment ([6a1a02b](https://github.com/openai/openai-java/commit/6a1a02b54a87dc5ad846086f4ca0eda047928720))
+
 ## 4.20.0 (2026-02-10)
 
 Full Changelog: [v4.19.0...v4.20.0](https://github.com/openai/openai-java/compare/v4.19.0...v4.20.0)
