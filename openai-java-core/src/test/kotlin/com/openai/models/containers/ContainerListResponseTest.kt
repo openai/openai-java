@@ -26,6 +26,12 @@ internal class ContainerListResponseTest {
                 )
                 .lastActiveAt(0L)
                 .memoryLimit(ContainerListResponse.MemoryLimit._1G)
+                .networkPolicy(
+                    ContainerListResponse.NetworkPolicy.builder()
+                        .type(ContainerListResponse.NetworkPolicy.Type.ALLOWLIST)
+                        .addAllowedDomain("string")
+                        .build()
+                )
                 .build()
 
         assertThat(containerListResponse.id()).isEqualTo("id")
@@ -43,6 +49,13 @@ internal class ContainerListResponseTest {
         assertThat(containerListResponse.lastActiveAt()).contains(0L)
         assertThat(containerListResponse.memoryLimit())
             .contains(ContainerListResponse.MemoryLimit._1G)
+        assertThat(containerListResponse.networkPolicy())
+            .contains(
+                ContainerListResponse.NetworkPolicy.builder()
+                    .type(ContainerListResponse.NetworkPolicy.Type.ALLOWLIST)
+                    .addAllowedDomain("string")
+                    .build()
+            )
     }
 
     @Test
@@ -63,6 +76,12 @@ internal class ContainerListResponseTest {
                 )
                 .lastActiveAt(0L)
                 .memoryLimit(ContainerListResponse.MemoryLimit._1G)
+                .networkPolicy(
+                    ContainerListResponse.NetworkPolicy.builder()
+                        .type(ContainerListResponse.NetworkPolicy.Type.ALLOWLIST)
+                        .addAllowedDomain("string")
+                        .build()
+                )
                 .build()
 
         val roundtrippedContainerListResponse =

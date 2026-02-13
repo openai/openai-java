@@ -13,6 +13,7 @@ internal class ContainerListParamsTest {
         ContainerListParams.builder()
             .after("after")
             .limit(0L)
+            .name("name")
             .order(ContainerListParams.Order.ASC)
             .build()
     }
@@ -23,6 +24,7 @@ internal class ContainerListParamsTest {
             ContainerListParams.builder()
                 .after("after")
                 .limit(0L)
+                .name("name")
                 .order(ContainerListParams.Order.ASC)
                 .build()
 
@@ -33,6 +35,7 @@ internal class ContainerListParamsTest {
                 QueryParams.builder()
                     .put("after", "after")
                     .put("limit", "0")
+                    .put("name", "name")
                     .put("order", "asc")
                     .build()
             )

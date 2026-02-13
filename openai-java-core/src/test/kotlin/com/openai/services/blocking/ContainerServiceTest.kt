@@ -5,6 +5,8 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.containers.ContainerCreateParams
+import com.openai.models.responses.ContainerNetworkPolicyDisabled
+import com.openai.models.responses.SkillReference
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -32,6 +34,8 @@ internal class ContainerServiceTest {
                     )
                     .addFileId("string")
                     .memoryLimit(ContainerCreateParams.MemoryLimit._1G)
+                    .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
+                    .addSkill(SkillReference.builder().skillId("x").version("version").build())
                     .build()
             )
 
