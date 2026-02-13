@@ -18,6 +18,7 @@ class ContainerListParams
 private constructor(
     private val after: String?,
     private val limit: Long?,
+    private val name: String?,
     private val order: Order?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -35,6 +36,9 @@ private constructor(
      * default is 20.
      */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
+
+    /** Filter results by container name. */
+    fun name(): Optional<String> = Optional.ofNullable(name)
 
     /**
      * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc`
@@ -63,6 +67,7 @@ private constructor(
 
         private var after: String? = null
         private var limit: Long? = null
+        private var name: String? = null
         private var order: Order? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
@@ -71,6 +76,7 @@ private constructor(
         internal fun from(containerListParams: ContainerListParams) = apply {
             after = containerListParams.after
             limit = containerListParams.limit
+            name = containerListParams.name
             order = containerListParams.order
             additionalHeaders = containerListParams.additionalHeaders.toBuilder()
             additionalQueryParams = containerListParams.additionalQueryParams.toBuilder()
@@ -102,6 +108,12 @@ private constructor(
 
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
+
+        /** Filter results by container name. */
+        fun name(name: String?) = apply { this.name = name }
+
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+        fun name(name: Optional<String>) = name(name.getOrNull())
 
         /**
          * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
@@ -219,6 +231,7 @@ private constructor(
             ContainerListParams(
                 after,
                 limit,
+                name,
                 order,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -232,6 +245,7 @@ private constructor(
             .apply {
                 after?.let { put("after", it) }
                 limit?.let { put("limit", it.toString()) }
+                name?.let { put("name", it) }
                 order?.let { put("order", it.toString()) }
                 putAll(additionalQueryParams)
             }
@@ -374,14 +388,15 @@ private constructor(
         return other is ContainerListParams &&
             after == other.after &&
             limit == other.limit &&
+            name == other.name &&
             order == other.order &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
     override fun hashCode(): Int =
-        Objects.hash(after, limit, order, additionalHeaders, additionalQueryParams)
+        Objects.hash(after, limit, name, order, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ContainerListParams{after=$after, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ContainerListParams{after=$after, limit=$limit, name=$name, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

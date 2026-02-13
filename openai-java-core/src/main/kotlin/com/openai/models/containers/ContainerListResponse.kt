@@ -11,7 +11,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -29,6 +31,7 @@ private constructor(
     private val expiresAfter: JsonField<ExpiresAfter>,
     private val lastActiveAt: JsonField<Long>,
     private val memoryLimit: JsonField<MemoryLimit>,
+    private val networkPolicy: JsonField<NetworkPolicy>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -48,6 +51,9 @@ private constructor(
         @JsonProperty("memory_limit")
         @ExcludeMissing
         memoryLimit: JsonField<MemoryLimit> = JsonMissing.of(),
+        @JsonProperty("network_policy")
+        @ExcludeMissing
+        networkPolicy: JsonField<NetworkPolicy> = JsonMissing.of(),
     ) : this(
         id,
         createdAt,
@@ -57,6 +63,7 @@ private constructor(
         expiresAfter,
         lastActiveAt,
         memoryLimit,
+        networkPolicy,
         mutableMapOf(),
     )
 
@@ -127,6 +134,14 @@ private constructor(
     fun memoryLimit(): Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
 
     /**
+     * Network access policy for the container.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun networkPolicy(): Optional<NetworkPolicy> = networkPolicy.getOptional("network_policy")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -188,6 +203,15 @@ private constructor(
     @ExcludeMissing
     fun _memoryLimit(): JsonField<MemoryLimit> = memoryLimit
 
+    /**
+     * Returns the raw JSON value of [networkPolicy].
+     *
+     * Unlike [networkPolicy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("network_policy")
+    @ExcludeMissing
+    fun _networkPolicy(): JsonField<NetworkPolicy> = networkPolicy
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -228,6 +252,7 @@ private constructor(
         private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
         private var lastActiveAt: JsonField<Long> = JsonMissing.of()
         private var memoryLimit: JsonField<MemoryLimit> = JsonMissing.of()
+        private var networkPolicy: JsonField<NetworkPolicy> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -240,6 +265,7 @@ private constructor(
             expiresAfter = containerListResponse.expiresAfter
             lastActiveAt = containerListResponse.lastActiveAt
             memoryLimit = containerListResponse.memoryLimit
+            networkPolicy = containerListResponse.networkPolicy
             additionalProperties = containerListResponse.additionalProperties.toMutableMap()
         }
 
@@ -342,6 +368,20 @@ private constructor(
             this.memoryLimit = memoryLimit
         }
 
+        /** Network access policy for the container. */
+        fun networkPolicy(networkPolicy: NetworkPolicy) = networkPolicy(JsonField.of(networkPolicy))
+
+        /**
+         * Sets [Builder.networkPolicy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.networkPolicy] with a well-typed [NetworkPolicy] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun networkPolicy(networkPolicy: JsonField<NetworkPolicy>) = apply {
+            this.networkPolicy = networkPolicy
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -387,6 +427,7 @@ private constructor(
                 expiresAfter,
                 lastActiveAt,
                 memoryLimit,
+                networkPolicy,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -406,6 +447,7 @@ private constructor(
         expiresAfter().ifPresent { it.validate() }
         lastActiveAt()
         memoryLimit().ifPresent { it.validate() }
+        networkPolicy().ifPresent { it.validate() }
         validated = true
     }
 
@@ -431,7 +473,8 @@ private constructor(
             (if (status.asKnown().isPresent) 1 else 0) +
             (expiresAfter.asKnown().getOrNull()?.validity() ?: 0) +
             (if (lastActiveAt.asKnown().isPresent) 1 else 0) +
-            (memoryLimit.asKnown().getOrNull()?.validity() ?: 0)
+            (memoryLimit.asKnown().getOrNull()?.validity() ?: 0) +
+            (networkPolicy.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
      * The container will expire after this time period. The anchor is the reference point for the
@@ -881,6 +924,353 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** Network access policy for the container. */
+    class NetworkPolicy
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val type: JsonField<Type>,
+        private val allowedDomains: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            @JsonProperty("allowed_domains")
+            @ExcludeMissing
+            allowedDomains: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(type, allowedDomains, mutableMapOf())
+
+        /**
+         * The network policy mode.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun type(): Type = type.getRequired("type")
+
+        /**
+         * Allowed outbound domains when `type` is `allowlist`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun allowedDomains(): Optional<List<String>> = allowedDomains.getOptional("allowed_domains")
+
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+        /**
+         * Returns the raw JSON value of [allowedDomains].
+         *
+         * Unlike [allowedDomains], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("allowed_domains")
+        @ExcludeMissing
+        fun _allowedDomains(): JsonField<List<String>> = allowedDomains
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [NetworkPolicy].
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [NetworkPolicy]. */
+        class Builder internal constructor() {
+
+            private var type: JsonField<Type>? = null
+            private var allowedDomains: JsonField<MutableList<String>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(networkPolicy: NetworkPolicy) = apply {
+                type = networkPolicy.type
+                allowedDomains = networkPolicy.allowedDomains.map { it.toMutableList() }
+                additionalProperties = networkPolicy.additionalProperties.toMutableMap()
+            }
+
+            /** The network policy mode. */
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
+
+            /** Allowed outbound domains when `type` is `allowlist`. */
+            fun allowedDomains(allowedDomains: List<String>) =
+                allowedDomains(JsonField.of(allowedDomains))
+
+            /**
+             * Sets [Builder.allowedDomains] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.allowedDomains] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun allowedDomains(allowedDomains: JsonField<List<String>>) = apply {
+                this.allowedDomains = allowedDomains.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [allowedDomains].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addAllowedDomain(allowedDomain: String) = apply {
+                allowedDomains =
+                    (allowedDomains ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("allowedDomains", it).add(allowedDomain)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [NetworkPolicy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): NetworkPolicy =
+                NetworkPolicy(
+                    checkRequired("type", type),
+                    (allowedDomains ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): NetworkPolicy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            type().validate()
+            allowedDomains()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (type.asKnown().getOrNull()?.validity() ?: 0) +
+                (allowedDomains.asKnown().getOrNull()?.size ?: 0)
+
+        /** The network policy mode. */
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val ALLOWLIST = of("allowlist")
+
+                @JvmField val DISABLED = of("disabled")
+
+                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+            }
+
+            /** An enum containing [Type]'s known values. */
+            enum class Known {
+                ALLOWLIST,
+                DISABLED,
+            }
+
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                ALLOWLIST,
+                DISABLED,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    ALLOWLIST -> Value.ALLOWLIST
+                    DISABLED -> Value.DISABLED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    ALLOWLIST -> Known.ALLOWLIST
+                    DISABLED -> Known.DISABLED
+                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Type && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is NetworkPolicy &&
+                type == other.type &&
+                allowedDomains == other.allowedDomains &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(type, allowedDomains, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "NetworkPolicy{type=$type, allowedDomains=$allowedDomains, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -895,6 +1285,7 @@ private constructor(
             expiresAfter == other.expiresAfter &&
             lastActiveAt == other.lastActiveAt &&
             memoryLimit == other.memoryLimit &&
+            networkPolicy == other.networkPolicy &&
             additionalProperties == other.additionalProperties
     }
 
@@ -908,6 +1299,7 @@ private constructor(
             expiresAfter,
             lastActiveAt,
             memoryLimit,
+            networkPolicy,
             additionalProperties,
         )
     }
@@ -915,5 +1307,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ContainerListResponse{id=$id, createdAt=$createdAt, name=$name, object_=$object_, status=$status, expiresAfter=$expiresAfter, lastActiveAt=$lastActiveAt, memoryLimit=$memoryLimit, additionalProperties=$additionalProperties}"
+        "ContainerListResponse{id=$id, createdAt=$createdAt, name=$name, object_=$object_, status=$status, expiresAfter=$expiresAfter, lastActiveAt=$lastActiveAt, memoryLimit=$memoryLimit, networkPolicy=$networkPolicy, additionalProperties=$additionalProperties}"
 }
