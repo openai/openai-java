@@ -59,11 +59,7 @@ internal class WebhookServiceAsyncTest {
 
     @Test
     fun unwrapWithoutSecretShouldThrow() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
+        val client = OpenAIOkHttpClientAsync.builder().apiKey("My API Key").build()
         val webhookServiceAsync = client.webhooks()
 
         val headers =
