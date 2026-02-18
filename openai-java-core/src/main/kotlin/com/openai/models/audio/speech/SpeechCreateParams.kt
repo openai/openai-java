@@ -21,7 +21,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Generates audio from the input text. */
+/**
+ * Generates audio from the input text.
+ *
+ * Returns the audio file content, or a stream of audio events.
+ */
 class SpeechCreateParams
 private constructor(
     private val body: Body,

@@ -11,7 +11,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Cancel a ChatKit session */
+/**
+ * Cancel an active ChatKit session and return its most recent metadata.
+ *
+ * Cancelling prevents new requests from using the issued client secret.
+ */
 class SessionCancelParams
 private constructor(
     private val sessionId: String?,

@@ -34,7 +34,12 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 import kotlin.jvm.optionals.getOrNull
 
-/** Transcribes audio into the input language. */
+/**
+ * Transcribes audio into the input language.
+ *
+ * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a stream
+ * of transcript events.
+ */
 class TranscriptionCreateParams
 private constructor(
     private val body: Body,

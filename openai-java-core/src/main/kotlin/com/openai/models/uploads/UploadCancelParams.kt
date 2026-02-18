@@ -11,7 +11,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
+/**
+ * Cancels the Upload. No Parts may be added after an Upload is cancelled.
+ *
+ * Returns the Upload object with status `cancelled`.
+ */
 class UploadCancelParams
 private constructor(
     private val uploadId: String?,

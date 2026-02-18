@@ -25,7 +25,7 @@ interface SessionServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionServiceAsync
 
-    /** Create a ChatKit session */
+    /** Create a ChatKit session. */
     fun create(params: SessionCreateParams): CompletableFuture<ChatSession> =
         create(params, RequestOptions.none())
 
@@ -35,7 +35,11 @@ interface SessionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatSession>
 
-    /** Cancel a ChatKit session */
+    /**
+     * Cancel an active ChatKit session and return its most recent metadata.
+     *
+     * Cancelling prevents new requests from using the issued client secret.
+     */
     fun cancel(sessionId: String): CompletableFuture<ChatSession> =
         cancel(sessionId, SessionCancelParams.none())
 

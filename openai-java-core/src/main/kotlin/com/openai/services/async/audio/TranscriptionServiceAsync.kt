@@ -28,7 +28,12 @@ interface TranscriptionServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionServiceAsync
 
-    /** Transcribes audio into the input language. */
+    /**
+     * Transcribes audio into the input language.
+     *
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
+     */
     fun create(params: TranscriptionCreateParams): CompletableFuture<TranscriptionCreateResponse> =
         create(params, RequestOptions.none())
 
@@ -38,7 +43,12 @@ interface TranscriptionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<TranscriptionCreateResponse>
 
-    /** Transcribes audio into the input language. */
+    /**
+     * Transcribes audio into the input language.
+     *
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
+     */
     fun createStreaming(
         params: TranscriptionCreateParams
     ): AsyncStreamResponse<TranscriptionStreamEvent> =

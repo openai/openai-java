@@ -34,7 +34,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Creates a completion for the provided prompt and parameters. */
+/**
+ * Creates a completion for the provided prompt and parameters.
+ *
+ * Returns a completion object, or a sequence of completion objects if the request is streamed.
+ */
 class CompletionCreateParams
 private constructor(
     private val body: Body,

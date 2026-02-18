@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get Skill Version Content */
+/** Download a skill version zip bundle. */
 class ContentRetrieveParams
 private constructor(
     private val skillId: String,

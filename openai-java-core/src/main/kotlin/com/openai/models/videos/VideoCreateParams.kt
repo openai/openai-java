@@ -22,7 +22,7 @@ import java.util.Optional
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
-/** Create a video */
+/** Create a new video generation job from a prompt and optional reference assets. */
 class VideoCreateParams
 private constructor(
     private val body: Body,

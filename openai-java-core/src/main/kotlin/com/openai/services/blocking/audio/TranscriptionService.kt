@@ -26,7 +26,12 @@ interface TranscriptionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionService
 
-    /** Transcribes audio into the input language. */
+    /**
+     * Transcribes audio into the input language.
+     *
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
+     */
     fun create(params: TranscriptionCreateParams): TranscriptionCreateResponse =
         create(params, RequestOptions.none())
 
@@ -36,7 +41,12 @@ interface TranscriptionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): TranscriptionCreateResponse
 
-    /** Transcribes audio into the input language. */
+    /**
+     * Transcribes audio into the input language.
+     *
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
+     */
     @MustBeClosed
     fun createStreaming(
         params: TranscriptionCreateParams

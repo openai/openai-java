@@ -24,7 +24,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a ChatKit session */
+/** Create a ChatKit session. */
 class SessionCreateParams
 private constructor(
     private val body: Body,

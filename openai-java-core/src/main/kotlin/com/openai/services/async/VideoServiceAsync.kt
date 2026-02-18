@@ -32,7 +32,7 @@ interface VideoServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoServiceAsync
 
-    /** Create a video */
+    /** Create a new video generation job from a prompt and optional reference assets. */
     fun create(params: VideoCreateParams): CompletableFuture<Video> =
         create(params, RequestOptions.none())
 
@@ -42,7 +42,7 @@ interface VideoServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Video>
 
-    /** Retrieve a video */
+    /** Fetch the latest metadata for a generated video. */
     fun retrieve(videoId: String): CompletableFuture<Video> =
         retrieve(videoId, VideoRetrieveParams.none())
 
@@ -74,7 +74,7 @@ interface VideoServiceAsync {
     fun retrieve(videoId: String, requestOptions: RequestOptions): CompletableFuture<Video> =
         retrieve(videoId, VideoRetrieveParams.none(), requestOptions)
 
-    /** List videos */
+    /** List recently generated videos for the current project. */
     fun list(): CompletableFuture<VideoListPageAsync> = list(VideoListParams.none())
 
     /** @see list */
@@ -92,7 +92,7 @@ interface VideoServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<VideoListPageAsync> =
         list(VideoListParams.none(), requestOptions)
 
-    /** Delete a video */
+    /** Permanently delete a completed or failed video and its stored assets. */
     fun delete(videoId: String): CompletableFuture<VideoDeleteResponse> =
         delete(videoId, VideoDeleteParams.none())
 
@@ -127,7 +127,11 @@ interface VideoServiceAsync {
     ): CompletableFuture<VideoDeleteResponse> =
         delete(videoId, VideoDeleteParams.none(), requestOptions)
 
-    /** Download video content */
+    /**
+     * Download the generated video bytes or a derived preview asset.
+     *
+     * Streams the rendered video content for the specified video job.
+     */
     fun downloadContent(videoId: String): CompletableFuture<HttpResponse> =
         downloadContent(videoId, VideoDownloadContentParams.none())
 
@@ -162,7 +166,7 @@ interface VideoServiceAsync {
     ): CompletableFuture<HttpResponse> =
         downloadContent(videoId, VideoDownloadContentParams.none(), requestOptions)
 
-    /** Create a video remix */
+    /** Create a remix of a completed video using a refreshed prompt. */
     fun remix(videoId: String, params: VideoRemixParams): CompletableFuture<Video> =
         remix(videoId, params, RequestOptions.none())
 

@@ -23,7 +23,11 @@ interface SpeechServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeechServiceAsync
 
-    /** Generates audio from the input text. */
+    /**
+     * Generates audio from the input text.
+     *
+     * Returns the audio file content, or a stream of audio events.
+     */
     fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
         create(params, RequestOptions.none())
 

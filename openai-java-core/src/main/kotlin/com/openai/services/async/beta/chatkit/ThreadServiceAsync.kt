@@ -30,7 +30,7 @@ interface ThreadServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadServiceAsync
 
-    /** Retrieve a ChatKit thread */
+    /** Retrieve a ChatKit thread by its identifier. */
     fun retrieve(threadId: String): CompletableFuture<ChatKitThread> =
         retrieve(threadId, ThreadRetrieveParams.none())
 
@@ -65,7 +65,7 @@ interface ThreadServiceAsync {
     ): CompletableFuture<ChatKitThread> =
         retrieve(threadId, ThreadRetrieveParams.none(), requestOptions)
 
-    /** List ChatKit threads */
+    /** List ChatKit threads with optional pagination and user filters. */
     fun list(): CompletableFuture<ThreadListPageAsync> = list(ThreadListParams.none())
 
     /** @see list */
@@ -83,7 +83,7 @@ interface ThreadServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<ThreadListPageAsync> =
         list(ThreadListParams.none(), requestOptions)
 
-    /** Delete a ChatKit thread */
+    /** Delete a ChatKit thread along with its items and stored attachments. */
     fun delete(threadId: String): CompletableFuture<ThreadDeleteResponse> =
         delete(threadId, ThreadDeleteParams.none())
 
@@ -118,7 +118,7 @@ interface ThreadServiceAsync {
     ): CompletableFuture<ThreadDeleteResponse> =
         delete(threadId, ThreadDeleteParams.none(), requestOptions)
 
-    /** List ChatKit thread items */
+    /** List items that belong to a ChatKit thread. */
     fun listItems(threadId: String): CompletableFuture<ThreadListItemsPageAsync> =
         listItems(threadId, ThreadListItemsParams.none())
 

@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get Skill Content */
+/** Download a skill zip bundle by its ID. */
 class ContentRetrieveParams
 private constructor(
     private val skillId: String?,

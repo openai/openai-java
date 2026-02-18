@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete Skill */
+/** Delete a skill by its ID. */
 class SkillDeleteParams
 private constructor(
     private val skillId: String?,

@@ -23,7 +23,11 @@ interface SpeechService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeechService
 
-    /** Generates audio from the input text. */
+    /**
+     * Generates audio from the input text.
+     *
+     * Returns the audio file content, or a stream of audio events.
+     */
     @MustBeClosed
     fun create(params: SpeechCreateParams): HttpResponse = create(params, RequestOptions.none())
 

@@ -32,7 +32,9 @@ import kotlin.jvm.optionals.getOrNull
  * You can specify the order of the Parts by passing in an ordered list of the Part IDs.
  *
  * The number of bytes uploaded upon completion must match the number of bytes initially specified
- * when creating the Upload object. No Parts may be added after an Upload is completed.
+ * when creating the Upload object. No Parts may be added after an Upload is completed. Returns the
+ * Upload object with status `completed`, including an additional `file` property containing the
+ * created usable File object.
  */
 class UploadCompleteParams
 private constructor(
