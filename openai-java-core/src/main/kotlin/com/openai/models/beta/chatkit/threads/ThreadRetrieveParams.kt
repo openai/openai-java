@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Retrieve a ChatKit thread */
+/** Retrieve a ChatKit thread by its identifier. */
 class ThreadRetrieveParams
 private constructor(
     private val threadId: String?,

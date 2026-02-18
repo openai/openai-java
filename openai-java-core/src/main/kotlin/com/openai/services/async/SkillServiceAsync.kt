@@ -36,7 +36,7 @@ interface SkillServiceAsync {
 
     fun versions(): VersionServiceAsync
 
-    /** Create Skill */
+    /** Create a new skill. */
     fun create(): CompletableFuture<Skill> = create(SkillCreateParams.none())
 
     /** @see create */
@@ -53,7 +53,7 @@ interface SkillServiceAsync {
     fun create(requestOptions: RequestOptions): CompletableFuture<Skill> =
         create(SkillCreateParams.none(), requestOptions)
 
-    /** Get Skill */
+    /** Get a skill by its ID. */
     fun retrieve(skillId: String): CompletableFuture<Skill> =
         retrieve(skillId, SkillRetrieveParams.none())
 
@@ -85,7 +85,7 @@ interface SkillServiceAsync {
     fun retrieve(skillId: String, requestOptions: RequestOptions): CompletableFuture<Skill> =
         retrieve(skillId, SkillRetrieveParams.none(), requestOptions)
 
-    /** Update Skill Default Version */
+    /** Update the default version pointer for a skill. */
     fun update(skillId: String, params: SkillUpdateParams): CompletableFuture<Skill> =
         update(skillId, params, RequestOptions.none())
 
@@ -107,7 +107,7 @@ interface SkillServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Skill>
 
-    /** List Skills */
+    /** List all skills for the current project. */
     fun list(): CompletableFuture<SkillListPageAsync> = list(SkillListParams.none())
 
     /** @see list */
@@ -125,7 +125,7 @@ interface SkillServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<SkillListPageAsync> =
         list(SkillListParams.none(), requestOptions)
 
-    /** Delete Skill */
+    /** Delete a skill by its ID. */
     fun delete(skillId: String): CompletableFuture<DeletedSkill> =
         delete(skillId, SkillDeleteParams.none())
 

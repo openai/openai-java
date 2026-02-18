@@ -58,6 +58,9 @@ import kotlin.jvm.optionals.getOrNull
  * for newer reasoning models. Parameters that are only supported for reasoning models are noted
  * below. For the current state of unsupported parameters in reasoning models,
  * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
+ *
+ * Returns a chat completion object, or a streamed sequence of chat completion chunk objects if the
+ * request is streamed.
  */
 class ChatCompletionCreateParams
 private constructor(

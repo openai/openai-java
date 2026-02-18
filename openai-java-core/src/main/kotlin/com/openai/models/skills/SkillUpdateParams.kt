@@ -20,7 +20,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Update Skill Default Version */
+/** Update the default version pointer for a skill. */
 class SkillUpdateParams
 private constructor(
     private val skillId: String?,

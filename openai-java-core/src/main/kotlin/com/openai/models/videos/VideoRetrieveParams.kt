@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Retrieve a video */
+/** Fetch the latest metadata for a generated video. */
 class VideoRetrieveParams
 private constructor(
     private val videoId: String?,

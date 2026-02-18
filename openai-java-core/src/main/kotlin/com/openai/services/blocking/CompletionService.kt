@@ -25,7 +25,11 @@ interface CompletionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompletionService
 
-    /** Creates a completion for the provided prompt and parameters. */
+    /**
+     * Creates a completion for the provided prompt and parameters.
+     *
+     * Returns a completion object, or a sequence of completion objects if the request is streamed.
+     */
     fun create(params: CompletionCreateParams): Completion = create(params, RequestOptions.none())
 
     /** @see create */
@@ -34,7 +38,11 @@ interface CompletionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Completion
 
-    /** Creates a completion for the provided prompt and parameters. */
+    /**
+     * Creates a completion for the provided prompt and parameters.
+     *
+     * Returns a completion object, or a sequence of completion objects if the request is streamed.
+     */
     @MustBeClosed
     fun createStreaming(params: CompletionCreateParams): StreamResponse<Completion> =
         createStreaming(params, RequestOptions.none())

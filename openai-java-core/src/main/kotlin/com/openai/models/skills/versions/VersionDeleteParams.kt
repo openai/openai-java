@@ -12,7 +12,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete Skill Version */
+/** Delete a skill version. */
 class VersionDeleteParams
 private constructor(
     private val skillId: String,

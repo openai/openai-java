@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List Skills */
+/** List all skills for the current project. */
 class SkillListParams
 private constructor(
     private val after: String?,

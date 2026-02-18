@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete a ChatKit thread */
+/** Delete a ChatKit thread along with its items and stored attachments. */
 class ThreadDeleteParams
 private constructor(
     private val threadId: String?,

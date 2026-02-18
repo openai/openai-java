@@ -13,7 +13,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Download video content */
+/**
+ * Download the generated video bytes or a derived preview asset.
+ *
+ * Streams the rendered video content for the specified video job.
+ */
 class VideoDownloadContentParams
 private constructor(
     private val videoId: String?,

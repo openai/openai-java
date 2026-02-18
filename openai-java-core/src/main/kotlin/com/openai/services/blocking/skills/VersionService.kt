@@ -32,7 +32,7 @@ interface VersionService {
 
     fun content(): ContentService
 
-    /** Create Skill Version */
+    /** Create a new immutable skill version. */
     fun create(skillId: String): SkillVersion = create(skillId, VersionCreateParams.none())
 
     /** @see create */
@@ -61,7 +61,7 @@ interface VersionService {
     fun create(skillId: String, requestOptions: RequestOptions): SkillVersion =
         create(skillId, VersionCreateParams.none(), requestOptions)
 
-    /** Get Skill Version */
+    /** Get a specific skill version. */
     fun retrieve(version: String, params: VersionRetrieveParams): SkillVersion =
         retrieve(version, params, RequestOptions.none())
 
@@ -82,7 +82,7 @@ interface VersionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SkillVersion
 
-    /** List Skill Versions */
+    /** List skill versions for a skill. */
     fun list(skillId: String): VersionListPage = list(skillId, VersionListParams.none())
 
     /** @see list */
@@ -111,7 +111,7 @@ interface VersionService {
     fun list(skillId: String, requestOptions: RequestOptions): VersionListPage =
         list(skillId, VersionListParams.none(), requestOptions)
 
-    /** Delete Skill Version */
+    /** Delete a skill version. */
     fun delete(version: String, params: VersionDeleteParams): DeletedSkillVersion =
         delete(version, params, RequestOptions.none())
 

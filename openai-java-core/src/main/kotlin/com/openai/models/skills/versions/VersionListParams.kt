@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List Skill Versions */
+/** List skill versions for a skill. */
 class VersionListParams
 private constructor(
     private val skillId: String?,

@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List ChatKit thread items */
+/** List items that belong to a ChatKit thread. */
 class ThreadListItemsParams
 private constructor(
     private val threadId: String?,

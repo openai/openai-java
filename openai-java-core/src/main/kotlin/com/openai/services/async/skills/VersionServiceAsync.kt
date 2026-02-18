@@ -32,7 +32,7 @@ interface VersionServiceAsync {
 
     fun content(): ContentServiceAsync
 
-    /** Create Skill Version */
+    /** Create a new immutable skill version. */
     fun create(skillId: String): CompletableFuture<SkillVersion> =
         create(skillId, VersionCreateParams.none())
 
@@ -64,7 +64,7 @@ interface VersionServiceAsync {
     fun create(skillId: String, requestOptions: RequestOptions): CompletableFuture<SkillVersion> =
         create(skillId, VersionCreateParams.none(), requestOptions)
 
-    /** Get Skill Version */
+    /** Get a specific skill version. */
     fun retrieve(version: String, params: VersionRetrieveParams): CompletableFuture<SkillVersion> =
         retrieve(version, params, RequestOptions.none())
 
@@ -86,7 +86,7 @@ interface VersionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<SkillVersion>
 
-    /** List Skill Versions */
+    /** List skill versions for a skill. */
     fun list(skillId: String): CompletableFuture<VersionListPageAsync> =
         list(skillId, VersionListParams.none())
 
@@ -121,7 +121,7 @@ interface VersionServiceAsync {
     ): CompletableFuture<VersionListPageAsync> =
         list(skillId, VersionListParams.none(), requestOptions)
 
-    /** Delete Skill Version */
+    /** Delete a skill version. */
     fun delete(
         version: String,
         params: VersionDeleteParams,

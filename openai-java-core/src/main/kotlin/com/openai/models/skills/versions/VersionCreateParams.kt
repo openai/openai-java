@@ -27,7 +27,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 import kotlin.jvm.optionals.getOrNull
 
-/** Create Skill Version */
+/** Create a new immutable skill version. */
 class VersionCreateParams
 private constructor(
     private val skillId: String?,

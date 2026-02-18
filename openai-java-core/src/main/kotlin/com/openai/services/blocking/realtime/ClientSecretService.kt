@@ -24,7 +24,23 @@ interface ClientSecretService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ClientSecretService
 
-    /** Create a Realtime client secret with an associated session configuration. */
+    /**
+     * Create a Realtime client secret with an associated session configuration.
+     *
+     * Client secrets are short-lived tokens that can be passed to a client app, such as a web
+     * frontend or mobile client, which grants access to the Realtime API without leaking your main
+     * API key. You can configure a custom TTL for each client secret.
+     *
+     * You can also attach session configuration options to the client secret, which will be applied
+     * to any sessions created using that client secret, but these can also be overridden by the
+     * client connection.
+     *
+     * [Learn more about authentication with client secrets over
+     * WebRTC](https://platform.openai.com/docs/guides/realtime-webrtc).
+     *
+     * Returns the created client secret and the effective session object. The client secret is a
+     * string that looks like `ek_1234`.
+     */
     fun create(): ClientSecretCreateResponse = create(ClientSecretCreateParams.none())
 
     /** @see create */

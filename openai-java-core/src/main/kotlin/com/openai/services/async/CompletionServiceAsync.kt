@@ -27,7 +27,11 @@ interface CompletionServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompletionServiceAsync
 
-    /** Creates a completion for the provided prompt and parameters. */
+    /**
+     * Creates a completion for the provided prompt and parameters.
+     *
+     * Returns a completion object, or a sequence of completion objects if the request is streamed.
+     */
     fun create(params: CompletionCreateParams): CompletableFuture<Completion> =
         create(params, RequestOptions.none())
 
@@ -37,7 +41,11 @@ interface CompletionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Completion>
 
-    /** Creates a completion for the provided prompt and parameters. */
+    /**
+     * Creates a completion for the provided prompt and parameters.
+     *
+     * Returns a completion object, or a sequence of completion objects if the request is streamed.
+     */
     fun createStreaming(params: CompletionCreateParams): AsyncStreamResponse<Completion> =
         createStreaming(params, RequestOptions.none())
 

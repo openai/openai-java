@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List videos */
+/** List recently generated videos for the current project. */
 class VideoListParams
 private constructor(
     private val after: String?,

@@ -19,7 +19,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a video remix */
+/** Create a remix of a completed video using a refreshed prompt. */
 class VideoRemixParams
 private constructor(
     private val videoId: String?,

@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get Skill */
+/** Get a skill by its ID. */
 class SkillRetrieveParams
 private constructor(
     private val skillId: String?,

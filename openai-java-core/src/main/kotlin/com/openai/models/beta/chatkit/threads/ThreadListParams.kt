@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** List ChatKit threads */
+/** List ChatKit threads with optional pagination and user filters. */
 class ThreadListParams
 private constructor(
     private val after: String?,
