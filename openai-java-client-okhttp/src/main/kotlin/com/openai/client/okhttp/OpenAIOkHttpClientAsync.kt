@@ -51,6 +51,8 @@ class OpenAIOkHttpClientAsync private constructor() {
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var dispatcherExecutorService: ExecutorService? = null
         private var proxy: Proxy? = null
+        private var maxIdleConnections: Int? = null
+        private var keepAliveDuration: Duration? = null
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
@@ -78,6 +80,46 @@ class OpenAIOkHttpClientAsync private constructor() {
 
         /** Alias for calling [Builder.proxy] with `proxy.orElse(null)`. */
         fun proxy(proxy: Optional<Proxy>) = proxy(proxy.getOrNull())
+
+        /**
+         * The maximum number of idle connections kept by the underlying OkHttp connection pool.
+         *
+         * If this is set, then [keepAliveDuration] must also be set.
+         *
+         * If unset, then OkHttp's default is used.
+         */
+        fun maxIdleConnections(maxIdleConnections: Int?) = apply {
+            this.maxIdleConnections = maxIdleConnections
+        }
+
+        /**
+         * Alias for [Builder.maxIdleConnections].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun maxIdleConnections(maxIdleConnections: Int) =
+            maxIdleConnections(maxIdleConnections as Int?)
+
+        /**
+         * Alias for calling [Builder.maxIdleConnections] with `maxIdleConnections.orElse(null)`.
+         */
+        fun maxIdleConnections(maxIdleConnections: Optional<Int>) =
+            maxIdleConnections(maxIdleConnections.getOrNull())
+
+        /**
+         * The keep-alive duration for idle connections in the underlying OkHttp connection pool.
+         *
+         * If this is set, then [maxIdleConnections] must also be set.
+         *
+         * If unset, then OkHttp's default is used.
+         */
+        fun keepAliveDuration(keepAliveDuration: Duration?) = apply {
+            this.keepAliveDuration = keepAliveDuration
+        }
+
+        /** Alias for calling [Builder.keepAliveDuration] with `keepAliveDuration.orElse(null)`. */
+        fun keepAliveDuration(keepAliveDuration: Optional<Duration>) =
+            keepAliveDuration(keepAliveDuration.getOrNull())
 
         /**
          * The socket factory used to secure HTTPS connections.
@@ -360,6 +402,8 @@ class OpenAIOkHttpClientAsync private constructor() {
                         OkHttpClient.builder()
                             .timeout(clientOptions.timeout())
                             .proxy(proxy)
+                            .maxIdleConnections(maxIdleConnections)
+                            .keepAliveDuration(keepAliveDuration)
                             .dispatcherExecutorService(dispatcherExecutorService)
                             .sslSocketFactory(sslSocketFactory)
                             .trustManager(trustManager)
