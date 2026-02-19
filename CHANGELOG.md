@@ -1,5 +1,26 @@
 # Changelog
 
+## 4.22.0 (2026-02-19)
+
+Full Changelog: [v4.21.0...v4.22.0](https://github.com/openai/openai-java/compare/v4.21.0...v4.22.0)
+
+### Features
+
+* **client:** add connection pooling option ([6b5fd77](https://github.com/openai/openai-java/commit/6b5fd77b364bd494b5630805f0cd62d5a381eceb))
+
+
+### Chores
+
+* **internal:** make `OkHttp` constructor internal ([a1e3ca6](https://github.com/openai/openai-java/commit/a1e3ca67621046ae0e2abe41e4a3f17c573c7ac1))
+* **internal:** remove unnecessary base URL ([360edde](https://github.com/openai/openai-java/commit/360edde0e5ea5d0ee30c926905a950db3e14b6fa))
+* **internal:** update `TestServerExtension` comment ([41182d1](https://github.com/openai/openai-java/commit/41182d164e3739af338ad8f6d17955792c3a48a5))
+* **internal:** update CI step name ([eeb51c6](https://github.com/openai/openai-java/commit/eeb51c61925e9e49ce1b2994f069d89068028e00))
+
+
+### Documentation
+
+* **api:** update docstrings across audio, chatkit, skills, videos, and other endpoints ([f5018f5](https://github.com/openai/openai-java/commit/f5018f5bfc839b22397d184c18fc5a359fabd430))
+
 ## 4.21.0 (2026-02-13)
 
 Full Changelog: [v4.20.0...v4.21.0](https://github.com/openai/openai-java/compare/v4.20.0...v4.21.0)
