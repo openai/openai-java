@@ -57,7 +57,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get input token counts */
+/**
+ * Returns input token counts of the request.
+ *
+ * Returns an object with `object` set to `response.input_tokens` and an `input_tokens` count.
+ */
 class InputTokenCountParams
 private constructor(
     private val body: Body,

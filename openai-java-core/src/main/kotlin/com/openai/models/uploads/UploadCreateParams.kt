@@ -37,6 +37,8 @@ import kotlin.jvm.optionals.getOrNull
  *
  * For guidance on the proper filename extensions for each purpose, please follow the documentation
  * on [creating a File](https://platform.openai.com/docs/api-reference/files/create).
+ *
+ * Returns the Upload object with status `pending`.
  */
 class UploadCreateParams
 private constructor(

@@ -28,7 +28,7 @@ jobs:
         run: |
           ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
 
-      - name: Run the Prism server
+      - name: Run the mock server
         run: |
           ./scripts/mock --daemon
 

@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get Skill Version */
+/** Get a specific skill version. */
 class VersionRetrieveParams
 private constructor(
     private val skillId: String,

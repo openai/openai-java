@@ -48,6 +48,8 @@ interface UploadServiceAsync {
      * For guidance on the proper filename extensions for each purpose, please follow the
      * documentation on
      * [creating a File](https://platform.openai.com/docs/api-reference/files/create).
+     *
+     * Returns the Upload object with status `pending`.
      */
     fun create(params: UploadCreateParams): CompletableFuture<Upload> =
         create(params, RequestOptions.none())
@@ -58,7 +60,11 @@ interface UploadServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Upload>
 
-    /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
+    /**
+     * Cancels the Upload. No Parts may be added after an Upload is cancelled.
+     *
+     * Returns the Upload object with status `cancelled`.
+     */
     fun cancel(uploadId: String): CompletableFuture<Upload> =
         cancel(uploadId, UploadCancelParams.none())
 
@@ -101,7 +107,8 @@ interface UploadServiceAsync {
      *
      * The number of bytes uploaded upon completion must match the number of bytes initially
      * specified when creating the Upload object. No Parts may be added after an Upload is
-     * completed.
+     * completed. Returns the Upload object with status `completed`, including an additional `file`
+     * property containing the created usable File object.
      */
     fun complete(uploadId: String, params: UploadCompleteParams): CompletableFuture<Upload> =
         complete(uploadId, params, RequestOptions.none())

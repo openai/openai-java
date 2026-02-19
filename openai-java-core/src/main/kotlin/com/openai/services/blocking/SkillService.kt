@@ -36,7 +36,7 @@ interface SkillService {
 
     fun versions(): VersionService
 
-    /** Create Skill */
+    /** Create a new skill. */
     fun create(): Skill = create(SkillCreateParams.none())
 
     /** @see create */
@@ -53,7 +53,7 @@ interface SkillService {
     fun create(requestOptions: RequestOptions): Skill =
         create(SkillCreateParams.none(), requestOptions)
 
-    /** Get Skill */
+    /** Get a skill by its ID. */
     fun retrieve(skillId: String): Skill = retrieve(skillId, SkillRetrieveParams.none())
 
     /** @see retrieve */
@@ -80,7 +80,7 @@ interface SkillService {
     fun retrieve(skillId: String, requestOptions: RequestOptions): Skill =
         retrieve(skillId, SkillRetrieveParams.none(), requestOptions)
 
-    /** Update Skill Default Version */
+    /** Update the default version pointer for a skill. */
     fun update(skillId: String, params: SkillUpdateParams): Skill =
         update(skillId, params, RequestOptions.none())
 
@@ -100,7 +100,7 @@ interface SkillService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Skill
 
-    /** List Skills */
+    /** List all skills for the current project. */
     fun list(): SkillListPage = list(SkillListParams.none())
 
     /** @see list */
@@ -117,7 +117,7 @@ interface SkillService {
     fun list(requestOptions: RequestOptions): SkillListPage =
         list(SkillListParams.none(), requestOptions)
 
-    /** Delete Skill */
+    /** Delete a skill by its ID. */
     fun delete(skillId: String): DeletedSkill = delete(skillId, SkillDeleteParams.none())
 
     /** @see delete */

@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete a video */
+/** Permanently delete a completed or failed video and its stored assets. */
 class VideoDeleteParams
 private constructor(
     private val videoId: String?,

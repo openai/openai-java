@@ -30,7 +30,7 @@ interface ThreadService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadService
 
-    /** Retrieve a ChatKit thread */
+    /** Retrieve a ChatKit thread by its identifier. */
     fun retrieve(threadId: String): ChatKitThread = retrieve(threadId, ThreadRetrieveParams.none())
 
     /** @see retrieve */
@@ -60,7 +60,7 @@ interface ThreadService {
     fun retrieve(threadId: String, requestOptions: RequestOptions): ChatKitThread =
         retrieve(threadId, ThreadRetrieveParams.none(), requestOptions)
 
-    /** List ChatKit threads */
+    /** List ChatKit threads with optional pagination and user filters. */
     fun list(): ThreadListPage = list(ThreadListParams.none())
 
     /** @see list */
@@ -77,7 +77,7 @@ interface ThreadService {
     fun list(requestOptions: RequestOptions): ThreadListPage =
         list(ThreadListParams.none(), requestOptions)
 
-    /** Delete a ChatKit thread */
+    /** Delete a ChatKit thread along with its items and stored attachments. */
     fun delete(threadId: String): ThreadDeleteResponse = delete(threadId, ThreadDeleteParams.none())
 
     /** @see delete */
@@ -107,7 +107,7 @@ interface ThreadService {
     fun delete(threadId: String, requestOptions: RequestOptions): ThreadDeleteResponse =
         delete(threadId, ThreadDeleteParams.none(), requestOptions)
 
-    /** List ChatKit thread items */
+    /** List items that belong to a ChatKit thread. */
     fun listItems(threadId: String): ThreadListItemsPage =
         listItems(threadId, ThreadListItemsParams.none())
 

@@ -23,7 +23,7 @@ interface ContentServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentServiceAsync
 
-    /** Get Skill Content */
+    /** Download a skill zip bundle by its ID. */
     fun retrieve(skillId: String): CompletableFuture<HttpResponse> =
         retrieve(skillId, ContentRetrieveParams.none())
 

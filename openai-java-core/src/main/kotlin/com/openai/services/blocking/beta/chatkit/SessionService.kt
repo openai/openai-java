@@ -25,7 +25,7 @@ interface SessionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService
 
-    /** Create a ChatKit session */
+    /** Create a ChatKit session. */
     fun create(params: SessionCreateParams): ChatSession = create(params, RequestOptions.none())
 
     /** @see create */
@@ -34,7 +34,11 @@ interface SessionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatSession
 
-    /** Cancel a ChatKit session */
+    /**
+     * Cancel an active ChatKit session and return its most recent metadata.
+     *
+     * Cancelling prevents new requests from using the issued client secret.
+     */
     fun cancel(sessionId: String): ChatSession = cancel(sessionId, SessionCancelParams.none())
 
     /** @see cancel */

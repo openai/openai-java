@@ -32,7 +32,7 @@ interface VideoService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService
 
-    /** Create a video */
+    /** Create a new video generation job from a prompt and optional reference assets. */
     fun create(params: VideoCreateParams): Video = create(params, RequestOptions.none())
 
     /** @see create */
@@ -41,7 +41,7 @@ interface VideoService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Video
 
-    /** Retrieve a video */
+    /** Fetch the latest metadata for a generated video. */
     fun retrieve(videoId: String): Video = retrieve(videoId, VideoRetrieveParams.none())
 
     /** @see retrieve */
@@ -68,7 +68,7 @@ interface VideoService {
     fun retrieve(videoId: String, requestOptions: RequestOptions): Video =
         retrieve(videoId, VideoRetrieveParams.none(), requestOptions)
 
-    /** List videos */
+    /** List recently generated videos for the current project. */
     fun list(): VideoListPage = list(VideoListParams.none())
 
     /** @see list */
@@ -85,7 +85,7 @@ interface VideoService {
     fun list(requestOptions: RequestOptions): VideoListPage =
         list(VideoListParams.none(), requestOptions)
 
-    /** Delete a video */
+    /** Permanently delete a completed or failed video and its stored assets. */
     fun delete(videoId: String): VideoDeleteResponse = delete(videoId, VideoDeleteParams.none())
 
     /** @see delete */
@@ -115,7 +115,11 @@ interface VideoService {
     fun delete(videoId: String, requestOptions: RequestOptions): VideoDeleteResponse =
         delete(videoId, VideoDeleteParams.none(), requestOptions)
 
-    /** Download video content */
+    /**
+     * Download the generated video bytes or a derived preview asset.
+     *
+     * Streams the rendered video content for the specified video job.
+     */
     @MustBeClosed
     fun downloadContent(videoId: String): HttpResponse =
         downloadContent(videoId, VideoDownloadContentParams.none())
@@ -152,7 +156,7 @@ interface VideoService {
     fun downloadContent(videoId: String, requestOptions: RequestOptions): HttpResponse =
         downloadContent(videoId, VideoDownloadContentParams.none(), requestOptions)
 
-    /** Create a video remix */
+    /** Create a remix of a completed video using a refreshed prompt. */
     fun remix(videoId: String, params: VideoRemixParams): Video =
         remix(videoId, params, RequestOptions.none())
 

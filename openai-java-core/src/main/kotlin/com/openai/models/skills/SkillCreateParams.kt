@@ -26,7 +26,7 @@ import java.util.Optional
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
-/** Create Skill */
+/** Create a new skill. */
 class SkillCreateParams
 private constructor(
     private val body: Body,

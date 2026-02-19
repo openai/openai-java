@@ -15,25 +15,12 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
         } catch (e: Exception) {
             throw RuntimeException(
                 """
-                The test suite will not run without a mock Prism server running against your OpenAPI spec.
+                The test suite will not run without a mock server running against your OpenAPI spec.
 
                 You can set the environment variable `SKIP_MOCK_TESTS` to `true` to skip running any tests
                 that require the mock server.
 
-                To fix:
-
-                1. Install Prism (requires Node 16+):
-
-                  With npm:
-                    $ npm install -g @stoplight/prism-cli
-
-                  With yarn:
-                    $ yarn global add @stoplight/prism-cli
-
-                2. Run the mock server
-
-                  To run the server, pass in the path of your OpenAPI spec to the prism command:
-                    $ prism mock path/to/your.openapi.yml
+                To fix run `./scripts/mock` in a separate terminal.
                 """
                     .trimIndent(),
                 e,

@@ -23,7 +23,7 @@ interface ContentService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentService
 
-    /** Get Skill Content */
+    /** Download a skill zip bundle by its ID. */
     @MustBeClosed
     fun retrieve(skillId: String): HttpResponse = retrieve(skillId, ContentRetrieveParams.none())
 

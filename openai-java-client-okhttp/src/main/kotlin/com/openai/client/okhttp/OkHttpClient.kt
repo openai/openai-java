@@ -16,11 +16,13 @@ import java.time.Duration
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
@@ -33,7 +35,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import okio.BufferedSink
 
 class OkHttpClient
-private constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) : HttpClient {
+internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
@@ -200,6 +202,8 @@ private constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClien
 
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var maxIdleConnections: Int? = null
+        private var keepAliveDuration: Duration? = null
         private var dispatcherExecutorService: ExecutorService? = null
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
@@ -210,6 +214,28 @@ private constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClien
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
+
+        /**
+         * Sets the maximum number of idle connections kept by the underlying [ConnectionPool].
+         *
+         * If this is set, then [keepAliveDuration] must also be set.
+         *
+         * If unset, then OkHttp's default is used.
+         */
+        fun maxIdleConnections(maxIdleConnections: Int?) = apply {
+            this.maxIdleConnections = maxIdleConnections
+        }
+
+        /**
+         * Sets the keep-alive duration for idle connections in the underlying [ConnectionPool].
+         *
+         * If this is set, then [maxIdleConnections] must also be set.
+         *
+         * If unset, then OkHttp's default is used.
+         */
+        fun keepAliveDuration(keepAliveDuration: Duration?) = apply {
+            this.keepAliveDuration = keepAliveDuration
+        }
 
         fun dispatcherExecutorService(dispatcherExecutorService: ExecutorService?) = apply {
             this.dispatcherExecutorService = dispatcherExecutorService
@@ -239,6 +265,22 @@ private constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClien
                     .proxy(proxy)
                     .apply {
                         dispatcherExecutorService?.let { dispatcher(Dispatcher(it)) }
+
+                        val maxIdleConnections = maxIdleConnections
+                        val keepAliveDuration = keepAliveDuration
+                        if (maxIdleConnections != null && keepAliveDuration != null) {
+                            connectionPool(
+                                ConnectionPool(
+                                    maxIdleConnections,
+                                    keepAliveDuration.toNanos(),
+                                    TimeUnit.NANOSECONDS,
+                                )
+                            )
+                        } else {
+                            check((maxIdleConnections != null) == (keepAliveDuration != null)) {
+                                "Both or none of `maxIdleConnections` and `keepAliveDuration` must be set, but only one was set"
+                            }
+                        }
 
                         val sslSocketFactory = sslSocketFactory
                         val trustManager = trustManager

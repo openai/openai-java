@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.21.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.21.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.21.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.22.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.22.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.22.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.21.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.22.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.21.0")
+implementation("com.openai:openai-java:4.22.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:4.21.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.21.0</version>
+  <version>4.22.0</version>
 </dependency>
 ```
 
@@ -1342,7 +1342,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:4.21.0")
+implementation("com.openai:openai-java-spring-boot-starter:4.22.0")
 ```
 
 #### Maven
@@ -1351,7 +1351,7 @@ implementation("com.openai:openai-java-spring-boot-starter:4.21.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>4.21.0</version>
+  <version>4.22.0</version>
 </dependency>
 ```
 
@@ -1515,6 +1515,25 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     ))
     .build();
 ```
+
+### Connection pooling
+
+To customize the underlying OkHttp connection pool, configure the client using the `maxIdleConnections` and `keepAliveDuration` methods:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import java.time.Duration;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    // If `maxIdleConnections` is set, then `keepAliveDuration` must be set, and vice versa.
+    .maxIdleConnections(10)
+    .keepAliveDuration(Duration.ofMinutes(2))
+    .build();
+```
+
+If both options are unset, OkHttp's default connection pool settings are used.
 
 ### HTTPS
 
