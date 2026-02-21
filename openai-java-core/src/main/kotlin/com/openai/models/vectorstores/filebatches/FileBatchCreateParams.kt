@@ -60,8 +60,8 @@ private constructor(
     /**
      * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
      * store should use. Useful for tools like `file_search` that can access files. If `attributes`
-     * or `chunking_strategy` are provided, they will be applied to all files in the batch. Mutually
-     * exclusive with `files`.
+     * or `chunking_strategy` are provided, they will be applied to all files in the batch. The
+     * maximum batch size is 2000 files. Mutually exclusive with `files`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -72,7 +72,7 @@ private constructor(
      * A list of objects that each include a `file_id` plus optional `attributes` or
      * `chunking_strategy`. Use this when you need to override metadata for specific files. The
      * global `attributes` or `chunking_strategy` will be ignored and must be specified for each
-     * file. Mutually exclusive with `file_ids`.
+     * file. The maximum batch size is 2000 files. Mutually exclusive with `file_ids`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -228,7 +228,7 @@ private constructor(
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
          * vector store should use. Useful for tools like `file_search` that can access files. If
          * `attributes` or `chunking_strategy` are provided, they will be applied to all files in
-         * the batch. Mutually exclusive with `files`.
+         * the batch. The maximum batch size is 2000 files. Mutually exclusive with `files`.
          */
         fun fileIds(fileIds: List<String>) = apply { body.fileIds(fileIds) }
 
@@ -252,7 +252,7 @@ private constructor(
          * A list of objects that each include a `file_id` plus optional `attributes` or
          * `chunking_strategy`. Use this when you need to override metadata for specific files. The
          * global `attributes` or `chunking_strategy` will be ignored and must be specified for each
-         * file. Mutually exclusive with `file_ids`.
+         * file. The maximum batch size is 2000 files. Mutually exclusive with `file_ids`.
          */
         fun files(files: List<File>) = apply { body.files(files) }
 
@@ -465,7 +465,7 @@ private constructor(
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
          * vector store should use. Useful for tools like `file_search` that can access files. If
          * `attributes` or `chunking_strategy` are provided, they will be applied to all files in
-         * the batch. Mutually exclusive with `files`.
+         * the batch. The maximum batch size is 2000 files. Mutually exclusive with `files`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -476,7 +476,7 @@ private constructor(
          * A list of objects that each include a `file_id` plus optional `attributes` or
          * `chunking_strategy`. Use this when you need to override metadata for specific files. The
          * global `attributes` or `chunking_strategy` will be ignored and must be specified for each
-         * file. Mutually exclusive with `file_ids`.
+         * file. The maximum batch size is 2000 files. Mutually exclusive with `file_ids`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -623,7 +623,8 @@ private constructor(
              * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
              * vector store should use. Useful for tools like `file_search` that can access files.
              * If `attributes` or `chunking_strategy` are provided, they will be applied to all
-             * files in the batch. Mutually exclusive with `files`.
+             * files in the batch. The maximum batch size is 2000 files. Mutually exclusive with
+             * `files`.
              */
             fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
@@ -654,7 +655,8 @@ private constructor(
              * A list of objects that each include a `file_id` plus optional `attributes` or
              * `chunking_strategy`. Use this when you need to override metadata for specific files.
              * The global `attributes` or `chunking_strategy` will be ignored and must be specified
-             * for each file. Mutually exclusive with `file_ids`.
+             * for each file. The maximum batch size is 2000 files. Mutually exclusive with
+             * `file_ids`.
              */
             fun files(files: List<File>) = files(JsonField.of(files))
 
