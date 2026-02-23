@@ -57,6 +57,7 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "speech")
+                    .putHeader("Accept", "application/octet-stream")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params)

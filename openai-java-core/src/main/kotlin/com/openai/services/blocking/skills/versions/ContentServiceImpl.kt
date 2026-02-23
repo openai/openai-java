@@ -66,6 +66,7 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
                         params._pathParam(1),
                         "content",
                     )
+                    .putHeader("Accept", "application/binary")
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

@@ -332,6 +332,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("threads", "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,

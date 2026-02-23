@@ -164,6 +164,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,

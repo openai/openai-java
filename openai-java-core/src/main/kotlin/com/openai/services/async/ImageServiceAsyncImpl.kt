@@ -173,6 +173,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "edits")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         multipartFormData(
                             clientOptions.jsonMapper,
@@ -242,6 +243,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "generations")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,

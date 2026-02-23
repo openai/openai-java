@@ -112,6 +112,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("completions")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,
