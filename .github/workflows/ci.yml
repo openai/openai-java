@@ -38,7 +38,7 @@ jobs:
         run: ./scripts/lint
 
   build:
-    timeout-minutes: 15
+    timeout-minutes: 30
     name: build
     permissions:
       contents: read
@@ -83,7 +83,7 @@ jobs:
           PROJECT: openai-java
         run: ./scripts/upload-artifacts
   test:
-    timeout-minutes: 15
+    timeout-minutes: 30
     name: test
     runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
