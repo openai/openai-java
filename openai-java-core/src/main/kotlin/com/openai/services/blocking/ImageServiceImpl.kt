@@ -153,6 +153,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "edits")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         multipartFormData(
                             clientOptions.jsonMapper,
@@ -216,6 +217,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "generations")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,

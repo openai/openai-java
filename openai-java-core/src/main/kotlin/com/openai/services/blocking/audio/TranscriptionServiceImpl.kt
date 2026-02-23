@@ -120,6 +120,7 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         multipartFormData(
                             clientOptions.jsonMapper,
