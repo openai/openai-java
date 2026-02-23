@@ -67,21 +67,49 @@ jobs:
           GRADLE_OPTS: "-Dkotlin.compiler.execution.strategy=in-process"
         run: ./scripts/build
 
-      - name: Get GitHub OIDC Token
-        if: github.repository == 'stainless-sdks/openai-java'
-        id: github-oidc
-        uses: actions/github-script@v8
-        with:
-          script: core.setOutput('github_token', await core.getIDToken());
-
       - name: Build and upload Maven artifacts
         if: github.repository == 'stainless-sdks/openai-java'
         env:
           URL: https://pkg.stainless.com/s
-          AUTH: ${{ steps.github-oidc.outputs.github_token }}
           SHA: ${{ github.sha }}
           PROJECT: openai-java
-        run: ./scripts/upload-artifacts
+        run: |
+          set -euo pipefail
+
+          max_retries=5
+          attempt=1
+
+          while true; do
+            echo "Maven artifact upload attempt ${attempt}/${max_retries}"
+
+            oidc_response="$(curl -sSf \
+              -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+              "${ACTIONS_ID_TOKEN_REQUEST_URL}")"
+            github_token="$(printf '%s' "$oidc_response" | jq -er '.value')"
+
+            upload_log="$(mktemp)"
+            set +e
+            AUTH="$github_token" ./scripts/upload-artifacts 2>&1 | tee "$upload_log"
+            upload_status=${PIPESTATUS[0]}
+            set -e
+
+            if [ "$upload_status" -eq 0 ]; then
+              break
+            fi
+
+            if [ "$attempt" -lt "$max_retries" ] && \
+              grep -q "Failed to get valid signed URL" "$upload_log" && \
+              grep -q "GitHub JWT is missing or invalid\\." "$upload_log"; then
+              sleep_seconds=$((3 * (1 << (attempt - 1))))
+              echo "Retrying after fresh OIDC token due to transient GitHub JWT validation failure"
+              echo "Sleeping ${sleep_seconds}s before retry"
+              sleep "$sleep_seconds"
+              attempt=$((attempt + 1))
+              continue
+            fi
+
+            exit "$upload_status"
+          done
   test:
     timeout-minutes: 30
     name: test
