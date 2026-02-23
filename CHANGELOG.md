@@ -1,5 +1,32 @@
 # Changelog
 
+## 4.23.0 (2026-02-23)
+
+Full Changelog: [v4.22.0...v4.23.0](https://github.com/openai/openai-java/compare/v4.22.0...v4.23.0)
+
+### Features
+
+* **api:** add gpt-realtime-1.5 and gpt-audio-1.5 models to realtime session ([b00b515](https://github.com/openai/openai-java/commit/b00b515f591c8651ab4d5d46606e31a69787eebf))
+
+
+### Bug Fixes
+
+* **api:** manual updates ([bd83804](https://github.com/openai/openai-java/commit/bd83804f76f2be62a2a09e4b9f2ed7832fdb740f))
+* set Accept header in more places ([9e2e714](https://github.com/openai/openai-java/commit/9e2e7145e357dfe6e8b3f8701df70a42e07a4f63))
+* **tests:** skip unsupported streaming tests ([24f9854](https://github.com/openai/openai-java/commit/24f9854de6299572a6b836059855218f68f2e412))
+
+
+### Chores
+
+* drop apache dependency ([37805bf](https://github.com/openai/openai-java/commit/37805bf5dad1f503cec009dfaca6c6b2b21fc279))
+* make `Properties` more resilient to `null` ([0039eb0](https://github.com/openai/openai-java/commit/0039eb008840c33d9f62d44999e4b4533a3a50d2))
+
+
+### Documentation
+
+* **api:** add batch size limit to file batch create parameters ([764fd86](https://github.com/openai/openai-java/commit/764fd868ab4d0f9642ae2facb6ca98ef3a491888))
+* **api:** clarify safety_identifier max length in chat completions and responses ([b2735b0](https://github.com/openai/openai-java/commit/b2735b002e3591513ea743062e36d6f965f1fd46))
+
 ## 4.22.0 (2026-02-19)
 
 Full Changelog: [v4.21.0...v4.22.0](https://github.com/openai/openai-java/compare/v4.21.0...v4.22.0)
