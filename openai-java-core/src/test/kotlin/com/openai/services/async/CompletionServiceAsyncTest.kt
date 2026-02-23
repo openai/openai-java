@@ -7,6 +7,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.chat.completions.ChatCompletionStreamOptions
 import com.openai.models.completions.CompletionCreateParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -58,6 +59,7 @@ internal class CompletionServiceAsyncTest {
         completion.validate()
     }
 
+    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =

@@ -17,6 +17,7 @@ import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
 import com.openai.models.responses.ToolChoiceOptions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -114,6 +115,7 @@ internal class ResponseServiceTest {
         response.validate()
     }
 
+    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =
@@ -229,6 +231,7 @@ internal class ResponseServiceTest {
         response.validate()
     }
 
+    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun retrieveStreaming() {
         val client =
