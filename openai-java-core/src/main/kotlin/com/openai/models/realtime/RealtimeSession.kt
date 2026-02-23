@@ -1865,6 +1865,8 @@ private constructor(
 
             @JvmField val GPT_REALTIME = of("gpt-realtime")
 
+            @JvmField val GPT_REALTIME_1_5 = of("gpt-realtime-1.5")
+
             @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
 
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
@@ -1890,6 +1892,8 @@ private constructor(
 
             @JvmField val GPT_REALTIME_MINI_2025_12_15 = of("gpt-realtime-mini-2025-12-15")
 
+            @JvmField val GPT_AUDIO_1_5 = of("gpt-audio-1.5")
+
             @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
 
             @JvmField val GPT_AUDIO_MINI_2025_10_06 = of("gpt-audio-mini-2025-10-06")
@@ -1902,6 +1906,7 @@ private constructor(
         /** An enum containing [Model]'s known values. */
         enum class Known {
             GPT_REALTIME,
+            GPT_REALTIME_1_5,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -1912,6 +1917,7 @@ private constructor(
             GPT_REALTIME_MINI,
             GPT_REALTIME_MINI_2025_10_06,
             GPT_REALTIME_MINI_2025_12_15,
+            GPT_AUDIO_1_5,
             GPT_AUDIO_MINI,
             GPT_AUDIO_MINI_2025_10_06,
             GPT_AUDIO_MINI_2025_12_15,
@@ -1928,6 +1934,7 @@ private constructor(
          */
         enum class Value {
             GPT_REALTIME,
+            GPT_REALTIME_1_5,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -1938,6 +1945,7 @@ private constructor(
             GPT_REALTIME_MINI,
             GPT_REALTIME_MINI_2025_10_06,
             GPT_REALTIME_MINI_2025_12_15,
+            GPT_AUDIO_1_5,
             GPT_AUDIO_MINI,
             GPT_AUDIO_MINI_2025_10_06,
             GPT_AUDIO_MINI_2025_12_15,
@@ -1955,6 +1963,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 GPT_REALTIME -> Value.GPT_REALTIME
+                GPT_REALTIME_1_5 -> Value.GPT_REALTIME_1_5
                 GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -1966,6 +1975,7 @@ private constructor(
                 GPT_REALTIME_MINI -> Value.GPT_REALTIME_MINI
                 GPT_REALTIME_MINI_2025_10_06 -> Value.GPT_REALTIME_MINI_2025_10_06
                 GPT_REALTIME_MINI_2025_12_15 -> Value.GPT_REALTIME_MINI_2025_12_15
+                GPT_AUDIO_1_5 -> Value.GPT_AUDIO_1_5
                 GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
                 GPT_AUDIO_MINI_2025_10_06 -> Value.GPT_AUDIO_MINI_2025_10_06
                 GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
@@ -1984,6 +1994,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 GPT_REALTIME -> Known.GPT_REALTIME
+                GPT_REALTIME_1_5 -> Known.GPT_REALTIME_1_5
                 GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -1995,6 +2006,7 @@ private constructor(
                 GPT_REALTIME_MINI -> Known.GPT_REALTIME_MINI
                 GPT_REALTIME_MINI_2025_10_06 -> Known.GPT_REALTIME_MINI_2025_10_06
                 GPT_REALTIME_MINI_2025_12_15 -> Known.GPT_REALTIME_MINI_2025_12_15
+                GPT_AUDIO_1_5 -> Known.GPT_AUDIO_1_5
                 GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
                 GPT_AUDIO_MINI_2025_10_06 -> Known.GPT_AUDIO_MINI_2025_10_06
                 GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
