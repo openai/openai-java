@@ -34,9 +34,9 @@ fun getOsName(): String {
     }
 }
 
-fun getOsVersion(): String = System.getProperty("os.version", "unknown")
+fun getOsVersion(): String = System.getProperty("os.version", "unknown") ?: "unknown"
 
 fun getPackageVersion(): String =
-    OpenAIClient::class.java.`package`.implementationVersion ?: "unknown"
+    OpenAIClient::class.java.`package`?.implementationVersion ?: "unknown"
 
-fun getJavaVersion(): String = System.getProperty("java.version", "unknown")
+fun getJavaVersion(): String = System.getProperty("java.version", "unknown") ?: "unknown"
