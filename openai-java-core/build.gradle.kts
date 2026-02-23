@@ -28,8 +28,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
-    implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
