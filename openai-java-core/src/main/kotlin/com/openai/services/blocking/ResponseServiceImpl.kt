@@ -163,6 +163,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses")
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,
@@ -236,6 +237,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .putQueryParam("stream", "true")
+                    .putHeader("Accept", "text/event-stream")
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

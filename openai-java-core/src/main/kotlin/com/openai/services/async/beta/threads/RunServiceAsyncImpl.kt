@@ -207,6 +207,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,
@@ -457,6 +458,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                         "submit_tool_outputs",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
+                    .putHeader("Accept", "text/event-stream")
                     .body(
                         json(
                             clientOptions.jsonMapper,

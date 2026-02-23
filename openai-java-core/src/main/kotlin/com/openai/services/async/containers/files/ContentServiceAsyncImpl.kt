@@ -67,6 +67,7 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
                         params._pathParam(1),
                         "content",
                     )
+                    .putHeader("Accept", "application/binary")
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
