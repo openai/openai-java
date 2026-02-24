@@ -20,7 +20,6 @@ internal class ResponseInputItemTest {
             EasyInputMessage.builder()
                 .content("string")
                 .role(EasyInputMessage.Role.USER)
-                .phase(EasyInputMessage.Phase.COMMENTARY)
                 .type(EasyInputMessage.Type.MESSAGE)
                 .build()
 
@@ -62,7 +61,6 @@ internal class ResponseInputItemTest {
                 EasyInputMessage.builder()
                     .content("string")
                     .role(EasyInputMessage.Role.USER)
-                    .phase(EasyInputMessage.Phase.COMMENTARY)
                     .type(EasyInputMessage.Type.MESSAGE)
                     .build()
             )
@@ -170,7 +168,6 @@ internal class ResponseInputItemTest {
                         .build()
                 )
                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                .phase(ResponseOutputMessage.Phase.COMMENTARY)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofResponseOutputMessage(responseOutputMessage)
@@ -237,7 +234,6 @@ internal class ResponseInputItemTest {
                             .build()
                     )
                     .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                    .phase(ResponseOutputMessage.Phase.COMMENTARY)
                     .build()
             )
 

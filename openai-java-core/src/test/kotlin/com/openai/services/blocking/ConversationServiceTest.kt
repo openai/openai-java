@@ -30,7 +30,6 @@ internal class ConversationServiceTest {
                         EasyInputMessage.builder()
                             .content("string")
                             .role(EasyInputMessage.Role.USER)
-                            .phase(EasyInputMessage.Phase.COMMENTARY)
                             .type(EasyInputMessage.Type.MESSAGE)
                             .build()
                     )

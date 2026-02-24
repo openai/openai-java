@@ -41,7 +41,6 @@ class EasyInputMessage
 private constructor(
     private val content: JsonField<Content>,
     private val role: JsonField<Role>,
-    private val phase: JsonField<Phase>,
     private val type: JsonField<Type>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -50,9 +49,8 @@ private constructor(
     private constructor(
         @JsonProperty("content") @ExcludeMissing content: JsonField<Content> = JsonMissing.of(),
         @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
-        @JsonProperty("phase") @ExcludeMissing phase: JsonField<Phase> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-    ) : this(content, role, phase, type, mutableMapOf())
+    ) : this(content, role, type, mutableMapOf())
 
     /**
      * Text, image, or audio input to the model, used to generate a response. Can also contain
@@ -70,19 +68,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun role(): Role = role.getRequired("role")
-
-    /**
-     * The phase of an assistant message.
-     *
-     * Use `commentary` for an intermediate assistant message and `final_answer` for the final
-     * assistant message. For follow-up requests with models like `gpt-5.3-codex` and later,
-     * preserve and resend phase on all assistant messages. Omitting it can degrade performance. Not
-     * used for user messages.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun phase(): Optional<Phase> = phase.getOptional("phase")
 
     /**
      * The type of the message input. Always `message`.
@@ -105,13 +90,6 @@ private constructor(
      * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
-
-    /**
-     * Returns the raw JSON value of [phase].
-     *
-     * Unlike [phase], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("phase") @ExcludeMissing fun _phase(): JsonField<Phase> = phase
 
     /**
      * Returns the raw JSON value of [type].
@@ -151,7 +129,6 @@ private constructor(
 
         private var content: JsonField<Content>? = null
         private var role: JsonField<Role>? = null
-        private var phase: JsonField<Phase> = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -159,7 +136,6 @@ private constructor(
         internal fun from(easyInputMessage: EasyInputMessage) = apply {
             content = easyInputMessage.content
             role = easyInputMessage.role
-            phase = easyInputMessage.phase
             type = easyInputMessage.type
             additionalProperties = easyInputMessage.additionalProperties.toMutableMap()
         }
@@ -199,27 +175,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun role(role: JsonField<Role>) = apply { this.role = role }
-
-        /**
-         * The phase of an assistant message.
-         *
-         * Use `commentary` for an intermediate assistant message and `final_answer` for the final
-         * assistant message. For follow-up requests with models like `gpt-5.3-codex` and later,
-         * preserve and resend phase on all assistant messages. Omitting it can degrade performance.
-         * Not used for user messages.
-         */
-        fun phase(phase: Phase?) = phase(JsonField.ofNullable(phase))
-
-        /** Alias for calling [Builder.phase] with `phase.orElse(null)`. */
-        fun phase(phase: Optional<Phase>) = phase(phase.getOrNull())
-
-        /**
-         * Sets [Builder.phase] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.phase] with a well-typed [Phase] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun phase(phase: JsonField<Phase>) = apply { this.phase = phase }
 
         /** The type of the message input. Always `message`. */
         fun type(type: Type) = type(JsonField.of(type))
@@ -268,7 +223,6 @@ private constructor(
             EasyInputMessage(
                 checkRequired("content", content),
                 checkRequired("role", role),
-                phase,
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -283,7 +237,6 @@ private constructor(
 
         content().validate()
         role().validate()
-        phase().ifPresent { it.validate() }
         type().ifPresent { it.validate() }
         validated = true
     }
@@ -305,7 +258,6 @@ private constructor(
     internal fun validity(): Int =
         (content.asKnown().getOrNull()?.validity() ?: 0) +
             (role.asKnown().getOrNull()?.validity() ?: 0) +
-            (phase.asKnown().getOrNull()?.validity() ?: 0) +
             (type.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
@@ -653,139 +605,6 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /**
-     * The phase of an assistant message.
-     *
-     * Use `commentary` for an intermediate assistant message and `final_answer` for the final
-     * assistant message. For follow-up requests with models like `gpt-5.3-codex` and later,
-     * preserve and resend phase on all assistant messages. Omitting it can degrade performance. Not
-     * used for user messages.
-     */
-    class Phase @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val COMMENTARY = of("commentary")
-
-            @JvmField val FINAL_ANSWER = of("final_answer")
-
-            @JvmStatic fun of(value: String) = Phase(JsonField.of(value))
-        }
-
-        /** An enum containing [Phase]'s known values. */
-        enum class Known {
-            COMMENTARY,
-            FINAL_ANSWER,
-        }
-
-        /**
-         * An enum containing [Phase]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Phase] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            COMMENTARY,
-            FINAL_ANSWER,
-            /** An enum member indicating that [Phase] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                COMMENTARY -> Value.COMMENTARY
-                FINAL_ANSWER -> Value.FINAL_ANSWER
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                COMMENTARY -> Known.COMMENTARY
-                FINAL_ANSWER -> Known.FINAL_ANSWER
-                else -> throw OpenAIInvalidDataException("Unknown Phase: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Phase = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Phase && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     /** The type of the message input. Always `message`. */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -914,17 +733,14 @@ private constructor(
         return other is EasyInputMessage &&
             content == other.content &&
             role == other.role &&
-            phase == other.phase &&
             type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy {
-        Objects.hash(content, role, phase, type, additionalProperties)
-    }
+    private val hashCode: Int by lazy { Objects.hash(content, role, type, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "EasyInputMessage{content=$content, role=$role, phase=$phase, type=$type, additionalProperties=$additionalProperties}"
+        "EasyInputMessage{content=$content, role=$role, type=$type, additionalProperties=$additionalProperties}"
 }
