@@ -1,5 +1,26 @@
 # Changelog
 
+## 4.24.0 (2026-02-24)
+
+Full Changelog: [v4.23.0...v4.24.0](https://github.com/openai/openai-java/compare/v4.23.0...v4.24.0)
+
+### Features
+
+* **api:** add phase ([28dfb07](https://github.com/openai/openai-java/commit/28dfb07eea2195b13ab9bf4d47f40e3bbbe386f1))
+* **api:** remove phase from messages and promptCacheKey parameter ([6eb0909](https://github.com/openai/openai-java/commit/6eb09098f7509d17f83c2b92c86f43ed28d278e9))
+
+
+### Bug Fixes
+
+* **api:** fix phase enum ([9217829](https://github.com/openai/openai-java/commit/9217829f66334fba3323acd38369a81da39b19d3))
+* **api:** phase docs ([215079e](https://github.com/openai/openai-java/commit/215079e8e83b527a5480db9ebc7a4c43fbe01490))
+* **api:** readd phase ([9d234b2](https://github.com/openai/openai-java/commit/9d234b208b5e77b57665589a8881c8b4c8f3372e))
+
+
+### Chores
+
+* **internal:** expand imports ([73adcb9](https://github.com/openai/openai-java/commit/73adcb9d348bc2e51c98c4535f7f2373fcf782c9))
+
 ## 4.23.0 (2026-02-23)
 
 Full Changelog: [v4.22.0...v4.23.0](https://github.com/openai/openai-java/compare/v4.22.0...v4.23.0)
