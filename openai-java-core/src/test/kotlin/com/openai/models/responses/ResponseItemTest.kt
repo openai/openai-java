@@ -104,7 +104,6 @@ internal class ResponseItemTest {
                         .build()
                 )
                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                .phase(ResponseOutputMessage.Phase.COMMENTARY)
                 .build()
 
         val responseItem = ResponseItem.ofResponseOutputMessage(responseOutputMessage)
@@ -165,7 +164,6 @@ internal class ResponseItemTest {
                             .build()
                     )
                     .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                    .phase(ResponseOutputMessage.Phase.COMMENTARY)
                     .build()
             )
 
