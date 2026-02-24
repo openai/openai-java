@@ -90,6 +90,14 @@ private constructor(
     fun previousResponseId(): Optional<String> = body.previousResponseId()
 
     /**
+     * A key to use when reading from or writing to the prompt cache.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheKey(): Optional<String> = body.promptCacheKey()
+
+    /**
      * Returns the raw JSON value of [model].
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -117,6 +125,13 @@ private constructor(
      * type.
      */
     fun _previousResponseId(): JsonField<String> = body._previousResponseId()
+
+    /**
+     * Returns the raw JSON value of [promptCacheKey].
+     *
+     * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -164,6 +179,8 @@ private constructor(
          * - [input]
          * - [instructions]
          * - [previousResponseId]
+         * - [promptCacheKey]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -263,6 +280,24 @@ private constructor(
          */
         fun previousResponseId(previousResponseId: JsonField<String>) = apply {
             body.previousResponseId(previousResponseId)
+        }
+
+        /** A key to use when reading from or writing to the prompt cache. */
+        fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheKey] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+            body.promptCacheKey(promptCacheKey)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -415,6 +450,7 @@ private constructor(
         private val input: JsonField<Input>,
         private val instructions: JsonField<String>,
         private val previousResponseId: JsonField<String>,
+        private val promptCacheKey: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -428,7 +464,10 @@ private constructor(
             @JsonProperty("previous_response_id")
             @ExcludeMissing
             previousResponseId: JsonField<String> = JsonMissing.of(),
-        ) : this(model, input, instructions, previousResponseId, mutableMapOf())
+            @JsonProperty("prompt_cache_key")
+            @ExcludeMissing
+            promptCacheKey: JsonField<String> = JsonMissing.of(),
+        ) : this(model, input, instructions, previousResponseId, promptCacheKey, mutableMapOf())
 
         /**
          * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
@@ -473,6 +512,14 @@ private constructor(
             previousResponseId.getOptional("previous_response_id")
 
         /**
+         * A key to use when reading from or writing to the prompt cache.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
+
+        /**
          * Returns the raw JSON value of [model].
          *
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -506,6 +553,16 @@ private constructor(
         @ExcludeMissing
         fun _previousResponseId(): JsonField<String> = previousResponseId
 
+        /**
+         * Returns the raw JSON value of [promptCacheKey].
+         *
+         * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("prompt_cache_key")
+        @ExcludeMissing
+        fun _promptCacheKey(): JsonField<String> = promptCacheKey
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -538,6 +595,7 @@ private constructor(
             private var input: JsonField<Input> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
+            private var promptCacheKey: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -546,6 +604,7 @@ private constructor(
                 input = body.input
                 instructions = body.instructions
                 previousResponseId = body.previousResponseId
+                promptCacheKey = body.promptCacheKey
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -651,6 +710,25 @@ private constructor(
                 this.previousResponseId = previousResponseId
             }
 
+            /** A key to use when reading from or writing to the prompt cache. */
+            fun promptCacheKey(promptCacheKey: String?) =
+                promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+            /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+            fun promptCacheKey(promptCacheKey: Optional<String>) =
+                promptCacheKey(promptCacheKey.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheKey] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+                this.promptCacheKey = promptCacheKey
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -688,6 +766,7 @@ private constructor(
                     input,
                     instructions,
                     previousResponseId,
+                    promptCacheKey,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -703,6 +782,7 @@ private constructor(
             input().ifPresent { it.validate() }
             instructions()
             previousResponseId()
+            promptCacheKey()
             validated = true
         }
 
@@ -725,7 +805,8 @@ private constructor(
             (if (model.asKnown().isPresent) 1 else 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
-                (if (previousResponseId.asKnown().isPresent) 1 else 0)
+                (if (previousResponseId.asKnown().isPresent) 1 else 0) +
+                (if (promptCacheKey.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -737,17 +818,25 @@ private constructor(
                 input == other.input &&
                 instructions == other.instructions &&
                 previousResponseId == other.previousResponseId &&
+                promptCacheKey == other.promptCacheKey &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(model, input, instructions, previousResponseId, additionalProperties)
+            Objects.hash(
+                model,
+                input,
+                instructions,
+                previousResponseId,
+                promptCacheKey,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, additionalProperties=$additionalProperties}"
+            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, additionalProperties=$additionalProperties}"
     }
 
     /**

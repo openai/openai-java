@@ -41,6 +41,7 @@ internal class ResponseOutputMessageTest {
                         .build()
                 )
                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                .phase(ResponseOutputMessage.Phase.COMMENTARY)
                 .build()
 
         assertThat(responseOutputMessage.id()).isEqualTo("id")
@@ -75,6 +76,7 @@ internal class ResponseOutputMessageTest {
             )
         assertThat(responseOutputMessage.status())
             .isEqualTo(ResponseOutputMessage.Status.IN_PROGRESS)
+        assertThat(responseOutputMessage.phase()).contains(ResponseOutputMessage.Phase.COMMENTARY)
     }
 
     @Test
@@ -110,6 +112,7 @@ internal class ResponseOutputMessageTest {
                         .build()
                 )
                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                .phase(ResponseOutputMessage.Phase.COMMENTARY)
                 .build()
 
         val roundtrippedResponseOutputMessage =

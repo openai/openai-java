@@ -45,6 +45,7 @@ internal class CompactedResponseTest {
                                 .build()
                         )
                         .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                        .phase(ResponseOutputMessage.Phase.COMMENTARY)
                         .build()
                 )
                 .usage(
@@ -96,6 +97,7 @@ internal class CompactedResponseTest {
                                 .build()
                         )
                         .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                        .phase(ResponseOutputMessage.Phase.COMMENTARY)
                         .build()
                 )
             )
@@ -152,6 +154,7 @@ internal class CompactedResponseTest {
                                 .build()
                         )
                         .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                        .phase(ResponseOutputMessage.Phase.COMMENTARY)
                         .build()
                 )
                 .usage(
