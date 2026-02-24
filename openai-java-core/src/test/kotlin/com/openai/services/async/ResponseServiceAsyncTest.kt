@@ -303,6 +303,7 @@ internal class ResponseServiceAsyncTest {
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")
+                    .promptCacheKey("prompt_cache_key")
                     .build()
             )
 
