@@ -107,10 +107,12 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
-     * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
-     * requests, preserve and resend phase on all assistant messages — dropping it can degrade
-     * performance. Not used for user messages.
+     * The phase of an assistant message.
+     *
+     * Use `commentary` for an intermediate assistant message and `final_answer` for the final
+     * assistant message. For follow-up requests with models like `gpt-5.3-codex` and later,
+     * preserve and resend phase on all assistant messages. Omitting it can degrade performance. Not
+     * used for user messages.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -292,10 +294,12 @@ private constructor(
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
-         * Labels an `assistant` message as intermediate commentary (`commentary`) or the final
-         * answer (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending
-         * follow-up requests, preserve and resend phase on all assistant messages — dropping it can
-         * degrade performance. Not used for user messages.
+         * The phase of an assistant message.
+         *
+         * Use `commentary` for an intermediate assistant message and `final_answer` for the final
+         * assistant message. For follow-up requests with models like `gpt-5.3-codex` and later,
+         * preserve and resend phase on all assistant messages. Omitting it can degrade performance.
+         * Not used for user messages.
          */
         fun phase(phase: Phase?) = phase(JsonField.ofNullable(phase))
 
@@ -714,10 +718,12 @@ private constructor(
     }
 
     /**
-     * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
-     * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
-     * requests, preserve and resend phase on all assistant messages — dropping it can degrade
-     * performance. Not used for user messages.
+     * The phase of an assistant message.
+     *
+     * Use `commentary` for an intermediate assistant message and `final_answer` for the final
+     * assistant message. For follow-up requests with models like `gpt-5.3-codex` and later,
+     * preserve and resend phase on all assistant messages. Omitting it can degrade performance. Not
+     * used for user messages.
      */
     class Phase @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -735,12 +741,15 @@ private constructor(
 
             @JvmField val COMMENTARY = of("commentary")
 
+            @JvmField val FINAL_ANSWER = of("final_answer")
+
             @JvmStatic fun of(value: String) = Phase(JsonField.of(value))
         }
 
         /** An enum containing [Phase]'s known values. */
         enum class Known {
-            COMMENTARY
+            COMMENTARY,
+            FINAL_ANSWER,
         }
 
         /**
@@ -754,6 +763,7 @@ private constructor(
          */
         enum class Value {
             COMMENTARY,
+            FINAL_ANSWER,
             /** An enum member indicating that [Phase] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -768,6 +778,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 COMMENTARY -> Value.COMMENTARY
+                FINAL_ANSWER -> Value.FINAL_ANSWER
                 else -> Value._UNKNOWN
             }
 
@@ -783,6 +794,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 COMMENTARY -> Known.COMMENTARY
+                FINAL_ANSWER -> Known.FINAL_ANSWER
                 else -> throw OpenAIInvalidDataException("Unknown Phase: $value")
             }
 
