@@ -46,6 +46,7 @@ internal class ResponseOutputItemTest {
                         .build()
                 )
                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                .phase(ResponseOutputMessage.Phase.COMMENTARY)
                 .build()
 
         val responseOutputItem = ResponseOutputItem.ofMessage(message)
@@ -104,6 +105,7 @@ internal class ResponseOutputItemTest {
                             .build()
                     )
                     .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                    .phase(ResponseOutputMessage.Phase.COMMENTARY)
                     .build()
             )
 
