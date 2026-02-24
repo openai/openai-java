@@ -15,12 +15,14 @@ internal class EasyInputMessageTest {
             EasyInputMessage.builder()
                 .content("string")
                 .role(EasyInputMessage.Role.USER)
+                .phase(EasyInputMessage.Phase.COMMENTARY)
                 .type(EasyInputMessage.Type.MESSAGE)
                 .build()
 
         assertThat(easyInputMessage.content())
             .isEqualTo(EasyInputMessage.Content.ofTextInput("string"))
         assertThat(easyInputMessage.role()).isEqualTo(EasyInputMessage.Role.USER)
+        assertThat(easyInputMessage.phase()).contains(EasyInputMessage.Phase.COMMENTARY)
         assertThat(easyInputMessage.type()).contains(EasyInputMessage.Type.MESSAGE)
     }
 
@@ -31,6 +33,7 @@ internal class EasyInputMessageTest {
             EasyInputMessage.builder()
                 .content("string")
                 .role(EasyInputMessage.Role.USER)
+                .phase(EasyInputMessage.Phase.COMMENTARY)
                 .type(EasyInputMessage.Type.MESSAGE)
                 .build()
 
