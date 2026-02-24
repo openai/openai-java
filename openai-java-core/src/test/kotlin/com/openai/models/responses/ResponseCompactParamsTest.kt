@@ -14,7 +14,6 @@ internal class ResponseCompactParamsTest {
             .input("string")
             .instructions("instructions")
             .previousResponseId("resp_123")
-            .promptCacheKey("prompt_cache_key")
             .build()
     }
 
@@ -26,7 +25,6 @@ internal class ResponseCompactParamsTest {
                 .input("string")
                 .instructions("instructions")
                 .previousResponseId("resp_123")
-                .promptCacheKey("prompt_cache_key")
                 .build()
 
         val body = params._body()
@@ -35,7 +33,6 @@ internal class ResponseCompactParamsTest {
         assertThat(body.input()).contains(ResponseCompactParams.Input.ofString("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.previousResponseId()).contains("resp_123")
-        assertThat(body.promptCacheKey()).contains("prompt_cache_key")
     }
 
     @Test
