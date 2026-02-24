@@ -72,10 +72,10 @@ private constructor(
     fun role(): Role = role.getRequired("role")
 
     /**
-     * Labels an assistant message as intermediate commentary ("commentary") or the final answer
-     * ("final_answer"). For models like gpt-5.3-codex and beyond, when sending follow-up requests,
-     * preserve and resend phase on all assistant messages — dropping it can degrade performance.
-     * Not used for user messages.
+     * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
+     * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
+     * requests, preserve and resend phase on all assistant messages — dropping it can degrade
+     * performance. Not used for user messages.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -199,10 +199,10 @@ private constructor(
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
-         * Labels an assistant message as intermediate commentary ("commentary") or the final answer
-         * ("final_answer"). For models like gpt-5.3-codex and beyond, when sending follow-up
-         * requests, preserve and resend phase on all assistant messages — dropping it can degrade
-         * performance. Not used for user messages.
+         * Labels an `assistant` message as intermediate commentary (`commentary`) or the final
+         * answer (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending
+         * follow-up requests, preserve and resend phase on all assistant messages — dropping it can
+         * degrade performance. Not used for user messages.
          */
         fun phase(phase: Phase?) = phase(JsonField.ofNullable(phase))
 
@@ -650,10 +650,10 @@ private constructor(
     }
 
     /**
-     * Labels an assistant message as intermediate commentary ("commentary") or the final answer
-     * ("final_answer"). For models like gpt-5.3-codex and beyond, when sending follow-up requests,
-     * preserve and resend phase on all assistant messages — dropping it can degrade performance.
-     * Not used for user messages.
+     * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
+     * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
+     * requests, preserve and resend phase on all assistant messages — dropping it can degrade
+     * performance. Not used for user messages.
      */
     class Phase @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
