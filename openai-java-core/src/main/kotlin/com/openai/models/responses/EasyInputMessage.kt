@@ -686,12 +686,15 @@ private constructor(
 
             @JvmField val COMMENTARY = of("commentary")
 
+            @JvmField val FINAL_ANSWER = of("final_answer")
+
             @JvmStatic fun of(value: String) = Phase(JsonField.of(value))
         }
 
         /** An enum containing [Phase]'s known values. */
         enum class Known {
-            COMMENTARY
+            COMMENTARY,
+            FINAL_ANSWER,
         }
 
         /**
@@ -705,6 +708,7 @@ private constructor(
          */
         enum class Value {
             COMMENTARY,
+            FINAL_ANSWER,
             /** An enum member indicating that [Phase] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -719,6 +723,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 COMMENTARY -> Value.COMMENTARY
+                FINAL_ANSWER -> Value.FINAL_ANSWER
                 else -> Value._UNKNOWN
             }
 
@@ -734,6 +739,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 COMMENTARY -> Known.COMMENTARY
+                FINAL_ANSWER -> Known.FINAL_ANSWER
                 else -> throw OpenAIInvalidDataException("Unknown Phase: $value")
             }
 
