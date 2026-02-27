@@ -3090,7 +3090,6 @@ private constructor(
             /** A JSON string of the output of the function tool call. */
             fun string(): Optional<String> = Optional.ofNullable(string)
 
-            /** An array of content outputs (text, image, file) for the function tool call. */
             fun responseFunctionCallOutputItemList():
                 Optional<List<ResponseFunctionCallOutputItem>> =
                 Optional.ofNullable(responseFunctionCallOutputItemList)
@@ -3103,7 +3102,6 @@ private constructor(
             /** A JSON string of the output of the function tool call. */
             fun asString(): String = string.getOrThrow("string")
 
-            /** An array of content outputs (text, image, file) for the function tool call. */
             fun asResponseFunctionCallOutputItemList(): List<ResponseFunctionCallOutputItem> =
                 responseFunctionCallOutputItemList.getOrThrow("responseFunctionCallOutputItemList")
 
@@ -3194,7 +3192,6 @@ private constructor(
                 /** A JSON string of the output of the function tool call. */
                 @JvmStatic fun ofString(string: String) = Output(string = string)
 
-                /** An array of content outputs (text, image, file) for the function tool call. */
                 @JvmStatic
                 fun ofResponseFunctionCallOutputItemList(
                     responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
@@ -3213,7 +3210,6 @@ private constructor(
                 /** A JSON string of the output of the function tool call. */
                 fun visitString(string: String): T
 
-                /** An array of content outputs (text, image, file) for the function tool call. */
                 fun visitResponseFunctionCallOutputItemList(
                     responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
                 ): T
@@ -3259,7 +3255,7 @@ private constructor(
                             .toList()
                     return when (bestMatches.size) {
                         // This can happen if what we're deserializing is completely incompatible
-                        // with all the possible variants (e.g. deserializing from boolean).
+                        // with all the possible variants (e.g. deserializing from object).
                         0 -> Output(_json = json)
                         1 -> bestMatches.single()
                         // If there's more than one match with the highest validity, then use the
@@ -5260,7 +5256,6 @@ private constructor(
         private val callId: JsonField<String>,
         private val type: JsonValue,
         private val id: JsonField<String>,
-        private val environment: JsonField<Environment>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -5271,11 +5266,8 @@ private constructor(
             @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("environment")
-            @ExcludeMissing
-            environment: JsonField<Environment> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        ) : this(action, callId, type, id, environment, status, mutableMapOf())
+        ) : this(action, callId, type, id, status, mutableMapOf())
 
         /**
          * The shell commands and limits that describe how to run the tool call.
@@ -5315,14 +5307,6 @@ private constructor(
         fun id(): Optional<String> = id.getOptional("id")
 
         /**
-         * The environment to execute the shell commands in.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun environment(): Optional<Environment> = environment.getOptional("environment")
-
-        /**
          * The status of the shell call. One of `in_progress`, `completed`, or `incomplete`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -5350,15 +5334,6 @@ private constructor(
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        /**
-         * Returns the raw JSON value of [environment].
-         *
-         * Unlike [environment], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("environment")
-        @ExcludeMissing
-        fun _environment(): JsonField<Environment> = environment
 
         /**
          * Returns the raw JSON value of [status].
@@ -5400,7 +5375,6 @@ private constructor(
             private var callId: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("shell_call")
             private var id: JsonField<String> = JsonMissing.of()
-            private var environment: JsonField<Environment> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5410,7 +5384,6 @@ private constructor(
                 callId = shellCall.callId
                 type = shellCall.type
                 id = shellCall.id
-                environment = shellCall.environment
                 status = shellCall.status
                 additionalProperties = shellCall.additionalProperties.toMutableMap()
             }
@@ -5470,46 +5443,6 @@ private constructor(
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
-            /** The environment to execute the shell commands in. */
-            fun environment(environment: Environment?) =
-                environment(JsonField.ofNullable(environment))
-
-            /** Alias for calling [Builder.environment] with `environment.orElse(null)`. */
-            fun environment(environment: Optional<Environment>) =
-                environment(environment.getOrNull())
-
-            /**
-             * Sets [Builder.environment] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.environment] with a well-typed [Environment] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun environment(environment: JsonField<Environment>) = apply {
-                this.environment = environment
-            }
-
-            /** Alias for calling [environment] with `Environment.ofLocal(local)`. */
-            fun environment(local: LocalEnvironment) = environment(Environment.ofLocal(local))
-
-            /**
-             * Alias for calling [environment] with
-             * `Environment.ofContainerReference(containerReference)`.
-             */
-            fun environment(containerReference: ContainerReference) =
-                environment(Environment.ofContainerReference(containerReference))
-
-            /**
-             * Alias for calling [environment] with the following:
-             * ```java
-             * ContainerReference.builder()
-             *     .containerId(containerId)
-             *     .build()
-             * ```
-             */
-            fun containerReferenceEnvironment(containerId: String) =
-                environment(ContainerReference.builder().containerId(containerId).build())
-
             /** The status of the shell call. One of `in_progress`, `completed`, or `incomplete`. */
             fun status(status: Status?) = status(JsonField.ofNullable(status))
 
@@ -5563,7 +5496,6 @@ private constructor(
                     checkRequired("callId", callId),
                     type,
                     id,
-                    environment,
                     status,
                     additionalProperties.toMutableMap(),
                 )
@@ -5584,7 +5516,6 @@ private constructor(
                 }
             }
             id()
-            environment().ifPresent { it.validate() }
             status().ifPresent { it.validate() }
             validated = true
         }
@@ -5609,7 +5540,6 @@ private constructor(
                 (if (callId.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("shell_call")) 1 else 0 } +
                 (if (id.asKnown().isPresent) 1 else 0) +
-                (environment.asKnown().getOrNull()?.validity() ?: 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The shell commands and limits that describe how to run the tool call. */
@@ -5909,187 +5839,6 @@ private constructor(
                 "Action{commands=$commands, maxOutputLength=$maxOutputLength, timeoutMs=$timeoutMs, additionalProperties=$additionalProperties}"
         }
 
-        /** The environment to execute the shell commands in. */
-        @JsonDeserialize(using = Environment.Deserializer::class)
-        @JsonSerialize(using = Environment.Serializer::class)
-        class Environment
-        private constructor(
-            private val local: LocalEnvironment? = null,
-            private val containerReference: ContainerReference? = null,
-            private val _json: JsonValue? = null,
-        ) {
-
-            fun local(): Optional<LocalEnvironment> = Optional.ofNullable(local)
-
-            fun containerReference(): Optional<ContainerReference> =
-                Optional.ofNullable(containerReference)
-
-            fun isLocal(): Boolean = local != null
-
-            fun isContainerReference(): Boolean = containerReference != null
-
-            fun asLocal(): LocalEnvironment = local.getOrThrow("local")
-
-            fun asContainerReference(): ContainerReference =
-                containerReference.getOrThrow("containerReference")
-
-            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-            fun <T> accept(visitor: Visitor<T>): T =
-                when {
-                    local != null -> visitor.visitLocal(local)
-                    containerReference != null ->
-                        visitor.visitContainerReference(containerReference)
-                    else -> visitor.unknown(_json)
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Environment = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                accept(
-                    object : Visitor<Unit> {
-                        override fun visitLocal(local: LocalEnvironment) {
-                            local.validate()
-                        }
-
-                        override fun visitContainerReference(
-                            containerReference: ContainerReference
-                        ) {
-                            containerReference.validate()
-                        }
-                    }
-                )
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int =
-                accept(
-                    object : Visitor<Int> {
-                        override fun visitLocal(local: LocalEnvironment) = local.validity()
-
-                        override fun visitContainerReference(
-                            containerReference: ContainerReference
-                        ) = containerReference.validity()
-
-                        override fun unknown(json: JsonValue?) = 0
-                    }
-                )
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Environment &&
-                    local == other.local &&
-                    containerReference == other.containerReference
-            }
-
-            override fun hashCode(): Int = Objects.hash(local, containerReference)
-
-            override fun toString(): String =
-                when {
-                    local != null -> "Environment{local=$local}"
-                    containerReference != null ->
-                        "Environment{containerReference=$containerReference}"
-                    _json != null -> "Environment{_unknown=$_json}"
-                    else -> throw IllegalStateException("Invalid Environment")
-                }
-
-            companion object {
-
-                @JvmStatic fun ofLocal(local: LocalEnvironment) = Environment(local = local)
-
-                @JvmStatic
-                fun ofContainerReference(containerReference: ContainerReference) =
-                    Environment(containerReference = containerReference)
-            }
-
-            /**
-             * An interface that defines how to map each variant of [Environment] to a value of type
-             * [T].
-             */
-            interface Visitor<out T> {
-
-                fun visitLocal(local: LocalEnvironment): T
-
-                fun visitContainerReference(containerReference: ContainerReference): T
-
-                /**
-                 * Maps an unknown variant of [Environment] to a value of type [T].
-                 *
-                 * An instance of [Environment] can contain an unknown variant if it was
-                 * deserialized from data that doesn't match any known variant. For example, if the
-                 * SDK is on an older version than the API, then the API may respond with new
-                 * variants that the SDK is unaware of.
-                 *
-                 * @throws OpenAIInvalidDataException in the default implementation.
-                 */
-                fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Environment: $json")
-                }
-            }
-
-            internal class Deserializer : BaseDeserializer<Environment>(Environment::class) {
-
-                override fun ObjectCodec.deserialize(node: JsonNode): Environment {
-                    val json = JsonValue.fromJsonNode(node)
-                    val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
-
-                    when (type) {
-                        "local" -> {
-                            return tryDeserialize(node, jacksonTypeRef<LocalEnvironment>())?.let {
-                                Environment(local = it, _json = json)
-                            } ?: Environment(_json = json)
-                        }
-                        "container_reference" -> {
-                            return tryDeserialize(node, jacksonTypeRef<ContainerReference>())?.let {
-                                Environment(containerReference = it, _json = json)
-                            } ?: Environment(_json = json)
-                        }
-                    }
-
-                    return Environment(_json = json)
-                }
-            }
-
-            internal class Serializer : BaseSerializer<Environment>(Environment::class) {
-
-                override fun serialize(
-                    value: Environment,
-                    generator: JsonGenerator,
-                    provider: SerializerProvider,
-                ) {
-                    when {
-                        value.local != null -> generator.writeObject(value.local)
-                        value.containerReference != null ->
-                            generator.writeObject(value.containerReference)
-                        value._json != null -> generator.writeObject(value._json)
-                        else -> throw IllegalStateException("Invalid Environment")
-                    }
-                }
-            }
-        }
-
         /** The status of the shell call. One of `in_progress`, `completed`, or `incomplete`. */
         class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -6236,19 +5985,18 @@ private constructor(
                 callId == other.callId &&
                 type == other.type &&
                 id == other.id &&
-                environment == other.environment &&
                 status == other.status &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(action, callId, type, id, environment, status, additionalProperties)
+            Objects.hash(action, callId, type, id, status, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ShellCall{action=$action, callId=$callId, type=$type, id=$id, environment=$environment, status=$status, additionalProperties=$additionalProperties}"
+            "ShellCall{action=$action, callId=$callId, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
     }
 
     /** The streamed output items emitted by a shell tool call. */
@@ -6260,7 +6008,6 @@ private constructor(
         private val type: JsonValue,
         private val id: JsonField<String>,
         private val maxOutputLength: JsonField<Long>,
-        private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -6275,8 +6022,7 @@ private constructor(
             @JsonProperty("max_output_length")
             @ExcludeMissing
             maxOutputLength: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        ) : this(callId, output, type, id, maxOutputLength, status, mutableMapOf())
+        ) : this(callId, output, type, id, maxOutputLength, mutableMapOf())
 
         /**
          * The unique ID of the shell tool call generated by the model.
@@ -6325,14 +6071,6 @@ private constructor(
         fun maxOutputLength(): Optional<Long> = maxOutputLength.getOptional("max_output_length")
 
         /**
-         * The status of the shell call output.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun status(): Optional<Status> = status.getOptional("status")
-
-        /**
          * Returns the raw JSON value of [callId].
          *
          * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
@@ -6364,13 +6102,6 @@ private constructor(
         @JsonProperty("max_output_length")
         @ExcludeMissing
         fun _maxOutputLength(): JsonField<Long> = maxOutputLength
-
-        /**
-         * Returns the raw JSON value of [status].
-         *
-         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6407,7 +6138,6 @@ private constructor(
             private var type: JsonValue = JsonValue.from("shell_call_output")
             private var id: JsonField<String> = JsonMissing.of()
             private var maxOutputLength: JsonField<Long> = JsonMissing.of()
-            private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6417,7 +6147,6 @@ private constructor(
                 type = shellCallOutput.type
                 id = shellCallOutput.id
                 maxOutputLength = shellCallOutput.maxOutputLength
-                status = shellCallOutput.status
                 additionalProperties = shellCallOutput.additionalProperties.toMutableMap()
             }
 
@@ -6523,21 +6252,6 @@ private constructor(
                 this.maxOutputLength = maxOutputLength
             }
 
-            /** The status of the shell call output. */
-            fun status(status: Status?) = status(JsonField.ofNullable(status))
-
-            /** Alias for calling [Builder.status] with `status.orElse(null)`. */
-            fun status(status: Optional<Status>) = status(status.getOrNull())
-
-            /**
-             * Sets [Builder.status] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.status] with a well-typed [Status] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun status(status: JsonField<Status>) = apply { this.status = status }
-
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -6577,7 +6291,6 @@ private constructor(
                     type,
                     id,
                     maxOutputLength,
-                    status,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6598,7 +6311,6 @@ private constructor(
             }
             id()
             maxOutputLength()
-            status().ifPresent { it.validate() }
             validated = true
         }
 
@@ -6622,144 +6334,7 @@ private constructor(
                 (output.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 type.let { if (it == JsonValue.from("shell_call_output")) 1 else 0 } +
                 (if (id.asKnown().isPresent) 1 else 0) +
-                (if (maxOutputLength.asKnown().isPresent) 1 else 0) +
-                (status.asKnown().getOrNull()?.validity() ?: 0)
-
-        /** The status of the shell call output. */
-        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val IN_PROGRESS = of("in_progress")
-
-                @JvmField val COMPLETED = of("completed")
-
-                @JvmField val INCOMPLETE = of("incomplete")
-
-                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
-            }
-
-            /** An enum containing [Status]'s known values. */
-            enum class Known {
-                IN_PROGRESS,
-                COMPLETED,
-                INCOMPLETE,
-            }
-
-            /**
-             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Status] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                IN_PROGRESS,
-                COMPLETED,
-                INCOMPLETE,
-                /**
-                 * An enum member indicating that [Status] was instantiated with an unknown value.
-                 */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    IN_PROGRESS -> Value.IN_PROGRESS
-                    COMPLETED -> Value.COMPLETED
-                    INCOMPLETE -> Value.INCOMPLETE
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    IN_PROGRESS -> Known.IN_PROGRESS
-                    COMPLETED -> Known.COMPLETED
-                    INCOMPLETE -> Known.INCOMPLETE
-                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Status = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Status && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
+                (if (maxOutputLength.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -6772,18 +6347,17 @@ private constructor(
                 type == other.type &&
                 id == other.id &&
                 maxOutputLength == other.maxOutputLength &&
-                status == other.status &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(callId, output, type, id, maxOutputLength, status, additionalProperties)
+            Objects.hash(callId, output, type, id, maxOutputLength, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ShellCallOutput{callId=$callId, output=$output, type=$type, id=$id, maxOutputLength=$maxOutputLength, status=$status, additionalProperties=$additionalProperties}"
+            "ShellCallOutput{callId=$callId, output=$output, type=$type, id=$id, maxOutputLength=$maxOutputLength, additionalProperties=$additionalProperties}"
     }
 
     /** A tool call representing a request to create, delete, or update files using diff patches. */
@@ -8972,15 +8546,7 @@ private constructor(
                 description: JsonField<String> = JsonMissing.of(),
             ) : this(inputSchema, name, annotations, description, mutableMapOf())
 
-            /**
-             * The JSON schema describing the tool's input.
-             *
-             * This arbitrary value can be deserialized into a custom type using the `convert`
-             * method:
-             * ```java
-             * MyClass myObject = tool.inputSchema().convert(MyClass.class);
-             * ```
-             */
+            /** The JSON schema describing the tool's input. */
             @JsonProperty("input_schema")
             @ExcludeMissing
             fun _inputSchema(): JsonValue = inputSchema
@@ -8994,15 +8560,7 @@ private constructor(
              */
             fun name(): String = name.getRequired("name")
 
-            /**
-             * Additional annotations about the tool.
-             *
-             * This arbitrary value can be deserialized into a custom type using the `convert`
-             * method:
-             * ```java
-             * MyClass myObject = tool.annotations().convert(MyClass.class);
-             * ```
-             */
+            /** Additional annotations about the tool. */
             @JsonProperty("annotations") @ExcludeMissing fun _annotations(): JsonValue = annotations
 
             /**
