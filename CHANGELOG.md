@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.24.1 (2026-02-28)
+
+Full Changelog: [v4.24.0...v4.24.1](https://github.com/openai/openai-java/compare/v4.24.0...v4.24.1)
+
+### Bug Fixes
+
+* **api:** internal schema fixes ([b4d6777](https://github.com/openai/openai-java/commit/b4d67776443c04d9283e9d349af237d047b9e5c9))
+* **api:** manual updates ([95d5732](https://github.com/openai/openai-java/commit/95d5732a7eaac2ba4708e3d9ab48433f64aa9d13))
+
 ## 4.24.0 (2026-02-24)
 
 Full Changelog: [v4.23.0...v4.24.0](https://github.com/openai/openai-java/compare/v4.23.0...v4.24.0)
