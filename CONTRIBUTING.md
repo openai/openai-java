@@ -103,7 +103,6 @@ Then run the tests:
 
 ```sh
 $ ./scripts/test
-
 ```
 
 ### Test configuration
@@ -159,22 +158,6 @@ To build a specific module:
 
 ```sh
 $ ./gradlew :openai-java-core:build
-```
-
-## Adding and running examples
-
-All files in the `openai-java-example/` directory are not modified by the generator and can be freely edited or added to.
-
-```java
-// add an example to openai-java-example/src/main/java/com/openai/example/<YourExample>.java
-
-package com.openai.example;
-
-public class YourExample {
-    public static void main(String[] args) {
-        // ...
-    }
-}
 ```
 
 ## Publishing and releases
