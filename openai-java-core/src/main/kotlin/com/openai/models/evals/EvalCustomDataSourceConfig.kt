@@ -179,7 +179,7 @@ private constructor(
             return@apply
         }
 
-        schema().validate()
+        _schema().asKnown().ifPresent { it.validate() }
         _type().let {
             if (it != JsonValue.from("custom")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -203,7 +203,7 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (schema.asKnown().getOrNull()?.validity() ?: 0) +
+        (schema.asKnown().getOrNull()?.validity() ?: schema.asUnknown().flatMap { it.asObject() }.map { 1 }.orElse(0)) +
             type.let { if (it == JsonValue.from("custom")) 1 else 0 }
 
     /**

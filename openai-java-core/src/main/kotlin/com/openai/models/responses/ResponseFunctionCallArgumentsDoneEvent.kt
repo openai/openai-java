@@ -14,6 +14,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 
 /** Emitted when function-call arguments are finalized. */
 class ResponseFunctionCallArgumentsDoneEvent
@@ -64,7 +65,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): Optional<String> = name.getOptional("name")
 
     /**
      * The index of the output item.
@@ -152,7 +153,6 @@ private constructor(
          * ```java
          * .arguments()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -177,7 +177,7 @@ private constructor(
         ) = apply {
             arguments = responseFunctionCallArgumentsDoneEvent.arguments
             itemId = responseFunctionCallArgumentsDoneEvent.itemId
-            name = responseFunctionCallArgumentsDoneEvent.name
+            name = responseFunctionCallArgumentsDoneEvent._name()
             outputIndex = responseFunctionCallArgumentsDoneEvent.outputIndex
             sequenceNumber = responseFunctionCallArgumentsDoneEvent.sequenceNumber
             type = responseFunctionCallArgumentsDoneEvent.type
@@ -210,6 +210,9 @@ private constructor(
 
         /** The name of the function that was called. */
         fun name(name: String) = name(JsonField.of(name))
+
+        /** The name of the function that was called. */
+        fun name(name: Optional<String>) = name(name.map { JsonField.of(it) }.orElse(JsonMissing.of()))
 
         /**
          * Sets [Builder.name] to an arbitrary JSON value.
@@ -287,7 +290,6 @@ private constructor(
          * ```java
          * .arguments()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -298,7 +300,7 @@ private constructor(
             ResponseFunctionCallArgumentsDoneEvent(
                 checkRequired("arguments", arguments),
                 checkRequired("itemId", itemId),
-                checkRequired("name", name),
+                name ?: JsonMissing.of(),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
@@ -315,7 +317,6 @@ private constructor(
 
         arguments()
         itemId()
-        name()
         outputIndex()
         sequenceNumber()
         _type().let {

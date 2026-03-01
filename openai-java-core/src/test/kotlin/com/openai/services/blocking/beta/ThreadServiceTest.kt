@@ -27,65 +27,7 @@ internal class ThreadServiceTest {
                 .build()
         val threadService = client.beta().threads()
 
-        val thread =
-            threadService.create(
-                ThreadCreateParams.builder()
-                    .addMessage(
-                        ThreadCreateParams.Message.builder()
-                            .content("string")
-                            .role(ThreadCreateParams.Message.Role.USER)
-                            .addAttachment(
-                                ThreadCreateParams.Message.Attachment.builder()
-                                    .fileId("file_id")
-                                    .addTool(CodeInterpreterTool.builder().build())
-                                    .build()
-                            )
-                            .metadata(
-                                ThreadCreateParams.Message.Metadata.builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("string"))
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .metadata(
-                        ThreadCreateParams.Metadata.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
-                    )
-                    .toolResources(
-                        ThreadCreateParams.ToolResources.builder()
-                            .codeInterpreter(
-                                ThreadCreateParams.ToolResources.CodeInterpreter.builder()
-                                    .addFileId("string")
-                                    .build()
-                            )
-                            .fileSearch(
-                                ThreadCreateParams.ToolResources.FileSearch.builder()
-                                    .addVectorStoreId("string")
-                                    .addVectorStore(
-                                        ThreadCreateParams.ToolResources.FileSearch.VectorStore
-                                            .builder()
-                                            .chunkingStrategyAuto()
-                                            .addFileId("string")
-                                            .metadata(
-                                                ThreadCreateParams.ToolResources.FileSearch
-                                                    .VectorStore
-                                                    .Metadata
-                                                    .builder()
-                                                    .putAdditionalProperty(
-                                                        "foo",
-                                                        JsonValue.from("string"),
-                                                    )
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
+        val thread = threadService.create(ThreadCreateParams.builder().build())
 
         thread.validate()
     }

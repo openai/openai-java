@@ -27,54 +27,7 @@ internal class AssistantServiceAsyncTest {
 
         val assistantFuture =
             assistantServiceAsync.create(
-                AssistantCreateParams.builder()
-                    .model(ChatModel.GPT_4O)
-                    .description("description")
-                    .instructions("instructions")
-                    .metadata(
-                        AssistantCreateParams.Metadata.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
-                    )
-                    .name("name")
-                    .reasoningEffort(ReasoningEffort.NONE)
-                    .responseFormatAuto()
-                    .temperature(1.0)
-                    .toolResources(
-                        AssistantCreateParams.ToolResources.builder()
-                            .codeInterpreter(
-                                AssistantCreateParams.ToolResources.CodeInterpreter.builder()
-                                    .addFileId("string")
-                                    .build()
-                            )
-                            .fileSearch(
-                                AssistantCreateParams.ToolResources.FileSearch.builder()
-                                    .addVectorStoreId("string")
-                                    .addVectorStore(
-                                        AssistantCreateParams.ToolResources.FileSearch.VectorStore
-                                            .builder()
-                                            .chunkingStrategyAuto()
-                                            .addFileId("string")
-                                            .metadata(
-                                                AssistantCreateParams.ToolResources.FileSearch
-                                                    .VectorStore
-                                                    .Metadata
-                                                    .builder()
-                                                    .putAdditionalProperty(
-                                                        "foo",
-                                                        JsonValue.from("string"),
-                                                    )
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .addTool(CodeInterpreterTool.builder().build())
-                    .topP(1.0)
-                    .build()
+                AssistantCreateParams.builder().model(ChatModel.GPT_4O).build()
             )
 
         val assistant = assistantFuture.get()

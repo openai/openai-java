@@ -311,9 +311,9 @@ private constructor(
         }
 
         inputTokens()
-        inputTokensDetails().validate()
+        _inputTokensDetails().asKnown().ifPresent { it.validate() }
         outputTokens()
-        outputTokensDetails().validate()
+        _outputTokensDetails().asKnown().ifPresent { it.validate() }
         totalTokens()
         validated = true
     }

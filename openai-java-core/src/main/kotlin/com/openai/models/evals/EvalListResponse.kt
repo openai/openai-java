@@ -513,7 +513,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
-        testingCriteria().forEach { it.validate() }
+        _testingCriteria().asKnown().ifPresent { it.forEach { criterion -> criterion.validate() } }
         validated = true
     }
 

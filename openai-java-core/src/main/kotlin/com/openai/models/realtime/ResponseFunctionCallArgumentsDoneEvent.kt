@@ -14,6 +14,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 
 /**
  * Returned when the model-generated function call arguments are done streaming. Also emitted when a
@@ -97,7 +98,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): Optional<String> = name.getOptional("name")
 
     /**
      * The index of the output item in the response.
@@ -201,7 +202,6 @@ private constructor(
          * .callId()
          * .eventId()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .responseId()
          * ```
@@ -230,7 +230,7 @@ private constructor(
             callId = responseFunctionCallArgumentsDoneEvent.callId
             eventId = responseFunctionCallArgumentsDoneEvent.eventId
             itemId = responseFunctionCallArgumentsDoneEvent.itemId
-            name = responseFunctionCallArgumentsDoneEvent.name
+            name = responseFunctionCallArgumentsDoneEvent._name()
             outputIndex = responseFunctionCallArgumentsDoneEvent.outputIndex
             responseId = responseFunctionCallArgumentsDoneEvent.responseId
             type = responseFunctionCallArgumentsDoneEvent.type
@@ -285,6 +285,9 @@ private constructor(
 
         /** The name of the function that was called. */
         fun name(name: String) = name(JsonField.of(name))
+
+        /** The name of the function that was called. */
+        fun name(name: Optional<String>) = name(name.map { JsonField.of(it) }.orElse(JsonMissing.of()))
 
         /**
          * Sets [Builder.name] to an arbitrary JSON value.
@@ -362,7 +365,6 @@ private constructor(
          * .callId()
          * .eventId()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .responseId()
          * ```
@@ -375,7 +377,7 @@ private constructor(
                 checkRequired("callId", callId),
                 checkRequired("eventId", eventId),
                 checkRequired("itemId", itemId),
-                checkRequired("name", name),
+                name ?: JsonMissing.of(),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("responseId", responseId),
                 type,
@@ -394,7 +396,6 @@ private constructor(
         callId()
         eventId()
         itemId()
-        name()
         outputIndex()
         responseId()
         _type().let {

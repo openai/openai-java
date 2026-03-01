@@ -263,7 +263,7 @@ private constructor(
 
         id()
         stateVariables().ifPresent { it.validate() }
-        tracing().validate()
+        _tracing().asKnown().ifPresent { it.validate() }
         version()
         validated = true
     }

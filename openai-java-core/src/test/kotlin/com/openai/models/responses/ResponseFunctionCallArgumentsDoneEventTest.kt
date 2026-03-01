@@ -22,7 +22,7 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
 
         assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
         assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseFunctionCallArgumentsDoneEvent.name()).isEqualTo("name")
+        assertThat(responseFunctionCallArgumentsDoneEvent.name()).contains("name")
         assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
     }
@@ -47,5 +47,30 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
 
         assertThat(roundtrippedResponseFunctionCallArgumentsDoneEvent)
             .isEqualTo(responseFunctionCallArgumentsDoneEvent)
+    }
+
+    @Test
+    fun missingName() {
+        val jsonMapper = jsonMapper()
+        val responseFunctionCallArgumentsDoneEvent =
+            jsonMapper.readValue(
+                """
+                {
+                  "arguments": "arguments",
+                  "item_id": "item_id",
+                  "output_index": 0,
+                  "sequence_number": 0,
+                  "type": "response.function_call_arguments.done"
+                }
+                """
+                    .trimIndent(),
+                jacksonTypeRef<ResponseFunctionCallArgumentsDoneEvent>(),
+            )
+
+        assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
+        assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.name()).isEmpty()
+        assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
     }
 }

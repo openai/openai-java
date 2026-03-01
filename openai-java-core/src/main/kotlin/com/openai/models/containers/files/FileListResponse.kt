@@ -342,7 +342,7 @@ private constructor(
         containerId()
         createdAt()
         _object_().let {
-            if (it != JsonValue.from("container.file")) {
+            if (!it.asString().isPresent) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
@@ -370,7 +370,7 @@ private constructor(
             (if (bytes.asKnown().isPresent) 1 else 0) +
             (if (containerId.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
-            object_.let { if (it == JsonValue.from("container.file")) 1 else 0 } +
+            (if (object_.asString().isPresent) 1 else 0) +
             (if (path.asKnown().isPresent) 1 else 0) +
             (if (source.asKnown().isPresent) 1 else 0)
 

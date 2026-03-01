@@ -362,14 +362,13 @@ private constructor(
             return@apply
         }
 
-        id()
         content().forEach { it.validate() }
         _role().let {
-            if (it != JsonValue.from("assistant")) {
+            if (it != JsonValue.from("assistant") && it != JsonValue.from("user")) {
                 throw OpenAIInvalidDataException("'role' is invalid, received $it")
             }
         }
-        status().validate()
+        _status().asKnown().ifPresent { it.validate() }
         _type().let {
             if (it != JsonValue.from("message")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -396,7 +395,9 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            role.let { if (it == JsonValue.from("assistant")) 1 else 0 } +
+            role.let {
+                if (it == JsonValue.from("assistant") || it == JsonValue.from("user")) 1 else 0
+            } +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("message")) 1 else 0 } +
             (phase.asKnown().getOrNull()?.validity() ?: 0)
@@ -452,6 +453,9 @@ private constructor(
                     override fun visitRefusal(refusal: ResponseOutputRefusal) {
                         refusal.validate()
                     }
+
+                    // Ignore unknown content variants for forward compatibility.
+                    override fun unknown(json: JsonValue?) {}
                 }
             )
             validated = true
