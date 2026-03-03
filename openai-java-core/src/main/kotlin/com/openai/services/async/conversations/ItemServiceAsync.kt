@@ -16,6 +16,7 @@ import com.openai.models.conversations.items.ItemRetrieveParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Manage conversations and conversation items. */
 interface ItemServiceAsync {
 
     /**

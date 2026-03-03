@@ -21,6 +21,7 @@ import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     CheckpointService {
 

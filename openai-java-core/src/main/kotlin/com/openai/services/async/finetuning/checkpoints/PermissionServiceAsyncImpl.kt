@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 class PermissionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     PermissionServiceAsync {
 

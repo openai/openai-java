@@ -15,6 +15,7 @@ import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
 import java.util.function.Consumer
 
+/** Given a prompt and/or an input image, the model will generate a new image. */
 interface ImageService {
 
     /**

@@ -63,20 +63,35 @@ interface OpenAIClientAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync
 
+    /**
+     * Given a prompt, the model will return one or more predicted completions, and can also return
+     * the probabilities of alternative tokens at each position.
+     */
     fun completions(): CompletionServiceAsync
 
     fun chat(): ChatServiceAsync
 
+    /**
+     * Get a vector representation of a given input that can be easily consumed by machine learning
+     * models and algorithms.
+     */
     fun embeddings(): EmbeddingServiceAsync
 
+    /**
+     * Files are used to upload documents that can be used with features like Assistants and
+     * Fine-tuning.
+     */
     fun files(): FileServiceAsync
 
+    /** Given a prompt and/or an input image, the model will generate a new image. */
     fun images(): ImageServiceAsync
 
     fun audio(): AudioServiceAsync
 
+    /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
     fun moderations(): ModerationServiceAsync
 
+    /** List and describe the various models available in the API. */
     fun models(): ModelServiceAsync
 
     fun fineTuning(): FineTuningServiceAsync
@@ -89,16 +104,20 @@ interface OpenAIClientAsync {
 
     fun beta(): BetaServiceAsync
 
+    /** Create large batches of API requests to run asynchronously. */
     fun batches(): BatchServiceAsync
 
+    /** Use Uploads to upload large files in multiple parts. */
     fun uploads(): UploadServiceAsync
 
     fun responses(): ResponseServiceAsync
 
     fun realtime(): RealtimeServiceAsync
 
+    /** Manage conversations and conversation items. */
     fun conversations(): ConversationServiceAsync
 
+    /** Manage and run evals in the OpenAI platform. */
     fun evals(): EvalServiceAsync
 
     fun containers(): ContainerServiceAsync
@@ -132,20 +151,35 @@ interface OpenAIClientAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): OpenAIClientAsync.WithRawResponse
 
+        /**
+         * Given a prompt, the model will return one or more predicted completions, and can also
+         * return the probabilities of alternative tokens at each position.
+         */
         fun completions(): CompletionServiceAsync.WithRawResponse
 
         fun chat(): ChatServiceAsync.WithRawResponse
 
+        /**
+         * Get a vector representation of a given input that can be easily consumed by machine
+         * learning models and algorithms.
+         */
         fun embeddings(): EmbeddingServiceAsync.WithRawResponse
 
+        /**
+         * Files are used to upload documents that can be used with features like Assistants and
+         * Fine-tuning.
+         */
         fun files(): FileServiceAsync.WithRawResponse
 
+        /** Given a prompt and/or an input image, the model will generate a new image. */
         fun images(): ImageServiceAsync.WithRawResponse
 
         fun audio(): AudioServiceAsync.WithRawResponse
 
+        /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
         fun moderations(): ModerationServiceAsync.WithRawResponse
 
+        /** List and describe the various models available in the API. */
         fun models(): ModelServiceAsync.WithRawResponse
 
         fun fineTuning(): FineTuningServiceAsync.WithRawResponse
@@ -158,16 +192,20 @@ interface OpenAIClientAsync {
 
         fun beta(): BetaServiceAsync.WithRawResponse
 
+        /** Create large batches of API requests to run asynchronously. */
         fun batches(): BatchServiceAsync.WithRawResponse
 
+        /** Use Uploads to upload large files in multiple parts. */
         fun uploads(): UploadServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
 
         fun realtime(): RealtimeServiceAsync.WithRawResponse
 
+        /** Manage conversations and conversation items. */
         fun conversations(): ConversationServiceAsync.WithRawResponse
 
+        /** Manage and run evals in the OpenAI platform. */
         fun evals(): EvalServiceAsync.WithRawResponse
 
         fun containers(): ContainerServiceAsync.WithRawResponse

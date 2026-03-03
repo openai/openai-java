@@ -15,6 +15,7 @@ import com.openai.services.async.conversations.ItemServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Manage conversations and conversation items. */
 interface ConversationServiceAsync {
 
     /**
@@ -29,6 +30,7 @@ interface ConversationServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ConversationServiceAsync
 
+    /** Manage conversations and conversation items. */
     fun items(): ItemServiceAsync
 
     /** Create a conversation. */
@@ -159,6 +161,7 @@ interface ConversationServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ConversationServiceAsync.WithRawResponse
 
+        /** Manage conversations and conversation items. */
         fun items(): ItemServiceAsync.WithRawResponse
 
         /**

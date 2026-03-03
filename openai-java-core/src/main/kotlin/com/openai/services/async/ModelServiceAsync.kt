@@ -14,6 +14,7 @@ import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** List and describe the various models available in the API. */
 interface ModelServiceAsync {
 
     /**

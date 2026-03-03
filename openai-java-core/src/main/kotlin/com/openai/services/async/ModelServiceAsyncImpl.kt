@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** List and describe the various models available in the API. */
 class ModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ModelServiceAsync {
 

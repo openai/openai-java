@@ -21,6 +21,7 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointService =
         CheckpointServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun permissions(): PermissionService = permissions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun permissions(): PermissionService.WithRawResponse = permissions
     }
 }

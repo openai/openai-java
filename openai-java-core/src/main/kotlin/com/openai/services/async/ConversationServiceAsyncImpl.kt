@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage conversations and conversation items. */
 class ConversationServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ConversationServiceAsync {
 
@@ -42,6 +43,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ConversationServiceAsync =
         ConversationServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage conversations and conversation items. */
     override fun items(): ItemServiceAsync = items
 
     override fun create(
@@ -89,6 +91,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage conversations and conversation items. */
         override fun items(): ItemServiceAsync.WithRawResponse = items
 
         private val createHandler: Handler<Conversation> =

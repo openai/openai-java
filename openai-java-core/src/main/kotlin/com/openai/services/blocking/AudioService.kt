@@ -22,10 +22,13 @@ interface AudioService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioService
 
+    /** Turn audio into text or text into audio. */
     fun transcriptions(): TranscriptionService
 
+    /** Turn audio into text or text into audio. */
     fun translations(): TranslationService
 
+    /** Turn audio into text or text into audio. */
     fun speech(): SpeechService
 
     /** A view of [AudioService] that provides access to raw HTTP responses for each method. */
@@ -38,10 +41,13 @@ interface AudioService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioService.WithRawResponse
 
+        /** Turn audio into text or text into audio. */
         fun transcriptions(): TranscriptionService.WithRawResponse
 
+        /** Turn audio into text or text into audio. */
         fun translations(): TranslationService.WithRawResponse
 
+        /** Turn audio into text or text into audio. */
         fun speech(): SpeechService.WithRawResponse
     }
 }

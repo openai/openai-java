@@ -13,6 +13,7 @@ import com.openai.services.async.uploads.PartServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Use Uploads to upload large files in multiple parts. */
 interface UploadServiceAsync {
 
     /**
@@ -27,6 +28,7 @@ interface UploadServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadServiceAsync
 
+    /** Use Uploads to upload large files in multiple parts. */
     fun parts(): PartServiceAsync
 
     /**
@@ -145,6 +147,7 @@ interface UploadServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): UploadServiceAsync.WithRawResponse
 
+        /** Use Uploads to upload large files in multiple parts. */
         fun parts(): PartServiceAsync.WithRawResponse
 
         /**

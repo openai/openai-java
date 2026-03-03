@@ -19,6 +19,7 @@ import com.openai.services.async.evals.RunServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Manage and run evals in the OpenAI platform. */
 interface EvalServiceAsync {
 
     /**
@@ -33,6 +34,7 @@ interface EvalServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalServiceAsync
 
+    /** Manage and run evals in the OpenAI platform. */
     fun runs(): RunServiceAsync
 
     /**
@@ -183,6 +185,7 @@ interface EvalServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalServiceAsync.WithRawResponse
 
+        /** Manage and run evals in the OpenAI platform. */
         fun runs(): RunServiceAsync.WithRawResponse
 
         /**

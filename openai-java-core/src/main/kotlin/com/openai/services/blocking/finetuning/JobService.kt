@@ -19,6 +19,7 @@ import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
 import java.util.function.Consumer
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 interface JobService {
 
     /**
@@ -33,6 +34,7 @@ interface JobService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun checkpoints(): CheckpointService
 
     /**
@@ -239,6 +241,7 @@ interface JobService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun checkpoints(): CheckpointService.WithRawResponse
 
         /**

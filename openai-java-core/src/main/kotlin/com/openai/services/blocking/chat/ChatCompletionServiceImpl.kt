@@ -36,6 +36,7 @@ import com.openai.services.blocking.chat.completions.MessageServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Given a list of messages comprising a conversation, the model will return a response. */
 class ChatCompletionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ChatCompletionService {
 
@@ -50,6 +51,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatCompletionService =
         ChatCompletionServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Given a list of messages comprising a conversation, the model will return a response. */
     override fun messages(): MessageService = messages
 
     override fun create(
@@ -111,6 +113,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Given a list of messages comprising a conversation, the model will return a response. */
         override fun messages(): MessageService.WithRawResponse = messages
 
         private val createHandler: Handler<ChatCompletion> =

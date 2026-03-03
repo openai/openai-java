@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Turn audio into text or text into audio. */
 class TranscriptionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionServiceAsync {
 

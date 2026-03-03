@@ -37,6 +37,7 @@ class FineTuningServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun methods(): MethodServiceAsync = methods
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun jobs(): JobServiceAsync = jobs
 
     override fun checkpoints(): CheckpointServiceAsync = checkpoints
@@ -71,6 +72,7 @@ class FineTuningServiceAsyncImpl internal constructor(private val clientOptions:
 
         override fun methods(): MethodServiceAsync.WithRawResponse = methods
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun jobs(): JobServiceAsync.WithRawResponse = jobs
 
         override fun checkpoints(): CheckpointServiceAsync.WithRawResponse = checkpoints

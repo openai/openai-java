@@ -12,6 +12,7 @@ import com.openai.models.finetuning.alpha.graders.GraderValidateParams
 import com.openai.models.finetuning.alpha.graders.GraderValidateResponse
 import java.util.function.Consumer
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 interface GraderService {
 
     /**

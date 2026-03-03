@@ -40,6 +40,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 class RunServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     RunServiceAsync {
@@ -60,6 +61,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync =
         RunServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun steps(): StepServiceAsync = steps
 
@@ -151,6 +153,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun steps(): StepServiceAsync.WithRawResponse = steps
 

@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Use Uploads to upload large files in multiple parts. */
 class UploadServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     UploadServiceAsync {
 
@@ -40,6 +41,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadServiceAsync =
         UploadServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Use Uploads to upload large files in multiple parts. */
     override fun parts(): PartServiceAsync = parts
 
     override fun create(
@@ -80,6 +82,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Use Uploads to upload large files in multiple parts. */
         override fun parts(): PartServiceAsync.WithRawResponse = parts
 
         private val createHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)

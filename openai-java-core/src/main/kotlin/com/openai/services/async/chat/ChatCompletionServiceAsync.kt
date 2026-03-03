@@ -23,6 +23,7 @@ import com.openai.services.async.chat.completions.MessageServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Given a list of messages comprising a conversation, the model will return a response. */
 interface ChatCompletionServiceAsync {
 
     /**
@@ -37,6 +38,7 @@ interface ChatCompletionServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatCompletionServiceAsync
 
+    /** Given a list of messages comprising a conversation, the model will return a response. */
     fun messages(): MessageServiceAsync
 
     /**
@@ -288,6 +290,7 @@ interface ChatCompletionServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ChatCompletionServiceAsync.WithRawResponse
 
+        /** Given a list of messages comprising a conversation, the model will return a response. */
         fun messages(): MessageServiceAsync.WithRawResponse
 
         /**

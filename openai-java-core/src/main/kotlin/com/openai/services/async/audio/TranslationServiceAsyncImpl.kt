@@ -20,6 +20,7 @@ import com.openai.models.audio.translations.TranslationCreateResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Turn audio into text or text into audio. */
 class TranslationServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     TranslationServiceAsync {
 

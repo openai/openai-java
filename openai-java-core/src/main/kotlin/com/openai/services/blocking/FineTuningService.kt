@@ -25,6 +25,7 @@ interface FineTuningService {
 
     fun methods(): MethodService
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun jobs(): JobService
 
     fun checkpoints(): CheckpointService
@@ -45,6 +46,7 @@ interface FineTuningService {
 
         fun methods(): MethodService.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun jobs(): JobService.WithRawResponse
 
         fun checkpoints(): CheckpointService.WithRawResponse

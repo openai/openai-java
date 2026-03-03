@@ -25,6 +25,7 @@ import com.openai.services.blocking.uploads.PartServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Use Uploads to upload large files in multiple parts. */
 class UploadServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     UploadService {
 
@@ -39,6 +40,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService =
         UploadServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Use Uploads to upload large files in multiple parts. */
     override fun parts(): PartService = parts
 
     override fun create(params: UploadCreateParams, requestOptions: RequestOptions): Upload =
@@ -70,6 +72,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Use Uploads to upload large files in multiple parts. */
         override fun parts(): PartService.WithRawResponse = parts
 
         private val createHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)

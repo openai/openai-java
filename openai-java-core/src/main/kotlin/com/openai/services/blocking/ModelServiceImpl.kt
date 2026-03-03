@@ -26,6 +26,7 @@ import com.openai.models.models.ModelRetrieveParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** List and describe the various models available in the API. */
 class ModelServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ModelService {
 

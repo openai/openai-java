@@ -23,6 +23,7 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync =
         ChatServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Given a list of messages comprising a conversation, the model will return a response. */
     override fun completions(): ChatCompletionServiceAsync = completions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,6 +40,7 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Given a list of messages comprising a conversation, the model will return a response. */
         override fun completions(): ChatCompletionServiceAsync.WithRawResponse = completions
     }
 }

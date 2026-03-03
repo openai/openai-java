@@ -23,6 +23,7 @@ import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage and run evals in the OpenAI platform. */
 class OutputItemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     OutputItemService {
 
