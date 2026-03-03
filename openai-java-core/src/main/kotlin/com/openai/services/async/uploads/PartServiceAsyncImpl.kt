@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Use Uploads to upload large files in multiple parts. */
 class PartServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     PartServiceAsync {
 

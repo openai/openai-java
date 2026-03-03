@@ -21,6 +21,7 @@ import com.openai.models.uploads.parts.UploadPart
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Use Uploads to upload large files in multiple parts. */
 class PartServiceImpl internal constructor(private val clientOptions: ClientOptions) : PartService {
 
     private val withRawResponse: PartService.WithRawResponse by lazy {

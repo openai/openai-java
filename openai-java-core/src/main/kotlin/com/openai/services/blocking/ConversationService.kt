@@ -15,6 +15,7 @@ import com.openai.models.conversations.ConversationUpdateParams
 import com.openai.services.blocking.conversations.ItemService
 import java.util.function.Consumer
 
+/** Manage conversations and conversation items. */
 interface ConversationService {
 
     /**
@@ -29,6 +30,7 @@ interface ConversationService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ConversationService
 
+    /** Manage conversations and conversation items. */
     fun items(): ItemService
 
     /** Create a conversation. */
@@ -151,6 +153,7 @@ interface ConversationService {
             modifier: Consumer<ClientOptions.Builder>
         ): ConversationService.WithRawResponse
 
+        /** Manage conversations and conversation items. */
         fun items(): ItemService.WithRawResponse
 
         /**

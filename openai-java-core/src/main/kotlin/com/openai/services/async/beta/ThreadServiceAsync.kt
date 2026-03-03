@@ -22,6 +22,7 @@ import com.openai.services.async.beta.threads.RunServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 interface ThreadServiceAsync {
 
@@ -37,9 +38,11 @@ interface ThreadServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadServiceAsync
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun runs(): RunServiceAsync
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun messages(): MessageServiceAsync
 
@@ -219,9 +222,11 @@ interface ThreadServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ThreadServiceAsync.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun runs(): RunServiceAsync.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun messages(): MessageServiceAsync.WithRawResponse
 

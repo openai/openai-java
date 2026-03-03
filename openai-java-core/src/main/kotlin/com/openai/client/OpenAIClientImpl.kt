@@ -136,20 +136,35 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient =
         OpenAIClientImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /**
+     * Given a prompt, the model will return one or more predicted completions, and can also return
+     * the probabilities of alternative tokens at each position.
+     */
     override fun completions(): CompletionService = completions
 
     override fun chat(): ChatService = chat
 
+    /**
+     * Get a vector representation of a given input that can be easily consumed by machine learning
+     * models and algorithms.
+     */
     override fun embeddings(): EmbeddingService = embeddings
 
+    /**
+     * Files are used to upload documents that can be used with features like Assistants and
+     * Fine-tuning.
+     */
     override fun files(): FileService = files
 
+    /** Given a prompt and/or an input image, the model will generate a new image. */
     override fun images(): ImageService = images
 
     override fun audio(): AudioService = audio
 
+    /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
     override fun moderations(): ModerationService = moderations
 
+    /** List and describe the various models available in the API. */
     override fun models(): ModelService = models
 
     override fun fineTuning(): FineTuningService = fineTuning
@@ -162,16 +177,20 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     override fun beta(): BetaService = beta
 
+    /** Create large batches of API requests to run asynchronously. */
     override fun batches(): BatchService = batches
 
+    /** Use Uploads to upload large files in multiple parts. */
     override fun uploads(): UploadService = uploads
 
     override fun responses(): ResponseService = responses
 
     override fun realtime(): RealtimeService = realtime
 
+    /** Manage conversations and conversation items. */
     override fun conversations(): ConversationService = conversations
 
+    /** Manage and run evals in the OpenAI platform. */
     override fun evals(): EvalService = evals
 
     override fun containers(): ContainerService = containers
@@ -280,20 +299,35 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /**
+         * Given a prompt, the model will return one or more predicted completions, and can also
+         * return the probabilities of alternative tokens at each position.
+         */
         override fun completions(): CompletionService.WithRawResponse = completions
 
         override fun chat(): ChatService.WithRawResponse = chat
 
+        /**
+         * Get a vector representation of a given input that can be easily consumed by machine
+         * learning models and algorithms.
+         */
         override fun embeddings(): EmbeddingService.WithRawResponse = embeddings
 
+        /**
+         * Files are used to upload documents that can be used with features like Assistants and
+         * Fine-tuning.
+         */
         override fun files(): FileService.WithRawResponse = files
 
+        /** Given a prompt and/or an input image, the model will generate a new image. */
         override fun images(): ImageService.WithRawResponse = images
 
         override fun audio(): AudioService.WithRawResponse = audio
 
+        /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
         override fun moderations(): ModerationService.WithRawResponse = moderations
 
+        /** List and describe the various models available in the API. */
         override fun models(): ModelService.WithRawResponse = models
 
         override fun fineTuning(): FineTuningService.WithRawResponse = fineTuning
@@ -306,16 +340,20 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         override fun beta(): BetaService.WithRawResponse = beta
 
+        /** Create large batches of API requests to run asynchronously. */
         override fun batches(): BatchService.WithRawResponse = batches
 
+        /** Use Uploads to upload large files in multiple parts. */
         override fun uploads(): UploadService.WithRawResponse = uploads
 
         override fun responses(): ResponseService.WithRawResponse = responses
 
         override fun realtime(): RealtimeService.WithRawResponse = realtime
 
+        /** Manage conversations and conversation items. */
         override fun conversations(): ConversationService.WithRawResponse = conversations
 
+        /** Manage and run evals in the OpenAI platform. */
         override fun evals(): EvalService.WithRawResponse = evals
 
         override fun containers(): ContainerService.WithRawResponse = containers

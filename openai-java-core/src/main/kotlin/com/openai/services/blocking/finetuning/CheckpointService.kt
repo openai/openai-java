@@ -20,6 +20,7 @@ interface CheckpointService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointService
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun permissions(): PermissionService
 
     /** A view of [CheckpointService] that provides access to raw HTTP responses for each method. */
@@ -34,6 +35,7 @@ interface CheckpointService {
             modifier: Consumer<ClientOptions.Builder>
         ): CheckpointService.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun permissions(): PermissionService.WithRawResponse
     }
 }

@@ -39,6 +39,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Given a list of messages comprising a conversation, the model will return a response. */
 class ChatCompletionServiceAsyncImpl
 internal constructor(private val clientOptions: ClientOptions) : ChatCompletionServiceAsync {
 
@@ -55,6 +56,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
     ): ChatCompletionServiceAsync =
         ChatCompletionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Given a list of messages comprising a conversation, the model will return a response. */
     override fun messages(): MessageServiceAsync = messages
 
     override fun create(
@@ -119,6 +121,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Given a list of messages comprising a conversation, the model will return a response. */
         override fun messages(): MessageServiceAsync.WithRawResponse = messages
 
         private val createHandler: Handler<ChatCompletion> =

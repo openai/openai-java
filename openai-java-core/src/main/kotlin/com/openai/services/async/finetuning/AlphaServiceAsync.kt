@@ -20,6 +20,7 @@ interface AlphaServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaServiceAsync
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun graders(): GraderServiceAsync
 
     /** A view of [AlphaServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -34,6 +35,7 @@ interface AlphaServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): AlphaServiceAsync.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun graders(): GraderServiceAsync.WithRawResponse
     }
 }

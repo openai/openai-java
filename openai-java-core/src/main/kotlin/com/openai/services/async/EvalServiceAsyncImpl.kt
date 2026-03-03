@@ -33,6 +33,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage and run evals in the OpenAI platform. */
 class EvalServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     EvalServiceAsync {
 
@@ -47,6 +48,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalServiceAsync =
         EvalServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage and run evals in the OpenAI platform. */
     override fun runs(): RunServiceAsync = runs
 
     override fun create(
@@ -101,6 +103,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage and run evals in the OpenAI platform. */
         override fun runs(): RunServiceAsync.WithRawResponse = runs
 
         private val createHandler: Handler<EvalCreateResponse> =

@@ -37,6 +37,7 @@ import com.openai.services.blocking.beta.threads.runs.StepServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
 
@@ -56,6 +57,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService =
         RunServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun steps(): StepService = steps
 
@@ -126,6 +128,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun steps(): StepService.WithRawResponse = steps
 

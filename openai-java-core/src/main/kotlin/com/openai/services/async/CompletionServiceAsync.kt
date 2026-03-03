@@ -13,6 +13,10 @@ import com.openai.models.completions.CompletionCreateParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/**
+ * Given a prompt, the model will return one or more predicted completions, and can also return the
+ * probabilities of alternative tokens at each position.
+ */
 interface CompletionServiceAsync {
 
     /**

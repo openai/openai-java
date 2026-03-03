@@ -27,6 +27,7 @@ import com.openai.services.blocking.conversations.ItemServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage conversations and conversation items. */
 class ConversationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ConversationService {
 
@@ -41,6 +42,7 @@ class ConversationServiceImpl internal constructor(private val clientOptions: Cl
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ConversationService =
         ConversationServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage conversations and conversation items. */
     override fun items(): ItemService = items
 
     override fun create(
@@ -88,6 +90,7 @@ class ConversationServiceImpl internal constructor(private val clientOptions: Cl
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage conversations and conversation items. */
         override fun items(): ItemService.WithRawResponse = items
 
         private val createHandler: Handler<Conversation> =

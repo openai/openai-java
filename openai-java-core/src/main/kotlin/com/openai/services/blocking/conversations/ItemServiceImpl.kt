@@ -27,6 +27,7 @@ import com.openai.models.conversations.items.ItemRetrieveParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage conversations and conversation items. */
 class ItemServiceImpl internal constructor(private val clientOptions: ClientOptions) : ItemService {
 
     private val withRawResponse: ItemService.WithRawResponse by lazy {

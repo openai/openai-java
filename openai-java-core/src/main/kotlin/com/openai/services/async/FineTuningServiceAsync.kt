@@ -25,6 +25,7 @@ interface FineTuningServiceAsync {
 
     fun methods(): MethodServiceAsync
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun jobs(): JobServiceAsync
 
     fun checkpoints(): CheckpointServiceAsync
@@ -48,6 +49,7 @@ interface FineTuningServiceAsync {
 
         fun methods(): MethodServiceAsync.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun jobs(): JobServiceAsync.WithRawResponse
 
         fun checkpoints(): CheckpointServiceAsync.WithRawResponse

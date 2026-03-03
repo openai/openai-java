@@ -29,6 +29,10 @@ import com.openai.models.files.FileRetrieveParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Files are used to upload documents that can be used with features like Assistants and
+ * Fine-tuning.
+ */
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
 
     private val withRawResponse: FileService.WithRawResponse by lazy {

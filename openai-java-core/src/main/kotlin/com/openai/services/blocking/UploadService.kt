@@ -13,6 +13,7 @@ import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
 import java.util.function.Consumer
 
+/** Use Uploads to upload large files in multiple parts. */
 interface UploadService {
 
     /**
@@ -27,6 +28,7 @@ interface UploadService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService
 
+    /** Use Uploads to upload large files in multiple parts. */
     fun parts(): PartService
 
     /**
@@ -133,6 +135,7 @@ interface UploadService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService.WithRawResponse
 
+        /** Use Uploads to upload large files in multiple parts. */
         fun parts(): PartService.WithRawResponse
 
         /**

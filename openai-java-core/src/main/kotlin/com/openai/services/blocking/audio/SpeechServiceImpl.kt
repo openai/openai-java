@@ -15,6 +15,7 @@ import com.openai.core.prepare
 import com.openai.models.audio.speech.SpeechCreateParams
 import java.util.function.Consumer
 
+/** Turn audio into text or text into audio. */
 class SpeechServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     SpeechService {
 

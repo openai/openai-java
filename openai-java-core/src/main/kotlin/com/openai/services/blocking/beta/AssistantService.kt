@@ -16,6 +16,7 @@ import com.openai.models.beta.assistants.AssistantRetrieveParams
 import com.openai.models.beta.assistants.AssistantUpdateParams
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 interface AssistantService {
 
     /**

@@ -21,6 +21,7 @@ class AlphaServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaServiceAsync =
         AlphaServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun graders(): GraderServiceAsync = graders
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class AlphaServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun graders(): GraderServiceAsync.WithRawResponse = graders
     }
 }

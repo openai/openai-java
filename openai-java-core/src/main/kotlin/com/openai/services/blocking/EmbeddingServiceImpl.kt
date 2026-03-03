@@ -19,6 +19,10 @@ import com.openai.models.embeddings.CreateEmbeddingResponse
 import com.openai.models.embeddings.EmbeddingCreateParams
 import java.util.function.Consumer
 
+/**
+ * Get a vector representation of a given input that can be easily consumed by machine learning
+ * models and algorithms.
+ */
 class EmbeddingServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     EmbeddingService {
 

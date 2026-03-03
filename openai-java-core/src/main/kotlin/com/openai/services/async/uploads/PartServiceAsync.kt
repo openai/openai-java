@@ -10,6 +10,7 @@ import com.openai.models.uploads.parts.UploadPart
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Use Uploads to upload large files in multiple parts. */
 interface PartServiceAsync {
 
     /**

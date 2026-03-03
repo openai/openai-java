@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     JobServiceAsync {
 
@@ -50,6 +51,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync =
         JobServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun checkpoints(): CheckpointServiceAsync = checkpoints
 
     override fun create(
@@ -118,6 +120,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun checkpoints(): CheckpointServiceAsync.WithRawResponse = checkpoints
 
         private val createHandler: Handler<FineTuningJob> =

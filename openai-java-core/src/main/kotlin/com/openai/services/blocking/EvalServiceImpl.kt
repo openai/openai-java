@@ -32,6 +32,7 @@ import com.openai.services.blocking.evals.RunServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage and run evals in the OpenAI platform. */
 class EvalServiceImpl internal constructor(private val clientOptions: ClientOptions) : EvalService {
 
     private val withRawResponse: EvalService.WithRawResponse by lazy {
@@ -45,6 +46,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalService =
         EvalServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage and run evals in the OpenAI platform. */
     override fun runs(): RunService = runs
 
     override fun create(
@@ -96,6 +98,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage and run evals in the OpenAI platform. */
         override fun runs(): RunService.WithRawResponse = runs
 
         private val createHandler: Handler<EvalCreateResponse> =

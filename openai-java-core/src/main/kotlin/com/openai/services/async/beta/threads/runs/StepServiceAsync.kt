@@ -12,6 +12,7 @@ import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 interface StepServiceAsync {
 

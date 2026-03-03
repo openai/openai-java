@@ -28,6 +28,7 @@ import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Turn audio into text or text into audio. */
 class TranscriptionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionService {
 

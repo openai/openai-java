@@ -14,6 +14,7 @@ import com.openai.models.batches.BatchRetrieveParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create large batches of API requests to run asynchronously. */
 interface BatchServiceAsync {
 
     /**

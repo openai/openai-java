@@ -26,6 +26,7 @@ import com.openai.models.batches.BatchRetrieveParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create large batches of API requests to run asynchronously. */
 class BatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     BatchService {
 

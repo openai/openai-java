@@ -10,6 +10,7 @@ import com.openai.models.chat.completions.messages.MessageListParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Given a list of messages comprising a conversation, the model will return a response. */
 interface MessageServiceAsync {
 
     /**

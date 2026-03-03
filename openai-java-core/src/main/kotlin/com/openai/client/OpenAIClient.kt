@@ -63,20 +63,35 @@ interface OpenAIClient {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient
 
+    /**
+     * Given a prompt, the model will return one or more predicted completions, and can also return
+     * the probabilities of alternative tokens at each position.
+     */
     fun completions(): CompletionService
 
     fun chat(): ChatService
 
+    /**
+     * Get a vector representation of a given input that can be easily consumed by machine learning
+     * models and algorithms.
+     */
     fun embeddings(): EmbeddingService
 
+    /**
+     * Files are used to upload documents that can be used with features like Assistants and
+     * Fine-tuning.
+     */
     fun files(): FileService
 
+    /** Given a prompt and/or an input image, the model will generate a new image. */
     fun images(): ImageService
 
     fun audio(): AudioService
 
+    /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
     fun moderations(): ModerationService
 
+    /** List and describe the various models available in the API. */
     fun models(): ModelService
 
     fun fineTuning(): FineTuningService
@@ -89,16 +104,20 @@ interface OpenAIClient {
 
     fun beta(): BetaService
 
+    /** Create large batches of API requests to run asynchronously. */
     fun batches(): BatchService
 
+    /** Use Uploads to upload large files in multiple parts. */
     fun uploads(): UploadService
 
     fun responses(): ResponseService
 
     fun realtime(): RealtimeService
 
+    /** Manage conversations and conversation items. */
     fun conversations(): ConversationService
 
+    /** Manage and run evals in the OpenAI platform. */
     fun evals(): EvalService
 
     fun containers(): ContainerService
@@ -130,20 +149,35 @@ interface OpenAIClient {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient.WithRawResponse
 
+        /**
+         * Given a prompt, the model will return one or more predicted completions, and can also
+         * return the probabilities of alternative tokens at each position.
+         */
         fun completions(): CompletionService.WithRawResponse
 
         fun chat(): ChatService.WithRawResponse
 
+        /**
+         * Get a vector representation of a given input that can be easily consumed by machine
+         * learning models and algorithms.
+         */
         fun embeddings(): EmbeddingService.WithRawResponse
 
+        /**
+         * Files are used to upload documents that can be used with features like Assistants and
+         * Fine-tuning.
+         */
         fun files(): FileService.WithRawResponse
 
+        /** Given a prompt and/or an input image, the model will generate a new image. */
         fun images(): ImageService.WithRawResponse
 
         fun audio(): AudioService.WithRawResponse
 
+        /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
         fun moderations(): ModerationService.WithRawResponse
 
+        /** List and describe the various models available in the API. */
         fun models(): ModelService.WithRawResponse
 
         fun fineTuning(): FineTuningService.WithRawResponse
@@ -156,16 +190,20 @@ interface OpenAIClient {
 
         fun beta(): BetaService.WithRawResponse
 
+        /** Create large batches of API requests to run asynchronously. */
         fun batches(): BatchService.WithRawResponse
 
+        /** Use Uploads to upload large files in multiple parts. */
         fun uploads(): UploadService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
 
         fun realtime(): RealtimeService.WithRawResponse
 
+        /** Manage conversations and conversation items. */
         fun conversations(): ConversationService.WithRawResponse
 
+        /** Manage and run evals in the OpenAI platform. */
         fun evals(): EvalService.WithRawResponse
 
         fun containers(): ContainerService.WithRawResponse

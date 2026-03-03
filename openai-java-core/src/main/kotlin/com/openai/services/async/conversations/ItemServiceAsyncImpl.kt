@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage conversations and conversation items. */
 class ItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ItemServiceAsync {
 

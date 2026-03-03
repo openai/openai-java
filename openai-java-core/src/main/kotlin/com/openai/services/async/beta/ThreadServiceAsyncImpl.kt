@@ -41,6 +41,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 class ThreadServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ThreadServiceAsync {
@@ -63,9 +64,11 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadServiceAsync =
         ThreadServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun runs(): RunServiceAsync = runs
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun messages(): MessageServiceAsync = messages
 
@@ -142,9 +145,11 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun runs(): RunServiceAsync.WithRawResponse = runs
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun messages(): MessageServiceAsync.WithRawResponse = messages
 

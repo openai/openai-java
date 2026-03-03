@@ -12,6 +12,7 @@ import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
 import java.util.function.Consumer
 
+/** Manage and run evals in the OpenAI platform. */
 interface OutputItemService {
 
     /**
