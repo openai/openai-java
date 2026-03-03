@@ -33,10 +33,13 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioServiceAsync =
         AudioServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Turn audio into text or text into audio. */
     override fun transcriptions(): TranscriptionServiceAsync = transcriptions
 
+    /** Turn audio into text or text into audio. */
     override fun translations(): TranslationServiceAsync = translations
 
+    /** Turn audio into text or text into audio. */
     override fun speech(): SpeechServiceAsync = speech
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -61,10 +64,13 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Turn audio into text or text into audio. */
         override fun transcriptions(): TranscriptionServiceAsync.WithRawResponse = transcriptions
 
+        /** Turn audio into text or text into audio. */
         override fun translations(): TranslationServiceAsync.WithRawResponse = translations
 
+        /** Turn audio into text or text into audio. */
         override fun speech(): SpeechServiceAsync.WithRawResponse = speech
     }
 }

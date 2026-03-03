@@ -14,6 +14,7 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveRe
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 interface PermissionServiceAsync {
 
     /**

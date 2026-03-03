@@ -33,6 +33,7 @@ import com.openai.services.blocking.finetuning.jobs.CheckpointServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 class JobServiceImpl internal constructor(private val clientOptions: ClientOptions) : JobService {
 
     private val withRawResponse: JobService.WithRawResponse by lazy {
@@ -46,6 +47,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService =
         JobServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun checkpoints(): CheckpointService = checkpoints
 
     override fun create(params: JobCreateParams, requestOptions: RequestOptions): FineTuningJob =
@@ -99,6 +101,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun checkpoints(): CheckpointService.WithRawResponse = checkpoints
 
         private val createHandler: Handler<FineTuningJob> =

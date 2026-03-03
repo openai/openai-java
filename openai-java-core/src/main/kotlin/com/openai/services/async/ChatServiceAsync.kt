@@ -20,6 +20,7 @@ interface ChatServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync
 
+    /** Given a list of messages comprising a conversation, the model will return a response. */
     fun completions(): ChatCompletionServiceAsync
 
     /** A view of [ChatServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface ChatServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync.WithRawResponse
 
+        /** Given a list of messages comprising a conversation, the model will return a response. */
         fun completions(): ChatCompletionServiceAsync.WithRawResponse
     }
 }

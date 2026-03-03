@@ -35,6 +35,7 @@ class FineTuningServiceImpl internal constructor(private val clientOptions: Clie
 
     override fun methods(): MethodService = methods
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun jobs(): JobService = jobs
 
     override fun checkpoints(): CheckpointService = checkpoints
@@ -69,6 +70,7 @@ class FineTuningServiceImpl internal constructor(private val clientOptions: Clie
 
         override fun methods(): MethodService.WithRawResponse = methods
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun jobs(): JobService.WithRawResponse = jobs
 
         override fun checkpoints(): CheckpointService.WithRawResponse = checkpoints

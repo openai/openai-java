@@ -10,6 +10,7 @@ import com.openai.models.moderations.ModerationCreateResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
 interface ModerationServiceAsync {
 
     /**

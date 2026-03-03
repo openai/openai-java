@@ -154,20 +154,35 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync =
         OpenAIClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /**
+     * Given a prompt, the model will return one or more predicted completions, and can also return
+     * the probabilities of alternative tokens at each position.
+     */
     override fun completions(): CompletionServiceAsync = completions
 
     override fun chat(): ChatServiceAsync = chat
 
+    /**
+     * Get a vector representation of a given input that can be easily consumed by machine learning
+     * models and algorithms.
+     */
     override fun embeddings(): EmbeddingServiceAsync = embeddings
 
+    /**
+     * Files are used to upload documents that can be used with features like Assistants and
+     * Fine-tuning.
+     */
     override fun files(): FileServiceAsync = files
 
+    /** Given a prompt and/or an input image, the model will generate a new image. */
     override fun images(): ImageServiceAsync = images
 
     override fun audio(): AudioServiceAsync = audio
 
+    /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
     override fun moderations(): ModerationServiceAsync = moderations
 
+    /** List and describe the various models available in the API. */
     override fun models(): ModelServiceAsync = models
 
     override fun fineTuning(): FineTuningServiceAsync = fineTuning
@@ -180,16 +195,20 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun beta(): BetaServiceAsync = beta
 
+    /** Create large batches of API requests to run asynchronously. */
     override fun batches(): BatchServiceAsync = batches
 
+    /** Use Uploads to upload large files in multiple parts. */
     override fun uploads(): UploadServiceAsync = uploads
 
     override fun responses(): ResponseServiceAsync = responses
 
     override fun realtime(): RealtimeServiceAsync = realtime
 
+    /** Manage conversations and conversation items. */
     override fun conversations(): ConversationServiceAsync = conversations
 
+    /** Manage and run evals in the OpenAI platform. */
     override fun evals(): EvalServiceAsync = evals
 
     override fun containers(): ContainerServiceAsync = containers
@@ -298,20 +317,35 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /**
+         * Given a prompt, the model will return one or more predicted completions, and can also
+         * return the probabilities of alternative tokens at each position.
+         */
         override fun completions(): CompletionServiceAsync.WithRawResponse = completions
 
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
 
+        /**
+         * Get a vector representation of a given input that can be easily consumed by machine
+         * learning models and algorithms.
+         */
         override fun embeddings(): EmbeddingServiceAsync.WithRawResponse = embeddings
 
+        /**
+         * Files are used to upload documents that can be used with features like Assistants and
+         * Fine-tuning.
+         */
         override fun files(): FileServiceAsync.WithRawResponse = files
 
+        /** Given a prompt and/or an input image, the model will generate a new image. */
         override fun images(): ImageServiceAsync.WithRawResponse = images
 
         override fun audio(): AudioServiceAsync.WithRawResponse = audio
 
+        /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
         override fun moderations(): ModerationServiceAsync.WithRawResponse = moderations
 
+        /** List and describe the various models available in the API. */
         override fun models(): ModelServiceAsync.WithRawResponse = models
 
         override fun fineTuning(): FineTuningServiceAsync.WithRawResponse = fineTuning
@@ -324,16 +358,20 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         override fun beta(): BetaServiceAsync.WithRawResponse = beta
 
+        /** Create large batches of API requests to run asynchronously. */
         override fun batches(): BatchServiceAsync.WithRawResponse = batches
 
+        /** Use Uploads to upload large files in multiple parts. */
         override fun uploads(): UploadServiceAsync.WithRawResponse = uploads
 
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 
         override fun realtime(): RealtimeServiceAsync.WithRawResponse = realtime
 
+        /** Manage conversations and conversation items. */
         override fun conversations(): ConversationServiceAsync.WithRawResponse = conversations
 
+        /** Manage and run evals in the OpenAI platform. */
         override fun evals(): EvalServiceAsync.WithRawResponse = evals
 
         override fun containers(): ContainerServiceAsync.WithRawResponse = containers

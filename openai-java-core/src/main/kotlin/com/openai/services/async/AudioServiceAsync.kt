@@ -22,10 +22,13 @@ interface AudioServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioServiceAsync
 
+    /** Turn audio into text or text into audio. */
     fun transcriptions(): TranscriptionServiceAsync
 
+    /** Turn audio into text or text into audio. */
     fun translations(): TranslationServiceAsync
 
+    /** Turn audio into text or text into audio. */
     fun speech(): SpeechServiceAsync
 
     /** A view of [AudioServiceAsync] that provides access to raw HTTP responses for each method. */
@@ -40,10 +43,13 @@ interface AudioServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): AudioServiceAsync.WithRawResponse
 
+        /** Turn audio into text or text into audio. */
         fun transcriptions(): TranscriptionServiceAsync.WithRawResponse
 
+        /** Turn audio into text or text into audio. */
         fun translations(): TranslationServiceAsync.WithRawResponse
 
+        /** Turn audio into text or text into audio. */
         fun speech(): SpeechServiceAsync.WithRawResponse
     }
 }

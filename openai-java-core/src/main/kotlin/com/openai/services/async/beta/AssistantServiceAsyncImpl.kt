@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Build Assistants that can call models and use tools. */
 class AssistantServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     AssistantServiceAsync {
 

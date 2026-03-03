@@ -17,6 +17,10 @@ import com.openai.models.files.FileObject
 import com.openai.models.files.FileRetrieveParams
 import java.util.function.Consumer
 
+/**
+ * Files are used to upload documents that can be used with features like Assistants and
+ * Fine-tuning.
+ */
 interface FileService {
 
     /**

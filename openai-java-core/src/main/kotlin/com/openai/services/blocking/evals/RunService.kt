@@ -19,6 +19,7 @@ import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.blocking.evals.runs.OutputItemService
 import java.util.function.Consumer
 
+/** Manage and run evals in the OpenAI platform. */
 interface RunService {
 
     /**
@@ -33,6 +34,7 @@ interface RunService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService
 
+    /** Manage and run evals in the OpenAI platform. */
     fun outputItems(): OutputItemService
 
     /**
@@ -157,6 +159,7 @@ interface RunService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService.WithRawResponse
 
+        /** Manage and run evals in the OpenAI platform. */
         fun outputItems(): OutputItemService.WithRawResponse
 
         /**

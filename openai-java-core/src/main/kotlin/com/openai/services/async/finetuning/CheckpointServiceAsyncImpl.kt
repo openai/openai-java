@@ -23,6 +23,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync =
         CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun permissions(): PermissionServiceAsync = permissions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,6 +40,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun permissions(): PermissionServiceAsync.WithRawResponse = permissions
     }
 }

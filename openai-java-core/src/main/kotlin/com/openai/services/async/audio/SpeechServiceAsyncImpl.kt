@@ -16,6 +16,7 @@ import com.openai.models.audio.speech.SpeechCreateParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Turn audio into text or text into audio. */
 class SpeechServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     SpeechServiceAsync {
 

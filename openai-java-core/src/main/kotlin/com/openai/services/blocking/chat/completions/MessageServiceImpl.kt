@@ -21,6 +21,7 @@ import com.openai.models.chat.completions.messages.MessageListParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Given a list of messages comprising a conversation, the model will return a response. */
 class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageService {
 

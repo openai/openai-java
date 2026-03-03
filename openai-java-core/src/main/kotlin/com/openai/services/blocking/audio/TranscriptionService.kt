@@ -12,6 +12,7 @@ import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
 import java.util.function.Consumer
 
+/** Turn audio into text or text into audio. */
 interface TranscriptionService {
 
     /**

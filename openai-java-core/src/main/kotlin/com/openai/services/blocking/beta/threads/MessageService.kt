@@ -16,6 +16,7 @@ import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 interface MessageService {
 

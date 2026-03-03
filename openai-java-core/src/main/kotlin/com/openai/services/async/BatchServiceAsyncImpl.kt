@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create large batches of API requests to run asynchronously. */
 class BatchServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     BatchServiceAsync {
 

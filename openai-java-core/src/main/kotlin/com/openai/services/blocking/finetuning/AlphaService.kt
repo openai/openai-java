@@ -20,6 +20,7 @@ interface AlphaService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun graders(): GraderService
 
     /** A view of [AlphaService] that provides access to raw HTTP responses for each method. */
@@ -32,6 +33,7 @@ interface AlphaService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun graders(): GraderService.WithRawResponse
     }
 }

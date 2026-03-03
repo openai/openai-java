@@ -38,6 +38,7 @@ import com.openai.services.blocking.beta.threads.RunServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 class ThreadServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ThreadService {
@@ -60,9 +61,11 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadService =
         ThreadServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun runs(): RunService = runs
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun messages(): MessageService = messages
 
@@ -124,9 +127,11 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun runs(): RunService.WithRawResponse = runs
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun messages(): MessageService.WithRawResponse = messages
 

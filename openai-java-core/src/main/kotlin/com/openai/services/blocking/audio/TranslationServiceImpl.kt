@@ -19,6 +19,7 @@ import com.openai.models.audio.translations.TranslationCreateParams
 import com.openai.models.audio.translations.TranslationCreateResponse
 import java.util.function.Consumer
 
+/** Turn audio into text or text into audio. */
 class TranslationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranslationService {
 

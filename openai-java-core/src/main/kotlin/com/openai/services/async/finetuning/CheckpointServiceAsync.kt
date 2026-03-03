@@ -20,6 +20,7 @@ interface CheckpointServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun permissions(): PermissionServiceAsync
 
     /**
@@ -37,6 +38,7 @@ interface CheckpointServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): CheckpointServiceAsync.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun permissions(): PermissionServiceAsync.WithRawResponse
     }
 }

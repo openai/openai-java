@@ -24,8 +24,10 @@ interface BetaService {
 
     fun chatkit(): ChatKitService
 
+    /** Build Assistants that can call models and use tools. */
     fun assistants(): AssistantService
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun threads(): ThreadService
 
@@ -41,8 +43,10 @@ interface BetaService {
 
         fun chatkit(): ChatKitService.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         fun assistants(): AssistantService.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun threads(): ThreadService.WithRawResponse
     }

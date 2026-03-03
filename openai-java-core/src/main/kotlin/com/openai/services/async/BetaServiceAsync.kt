@@ -24,8 +24,10 @@ interface BetaServiceAsync {
 
     fun chatkit(): ChatKitServiceAsync
 
+    /** Build Assistants that can call models and use tools. */
     fun assistants(): AssistantServiceAsync
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun threads(): ThreadServiceAsync
 
@@ -41,8 +43,10 @@ interface BetaServiceAsync {
 
         fun chatkit(): ChatKitServiceAsync.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         fun assistants(): AssistantServiceAsync.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun threads(): ThreadServiceAsync.WithRawResponse
     }

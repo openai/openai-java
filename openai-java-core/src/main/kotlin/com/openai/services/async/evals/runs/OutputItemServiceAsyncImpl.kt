@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Manage and run evals in the OpenAI platform. */
 class OutputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     OutputItemServiceAsync {
 

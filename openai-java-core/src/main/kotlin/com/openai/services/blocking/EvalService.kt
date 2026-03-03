@@ -19,6 +19,7 @@ import com.openai.models.evals.EvalUpdateResponse
 import com.openai.services.blocking.evals.RunService
 import java.util.function.Consumer
 
+/** Manage and run evals in the OpenAI platform. */
 interface EvalService {
 
     /**
@@ -33,6 +34,7 @@ interface EvalService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalService
 
+    /** Manage and run evals in the OpenAI platform. */
     fun runs(): RunService
 
     /**
@@ -165,6 +167,7 @@ interface EvalService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalService.WithRawResponse
 
+        /** Manage and run evals in the OpenAI platform. */
         fun runs(): RunService.WithRawResponse
 
         /**

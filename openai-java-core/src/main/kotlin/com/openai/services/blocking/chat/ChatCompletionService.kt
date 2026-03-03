@@ -19,6 +19,7 @@ import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
 import java.util.function.Consumer
 
+/** Given a list of messages comprising a conversation, the model will return a response. */
 interface ChatCompletionService {
 
     /**
@@ -33,6 +34,7 @@ interface ChatCompletionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatCompletionService
 
+    /** Given a list of messages comprising a conversation, the model will return a response. */
     fun messages(): MessageService
 
     /**
@@ -228,6 +230,7 @@ interface ChatCompletionService {
             modifier: Consumer<ClientOptions.Builder>
         ): ChatCompletionService.WithRawResponse
 
+        /** Given a list of messages comprising a conversation, the model will return a response. */
         fun messages(): MessageService.WithRawResponse
 
         /**

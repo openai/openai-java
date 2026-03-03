@@ -20,6 +20,10 @@ import com.openai.models.embeddings.EmbeddingCreateParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/**
+ * Get a vector representation of a given input that can be easily consumed by machine learning
+ * models and algorithms.
+ */
 class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     EmbeddingServiceAsync {
 

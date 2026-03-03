@@ -21,6 +21,7 @@ class AlphaServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService =
         AlphaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     override fun graders(): GraderService = graders
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -37,6 +38,7 @@ class AlphaServiceImpl internal constructor(private val clientOptions: ClientOpt
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         override fun graders(): GraderService.WithRawResponse = graders
     }
 }

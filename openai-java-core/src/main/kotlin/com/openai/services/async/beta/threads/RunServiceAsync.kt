@@ -21,6 +21,7 @@ import com.openai.services.async.beta.threads.runs.StepServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 interface RunServiceAsync {
 
@@ -36,6 +37,7 @@ interface RunServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun steps(): StepServiceAsync
 
@@ -287,6 +289,7 @@ interface RunServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun steps(): StepServiceAsync.WithRawResponse
 

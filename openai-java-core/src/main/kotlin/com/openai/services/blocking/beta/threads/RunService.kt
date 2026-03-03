@@ -19,6 +19,7 @@ import com.openai.models.beta.threads.runs.RunUpdateParams
 import com.openai.services.blocking.beta.threads.runs.StepService
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 interface RunService {
 
@@ -34,6 +35,7 @@ interface RunService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun steps(): StepService
 
@@ -269,6 +271,7 @@ interface RunService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun steps(): StepService.WithRawResponse
 

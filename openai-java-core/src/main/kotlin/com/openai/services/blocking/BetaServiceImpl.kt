@@ -30,8 +30,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun chatkit(): ChatKitService = chatkit
 
+    /** Build Assistants that can call models and use tools. */
     override fun assistants(): AssistantService = assistants
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun threads(): ThreadService = threads
 
@@ -59,8 +61,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         override fun chatkit(): ChatKitService.WithRawResponse = chatkit
 
+        /** Build Assistants that can call models and use tools. */
         override fun assistants(): AssistantService.WithRawResponse = assistants
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         override fun threads(): ThreadService.WithRawResponse = threads
     }

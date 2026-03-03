@@ -20,6 +20,7 @@ import com.openai.services.blocking.beta.threads.MessageService
 import com.openai.services.blocking.beta.threads.RunService
 import java.util.function.Consumer
 
+/** Build Assistants that can call models and use tools. */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
 interface ThreadService {
 
@@ -35,9 +36,11 @@ interface ThreadService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadService
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun runs(): RunService
 
+    /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     fun messages(): MessageService
 
@@ -203,9 +206,11 @@ interface ThreadService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ThreadService.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun runs(): RunService.WithRawResponse
 
+        /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
         fun messages(): MessageService.WithRawResponse
 

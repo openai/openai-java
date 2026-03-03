@@ -19,6 +19,7 @@ import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Manage fine-tuning jobs to tailor a model to your specific training data. */
 interface JobServiceAsync {
 
     /**
@@ -33,6 +34,7 @@ interface JobServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync
 
+    /** Manage fine-tuning jobs to tailor a model to your specific training data. */
     fun checkpoints(): CheckpointServiceAsync
 
     /**
@@ -260,6 +262,7 @@ interface JobServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync.WithRawResponse
 
+        /** Manage fine-tuning jobs to tailor a model to your specific training data. */
         fun checkpoints(): CheckpointServiceAsync.WithRawResponse
 
         /**
