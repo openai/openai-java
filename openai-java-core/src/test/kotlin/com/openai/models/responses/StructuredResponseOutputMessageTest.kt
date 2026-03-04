@@ -38,6 +38,7 @@ import org.mockito.kotlin.verify
 internal class StructuredResponseOutputMessageTest {
     companion object {
         private val MESSAGE_STATUS = ResponseOutputMessage.Status.COMPLETED
+        private val MESSAGE_PHASE = ResponseOutputMessage.Phase.COMMENTARY
         private val OUTPUT_TEXT =
             ResponseOutputText.builder()
                 .annotations(listOf())
@@ -56,10 +57,12 @@ internal class StructuredResponseOutputMessageTest {
                 // `content()` is a special case and has its own test function.
                 DelegationReadTestCase("_role", JSON_VALUE),
                 DelegationReadTestCase("status", MESSAGE_STATUS),
+                DelegationReadTestCase("phase", Optional.of(MESSAGE_PHASE)),
                 DelegationReadTestCase("_type", JSON_VALUE),
                 DelegationReadTestCase("_id", JSON_FIELD),
                 // `_content()` is a special case and has its own test function.
                 DelegationReadTestCase("_status", JSON_FIELD),
+                DelegationReadTestCase("_phase", JsonField.of(MESSAGE_PHASE)),
                 DelegationReadTestCase("_additionalProperties", MAP),
             )
 
