@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.24.1 (2026-03-04)
+
+Full Changelog: [v4.24.0...v4.24.1](https://github.com/openai/openai-java/compare/v4.24.0...v4.24.1)
+
+### Bug Fixes
+
+* **api:** internal schema fixes ([b4d6777](https://github.com/openai/openai-java/commit/b4d67776443c04d9283e9d349af237d047b9e5c9))
+* **api:** manual updates ([95d5732](https://github.com/openai/openai-java/commit/95d5732a7eaac2ba4708e3d9ab48433f64aa9d13))
+* **java:** add missing phase delegates to structured response output wrapper ([9c61370](https://github.com/openai/openai-java/commit/9c6137015ca7f95fb1144810986f2097e7f5d0ca))
+
+
+### Chores
+
+* **internal:** codegen related update ([e5c572f](https://github.com/openai/openai-java/commit/e5c572f40fce11d20f24de6afbeef6b69d4bc7bb))
+* **internal:** reduce warnings ([445d1ad](https://github.com/openai/openai-java/commit/445d1ad99e6a7745bf30c4ec4d8f9a9c02e7dab7))
+
 ## 4.24.0 (2026-02-24)
 
 Full Changelog: [v4.23.0...v4.24.0](https://github.com/openai/openai-java/compare/v4.23.0...v4.24.0)
