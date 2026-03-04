@@ -10,6 +10,8 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListPage
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.function.Consumer
@@ -67,10 +69,12 @@ interface PermissionService {
      * Organization owners can use this endpoint to view all permissions for a fine-tuned model
      * checkpoint.
      */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(fineTunedModelCheckpoint: String): PermissionRetrieveResponse =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -82,6 +86,7 @@ interface PermissionService {
         )
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -89,21 +94,63 @@ interface PermissionService {
         retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PermissionRetrieveResponse
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(params: PermissionRetrieveParams): PermissionRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         fineTunedModelCheckpoint: String,
         requestOptions: RequestOptions,
     ): PermissionRetrieveResponse =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
+
+    /**
+     * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
+     *
+     * Organization owners can use this endpoint to view all permissions for a fine-tuned model
+     * checkpoint.
+     */
+    fun list(fineTunedModelCheckpoint: String): PermissionListPage =
+        list(fineTunedModelCheckpoint, PermissionListParams.none())
+
+    /** @see list */
+    fun list(
+        fineTunedModelCheckpoint: String,
+        params: PermissionListParams = PermissionListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): PermissionListPage =
+        list(
+            params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+            requestOptions,
+        )
+
+    /** @see list */
+    fun list(
+        fineTunedModelCheckpoint: String,
+        params: PermissionListParams = PermissionListParams.none(),
+    ): PermissionListPage = list(fineTunedModelCheckpoint, params, RequestOptions.none())
+
+    /** @see list */
+    fun list(
+        params: PermissionListParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): PermissionListPage
+
+    /** @see list */
+    fun list(params: PermissionListParams): PermissionListPage = list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(fineTunedModelCheckpoint: String, requestOptions: RequestOptions): PermissionListPage =
+        list(fineTunedModelCheckpoint, PermissionListParams.none(), requestOptions)
 
     /**
      * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
@@ -185,6 +232,7 @@ interface PermissionService {
          * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
          * same as [PermissionService.retrieve].
          */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String
@@ -192,6 +240,7 @@ interface PermissionService {
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
@@ -204,6 +253,7 @@ interface PermissionService {
             )
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
@@ -212,6 +262,7 @@ interface PermissionService {
             retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         @MustBeClosed
         fun retrieve(
             params: PermissionRetrieveParams,
@@ -219,18 +270,69 @@ interface PermissionService {
         ): HttpResponseFor<PermissionRetrieveResponse>
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         @MustBeClosed
         fun retrieve(
             params: PermissionRetrieveParams
         ): HttpResponseFor<PermissionRetrieveResponse> = retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
             requestOptions: RequestOptions,
         ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get
+         * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
+         * same as [PermissionService.list].
+         */
+        @MustBeClosed
+        fun list(fineTunedModelCheckpoint: String): HttpResponseFor<PermissionListPage> =
+            list(fineTunedModelCheckpoint, PermissionListParams.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            fineTunedModelCheckpoint: String,
+            params: PermissionListParams = PermissionListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<PermissionListPage> =
+            list(
+                params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+                requestOptions,
+            )
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            fineTunedModelCheckpoint: String,
+            params: PermissionListParams = PermissionListParams.none(),
+        ): HttpResponseFor<PermissionListPage> =
+            list(fineTunedModelCheckpoint, params, RequestOptions.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            params: PermissionListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<PermissionListPage>
+
+        /** @see list */
+        @MustBeClosed
+        fun list(params: PermissionListParams): HttpResponseFor<PermissionListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            fineTunedModelCheckpoint: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<PermissionListPage> =
+            list(fineTunedModelCheckpoint, PermissionListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete

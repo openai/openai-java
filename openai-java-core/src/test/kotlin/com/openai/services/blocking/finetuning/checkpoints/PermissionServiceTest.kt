@@ -57,6 +57,20 @@ internal class PermissionServiceTest {
     }
 
     @Test
+    fun list() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val permissionService = client.fineTuning().checkpoints().permissions()
+
+        val page = permissionService.list("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
+
+        page.response().validate()
+    }
+
+    @Test
     fun delete() {
         val client =
             OpenAIOkHttpClient.builder()
