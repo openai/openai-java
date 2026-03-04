@@ -19,8 +19,7 @@ import kotlin.jvm.optionals.getOrNull
  * Organization owners can use this endpoint to view all permissions for a fine-tuned model
  * checkpoint.
  */
-@Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
-class PermissionRetrieveParams
+class PermissionListParams
 private constructor(
     private val fineTunedModelCheckpoint: String?,
     private val after: String?,
@@ -55,13 +54,13 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): PermissionRetrieveParams = builder().build()
+        @JvmStatic fun none(): PermissionListParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [PermissionRetrieveParams]. */
+        /** Returns a mutable builder for constructing an instance of [PermissionListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [PermissionRetrieveParams]. */
+    /** A builder for [PermissionListParams]. */
     class Builder internal constructor() {
 
         private var fineTunedModelCheckpoint: String? = null
@@ -73,14 +72,14 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(permissionRetrieveParams: PermissionRetrieveParams) = apply {
-            fineTunedModelCheckpoint = permissionRetrieveParams.fineTunedModelCheckpoint
-            after = permissionRetrieveParams.after
-            limit = permissionRetrieveParams.limit
-            order = permissionRetrieveParams.order
-            projectId = permissionRetrieveParams.projectId
-            additionalHeaders = permissionRetrieveParams.additionalHeaders.toBuilder()
-            additionalQueryParams = permissionRetrieveParams.additionalQueryParams.toBuilder()
+        internal fun from(permissionListParams: PermissionListParams) = apply {
+            fineTunedModelCheckpoint = permissionListParams.fineTunedModelCheckpoint
+            after = permissionListParams.after
+            limit = permissionListParams.limit
+            order = permissionListParams.order
+            projectId = permissionListParams.projectId
+            additionalHeaders = permissionListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = permissionListParams.additionalQueryParams.toBuilder()
         }
 
         fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String?) = apply {
@@ -224,12 +223,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [PermissionRetrieveParams].
+         * Returns an immutable instance of [PermissionListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): PermissionRetrieveParams =
-            PermissionRetrieveParams(
+        fun build(): PermissionListParams =
+            PermissionListParams(
                 fineTunedModelCheckpoint,
                 after,
                 limit,
@@ -390,7 +389,7 @@ private constructor(
             return true
         }
 
-        return other is PermissionRetrieveParams &&
+        return other is PermissionListParams &&
             fineTunedModelCheckpoint == other.fineTunedModelCheckpoint &&
             after == other.after &&
             limit == other.limit &&
@@ -412,5 +411,5 @@ private constructor(
         )
 
     override fun toString() =
-        "PermissionRetrieveParams{fineTunedModelCheckpoint=$fineTunedModelCheckpoint, after=$after, limit=$limit, order=$order, projectId=$projectId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "PermissionListParams{fineTunedModelCheckpoint=$fineTunedModelCheckpoint, after=$after, limit=$limit, order=$order, projectId=$projectId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

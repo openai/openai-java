@@ -9,6 +9,8 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListPageAsync
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
@@ -68,10 +70,12 @@ interface PermissionServiceAsync {
      * Organization owners can use this endpoint to view all permissions for a fine-tuned model
      * checkpoint.
      */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(fineTunedModelCheckpoint: String): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -83,6 +87,7 @@ interface PermissionServiceAsync {
         )
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -90,21 +95,68 @@ interface PermissionServiceAsync {
         retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<PermissionRetrieveResponse>
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(params: PermissionRetrieveParams): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
     /** @see retrieve */
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     fun retrieve(
         fineTunedModelCheckpoint: String,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
+
+    /**
+     * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
+     *
+     * Organization owners can use this endpoint to view all permissions for a fine-tuned model
+     * checkpoint.
+     */
+    fun list(fineTunedModelCheckpoint: String): CompletableFuture<PermissionListPageAsync> =
+        list(fineTunedModelCheckpoint, PermissionListParams.none())
+
+    /** @see list */
+    fun list(
+        fineTunedModelCheckpoint: String,
+        params: PermissionListParams = PermissionListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<PermissionListPageAsync> =
+        list(
+            params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+            requestOptions,
+        )
+
+    /** @see list */
+    fun list(
+        fineTunedModelCheckpoint: String,
+        params: PermissionListParams = PermissionListParams.none(),
+    ): CompletableFuture<PermissionListPageAsync> =
+        list(fineTunedModelCheckpoint, params, RequestOptions.none())
+
+    /** @see list */
+    fun list(
+        params: PermissionListParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<PermissionListPageAsync>
+
+    /** @see list */
+    fun list(params: PermissionListParams): CompletableFuture<PermissionListPageAsync> =
+        list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(
+        fineTunedModelCheckpoint: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<PermissionListPageAsync> =
+        list(fineTunedModelCheckpoint, PermissionListParams.none(), requestOptions)
 
     /**
      * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
@@ -190,12 +242,14 @@ interface PermissionServiceAsync {
          * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
          * same as [PermissionServiceAsync.retrieve].
          */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         fun retrieve(
             fineTunedModelCheckpoint: String
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         fun retrieve(
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -207,6 +261,7 @@ interface PermissionServiceAsync {
             )
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         fun retrieve(
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -214,23 +269,73 @@ interface PermissionServiceAsync {
             retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>>
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         fun retrieve(
             params: PermissionRetrieveParams
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see retrieve */
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         fun retrieve(
             fineTunedModelCheckpoint: String,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get
+         * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
+         * same as [PermissionServiceAsync.list].
+         */
+        fun list(
+            fineTunedModelCheckpoint: String
+        ): CompletableFuture<HttpResponseFor<PermissionListPageAsync>> =
+            list(fineTunedModelCheckpoint, PermissionListParams.none())
+
+        /** @see list */
+        fun list(
+            fineTunedModelCheckpoint: String,
+            params: PermissionListParams = PermissionListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionListPageAsync>> =
+            list(
+                params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+                requestOptions,
+            )
+
+        /** @see list */
+        fun list(
+            fineTunedModelCheckpoint: String,
+            params: PermissionListParams = PermissionListParams.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionListPageAsync>> =
+            list(fineTunedModelCheckpoint, params, RequestOptions.none())
+
+        /** @see list */
+        fun list(
+            params: PermissionListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionListPageAsync>>
+
+        /** @see list */
+        fun list(
+            params: PermissionListParams
+        ): CompletableFuture<HttpResponseFor<PermissionListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see list */
+        fun list(
+            fineTunedModelCheckpoint: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<PermissionListPageAsync>> =
+            list(fineTunedModelCheckpoint, PermissionListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete

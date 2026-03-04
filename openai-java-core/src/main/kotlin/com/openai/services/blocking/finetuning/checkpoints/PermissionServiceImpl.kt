@@ -21,6 +21,9 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListPage
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListPageResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionListParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.function.Consumer
@@ -46,12 +49,20 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
         // post /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().create(params, requestOptions).parse()
 
+    @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
     ): PermissionRetrieveResponse =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).parse()
+
+    override fun list(
+        params: PermissionListParams,
+        requestOptions: RequestOptions,
+    ): PermissionListPage =
+        // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
+        withRawResponse().list(params, requestOptions).parse()
 
     override fun delete(
         params: PermissionDeleteParams,
@@ -119,6 +130,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
         private val retrieveHandler: Handler<PermissionRetrieveResponse> =
             jsonHandler<PermissionRetrieveResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
         override fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
@@ -147,6 +159,48 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                         if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<PermissionListPageResponse> =
+            jsonHandler<PermissionListPageResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: PermissionListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<PermissionListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "fine_tuning",
+                        "checkpoints",
+                        params._pathParam(0),
+                        "permissions",
+                    )
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        PermissionListPage.builder()
+                            .service(PermissionServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }
