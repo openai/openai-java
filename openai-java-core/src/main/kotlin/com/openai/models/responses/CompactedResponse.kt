@@ -257,6 +257,19 @@ private constructor(
         fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
+        /**
+         * Alias for calling [addOutput] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
+         */
+        fun addOutput(toolSearchCall: ResponseToolSearchCall) =
+            addOutput(ResponseOutputItem.ofToolSearchCall(toolSearchCall))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofToolSearchOutput(toolSearchOutput)`.
+         */
+        fun addOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
+            addOutput(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: ResponseCompactionItem) =
             addOutput(ResponseOutputItem.ofCompaction(compaction))

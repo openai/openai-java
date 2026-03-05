@@ -102,6 +102,7 @@ internal class ResponseServiceAsyncTest {
                                     .build()
                             )
                             .strict(true)
+                            .deferLoading(true)
                             .description("description")
                             .build()
                     )
@@ -195,6 +196,7 @@ internal class ResponseServiceAsyncTest {
                                     .build()
                             )
                             .strict(true)
+                            .deferLoading(true)
                             .description("description")
                             .build()
                     )
@@ -299,7 +301,7 @@ internal class ResponseServiceAsyncTest {
         val compactedResponseFuture =
             responseServiceAsync.compact(
                 ResponseCompactParams.builder()
-                    .model(ResponseCompactParams.Model.GPT_5_2)
+                    .model(ResponseCompactParams.Model.GPT_5_4)
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")

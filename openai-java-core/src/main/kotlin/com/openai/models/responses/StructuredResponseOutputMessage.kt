@@ -34,11 +34,11 @@ class StructuredResponseOutputMessage<T : Any>(
     /** @see ResponseOutputMessage._role */
     fun _role(): JsonValue = rawMessage._role()
 
-    /** @see ResponseOutputMessage.status */
-    fun status(): ResponseOutputMessage.Status = rawMessage.status()
-
     /** @see ResponseOutputMessage.phase */
     fun phase(): Optional<ResponseOutputMessage.Phase> = rawMessage.phase()
+
+    /** @see ResponseOutputMessage.status */
+    fun status(): ResponseOutputMessage.Status = rawMessage.status()
 
     /** @see ResponseOutputMessage._type */
     fun _type(): JsonValue = rawMessage._type()
@@ -49,11 +49,11 @@ class StructuredResponseOutputMessage<T : Any>(
     /** @see ResponseOutputMessage._content */
     fun _content(): JsonField<List<Content<T>>> = content
 
-    /** @see ResponseOutputMessage._status */
-    fun _status(): JsonField<ResponseOutputMessage.Status> = rawMessage._status()
-
     /** @see ResponseOutputMessage._phase */
     fun _phase(): JsonField<ResponseOutputMessage.Phase> = rawMessage._phase()
+
+    /** @see ResponseOutputMessage._status */
+    fun _status(): JsonField<ResponseOutputMessage.Status> = rawMessage._status()
 
     /** @see ResponseOutputMessage._additionalProperties */
     fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()

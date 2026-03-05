@@ -18,6 +18,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeResponseCreateMcpTool.ConnectorId.CONNECTOR_DROPBOX)
+                .deferLoading(true)
                 .headers(
                     RealtimeResponseCreateMcpTool.Headers.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -53,6 +54,7 @@ internal class RealtimeResponseCreateMcpToolTest {
         assertThat(realtimeResponseCreateMcpTool.authorization()).contains("authorization")
         assertThat(realtimeResponseCreateMcpTool.connectorId())
             .contains(RealtimeResponseCreateMcpTool.ConnectorId.CONNECTOR_DROPBOX)
+        assertThat(realtimeResponseCreateMcpTool.deferLoading()).contains(true)
         assertThat(realtimeResponseCreateMcpTool.headers())
             .contains(
                 RealtimeResponseCreateMcpTool.Headers.builder()
@@ -95,6 +97,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeResponseCreateMcpTool.ConnectorId.CONNECTOR_DROPBOX)
+                .deferLoading(true)
                 .headers(
                     RealtimeResponseCreateMcpTool.Headers.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))

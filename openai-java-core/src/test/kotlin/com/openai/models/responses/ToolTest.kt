@@ -26,6 +26,7 @@ internal class ToolTest {
                         .build()
                 )
                 .strict(true)
+                .deferLoading(true)
                 .description("description")
                 .build()
 
@@ -33,6 +34,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).contains(function)
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -41,6 +43,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -58,6 +62,7 @@ internal class ToolTest {
                             .build()
                     )
                     .strict(true)
+                    .deferLoading(true)
                     .description("description")
                     .build()
             )
@@ -99,6 +104,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).contains(fileSearch)
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -107,6 +113,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -148,6 +156,40 @@ internal class ToolTest {
     }
 
     @Test
+    fun ofComputer() {
+        val computer = ComputerUseTool.builder().build()
+
+        val tool = Tool.ofComputer(computer)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).contains(computer)
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
+        assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
+    }
+
+    @Test
+    fun ofComputerRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool = Tool.ofComputer(ComputerUseTool.builder().build())
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
     fun ofComputerUsePreview() {
         val computerUsePreview =
             ComputerTool.builder()
@@ -160,6 +202,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).contains(computerUsePreview)
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -168,6 +211,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -212,6 +257,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).contains(webSearch)
         assertThat(tool.mcp()).isEmpty
@@ -220,6 +266,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -259,6 +307,7 @@ internal class ToolTest {
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(Tool.Mcp.ConnectorId.CONNECTOR_DROPBOX)
+                .deferLoading(true)
                 .headers(
                     Tool.Mcp.Headers.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -288,6 +337,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).contains(mcp)
@@ -296,6 +346,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -310,6 +362,7 @@ internal class ToolTest {
                     .allowedToolsOfMcp(listOf("string"))
                     .authorization("authorization")
                     .connectorId(Tool.Mcp.ConnectorId.CONNECTOR_DROPBOX)
+                    .deferLoading(true)
                     .headers(
                         Tool.Mcp.Headers.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -350,6 +403,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -358,6 +412,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -400,6 +456,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -408,6 +465,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -449,6 +508,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -457,6 +517,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).contains(JsonValue.from(mapOf("type" to "local_shell")))
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -490,6 +552,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -498,6 +561,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).contains(shell)
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -530,12 +595,18 @@ internal class ToolTest {
     @Test
     fun ofCustom() {
         val custom =
-            CustomTool.builder().name("name").description("description").formatText().build()
+            CustomTool.builder()
+                .name("name")
+                .deferLoading(true)
+                .description("description")
+                .formatText()
+                .build()
 
         val tool = Tool.ofCustom(custom)
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -544,6 +615,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).contains(custom)
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -553,7 +626,118 @@ internal class ToolTest {
         val jsonMapper = jsonMapper()
         val tool =
             Tool.ofCustom(
-                CustomTool.builder().name("name").description("description").formatText().build()
+                CustomTool.builder()
+                    .name("name")
+                    .deferLoading(true)
+                    .description("description")
+                    .formatText()
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofNamespace() {
+        val namespace =
+            NamespaceTool.builder()
+                .description("x")
+                .name("x")
+                .addTool(
+                    NamespaceTool.Tool.Function.builder()
+                        .name("name")
+                        .description("description")
+                        .parameters(JsonValue.from(mapOf<String, Any>()))
+                        .strict(true)
+                        .build()
+                )
+                .build()
+
+        val tool = Tool.ofNamespace(namespace)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
+        assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).contains(namespace)
+        assertThat(tool.search()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
+    }
+
+    @Test
+    fun ofNamespaceRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofNamespace(
+                NamespaceTool.builder()
+                    .description("x")
+                    .name("x")
+                    .addTool(
+                        NamespaceTool.Tool.Function.builder()
+                            .name("name")
+                            .description("description")
+                            .parameters(JsonValue.from(mapOf<String, Any>()))
+                            .strict(true)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofSearch() {
+        val search =
+            ToolSearchTool.builder()
+                .description("description")
+                .execution(ToolSearchTool.Execution.SERVER)
+                .parameters(JsonValue.from(mapOf<String, Any>()))
+                .build()
+
+        val tool = Tool.ofSearch(search)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
+        assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).contains(search)
+        assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
+    }
+
+    @Test
+    fun ofSearchRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofSearch(
+                ToolSearchTool.builder()
+                    .description("description")
+                    .execution(ToolSearchTool.Execution.SERVER)
+                    .parameters(JsonValue.from(mapOf<String, Any>()))
+                    .build()
             )
 
         val roundtrippedTool =
@@ -567,6 +751,7 @@ internal class ToolTest {
         val webSearchPreview =
             WebSearchPreviewTool.builder()
                 .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                .addSearchContentType(WebSearchPreviewTool.SearchContentType.TEXT)
                 .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
                 .userLocation(
                     WebSearchPreviewTool.UserLocation.builder()
@@ -582,6 +767,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -590,6 +776,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).contains(webSearchPreview)
         assertThat(tool.applyPatch()).isEmpty
     }
@@ -601,6 +789,7 @@ internal class ToolTest {
             Tool.ofWebSearchPreview(
                 WebSearchPreviewTool.builder()
                     .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                    .addSearchContentType(WebSearchPreviewTool.SearchContentType.TEXT)
                     .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
                     .userLocation(
                         WebSearchPreviewTool.UserLocation.builder()
@@ -627,6 +816,7 @@ internal class ToolTest {
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
@@ -635,6 +825,8 @@ internal class ToolTest {
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
         assertThat(tool.applyPatch()).contains(applyPatch)
     }

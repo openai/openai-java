@@ -38,6 +38,7 @@ class Tool
 private constructor(
     private val function: FunctionTool? = null,
     private val fileSearch: FileSearchTool? = null,
+    private val computer: ComputerUseTool? = null,
     private val computerUsePreview: ComputerTool? = null,
     private val webSearch: WebSearchTool? = null,
     private val mcp: Mcp? = null,
@@ -46,6 +47,8 @@ private constructor(
     private val localShell: JsonValue? = null,
     private val shell: FunctionShellTool? = null,
     private val custom: CustomTool? = null,
+    private val namespace: NamespaceTool? = null,
+    private val search: ToolSearchTool? = null,
     private val webSearchPreview: WebSearchPreviewTool? = null,
     private val applyPatch: ApplyPatchTool? = null,
     private val _json: JsonValue? = null,
@@ -62,6 +65,12 @@ private constructor(
      * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
      */
     fun fileSearch(): Optional<FileSearchTool> = Optional.ofNullable(fileSearch)
+
+    /**
+     * A tool that controls a virtual computer. Learn more about the
+     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     */
+    fun computer(): Optional<ComputerUseTool> = Optional.ofNullable(computer)
 
     /**
      * A tool that controls a virtual computer. Learn more about the
@@ -99,6 +108,12 @@ private constructor(
      */
     fun custom(): Optional<CustomTool> = Optional.ofNullable(custom)
 
+    /** Groups function/custom tools under a shared namespace. */
+    fun namespace(): Optional<NamespaceTool> = Optional.ofNullable(namespace)
+
+    /** Hosted or BYOT tool search configuration for deferred tools. */
+    fun search(): Optional<ToolSearchTool> = Optional.ofNullable(search)
+
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
@@ -111,6 +126,8 @@ private constructor(
     fun isFunction(): Boolean = function != null
 
     fun isFileSearch(): Boolean = fileSearch != null
+
+    fun isComputer(): Boolean = computer != null
 
     fun isComputerUsePreview(): Boolean = computerUsePreview != null
 
@@ -128,6 +145,10 @@ private constructor(
 
     fun isCustom(): Boolean = custom != null
 
+    fun isNamespace(): Boolean = namespace != null
+
+    fun isSearch(): Boolean = search != null
+
     fun isWebSearchPreview(): Boolean = webSearchPreview != null
 
     fun isApplyPatch(): Boolean = applyPatch != null
@@ -143,6 +164,12 @@ private constructor(
      * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
      */
     fun asFileSearch(): FileSearchTool = fileSearch.getOrThrow("fileSearch")
+
+    /**
+     * A tool that controls a virtual computer. Learn more about the
+     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     */
+    fun asComputer(): ComputerUseTool = computer.getOrThrow("computer")
 
     /**
      * A tool that controls a virtual computer. Learn more about the
@@ -180,6 +207,12 @@ private constructor(
      */
     fun asCustom(): CustomTool = custom.getOrThrow("custom")
 
+    /** Groups function/custom tools under a shared namespace. */
+    fun asNamespace(): NamespaceTool = namespace.getOrThrow("namespace")
+
+    /** Hosted or BYOT tool search configuration for deferred tools. */
+    fun asSearch(): ToolSearchTool = search.getOrThrow("search")
+
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
@@ -195,6 +228,7 @@ private constructor(
         when {
             function != null -> visitor.visitFunction(function)
             fileSearch != null -> visitor.visitFileSearch(fileSearch)
+            computer != null -> visitor.visitComputer(computer)
             computerUsePreview != null -> visitor.visitComputerUsePreview(computerUsePreview)
             webSearch != null -> visitor.visitWebSearch(webSearch)
             mcp != null -> visitor.visitMcp(mcp)
@@ -203,6 +237,8 @@ private constructor(
             localShell != null -> visitor.visitLocalShell(localShell)
             shell != null -> visitor.visitShell(shell)
             custom != null -> visitor.visitCustom(custom)
+            namespace != null -> visitor.visitNamespace(namespace)
+            search != null -> visitor.visitSearch(search)
             webSearchPreview != null -> visitor.visitWebSearchPreview(webSearchPreview)
             applyPatch != null -> visitor.visitApplyPatch(applyPatch)
             else -> visitor.unknown(_json)
@@ -223,6 +259,10 @@ private constructor(
 
                 override fun visitFileSearch(fileSearch: FileSearchTool) {
                     fileSearch.validate()
+                }
+
+                override fun visitComputer(computer: ComputerUseTool) {
+                    computer.validate()
                 }
 
                 override fun visitComputerUsePreview(computerUsePreview: ComputerTool) {
@@ -263,6 +303,14 @@ private constructor(
                     custom.validate()
                 }
 
+                override fun visitNamespace(namespace: NamespaceTool) {
+                    namespace.validate()
+                }
+
+                override fun visitSearch(search: ToolSearchTool) {
+                    search.validate()
+                }
+
                 override fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool) {
                     webSearchPreview.validate()
                 }
@@ -296,6 +344,8 @@ private constructor(
 
                 override fun visitFileSearch(fileSearch: FileSearchTool) = fileSearch.validity()
 
+                override fun visitComputer(computer: ComputerUseTool) = computer.validity()
+
                 override fun visitComputerUsePreview(computerUsePreview: ComputerTool) =
                     computerUsePreview.validity()
 
@@ -318,6 +368,10 @@ private constructor(
 
                 override fun visitCustom(custom: CustomTool) = custom.validity()
 
+                override fun visitNamespace(namespace: NamespaceTool) = namespace.validity()
+
+                override fun visitSearch(search: ToolSearchTool) = search.validity()
+
                 override fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool) =
                     webSearchPreview.validity()
 
@@ -335,6 +389,7 @@ private constructor(
         return other is Tool &&
             function == other.function &&
             fileSearch == other.fileSearch &&
+            computer == other.computer &&
             computerUsePreview == other.computerUsePreview &&
             webSearch == other.webSearch &&
             mcp == other.mcp &&
@@ -343,6 +398,8 @@ private constructor(
             localShell == other.localShell &&
             shell == other.shell &&
             custom == other.custom &&
+            namespace == other.namespace &&
+            search == other.search &&
             webSearchPreview == other.webSearchPreview &&
             applyPatch == other.applyPatch
     }
@@ -351,6 +408,7 @@ private constructor(
         Objects.hash(
             function,
             fileSearch,
+            computer,
             computerUsePreview,
             webSearch,
             mcp,
@@ -359,6 +417,8 @@ private constructor(
             localShell,
             shell,
             custom,
+            namespace,
+            search,
             webSearchPreview,
             applyPatch,
         )
@@ -367,6 +427,7 @@ private constructor(
         when {
             function != null -> "Tool{function=$function}"
             fileSearch != null -> "Tool{fileSearch=$fileSearch}"
+            computer != null -> "Tool{computer=$computer}"
             computerUsePreview != null -> "Tool{computerUsePreview=$computerUsePreview}"
             webSearch != null -> "Tool{webSearch=$webSearch}"
             mcp != null -> "Tool{mcp=$mcp}"
@@ -375,6 +436,8 @@ private constructor(
             localShell != null -> "Tool{localShell=$localShell}"
             shell != null -> "Tool{shell=$shell}"
             custom != null -> "Tool{custom=$custom}"
+            namespace != null -> "Tool{namespace=$namespace}"
+            search != null -> "Tool{search=$search}"
             webSearchPreview != null -> "Tool{webSearchPreview=$webSearchPreview}"
             applyPatch != null -> "Tool{applyPatch=$applyPatch}"
             _json != null -> "Tool{_unknown=$_json}"
@@ -394,6 +457,12 @@ private constructor(
          * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
          */
         @JvmStatic fun ofFileSearch(fileSearch: FileSearchTool) = Tool(fileSearch = fileSearch)
+
+        /**
+         * A tool that controls a virtual computer. Learn more about the
+         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         */
+        @JvmStatic fun ofComputer(computer: ComputerUseTool) = Tool(computer = computer)
 
         /**
          * A tool that controls a virtual computer. Learn more about the
@@ -439,6 +508,12 @@ private constructor(
          */
         @JvmStatic fun ofCustom(custom: CustomTool) = Tool(custom = custom)
 
+        /** Groups function/custom tools under a shared namespace. */
+        @JvmStatic fun ofNamespace(namespace: NamespaceTool) = Tool(namespace = namespace)
+
+        /** Hosted or BYOT tool search configuration for deferred tools. */
+        @JvmStatic fun ofSearch(search: ToolSearchTool) = Tool(search = search)
+
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
          * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
@@ -465,6 +540,12 @@ private constructor(
          * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
          */
         fun visitFileSearch(fileSearch: FileSearchTool): T
+
+        /**
+         * A tool that controls a virtual computer. Learn more about the
+         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         */
+        fun visitComputer(computer: ComputerUseTool): T
 
         /**
          * A tool that controls a virtual computer. Learn more about the
@@ -502,6 +583,12 @@ private constructor(
          * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
          */
         fun visitCustom(custom: CustomTool): T
+
+        /** Groups function/custom tools under a shared namespace. */
+        fun visitNamespace(namespace: NamespaceTool): T
+
+        /** Hosted or BYOT tool search configuration for deferred tools. */
+        fun visitSearch(search: ToolSearchTool): T
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
@@ -543,6 +630,11 @@ private constructor(
                         Tool(fileSearch = it, _json = json)
                     } ?: Tool(_json = json)
                 }
+                "computer" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ComputerUseTool>())?.let {
+                        Tool(computer = it, _json = json)
+                    } ?: Tool(_json = json)
+                }
                 "computer_use_preview" -> {
                     return tryDeserialize(node, jacksonTypeRef<ComputerTool>())?.let {
                         Tool(computerUsePreview = it, _json = json)
@@ -576,6 +668,16 @@ private constructor(
                 "custom" -> {
                     return tryDeserialize(node, jacksonTypeRef<CustomTool>())?.let {
                         Tool(custom = it, _json = json)
+                    } ?: Tool(_json = json)
+                }
+                "namespace" -> {
+                    return tryDeserialize(node, jacksonTypeRef<NamespaceTool>())?.let {
+                        Tool(namespace = it, _json = json)
+                    } ?: Tool(_json = json)
+                }
+                "tool_search" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ToolSearchTool>())?.let {
+                        Tool(search = it, _json = json)
                     } ?: Tool(_json = json)
                 }
                 "apply_patch" -> {
@@ -619,6 +721,7 @@ private constructor(
             when {
                 value.function != null -> generator.writeObject(value.function)
                 value.fileSearch != null -> generator.writeObject(value.fileSearch)
+                value.computer != null -> generator.writeObject(value.computer)
                 value.computerUsePreview != null -> generator.writeObject(value.computerUsePreview)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
                 value.mcp != null -> generator.writeObject(value.mcp)
@@ -627,6 +730,8 @@ private constructor(
                 value.localShell != null -> generator.writeObject(value.localShell)
                 value.shell != null -> generator.writeObject(value.shell)
                 value.custom != null -> generator.writeObject(value.custom)
+                value.namespace != null -> generator.writeObject(value.namespace)
+                value.search != null -> generator.writeObject(value.search)
                 value.webSearchPreview != null -> generator.writeObject(value.webSearchPreview)
                 value.applyPatch != null -> generator.writeObject(value.applyPatch)
                 value._json != null -> generator.writeObject(value._json)
@@ -647,6 +752,7 @@ private constructor(
         private val allowedTools: JsonField<AllowedTools>,
         private val authorization: JsonField<String>,
         private val connectorId: JsonField<ConnectorId>,
+        private val deferLoading: JsonField<Boolean>,
         private val headers: JsonField<Headers>,
         private val requireApproval: JsonField<RequireApproval>,
         private val serverDescription: JsonField<String>,
@@ -669,6 +775,9 @@ private constructor(
             @JsonProperty("connector_id")
             @ExcludeMissing
             connectorId: JsonField<ConnectorId> = JsonMissing.of(),
+            @JsonProperty("defer_loading")
+            @ExcludeMissing
+            deferLoading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("headers") @ExcludeMissing headers: JsonField<Headers> = JsonMissing.of(),
             @JsonProperty("require_approval")
             @ExcludeMissing
@@ -685,6 +794,7 @@ private constructor(
             allowedTools,
             authorization,
             connectorId,
+            deferLoading,
             headers,
             requireApproval,
             serverDescription,
@@ -750,6 +860,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
+
+        /**
+         * Whether this MCP tool is deferred and discovered via tool search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
 
         /**
          * Optional HTTP headers to send to the MCP server. Use for authentication or other
@@ -825,6 +943,16 @@ private constructor(
         fun _connectorId(): JsonField<ConnectorId> = connectorId
 
         /**
+         * Returns the raw JSON value of [deferLoading].
+         *
+         * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("defer_loading")
+        @ExcludeMissing
+        fun _deferLoading(): JsonField<Boolean> = deferLoading
+
+        /**
          * Returns the raw JSON value of [headers].
          *
          * Unlike [headers], this method doesn't throw if the JSON field has an unexpected type.
@@ -891,6 +1019,7 @@ private constructor(
             private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
             private var authorization: JsonField<String> = JsonMissing.of()
             private var connectorId: JsonField<ConnectorId> = JsonMissing.of()
+            private var deferLoading: JsonField<Boolean> = JsonMissing.of()
             private var headers: JsonField<Headers> = JsonMissing.of()
             private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
             private var serverDescription: JsonField<String> = JsonMissing.of()
@@ -904,6 +1033,7 @@ private constructor(
                 allowedTools = mcp.allowedTools
                 authorization = mcp.authorization
                 connectorId = mcp.connectorId
+                deferLoading = mcp.deferLoading
                 headers = mcp.headers
                 requireApproval = mcp.requireApproval
                 serverDescription = mcp.serverDescription
@@ -1011,6 +1141,20 @@ private constructor(
              */
             fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
                 this.connectorId = connectorId
+            }
+
+            /** Whether this MCP tool is deferred and discovered via tool search. */
+            fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
+
+            /**
+             * Sets [Builder.deferLoading] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.deferLoading] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun deferLoading(deferLoading: JsonField<Boolean>) = apply {
+                this.deferLoading = deferLoading
             }
 
             /**
@@ -1131,6 +1275,7 @@ private constructor(
                     allowedTools,
                     authorization,
                     connectorId,
+                    deferLoading,
                     headers,
                     requireApproval,
                     serverDescription,
@@ -1155,6 +1300,7 @@ private constructor(
             allowedTools().ifPresent { it.validate() }
             authorization()
             connectorId().ifPresent { it.validate() }
+            deferLoading()
             headers().ifPresent { it.validate() }
             requireApproval().ifPresent { it.validate() }
             serverDescription()
@@ -1183,6 +1329,7 @@ private constructor(
                 (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (authorization.asKnown().isPresent) 1 else 0) +
                 (connectorId.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (deferLoading.asKnown().isPresent) 1 else 0) +
                 (headers.asKnown().getOrNull()?.validity() ?: 0) +
                 (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (serverDescription.asKnown().isPresent) 1 else 0) +
@@ -2920,6 +3067,7 @@ private constructor(
                 allowedTools == other.allowedTools &&
                 authorization == other.authorization &&
                 connectorId == other.connectorId &&
+                deferLoading == other.deferLoading &&
                 headers == other.headers &&
                 requireApproval == other.requireApproval &&
                 serverDescription == other.serverDescription &&
@@ -2934,6 +3082,7 @@ private constructor(
                 allowedTools,
                 authorization,
                 connectorId,
+                deferLoading,
                 headers,
                 requireApproval,
                 serverDescription,
@@ -2945,7 +3094,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mcp{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
+            "Mcp{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
     }
 
     /** A tool that runs Python code to help generate a response to a prompt. */

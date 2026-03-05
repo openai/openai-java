@@ -35,15 +35,18 @@ import com.openai.models.ResponseFormatText
 import com.openai.models.graders.gradermodels.EvalContentItem
 import com.openai.models.responses.ApplyPatchTool
 import com.openai.models.responses.ComputerTool
+import com.openai.models.responses.ComputerUseTool
 import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionShellTool
 import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.NamespaceTool
 import com.openai.models.responses.ResponseFormatTextConfig
 import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
 import com.openai.models.responses.ResponseInputAudio
 import com.openai.models.responses.ResponseInputText
 import com.openai.models.responses.Tool
+import com.openai.models.responses.ToolSearchTool
 import com.openai.models.responses.WebSearchPreviewTool
 import com.openai.models.responses.WebSearchTool
 import java.util.Collections
@@ -6264,6 +6267,9 @@ private constructor(
                     fun addFileSearchTool(vectorStoreIds: List<String>) =
                         addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
+                    /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
+                    fun addTool(computer: ComputerUseTool) = addTool(Tool.ofComputer(computer))
+
                     /**
                      * Alias for calling [addTool] with
                      * `Tool.ofComputerUsePreview(computerUsePreview)`.
@@ -6351,6 +6357,12 @@ private constructor(
                      */
                     fun addCustomTool(name: String) =
                         addTool(CustomTool.builder().name(name).build())
+
+                    /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
+                    fun addTool(namespace: NamespaceTool) = addTool(Tool.ofNamespace(namespace))
+
+                    /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
+                    fun addTool(search: ToolSearchTool) = addTool(Tool.ofSearch(search))
 
                     /**
                      * Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`.

@@ -30,6 +30,8 @@ import com.openai.models.responses.ResponseIncludable
 import com.openai.models.responses.ResponseInputItem
 import com.openai.models.responses.ResponseOutputMessage
 import com.openai.models.responses.ResponseReasoningItem
+import com.openai.models.responses.ResponseToolSearchOutputItemParam
+import com.openai.models.responses.Tool
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -214,6 +216,45 @@ private constructor(
          */
         fun addItem(functionCallOutput: ResponseInputItem.FunctionCallOutput) = apply {
             body.addItem(functionCallOutput)
+        }
+
+        /**
+         * Alias for calling [addItem] with `ResponseInputItem.ofToolSearchCall(toolSearchCall)`.
+         */
+        fun addItem(toolSearchCall: ResponseInputItem.ToolSearchCall) = apply {
+            body.addItem(toolSearchCall)
+        }
+
+        /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseInputItem.ToolSearchCall.builder()
+         *     .arguments(arguments)
+         *     .build()
+         * ```
+         */
+        fun addToolSearchCallItem(arguments: JsonValue) = apply {
+            body.addToolSearchCallItem(arguments)
+        }
+
+        /**
+         * Alias for calling [addItem] with
+         * `ResponseInputItem.ofToolSearchOutput(toolSearchOutput)`.
+         */
+        fun addItem(toolSearchOutput: ResponseToolSearchOutputItemParam) = apply {
+            body.addItem(toolSearchOutput)
+        }
+
+        /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseToolSearchOutputItemParam.builder()
+         *     .tools(tools)
+         *     .build()
+         * ```
+         */
+        fun addToolSearchOutputItem(tools: List<Tool>) = apply {
+            body.addToolSearchOutputItem(tools)
         }
 
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
@@ -650,6 +691,42 @@ private constructor(
              */
             fun addItem(functionCallOutput: ResponseInputItem.FunctionCallOutput) =
                 addItem(ResponseInputItem.ofFunctionCallOutput(functionCallOutput))
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofToolSearchCall(toolSearchCall)`.
+             */
+            fun addItem(toolSearchCall: ResponseInputItem.ToolSearchCall) =
+                addItem(ResponseInputItem.ofToolSearchCall(toolSearchCall))
+
+            /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseInputItem.ToolSearchCall.builder()
+             *     .arguments(arguments)
+             *     .build()
+             * ```
+             */
+            fun addToolSearchCallItem(arguments: JsonValue) =
+                addItem(ResponseInputItem.ToolSearchCall.builder().arguments(arguments).build())
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofToolSearchOutput(toolSearchOutput)`.
+             */
+            fun addItem(toolSearchOutput: ResponseToolSearchOutputItemParam) =
+                addItem(ResponseInputItem.ofToolSearchOutput(toolSearchOutput))
+
+            /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseToolSearchOutputItemParam.builder()
+             *     .tools(tools)
+             *     .build()
+             * ```
+             */
+            fun addToolSearchOutputItem(tools: List<Tool>) =
+                addItem(ResponseToolSearchOutputItemParam.builder().tools(tools).build())
 
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =

@@ -83,6 +83,9 @@ internal class StructuredResponseCreateParamsTest {
 
         private val FUNCTION_TOOL =
             FunctionTool.builder().name(STRING).parameters(NULLABLE).strict(BOOLEAN).build()
+        private val NAMESPACE_TOOL =
+            NamespaceTool.builder().description(STRING).name(STRING).tools(listOf()).build()
+        private val TOOL_SEARCH_TOOL = ToolSearchTool.builder().build()
         private val FILE_SEARCH_TOOL = FileSearchTool.builder().vectorStoreIds(LIST).build()
         private val WEB_SEARCH_TOOL =
             WebSearchTool.builder().type(WebSearchTool.Type.WEB_SEARCH).build()
@@ -90,6 +93,7 @@ internal class StructuredResponseCreateParamsTest {
             WebSearchPreviewTool.builder()
                 .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
                 .build()
+        private val COMPUTER_USE_TOOL = ComputerUseTool.builder().build()
         private val COMPUTER_TOOL =
             ComputerTool.builder()
                 .displayWidth(LONG)
@@ -214,9 +218,12 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
                 DelegationWriteTestCase("addTool", FUNCTION_TOOL),
+                DelegationWriteTestCase("addTool", NAMESPACE_TOOL),
+                DelegationWriteTestCase("addTool", TOOL_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", CLASS, VALIDATION),
                 DelegationWriteTestCase("addTool", FILE_SEARCH_TOOL),
                 DelegationWriteTestCase("addFileSearchTool", LIST),
+                DelegationWriteTestCase("addTool", COMPUTER_USE_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_PREVIEW_TOOL),
                 DelegationWriteTestCase("addTool", APPLY_PATCH_TOOL),

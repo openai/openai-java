@@ -41,8 +41,8 @@ private constructor(
     ) : this(detail, type, fileId, imageUrl, mutableMapOf())
 
     /**
-     * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
-     * Defaults to `auto`.
+     * The detail level of the image to be sent to the model. One of `high`, `low`, `auto`, or
+     * `original`. Defaults to `auto`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -144,8 +144,8 @@ private constructor(
         }
 
         /**
-         * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
-         * Defaults to `auto`.
+         * The detail level of the image to be sent to the model. One of `high`, `low`, `auto`, or
+         * `original`. Defaults to `auto`.
          */
         fun detail(detail: Detail) = detail(JsonField.of(detail))
 
@@ -282,8 +282,8 @@ private constructor(
             (if (imageUrl.asKnown().isPresent) 1 else 0)
 
     /**
-     * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
-     * Defaults to `auto`.
+     * The detail level of the image to be sent to the model. One of `high`, `low`, `auto`, or
+     * `original`. Defaults to `auto`.
      */
     class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -305,6 +305,8 @@ private constructor(
 
             @JvmField val AUTO = of("auto")
 
+            @JvmField val ORIGINAL = of("original")
+
             @JvmStatic fun of(value: String) = Detail(JsonField.of(value))
         }
 
@@ -313,6 +315,7 @@ private constructor(
             LOW,
             HIGH,
             AUTO,
+            ORIGINAL,
         }
 
         /**
@@ -328,6 +331,7 @@ private constructor(
             LOW,
             HIGH,
             AUTO,
+            ORIGINAL,
             /** An enum member indicating that [Detail] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -344,6 +348,7 @@ private constructor(
                 LOW -> Value.LOW
                 HIGH -> Value.HIGH
                 AUTO -> Value.AUTO
+                ORIGINAL -> Value.ORIGINAL
                 else -> Value._UNKNOWN
             }
 
@@ -361,6 +366,7 @@ private constructor(
                 LOW -> Known.LOW
                 HIGH -> Known.HIGH
                 AUTO -> Known.AUTO
+                ORIGINAL -> Known.ORIGINAL
                 else -> throw OpenAIInvalidDataException("Unknown Detail: $value")
             }
 

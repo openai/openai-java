@@ -11,7 +11,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -26,6 +28,7 @@ class WebSearchPreviewTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonField<Type>,
+    private val searchContentTypes: JsonField<List<SearchContentType>>,
     private val searchContextSize: JsonField<SearchContextSize>,
     private val userLocation: JsonField<UserLocation>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -34,13 +37,16 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("search_content_types")
+        @ExcludeMissing
+        searchContentTypes: JsonField<List<SearchContentType>> = JsonMissing.of(),
         @JsonProperty("search_context_size")
         @ExcludeMissing
         searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
         @JsonProperty("user_location")
         @ExcludeMissing
         userLocation: JsonField<UserLocation> = JsonMissing.of(),
-    ) : this(type, searchContextSize, userLocation, mutableMapOf())
+    ) : this(type, searchContentTypes, searchContextSize, userLocation, mutableMapOf())
 
     /**
      * The type of the web search tool. One of `web_search_preview` or
@@ -50,6 +56,13 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun searchContentTypes(): Optional<List<SearchContentType>> =
+        searchContentTypes.getOptional("search_content_types")
 
     /**
      * High level guidance for the amount of context window space to use for the search. One of
@@ -75,6 +88,16 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+    /**
+     * Returns the raw JSON value of [searchContentTypes].
+     *
+     * Unlike [searchContentTypes], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("search_content_types")
+    @ExcludeMissing
+    fun _searchContentTypes(): JsonField<List<SearchContentType>> = searchContentTypes
 
     /**
      * Returns the raw JSON value of [searchContextSize].
@@ -124,6 +147,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var type: JsonField<Type>? = null
+        private var searchContentTypes: JsonField<MutableList<SearchContentType>>? = null
         private var searchContextSize: JsonField<SearchContextSize> = JsonMissing.of()
         private var userLocation: JsonField<UserLocation> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -131,6 +155,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(webSearchPreviewTool: WebSearchPreviewTool) = apply {
             type = webSearchPreviewTool.type
+            searchContentTypes = webSearchPreviewTool.searchContentTypes.map { it.toMutableList() }
             searchContextSize = webSearchPreviewTool.searchContextSize
             userLocation = webSearchPreviewTool.userLocation
             additionalProperties = webSearchPreviewTool.additionalProperties.toMutableMap()
@@ -149,6 +174,32 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
+
+        fun searchContentTypes(searchContentTypes: List<SearchContentType>) =
+            searchContentTypes(JsonField.of(searchContentTypes))
+
+        /**
+         * Sets [Builder.searchContentTypes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.searchContentTypes] with a well-typed
+         * `List<SearchContentType>` value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
+        fun searchContentTypes(searchContentTypes: JsonField<List<SearchContentType>>) = apply {
+            this.searchContentTypes = searchContentTypes.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [SearchContentType] to [searchContentTypes].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addSearchContentType(searchContentType: SearchContentType) = apply {
+            searchContentTypes =
+                (searchContentTypes ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("searchContentTypes", it).add(searchContentType)
+                }
+        }
 
         /**
          * High level guidance for the amount of context window space to use for the search. One of
@@ -221,6 +272,7 @@ private constructor(
         fun build(): WebSearchPreviewTool =
             WebSearchPreviewTool(
                 checkRequired("type", type),
+                (searchContentTypes ?: JsonMissing.of()).map { it.toImmutable() },
                 searchContextSize,
                 userLocation,
                 additionalProperties.toMutableMap(),
@@ -235,6 +287,7 @@ private constructor(
         }
 
         type().validate()
+        searchContentTypes().ifPresent { it.forEach { it.validate() } }
         searchContextSize().ifPresent { it.validate() }
         userLocation().ifPresent { it.validate() }
         validated = true
@@ -256,6 +309,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (type.asKnown().getOrNull()?.validity() ?: 0) +
+            (searchContentTypes.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (searchContextSize.asKnown().getOrNull()?.validity() ?: 0) +
             (userLocation.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -381,6 +435,135 @@ private constructor(
             }
 
             return other is Type && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    class SearchContentType @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val TEXT = of("text")
+
+            @JvmField val IMAGE = of("image")
+
+            @JvmStatic fun of(value: String) = SearchContentType(JsonField.of(value))
+        }
+
+        /** An enum containing [SearchContentType]'s known values. */
+        enum class Known {
+            TEXT,
+            IMAGE,
+        }
+
+        /**
+         * An enum containing [SearchContentType]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [SearchContentType] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            TEXT,
+            IMAGE,
+            /**
+             * An enum member indicating that [SearchContentType] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                TEXT -> Value.TEXT
+                IMAGE -> Value.IMAGE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                TEXT -> Known.TEXT
+                IMAGE -> Known.IMAGE
+                else -> throw OpenAIInvalidDataException("Unknown SearchContentType: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): SearchContentType = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SearchContentType && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -848,17 +1031,24 @@ private constructor(
 
         return other is WebSearchPreviewTool &&
             type == other.type &&
+            searchContentTypes == other.searchContentTypes &&
             searchContextSize == other.searchContextSize &&
             userLocation == other.userLocation &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, searchContextSize, userLocation, additionalProperties)
+        Objects.hash(
+            type,
+            searchContentTypes,
+            searchContextSize,
+            userLocation,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "WebSearchPreviewTool{type=$type, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
+        "WebSearchPreviewTool{type=$type, searchContentTypes=$searchContentTypes, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
 }

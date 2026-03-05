@@ -102,6 +102,7 @@ internal class ResponseServiceTest {
                                     .build()
                             )
                             .strict(true)
+                            .deferLoading(true)
                             .description("description")
                             .build()
                     )
@@ -194,6 +195,7 @@ internal class ResponseServiceTest {
                                     .build()
                             )
                             .strict(true)
+                            .deferLoading(true)
                             .description("description")
                             .build()
                     )
@@ -294,7 +296,7 @@ internal class ResponseServiceTest {
         val compactedResponse =
             responseService.compact(
                 ResponseCompactParams.builder()
-                    .model(ResponseCompactParams.Model.GPT_5_2)
+                    .model(ResponseCompactParams.Model.GPT_5_4)
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")

@@ -58,7 +58,7 @@ internal class ServiceParamsTest {
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.GPT_4O)
+                .model(ChatModel.GPT_5_4)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)

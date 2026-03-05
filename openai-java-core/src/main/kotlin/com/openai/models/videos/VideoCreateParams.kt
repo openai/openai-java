@@ -39,7 +39,7 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
-     * Optional image reference that guides generation.
+     * Optional multipart reference asset that guides generation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -169,7 +169,7 @@ private constructor(
          */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
-        /** Optional image reference that guides generation. */
+        /** Optional multipart reference asset that guides generation. */
         fun inputReference(inputReference: InputStream) = apply {
             body.inputReference(inputReference)
         }
@@ -185,12 +185,12 @@ private constructor(
             body.inputReference(inputReference)
         }
 
-        /** Optional image reference that guides generation. */
+        /** Optional multipart reference asset that guides generation. */
         fun inputReference(inputReference: ByteArray) = apply {
             body.inputReference(inputReference)
         }
 
-        /** Optional image reference that guides generation. */
+        /** Optional multipart reference asset that guides generation. */
         fun inputReference(path: Path) = apply { body.inputReference(path) }
 
         /**
@@ -413,7 +413,7 @@ private constructor(
         fun prompt(): String = prompt.value.getRequired("prompt")
 
         /**
-         * Optional image reference that guides generation.
+         * Optional multipart reference asset that guides generation.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -545,7 +545,7 @@ private constructor(
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
-            /** Optional image reference that guides generation. */
+            /** Optional multipart reference asset that guides generation. */
             fun inputReference(inputReference: InputStream) =
                 inputReference(MultipartField.of(inputReference))
 
@@ -560,11 +560,11 @@ private constructor(
                 this.inputReference = inputReference
             }
 
-            /** Optional image reference that guides generation. */
+            /** Optional multipart reference asset that guides generation. */
             fun inputReference(inputReference: ByteArray) =
                 inputReference(inputReference.inputStream())
 
-            /** Optional image reference that guides generation. */
+            /** Optional multipart reference asset that guides generation. */
             fun inputReference(path: Path) =
                 inputReference(
                     MultipartField.builder<InputStream>()

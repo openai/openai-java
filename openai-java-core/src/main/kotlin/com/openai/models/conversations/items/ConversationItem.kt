@@ -40,6 +40,8 @@ import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseReasoningItem
+import com.openai.models.responses.ResponseToolSearchCall
+import com.openai.models.responses.ResponseToolSearchOutputItem
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -62,6 +64,8 @@ private constructor(
     private val imageGenerationCall: ImageGenerationCall? = null,
     private val computerCall: ResponseComputerToolCall? = null,
     private val computerCallOutput: ResponseComputerToolCallOutputItem? = null,
+    private val toolSearchCall: ResponseToolSearchCall? = null,
+    private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val codeInterpreterCall: ResponseCodeInterpreterToolCall? = null,
     private val localShellCall: LocalShellCall? = null,
@@ -119,6 +123,11 @@ private constructor(
 
     fun computerCallOutput(): Optional<ResponseComputerToolCallOutputItem> =
         Optional.ofNullable(computerCallOutput)
+
+    fun toolSearchCall(): Optional<ResponseToolSearchCall> = Optional.ofNullable(toolSearchCall)
+
+    fun toolSearchOutput(): Optional<ResponseToolSearchOutputItem> =
+        Optional.ofNullable(toolSearchOutput)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -189,6 +198,10 @@ private constructor(
 
     fun isComputerCallOutput(): Boolean = computerCallOutput != null
 
+    fun isToolSearchCall(): Boolean = toolSearchCall != null
+
+    fun isToolSearchOutput(): Boolean = toolSearchOutput != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isCodeInterpreterCall(): Boolean = codeInterpreterCall != null
@@ -258,6 +271,11 @@ private constructor(
     fun asComputerCallOutput(): ResponseComputerToolCallOutputItem =
         computerCallOutput.getOrThrow("computerCallOutput")
 
+    fun asToolSearchCall(): ResponseToolSearchCall = toolSearchCall.getOrThrow("toolSearchCall")
+
+    fun asToolSearchOutput(): ResponseToolSearchOutputItem =
+        toolSearchOutput.getOrThrow("toolSearchOutput")
+
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
@@ -324,6 +342,8 @@ private constructor(
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
             computerCall != null -> visitor.visitComputerCall(computerCall)
             computerCallOutput != null -> visitor.visitComputerCallOutput(computerCallOutput)
+            toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
+            toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             reasoning != null -> visitor.visitReasoning(reasoning)
             codeInterpreterCall != null -> visitor.visitCodeInterpreterCall(codeInterpreterCall)
             localShellCall != null -> visitor.visitLocalShellCall(localShellCall)
@@ -384,6 +404,14 @@ private constructor(
                     computerCallOutput: ResponseComputerToolCallOutputItem
                 ) {
                     computerCallOutput.validate()
+                }
+
+                override fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall) {
+                    toolSearchCall.validate()
+                }
+
+                override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) {
+                    toolSearchOutput.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -496,6 +524,12 @@ private constructor(
                     computerCallOutput: ResponseComputerToolCallOutputItem
                 ) = computerCallOutput.validity()
 
+                override fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall) =
+                    toolSearchCall.validity()
+
+                override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
+                    toolSearchOutput.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitCodeInterpreterCall(
@@ -557,6 +591,8 @@ private constructor(
             imageGenerationCall == other.imageGenerationCall &&
             computerCall == other.computerCall &&
             computerCallOutput == other.computerCallOutput &&
+            toolSearchCall == other.toolSearchCall &&
+            toolSearchOutput == other.toolSearchOutput &&
             reasoning == other.reasoning &&
             codeInterpreterCall == other.codeInterpreterCall &&
             localShellCall == other.localShellCall &&
@@ -583,6 +619,8 @@ private constructor(
             imageGenerationCall,
             computerCall,
             computerCallOutput,
+            toolSearchCall,
+            toolSearchOutput,
             reasoning,
             codeInterpreterCall,
             localShellCall,
@@ -610,6 +648,8 @@ private constructor(
                 "ConversationItem{imageGenerationCall=$imageGenerationCall}"
             computerCall != null -> "ConversationItem{computerCall=$computerCall}"
             computerCallOutput != null -> "ConversationItem{computerCallOutput=$computerCallOutput}"
+            toolSearchCall != null -> "ConversationItem{toolSearchCall=$toolSearchCall}"
+            toolSearchOutput != null -> "ConversationItem{toolSearchOutput=$toolSearchOutput}"
             reasoning != null -> "ConversationItem{reasoning=$reasoning}"
             codeInterpreterCall != null ->
                 "ConversationItem{codeInterpreterCall=$codeInterpreterCall}"
@@ -686,6 +726,14 @@ private constructor(
         @JvmStatic
         fun ofComputerCallOutput(computerCallOutput: ResponseComputerToolCallOutputItem) =
             ConversationItem(computerCallOutput = computerCallOutput)
+
+        @JvmStatic
+        fun ofToolSearchCall(toolSearchCall: ResponseToolSearchCall) =
+            ConversationItem(toolSearchCall = toolSearchCall)
+
+        @JvmStatic
+        fun ofToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
+            ConversationItem(toolSearchOutput = toolSearchOutput)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -804,6 +852,10 @@ private constructor(
 
         fun visitComputerCallOutput(computerCallOutput: ResponseComputerToolCallOutputItem): T
 
+        fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall): T
+
+        fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
+
         /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
@@ -919,6 +971,16 @@ private constructor(
                         ?.let { ConversationItem(computerCallOutput = it, _json = json) }
                         ?: ConversationItem(_json = json)
                 }
+                "tool_search_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseToolSearchCall>())?.let {
+                        ConversationItem(toolSearchCall = it, _json = json)
+                    } ?: ConversationItem(_json = json)
+                }
+                "tool_search_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseToolSearchOutputItem>())
+                        ?.let { ConversationItem(toolSearchOutput = it, _json = json) }
+                        ?: ConversationItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ConversationItem(reasoning = it, _json = json)
@@ -1015,6 +1077,8 @@ private constructor(
                     generator.writeObject(value.imageGenerationCall)
                 value.computerCall != null -> generator.writeObject(value.computerCall)
                 value.computerCallOutput != null -> generator.writeObject(value.computerCallOutput)
+                value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
+                value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.codeInterpreterCall != null ->
                     generator.writeObject(value.codeInterpreterCall)

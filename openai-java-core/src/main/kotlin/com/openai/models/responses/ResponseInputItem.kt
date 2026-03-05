@@ -51,6 +51,8 @@ private constructor(
     private val webSearchCall: ResponseFunctionWebSearch? = null,
     private val functionCall: ResponseFunctionToolCall? = null,
     private val functionCallOutput: FunctionCallOutput? = null,
+    private val toolSearchCall: ToolSearchCall? = null,
+    private val toolSearchOutput: ResponseToolSearchOutputItemParam? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val compaction: ResponseCompactionItemParam? = null,
     private val imageGenerationCall: ImageGenerationCall? = null,
@@ -123,6 +125,11 @@ private constructor(
 
     /** The output of a function tool call. */
     fun functionCallOutput(): Optional<FunctionCallOutput> = Optional.ofNullable(functionCallOutput)
+
+    fun toolSearchCall(): Optional<ToolSearchCall> = Optional.ofNullable(toolSearchCall)
+
+    fun toolSearchOutput(): Optional<ResponseToolSearchOutputItemParam> =
+        Optional.ofNullable(toolSearchOutput)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -206,6 +213,10 @@ private constructor(
     fun isFunctionCall(): Boolean = functionCall != null
 
     fun isFunctionCallOutput(): Boolean = functionCallOutput != null
+
+    fun isToolSearchCall(): Boolean = toolSearchCall != null
+
+    fun isToolSearchOutput(): Boolean = toolSearchOutput != null
 
     fun isReasoning(): Boolean = reasoning != null
 
@@ -296,6 +307,11 @@ private constructor(
     fun asFunctionCallOutput(): FunctionCallOutput =
         functionCallOutput.getOrThrow("functionCallOutput")
 
+    fun asToolSearchCall(): ToolSearchCall = toolSearchCall.getOrThrow("toolSearchCall")
+
+    fun asToolSearchOutput(): ResponseToolSearchOutputItemParam =
+        toolSearchOutput.getOrThrow("toolSearchOutput")
+
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
@@ -376,6 +392,8 @@ private constructor(
             webSearchCall != null -> visitor.visitWebSearchCall(webSearchCall)
             functionCall != null -> visitor.visitFunctionCall(functionCall)
             functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
+            toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
+            toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             reasoning != null -> visitor.visitReasoning(reasoning)
             compaction != null -> visitor.visitCompaction(compaction)
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
@@ -441,6 +459,16 @@ private constructor(
 
                 override fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput) {
                     functionCallOutput.validate()
+                }
+
+                override fun visitToolSearchCall(toolSearchCall: ToolSearchCall) {
+                    toolSearchCall.validate()
+                }
+
+                override fun visitToolSearchOutput(
+                    toolSearchOutput: ResponseToolSearchOutputItemParam
+                ) {
+                    toolSearchOutput.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -563,6 +591,13 @@ private constructor(
                 override fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput) =
                     functionCallOutput.validity()
 
+                override fun visitToolSearchCall(toolSearchCall: ToolSearchCall) =
+                    toolSearchCall.validity()
+
+                override fun visitToolSearchOutput(
+                    toolSearchOutput: ResponseToolSearchOutputItemParam
+                ) = toolSearchOutput.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitCompaction(compaction: ResponseCompactionItemParam) =
@@ -631,6 +666,8 @@ private constructor(
             webSearchCall == other.webSearchCall &&
             functionCall == other.functionCall &&
             functionCallOutput == other.functionCallOutput &&
+            toolSearchCall == other.toolSearchCall &&
+            toolSearchOutput == other.toolSearchOutput &&
             reasoning == other.reasoning &&
             compaction == other.compaction &&
             imageGenerationCall == other.imageGenerationCall &&
@@ -661,6 +698,8 @@ private constructor(
             webSearchCall,
             functionCall,
             functionCallOutput,
+            toolSearchCall,
+            toolSearchOutput,
             reasoning,
             compaction,
             imageGenerationCall,
@@ -694,6 +733,8 @@ private constructor(
             functionCall != null -> "ResponseInputItem{functionCall=$functionCall}"
             functionCallOutput != null ->
                 "ResponseInputItem{functionCallOutput=$functionCallOutput}"
+            toolSearchCall != null -> "ResponseInputItem{toolSearchCall=$toolSearchCall}"
+            toolSearchOutput != null -> "ResponseInputItem{toolSearchOutput=$toolSearchOutput}"
             reasoning != null -> "ResponseInputItem{reasoning=$reasoning}"
             compaction != null -> "ResponseInputItem{compaction=$compaction}"
             imageGenerationCall != null ->
@@ -791,6 +832,14 @@ private constructor(
         @JvmStatic
         fun ofFunctionCallOutput(functionCallOutput: FunctionCallOutput) =
             ResponseInputItem(functionCallOutput = functionCallOutput)
+
+        @JvmStatic
+        fun ofToolSearchCall(toolSearchCall: ToolSearchCall) =
+            ResponseInputItem(toolSearchCall = toolSearchCall)
+
+        @JvmStatic
+        fun ofToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItemParam) =
+            ResponseInputItem(toolSearchOutput = toolSearchOutput)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -941,6 +990,10 @@ private constructor(
         /** The output of a function tool call. */
         fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T
 
+        fun visitToolSearchCall(toolSearchCall: ToolSearchCall): T
+
+        fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItemParam): T
+
         /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
@@ -1081,6 +1134,16 @@ private constructor(
                         ResponseInputItem(functionCallOutput = it, _json = json)
                     } ?: ResponseInputItem(_json = json)
                 }
+                "tool_search_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ToolSearchCall>())?.let {
+                        ResponseInputItem(toolSearchCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
+                "tool_search_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseToolSearchOutputItemParam>())
+                        ?.let { ResponseInputItem(toolSearchOutput = it, _json = json) }
+                        ?: ResponseInputItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ResponseInputItem(reasoning = it, _json = json)
@@ -1190,6 +1253,8 @@ private constructor(
                 value.webSearchCall != null -> generator.writeObject(value.webSearchCall)
                 value.functionCall != null -> generator.writeObject(value.functionCall)
                 value.functionCallOutput != null -> generator.writeObject(value.functionCallOutput)
+                value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
+                value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.compaction != null -> generator.writeObject(value.compaction)
                 value.imageGenerationCall != null ->
@@ -3443,6 +3508,613 @@ private constructor(
 
         override fun toString() =
             "FunctionCallOutput{callId=$callId, output=$output, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
+    }
+
+    class ToolSearchCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val arguments: JsonValue,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val callId: JsonField<String>,
+        private val execution: JsonField<Execution>,
+        private val status: JsonField<Status>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("arguments") @ExcludeMissing arguments: JsonValue = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("execution")
+            @ExcludeMissing
+            execution: JsonField<Execution> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(arguments, type, id, callId, execution, status, mutableMapOf())
+
+        /**
+         * The arguments supplied to the tool search call.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = toolSearchCall.arguments().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonValue = arguments
+
+        /**
+         * The item type. Always `tool_search_call`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("tool_search_call")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The unique ID of this tool search call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The unique ID of the tool search call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun callId(): Optional<String> = callId.getOptional("call_id")
+
+        /**
+         * Whether tool search was executed by the server or by the client.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun execution(): Optional<Execution> = execution.getOptional("execution")
+
+        /**
+         * The status of the tool search call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun status(): Optional<Status> = status.getOptional("status")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+        /**
+         * Returns the raw JSON value of [execution].
+         *
+         * Unlike [execution], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("execution")
+        @ExcludeMissing
+        fun _execution(): JsonField<Execution> = execution
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ToolSearchCall].
+             *
+             * The following fields are required:
+             * ```java
+             * .arguments()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ToolSearchCall]. */
+        class Builder internal constructor() {
+
+            private var arguments: JsonValue? = null
+            private var type: JsonValue = JsonValue.from("tool_search_call")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var callId: JsonField<String> = JsonMissing.of()
+            private var execution: JsonField<Execution> = JsonMissing.of()
+            private var status: JsonField<Status> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(toolSearchCall: ToolSearchCall) = apply {
+                arguments = toolSearchCall.arguments
+                type = toolSearchCall.type
+                id = toolSearchCall.id
+                callId = toolSearchCall.callId
+                execution = toolSearchCall.execution
+                status = toolSearchCall.status
+                additionalProperties = toolSearchCall.additionalProperties.toMutableMap()
+            }
+
+            /** The arguments supplied to the tool search call. */
+            fun arguments(arguments: JsonValue) = apply { this.arguments = arguments }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("tool_search_call")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /** The unique ID of this tool search call. */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The unique ID of the tool search call generated by the model. */
+            fun callId(callId: String?) = callId(JsonField.ofNullable(callId))
+
+            /** Alias for calling [Builder.callId] with `callId.orElse(null)`. */
+            fun callId(callId: Optional<String>) = callId(callId.getOrNull())
+
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+            /** Whether tool search was executed by the server or by the client. */
+            fun execution(execution: Execution) = execution(JsonField.of(execution))
+
+            /**
+             * Sets [Builder.execution] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.execution] with a well-typed [Execution] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun execution(execution: JsonField<Execution>) = apply { this.execution = execution }
+
+            /** The status of the tool search call. */
+            fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+            /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+            fun status(status: Optional<Status>) = status(status.getOrNull())
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ToolSearchCall].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .arguments()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ToolSearchCall =
+                ToolSearchCall(
+                    checkRequired("arguments", arguments),
+                    type,
+                    id,
+                    callId,
+                    execution,
+                    status,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ToolSearchCall = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _type().let {
+                if (it != JsonValue.from("tool_search_call")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            callId()
+            execution().ifPresent { it.validate() }
+            status().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            type.let { if (it == JsonValue.from("tool_search_call")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
+                (if (callId.asKnown().isPresent) 1 else 0) +
+                (execution.asKnown().getOrNull()?.validity() ?: 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Whether tool search was executed by the server or by the client. */
+        class Execution @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val SERVER = of("server")
+
+                @JvmField val CLIENT = of("client")
+
+                @JvmStatic fun of(value: String) = Execution(JsonField.of(value))
+            }
+
+            /** An enum containing [Execution]'s known values. */
+            enum class Known {
+                SERVER,
+                CLIENT,
+            }
+
+            /**
+             * An enum containing [Execution]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Execution] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                SERVER,
+                CLIENT,
+                /**
+                 * An enum member indicating that [Execution] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    SERVER -> Value.SERVER
+                    CLIENT -> Value.CLIENT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    SERVER -> Known.SERVER
+                    CLIENT -> Known.CLIENT
+                    else -> throw OpenAIInvalidDataException("Unknown Execution: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Execution = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Execution && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The status of the tool search call. */
+        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IN_PROGRESS = of("in_progress")
+
+                @JvmField val COMPLETED = of("completed")
+
+                @JvmField val INCOMPLETE = of("incomplete")
+
+                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+            }
+
+            /** An enum containing [Status]'s known values. */
+            enum class Known {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+            }
+
+            /**
+             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Status] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+                /**
+                 * An enum member indicating that [Status] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IN_PROGRESS -> Value.IN_PROGRESS
+                    COMPLETED -> Value.COMPLETED
+                    INCOMPLETE -> Value.INCOMPLETE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IN_PROGRESS -> Known.IN_PROGRESS
+                    COMPLETED -> Known.COMPLETED
+                    INCOMPLETE -> Known.INCOMPLETE
+                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ToolSearchCall &&
+                arguments == other.arguments &&
+                type == other.type &&
+                id == other.id &&
+                callId == other.callId &&
+                execution == other.execution &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(arguments, type, id, callId, execution, status, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ToolSearchCall{arguments=$arguments, type=$type, id=$id, callId=$callId, execution=$execution, status=$status, additionalProperties=$additionalProperties}"
     }
 
     /** An image generation request made by the model. */
