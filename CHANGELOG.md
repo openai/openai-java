@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.25.0 (2026-03-05)
+
+Full Changelog: [v4.24.1...v4.25.0](https://github.com/openai/openai-java/compare/v4.24.1...v4.25.0)
+
+### Features
+
+* **api:** gpt-5.4, tool search tool, and new computer tool ([18c8870](https://github.com/openai/openai-java/commit/18c8870b9f16b4fb2d87eb10d73797da3ecc6fdf))
+
+
+### Bug Fixes
+
+* **api:** allow unknown video seconds in responses ([82d67cb](https://github.com/openai/openai-java/commit/82d67cb396925dbe221cd9713afc414c0b9406ad))
+
+
+### Chores
+
+* **internal:** codegen related update ([42a435d](https://github.com/openai/openai-java/commit/42a435d6e939b6ecf1dc5866d5fce60f50b8b08b))
+
 ## 4.24.1 (2026-03-04)
 
 Full Changelog: [v4.24.0...v4.24.1](https://github.com/openai/openai-java/compare/v4.24.0...v4.24.1)
