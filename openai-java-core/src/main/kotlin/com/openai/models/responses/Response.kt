@@ -1336,10 +1336,10 @@ private constructor(
             addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
         /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
-        fun addTool(computer: ComputerUseTool) = addTool(Tool.ofComputer(computer))
+        fun addTool(computer: ComputerTool) = addTool(Tool.ofComputer(computer))
 
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
-        fun addTool(computerUsePreview: ComputerTool) =
+        fun addTool(computerUsePreview: ComputerUsePreviewTool) =
             addTool(Tool.ofComputerUsePreview(computerUsePreview))
 
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */

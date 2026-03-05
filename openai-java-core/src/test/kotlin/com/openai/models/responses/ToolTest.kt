@@ -157,7 +157,7 @@ internal class ToolTest {
 
     @Test
     fun ofComputer() {
-        val computer = ComputerUseTool.builder().build()
+        val computer = ComputerTool.builder().build()
 
         val tool = Tool.ofComputer(computer)
 
@@ -181,7 +181,7 @@ internal class ToolTest {
     @Test
     fun ofComputerRoundtrip() {
         val jsonMapper = jsonMapper()
-        val tool = Tool.ofComputer(ComputerUseTool.builder().build())
+        val tool = Tool.ofComputer(ComputerTool.builder().build())
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
@@ -192,10 +192,10 @@ internal class ToolTest {
     @Test
     fun ofComputerUsePreview() {
         val computerUsePreview =
-            ComputerTool.builder()
+            ComputerUsePreviewTool.builder()
                 .displayHeight(0L)
                 .displayWidth(0L)
-                .environment(ComputerTool.Environment.WINDOWS)
+                .environment(ComputerUsePreviewTool.Environment.WINDOWS)
                 .build()
 
         val tool = Tool.ofComputerUsePreview(computerUsePreview)
@@ -222,10 +222,10 @@ internal class ToolTest {
         val jsonMapper = jsonMapper()
         val tool =
             Tool.ofComputerUsePreview(
-                ComputerTool.builder()
+                ComputerUsePreviewTool.builder()
                     .displayHeight(0L)
                     .displayWidth(0L)
-                    .environment(ComputerTool.Environment.WINDOWS)
+                    .environment(ComputerUsePreviewTool.Environment.WINDOWS)
                     .build()
             )
 
