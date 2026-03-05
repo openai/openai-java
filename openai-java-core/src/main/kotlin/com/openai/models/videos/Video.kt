@@ -635,7 +635,9 @@ private constructor(
         progress()
         prompt()
         remixedFromVideoId()
-        seconds().validate()
+        // `seconds` can be either one of the known request enum values or an arbitrary
+        // stitched duration string in responses.
+        seconds()
         size().validate()
         status().validate()
         validated = true
