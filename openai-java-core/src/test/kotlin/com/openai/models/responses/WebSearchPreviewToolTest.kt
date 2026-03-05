@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,6 +15,7 @@ internal class WebSearchPreviewToolTest {
         val webSearchPreviewTool =
             WebSearchPreviewTool.builder()
                 .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                .addSearchContentType(WebSearchPreviewTool.SearchContentType.TEXT)
                 .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
                 .userLocation(
                     WebSearchPreviewTool.UserLocation.builder()
@@ -27,6 +29,8 @@ internal class WebSearchPreviewToolTest {
 
         assertThat(webSearchPreviewTool.type())
             .isEqualTo(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+        assertThat(webSearchPreviewTool.searchContentTypes().getOrNull())
+            .containsExactly(WebSearchPreviewTool.SearchContentType.TEXT)
         assertThat(webSearchPreviewTool.searchContextSize())
             .contains(WebSearchPreviewTool.SearchContextSize.LOW)
         assertThat(webSearchPreviewTool.userLocation())
@@ -46,6 +50,7 @@ internal class WebSearchPreviewToolTest {
         val webSearchPreviewTool =
             WebSearchPreviewTool.builder()
                 .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                .addSearchContentType(WebSearchPreviewTool.SearchContentType.TEXT)
                 .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
                 .userLocation(
                     WebSearchPreviewTool.UserLocation.builder()

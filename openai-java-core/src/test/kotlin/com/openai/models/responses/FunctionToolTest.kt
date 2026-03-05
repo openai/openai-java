@@ -21,6 +21,7 @@ internal class FunctionToolTest {
                         .build()
                 )
                 .strict(true)
+                .deferLoading(true)
                 .description("description")
                 .build()
 
@@ -32,6 +33,7 @@ internal class FunctionToolTest {
                     .build()
             )
         assertThat(functionTool.strict()).contains(true)
+        assertThat(functionTool.deferLoading()).contains(true)
         assertThat(functionTool.description()).contains("description")
     }
 
@@ -47,6 +49,7 @@ internal class FunctionToolTest {
                         .build()
                 )
                 .strict(true)
+                .deferLoading(true)
                 .description("description")
                 .build()
 

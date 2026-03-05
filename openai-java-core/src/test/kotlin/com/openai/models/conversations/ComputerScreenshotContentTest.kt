@@ -12,8 +12,14 @@ internal class ComputerScreenshotContentTest {
     @Test
     fun create() {
         val computerScreenshotContent =
-            ComputerScreenshotContent.builder().fileId("file_id").imageUrl("image_url").build()
+            ComputerScreenshotContent.builder()
+                .detail(ComputerScreenshotContent.Detail.LOW)
+                .fileId("file_id")
+                .imageUrl("image_url")
+                .build()
 
+        assertThat(computerScreenshotContent.detail())
+            .isEqualTo(ComputerScreenshotContent.Detail.LOW)
         assertThat(computerScreenshotContent.fileId()).contains("file_id")
         assertThat(computerScreenshotContent.imageUrl()).contains("image_url")
     }
@@ -22,7 +28,11 @@ internal class ComputerScreenshotContentTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val computerScreenshotContent =
-            ComputerScreenshotContent.builder().fileId("file_id").imageUrl("image_url").build()
+            ComputerScreenshotContent.builder()
+                .detail(ComputerScreenshotContent.Detail.LOW)
+                .fileId("file_id")
+                .imageUrl("image_url")
+                .build()
 
         val roundtrippedComputerScreenshotContent =
             jsonMapper.readValue(

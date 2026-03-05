@@ -452,6 +452,12 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(function: FunctionTool) = apply { paramsBuilder.addTool(function) }
 
         /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(namespace: NamespaceTool) = apply { paramsBuilder.addTool(namespace) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(search: ToolSearchTool) = apply { paramsBuilder.addTool(search) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
         @JvmOverloads
         fun addTool(
             functionParametersType: Class<*>,
@@ -465,6 +471,9 @@ class StructuredResponseCreateParams<T : Any>(
         fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
             paramsBuilder.addFileSearchTool(vectorStoreIds)
         }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(computer: ComputerUseTool) = apply { paramsBuilder.addTool(computer) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(webSearch: WebSearchTool) = apply { paramsBuilder.addTool(webSearch) }

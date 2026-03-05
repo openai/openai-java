@@ -32,6 +32,13 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.functionCall */
     fun functionCall(): Optional<ResponseFunctionToolCall> = rawOutputItem.functionCall()
 
+    /** @see ResponseOutputItem.toolSearchCall */
+    fun toolSearchCall(): Optional<ResponseToolSearchCall> = rawOutputItem.toolSearchCall()
+
+    /** @see ResponseOutputItem.toolSearchOutput */
+    fun toolSearchOutput(): Optional<ResponseToolSearchOutputItem> =
+        rawOutputItem.toolSearchOutput()
+
     /** @see ResponseOutputItem.webSearchCall */
     fun webSearchCall(): Optional<ResponseFunctionWebSearch> = rawOutputItem.webSearchCall()
 
@@ -92,6 +99,12 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isFunctionCall */
     fun isFunctionCall(): Boolean = rawOutputItem.isFunctionCall()
 
+    /** @see ResponseOutputItem.isToolSearchCall */
+    fun isToolSearchCall(): Boolean = rawOutputItem.isToolSearchCall()
+
+    /** @see ResponseOutputItem.isToolSearchOutput */
+    fun isToolSearchOutput(): Boolean = rawOutputItem.isToolSearchOutput()
+
     /** @see ResponseOutputItem.isWebSearchCall */
     fun isWebSearchCall(): Boolean = rawOutputItem.isWebSearchCall()
 
@@ -149,6 +162,12 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.asFunctionCall */
     fun asFunctionCall(): ResponseFunctionToolCall = rawOutputItem.asFunctionCall()
+
+    /** @see ResponseOutputItem.asToolSearchCall */
+    fun asToolSearchCall(): ResponseToolSearchCall = rawOutputItem.asToolSearchCall()
+
+    /** @see ResponseOutputItem.asToolSearchOutput */
+    fun asToolSearchOutput(): ResponseToolSearchOutputItem = rawOutputItem.asToolSearchOutput()
 
     /** @see ResponseOutputItem.asWebSearchCall */
     fun asWebSearchCall(): ResponseFunctionWebSearch = rawOutputItem.asWebSearchCall()
@@ -208,6 +227,8 @@ class StructuredResponseOutputItem<T : Any>(
             isMessage() -> visitor.visitMessage(asMessage())
             isFileSearchCall() -> visitor.visitFileSearchCall(asFileSearchCall())
             isFunctionCall() -> visitor.visitFunctionCall(asFunctionCall())
+            isToolSearchCall() -> visitor.visitToolSearchCall(asToolSearchCall())
+            isToolSearchOutput() -> visitor.visitToolSearchOutput(asToolSearchOutput())
             isWebSearchCall() -> visitor.visitWebSearchCall(asWebSearchCall())
             isComputerCall() -> visitor.visitComputerCall(asComputerCall())
             isReasoning() -> visitor.visitReasoning(asReasoning())
@@ -245,6 +266,14 @@ class StructuredResponseOutputItem<T : Any>(
 
                 override fun visitFunctionCall(functionCall: ResponseFunctionToolCall) {
                     functionCall.validate()
+                }
+
+                override fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall) {
+                    toolSearchCall.validate()
+                }
+
+                override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) {
+                    toolSearchOutput.validate()
                 }
 
                 override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) {
@@ -356,6 +385,12 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitFunctionCall */
         fun visitFunctionCall(functionCall: ResponseFunctionToolCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitToolSearchCall */
+        fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitToolSearchOutput */
+        fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
 
         /** @see ResponseOutputItem.Visitor.visitWebSearchCall */
         fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch): T

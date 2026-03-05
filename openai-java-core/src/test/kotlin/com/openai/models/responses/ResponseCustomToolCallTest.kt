@@ -17,12 +17,14 @@ internal class ResponseCustomToolCallTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .namespace("namespace")
                 .build()
 
         assertThat(responseCustomToolCall.callId()).isEqualTo("call_id")
         assertThat(responseCustomToolCall.input()).isEqualTo("input")
         assertThat(responseCustomToolCall.name()).isEqualTo("name")
         assertThat(responseCustomToolCall.id()).contains("id")
+        assertThat(responseCustomToolCall.namespace()).contains("namespace")
     }
 
     @Test
@@ -34,6 +36,7 @@ internal class ResponseCustomToolCallTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .namespace("namespace")
                 .build()
 
         val roundtrippedResponseCustomToolCall =

@@ -29,6 +29,7 @@ private constructor(
     private val parameters: JsonField<Parameters>,
     private val strict: JsonField<Boolean>,
     private val type: JsonValue,
+    private val deferLoading: JsonField<Boolean>,
     private val description: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -41,10 +42,13 @@ private constructor(
         parameters: JsonField<Parameters> = JsonMissing.of(),
         @JsonProperty("strict") @ExcludeMissing strict: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("defer_loading")
+        @ExcludeMissing
+        deferLoading: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("description")
         @ExcludeMissing
         description: JsonField<String> = JsonMissing.of(),
-    ) : this(name, parameters, strict, type, description, mutableMapOf())
+    ) : this(name, parameters, strict, type, deferLoading, description, mutableMapOf())
 
     /**
      * The name of the function to call.
@@ -84,6 +88,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * Whether this function is deferred and loaded via tool search.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
+
+    /**
      * A description of the function. Used by the model to determine whether or not to call the
      * function.
      *
@@ -114,6 +126,15 @@ private constructor(
      * Unlike [strict], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
+
+    /**
+     * Returns the raw JSON value of [deferLoading].
+     *
+     * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("defer_loading")
+    @ExcludeMissing
+    fun _deferLoading(): JsonField<Boolean> = deferLoading
 
     /**
      * Returns the raw JSON value of [description].
@@ -156,6 +177,7 @@ private constructor(
         private var parameters: JsonField<Parameters>? = null
         private var strict: JsonField<Boolean>? = null
         private var type: JsonValue = JsonValue.from("function")
+        private var deferLoading: JsonField<Boolean> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -165,6 +187,7 @@ private constructor(
             parameters = functionTool.parameters
             strict = functionTool.strict
             type = functionTool.type
+            deferLoading = functionTool.deferLoading
             description = functionTool.description
             additionalProperties = functionTool.additionalProperties.toMutableMap()
         }
@@ -230,6 +253,20 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Whether this function is deferred and loaded via tool search. */
+        fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
+
+        /**
+         * Sets [Builder.deferLoading] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deferLoading] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun deferLoading(deferLoading: JsonField<Boolean>) = apply {
+            this.deferLoading = deferLoading
+        }
+
         /**
          * A description of the function. Used by the model to determine whether or not to call the
          * function.
@@ -287,6 +324,7 @@ private constructor(
                 checkRequired("parameters", parameters),
                 checkRequired("strict", strict),
                 type,
+                deferLoading,
                 description,
                 additionalProperties.toMutableMap(),
             )
@@ -307,6 +345,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        deferLoading()
         description()
         validated = true
     }
@@ -330,6 +369,7 @@ private constructor(
             (parameters.asKnown().getOrNull()?.validity() ?: 0) +
             (if (strict.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("function")) 1 else 0 } +
+            (if (deferLoading.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0)
 
     /** A JSON schema object describing the parameters of the function. */
@@ -442,16 +482,25 @@ private constructor(
             parameters == other.parameters &&
             strict == other.strict &&
             type == other.type &&
+            deferLoading == other.deferLoading &&
             description == other.description &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(name, parameters, strict, type, description, additionalProperties)
+        Objects.hash(
+            name,
+            parameters,
+            strict,
+            type,
+            deferLoading,
+            description,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FunctionTool{name=$name, parameters=$parameters, strict=$strict, type=$type, description=$description, additionalProperties=$additionalProperties}"
+        "FunctionTool{name=$name, parameters=$parameters, strict=$strict, type=$type, deferLoading=$deferLoading, description=$description, additionalProperties=$additionalProperties}"
 }

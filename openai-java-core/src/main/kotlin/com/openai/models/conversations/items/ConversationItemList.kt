@@ -29,6 +29,8 @@ import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseReasoningItem
+import com.openai.models.responses.ResponseToolSearchCall
+import com.openai.models.responses.ResponseToolSearchOutputItem
 import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
@@ -242,6 +244,16 @@ private constructor(
          */
         fun addData(computerCallOutput: ResponseComputerToolCallOutputItem) =
             addData(ConversationItem.ofComputerCallOutput(computerCallOutput))
+
+        /** Alias for calling [addData] with `ConversationItem.ofToolSearchCall(toolSearchCall)`. */
+        fun addData(toolSearchCall: ResponseToolSearchCall) =
+            addData(ConversationItem.ofToolSearchCall(toolSearchCall))
+
+        /**
+         * Alias for calling [addData] with `ConversationItem.ofToolSearchOutput(toolSearchOutput)`.
+         */
+        fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
+            addData(ConversationItem.ofToolSearchOutput(toolSearchOutput))
 
         /** Alias for calling [addData] with `ConversationItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) =

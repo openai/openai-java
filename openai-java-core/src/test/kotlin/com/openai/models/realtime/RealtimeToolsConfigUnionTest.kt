@@ -60,6 +60,7 @@ internal class RealtimeToolsConfigUnionTest {
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeToolsConfigUnion.Mcp.ConnectorId.CONNECTOR_DROPBOX)
+                .deferLoading(true)
                 .headers(
                     RealtimeToolsConfigUnion.Mcp.Headers.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -104,6 +105,7 @@ internal class RealtimeToolsConfigUnionTest {
                     .allowedToolsOfMcp(listOf("string"))
                     .authorization("authorization")
                     .connectorId(RealtimeToolsConfigUnion.Mcp.ConnectorId.CONNECTOR_DROPBOX)
+                    .deferLoading(true)
                     .headers(
                         RealtimeToolsConfigUnion.Mcp.Headers.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))

@@ -13,12 +13,14 @@ internal class ResponseInputFileTest {
     fun create() {
         val responseInputFile =
             ResponseInputFile.builder()
+                .detail(ResponseInputFile.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file_id")
                 .fileUrl("file_url")
                 .filename("filename")
                 .build()
 
+        assertThat(responseInputFile.detail()).contains(ResponseInputFile.Detail.LOW)
         assertThat(responseInputFile.fileData()).contains("file_data")
         assertThat(responseInputFile.fileId()).contains("file_id")
         assertThat(responseInputFile.fileUrl()).contains("file_url")
@@ -30,6 +32,7 @@ internal class ResponseInputFileTest {
         val jsonMapper = jsonMapper()
         val responseInputFile =
             ResponseInputFile.builder()
+                .detail(ResponseInputFile.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file_id")
                 .fileUrl("file_url")

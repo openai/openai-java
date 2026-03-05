@@ -58,6 +58,7 @@ internal class InputTokenServiceAsyncTest {
                                     .build()
                             )
                             .strict(true)
+                            .deferLoading(true)
                             .description("description")
                             .build()
                     )

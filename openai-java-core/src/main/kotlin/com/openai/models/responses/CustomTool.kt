@@ -27,6 +27,7 @@ class CustomTool
 private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
+    private val deferLoading: JsonField<Boolean>,
     private val description: JsonField<String>,
     private val format: JsonField<CustomToolInputFormat>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -36,13 +37,16 @@ private constructor(
     private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("defer_loading")
+        @ExcludeMissing
+        deferLoading: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("description")
         @ExcludeMissing
         description: JsonField<String> = JsonMissing.of(),
         @JsonProperty("format")
         @ExcludeMissing
         format: JsonField<CustomToolInputFormat> = JsonMissing.of(),
-    ) : this(name, type, description, format, mutableMapOf())
+    ) : this(name, type, deferLoading, description, format, mutableMapOf())
 
     /**
      * The name of the custom tool, used to identify it in tool calls.
@@ -66,6 +70,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * Whether this tool should be deferred and discovered via tool search.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
+
+    /**
      * Optional description of the custom tool, used to provide more context.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -87,6 +99,15 @@ private constructor(
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /**
+     * Returns the raw JSON value of [deferLoading].
+     *
+     * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("defer_loading")
+    @ExcludeMissing
+    fun _deferLoading(): JsonField<Boolean> = deferLoading
 
     /**
      * Returns the raw JSON value of [description].
@@ -132,6 +153,7 @@ private constructor(
 
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("custom")
+        private var deferLoading: JsonField<Boolean> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
         private var format: JsonField<CustomToolInputFormat> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -140,6 +162,7 @@ private constructor(
         internal fun from(customTool: CustomTool) = apply {
             name = customTool.name
             type = customTool.type
+            deferLoading = customTool.deferLoading
             description = customTool.description
             format = customTool.format
             additionalProperties = customTool.additionalProperties.toMutableMap()
@@ -169,6 +192,20 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /** Whether this tool should be deferred and discovered via tool search. */
+        fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
+
+        /**
+         * Sets [Builder.deferLoading] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deferLoading] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun deferLoading(deferLoading: JsonField<Boolean>) = apply {
+            this.deferLoading = deferLoading
+        }
 
         /** Optional description of the custom tool, used to provide more context. */
         fun description(description: String) = description(JsonField.of(description))
@@ -236,6 +273,7 @@ private constructor(
             CustomTool(
                 checkRequired("name", name),
                 type,
+                deferLoading,
                 description,
                 format,
                 additionalProperties.toMutableMap(),
@@ -255,6 +293,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        deferLoading()
         description()
         format().ifPresent { it.validate() }
         validated = true
@@ -277,6 +316,7 @@ private constructor(
     internal fun validity(): Int =
         (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("custom")) 1 else 0 } +
+            (if (deferLoading.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0) +
             (format.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -288,17 +328,18 @@ private constructor(
         return other is CustomTool &&
             name == other.name &&
             type == other.type &&
+            deferLoading == other.deferLoading &&
             description == other.description &&
             format == other.format &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(name, type, description, format, additionalProperties)
+        Objects.hash(name, type, deferLoading, description, format, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CustomTool{name=$name, type=$type, description=$description, format=$format, additionalProperties=$additionalProperties}"
+        "CustomTool{name=$name, type=$type, deferLoading=$deferLoading, description=$description, format=$format, additionalProperties=$additionalProperties}"
 }

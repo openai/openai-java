@@ -40,7 +40,9 @@ private constructor(
      * Allowed values are:
      * - `file_search`
      * - `web_search_preview`
+     * - `computer`
      * - `computer_use_preview`
+     * - `computer_use`
      * - `code_interpreter`
      * - `image_generation`
      *
@@ -100,7 +102,9 @@ private constructor(
          * Allowed values are:
          * - `file_search`
          * - `web_search_preview`
+         * - `computer`
          * - `computer_use_preview`
+         * - `computer_use`
          * - `code_interpreter`
          * - `image_generation`
          */
@@ -182,7 +186,9 @@ private constructor(
      * Allowed values are:
      * - `file_search`
      * - `web_search_preview`
+     * - `computer`
      * - `computer_use_preview`
+     * - `computer_use`
      * - `code_interpreter`
      * - `image_generation`
      */
@@ -204,7 +210,11 @@ private constructor(
 
             @JvmField val WEB_SEARCH_PREVIEW = of("web_search_preview")
 
+            @JvmField val COMPUTER = of("computer")
+
             @JvmField val COMPUTER_USE_PREVIEW = of("computer_use_preview")
+
+            @JvmField val COMPUTER_USE = of("computer_use")
 
             @JvmField val WEB_SEARCH_PREVIEW_2025_03_11 = of("web_search_preview_2025_03_11")
 
@@ -219,7 +229,9 @@ private constructor(
         enum class Known {
             FILE_SEARCH,
             WEB_SEARCH_PREVIEW,
+            COMPUTER,
             COMPUTER_USE_PREVIEW,
+            COMPUTER_USE,
             WEB_SEARCH_PREVIEW_2025_03_11,
             IMAGE_GENERATION,
             CODE_INTERPRETER,
@@ -237,7 +249,9 @@ private constructor(
         enum class Value {
             FILE_SEARCH,
             WEB_SEARCH_PREVIEW,
+            COMPUTER,
             COMPUTER_USE_PREVIEW,
+            COMPUTER_USE,
             WEB_SEARCH_PREVIEW_2025_03_11,
             IMAGE_GENERATION,
             CODE_INTERPRETER,
@@ -256,7 +270,9 @@ private constructor(
             when (this) {
                 FILE_SEARCH -> Value.FILE_SEARCH
                 WEB_SEARCH_PREVIEW -> Value.WEB_SEARCH_PREVIEW
+                COMPUTER -> Value.COMPUTER
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
+                COMPUTER_USE -> Value.COMPUTER_USE
                 WEB_SEARCH_PREVIEW_2025_03_11 -> Value.WEB_SEARCH_PREVIEW_2025_03_11
                 IMAGE_GENERATION -> Value.IMAGE_GENERATION
                 CODE_INTERPRETER -> Value.CODE_INTERPRETER
@@ -276,7 +292,9 @@ private constructor(
             when (this) {
                 FILE_SEARCH -> Known.FILE_SEARCH
                 WEB_SEARCH_PREVIEW -> Known.WEB_SEARCH_PREVIEW
+                COMPUTER -> Known.COMPUTER
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
+                COMPUTER_USE -> Known.COMPUTER_USE
                 WEB_SEARCH_PREVIEW_2025_03_11 -> Known.WEB_SEARCH_PREVIEW_2025_03_11
                 IMAGE_GENERATION -> Known.IMAGE_GENERATION
                 CODE_INTERPRETER -> Known.CODE_INTERPRETER

@@ -19,6 +19,8 @@ import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseItem
 import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseToolSearchCall
+import com.openai.models.responses.ResponseToolSearchOutputItem
 import com.openai.services.blocking.responses.InputItemService
 import java.util.Objects
 import java.util.Optional
@@ -89,6 +91,14 @@ private constructor(
                             override fun visitFunctionCallOutput(
                                 functionCallOutput: ResponseFunctionToolCallOutputItem
                             ): Optional<String> = functionCallOutput._id().getOptional("id")
+
+                            override fun visitToolSearchCall(
+                                toolSearchCall: ResponseToolSearchCall
+                            ): Optional<String> = toolSearchCall._id().getOptional("id")
+
+                            override fun visitToolSearchOutput(
+                                toolSearchOutput: ResponseToolSearchOutputItem
+                            ): Optional<String> = toolSearchOutput._id().getOptional("id")
 
                             override fun visitImageGenerationCall(
                                 imageGenerationCall: ResponseItem.ImageGenerationCall

@@ -1,6 +1,7 @@
 package com.openai.models.responses
 
 import com.openai.core.DelegationReadTestCase
+import com.openai.core.JsonValue
 import com.openai.core.LIST
 import com.openai.core.OPTIONAL
 import com.openai.core.STRING
@@ -40,6 +41,28 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val FUNCTION_TOOL_CALL =
             ResponseFunctionToolCall.builder().arguments(STRING).callId(STRING).name(STRING).build()
+        private val TOOL_SEARCH_CALL =
+            ResponseToolSearchCall.builder()
+                .id(STRING)
+                .arguments(JsonValue.from(mapOf<String, Any>()))
+                .callId(STRING)
+                .execution(ResponseToolSearchCall.Execution.SERVER)
+                .status(ResponseToolSearchCall.Status.COMPLETED)
+                .build()
+        private val TOOL_SEARCH_OUTPUT =
+            ResponseToolSearchOutputItem.builder()
+                .id(STRING)
+                .callId(STRING)
+                .execution(ResponseToolSearchOutputItem.Execution.SERVER)
+                .status(ResponseToolSearchOutputItem.Status.COMPLETED)
+                .addTool(
+                    FunctionTool.builder()
+                        .name(STRING)
+                        .parameters(FunctionTool.Parameters.builder().build())
+                        .strict(false)
+                        .build()
+                )
+                .build()
         private val FUNCTION_WEB_SEARCH =
             ResponseFunctionWebSearch.builder()
                 .id(STRING)
@@ -176,6 +199,8 @@ internal class StructuredResponseOutputItemTest {
                 // `message()` is a special case and has its own test function.
                 DelegationReadTestCase("fileSearchCall", OPTIONAL),
                 DelegationReadTestCase("functionCall", OPTIONAL),
+                DelegationReadTestCase("toolSearchCall", OPTIONAL),
+                DelegationReadTestCase("toolSearchOutput", OPTIONAL),
                 DelegationReadTestCase("webSearchCall", OPTIONAL),
                 DelegationReadTestCase("computerCall", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
@@ -192,6 +217,10 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isFileSearchCall", false),
                 DelegationReadTestCase("isFunctionCall", true),
                 DelegationReadTestCase("isFunctionCall", false),
+                DelegationReadTestCase("isToolSearchCall", true),
+                DelegationReadTestCase("isToolSearchCall", false),
+                DelegationReadTestCase("isToolSearchOutput", true),
+                DelegationReadTestCase("isToolSearchOutput", false),
                 DelegationReadTestCase("isWebSearchCall", true),
                 DelegationReadTestCase("isWebSearchCall", false),
                 DelegationReadTestCase("isComputerCall", true),
@@ -213,6 +242,8 @@ internal class StructuredResponseOutputItemTest {
                 // `asMessage()` is a special case and has its own test function.
                 DelegationReadTestCase("asFileSearchCall", FILE_SEARCH_TOOL_CALL),
                 DelegationReadTestCase("asFunctionCall", FUNCTION_TOOL_CALL),
+                DelegationReadTestCase("asToolSearchCall", TOOL_SEARCH_CALL),
+                DelegationReadTestCase("asToolSearchOutput", TOOL_SEARCH_OUTPUT),
                 DelegationReadTestCase("asWebSearchCall", FUNCTION_WEB_SEARCH),
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
                 DelegationReadTestCase("asReasoning", REASONING_ITEM),
@@ -256,18 +287,24 @@ internal class StructuredResponseOutputItemTest {
             "asMcpApprovalRequest",
             "asMcpCall",
             "asMcpListTools",
+            "asToolSearchCall",
+            "asToolSearchOutput",
             "codeInterpreterCall",
             "imageGenerationCall",
             "localShellCall",
             "mcpApprovalRequest",
             "mcpCall",
             "mcpListTools",
+            "toolSearchCall",
+            "toolSearchOutput",
             "isCodeInterpreterCall",
             "isImageGenerationCall",
             "isLocalShellCall",
             "isMcpApprovalRequest",
             "isMcpCall",
             "isMcpListTools",
+            "isToolSearchCall",
+            "isToolSearchOutput",
         )
     }
 
@@ -300,22 +337,30 @@ internal class StructuredResponseOutputItemTest {
                     "visitMcpCall",
                     "visitMcpListTools",
                     "visitLocalShellCall",
+                    "visitToolSearchCall",
+                    "visitToolSearchOutput",
                     // All the functions added for new tools:
                     "asCodeInterpreterCall",
                     "asImageGenerationCall",
                     "asMcpApprovalRequest",
                     "asMcpCall",
                     "asMcpListTools",
+                    "asToolSearchCall",
+                    "asToolSearchOutput",
                     "codeInterpreterCall",
                     "imageGenerationCall",
                     "mcpApprovalRequest",
                     "mcpCall",
                     "mcpListTools",
+                    "toolSearchCall",
+                    "toolSearchOutput",
                     "isCodeInterpreterCall",
                     "isImageGenerationCall",
                     "isMcpApprovalRequest",
                     "isMcpCall",
                     "isMcpListTools",
+                    "isToolSearchCall",
+                    "isToolSearchOutput",
                 ),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
