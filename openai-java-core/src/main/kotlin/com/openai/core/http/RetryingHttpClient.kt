@@ -214,13 +214,8 @@ private constructor(
                     }
             }
             ?.let { retryAfterNanos ->
-                // If the API asks us to wait a certain amount of time (and it's a reasonable
-                // amount), just
-                // do what it says.
-                val retryAfter = Duration.ofNanos(retryAfterNanos.toLong())
-                if (retryAfter in Duration.ofNanos(0)..Duration.ofMinutes(1)) {
-                    return retryAfter
-                }
+                // If the API asks us to wait a certain amount of time, do what it says.
+                return Duration.ofNanos(retryAfterNanos.toLong())
             }
 
         // Apply exponential backoff, but not more than the max.
