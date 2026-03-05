@@ -38,8 +38,8 @@ class Tool
 private constructor(
     private val function: FunctionTool? = null,
     private val fileSearch: FileSearchTool? = null,
-    private val computer: ComputerUseTool? = null,
-    private val computerUsePreview: ComputerTool? = null,
+    private val computer: ComputerTool? = null,
+    private val computerUsePreview: ComputerUsePreviewTool? = null,
     private val webSearch: WebSearchTool? = null,
     private val mcp: Mcp? = null,
     private val codeInterpreter: CodeInterpreter? = null,
@@ -70,13 +70,14 @@ private constructor(
      * A tool that controls a virtual computer. Learn more about the
      * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
      */
-    fun computer(): Optional<ComputerUseTool> = Optional.ofNullable(computer)
+    fun computer(): Optional<ComputerTool> = Optional.ofNullable(computer)
 
     /**
      * A tool that controls a virtual computer. Learn more about the
      * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
      */
-    fun computerUsePreview(): Optional<ComputerTool> = Optional.ofNullable(computerUsePreview)
+    fun computerUsePreview(): Optional<ComputerUsePreviewTool> =
+        Optional.ofNullable(computerUsePreview)
 
     /**
      * Search the Internet for sources related to the prompt. Learn more about the
@@ -169,13 +170,14 @@ private constructor(
      * A tool that controls a virtual computer. Learn more about the
      * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
      */
-    fun asComputer(): ComputerUseTool = computer.getOrThrow("computer")
+    fun asComputer(): ComputerTool = computer.getOrThrow("computer")
 
     /**
      * A tool that controls a virtual computer. Learn more about the
      * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
      */
-    fun asComputerUsePreview(): ComputerTool = computerUsePreview.getOrThrow("computerUsePreview")
+    fun asComputerUsePreview(): ComputerUsePreviewTool =
+        computerUsePreview.getOrThrow("computerUsePreview")
 
     /**
      * Search the Internet for sources related to the prompt. Learn more about the
@@ -261,11 +263,11 @@ private constructor(
                     fileSearch.validate()
                 }
 
-                override fun visitComputer(computer: ComputerUseTool) {
+                override fun visitComputer(computer: ComputerTool) {
                     computer.validate()
                 }
 
-                override fun visitComputerUsePreview(computerUsePreview: ComputerTool) {
+                override fun visitComputerUsePreview(computerUsePreview: ComputerUsePreviewTool) {
                     computerUsePreview.validate()
                 }
 
@@ -344,9 +346,9 @@ private constructor(
 
                 override fun visitFileSearch(fileSearch: FileSearchTool) = fileSearch.validity()
 
-                override fun visitComputer(computer: ComputerUseTool) = computer.validity()
+                override fun visitComputer(computer: ComputerTool) = computer.validity()
 
-                override fun visitComputerUsePreview(computerUsePreview: ComputerTool) =
+                override fun visitComputerUsePreview(computerUsePreview: ComputerUsePreviewTool) =
                     computerUsePreview.validity()
 
                 override fun visitWebSearch(webSearch: WebSearchTool) = webSearch.validity()
@@ -462,14 +464,14 @@ private constructor(
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
-        @JvmStatic fun ofComputer(computer: ComputerUseTool) = Tool(computer = computer)
+        @JvmStatic fun ofComputer(computer: ComputerTool) = Tool(computer = computer)
 
         /**
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
         @JvmStatic
-        fun ofComputerUsePreview(computerUsePreview: ComputerTool) =
+        fun ofComputerUsePreview(computerUsePreview: ComputerUsePreviewTool) =
             Tool(computerUsePreview = computerUsePreview)
 
         /**
@@ -545,13 +547,13 @@ private constructor(
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
-        fun visitComputer(computer: ComputerUseTool): T
+        fun visitComputer(computer: ComputerTool): T
 
         /**
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
-        fun visitComputerUsePreview(computerUsePreview: ComputerTool): T
+        fun visitComputerUsePreview(computerUsePreview: ComputerUsePreviewTool): T
 
         /**
          * Search the Internet for sources related to the prompt. Learn more about the
@@ -631,12 +633,12 @@ private constructor(
                     } ?: Tool(_json = json)
                 }
                 "computer" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ComputerUseTool>())?.let {
+                    return tryDeserialize(node, jacksonTypeRef<ComputerTool>())?.let {
                         Tool(computer = it, _json = json)
                     } ?: Tool(_json = json)
                 }
                 "computer_use_preview" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ComputerTool>())?.let {
+                    return tryDeserialize(node, jacksonTypeRef<ComputerUsePreviewTool>())?.let {
                         Tool(computerUsePreview = it, _json = json)
                     } ?: Tool(_json = json)
                 }

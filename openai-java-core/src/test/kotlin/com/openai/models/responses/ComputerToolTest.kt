@@ -11,27 +11,13 @@ internal class ComputerToolTest {
 
     @Test
     fun create() {
-        val computerTool =
-            ComputerTool.builder()
-                .displayHeight(0L)
-                .displayWidth(0L)
-                .environment(ComputerTool.Environment.WINDOWS)
-                .build()
-
-        assertThat(computerTool.displayHeight()).isEqualTo(0L)
-        assertThat(computerTool.displayWidth()).isEqualTo(0L)
-        assertThat(computerTool.environment()).isEqualTo(ComputerTool.Environment.WINDOWS)
+        val computerTool = ComputerTool.builder().build()
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val computerTool =
-            ComputerTool.builder()
-                .displayHeight(0L)
-                .displayWidth(0L)
-                .environment(ComputerTool.Environment.WINDOWS)
-                .build()
+        val computerTool = ComputerTool.builder().build()
 
         val roundtrippedComputerTool =
             jsonMapper.readValue(

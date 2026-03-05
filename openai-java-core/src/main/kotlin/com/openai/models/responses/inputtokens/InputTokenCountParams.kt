@@ -33,7 +33,7 @@ import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatText
 import com.openai.models.responses.ApplyPatchTool
 import com.openai.models.responses.ComputerTool
-import com.openai.models.responses.ComputerUseTool
+import com.openai.models.responses.ComputerUsePreviewTool
 import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionShellTool
@@ -576,10 +576,12 @@ private constructor(
         }
 
         /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
-        fun addTool(computer: ComputerUseTool) = apply { body.addTool(computer) }
+        fun addTool(computer: ComputerTool) = apply { body.addTool(computer) }
 
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
-        fun addTool(computerUsePreview: ComputerTool) = apply { body.addTool(computerUsePreview) }
+        fun addTool(computerUsePreview: ComputerUsePreviewTool) = apply {
+            body.addTool(computerUsePreview)
+        }
 
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
         fun addTool(webSearch: WebSearchTool) = apply { body.addTool(webSearch) }
@@ -1417,10 +1419,10 @@ private constructor(
                 addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
             /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
-            fun addTool(computer: ComputerUseTool) = addTool(Tool.ofComputer(computer))
+            fun addTool(computer: ComputerTool) = addTool(Tool.ofComputer(computer))
 
             /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
-            fun addTool(computerUsePreview: ComputerTool) =
+            fun addTool(computerUsePreview: ComputerUsePreviewTool) =
                 addTool(Tool.ofComputerUsePreview(computerUsePreview))
 
             /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
