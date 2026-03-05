@@ -13,9 +13,15 @@ internal class CustomToolTest {
     @Test
     fun create() {
         val customTool =
-            CustomTool.builder().name("name").description("description").formatText().build()
+            CustomTool.builder()
+                .name("name")
+                .deferLoading(true)
+                .description("description")
+                .formatText()
+                .build()
 
         assertThat(customTool.name()).isEqualTo("name")
+        assertThat(customTool.deferLoading()).contains(true)
         assertThat(customTool.description()).contains("description")
         assertThat(customTool.format()).contains(CustomToolInputFormat.ofText())
     }
@@ -24,7 +30,12 @@ internal class CustomToolTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val customTool =
-            CustomTool.builder().name("name").description("description").formatText().build()
+            CustomTool.builder()
+                .name("name")
+                .deferLoading(true)
+                .description("description")
+                .formatText()
+                .build()
 
         val roundtrippedCustomTool =
             jsonMapper.readValue(

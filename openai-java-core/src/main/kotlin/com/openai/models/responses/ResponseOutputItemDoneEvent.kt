@@ -180,6 +180,16 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [item] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`. */
+        fun item(toolSearchCall: ResponseToolSearchCall) =
+            item(ResponseOutputItem.ofToolSearchCall(toolSearchCall))
+
+        /**
+         * Alias for calling [item] with `ResponseOutputItem.ofToolSearchOutput(toolSearchOutput)`.
+         */
+        fun item(toolSearchOutput: ResponseToolSearchOutputItem) =
+            item(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun item(compaction: ResponseCompactionItem) =
             item(ResponseOutputItem.ofCompaction(compaction))

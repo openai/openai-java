@@ -1557,6 +1557,9 @@ private constructor(
         fun addFileSearchTool(vectorStoreIds: List<String>) =
             addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
+        /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
+        fun addTool(computer: ComputerUseTool) = addTool(Tool.ofComputer(computer))
+
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) =
             addTool(Tool.ofComputerUsePreview(computerUsePreview))
@@ -1633,6 +1636,12 @@ private constructor(
          * ```
          */
         fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
+
+        /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
+        fun addTool(namespace: NamespaceTool) = addTool(Tool.ofNamespace(namespace))
+
+        /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
+        fun addTool(search: ToolSearchTool) = addTool(Tool.ofSearch(search))
 
         /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
         fun addTool(webSearchPreview: WebSearchPreviewTool) =

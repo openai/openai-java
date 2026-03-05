@@ -58,6 +58,7 @@ internal class InputTokenServiceTest {
                                     .build()
                             )
                             .strict(true)
+                            .deferLoading(true)
                             .description("description")
                             .build()
                     )

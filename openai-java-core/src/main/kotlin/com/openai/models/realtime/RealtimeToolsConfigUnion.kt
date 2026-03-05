@@ -234,6 +234,7 @@ private constructor(
         private val allowedTools: JsonField<AllowedTools>,
         private val authorization: JsonField<String>,
         private val connectorId: JsonField<ConnectorId>,
+        private val deferLoading: JsonField<Boolean>,
         private val headers: JsonField<Headers>,
         private val requireApproval: JsonField<RequireApproval>,
         private val serverDescription: JsonField<String>,
@@ -256,6 +257,9 @@ private constructor(
             @JsonProperty("connector_id")
             @ExcludeMissing
             connectorId: JsonField<ConnectorId> = JsonMissing.of(),
+            @JsonProperty("defer_loading")
+            @ExcludeMissing
+            deferLoading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("headers") @ExcludeMissing headers: JsonField<Headers> = JsonMissing.of(),
             @JsonProperty("require_approval")
             @ExcludeMissing
@@ -272,6 +276,7 @@ private constructor(
             allowedTools,
             authorization,
             connectorId,
+            deferLoading,
             headers,
             requireApproval,
             serverDescription,
@@ -337,6 +342,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
+
+        /**
+         * Whether this MCP tool is deferred and discovered via tool search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
 
         /**
          * Optional HTTP headers to send to the MCP server. Use for authentication or other
@@ -412,6 +425,16 @@ private constructor(
         fun _connectorId(): JsonField<ConnectorId> = connectorId
 
         /**
+         * Returns the raw JSON value of [deferLoading].
+         *
+         * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("defer_loading")
+        @ExcludeMissing
+        fun _deferLoading(): JsonField<Boolean> = deferLoading
+
+        /**
          * Returns the raw JSON value of [headers].
          *
          * Unlike [headers], this method doesn't throw if the JSON field has an unexpected type.
@@ -478,6 +501,7 @@ private constructor(
             private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
             private var authorization: JsonField<String> = JsonMissing.of()
             private var connectorId: JsonField<ConnectorId> = JsonMissing.of()
+            private var deferLoading: JsonField<Boolean> = JsonMissing.of()
             private var headers: JsonField<Headers> = JsonMissing.of()
             private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
             private var serverDescription: JsonField<String> = JsonMissing.of()
@@ -491,6 +515,7 @@ private constructor(
                 allowedTools = mcp.allowedTools
                 authorization = mcp.authorization
                 connectorId = mcp.connectorId
+                deferLoading = mcp.deferLoading
                 headers = mcp.headers
                 requireApproval = mcp.requireApproval
                 serverDescription = mcp.serverDescription
@@ -598,6 +623,20 @@ private constructor(
              */
             fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
                 this.connectorId = connectorId
+            }
+
+            /** Whether this MCP tool is deferred and discovered via tool search. */
+            fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
+
+            /**
+             * Sets [Builder.deferLoading] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.deferLoading] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun deferLoading(deferLoading: JsonField<Boolean>) = apply {
+                this.deferLoading = deferLoading
             }
 
             /**
@@ -718,6 +757,7 @@ private constructor(
                     allowedTools,
                     authorization,
                     connectorId,
+                    deferLoading,
                     headers,
                     requireApproval,
                     serverDescription,
@@ -742,6 +782,7 @@ private constructor(
             allowedTools().ifPresent { it.validate() }
             authorization()
             connectorId().ifPresent { it.validate() }
+            deferLoading()
             headers().ifPresent { it.validate() }
             requireApproval().ifPresent { it.validate() }
             serverDescription()
@@ -770,6 +811,7 @@ private constructor(
                 (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (authorization.asKnown().isPresent) 1 else 0) +
                 (connectorId.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (deferLoading.asKnown().isPresent) 1 else 0) +
                 (headers.asKnown().getOrNull()?.validity() ?: 0) +
                 (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (serverDescription.asKnown().isPresent) 1 else 0) +
@@ -2507,6 +2549,7 @@ private constructor(
                 allowedTools == other.allowedTools &&
                 authorization == other.authorization &&
                 connectorId == other.connectorId &&
+                deferLoading == other.deferLoading &&
                 headers == other.headers &&
                 requireApproval == other.requireApproval &&
                 serverDescription == other.serverDescription &&
@@ -2521,6 +2564,7 @@ private constructor(
                 allowedTools,
                 authorization,
                 connectorId,
+                deferLoading,
                 headers,
                 requireApproval,
                 serverDescription,
@@ -2532,6 +2576,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mcp{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
+            "Mcp{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
     }
 }

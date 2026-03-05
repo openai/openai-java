@@ -1274,6 +1274,9 @@ private constructor(
             body.addFileSearchTool(vectorStoreIds)
         }
 
+        /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
+        fun addTool(computer: ComputerUseTool) = apply { body.addTool(computer) }
+
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) = apply { body.addTool(computerUsePreview) }
 
@@ -1343,6 +1346,12 @@ private constructor(
          * ```
          */
         fun addCustomTool(name: String) = apply { body.addCustomTool(name) }
+
+        /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
+        fun addTool(namespace: NamespaceTool) = apply { body.addTool(namespace) }
+
+        /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
+        fun addTool(search: ToolSearchTool) = apply { body.addTool(search) }
 
         /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
         fun addTool(webSearchPreview: WebSearchPreviewTool) = apply {
@@ -3065,6 +3074,9 @@ private constructor(
             fun addFileSearchTool(vectorStoreIds: List<String>) =
                 addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
+            /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
+            fun addTool(computer: ComputerUseTool) = addTool(Tool.ofComputer(computer))
+
             /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
             fun addTool(computerUsePreview: ComputerTool) =
                 addTool(Tool.ofComputerUsePreview(computerUsePreview))
@@ -3143,6 +3155,12 @@ private constructor(
              * ```
              */
             fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
+
+            /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
+            fun addTool(namespace: NamespaceTool) = addTool(Tool.ofNamespace(namespace))
+
+            /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
+            fun addTool(search: ToolSearchTool) = addTool(Tool.ofSearch(search))
 
             /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
             fun addTool(webSearchPreview: WebSearchPreviewTool) =

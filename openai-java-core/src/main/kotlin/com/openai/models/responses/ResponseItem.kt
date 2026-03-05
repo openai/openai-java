@@ -44,6 +44,8 @@ private constructor(
     private val webSearchCall: ResponseFunctionWebSearch? = null,
     private val functionCall: ResponseFunctionToolCallItem? = null,
     private val functionCallOutput: ResponseFunctionToolCallOutputItem? = null,
+    private val toolSearchCall: ResponseToolSearchCall? = null,
+    private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val imageGenerationCall: ImageGenerationCall? = null,
     private val codeInterpreterCall: ResponseCodeInterpreterToolCall? = null,
     private val localShellCall: LocalShellCall? = null,
@@ -99,6 +101,11 @@ private constructor(
 
     fun functionCallOutput(): Optional<ResponseFunctionToolCallOutputItem> =
         Optional.ofNullable(functionCallOutput)
+
+    fun toolSearchCall(): Optional<ResponseToolSearchCall> = Optional.ofNullable(toolSearchCall)
+
+    fun toolSearchOutput(): Optional<ResponseToolSearchOutputItem> =
+        Optional.ofNullable(toolSearchOutput)
 
     /** An image generation request made by the model. */
     fun imageGenerationCall(): Optional<ImageGenerationCall> =
@@ -157,6 +164,10 @@ private constructor(
     fun isFunctionCall(): Boolean = functionCall != null
 
     fun isFunctionCallOutput(): Boolean = functionCallOutput != null
+
+    fun isToolSearchCall(): Boolean = toolSearchCall != null
+
+    fun isToolSearchOutput(): Boolean = toolSearchOutput != null
 
     fun isImageGenerationCall(): Boolean = imageGenerationCall != null
 
@@ -223,6 +234,11 @@ private constructor(
     fun asFunctionCallOutput(): ResponseFunctionToolCallOutputItem =
         functionCallOutput.getOrThrow("functionCallOutput")
 
+    fun asToolSearchCall(): ResponseToolSearchCall = toolSearchCall.getOrThrow("toolSearchCall")
+
+    fun asToolSearchOutput(): ResponseToolSearchOutputItem =
+        toolSearchOutput.getOrThrow("toolSearchOutput")
+
     /** An image generation request made by the model. */
     fun asImageGenerationCall(): ImageGenerationCall =
         imageGenerationCall.getOrThrow("imageGenerationCall")
@@ -280,6 +296,8 @@ private constructor(
             webSearchCall != null -> visitor.visitWebSearchCall(webSearchCall)
             functionCall != null -> visitor.visitFunctionCall(functionCall)
             functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
+            toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
+            toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
             codeInterpreterCall != null -> visitor.visitCodeInterpreterCall(codeInterpreterCall)
             localShellCall != null -> visitor.visitLocalShellCall(localShellCall)
@@ -342,6 +360,14 @@ private constructor(
                     functionCallOutput: ResponseFunctionToolCallOutputItem
                 ) {
                     functionCallOutput.validate()
+                }
+
+                override fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall) {
+                    toolSearchCall.validate()
+                }
+
+                override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) {
+                    toolSearchOutput.validate()
                 }
 
                 override fun visitImageGenerationCall(imageGenerationCall: ImageGenerationCall) {
@@ -447,6 +473,12 @@ private constructor(
                     functionCallOutput: ResponseFunctionToolCallOutputItem
                 ) = functionCallOutput.validity()
 
+                override fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall) =
+                    toolSearchCall.validity()
+
+                override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
+                    toolSearchOutput.validity()
+
                 override fun visitImageGenerationCall(imageGenerationCall: ImageGenerationCall) =
                     imageGenerationCall.validity()
 
@@ -502,6 +534,8 @@ private constructor(
             webSearchCall == other.webSearchCall &&
             functionCall == other.functionCall &&
             functionCallOutput == other.functionCallOutput &&
+            toolSearchCall == other.toolSearchCall &&
+            toolSearchOutput == other.toolSearchOutput &&
             imageGenerationCall == other.imageGenerationCall &&
             codeInterpreterCall == other.codeInterpreterCall &&
             localShellCall == other.localShellCall &&
@@ -526,6 +560,8 @@ private constructor(
             webSearchCall,
             functionCall,
             functionCallOutput,
+            toolSearchCall,
+            toolSearchOutput,
             imageGenerationCall,
             codeInterpreterCall,
             localShellCall,
@@ -552,6 +588,8 @@ private constructor(
             webSearchCall != null -> "ResponseItem{webSearchCall=$webSearchCall}"
             functionCall != null -> "ResponseItem{functionCall=$functionCall}"
             functionCallOutput != null -> "ResponseItem{functionCallOutput=$functionCallOutput}"
+            toolSearchCall != null -> "ResponseItem{toolSearchCall=$toolSearchCall}"
+            toolSearchOutput != null -> "ResponseItem{toolSearchOutput=$toolSearchOutput}"
             imageGenerationCall != null -> "ResponseItem{imageGenerationCall=$imageGenerationCall}"
             codeInterpreterCall != null -> "ResponseItem{codeInterpreterCall=$codeInterpreterCall}"
             localShellCall != null -> "ResponseItem{localShellCall=$localShellCall}"
@@ -624,6 +662,14 @@ private constructor(
         @JvmStatic
         fun ofFunctionCallOutput(functionCallOutput: ResponseFunctionToolCallOutputItem) =
             ResponseItem(functionCallOutput = functionCallOutput)
+
+        @JvmStatic
+        fun ofToolSearchCall(toolSearchCall: ResponseToolSearchCall) =
+            ResponseItem(toolSearchCall = toolSearchCall)
+
+        @JvmStatic
+        fun ofToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
+            ResponseItem(toolSearchOutput = toolSearchOutput)
 
         /** An image generation request made by the model. */
         @JvmStatic
@@ -724,6 +770,10 @@ private constructor(
         fun visitFunctionCall(functionCall: ResponseFunctionToolCallItem): T
 
         fun visitFunctionCallOutput(functionCallOutput: ResponseFunctionToolCallOutputItem): T
+
+        fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall): T
+
+        fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
 
         /** An image generation request made by the model. */
         fun visitImageGenerationCall(imageGenerationCall: ImageGenerationCall): T
@@ -843,6 +893,16 @@ private constructor(
                         ?.let { ResponseItem(functionCallOutput = it, _json = json) }
                         ?: ResponseItem(_json = json)
                 }
+                "tool_search_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseToolSearchCall>())?.let {
+                        ResponseItem(toolSearchCall = it, _json = json)
+                    } ?: ResponseItem(_json = json)
+                }
+                "tool_search_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseToolSearchOutputItem>())
+                        ?.let { ResponseItem(toolSearchOutput = it, _json = json) }
+                        ?: ResponseItem(_json = json)
+                }
                 "image_generation_call" -> {
                     return tryDeserialize(node, jacksonTypeRef<ImageGenerationCall>())?.let {
                         ResponseItem(imageGenerationCall = it, _json = json)
@@ -930,6 +990,8 @@ private constructor(
                 value.webSearchCall != null -> generator.writeObject(value.webSearchCall)
                 value.functionCall != null -> generator.writeObject(value.functionCall)
                 value.functionCallOutput != null -> generator.writeObject(value.functionCallOutput)
+                value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
+                value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.imageGenerationCall != null ->
                     generator.writeObject(value.imageGenerationCall)
                 value.codeInterpreterCall != null ->

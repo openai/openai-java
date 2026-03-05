@@ -7,6 +7,8 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.conversations.Message
+import com.openai.models.responses.ComputerAction
+import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
@@ -24,6 +26,8 @@ import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseLocalEnvironment
 import com.openai.models.responses.ResponseReasoningItem
+import com.openai.models.responses.ResponseToolSearchCall
+import com.openai.models.responses.ResponseToolSearchOutputItem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -52,6 +56,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -98,6 +104,7 @@ internal class ConversationItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 
@@ -111,6 +118,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -137,6 +146,7 @@ internal class ConversationItemTest {
                     .callId("call_id")
                     .name("name")
                     .id("id")
+                    .namespace("namespace")
                     .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                     .build()
             )
@@ -170,6 +180,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -240,6 +252,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -319,6 +333,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -385,6 +401,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).contains(imageGenerationCall)
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -427,13 +445,6 @@ internal class ConversationItemTest {
         val computerCall =
             ResponseComputerToolCall.builder()
                 .id("id")
-                .action(
-                    ResponseComputerToolCall.Action.Click.builder()
-                        .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
-                        .x(0L)
-                        .y(0L)
-                        .build()
-                )
                 .callId("call_id")
                 .addPendingSafetyCheck(
                     ResponseComputerToolCall.PendingSafetyCheck.builder()
@@ -444,6 +455,20 @@ internal class ConversationItemTest {
                 )
                 .status(ResponseComputerToolCall.Status.IN_PROGRESS)
                 .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
+                .action(
+                    ResponseComputerToolCall.Action.Click.builder()
+                        .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
+                        .x(0L)
+                        .y(0L)
+                        .build()
+                )
+                .addAction(
+                    ComputerAction.Click.builder()
+                        .button(ComputerAction.Click.Button.LEFT)
+                        .x(0L)
+                        .y(0L)
+                        .build()
+                )
                 .build()
 
         val conversationItem = ConversationItem.ofComputerCall(computerCall)
@@ -456,6 +481,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).contains(computerCall)
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -479,13 +506,6 @@ internal class ConversationItemTest {
             ConversationItem.ofComputerCall(
                 ResponseComputerToolCall.builder()
                     .id("id")
-                    .action(
-                        ResponseComputerToolCall.Action.Click.builder()
-                            .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
-                            .x(0L)
-                            .y(0L)
-                            .build()
-                    )
                     .callId("call_id")
                     .addPendingSafetyCheck(
                         ResponseComputerToolCall.PendingSafetyCheck.builder()
@@ -496,6 +516,20 @@ internal class ConversationItemTest {
                     )
                     .status(ResponseComputerToolCall.Status.IN_PROGRESS)
                     .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
+                    .action(
+                        ResponseComputerToolCall.Action.Click.builder()
+                            .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
+                            .x(0L)
+                            .y(0L)
+                            .build()
+                    )
+                    .addAction(
+                        ComputerAction.Click.builder()
+                            .button(ComputerAction.Click.Button.LEFT)
+                            .x(0L)
+                            .y(0L)
+                            .build()
+                    )
                     .build()
             )
 
@@ -540,6 +574,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).contains(computerCallOutput)
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -591,6 +627,158 @@ internal class ConversationItemTest {
     }
 
     @Test
+    fun ofToolSearchCall() {
+        val toolSearchCall =
+            ResponseToolSearchCall.builder()
+                .id("id")
+                .arguments(JsonValue.from(mapOf<String, Any>()))
+                .callId("call_id")
+                .execution(ResponseToolSearchCall.Execution.SERVER)
+                .status(ResponseToolSearchCall.Status.IN_PROGRESS)
+                .createdBy("created_by")
+                .build()
+
+        val conversationItem = ConversationItem.ofToolSearchCall(toolSearchCall)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).contains(toolSearchCall)
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofToolSearchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofToolSearchCall(
+                ResponseToolSearchCall.builder()
+                    .id("id")
+                    .arguments(JsonValue.from(mapOf<String, Any>()))
+                    .callId("call_id")
+                    .execution(ResponseToolSearchCall.Execution.SERVER)
+                    .status(ResponseToolSearchCall.Status.IN_PROGRESS)
+                    .createdBy("created_by")
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
+    fun ofToolSearchOutput() {
+        val toolSearchOutput =
+            ResponseToolSearchOutputItem.builder()
+                .id("id")
+                .callId("call_id")
+                .execution(ResponseToolSearchOutputItem.Execution.SERVER)
+                .status(ResponseToolSearchOutputItem.Status.IN_PROGRESS)
+                .addTool(
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .strict(true)
+                        .deferLoading(true)
+                        .description("description")
+                        .build()
+                )
+                .createdBy("created_by")
+                .build()
+
+        val conversationItem = ConversationItem.ofToolSearchOutput(toolSearchOutput)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).contains(toolSearchOutput)
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofToolSearchOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofToolSearchOutput(
+                ResponseToolSearchOutputItem.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .execution(ResponseToolSearchOutputItem.Execution.SERVER)
+                    .status(ResponseToolSearchOutputItem.Status.IN_PROGRESS)
+                    .addTool(
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .deferLoading(true)
+                            .description("description")
+                            .build()
+                    )
+                    .createdBy("created_by")
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
     fun ofReasoning() {
         val reasoning =
             ResponseReasoningItem.builder()
@@ -611,6 +799,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).contains(reasoning)
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -671,6 +861,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).contains(codeInterpreterCall)
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -742,6 +934,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).contains(localShellCall)
@@ -811,6 +1005,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -876,6 +1072,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -951,6 +1149,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1024,6 +1224,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1089,6 +1291,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1155,6 +1359,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1220,6 +1426,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1278,6 +1486,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1340,6 +1550,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1390,6 +1602,7 @@ internal class ConversationItemTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .namespace("namespace")
                 .build()
 
         val conversationItem = ConversationItem.ofCustomToolCall(customToolCall)
@@ -1402,6 +1615,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1428,6 +1643,7 @@ internal class ConversationItemTest {
                     .input("input")
                     .name("name")
                     .id("id")
+                    .namespace("namespace")
                     .build()
             )
 
@@ -1459,6 +1675,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.imageGenerationCall()).isEmpty
         assertThat(conversationItem.computerCall()).isEmpty
         assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty

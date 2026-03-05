@@ -31,6 +31,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val id: JsonField<String>,
+    private val namespace: JsonField<String>,
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -42,8 +43,9 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("namespace") @ExcludeMissing namespace: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(arguments, callId, name, type, id, status, mutableMapOf())
+    ) : this(arguments, callId, name, type, id, namespace, status, mutableMapOf())
 
     /**
      * A JSON string of the arguments to pass to the function.
@@ -91,6 +93,14 @@ private constructor(
     fun id(): Optional<String> = id.getOptional("id")
 
     /**
+     * The namespace of the function to run.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun namespace(): Optional<String> = namespace.getOptional("namespace")
+
+    /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
      * items are returned via API.
      *
@@ -126,6 +136,13 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [namespace].
+     *
+     * Unlike [namespace], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("namespace") @ExcludeMissing fun _namespace(): JsonField<String> = namespace
 
     /**
      * Returns the raw JSON value of [status].
@@ -169,6 +186,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("function_call")
         private var id: JsonField<String> = JsonMissing.of()
+        private var namespace: JsonField<String> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -179,6 +197,7 @@ private constructor(
             name = responseFunctionToolCall.name
             type = responseFunctionToolCall.type
             id = responseFunctionToolCall.id
+            namespace = responseFunctionToolCall.namespace
             status = responseFunctionToolCall.status
             additionalProperties = responseFunctionToolCall.additionalProperties.toMutableMap()
         }
@@ -242,6 +261,18 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** The namespace of the function to run. */
+        fun namespace(namespace: String) = namespace(JsonField.of(namespace))
+
+        /**
+         * Sets [Builder.namespace] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.namespace] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun namespace(namespace: JsonField<String>) = apply { this.namespace = namespace }
+
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
          * when items are returned via API.
@@ -296,6 +327,7 @@ private constructor(
                 checkRequired("name", name),
                 type,
                 id,
+                namespace,
                 status,
                 additionalProperties.toMutableMap(),
             )
@@ -317,6 +349,7 @@ private constructor(
             }
         }
         id()
+        namespace()
         status().ifPresent { it.validate() }
         validated = true
     }
@@ -341,6 +374,7 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("function_call")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
+            (if (namespace.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
@@ -489,16 +523,17 @@ private constructor(
             name == other.name &&
             type == other.type &&
             id == other.id &&
+            namespace == other.namespace &&
             status == other.status &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(arguments, callId, name, type, id, status, additionalProperties)
+        Objects.hash(arguments, callId, name, type, id, namespace, status, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionToolCall{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
+        "ResponseFunctionToolCall{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, namespace=$namespace, status=$status, additionalProperties=$additionalProperties}"
 }

@@ -28,6 +28,8 @@ import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseItem
 import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseToolSearchCall
+import com.openai.models.responses.ResponseToolSearchOutputItem
 import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
@@ -243,6 +245,14 @@ private constructor(
          */
         fun addData(functionCallOutput: ResponseFunctionToolCallOutputItem) =
             addData(ResponseItem.ofFunctionCallOutput(functionCallOutput))
+
+        /** Alias for calling [addData] with `ResponseItem.ofToolSearchCall(toolSearchCall)`. */
+        fun addData(toolSearchCall: ResponseToolSearchCall) =
+            addData(ResponseItem.ofToolSearchCall(toolSearchCall))
+
+        /** Alias for calling [addData] with `ResponseItem.ofToolSearchOutput(toolSearchOutput)`. */
+        fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
+            addData(ResponseItem.ofToolSearchOutput(toolSearchOutput))
 
         /**
          * Alias for calling [addData] with

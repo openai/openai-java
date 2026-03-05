@@ -17,6 +17,7 @@ internal class ResponseFunctionToolCallItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 
@@ -24,6 +25,7 @@ internal class ResponseFunctionToolCallItemTest {
         assertThat(responseFunctionToolCallItem.callId()).isEqualTo("call_id")
         assertThat(responseFunctionToolCallItem.name()).isEqualTo("name")
         assertThat(responseFunctionToolCallItem.id()).contains("id")
+        assertThat(responseFunctionToolCallItem.namespace()).contains("namespace")
         assertThat(responseFunctionToolCallItem.status())
             .contains(ResponseFunctionToolCall.Status.IN_PROGRESS)
     }
@@ -37,6 +39,7 @@ internal class ResponseFunctionToolCallItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 

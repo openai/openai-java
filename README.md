@@ -921,7 +921,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .model(ChatModel.GPT_4O)
+    .model(ChatModel.GPT_5_4)
     .messages(JsonMissing.of())
     .build();
 ```

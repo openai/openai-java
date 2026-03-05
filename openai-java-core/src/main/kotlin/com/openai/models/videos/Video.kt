@@ -165,7 +165,8 @@ private constructor(
         remixedFromVideoId.getOptional("remixed_from_video_id")
 
     /**
-     * Duration of the generated clip in seconds.
+     * Duration of the generated clip in seconds. For extensions, this is the stitched total
+     * duration.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -507,7 +508,10 @@ private constructor(
             this.remixedFromVideoId = remixedFromVideoId
         }
 
-        /** Duration of the generated clip in seconds. */
+        /**
+         * Duration of the generated clip in seconds. For extensions, this is the stitched total
+         * duration.
+         */
         fun seconds(seconds: VideoSeconds) = seconds(JsonField.of(seconds))
 
         /**
@@ -518,6 +522,14 @@ private constructor(
          * value.
          */
         fun seconds(seconds: JsonField<VideoSeconds>) = apply { this.seconds = seconds }
+
+        /**
+         * Sets [seconds] to an arbitrary [String].
+         *
+         * You should usually call [seconds] with a well-typed [VideoSeconds] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun seconds(value: String) = seconds(VideoSeconds.of(value))
 
         /** The resolution of the generated video. */
         fun size(size: VideoSize) = size(JsonField.of(size))
