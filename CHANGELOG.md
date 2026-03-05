@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.26.0 (2026-03-05)
+
+Full Changelog: [v4.25.0...v4.26.0](https://github.com/openai/openai-java/compare/v4.25.0...v4.26.0)
+
+### Features
+
+* **api:** The GA ComputerTool now uses the CompuerTool class. The 'computer_use_preview' tool is moved to ComputerUsePreview ([a8d8de8](https://github.com/openai/openai-java/commit/a8d8de803d9df873eb13ecd912cdea096532a062))
+
+
+### Bug Fixes
+
+* **api:** update structured response tool overloads ([5562fc1](https://github.com/openai/openai-java/commit/5562fc13a259d567aa03c59f36e74825effa53da))
+
 ## 4.25.0 (2026-03-05)
 
 Full Changelog: [v4.24.1...v4.25.0](https://github.com/openai/openai-java/compare/v4.24.1...v4.25.0)
