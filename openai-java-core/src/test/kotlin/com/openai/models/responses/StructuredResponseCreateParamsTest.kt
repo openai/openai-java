@@ -93,12 +93,12 @@ internal class StructuredResponseCreateParamsTest {
             WebSearchPreviewTool.builder()
                 .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
                 .build()
-        private val COMPUTER_USE_TOOL = ComputerUseTool.builder().build()
-        private val COMPUTER_TOOL =
-            ComputerTool.builder()
+        private val COMPUTER_TOOL = ComputerTool.builder().build()
+        private val COMPUTER_USE_PREVIEW_TOOL =
+            ComputerUsePreviewTool.builder()
                 .displayWidth(LONG)
                 .displayHeight(LONG)
-                .environment(ComputerTool.Environment.LINUX)
+                .environment(ComputerUsePreviewTool.Environment.LINUX)
                 .build()
         private val TOOL = Tool.ofFunction(FUNCTION_TOOL)
         private val MCP_TOOL = Tool.Mcp.builder().serverLabel(STRING).serverUrl(STRING).build()
@@ -223,11 +223,11 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addTool", CLASS, VALIDATION),
                 DelegationWriteTestCase("addTool", FILE_SEARCH_TOOL),
                 DelegationWriteTestCase("addFileSearchTool", LIST),
-                DelegationWriteTestCase("addTool", COMPUTER_USE_TOOL),
+                DelegationWriteTestCase("addTool", COMPUTER_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_PREVIEW_TOOL),
                 DelegationWriteTestCase("addTool", APPLY_PATCH_TOOL),
-                DelegationWriteTestCase("addTool", COMPUTER_TOOL),
+                DelegationWriteTestCase("addTool", COMPUTER_USE_PREVIEW_TOOL),
                 DelegationWriteTestCase("addTool", MCP_TOOL),
                 DelegationWriteTestCase("addMcpTool", STRING),
                 DelegationWriteTestCase("addTool", CODE_INTERPRETER_TOOL),

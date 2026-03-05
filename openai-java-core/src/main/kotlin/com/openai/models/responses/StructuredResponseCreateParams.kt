@@ -473,7 +473,7 @@ class StructuredResponseCreateParams<T : Any>(
         }
 
         /** @see ResponseCreateParams.Builder.addTool */
-        fun addTool(computer: ComputerUseTool) = apply { paramsBuilder.addTool(computer) }
+        fun addTool(computer: ComputerTool) = apply { paramsBuilder.addTool(computer) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(webSearch: WebSearchTool) = apply { paramsBuilder.addTool(webSearch) }
@@ -487,7 +487,7 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(applyPatch: ApplyPatchTool) = apply { paramsBuilder.addTool(applyPatch) }
 
         /** @see ResponseCreateParams.Builder.addTool */
-        fun addTool(computerUsePreview: ComputerTool) = apply {
+        fun addTool(computerUsePreview: ComputerUsePreviewTool) = apply {
             paramsBuilder.addTool(computerUsePreview)
         }
 
