@@ -12,7 +12,7 @@ internal class SkillCreateParamsTest {
     @Test
     fun create() {
         SkillCreateParams.builder()
-            .filesOfInputStreams(listOf("some content".byteInputStream()))
+            .filesOfInputStreams(listOf("Example data".byteInputStream()))
             .build()
     }
 
@@ -20,7 +20,7 @@ internal class SkillCreateParamsTest {
     fun body() {
         val params =
             SkillCreateParams.builder()
-                .filesOfInputStreams(listOf("some content".byteInputStream()))
+                .filesOfInputStreams(listOf("Example data".byteInputStream()))
                 .build()
 
         val body = params._body()
@@ -39,7 +39,7 @@ internal class SkillCreateParamsTest {
                             MultipartField.builder<SkillCreateParams.Files>()
                                 .value(
                                     SkillCreateParams.Files.ofInputStreams(
-                                        listOf("some content".byteInputStream())
+                                        listOf("Example data".byteInputStream())
                                     )
                                 )
                                 .contentType("application/octet-stream")

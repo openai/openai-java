@@ -24,7 +24,7 @@ internal class PartServiceTest {
             partService.create(
                 PartCreateParams.builder()
                     .uploadId("upload_abc123")
-                    .data("some content".byteInputStream())
+                    .data("Example data".byteInputStream())
                     .build()
             )
 

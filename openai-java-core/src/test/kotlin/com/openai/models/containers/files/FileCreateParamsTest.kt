@@ -13,7 +13,7 @@ internal class FileCreateParamsTest {
     fun create() {
         FileCreateParams.builder()
             .containerId("container_id")
-            .file("some content".byteInputStream())
+            .file("Example data".byteInputStream())
             .fileId("file_id")
             .build()
     }
@@ -32,7 +32,7 @@ internal class FileCreateParamsTest {
         val params =
             FileCreateParams.builder()
                 .containerId("container_id")
-                .file("some content".byteInputStream())
+                .file("Example data".byteInputStream())
                 .fileId("file_id")
                 .build()
 
@@ -48,7 +48,7 @@ internal class FileCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("some content".byteInputStream()),
+                        "file" to MultipartField.of("Example data".byteInputStream()),
                         "file_id" to MultipartField.of("file_id"),
                     )
                     .mapValues { (_, field) ->

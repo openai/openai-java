@@ -14,7 +14,7 @@ internal class VersionCreateParamsTest {
         VersionCreateParams.builder()
             .skillId("skill_123")
             .default_(true)
-            .filesOfInputStreams(listOf("some content".byteInputStream()))
+            .filesOfInputStreams(listOf("Example data".byteInputStream()))
             .build()
     }
 
@@ -33,7 +33,7 @@ internal class VersionCreateParamsTest {
             VersionCreateParams.builder()
                 .skillId("skill_123")
                 .default_(true)
-                .filesOfInputStreams(listOf("some content".byteInputStream()))
+                .filesOfInputStreams(listOf("Example data".byteInputStream()))
                 .build()
 
         val body = params._body()
@@ -53,7 +53,7 @@ internal class VersionCreateParamsTest {
                             MultipartField.builder<VersionCreateParams.Files>()
                                 .value(
                                     VersionCreateParams.Files.ofInputStreams(
-                                        listOf("some content".byteInputStream())
+                                        listOf("Example data".byteInputStream())
                                     )
                                 )
                                 .contentType("application/octet-stream")

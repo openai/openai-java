@@ -24,7 +24,7 @@ internal class SkillServiceTest {
         val skill =
             skillService.create(
                 SkillCreateParams.builder()
-                    .filesOfInputStreams(listOf("some content".byteInputStream()))
+                    .filesOfInputStreams(listOf("Example data".byteInputStream()))
                     .build()
             )
 

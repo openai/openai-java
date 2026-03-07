@@ -26,7 +26,7 @@ internal class ImageServiceAsyncTest {
         val imagesResponseFuture =
             imageServiceAsync.createVariation(
                 ImageCreateVariationParams.builder()
-                    .image("some content".byteInputStream())
+                    .image("Example data".byteInputStream())
                     .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
@@ -51,11 +51,11 @@ internal class ImageServiceAsyncTest {
         val imagesResponseFuture =
             imageServiceAsync.edit(
                 ImageEditParams.builder()
-                    .image("some content".byteInputStream())
+                    .image("Example data".byteInputStream())
                     .prompt("A cute baby sea otter wearing a beret")
                     .background(ImageEditParams.Background.TRANSPARENT)
                     .inputFidelity(ImageEditParams.InputFidelity.HIGH)
-                    .mask("some content".byteInputStream())
+                    .mask("Example data".byteInputStream())
                     .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .outputCompression(100L)
@@ -84,11 +84,11 @@ internal class ImageServiceAsyncTest {
         val imagesResponseStreamResponse =
             imageServiceAsync.editStreaming(
                 ImageEditParams.builder()
-                    .image("some content".byteInputStream())
+                    .image("Example data".byteInputStream())
                     .prompt("A cute baby sea otter wearing a beret")
                     .background(ImageEditParams.Background.TRANSPARENT)
                     .inputFidelity(ImageEditParams.InputFidelity.HIGH)
-                    .mask("some content".byteInputStream())
+                    .mask("Example data".byteInputStream())
                     .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .outputCompression(100L)

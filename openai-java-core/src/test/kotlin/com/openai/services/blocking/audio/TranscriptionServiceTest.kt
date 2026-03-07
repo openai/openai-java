@@ -26,7 +26,7 @@ internal class TranscriptionServiceTest {
         val transcription =
             transcriptionService.create(
                 TranscriptionCreateParams.builder()
-                    .file("some content".byteInputStream())
+                    .file("Example data".byteInputStream())
                     .model(AudioModel.GPT_4O_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)
@@ -55,7 +55,7 @@ internal class TranscriptionServiceTest {
         val transcriptionStreamResponse =
             transcriptionService.createStreaming(
                 TranscriptionCreateParams.builder()
-                    .file("some content".byteInputStream())
+                    .file("Example data".byteInputStream())
                     .model(AudioModel.GPT_4O_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)

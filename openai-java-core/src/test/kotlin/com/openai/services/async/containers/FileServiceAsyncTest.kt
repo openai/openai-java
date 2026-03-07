@@ -26,7 +26,7 @@ internal class FileServiceAsyncTest {
             fileServiceAsync.create(
                 FileCreateParams.builder()
                     .containerId("container_id")
-                    .file("some content".byteInputStream())
+                    .file("Example data".byteInputStream())
                     .fileId("file_id")
                     .build()
             )
