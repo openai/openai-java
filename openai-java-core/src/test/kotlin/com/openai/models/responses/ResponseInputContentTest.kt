@@ -81,7 +81,6 @@ internal class ResponseInputContentTest {
     fun ofInputFile() {
         val inputFile =
             ResponseInputFile.builder()
-                .detail(ResponseInputFile.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file_id")
                 .fileUrl("file_url")
@@ -101,7 +100,6 @@ internal class ResponseInputContentTest {
         val responseInputContent =
             ResponseInputContent.ofInputFile(
                 ResponseInputFile.builder()
-                    .detail(ResponseInputFile.Detail.LOW)
                     .fileData("file_data")
                     .fileId("file_id")
                     .fileUrl("file_url")

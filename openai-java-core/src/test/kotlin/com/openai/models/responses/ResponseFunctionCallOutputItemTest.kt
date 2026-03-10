@@ -85,7 +85,6 @@ internal class ResponseFunctionCallOutputItemTest {
     fun ofInputFile() {
         val inputFile =
             ResponseInputFileContent.builder()
-                .detail(ResponseInputFileContent.Detail.HIGH)
                 .fileData("file_data")
                 .fileId("file-123")
                 .fileUrl("file_url")
@@ -105,7 +104,6 @@ internal class ResponseFunctionCallOutputItemTest {
         val responseFunctionCallOutputItem =
             ResponseFunctionCallOutputItem.ofInputFile(
                 ResponseInputFileContent.builder()
-                    .detail(ResponseInputFileContent.Detail.HIGH)
                     .fileData("file_data")
                     .fileId("file-123")
                     .fileUrl("file_url")
