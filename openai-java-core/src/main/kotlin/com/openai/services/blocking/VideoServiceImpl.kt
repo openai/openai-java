@@ -22,11 +22,15 @@ import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
 import com.openai.models.videos.VideoListPage
 import com.openai.models.videos.VideoListPageResponse
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
+import com.openai.services.blocking.videos.CharacterService
+import com.openai.services.blocking.videos.CharacterServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -37,10 +41,14 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         WithRawResponseImpl(clientOptions)
     }
 
+    private val character: CharacterService by lazy { CharacterServiceImpl(clientOptions) }
+
     override fun withRawResponse(): VideoService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService =
         VideoServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun character(): CharacterService = character
 
     override fun create(params: VideoCreateParams, requestOptions: RequestOptions): Video =
         // post /videos
@@ -68,6 +76,14 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         // get /videos/{video_id}/content
         withRawResponse().downloadContent(params, requestOptions)
 
+    override fun edit(params: VideoEditParams, requestOptions: RequestOptions): Video =
+        // post /videos/edits
+        withRawResponse().edit(params, requestOptions).parse()
+
+    override fun extend(params: VideoExtendParams, requestOptions: RequestOptions): Video =
+        // post /videos/extensions
+        withRawResponse().extend(params, requestOptions).parse()
+
     override fun remix(params: VideoRemixParams, requestOptions: RequestOptions): Video =
         // post /videos/{video_id}/remix
         withRawResponse().remix(params, requestOptions).parse()
@@ -78,12 +94,18 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val character: CharacterService.WithRawResponse by lazy {
+            CharacterServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VideoService.WithRawResponse =
             VideoServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun character(): CharacterService.WithRawResponse = character
 
         private val createHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
@@ -224,6 +246,60 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response)
+        }
+
+        private val editHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        override fun edit(
+            params: VideoEditParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "edits")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { editHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val extendHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        override fun extend(
+            params: VideoExtendParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "extensions")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { extendHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
         }
 
         private val remixHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)

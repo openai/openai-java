@@ -16,10 +16,9 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import java.util.Optional
 
-/** Create a new video generation job from a prompt and optional reference assets. */
-class VideoCreateParams
+/** Create an extension of a completed video. */
+class VideoExtendParams
 private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
@@ -27,7 +26,7 @@ private constructor(
 ) : Params {
 
     /**
-     * Text prompt that describes the video to generate.
+     * Updated text prompt that directs the extension generation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -35,38 +34,21 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
-     * Optional reference object that guides generation. Provide exactly one of `image_url` or
-     * `file_id`.
+     * Length of the newly generated extension segment in seconds (allowed values: 4, 8, 12, 16,
+     * 20).
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun inputReference(): Optional<InputReference> = body.inputReference()
+    fun seconds(): VideoSeconds = body.seconds()
 
     /**
-     * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to `sora-2`.
+     * Reference to the completed video to extend.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun model(): Optional<VideoModel> = body.model()
-
-    /**
-     * Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun seconds(): Optional<VideoSeconds> = body.seconds()
-
-    /**
-     * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720, 1024x1792,
-     * 1792x1024). Defaults to 720x1280.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun size(): Optional<VideoSize> = body.size()
+    fun video(): Video = body.video()
 
     /**
      * Returns the raw multipart value of [prompt].
@@ -76,21 +58,6 @@ private constructor(
     fun _prompt(): MultipartField<String> = body._prompt()
 
     /**
-     * Returns the raw multipart value of [inputReference].
-     *
-     * Unlike [inputReference], this method doesn't throw if the multipart field has an unexpected
-     * type.
-     */
-    fun _inputReference(): MultipartField<InputReference> = body._inputReference()
-
-    /**
-     * Returns the raw multipart value of [model].
-     *
-     * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
-     */
-    fun _model(): MultipartField<VideoModel> = body._model()
-
-    /**
      * Returns the raw multipart value of [seconds].
      *
      * Unlike [seconds], this method doesn't throw if the multipart field has an unexpected type.
@@ -98,11 +65,11 @@ private constructor(
     fun _seconds(): MultipartField<VideoSeconds> = body._seconds()
 
     /**
-     * Returns the raw multipart value of [size].
+     * Returns the raw multipart value of [video].
      *
-     * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
+     * Unlike [video], this method doesn't throw if the multipart field has an unexpected type.
      */
-    fun _size(): MultipartField<VideoSize> = body._size()
+    fun _video(): MultipartField<Video> = body._video()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -117,17 +84,19 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [VideoCreateParams].
+         * Returns a mutable builder for constructing an instance of [VideoExtendParams].
          *
          * The following fields are required:
          * ```java
          * .prompt()
+         * .seconds()
+         * .video()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [VideoCreateParams]. */
+    /** A builder for [VideoExtendParams]. */
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -135,10 +104,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(videoCreateParams: VideoCreateParams) = apply {
-            body = videoCreateParams.body.toBuilder()
-            additionalHeaders = videoCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = videoCreateParams.additionalQueryParams.toBuilder()
+        internal fun from(videoExtendParams: VideoExtendParams) = apply {
+            body = videoExtendParams.body.toBuilder()
+            additionalHeaders = videoExtendParams.additionalHeaders.toBuilder()
+            additionalQueryParams = videoExtendParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -147,15 +116,12 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [prompt]
-         * - [inputReference]
-         * - [model]
          * - [seconds]
-         * - [size]
-         * - etc.
+         * - [video]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Text prompt that describes the video to generate. */
+        /** Updated text prompt that directs the extension generation. */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /**
@@ -167,48 +133,9 @@ private constructor(
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
         /**
-         * Optional reference object that guides generation. Provide exactly one of `image_url` or
-         * `file_id`.
+         * Length of the newly generated extension segment in seconds (allowed values: 4, 8, 12, 16,
+         * 20).
          */
-        fun inputReference(inputReference: InputReference) = apply {
-            body.inputReference(inputReference)
-        }
-
-        /**
-         * Sets [Builder.inputReference] to an arbitrary multipart value.
-         *
-         * You should usually call [Builder.inputReference] with a well-typed [InputReference] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun inputReference(inputReference: MultipartField<InputReference>) = apply {
-            body.inputReference(inputReference)
-        }
-
-        /**
-         * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
-         * `sora-2`.
-         */
-        fun model(model: VideoModel) = apply { body.model(model) }
-
-        /**
-         * Sets [Builder.model] to an arbitrary multipart value.
-         *
-         * You should usually call [Builder.model] with a well-typed [VideoModel] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun model(model: MultipartField<VideoModel>) = apply { body.model(model) }
-
-        /**
-         * Sets [model] to an arbitrary [String].
-         *
-         * You should usually call [model] with a well-typed [VideoModel] constant instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(value: String) = apply { body.model(value) }
-
-        /** Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds. */
         fun seconds(seconds: VideoSeconds) = apply { body.seconds(seconds) }
 
         /**
@@ -220,19 +147,16 @@ private constructor(
          */
         fun seconds(seconds: MultipartField<VideoSeconds>) = apply { body.seconds(seconds) }
 
-        /**
-         * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720,
-         * 1024x1792, 1792x1024). Defaults to 720x1280.
-         */
-        fun size(size: VideoSize) = apply { body.size(size) }
+        /** Reference to the completed video to extend. */
+        fun video(video: Video) = apply { body.video(video) }
 
         /**
-         * Sets [Builder.size] to an arbitrary multipart value.
+         * Sets [Builder.video] to an arbitrary multipart value.
          *
-         * You should usually call [Builder.size] with a well-typed [VideoSize] value instead. This
+         * You should usually call [Builder.video] with a well-typed [Video] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun size(size: MultipartField<VideoSize>) = apply { body.size(size) }
+        fun video(video: MultipartField<Video>) = apply { body.video(video) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -352,19 +276,21 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [VideoCreateParams].
+         * Returns an immutable instance of [VideoExtendParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
          * .prompt()
+         * .seconds()
+         * .video()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): VideoCreateParams =
-            VideoCreateParams(
+        fun build(): VideoExtendParams =
+            VideoExtendParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -372,32 +298,25 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        (mapOf(
-                "prompt" to _prompt(),
-                "input_reference" to _inputReference(),
-                "model" to _model(),
-                "seconds" to _seconds(),
-                "size" to _size(),
-            ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
+        (mapOf("prompt" to _prompt(), "seconds" to _seconds(), "video" to _video()) +
+                _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** JSON parameters for creating a new video generation job. */
+    /** JSON parameters for extending an existing generated video. */
     class Body
     private constructor(
         private val prompt: MultipartField<String>,
-        private val inputReference: MultipartField<InputReference>,
-        private val model: MultipartField<VideoModel>,
         private val seconds: MultipartField<VideoSeconds>,
-        private val size: MultipartField<VideoSize>,
+        private val video: MultipartField<Video>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
-         * Text prompt that describes the video to generate.
+         * Updated text prompt that directs the extension generation.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -405,40 +324,21 @@ private constructor(
         fun prompt(): String = prompt.value.getRequired("prompt")
 
         /**
-         * Optional reference object that guides generation. Provide exactly one of `image_url` or
-         * `file_id`.
+         * Length of the newly generated extension segment in seconds (allowed values: 4, 8, 12, 16,
+         * 20).
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun inputReference(): Optional<InputReference> =
-            inputReference.value.getOptional("input_reference")
+        fun seconds(): VideoSeconds = seconds.value.getRequired("seconds")
 
         /**
-         * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
-         * `sora-2`.
+         * Reference to the completed video to extend.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun model(): Optional<VideoModel> = model.value.getOptional("model")
-
-        /**
-         * Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun seconds(): Optional<VideoSeconds> = seconds.value.getOptional("seconds")
-
-        /**
-         * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720,
-         * 1024x1792, 1792x1024). Defaults to 720x1280.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun size(): Optional<VideoSize> = size.value.getOptional("size")
+        fun video(): Video = video.value.getRequired("video")
 
         /**
          * Returns the raw multipart value of [prompt].
@@ -446,23 +346,6 @@ private constructor(
          * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
          */
         @JsonProperty("prompt") @ExcludeMissing fun _prompt(): MultipartField<String> = prompt
-
-        /**
-         * Returns the raw multipart value of [inputReference].
-         *
-         * Unlike [inputReference], this method doesn't throw if the multipart field has an
-         * unexpected type.
-         */
-        @JsonProperty("input_reference")
-        @ExcludeMissing
-        fun _inputReference(): MultipartField<InputReference> = inputReference
-
-        /**
-         * Returns the raw multipart value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): MultipartField<VideoModel> = model
 
         /**
          * Returns the raw multipart value of [seconds].
@@ -475,11 +358,11 @@ private constructor(
         fun _seconds(): MultipartField<VideoSeconds> = seconds
 
         /**
-         * Returns the raw multipart value of [size].
+         * Returns the raw multipart value of [video].
          *
-         * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
+         * Unlike [video], this method doesn't throw if the multipart field has an unexpected type.
          */
-        @JsonProperty("size") @ExcludeMissing fun _size(): MultipartField<VideoSize> = size
+        @JsonProperty("video") @ExcludeMissing fun _video(): MultipartField<Video> = video
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -501,6 +384,8 @@ private constructor(
              * The following fields are required:
              * ```java
              * .prompt()
+             * .seconds()
+             * .video()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -510,23 +395,19 @@ private constructor(
         class Builder internal constructor() {
 
             private var prompt: MultipartField<String>? = null
-            private var inputReference: MultipartField<InputReference> = MultipartField.of(null)
-            private var model: MultipartField<VideoModel> = MultipartField.of(null)
-            private var seconds: MultipartField<VideoSeconds> = MultipartField.of(null)
-            private var size: MultipartField<VideoSize> = MultipartField.of(null)
+            private var seconds: MultipartField<VideoSeconds>? = null
+            private var video: MultipartField<Video>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 prompt = body.prompt
-                inputReference = body.inputReference
-                model = body.model
                 seconds = body.seconds
-                size = body.size
+                video = body.video
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Text prompt that describes the video to generate. */
+            /** Updated text prompt that directs the extension generation. */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
             /**
@@ -539,48 +420,9 @@ private constructor(
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
             /**
-             * Optional reference object that guides generation. Provide exactly one of `image_url`
-             * or `file_id`.
+             * Length of the newly generated extension segment in seconds (allowed values: 4, 8, 12,
+             * 16, 20).
              */
-            fun inputReference(inputReference: InputReference) =
-                inputReference(MultipartField.of(inputReference))
-
-            /**
-             * Sets [Builder.inputReference] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.inputReference] with a well-typed [InputReference]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun inputReference(inputReference: MultipartField<InputReference>) = apply {
-                this.inputReference = inputReference
-            }
-
-            /**
-             * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
-             * `sora-2`.
-             */
-            fun model(model: VideoModel) = model(MultipartField.of(model))
-
-            /**
-             * Sets [Builder.model] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.model] with a well-typed [VideoModel] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: MultipartField<VideoModel>) = apply { this.model = model }
-
-            /**
-             * Sets [model] to an arbitrary [String].
-             *
-             * You should usually call [model] with a well-typed [VideoModel] constant instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun model(value: String) = model(VideoModel.of(value))
-
-            /** Clip duration in seconds (allowed values: 4, 8, 12). Defaults to 4 seconds. */
             fun seconds(seconds: VideoSeconds) = seconds(MultipartField.of(seconds))
 
             /**
@@ -592,20 +434,17 @@ private constructor(
              */
             fun seconds(seconds: MultipartField<VideoSeconds>) = apply { this.seconds = seconds }
 
-            /**
-             * Output resolution formatted as width x height (allowed values: 720x1280, 1280x720,
-             * 1024x1792, 1792x1024). Defaults to 720x1280.
-             */
-            fun size(size: VideoSize) = size(MultipartField.of(size))
+            /** Reference to the completed video to extend. */
+            fun video(video: Video) = video(MultipartField.of(video))
 
             /**
-             * Sets [Builder.size] to an arbitrary multipart value.
+             * Sets [Builder.video] to an arbitrary multipart value.
              *
-             * You should usually call [Builder.size] with a well-typed [VideoSize] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.video] with a well-typed [Video] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun size(size: MultipartField<VideoSize>) = apply { this.size = size }
+            fun video(video: MultipartField<Video>) = apply { this.video = video }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -634,6 +473,8 @@ private constructor(
              * The following fields are required:
              * ```java
              * .prompt()
+             * .seconds()
+             * .video()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -641,10 +482,8 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("prompt", prompt),
-                    inputReference,
-                    model,
-                    seconds,
-                    size,
+                    checkRequired("seconds", seconds),
+                    checkRequired("video", video),
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -657,10 +496,8 @@ private constructor(
             }
 
             prompt()
-            inputReference().ifPresent { it.validate() }
-            model()
-            seconds().ifPresent { it.validate() }
-            size().ifPresent { it.validate() }
+            seconds().validate()
+            video().validate()
             validated = true
         }
 
@@ -679,64 +516,42 @@ private constructor(
 
             return other is Body &&
                 prompt == other.prompt &&
-                inputReference == other.inputReference &&
-                model == other.model &&
                 seconds == other.seconds &&
-                size == other.size &&
+                video == other.video &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(prompt, inputReference, model, seconds, size, additionalProperties)
+            Objects.hash(prompt, seconds, video, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{prompt=$prompt, inputReference=$inputReference, model=$model, seconds=$seconds, size=$size, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, seconds=$seconds, video=$video, additionalProperties=$additionalProperties}"
     }
 
-    /**
-     * Optional reference object that guides generation. Provide exactly one of `image_url` or
-     * `file_id`.
-     */
-    class InputReference
+    /** Reference to the completed video to extend. */
+    class Video
     private constructor(
-        private val fileId: MultipartField<String>,
-        private val imageUrl: MultipartField<String>,
+        private val id: MultipartField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * The identifier of the completed video.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun fileId(): Optional<String> = fileId.value.getOptional("file_id")
+        fun id(): String = id.value.getRequired("id")
 
         /**
-         * A fully qualified URL or base64-encoded data URL.
+         * Returns the raw multipart value of [id].
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Unlike [id], this method doesn't throw if the multipart field has an unexpected type.
          */
-        fun imageUrl(): Optional<String> = imageUrl.value.getOptional("image_url")
-
-        /**
-         * Returns the raw multipart value of [fileId].
-         *
-         * Unlike [fileId], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): MultipartField<String> = fileId
-
-        /**
-         * Returns the raw multipart value of [imageUrl].
-         *
-         * Unlike [imageUrl], this method doesn't throw if the multipart field has an unexpected
-         * type.
-         */
-        @JsonProperty("image_url")
-        @ExcludeMissing
-        fun _imageUrl(): MultipartField<String> = imageUrl
+        @JsonProperty("id") @ExcludeMissing fun _id(): MultipartField<String> = id
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -752,46 +567,40 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [InputReference]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [Video].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [InputReference]. */
+        /** A builder for [Video]. */
         class Builder internal constructor() {
 
-            private var fileId: MultipartField<String> = MultipartField.of(null)
-            private var imageUrl: MultipartField<String> = MultipartField.of(null)
+            private var id: MultipartField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(inputReference: InputReference) = apply {
-                fileId = inputReference.fileId
-                imageUrl = inputReference.imageUrl
-                additionalProperties = inputReference.additionalProperties.toMutableMap()
+            internal fun from(video: Video) = apply {
+                id = video.id
+                additionalProperties = video.additionalProperties.toMutableMap()
             }
 
-            fun fileId(fileId: String) = fileId(MultipartField.of(fileId))
+            /** The identifier of the completed video. */
+            fun id(id: String) = id(MultipartField.of(id))
 
             /**
-             * Sets [Builder.fileId] to an arbitrary multipart value.
+             * Sets [Builder.id] to an arbitrary multipart value.
              *
-             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun fileId(fileId: MultipartField<String>) = apply { this.fileId = fileId }
-
-            /** A fully qualified URL or base64-encoded data URL. */
-            fun imageUrl(imageUrl: String) = imageUrl(MultipartField.of(imageUrl))
-
-            /**
-             * Sets [Builder.imageUrl] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.imageUrl] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun imageUrl(imageUrl: MultipartField<String>) = apply { this.imageUrl = imageUrl }
+            fun id(id: MultipartField<String>) = apply { this.id = id }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -813,23 +622,28 @@ private constructor(
             }
 
             /**
-             * Returns an immutable instance of [InputReference].
+             * Returns an immutable instance of [Video].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): InputReference =
-                InputReference(fileId, imageUrl, additionalProperties.toMutableMap())
+            fun build(): Video = Video(checkRequired("id", id), additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
 
-        fun validate(): InputReference = apply {
+        fun validate(): Video = apply {
             if (validated) {
                 return@apply
             }
 
-            fileId()
-            imageUrl()
+            id()
             validated = true
         }
 
@@ -846,18 +660,16 @@ private constructor(
                 return true
             }
 
-            return other is InputReference &&
-                fileId == other.fileId &&
-                imageUrl == other.imageUrl &&
+            return other is Video &&
+                id == other.id &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(fileId, imageUrl, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "InputReference{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
+        override fun toString() = "Video{id=$id, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -865,7 +677,7 @@ private constructor(
             return true
         }
 
-        return other is VideoCreateParams &&
+        return other is VideoExtendParams &&
             body == other.body &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
@@ -874,5 +686,5 @@ private constructor(
     override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "VideoCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "VideoExtendParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

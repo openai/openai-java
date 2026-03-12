@@ -11,10 +11,13 @@ import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
 import com.openai.models.videos.VideoListPageAsync
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
+import com.openai.services.async.videos.CharacterServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -31,6 +34,8 @@ interface VideoServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoServiceAsync
+
+    fun character(): CharacterServiceAsync
 
     /** Create a new video generation job from a prompt and optional reference assets. */
     fun create(params: VideoCreateParams): CompletableFuture<Video> =
@@ -166,6 +171,26 @@ interface VideoServiceAsync {
     ): CompletableFuture<HttpResponse> =
         downloadContent(videoId, VideoDownloadContentParams.none(), requestOptions)
 
+    /** Create a new video generation job by editing a source video or existing generated video. */
+    fun edit(params: VideoEditParams): CompletableFuture<Video> =
+        edit(params, RequestOptions.none())
+
+    /** @see edit */
+    fun edit(
+        params: VideoEditParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Video>
+
+    /** Create an extension of a completed video. */
+    fun extend(params: VideoExtendParams): CompletableFuture<Video> =
+        extend(params, RequestOptions.none())
+
+    /** @see extend */
+    fun extend(
+        params: VideoExtendParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Video>
+
     /** Create a remix of a completed video using a refreshed prompt. */
     fun remix(videoId: String, params: VideoRemixParams): CompletableFuture<Video> =
         remix(videoId, params, RequestOptions.none())
@@ -198,6 +223,8 @@ interface VideoServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VideoServiceAsync.WithRawResponse
+
+        fun character(): CharacterServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /videos`, but is otherwise the same as
@@ -354,6 +381,32 @@ interface VideoServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> =
             downloadContent(videoId, VideoDownloadContentParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /videos/edits`, but is otherwise the same as
+         * [VideoServiceAsync.edit].
+         */
+        fun edit(params: VideoEditParams): CompletableFuture<HttpResponseFor<Video>> =
+            edit(params, RequestOptions.none())
+
+        /** @see edit */
+        fun edit(
+            params: VideoEditParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Video>>
+
+        /**
+         * Returns a raw HTTP response for `post /videos/extensions`, but is otherwise the same as
+         * [VideoServiceAsync.extend].
+         */
+        fun extend(params: VideoExtendParams): CompletableFuture<HttpResponseFor<Video>> =
+            extend(params, RequestOptions.none())
+
+        /** @see extend */
+        fun extend(
+            params: VideoExtendParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Video>>
 
         /**
          * Returns a raw HTTP response for `post /videos/{video_id}/remix`, but is otherwise the
