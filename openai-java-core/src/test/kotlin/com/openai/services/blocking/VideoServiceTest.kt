@@ -41,12 +41,7 @@ internal class VideoServiceTest {
             videoService.create(
                 VideoCreateParams.builder()
                     .prompt("x")
-                    .inputReference(
-                        VideoCreateParams.InputReference.builder()
-                            .fileId("file-123")
-                            .imageUrl("image_url")
-                            .build()
-                    )
+                    .inputReference("Example data".byteInputStream())
                     .model(VideoModel.SORA_2)
                     .seconds(VideoSeconds._4)
                     .size(VideoSize._720X1280)
@@ -132,7 +127,7 @@ internal class VideoServiceTest {
             videoService.edit(
                 VideoEditParams.builder()
                     .prompt("x")
-                    .video(VideoEditParams.Video.builder().id("video_123").build())
+                    .video("Example data".byteInputStream())
                     .build()
             )
 
@@ -153,7 +148,11 @@ internal class VideoServiceTest {
                 VideoExtendParams.builder()
                     .prompt("x")
                     .seconds(VideoSeconds._4)
-                    .video(VideoExtendParams.Video.builder().id("video_123").build())
+                    .video(
+                        VideoExtendParams.Video.VideoReferenceInputParam.builder()
+                            .id("video_123")
+                            .build()
+                    )
                     .build()
             )
 

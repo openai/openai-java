@@ -11,19 +11,13 @@ internal class VideoEditParamsTest {
 
     @Test
     fun create() {
-        VideoEditParams.builder()
-            .prompt("x")
-            .video(VideoEditParams.Video.builder().id("video_123").build())
-            .build()
+        VideoEditParams.builder().prompt("x").video("Example data".byteInputStream()).build()
     }
 
     @Test
     fun body() {
         val params =
-            VideoEditParams.builder()
-                .prompt("x")
-                .video(VideoEditParams.Video.builder().id("video_123").build())
-                .build()
+            VideoEditParams.builder().prompt("x").video("Example data".byteInputStream()).build()
 
         val body = params._body()
 
@@ -39,9 +33,14 @@ internal class VideoEditParamsTest {
                 mapOf(
                         "prompt" to MultipartField.of("x"),
                         "video" to
-                            MultipartField.of(
-                                VideoEditParams.Video.builder().id("video_123").build()
-                            ),
+                            MultipartField.builder<VideoEditParams.Video>()
+                                .value(
+                                    VideoEditParams.Video.ofInputStream(
+                                        "Example data".byteInputStream()
+                                    )
+                                )
+                                .contentType("application/octet-stream")
+                                .build(),
                     )
                     .mapValues { (_, field) ->
                         field.map { (it as? ByteArray)?.inputStream() ?: it }

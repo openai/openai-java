@@ -5,18 +5,27 @@ package com.openai.models.videos
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /** Create a new video generation job from a prompt and optional reference assets. */
 class VideoCreateParams
@@ -35,8 +44,7 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
-     * Optional reference object that guides generation. Provide exactly one of `image_url` or
-     * `file_id`.
+     * Optional reference asset upload or reference object that guides generation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -166,10 +174,7 @@ private constructor(
          */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
-        /**
-         * Optional reference object that guides generation. Provide exactly one of `image_url` or
-         * `file_id`.
-         */
+        /** Optional reference asset upload or reference object that guides generation. */
         fun inputReference(inputReference: InputReference) = apply {
             body.inputReference(inputReference)
         }
@@ -183,6 +188,23 @@ private constructor(
          */
         fun inputReference(inputReference: MultipartField<InputReference>) = apply {
             body.inputReference(inputReference)
+        }
+
+        /** Alias for calling [inputReference] with `InputReference.ofStream(stream)`. */
+        fun inputReference(stream: InputStream) = apply { body.inputReference(stream) }
+
+        /** Optional reference asset upload or reference object that guides generation. */
+        fun inputReference(stream: ByteArray) = apply { body.inputReference(stream) }
+
+        /** Optional reference asset upload or reference object that guides generation. */
+        fun inputReference(path: Path) = apply { body.inputReference(path) }
+
+        /**
+         * Alias for calling [inputReference] with
+         * `InputReference.ofImageRefParam2(imageRefParam2)`.
+         */
+        fun inputReference(imageRefParam2: InputReference.ImageRefParam2) = apply {
+            body.inputReference(imageRefParam2)
         }
 
         /**
@@ -385,7 +407,7 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** JSON parameters for creating a new video generation job. */
+    /** Multipart parameters for creating a new video generation job. */
     class Body
     private constructor(
         private val prompt: MultipartField<String>,
@@ -405,8 +427,7 @@ private constructor(
         fun prompt(): String = prompt.value.getRequired("prompt")
 
         /**
-         * Optional reference object that guides generation. Provide exactly one of `image_url` or
-         * `file_id`.
+         * Optional reference asset upload or reference object that guides generation.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -538,12 +559,14 @@ private constructor(
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
-            /**
-             * Optional reference object that guides generation. Provide exactly one of `image_url`
-             * or `file_id`.
-             */
+            /** Optional reference asset upload or reference object that guides generation. */
             fun inputReference(inputReference: InputReference) =
-                inputReference(MultipartField.of(inputReference))
+                inputReference(
+                    MultipartField.builder<InputReference>()
+                        .value(inputReference)
+                        .contentType("application/octet-stream")
+                        .build()
+                )
 
             /**
              * Sets [Builder.inputReference] to an arbitrary multipart value.
@@ -555,6 +578,30 @@ private constructor(
             fun inputReference(inputReference: MultipartField<InputReference>) = apply {
                 this.inputReference = inputReference
             }
+
+            /** Alias for calling [inputReference] with `InputReference.ofStream(stream)`. */
+            fun inputReference(stream: InputStream) =
+                inputReference(InputReference.ofStream(stream))
+
+            /** Optional reference asset upload or reference object that guides generation. */
+            fun inputReference(stream: ByteArray) = inputReference(stream.inputStream())
+
+            /** Optional reference asset upload or reference object that guides generation. */
+            fun inputReference(path: Path) =
+                inputReference(
+                    MultipartField.builder<InputReference>()
+                        .value(InputReference.ofStream(path.inputStream()))
+                        .contentType("application/octet-stream")
+                        .filename(path.name)
+                        .build()
+                )
+
+            /**
+             * Alias for calling [inputReference] with
+             * `InputReference.ofImageRefParam2(imageRefParam2)`.
+             */
+            fun inputReference(imageRefParam2: InputReference.ImageRefParam2) =
+                inputReference(InputReference.ofImageRefParam2(imageRefParam2))
 
             /**
              * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
@@ -696,130 +743,37 @@ private constructor(
             "Body{prompt=$prompt, inputReference=$inputReference, model=$model, seconds=$seconds, size=$size, additionalProperties=$additionalProperties}"
     }
 
-    /**
-     * Optional reference object that guides generation. Provide exactly one of `image_url` or
-     * `file_id`.
-     */
+    /** Optional reference asset upload or reference object that guides generation. */
+    @JsonSerialize(using = InputReference.Serializer::class)
     class InputReference
     private constructor(
-        private val fileId: MultipartField<String>,
-        private val imageUrl: MultipartField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
+        private val stream: InputStream? = null,
+        private val imageRefParam2: ImageRefParam2? = null,
+        private val _json: JsonValue? = null,
     ) {
 
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun fileId(): Optional<String> = fileId.value.getOptional("file_id")
+        /** Optional reference asset upload or reference object that guides generation. */
+        fun stream(): Optional<InputStream> = Optional.ofNullable(stream)
 
-        /**
-         * A fully qualified URL or base64-encoded data URL.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun imageUrl(): Optional<String> = imageUrl.value.getOptional("image_url")
+        fun imageRefParam2(): Optional<ImageRefParam2> = Optional.ofNullable(imageRefParam2)
 
-        /**
-         * Returns the raw multipart value of [fileId].
-         *
-         * Unlike [fileId], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): MultipartField<String> = fileId
+        fun isStream(): Boolean = stream != null
 
-        /**
-         * Returns the raw multipart value of [imageUrl].
-         *
-         * Unlike [imageUrl], this method doesn't throw if the multipart field has an unexpected
-         * type.
-         */
-        @JsonProperty("image_url")
-        @ExcludeMissing
-        fun _imageUrl(): MultipartField<String> = imageUrl
+        fun isImageRefParam2(): Boolean = imageRefParam2 != null
 
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
+        /** Optional reference asset upload or reference object that guides generation. */
+        fun asStream(): InputStream = stream.getOrThrow("stream")
 
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
+        fun asImageRefParam2(): ImageRefParam2 = imageRefParam2.getOrThrow("imageRefParam2")
 
-        fun toBuilder() = Builder().from(this)
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [InputReference]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [InputReference]. */
-        class Builder internal constructor() {
-
-            private var fileId: MultipartField<String> = MultipartField.of(null)
-            private var imageUrl: MultipartField<String> = MultipartField.of(null)
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(inputReference: InputReference) = apply {
-                fileId = inputReference.fileId
-                imageUrl = inputReference.imageUrl
-                additionalProperties = inputReference.additionalProperties.toMutableMap()
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                stream != null -> visitor.visitStream(stream)
+                imageRefParam2 != null -> visitor.visitImageRefParam2(imageRefParam2)
+                else -> visitor.unknown(_json)
             }
-
-            fun fileId(fileId: String) = fileId(MultipartField.of(fileId))
-
-            /**
-             * Sets [Builder.fileId] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun fileId(fileId: MultipartField<String>) = apply { this.fileId = fileId }
-
-            /** A fully qualified URL or base64-encoded data URL. */
-            fun imageUrl(imageUrl: String) = imageUrl(MultipartField.of(imageUrl))
-
-            /**
-             * Sets [Builder.imageUrl] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.imageUrl] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun imageUrl(imageUrl: MultipartField<String>) = apply { this.imageUrl = imageUrl }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [InputReference].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): InputReference =
-                InputReference(fileId, imageUrl, additionalProperties.toMutableMap())
-        }
 
         private var validated: Boolean = false
 
@@ -828,8 +782,15 @@ private constructor(
                 return@apply
             }
 
-            fileId()
-            imageUrl()
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitStream(stream: InputStream) {}
+
+                    override fun visitImageRefParam2(imageRefParam2: ImageRefParam2) {
+                        imageRefParam2.validate()
+                    }
+                }
+            )
             validated = true
         }
 
@@ -847,17 +808,237 @@ private constructor(
             }
 
             return other is InputReference &&
-                fileId == other.fileId &&
-                imageUrl == other.imageUrl &&
-                additionalProperties == other.additionalProperties
+                stream == other.stream &&
+                imageRefParam2 == other.imageRefParam2
         }
 
-        private val hashCode: Int by lazy { Objects.hash(fileId, imageUrl, additionalProperties) }
+        override fun hashCode(): Int = Objects.hash(stream, imageRefParam2)
 
-        override fun hashCode(): Int = hashCode
+        override fun toString(): String =
+            when {
+                stream != null -> "InputReference{stream=$stream}"
+                imageRefParam2 != null -> "InputReference{imageRefParam2=$imageRefParam2}"
+                _json != null -> "InputReference{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid InputReference")
+            }
 
-        override fun toString() =
-            "InputReference{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
+        companion object {
+
+            /** Optional reference asset upload or reference object that guides generation. */
+            @JvmStatic fun ofStream(stream: InputStream) = InputReference(stream = stream)
+
+            @JvmStatic
+            fun ofImageRefParam2(imageRefParam2: ImageRefParam2) =
+                InputReference(imageRefParam2 = imageRefParam2)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [InputReference] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            /** Optional reference asset upload or reference object that guides generation. */
+            fun visitStream(stream: InputStream): T
+
+            fun visitImageRefParam2(imageRefParam2: ImageRefParam2): T
+
+            /**
+             * Maps an unknown variant of [InputReference] to a value of type [T].
+             *
+             * An instance of [InputReference] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown InputReference: $json")
+            }
+        }
+
+        internal class Serializer : BaseSerializer<InputReference>(InputReference::class) {
+
+            override fun serialize(
+                value: InputReference,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.stream != null -> generator.writeObject(value.stream)
+                    value.imageRefParam2 != null -> generator.writeObject(value.imageRefParam2)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid InputReference")
+                }
+            }
+        }
+
+        class ImageRefParam2
+        private constructor(
+            private val fileId: MultipartField<String>,
+            private val imageUrl: MultipartField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun fileId(): Optional<String> = fileId.value.getOptional("file_id")
+
+            /**
+             * A fully qualified URL or base64-encoded data URL.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun imageUrl(): Optional<String> = imageUrl.value.getOptional("image_url")
+
+            /**
+             * Returns the raw multipart value of [fileId].
+             *
+             * Unlike [fileId], this method doesn't throw if the multipart field has an unexpected
+             * type.
+             */
+            @JsonProperty("file_id") @ExcludeMissing fun _fileId(): MultipartField<String> = fileId
+
+            /**
+             * Returns the raw multipart value of [imageUrl].
+             *
+             * Unlike [imageUrl], this method doesn't throw if the multipart field has an unexpected
+             * type.
+             */
+            @JsonProperty("image_url")
+            @ExcludeMissing
+            fun _imageUrl(): MultipartField<String> = imageUrl
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [ImageRefParam2]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [ImageRefParam2]. */
+            class Builder internal constructor() {
+
+                private var fileId: MultipartField<String> = MultipartField.of(null)
+                private var imageUrl: MultipartField<String> = MultipartField.of(null)
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(imageRefParam2: ImageRefParam2) = apply {
+                    fileId = imageRefParam2.fileId
+                    imageUrl = imageRefParam2.imageUrl
+                    additionalProperties = imageRefParam2.additionalProperties.toMutableMap()
+                }
+
+                fun fileId(fileId: String) = fileId(MultipartField.of(fileId))
+
+                /**
+                 * Sets [Builder.fileId] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.fileId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun fileId(fileId: MultipartField<String>) = apply { this.fileId = fileId }
+
+                /** A fully qualified URL or base64-encoded data URL. */
+                fun imageUrl(imageUrl: String) = imageUrl(MultipartField.of(imageUrl))
+
+                /**
+                 * Sets [Builder.imageUrl] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.imageUrl] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun imageUrl(imageUrl: MultipartField<String>) = apply { this.imageUrl = imageUrl }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [ImageRefParam2].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): ImageRefParam2 =
+                    ImageRefParam2(fileId, imageUrl, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): ImageRefParam2 = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileId()
+                imageUrl()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ImageRefParam2 &&
+                    fileId == other.fileId &&
+                    imageUrl == other.imageUrl &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(fileId, imageUrl, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "ImageRefParam2{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
+        }
     }
 
     override fun equals(other: Any?): Boolean {
