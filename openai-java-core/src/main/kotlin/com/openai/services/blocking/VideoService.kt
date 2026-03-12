@@ -12,10 +12,13 @@ import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
 import com.openai.models.videos.VideoListPage
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
+import com.openai.services.blocking.videos.CharacterService
 import java.util.function.Consumer
 
 interface VideoService {
@@ -31,6 +34,8 @@ interface VideoService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService
+
+    fun character(): CharacterService
 
     /** Create a new video generation job from a prompt and optional reference assets. */
     fun create(params: VideoCreateParams): Video = create(params, RequestOptions.none())
@@ -156,6 +161,21 @@ interface VideoService {
     fun downloadContent(videoId: String, requestOptions: RequestOptions): HttpResponse =
         downloadContent(videoId, VideoDownloadContentParams.none(), requestOptions)
 
+    /** Create a new video generation job by editing a source video or existing generated video. */
+    fun edit(params: VideoEditParams): Video = edit(params, RequestOptions.none())
+
+    /** @see edit */
+    fun edit(params: VideoEditParams, requestOptions: RequestOptions = RequestOptions.none()): Video
+
+    /** Create an extension of a completed video. */
+    fun extend(params: VideoExtendParams): Video = extend(params, RequestOptions.none())
+
+    /** @see extend */
+    fun extend(
+        params: VideoExtendParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Video
+
     /** Create a remix of a completed video using a refreshed prompt. */
     fun remix(videoId: String, params: VideoRemixParams): Video =
         remix(videoId, params, RequestOptions.none())
@@ -185,6 +205,8 @@ interface VideoService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService.WithRawResponse
+
+        fun character(): CharacterService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /videos`, but is otherwise the same as
@@ -349,6 +371,36 @@ interface VideoService {
         @MustBeClosed
         fun downloadContent(videoId: String, requestOptions: RequestOptions): HttpResponse =
             downloadContent(videoId, VideoDownloadContentParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /videos/edits`, but is otherwise the same as
+         * [VideoService.edit].
+         */
+        @MustBeClosed
+        fun edit(params: VideoEditParams): HttpResponseFor<Video> =
+            edit(params, RequestOptions.none())
+
+        /** @see edit */
+        @MustBeClosed
+        fun edit(
+            params: VideoEditParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Video>
+
+        /**
+         * Returns a raw HTTP response for `post /videos/extensions`, but is otherwise the same as
+         * [VideoService.extend].
+         */
+        @MustBeClosed
+        fun extend(params: VideoExtendParams): HttpResponseFor<Video> =
+            extend(params, RequestOptions.none())
+
+        /** @see extend */
+        @MustBeClosed
+        fun extend(
+            params: VideoExtendParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Video>
 
         /**
          * Returns a raw HTTP response for `post /videos/{video_id}/remix`, but is otherwise the

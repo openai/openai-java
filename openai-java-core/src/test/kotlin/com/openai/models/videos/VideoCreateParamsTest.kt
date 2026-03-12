@@ -13,7 +13,12 @@ internal class VideoCreateParamsTest {
     fun create() {
         VideoCreateParams.builder()
             .prompt("x")
-            .inputReference("Example data".byteInputStream())
+            .inputReference(
+                VideoCreateParams.InputReference.builder()
+                    .fileId("file-123")
+                    .imageUrl("image_url")
+                    .build()
+            )
             .model(VideoModel.SORA_2)
             .seconds(VideoSeconds._4)
             .size(VideoSize._720X1280)
@@ -25,7 +30,12 @@ internal class VideoCreateParamsTest {
         val params =
             VideoCreateParams.builder()
                 .prompt("x")
-                .inputReference("Example data".byteInputStream())
+                .inputReference(
+                    VideoCreateParams.InputReference.builder()
+                        .fileId("file-123")
+                        .imageUrl("image_url")
+                        .build()
+                )
                 .model(VideoModel.SORA_2)
                 .seconds(VideoSeconds._4)
                 .size(VideoSize._720X1280)
@@ -44,7 +54,13 @@ internal class VideoCreateParamsTest {
             .isEqualTo(
                 mapOf(
                         "prompt" to MultipartField.of("x"),
-                        "input_reference" to MultipartField.of("Example data".byteInputStream()),
+                        "input_reference" to
+                            MultipartField.of(
+                                VideoCreateParams.InputReference.builder()
+                                    .fileId("file-123")
+                                    .imageUrl("image_url")
+                                    .build()
+                            ),
                         "model" to MultipartField.of(VideoModel.SORA_2),
                         "seconds" to MultipartField.of(VideoSeconds._4),
                         "size" to MultipartField.of(VideoSize._720X1280),

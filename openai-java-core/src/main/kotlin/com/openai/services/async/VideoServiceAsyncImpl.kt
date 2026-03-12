@@ -22,11 +22,15 @@ import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
 import com.openai.models.videos.VideoListPageAsync
 import com.openai.models.videos.VideoListPageResponse
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
+import com.openai.services.async.videos.CharacterServiceAsync
+import com.openai.services.async.videos.CharacterServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -38,10 +42,16 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         WithRawResponseImpl(clientOptions)
     }
 
+    private val character: CharacterServiceAsync by lazy {
+        CharacterServiceAsyncImpl(clientOptions)
+    }
+
     override fun withRawResponse(): VideoServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoServiceAsync =
         VideoServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun character(): CharacterServiceAsync = character
 
     override fun create(
         params: VideoCreateParams,
@@ -78,6 +88,20 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // get /videos/{video_id}/content
         withRawResponse().downloadContent(params, requestOptions)
 
+    override fun edit(
+        params: VideoEditParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Video> =
+        // post /videos/edits
+        withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
+
+    override fun extend(
+        params: VideoExtendParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Video> =
+        // post /videos/extensions
+        withRawResponse().extend(params, requestOptions).thenApply { it.parse() }
+
     override fun remix(
         params: VideoRemixParams,
         requestOptions: RequestOptions,
@@ -91,12 +115,18 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val character: CharacterServiceAsync.WithRawResponse by lazy {
+            CharacterServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VideoServiceAsync.WithRawResponse =
             VideoServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun character(): CharacterServiceAsync.WithRawResponse = character
 
         private val createHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
@@ -251,6 +281,66 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response -> errorHandler.handle(response) }
+        }
+
+        private val editHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        override fun edit(
+            params: VideoEditParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Video>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "edits")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { editHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val extendHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        override fun extend(
+            params: VideoExtendParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Video>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "extensions")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { extendHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
         }
 
         private val remixHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
