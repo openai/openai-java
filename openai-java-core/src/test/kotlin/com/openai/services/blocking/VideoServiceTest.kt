@@ -12,6 +12,8 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
 import com.openai.models.videos.VideoModel
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoSeconds
@@ -39,7 +41,12 @@ internal class VideoServiceTest {
             videoService.create(
                 VideoCreateParams.builder()
                     .prompt("x")
-                    .inputReference("Example data".byteInputStream())
+                    .inputReference(
+                        VideoCreateParams.InputReference.builder()
+                            .fileId("file-123")
+                            .imageUrl("image_url")
+                            .build()
+                    )
                     .model(VideoModel.SORA_2)
                     .seconds(VideoSeconds._4)
                     .size(VideoSize._720X1280)
@@ -110,6 +117,47 @@ internal class VideoServiceTest {
             )
 
         assertThat(response.body()).hasContent("abc")
+    }
+
+    @Test
+    fun edit() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video =
+            videoService.edit(
+                VideoEditParams.builder()
+                    .prompt("x")
+                    .video(VideoEditParams.Video.builder().id("video_123").build())
+                    .build()
+            )
+
+        video.validate()
+    }
+
+    @Test
+    fun extend() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video =
+            videoService.extend(
+                VideoExtendParams.builder()
+                    .prompt("x")
+                    .seconds(VideoSeconds._4)
+                    .video(VideoExtendParams.Video.builder().id("video_123").build())
+                    .build()
+            )
+
+        video.validate()
     }
 
     @Test
