@@ -24,7 +24,7 @@ internal class SkillServiceAsyncTest {
         val skillFuture =
             skillServiceAsync.create(
                 SkillCreateParams.builder()
-                    .filesOfInputStreams(listOf("some content".byteInputStream()))
+                    .filesOfInputStreams(listOf("Example data".byteInputStream()))
                     .build()
             )
 

@@ -27,7 +27,7 @@ internal class VersionServiceTest {
                 VersionCreateParams.builder()
                     .skillId("skill_123")
                     .default_(true)
-                    .filesOfInputStreams(listOf("some content".byteInputStream()))
+                    .filesOfInputStreams(listOf("Example data".byteInputStream()))
                     .build()
             )
 

@@ -12,11 +12,11 @@ internal class ImageEditParamsTest {
     @Test
     fun create() {
         ImageEditParams.builder()
-            .image("some content".byteInputStream())
+            .image("Example data".byteInputStream())
             .prompt("A cute baby sea otter wearing a beret")
             .background(ImageEditParams.Background.TRANSPARENT)
             .inputFidelity(ImageEditParams.InputFidelity.HIGH)
-            .mask("some content".byteInputStream())
+            .mask("Example data".byteInputStream())
             .model(ImageModel.GPT_IMAGE_1_5)
             .n(1L)
             .outputCompression(100L)
@@ -33,11 +33,11 @@ internal class ImageEditParamsTest {
     fun body() {
         val params =
             ImageEditParams.builder()
-                .image("some content".byteInputStream())
+                .image("Example data".byteInputStream())
                 .prompt("A cute baby sea otter wearing a beret")
                 .background(ImageEditParams.Background.TRANSPARENT)
                 .inputFidelity(ImageEditParams.InputFidelity.HIGH)
-                .mask("some content".byteInputStream())
+                .mask("Example data".byteInputStream())
                 .model(ImageModel.GPT_IMAGE_1_5)
                 .n(1L)
                 .outputCompression(100L)
@@ -65,7 +65,7 @@ internal class ImageEditParamsTest {
                             MultipartField.builder<ImageEditParams.Image>()
                                 .value(
                                     ImageEditParams.Image.ofInputStream(
-                                        "some content".byteInputStream()
+                                        "Example data".byteInputStream()
                                     )
                                 )
                                 .contentType("application/octet-stream")
@@ -73,7 +73,7 @@ internal class ImageEditParamsTest {
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
                         "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
                         "input_fidelity" to MultipartField.of(ImageEditParams.InputFidelity.HIGH),
-                        "mask" to MultipartField.of("some content".byteInputStream()),
+                        "mask" to MultipartField.of("Example data".byteInputStream()),
                         "model" to MultipartField.of(ImageModel.GPT_IMAGE_1_5),
                         "n" to MultipartField.of(1L),
                         "output_compression" to MultipartField.of(100L),
@@ -94,7 +94,7 @@ internal class ImageEditParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             ImageEditParams.builder()
-                .image("some content".byteInputStream())
+                .image("Example data".byteInputStream())
                 .prompt("A cute baby sea otter wearing a beret")
                 .build()
 
@@ -114,7 +114,7 @@ internal class ImageEditParamsTest {
                             MultipartField.builder<ImageEditParams.Image>()
                                 .value(
                                     ImageEditParams.Image.ofInputStream(
-                                        "some content".byteInputStream()
+                                        "Example data".byteInputStream()
                                     )
                                 )
                                 .contentType("application/octet-stream")

@@ -68,7 +68,9 @@ jobs:
         run: ./scripts/build
 
       - name: Build and upload Maven artifacts
-        if: github.repository == 'stainless-sdks/openai-java'
+        if: |-
+          github.repository == 'stainless-sdks/openai-java' &&
+          !startsWith(github.ref, 'refs/heads/stl/')
         env:
           URL: https://pkg.stainless.com/s
           SHA: ${{ github.sha }}

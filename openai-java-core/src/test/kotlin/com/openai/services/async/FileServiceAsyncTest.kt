@@ -34,7 +34,7 @@ internal class FileServiceAsyncTest {
         val fileObjectFuture =
             fileServiceAsync.create(
                 FileCreateParams.builder()
-                    .file("some content".byteInputStream())
+                    .file("Example data".byteInputStream())
                     .purpose(FilePurpose.ASSISTANTS)
                     .expiresAfter(FileCreateParams.ExpiresAfter.builder().seconds(3600L).build())
                     .build()
