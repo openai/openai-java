@@ -24,7 +24,7 @@ internal class TranslationServiceAsyncTest {
         val translationFuture =
             translationServiceAsync.create(
                 TranslationCreateParams.builder()
-                    .file("some content".byteInputStream())
+                    .file("Example data".byteInputStream())
                     .model(AudioModel.WHISPER_1)
                     .prompt("prompt")
                     .responseFormat(TranslationCreateParams.ResponseFormat.JSON)
