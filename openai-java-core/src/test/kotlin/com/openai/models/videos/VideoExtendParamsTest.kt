@@ -14,7 +14,9 @@ internal class VideoExtendParamsTest {
         VideoExtendParams.builder()
             .prompt("x")
             .seconds(VideoSeconds._4)
-            .video(VideoExtendParams.Video.builder().id("video_123").build())
+            .video(
+                VideoExtendParams.Video.VideoReferenceInputParam.builder().id("video_123").build()
+            )
             .build()
     }
 
@@ -24,7 +26,11 @@ internal class VideoExtendParamsTest {
             VideoExtendParams.builder()
                 .prompt("x")
                 .seconds(VideoSeconds._4)
-                .video(VideoExtendParams.Video.builder().id("video_123").build())
+                .video(
+                    VideoExtendParams.Video.VideoReferenceInputParam.builder()
+                        .id("video_123")
+                        .build()
+                )
                 .build()
 
         val body = params._body()
@@ -42,9 +48,16 @@ internal class VideoExtendParamsTest {
                         "prompt" to MultipartField.of("x"),
                         "seconds" to MultipartField.of(VideoSeconds._4),
                         "video" to
-                            MultipartField.of(
-                                VideoExtendParams.Video.builder().id("video_123").build()
-                            ),
+                            MultipartField.builder<VideoExtendParams.Video>()
+                                .value(
+                                    VideoExtendParams.Video.ofReferenceInputParam(
+                                        VideoExtendParams.Video.VideoReferenceInputParam.builder()
+                                            .id("video_123")
+                                            .build()
+                                    )
+                                )
+                                .contentType("application/octet-stream")
+                                .build(),
                     )
                     .mapValues { (_, field) ->
                         field.map { (it as? ByteArray)?.inputStream() ?: it }
