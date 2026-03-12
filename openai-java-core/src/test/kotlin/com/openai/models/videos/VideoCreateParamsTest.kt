@@ -13,12 +13,7 @@ internal class VideoCreateParamsTest {
     fun create() {
         VideoCreateParams.builder()
             .prompt("x")
-            .inputReference(
-                VideoCreateParams.InputReference.builder()
-                    .fileId("file-123")
-                    .imageUrl("image_url")
-                    .build()
-            )
+            .inputReference("Example data".byteInputStream())
             .model(VideoModel.SORA_2)
             .seconds(VideoSeconds._4)
             .size(VideoSize._720X1280)
@@ -30,12 +25,7 @@ internal class VideoCreateParamsTest {
         val params =
             VideoCreateParams.builder()
                 .prompt("x")
-                .inputReference(
-                    VideoCreateParams.InputReference.builder()
-                        .fileId("file-123")
-                        .imageUrl("image_url")
-                        .build()
-                )
+                .inputReference("Example data".byteInputStream())
                 .model(VideoModel.SORA_2)
                 .seconds(VideoSeconds._4)
                 .size(VideoSize._720X1280)
@@ -55,12 +45,14 @@ internal class VideoCreateParamsTest {
                 mapOf(
                         "prompt" to MultipartField.of("x"),
                         "input_reference" to
-                            MultipartField.of(
-                                VideoCreateParams.InputReference.builder()
-                                    .fileId("file-123")
-                                    .imageUrl("image_url")
-                                    .build()
-                            ),
+                            MultipartField.builder<VideoCreateParams.InputReference>()
+                                .value(
+                                    VideoCreateParams.InputReference.ofStream(
+                                        "Example data".byteInputStream()
+                                    )
+                                )
+                                .contentType("application/octet-stream")
+                                .build(),
                         "model" to MultipartField.of(VideoModel.SORA_2),
                         "seconds" to MultipartField.of(VideoSeconds._4),
                         "size" to MultipartField.of(VideoSize._720X1280),

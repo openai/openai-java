@@ -5,17 +5,27 @@ package com.openai.models.videos
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /** Create an extension of a completed video. */
 class VideoExtendParams
@@ -43,7 +53,7 @@ private constructor(
     fun seconds(): VideoSeconds = body.seconds()
 
     /**
-     * Reference to the completed video to extend.
+     * Reference to the completed video.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -147,7 +157,7 @@ private constructor(
          */
         fun seconds(seconds: MultipartField<VideoSeconds>) = apply { body.seconds(seconds) }
 
-        /** Reference to the completed video to extend. */
+        /** Reference to the completed video. */
         fun video(video: Video) = apply { body.video(video) }
 
         /**
@@ -157,6 +167,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun video(video: MultipartField<Video>) = apply { body.video(video) }
+
+        /** Alias for calling [video] with `Video.ofReferenceInputParam(referenceInputParam)`. */
+        fun video(referenceInputParam: Video.VideoReferenceInputParam) = apply {
+            body.video(referenceInputParam)
+        }
+
+        /** Alias for calling [video] with `Video.ofInputStream(inputStream)`. */
+        fun video(inputStream: InputStream) = apply { body.video(inputStream) }
+
+        /** Reference to the completed video to extend. */
+        fun video(inputStream: ByteArray) = apply { body.video(inputStream) }
+
+        /** Reference to the completed video to extend. */
+        fun video(path: Path) = apply { body.video(path) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -306,7 +330,7 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** JSON parameters for extending an existing generated video. */
+    /** Multipart parameters for extending an existing generated video. */
     class Body
     private constructor(
         private val prompt: MultipartField<String>,
@@ -333,7 +357,7 @@ private constructor(
         fun seconds(): VideoSeconds = seconds.value.getRequired("seconds")
 
         /**
-         * Reference to the completed video to extend.
+         * Reference to the completed video.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -434,8 +458,14 @@ private constructor(
              */
             fun seconds(seconds: MultipartField<VideoSeconds>) = apply { this.seconds = seconds }
 
-            /** Reference to the completed video to extend. */
-            fun video(video: Video) = video(MultipartField.of(video))
+            /** Reference to the completed video. */
+            fun video(video: Video) =
+                video(
+                    MultipartField.builder<Video>()
+                        .value(video)
+                        .contentType("application/octet-stream")
+                        .build()
+                )
 
             /**
              * Sets [Builder.video] to an arbitrary multipart value.
@@ -445,6 +475,28 @@ private constructor(
              * value.
              */
             fun video(video: MultipartField<Video>) = apply { this.video = video }
+
+            /**
+             * Alias for calling [video] with `Video.ofReferenceInputParam(referenceInputParam)`.
+             */
+            fun video(referenceInputParam: Video.VideoReferenceInputParam) =
+                video(Video.ofReferenceInputParam(referenceInputParam))
+
+            /** Alias for calling [video] with `Video.ofInputStream(inputStream)`. */
+            fun video(inputStream: InputStream) = video(Video.ofInputStream(inputStream))
+
+            /** Reference to the completed video to extend. */
+            fun video(inputStream: ByteArray) = video(inputStream.inputStream())
+
+            /** Reference to the completed video to extend. */
+            fun video(path: Path) =
+                video(
+                    MultipartField.builder<Video>()
+                        .value(Video.ofInputStream(path.inputStream()))
+                        .contentType("application/octet-stream")
+                        .filename(path.name)
+                        .build()
+                )
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -531,110 +583,41 @@ private constructor(
             "Body{prompt=$prompt, seconds=$seconds, video=$video, additionalProperties=$additionalProperties}"
     }
 
-    /** Reference to the completed video to extend. */
+    /** Reference to the completed video. */
+    @JsonSerialize(using = Video.Serializer::class)
     class Video
     private constructor(
-        private val id: MultipartField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
+        private val referenceInputParam: VideoReferenceInputParam? = null,
+        private val inputStream: InputStream? = null,
+        private val _json: JsonValue? = null,
     ) {
 
-        /**
-         * The identifier of the completed video.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun id(): String = id.value.getRequired("id")
+        /** Reference to the completed video. */
+        fun referenceInputParam(): Optional<VideoReferenceInputParam> =
+            Optional.ofNullable(referenceInputParam)
 
-        /**
-         * Returns the raw multipart value of [id].
-         *
-         * Unlike [id], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        @JsonProperty("id") @ExcludeMissing fun _id(): MultipartField<String> = id
+        /** Reference to the completed video to extend. */
+        fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
+        fun isReferenceInputParam(): Boolean = referenceInputParam != null
 
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
+        fun isInputStream(): Boolean = inputStream != null
 
-        fun toBuilder() = Builder().from(this)
+        /** Reference to the completed video. */
+        fun asReferenceInputParam(): VideoReferenceInputParam =
+            referenceInputParam.getOrThrow("referenceInputParam")
 
-        companion object {
+        /** Reference to the completed video to extend. */
+        fun asInputStream(): InputStream = inputStream.getOrThrow("inputStream")
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Video].
-             *
-             * The following fields are required:
-             * ```java
-             * .id()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        /** A builder for [Video]. */
-        class Builder internal constructor() {
-
-            private var id: MultipartField<String>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(video: Video) = apply {
-                id = video.id
-                additionalProperties = video.additionalProperties.toMutableMap()
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                referenceInputParam != null -> visitor.visitReferenceInputParam(referenceInputParam)
+                inputStream != null -> visitor.visitInputStream(inputStream)
+                else -> visitor.unknown(_json)
             }
-
-            /** The identifier of the completed video. */
-            fun id(id: String) = id(MultipartField.of(id))
-
-            /**
-             * Sets [Builder.id] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.id] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun id(id: MultipartField<String>) = apply { this.id = id }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Video].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .id()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Video = Video(checkRequired("id", id), additionalProperties.toMutableMap())
-        }
 
         private var validated: Boolean = false
 
@@ -643,7 +626,17 @@ private constructor(
                 return@apply
             }
 
-            id()
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitReferenceInputParam(
+                        referenceInputParam: VideoReferenceInputParam
+                    ) {
+                        referenceInputParam.validate()
+                    }
+
+                    override fun visitInputStream(inputStream: InputStream) {}
+                }
+            )
             validated = true
         }
 
@@ -661,15 +654,224 @@ private constructor(
             }
 
             return other is Video &&
-                id == other.id &&
-                additionalProperties == other.additionalProperties
+                referenceInputParam == other.referenceInputParam &&
+                inputStream == other.inputStream
         }
 
-        private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
+        override fun hashCode(): Int = Objects.hash(referenceInputParam, inputStream)
 
-        override fun hashCode(): Int = hashCode
+        override fun toString(): String =
+            when {
+                referenceInputParam != null -> "Video{referenceInputParam=$referenceInputParam}"
+                inputStream != null -> "Video{inputStream=$inputStream}"
+                _json != null -> "Video{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Video")
+            }
 
-        override fun toString() = "Video{id=$id, additionalProperties=$additionalProperties}"
+        companion object {
+
+            /** Reference to the completed video. */
+            @JvmStatic
+            fun ofReferenceInputParam(referenceInputParam: VideoReferenceInputParam) =
+                Video(referenceInputParam = referenceInputParam)
+
+            /** Reference to the completed video to extend. */
+            @JvmStatic
+            fun ofInputStream(inputStream: InputStream) = Video(inputStream = inputStream)
+        }
+
+        /** An interface that defines how to map each variant of [Video] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            /** Reference to the completed video. */
+            fun visitReferenceInputParam(referenceInputParam: VideoReferenceInputParam): T
+
+            /** Reference to the completed video to extend. */
+            fun visitInputStream(inputStream: InputStream): T
+
+            /**
+             * Maps an unknown variant of [Video] to a value of type [T].
+             *
+             * An instance of [Video] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Video: $json")
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Video>(Video::class) {
+
+            override fun serialize(
+                value: Video,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.referenceInputParam != null ->
+                        generator.writeObject(value.referenceInputParam)
+                    value.inputStream != null -> generator.writeObject(value.inputStream)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Video")
+                }
+            }
+        }
+
+        /** Reference to the completed video. */
+        class VideoReferenceInputParam
+        private constructor(
+            private val id: MultipartField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            /**
+             * The identifier of the completed video.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun id(): String = id.value.getRequired("id")
+
+            /**
+             * Returns the raw multipart value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the multipart field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): MultipartField<String> = id
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of
+                 * [VideoReferenceInputParam].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [VideoReferenceInputParam]. */
+            class Builder internal constructor() {
+
+                private var id: MultipartField<String>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(videoReferenceInputParam: VideoReferenceInputParam) = apply {
+                    id = videoReferenceInputParam.id
+                    additionalProperties =
+                        videoReferenceInputParam.additionalProperties.toMutableMap()
+                }
+
+                /** The identifier of the completed video. */
+                fun id(id: String) = id(MultipartField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: MultipartField<String>) = apply { this.id = id }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [VideoReferenceInputParam].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): VideoReferenceInputParam =
+                    VideoReferenceInputParam(
+                        checkRequired("id", id),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): VideoReferenceInputParam = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                id()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is VideoReferenceInputParam &&
+                    id == other.id &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "VideoReferenceInputParam{id=$id, additionalProperties=$additionalProperties}"
+        }
     }
 
     override fun equals(other: Any?): Boolean {
