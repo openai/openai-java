@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.28.0 (2026-03-13)
+
+Full Changelog: [v4.27.0...v4.28.0](https://github.com/openai/openai-java/compare/v4.27.0...v4.28.0)
+
+### Features
+
+* **api:** custom voices ([e576130](https://github.com/openai/openai-java/commit/e57613014fa561418c77afb9cec87149f012bb67))
+
 ## 4.27.0 (2026-03-13)
 
 Full Changelog: [v4.26.0...v4.27.0](https://github.com/openai/openai-java/compare/v4.26.0...v4.27.0)
