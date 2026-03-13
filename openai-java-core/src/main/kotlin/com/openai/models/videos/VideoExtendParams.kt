@@ -53,7 +53,7 @@ private constructor(
     fun seconds(): VideoSeconds = body.seconds()
 
     /**
-     * Reference to the completed video.
+     * Reference to the completed video to extend.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -157,7 +157,7 @@ private constructor(
          */
         fun seconds(seconds: MultipartField<VideoSeconds>) = apply { body.seconds(seconds) }
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to extend. */
         fun video(video: Video) = apply { body.video(video) }
 
         /**
@@ -168,11 +168,6 @@ private constructor(
          */
         fun video(video: MultipartField<Video>) = apply { body.video(video) }
 
-        /** Alias for calling [video] with `Video.ofReferenceInputParam(referenceInputParam)`. */
-        fun video(referenceInputParam: Video.VideoReferenceInputParam) = apply {
-            body.video(referenceInputParam)
-        }
-
         /** Alias for calling [video] with `Video.ofInputStream(inputStream)`. */
         fun video(inputStream: InputStream) = apply { body.video(inputStream) }
 
@@ -181,6 +176,11 @@ private constructor(
 
         /** Reference to the completed video to extend. */
         fun video(path: Path) = apply { body.video(path) }
+
+        /** Alias for calling [video] with `Video.ofReferenceInputParam(referenceInputParam)`. */
+        fun video(referenceInputParam: Video.VideoReferenceInputParam) = apply {
+            body.video(referenceInputParam)
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -357,7 +357,7 @@ private constructor(
         fun seconds(): VideoSeconds = seconds.value.getRequired("seconds")
 
         /**
-         * Reference to the completed video.
+         * Reference to the completed video to extend.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -458,7 +458,7 @@ private constructor(
              */
             fun seconds(seconds: MultipartField<VideoSeconds>) = apply { this.seconds = seconds }
 
-            /** Reference to the completed video. */
+            /** Reference to the completed video to extend. */
             fun video(video: Video) =
                 video(
                     MultipartField.builder<Video>()
@@ -476,12 +476,6 @@ private constructor(
              */
             fun video(video: MultipartField<Video>) = apply { this.video = video }
 
-            /**
-             * Alias for calling [video] with `Video.ofReferenceInputParam(referenceInputParam)`.
-             */
-            fun video(referenceInputParam: Video.VideoReferenceInputParam) =
-                video(Video.ofReferenceInputParam(referenceInputParam))
-
             /** Alias for calling [video] with `Video.ofInputStream(inputStream)`. */
             fun video(inputStream: InputStream) = video(Video.ofInputStream(inputStream))
 
@@ -497,6 +491,12 @@ private constructor(
                         .filename(path.name)
                         .build()
                 )
+
+            /**
+             * Alias for calling [video] with `Video.ofReferenceInputParam(referenceInputParam)`.
+             */
+            fun video(referenceInputParam: Video.VideoReferenceInputParam) =
+                video(Video.ofReferenceInputParam(referenceInputParam))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -583,39 +583,39 @@ private constructor(
             "Body{prompt=$prompt, seconds=$seconds, video=$video, additionalProperties=$additionalProperties}"
     }
 
-    /** Reference to the completed video. */
+    /** Reference to the completed video to extend. */
     @JsonSerialize(using = Video.Serializer::class)
     class Video
     private constructor(
-        private val referenceInputParam: VideoReferenceInputParam? = null,
         private val inputStream: InputStream? = null,
+        private val referenceInputParam: VideoReferenceInputParam? = null,
         private val _json: JsonValue? = null,
     ) {
+
+        /** Reference to the completed video to extend. */
+        fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
         /** Reference to the completed video. */
         fun referenceInputParam(): Optional<VideoReferenceInputParam> =
             Optional.ofNullable(referenceInputParam)
 
-        /** Reference to the completed video to extend. */
-        fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
+        fun isInputStream(): Boolean = inputStream != null
 
         fun isReferenceInputParam(): Boolean = referenceInputParam != null
 
-        fun isInputStream(): Boolean = inputStream != null
+        /** Reference to the completed video to extend. */
+        fun asInputStream(): InputStream = inputStream.getOrThrow("inputStream")
 
         /** Reference to the completed video. */
         fun asReferenceInputParam(): VideoReferenceInputParam =
             referenceInputParam.getOrThrow("referenceInputParam")
 
-        /** Reference to the completed video to extend. */
-        fun asInputStream(): InputStream = inputStream.getOrThrow("inputStream")
-
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                referenceInputParam != null -> visitor.visitReferenceInputParam(referenceInputParam)
                 inputStream != null -> visitor.visitInputStream(inputStream)
+                referenceInputParam != null -> visitor.visitReferenceInputParam(referenceInputParam)
                 else -> visitor.unknown(_json)
             }
 
@@ -628,13 +628,13 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
+                    override fun visitInputStream(inputStream: InputStream) {}
+
                     override fun visitReferenceInputParam(
                         referenceInputParam: VideoReferenceInputParam
                     ) {
                         referenceInputParam.validate()
                     }
-
-                    override fun visitInputStream(inputStream: InputStream) {}
                 }
             )
             validated = true
@@ -654,40 +654,40 @@ private constructor(
             }
 
             return other is Video &&
-                referenceInputParam == other.referenceInputParam &&
-                inputStream == other.inputStream
+                inputStream == other.inputStream &&
+                referenceInputParam == other.referenceInputParam
         }
 
-        override fun hashCode(): Int = Objects.hash(referenceInputParam, inputStream)
+        override fun hashCode(): Int = Objects.hash(inputStream, referenceInputParam)
 
         override fun toString(): String =
             when {
-                referenceInputParam != null -> "Video{referenceInputParam=$referenceInputParam}"
                 inputStream != null -> "Video{inputStream=$inputStream}"
+                referenceInputParam != null -> "Video{referenceInputParam=$referenceInputParam}"
                 _json != null -> "Video{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Video")
             }
 
         companion object {
 
+            /** Reference to the completed video to extend. */
+            @JvmStatic
+            fun ofInputStream(inputStream: InputStream) = Video(inputStream = inputStream)
+
             /** Reference to the completed video. */
             @JvmStatic
             fun ofReferenceInputParam(referenceInputParam: VideoReferenceInputParam) =
                 Video(referenceInputParam = referenceInputParam)
-
-            /** Reference to the completed video to extend. */
-            @JvmStatic
-            fun ofInputStream(inputStream: InputStream) = Video(inputStream = inputStream)
         }
 
         /** An interface that defines how to map each variant of [Video] to a value of type [T]. */
         interface Visitor<out T> {
 
-            /** Reference to the completed video. */
-            fun visitReferenceInputParam(referenceInputParam: VideoReferenceInputParam): T
-
             /** Reference to the completed video to extend. */
             fun visitInputStream(inputStream: InputStream): T
+
+            /** Reference to the completed video. */
+            fun visitReferenceInputParam(referenceInputParam: VideoReferenceInputParam): T
 
             /**
              * Maps an unknown variant of [Video] to a value of type [T].
@@ -712,9 +712,9 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
+                    value.inputStream != null -> generator.writeObject(value.inputStream)
                     value.referenceInputParam != null ->
                         generator.writeObject(value.referenceInputParam)
-                    value.inputStream != null -> generator.writeObject(value.inputStream)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Video")
                 }

@@ -18,19 +18,21 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.videos.Video
+import com.openai.models.videos.VideoCreateCharacterParams
+import com.openai.models.videos.VideoCreateCharacterResponse
 import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
 import com.openai.models.videos.VideoEditParams
 import com.openai.models.videos.VideoExtendParams
+import com.openai.models.videos.VideoGetCharacterParams
+import com.openai.models.videos.VideoGetCharacterResponse
 import com.openai.models.videos.VideoListPageAsync
 import com.openai.models.videos.VideoListPageResponse
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
-import com.openai.services.async.videos.CharacterServiceAsync
-import com.openai.services.async.videos.CharacterServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -42,16 +44,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         WithRawResponseImpl(clientOptions)
     }
 
-    private val character: CharacterServiceAsync by lazy {
-        CharacterServiceAsyncImpl(clientOptions)
-    }
-
     override fun withRawResponse(): VideoServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoServiceAsync =
         VideoServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
-
-    override fun character(): CharacterServiceAsync = character
 
     override fun create(
         params: VideoCreateParams,
@@ -81,6 +77,13 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // delete /videos/{video_id}
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
+    override fun createCharacter(
+        params: VideoCreateCharacterParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VideoCreateCharacterResponse> =
+        // post /videos/characters
+        withRawResponse().createCharacter(params, requestOptions).thenApply { it.parse() }
+
     override fun downloadContent(
         params: VideoDownloadContentParams,
         requestOptions: RequestOptions,
@@ -102,6 +105,13 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // post /videos/extensions
         withRawResponse().extend(params, requestOptions).thenApply { it.parse() }
 
+    override fun getCharacter(
+        params: VideoGetCharacterParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VideoGetCharacterResponse> =
+        // get /videos/characters/{character_id}
+        withRawResponse().getCharacter(params, requestOptions).thenApply { it.parse() }
+
     override fun remix(
         params: VideoRemixParams,
         requestOptions: RequestOptions,
@@ -115,18 +125,12 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
-        private val character: CharacterServiceAsync.WithRawResponse by lazy {
-            CharacterServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VideoServiceAsync.WithRawResponse =
             VideoServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
-
-        override fun character(): CharacterServiceAsync.WithRawResponse = character
 
         private val createHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
@@ -262,6 +266,37 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
+        private val createCharacterHandler: Handler<VideoCreateCharacterResponse> =
+            jsonHandler<VideoCreateCharacterResponse>(clientOptions.jsonMapper)
+
+        override fun createCharacter(
+            params: VideoCreateCharacterParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VideoCreateCharacterResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "characters")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { createCharacterHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
         override fun downloadContent(
             params: VideoDownloadContentParams,
             requestOptions: RequestOptions,
@@ -334,6 +369,39 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     errorHandler.handle(response).parseable {
                         response
                             .use { extendHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val getCharacterHandler: Handler<VideoGetCharacterResponse> =
+            jsonHandler<VideoGetCharacterResponse>(clientOptions.jsonMapper)
+
+        override fun getCharacter(
+            params: VideoGetCharacterParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("characterId", params.characterId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "characters", params._pathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { getCharacterHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

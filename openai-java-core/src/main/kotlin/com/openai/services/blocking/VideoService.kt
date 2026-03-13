@@ -8,17 +8,20 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.videos.Video
+import com.openai.models.videos.VideoCreateCharacterParams
+import com.openai.models.videos.VideoCreateCharacterResponse
 import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
 import com.openai.models.videos.VideoEditParams
 import com.openai.models.videos.VideoExtendParams
+import com.openai.models.videos.VideoGetCharacterParams
+import com.openai.models.videos.VideoGetCharacterResponse
 import com.openai.models.videos.VideoListPage
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
-import com.openai.services.blocking.videos.CharacterService
 import java.util.function.Consumer
 
 interface VideoService {
@@ -34,8 +37,6 @@ interface VideoService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService
-
-    fun character(): CharacterService
 
     /** Create a new video generation job from a prompt and optional reference assets. */
     fun create(params: VideoCreateParams): Video = create(params, RequestOptions.none())
@@ -120,6 +121,16 @@ interface VideoService {
     fun delete(videoId: String, requestOptions: RequestOptions): VideoDeleteResponse =
         delete(videoId, VideoDeleteParams.none(), requestOptions)
 
+    /** Create a character from an uploaded video. */
+    fun createCharacter(params: VideoCreateCharacterParams): VideoCreateCharacterResponse =
+        createCharacter(params, RequestOptions.none())
+
+    /** @see createCharacter */
+    fun createCharacter(
+        params: VideoCreateCharacterParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): VideoCreateCharacterResponse
+
     /**
      * Download the generated video bytes or a derived preview asset.
      *
@@ -176,6 +187,41 @@ interface VideoService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Video
 
+    /** Fetch a character. */
+    fun getCharacter(characterId: String): VideoGetCharacterResponse =
+        getCharacter(characterId, VideoGetCharacterParams.none())
+
+    /** @see getCharacter */
+    fun getCharacter(
+        characterId: String,
+        params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): VideoGetCharacterResponse =
+        getCharacter(params.toBuilder().characterId(characterId).build(), requestOptions)
+
+    /** @see getCharacter */
+    fun getCharacter(
+        characterId: String,
+        params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+    ): VideoGetCharacterResponse = getCharacter(characterId, params, RequestOptions.none())
+
+    /** @see getCharacter */
+    fun getCharacter(
+        params: VideoGetCharacterParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): VideoGetCharacterResponse
+
+    /** @see getCharacter */
+    fun getCharacter(params: VideoGetCharacterParams): VideoGetCharacterResponse =
+        getCharacter(params, RequestOptions.none())
+
+    /** @see getCharacter */
+    fun getCharacter(
+        characterId: String,
+        requestOptions: RequestOptions,
+    ): VideoGetCharacterResponse =
+        getCharacter(characterId, VideoGetCharacterParams.none(), requestOptions)
+
     /** Create a remix of a completed video using a refreshed prompt. */
     fun remix(videoId: String, params: VideoRemixParams): Video =
         remix(videoId, params, RequestOptions.none())
@@ -205,8 +251,6 @@ interface VideoService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService.WithRawResponse
-
-        fun character(): CharacterService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /videos`, but is otherwise the same as
@@ -332,6 +376,23 @@ interface VideoService {
             delete(videoId, VideoDeleteParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `post /videos/characters`, but is otherwise the same as
+         * [VideoService.createCharacter].
+         */
+        @MustBeClosed
+        fun createCharacter(
+            params: VideoCreateCharacterParams
+        ): HttpResponseFor<VideoCreateCharacterResponse> =
+            createCharacter(params, RequestOptions.none())
+
+        /** @see createCharacter */
+        @MustBeClosed
+        fun createCharacter(
+            params: VideoCreateCharacterParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VideoCreateCharacterResponse>
+
+        /**
          * Returns a raw HTTP response for `get /videos/{video_id}/content`, but is otherwise the
          * same as [VideoService.downloadContent].
          */
@@ -401,6 +462,52 @@ interface VideoService {
             params: VideoExtendParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Video>
+
+        /**
+         * Returns a raw HTTP response for `get /videos/characters/{character_id}`, but is otherwise
+         * the same as [VideoService.getCharacter].
+         */
+        @MustBeClosed
+        fun getCharacter(characterId: String): HttpResponseFor<VideoGetCharacterResponse> =
+            getCharacter(characterId, VideoGetCharacterParams.none())
+
+        /** @see getCharacter */
+        @MustBeClosed
+        fun getCharacter(
+            characterId: String,
+            params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VideoGetCharacterResponse> =
+            getCharacter(params.toBuilder().characterId(characterId).build(), requestOptions)
+
+        /** @see getCharacter */
+        @MustBeClosed
+        fun getCharacter(
+            characterId: String,
+            params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+        ): HttpResponseFor<VideoGetCharacterResponse> =
+            getCharacter(characterId, params, RequestOptions.none())
+
+        /** @see getCharacter */
+        @MustBeClosed
+        fun getCharacter(
+            params: VideoGetCharacterParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VideoGetCharacterResponse>
+
+        /** @see getCharacter */
+        @MustBeClosed
+        fun getCharacter(
+            params: VideoGetCharacterParams
+        ): HttpResponseFor<VideoGetCharacterResponse> = getCharacter(params, RequestOptions.none())
+
+        /** @see getCharacter */
+        @MustBeClosed
+        fun getCharacter(
+            characterId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VideoGetCharacterResponse> =
+            getCharacter(characterId, VideoGetCharacterParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /videos/{video_id}/remix`, but is otherwise the

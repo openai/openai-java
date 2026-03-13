@@ -1,20 +1,20 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.videos.character
+package com.openai.models.videos
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class CharacterGetParamsTest {
+internal class VideoGetCharacterParamsTest {
 
     @Test
     fun create() {
-        CharacterGetParams.builder().characterId("char_123").build()
+        VideoGetCharacterParams.builder().characterId("char_123").build()
     }
 
     @Test
     fun pathParams() {
-        val params = CharacterGetParams.builder().characterId("char_123").build()
+        val params = VideoGetCharacterParams.builder().characterId("char_123").build()
 
         assertThat(params._pathParam(0)).isEqualTo("char_123")
         // out-of-bound path param

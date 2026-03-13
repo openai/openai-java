@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.videos.character
+package com.openai.models.videos
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -17,7 +17,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-class CharacterCreateResponse
+class VideoCreateCharacterResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
@@ -93,7 +93,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [CharacterCreateResponse].
+         * Returns a mutable builder for constructing an instance of [VideoCreateCharacterResponse].
          *
          * The following fields are required:
          * ```java
@@ -105,7 +105,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [CharacterCreateResponse]. */
+    /** A builder for [VideoCreateCharacterResponse]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
@@ -114,11 +114,11 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(characterCreateResponse: CharacterCreateResponse) = apply {
-            id = characterCreateResponse.id
-            createdAt = characterCreateResponse.createdAt
-            name = characterCreateResponse.name
-            additionalProperties = characterCreateResponse.additionalProperties.toMutableMap()
+        internal fun from(videoCreateCharacterResponse: VideoCreateCharacterResponse) = apply {
+            id = videoCreateCharacterResponse.id
+            createdAt = videoCreateCharacterResponse.createdAt
+            name = videoCreateCharacterResponse.name
+            additionalProperties = videoCreateCharacterResponse.additionalProperties.toMutableMap()
         }
 
         /** Identifier for the character creation cameo. */
@@ -180,7 +180,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [CharacterCreateResponse].
+         * Returns an immutable instance of [VideoCreateCharacterResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -193,8 +193,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): CharacterCreateResponse =
-            CharacterCreateResponse(
+        fun build(): VideoCreateCharacterResponse =
+            VideoCreateCharacterResponse(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("name", name),
@@ -204,7 +204,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): CharacterCreateResponse = apply {
+    fun validate(): VideoCreateCharacterResponse = apply {
         if (validated) {
             return@apply
         }
@@ -239,7 +239,7 @@ private constructor(
             return true
         }
 
-        return other is CharacterCreateResponse &&
+        return other is VideoCreateCharacterResponse &&
             id == other.id &&
             createdAt == other.createdAt &&
             name == other.name &&
@@ -251,5 +251,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CharacterCreateResponse{id=$id, createdAt=$createdAt, name=$name, additionalProperties=$additionalProperties}"
+        "VideoCreateCharacterResponse{id=$id, createdAt=$createdAt, name=$name, additionalProperties=$additionalProperties}"
 }
