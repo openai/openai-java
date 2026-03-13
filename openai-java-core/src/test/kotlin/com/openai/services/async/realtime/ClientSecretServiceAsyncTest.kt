@@ -91,7 +91,7 @@ internal class ClientSecretServiceAsyncTest {
                                                     .build()
                                             )
                                             .speed(0.25)
-                                            .voice(RealtimeAudioConfigOutput.Voice.ASH)
+                                            .voice("string")
                                             .build()
                                     )
                                     .build()
