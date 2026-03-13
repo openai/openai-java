@@ -201,10 +201,10 @@ private constructor(
 
         /**
          * Alias for calling [inputReference] with
-         * `InputReference.ofImageRefParam2(imageRefParam2)`.
+         * `InputReference.ofImageInputReferenceParam(imageInputReferenceParam)`.
          */
-        fun inputReference(imageRefParam2: InputReference.ImageRefParam2) = apply {
-            body.inputReference(imageRefParam2)
+        fun inputReference(imageInputReferenceParam: ImageInputReferenceParam) = apply {
+            body.inputReference(imageInputReferenceParam)
         }
 
         /**
@@ -598,10 +598,10 @@ private constructor(
 
             /**
              * Alias for calling [inputReference] with
-             * `InputReference.ofImageRefParam2(imageRefParam2)`.
+             * `InputReference.ofImageInputReferenceParam(imageInputReferenceParam)`.
              */
-            fun inputReference(imageRefParam2: InputReference.ImageRefParam2) =
-                inputReference(InputReference.ofImageRefParam2(imageRefParam2))
+            fun inputReference(imageInputReferenceParam: ImageInputReferenceParam) =
+                inputReference(InputReference.ofImageInputReferenceParam(imageInputReferenceParam))
 
             /**
              * The video generation model to use (allowed values: sora-2, sora-2-pro). Defaults to
@@ -748,30 +748,33 @@ private constructor(
     class InputReference
     private constructor(
         private val stream: InputStream? = null,
-        private val imageRefParam2: ImageRefParam2? = null,
+        private val imageInputReferenceParam: ImageInputReferenceParam? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Optional reference asset upload or reference object that guides generation. */
         fun stream(): Optional<InputStream> = Optional.ofNullable(stream)
 
-        fun imageRefParam2(): Optional<ImageRefParam2> = Optional.ofNullable(imageRefParam2)
+        fun imageInputReferenceParam(): Optional<ImageInputReferenceParam> =
+            Optional.ofNullable(imageInputReferenceParam)
 
         fun isStream(): Boolean = stream != null
 
-        fun isImageRefParam2(): Boolean = imageRefParam2 != null
+        fun isImageInputReferenceParam(): Boolean = imageInputReferenceParam != null
 
         /** Optional reference asset upload or reference object that guides generation. */
         fun asStream(): InputStream = stream.getOrThrow("stream")
 
-        fun asImageRefParam2(): ImageRefParam2 = imageRefParam2.getOrThrow("imageRefParam2")
+        fun asImageInputReferenceParam(): ImageInputReferenceParam =
+            imageInputReferenceParam.getOrThrow("imageInputReferenceParam")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 stream != null -> visitor.visitStream(stream)
-                imageRefParam2 != null -> visitor.visitImageRefParam2(imageRefParam2)
+                imageInputReferenceParam != null ->
+                    visitor.visitImageInputReferenceParam(imageInputReferenceParam)
                 else -> visitor.unknown(_json)
             }
 
@@ -786,8 +789,10 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitStream(stream: InputStream) {}
 
-                    override fun visitImageRefParam2(imageRefParam2: ImageRefParam2) {
-                        imageRefParam2.validate()
+                    override fun visitImageInputReferenceParam(
+                        imageInputReferenceParam: ImageInputReferenceParam
+                    ) {
+                        imageInputReferenceParam.validate()
                     }
                 }
             )
@@ -809,15 +814,16 @@ private constructor(
 
             return other is InputReference &&
                 stream == other.stream &&
-                imageRefParam2 == other.imageRefParam2
+                imageInputReferenceParam == other.imageInputReferenceParam
         }
 
-        override fun hashCode(): Int = Objects.hash(stream, imageRefParam2)
+        override fun hashCode(): Int = Objects.hash(stream, imageInputReferenceParam)
 
         override fun toString(): String =
             when {
                 stream != null -> "InputReference{stream=$stream}"
-                imageRefParam2 != null -> "InputReference{imageRefParam2=$imageRefParam2}"
+                imageInputReferenceParam != null ->
+                    "InputReference{imageInputReferenceParam=$imageInputReferenceParam}"
                 _json != null -> "InputReference{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid InputReference")
             }
@@ -828,8 +834,8 @@ private constructor(
             @JvmStatic fun ofStream(stream: InputStream) = InputReference(stream = stream)
 
             @JvmStatic
-            fun ofImageRefParam2(imageRefParam2: ImageRefParam2) =
-                InputReference(imageRefParam2 = imageRefParam2)
+            fun ofImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam) =
+                InputReference(imageInputReferenceParam = imageInputReferenceParam)
         }
 
         /**
@@ -841,7 +847,7 @@ private constructor(
             /** Optional reference asset upload or reference object that guides generation. */
             fun visitStream(stream: InputStream): T
 
-            fun visitImageRefParam2(imageRefParam2: ImageRefParam2): T
+            fun visitImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam): T
 
             /**
              * Maps an unknown variant of [InputReference] to a value of type [T].
@@ -867,177 +873,12 @@ private constructor(
             ) {
                 when {
                     value.stream != null -> generator.writeObject(value.stream)
-                    value.imageRefParam2 != null -> generator.writeObject(value.imageRefParam2)
+                    value.imageInputReferenceParam != null ->
+                        generator.writeObject(value.imageInputReferenceParam)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid InputReference")
                 }
             }
-        }
-
-        class ImageRefParam2
-        private constructor(
-            private val fileId: MultipartField<String>,
-            private val imageUrl: MultipartField<String>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun fileId(): Optional<String> = fileId.value.getOptional("file_id")
-
-            /**
-             * A fully qualified URL or base64-encoded data URL.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun imageUrl(): Optional<String> = imageUrl.value.getOptional("image_url")
-
-            /**
-             * Returns the raw multipart value of [fileId].
-             *
-             * Unlike [fileId], this method doesn't throw if the multipart field has an unexpected
-             * type.
-             */
-            @JsonProperty("file_id") @ExcludeMissing fun _fileId(): MultipartField<String> = fileId
-
-            /**
-             * Returns the raw multipart value of [imageUrl].
-             *
-             * Unlike [imageUrl], this method doesn't throw if the multipart field has an unexpected
-             * type.
-             */
-            @JsonProperty("image_url")
-            @ExcludeMissing
-            fun _imageUrl(): MultipartField<String> = imageUrl
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /** Returns a mutable builder for constructing an instance of [ImageRefParam2]. */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [ImageRefParam2]. */
-            class Builder internal constructor() {
-
-                private var fileId: MultipartField<String> = MultipartField.of(null)
-                private var imageUrl: MultipartField<String> = MultipartField.of(null)
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(imageRefParam2: ImageRefParam2) = apply {
-                    fileId = imageRefParam2.fileId
-                    imageUrl = imageRefParam2.imageUrl
-                    additionalProperties = imageRefParam2.additionalProperties.toMutableMap()
-                }
-
-                fun fileId(fileId: String) = fileId(MultipartField.of(fileId))
-
-                /**
-                 * Sets [Builder.fileId] to an arbitrary multipart value.
-                 *
-                 * You should usually call [Builder.fileId] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun fileId(fileId: MultipartField<String>) = apply { this.fileId = fileId }
-
-                /** A fully qualified URL or base64-encoded data URL. */
-                fun imageUrl(imageUrl: String) = imageUrl(MultipartField.of(imageUrl))
-
-                /**
-                 * Sets [Builder.imageUrl] to an arbitrary multipart value.
-                 *
-                 * You should usually call [Builder.imageUrl] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun imageUrl(imageUrl: MultipartField<String>) = apply { this.imageUrl = imageUrl }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [ImageRefParam2].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 */
-                fun build(): ImageRefParam2 =
-                    ImageRefParam2(fileId, imageUrl, additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): ImageRefParam2 = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileId()
-                imageUrl()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is ImageRefParam2 &&
-                    fileId == other.fileId &&
-                    imageUrl == other.imageUrl &&
-                    additionalProperties == other.additionalProperties
-            }
-
-            private val hashCode: Int by lazy {
-                Objects.hash(fileId, imageUrl, additionalProperties)
-            }
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "ImageRefParam2{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
         }
     }
 

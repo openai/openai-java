@@ -10,6 +10,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.models.videos.VideoCreateCharacterParams
 import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDownloadContentParams
 import com.openai.models.videos.VideoEditParams
@@ -94,6 +95,26 @@ internal class VideoServiceTest {
     }
 
     @Test
+    fun createCharacter() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val videoService = client.videos()
+
+        val response =
+            videoService.createCharacter(
+                VideoCreateCharacterParams.builder()
+                    .name("x")
+                    .video("Example data".byteInputStream())
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
     fun downloadContent(wmRuntimeInfo: WireMockRuntimeInfo) {
         val client =
             OpenAIOkHttpClient.builder()
@@ -148,15 +169,25 @@ internal class VideoServiceTest {
                 VideoExtendParams.builder()
                     .prompt("x")
                     .seconds(VideoSeconds._4)
-                    .video(
-                        VideoExtendParams.Video.VideoReferenceInputParam.builder()
-                            .id("video_123")
-                            .build()
-                    )
+                    .video("Example data".byteInputStream())
                     .build()
             )
 
         video.validate()
+    }
+
+    @Test
+    fun getCharacter() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val videoService = client.videos()
+
+        val response = videoService.getCharacter("char_123")
+
+        response.validate()
     }
 
     @Test

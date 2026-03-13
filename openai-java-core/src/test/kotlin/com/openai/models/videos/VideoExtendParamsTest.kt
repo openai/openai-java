@@ -14,9 +14,7 @@ internal class VideoExtendParamsTest {
         VideoExtendParams.builder()
             .prompt("x")
             .seconds(VideoSeconds._4)
-            .video(
-                VideoExtendParams.Video.VideoReferenceInputParam.builder().id("video_123").build()
-            )
+            .video("Example data".byteInputStream())
             .build()
     }
 
@@ -26,11 +24,7 @@ internal class VideoExtendParamsTest {
             VideoExtendParams.builder()
                 .prompt("x")
                 .seconds(VideoSeconds._4)
-                .video(
-                    VideoExtendParams.Video.VideoReferenceInputParam.builder()
-                        .id("video_123")
-                        .build()
-                )
+                .video("Example data".byteInputStream())
                 .build()
 
         val body = params._body()
@@ -50,10 +44,8 @@ internal class VideoExtendParamsTest {
                         "video" to
                             MultipartField.builder<VideoExtendParams.Video>()
                                 .value(
-                                    VideoExtendParams.Video.ofReferenceInputParam(
-                                        VideoExtendParams.Video.VideoReferenceInputParam.builder()
-                                            .id("video_123")
-                                            .build()
+                                    VideoExtendParams.Video.ofInputStream(
+                                        "Example data".byteInputStream()
                                     )
                                 )
                                 .contentType("application/octet-stream")
