@@ -37,7 +37,7 @@ internal class SpeechServiceAsyncTest {
                 SpeechCreateParams.builder()
                     .input("input")
                     .model(SpeechModel.TTS_1)
-                    .voice(SpeechCreateParams.Voice.ASH)
+                    .voice("string")
                     .instructions("instructions")
                     .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                     .speed(0.25)

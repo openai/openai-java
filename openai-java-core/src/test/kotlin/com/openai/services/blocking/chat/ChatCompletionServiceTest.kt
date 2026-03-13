@@ -45,7 +45,7 @@ internal class ChatCompletionServiceTest {
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
-                            .voice(ChatCompletionAudioParam.Voice.ASH)
+                            .voice("string")
                             .build()
                     )
                     .frequencyPenalty(-2.0)
@@ -161,7 +161,7 @@ internal class ChatCompletionServiceTest {
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
-                            .voice(ChatCompletionAudioParam.Voice.ASH)
+                            .voice("string")
                             .build()
                     )
                     .frequencyPenalty(-2.0)
