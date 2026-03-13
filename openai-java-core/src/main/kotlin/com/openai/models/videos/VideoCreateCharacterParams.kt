@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.videos.character
+package com.openai.models.videos
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -22,7 +22,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create a character from an uploaded video. */
-class CharacterCreateParams
+class VideoCreateCharacterParams
 private constructor(
     private val body: Body,
     private val additionalHeaders: Headers,
@@ -72,7 +72,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [CharacterCreateParams].
+         * Returns a mutable builder for constructing an instance of [VideoCreateCharacterParams].
          *
          * The following fields are required:
          * ```java
@@ -83,7 +83,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [CharacterCreateParams]. */
+    /** A builder for [VideoCreateCharacterParams]. */
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -91,10 +91,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(characterCreateParams: CharacterCreateParams) = apply {
-            body = characterCreateParams.body.toBuilder()
-            additionalHeaders = characterCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = characterCreateParams.additionalQueryParams.toBuilder()
+        internal fun from(videoCreateCharacterParams: VideoCreateCharacterParams) = apply {
+            body = videoCreateCharacterParams.body.toBuilder()
+            additionalHeaders = videoCreateCharacterParams.additionalHeaders.toBuilder()
+            additionalQueryParams = videoCreateCharacterParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -254,7 +254,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [CharacterCreateParams].
+         * Returns an immutable instance of [VideoCreateCharacterParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -266,8 +266,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): CharacterCreateParams =
-            CharacterCreateParams(
+        fun build(): VideoCreateCharacterParams =
+            VideoCreateCharacterParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -481,7 +481,7 @@ private constructor(
             return true
         }
 
-        return other is CharacterCreateParams &&
+        return other is VideoCreateCharacterParams &&
             body == other.body &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
@@ -490,5 +490,5 @@ private constructor(
     override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "CharacterCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "VideoCreateCharacterParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -7,17 +7,20 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.videos.Video
+import com.openai.models.videos.VideoCreateCharacterParams
+import com.openai.models.videos.VideoCreateCharacterResponse
 import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDeleteParams
 import com.openai.models.videos.VideoDeleteResponse
 import com.openai.models.videos.VideoDownloadContentParams
 import com.openai.models.videos.VideoEditParams
 import com.openai.models.videos.VideoExtendParams
+import com.openai.models.videos.VideoGetCharacterParams
+import com.openai.models.videos.VideoGetCharacterResponse
 import com.openai.models.videos.VideoListPageAsync
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
-import com.openai.services.async.videos.CharacterServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -34,8 +37,6 @@ interface VideoServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoServiceAsync
-
-    fun character(): CharacterServiceAsync
 
     /** Create a new video generation job from a prompt and optional reference assets. */
     fun create(params: VideoCreateParams): CompletableFuture<Video> =
@@ -132,6 +133,18 @@ interface VideoServiceAsync {
     ): CompletableFuture<VideoDeleteResponse> =
         delete(videoId, VideoDeleteParams.none(), requestOptions)
 
+    /** Create a character from an uploaded video. */
+    fun createCharacter(
+        params: VideoCreateCharacterParams
+    ): CompletableFuture<VideoCreateCharacterResponse> =
+        createCharacter(params, RequestOptions.none())
+
+    /** @see createCharacter */
+    fun createCharacter(
+        params: VideoCreateCharacterParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VideoCreateCharacterResponse>
+
     /**
      * Download the generated video bytes or a derived preview asset.
      *
@@ -191,6 +204,43 @@ interface VideoServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Video>
 
+    /** Fetch a character. */
+    fun getCharacter(characterId: String): CompletableFuture<VideoGetCharacterResponse> =
+        getCharacter(characterId, VideoGetCharacterParams.none())
+
+    /** @see getCharacter */
+    fun getCharacter(
+        characterId: String,
+        params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VideoGetCharacterResponse> =
+        getCharacter(params.toBuilder().characterId(characterId).build(), requestOptions)
+
+    /** @see getCharacter */
+    fun getCharacter(
+        characterId: String,
+        params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+    ): CompletableFuture<VideoGetCharacterResponse> =
+        getCharacter(characterId, params, RequestOptions.none())
+
+    /** @see getCharacter */
+    fun getCharacter(
+        params: VideoGetCharacterParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VideoGetCharacterResponse>
+
+    /** @see getCharacter */
+    fun getCharacter(
+        params: VideoGetCharacterParams
+    ): CompletableFuture<VideoGetCharacterResponse> = getCharacter(params, RequestOptions.none())
+
+    /** @see getCharacter */
+    fun getCharacter(
+        characterId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VideoGetCharacterResponse> =
+        getCharacter(characterId, VideoGetCharacterParams.none(), requestOptions)
+
     /** Create a remix of a completed video using a refreshed prompt. */
     fun remix(videoId: String, params: VideoRemixParams): CompletableFuture<Video> =
         remix(videoId, params, RequestOptions.none())
@@ -223,8 +273,6 @@ interface VideoServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): VideoServiceAsync.WithRawResponse
-
-        fun character(): CharacterServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /videos`, but is otherwise the same as
@@ -345,6 +393,21 @@ interface VideoServiceAsync {
             delete(videoId, VideoDeleteParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `post /videos/characters`, but is otherwise the same as
+         * [VideoServiceAsync.createCharacter].
+         */
+        fun createCharacter(
+            params: VideoCreateCharacterParams
+        ): CompletableFuture<HttpResponseFor<VideoCreateCharacterResponse>> =
+            createCharacter(params, RequestOptions.none())
+
+        /** @see createCharacter */
+        fun createCharacter(
+            params: VideoCreateCharacterParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VideoCreateCharacterResponse>>
+
+        /**
          * Returns a raw HTTP response for `get /videos/{video_id}/content`, but is otherwise the
          * same as [VideoServiceAsync.downloadContent].
          */
@@ -407,6 +470,49 @@ interface VideoServiceAsync {
             params: VideoExtendParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Video>>
+
+        /**
+         * Returns a raw HTTP response for `get /videos/characters/{character_id}`, but is otherwise
+         * the same as [VideoServiceAsync.getCharacter].
+         */
+        fun getCharacter(
+            characterId: String
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>> =
+            getCharacter(characterId, VideoGetCharacterParams.none())
+
+        /** @see getCharacter */
+        fun getCharacter(
+            characterId: String,
+            params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>> =
+            getCharacter(params.toBuilder().characterId(characterId).build(), requestOptions)
+
+        /** @see getCharacter */
+        fun getCharacter(
+            characterId: String,
+            params: VideoGetCharacterParams = VideoGetCharacterParams.none(),
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>> =
+            getCharacter(characterId, params, RequestOptions.none())
+
+        /** @see getCharacter */
+        fun getCharacter(
+            params: VideoGetCharacterParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>>
+
+        /** @see getCharacter */
+        fun getCharacter(
+            params: VideoGetCharacterParams
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>> =
+            getCharacter(params, RequestOptions.none())
+
+        /** @see getCharacter */
+        fun getCharacter(
+            characterId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VideoGetCharacterResponse>> =
+            getCharacter(characterId, VideoGetCharacterParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /videos/{video_id}/remix`, but is otherwise the

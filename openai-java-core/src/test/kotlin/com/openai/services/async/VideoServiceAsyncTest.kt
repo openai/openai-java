@@ -10,6 +10,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
+import com.openai.models.videos.VideoCreateCharacterParams
 import com.openai.models.videos.VideoCreateParams
 import com.openai.models.videos.VideoDownloadContentParams
 import com.openai.models.videos.VideoEditParams
@@ -98,6 +99,27 @@ internal class VideoServiceAsyncTest {
     }
 
     @Test
+    fun createCharacter() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val videoServiceAsync = client.videos()
+
+        val responseFuture =
+            videoServiceAsync.createCharacter(
+                VideoCreateCharacterParams.builder()
+                    .name("x")
+                    .video("Example data".byteInputStream())
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+
+    @Test
     fun downloadContent(wmRuntimeInfo: WireMockRuntimeInfo) {
         val client =
             OpenAIOkHttpClientAsync.builder()
@@ -154,16 +176,27 @@ internal class VideoServiceAsyncTest {
                 VideoExtendParams.builder()
                     .prompt("x")
                     .seconds(VideoSeconds._4)
-                    .video(
-                        VideoExtendParams.Video.VideoReferenceInputParam.builder()
-                            .id("video_123")
-                            .build()
-                    )
+                    .video("Example data".byteInputStream())
                     .build()
             )
 
         val video = videoFuture.get()
         video.validate()
+    }
+
+    @Test
+    fun getCharacter() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val videoServiceAsync = client.videos()
+
+        val responseFuture = videoServiceAsync.getCharacter("char_123")
+
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Test

@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.videos.character
+package com.openai.models.videos
 
 import com.openai.core.Params
 import com.openai.core.http.Headers
@@ -10,7 +10,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Fetch a character. */
-class CharacterGetParams
+class VideoGetCharacterParams
 private constructor(
     private val characterId: String?,
     private val additionalHeaders: Headers,
@@ -29,13 +29,13 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun none(): CharacterGetParams = builder().build()
+        @JvmStatic fun none(): VideoGetCharacterParams = builder().build()
 
-        /** Returns a mutable builder for constructing an instance of [CharacterGetParams]. */
+        /** Returns a mutable builder for constructing an instance of [VideoGetCharacterParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [CharacterGetParams]. */
+    /** A builder for [VideoGetCharacterParams]. */
     class Builder internal constructor() {
 
         private var characterId: String? = null
@@ -43,10 +43,10 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(characterGetParams: CharacterGetParams) = apply {
-            characterId = characterGetParams.characterId
-            additionalHeaders = characterGetParams.additionalHeaders.toBuilder()
-            additionalQueryParams = characterGetParams.additionalQueryParams.toBuilder()
+        internal fun from(videoGetCharacterParams: VideoGetCharacterParams) = apply {
+            characterId = videoGetCharacterParams.characterId
+            additionalHeaders = videoGetCharacterParams.additionalHeaders.toBuilder()
+            additionalQueryParams = videoGetCharacterParams.additionalQueryParams.toBuilder()
         }
 
         fun characterId(characterId: String?) = apply { this.characterId = characterId }
@@ -153,12 +153,12 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [CharacterGetParams].
+         * Returns an immutable instance of [VideoGetCharacterParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): CharacterGetParams =
-            CharacterGetParams(
+        fun build(): VideoGetCharacterParams =
+            VideoGetCharacterParams(
                 characterId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -180,7 +180,7 @@ private constructor(
             return true
         }
 
-        return other is CharacterGetParams &&
+        return other is VideoGetCharacterParams &&
             characterId == other.characterId &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
@@ -190,5 +190,5 @@ private constructor(
         Objects.hash(characterId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "CharacterGetParams{characterId=$characterId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "VideoGetCharacterParams{characterId=$characterId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -1,23 +1,26 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.videos.character
+package com.openai.models.videos
 
 import com.openai.core.MultipartField
 import java.io.InputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class CharacterCreateParamsTest {
+internal class VideoCreateCharacterParamsTest {
 
     @Test
     fun create() {
-        CharacterCreateParams.builder().name("x").video("Example data".byteInputStream()).build()
+        VideoCreateCharacterParams.builder()
+            .name("x")
+            .video("Example data".byteInputStream())
+            .build()
     }
 
     @Test
     fun body() {
         val params =
-            CharacterCreateParams.builder()
+            VideoCreateCharacterParams.builder()
                 .name("x")
                 .video("Example data".byteInputStream())
                 .build()
