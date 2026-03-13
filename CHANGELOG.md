@@ -1,5 +1,26 @@
 # Changelog
 
+## 4.27.0 (2026-03-13)
+
+Full Changelog: [v4.26.0...v4.27.0](https://github.com/openai/openai-java/compare/v4.26.0...v4.27.0)
+
+### Features
+
+* **api:** api update ([ce42160](https://github.com/openai/openai-java/commit/ce421607a7d839d4477217d7a35abc13ffd1c9fc))
+* **api:** manual updates ([39b947b](https://github.com/openai/openai-java/commit/39b947b75af1dbb9544c6c1db27dba1b995b2b52))
+* **api:** manual updates ([7b4fbeb](https://github.com/openai/openai-java/commit/7b4fbeb15137592fb75fbcd79c1b5f4d28cf7601))
+* **api:** sora api improvements: character api, video extensions/edits, higher resolution exports. ([54bf78f](https://github.com/openai/openai-java/commit/54bf78f851562794c679eb7126726629ec724314))
+
+
+### Bug Fixes
+
+* **client:** incorrect `Retry-After` parsing ([948b279](https://github.com/openai/openai-java/commit/948b279b6ccf1e39e201dc193bcfc3b66b4f7359))
+
+
+### Chores
+
+* **internal:** codegen related update ([0ea414d](https://github.com/openai/openai-java/commit/0ea414d19b78c438fe360f6b73fd42881be37d86))
+
 ## 4.26.0 (2026-03-05)
 
 Full Changelog: [v4.25.0...v4.26.0](https://github.com/openai/openai-java/compare/v4.25.0...v4.26.0)
