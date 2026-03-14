@@ -649,6 +649,7 @@ internal class ToolTest {
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .deferLoading(true)
                         .description("description")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
@@ -686,6 +687,7 @@ internal class ToolTest {
                     .addTool(
                         NamespaceTool.Tool.Function.builder()
                             .name("name")
+                            .deferLoading(true)
                             .description("description")
                             .parameters(JsonValue.from(mapOf<String, Any>()))
                             .strict(true)

@@ -505,6 +505,7 @@ private constructor(
         private constructor(
             private val name: JsonField<String>,
             private val type: JsonValue,
+            private val deferLoading: JsonField<Boolean>,
             private val description: JsonField<String>,
             private val parameters: JsonValue,
             private val strict: JsonField<Boolean>,
@@ -515,6 +516,9 @@ private constructor(
             private constructor(
                 @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("defer_loading")
+                @ExcludeMissing
+                deferLoading: JsonField<Boolean> = JsonMissing.of(),
                 @JsonProperty("description")
                 @ExcludeMissing
                 description: JsonField<String> = JsonMissing.of(),
@@ -524,7 +528,7 @@ private constructor(
                 @JsonProperty("strict")
                 @ExcludeMissing
                 strict: JsonField<Boolean> = JsonMissing.of(),
-            ) : this(name, type, description, parameters, strict, mutableMapOf())
+            ) : this(name, type, deferLoading, description, parameters, strict, mutableMapOf())
 
             /**
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -543,6 +547,14 @@ private constructor(
              * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Whether this function should be deferred and discovered via tool search.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
 
             /**
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -571,6 +583,16 @@ private constructor(
              * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+            /**
+             * Returns the raw JSON value of [deferLoading].
+             *
+             * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("defer_loading")
+            @ExcludeMissing
+            fun _deferLoading(): JsonField<Boolean> = deferLoading
 
             /**
              * Returns the raw JSON value of [description].
@@ -619,6 +641,7 @@ private constructor(
 
                 private var name: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("function")
+                private var deferLoading: JsonField<Boolean> = JsonMissing.of()
                 private var description: JsonField<String> = JsonMissing.of()
                 private var parameters: JsonValue = JsonMissing.of()
                 private var strict: JsonField<Boolean> = JsonMissing.of()
@@ -628,6 +651,7 @@ private constructor(
                 internal fun from(function: Function) = apply {
                     name = function.name
                     type = function.type
+                    deferLoading = function.deferLoading
                     description = function.description
                     parameters = function.parameters
                     strict = function.strict
@@ -658,6 +682,20 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
+
+                /** Whether this function should be deferred and discovered via tool search. */
+                fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
+
+                /**
+                 * Sets [Builder.deferLoading] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.deferLoading] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun deferLoading(deferLoading: JsonField<Boolean>) = apply {
+                    this.deferLoading = deferLoading
+                }
 
                 fun description(description: String?) =
                     description(JsonField.ofNullable(description))
@@ -738,6 +776,7 @@ private constructor(
                     Function(
                         checkRequired("name", name),
                         type,
+                        deferLoading,
                         description,
                         parameters,
                         strict,
@@ -758,6 +797,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
+                deferLoading()
                 description()
                 strict()
                 validated = true
@@ -781,6 +821,7 @@ private constructor(
             internal fun validity(): Int =
                 (if (name.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("function")) 1 else 0 } +
+                    (if (deferLoading.asKnown().isPresent) 1 else 0) +
                     (if (description.asKnown().isPresent) 1 else 0) +
                     (if (strict.asKnown().isPresent) 1 else 0)
 
@@ -792,6 +833,7 @@ private constructor(
                 return other is Function &&
                     name == other.name &&
                     type == other.type &&
+                    deferLoading == other.deferLoading &&
                     description == other.description &&
                     parameters == other.parameters &&
                     strict == other.strict &&
@@ -799,13 +841,21 @@ private constructor(
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(name, type, description, parameters, strict, additionalProperties)
+                Objects.hash(
+                    name,
+                    type,
+                    deferLoading,
+                    description,
+                    parameters,
+                    strict,
+                    additionalProperties,
+                )
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Function{name=$name, type=$type, description=$description, parameters=$parameters, strict=$strict, additionalProperties=$additionalProperties}"
+                "Function{name=$name, type=$type, deferLoading=$deferLoading, description=$description, parameters=$parameters, strict=$strict, additionalProperties=$additionalProperties}"
         }
     }
 
