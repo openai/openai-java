@@ -16,7 +16,10 @@ private constructor(
     private val headers: Headers,
     private val error: ErrorObject?,
     cause: Throwable?,
-) : OpenAIServiceException("400: ${error?._message()}", cause) {
+) : OpenAIServiceException(
+    error?._message()?.asKnown()?.getOrNull()?.let { "400: $it" } ?: "400",
+    cause,
+) {
 
     override fun statusCode(): Int = 400
 
