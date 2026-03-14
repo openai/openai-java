@@ -19,6 +19,7 @@ internal class NamespaceToolTest {
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .deferLoading(true)
                         .description("description")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
@@ -33,6 +34,7 @@ internal class NamespaceToolTest {
                 NamespaceTool.Tool.ofFunction(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .deferLoading(true)
                         .description("description")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
@@ -51,6 +53,7 @@ internal class NamespaceToolTest {
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .deferLoading(true)
                         .description("description")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
