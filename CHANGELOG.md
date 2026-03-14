@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.29.0 (2026-03-14)
+
+Full Changelog: [v4.28.0...v4.29.0](https://github.com/openai/openai-java/compare/v4.28.0...v4.29.0)
+
+### Features
+
+* **api:** add defer_loading field to NamespaceTool.Tool.Function ([ff60586](https://github.com/openai/openai-java/commit/ff60586659f25204a545cb08623fe0a12810cbfa))
+* **api:** add v1/videos endpoint to batch create ([421acd8](https://github.com/openai/openai-java/commit/421acd884ef736944c5368a7282fda8a890f0aed))
+
 ## 4.28.0 (2026-03-13)
 
 Full Changelog: [v4.27.0...v4.28.0](https://github.com/openai/openai-java/compare/v4.27.0...v4.28.0)
