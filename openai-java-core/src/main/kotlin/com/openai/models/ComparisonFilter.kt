@@ -320,6 +320,10 @@ private constructor(
 
             @JvmField val LTE = of("lte")
 
+            @JvmField val IN = of("in")
+
+            @JvmField val NIN = of("nin")
+
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
@@ -331,6 +335,8 @@ private constructor(
             GTE,
             LT,
             LTE,
+            IN,
+            NIN,
         }
 
         /**
@@ -349,6 +355,8 @@ private constructor(
             GTE,
             LT,
             LTE,
+            IN,
+            NIN,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -368,6 +376,8 @@ private constructor(
                 GTE -> Value.GTE
                 LT -> Value.LT
                 LTE -> Value.LTE
+                IN -> Value.IN
+                NIN -> Value.NIN
                 else -> Value._UNKNOWN
             }
 
@@ -388,6 +398,8 @@ private constructor(
                 GTE -> Known.GTE
                 LT -> Known.LT
                 LTE -> Known.LTE
+                IN -> Known.IN
+                NIN -> Known.NIN
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 
