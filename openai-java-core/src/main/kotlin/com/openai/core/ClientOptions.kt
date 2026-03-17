@@ -533,9 +533,7 @@ private constructor(
             headers.put("X-Stainless-Runtime", "JRE")
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
             headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
-            organization?.let { headers.put("OpenAI-Organization", it) }
-            project?.let { headers.put("OpenAI-Project", it) }
-
+            // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
             when (credential) {
                 is AzureApiKeyCredential -> {
@@ -568,6 +566,13 @@ private constructor(
             }
 
             queryParams.replaceAll(this.queryParams.build())
+            organization?.let { headers.replace("OpenAI-Organization", it) }
+            project?.let { headers.replace("OpenAI-Project", it) }
+            apiKey.let {
+                if (!it.isEmpty()) {
+                    headers.replace("Authorization", "Bearer $it")
+                }
+            }
 
             return ClientOptions(
                 httpClient,
