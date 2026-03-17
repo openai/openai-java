@@ -17,6 +17,44 @@ internal class ClientOptionsTest {
     private val httpClient = mock<HttpClient>()
 
     @Test
+    fun putHeader_canOverwriteDefaultHeader() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .putHeader("User-Agent", "My User Agent")
+                .apiKey("My API Key")
+                .build()
+
+        assertThat(clientOptions.headers.values("User-Agent")).containsExactly("My User Agent")
+    }
+
+    @Test
+    fun toBuilder_organizationCanBeUpdated() {
+        var clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .organization("My Organization")
+                .apiKey("My API Key")
+                .build()
+
+        clientOptions = clientOptions.toBuilder().organization("another My Organization").build()
+
+        assertThat(clientOptions.headers.values("OpenAI-Organization"))
+            .containsExactly("another My Organization")
+    }
+
+    @Test
+    fun toBuilder_bearerAuthCanBeUpdated() {
+        var clientOptions =
+            ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
+
+        clientOptions = clientOptions.toBuilder().apiKey("another My API Key").build()
+
+        assertThat(clientOptions.headers.values("Authorization"))
+            .containsExactly("Bearer another My API Key")
+    }
+
+    @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
         var clientOptions =
             ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
