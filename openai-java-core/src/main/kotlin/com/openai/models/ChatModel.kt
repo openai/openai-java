@@ -22,6 +22,14 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_5_4 = of("gpt-5.4")
 
+        @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
+
+        @JvmField val GPT_5_4_NANO = of("gpt-5.4-nano")
+
+        @JvmField val GPT_5_4_MINI_2026_03_17 = of("gpt-5.4-mini-2026-03-17")
+
+        @JvmField val GPT_5_4_NANO_2026_03_17 = of("gpt-5.4-nano-2026-03-17")
+
         @JvmField val GPT_5_3_CHAT_LATEST = of("gpt-5.3-chat-latest")
 
         @JvmField val GPT_5_2 = of("gpt-5.2")
@@ -176,6 +184,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
         GPT_5_4,
+        GPT_5_4_MINI,
+        GPT_5_4_NANO,
+        GPT_5_4_MINI_2026_03_17,
+        GPT_5_4_NANO_2026_03_17,
         GPT_5_3_CHAT_LATEST,
         GPT_5_2,
         GPT_5_2_2025_12_11,
@@ -262,6 +274,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     enum class Value {
         GPT_5_4,
+        GPT_5_4_MINI,
+        GPT_5_4_NANO,
+        GPT_5_4_MINI_2026_03_17,
+        GPT_5_4_NANO_2026_03_17,
         GPT_5_3_CHAT_LATEST,
         GPT_5_2,
         GPT_5_2_2025_12_11,
@@ -349,6 +365,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     fun value(): Value =
         when (this) {
             GPT_5_4 -> Value.GPT_5_4
+            GPT_5_4_MINI -> Value.GPT_5_4_MINI
+            GPT_5_4_NANO -> Value.GPT_5_4_NANO
+            GPT_5_4_MINI_2026_03_17 -> Value.GPT_5_4_MINI_2026_03_17
+            GPT_5_4_NANO_2026_03_17 -> Value.GPT_5_4_NANO_2026_03_17
             GPT_5_3_CHAT_LATEST -> Value.GPT_5_3_CHAT_LATEST
             GPT_5_2 -> Value.GPT_5_2
             GPT_5_2_2025_12_11 -> Value.GPT_5_2_2025_12_11
@@ -436,6 +456,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     fun known(): Known =
         when (this) {
             GPT_5_4 -> Known.GPT_5_4
+            GPT_5_4_MINI -> Known.GPT_5_4_MINI
+            GPT_5_4_NANO -> Known.GPT_5_4_NANO
+            GPT_5_4_MINI_2026_03_17 -> Known.GPT_5_4_MINI_2026_03_17
+            GPT_5_4_NANO_2026_03_17 -> Known.GPT_5_4_NANO_2026_03_17
             GPT_5_3_CHAT_LATEST -> Known.GPT_5_3_CHAT_LATEST
             GPT_5_2 -> Known.GPT_5_2
             GPT_5_2_2025_12_11 -> Known.GPT_5_2_2025_12_11
