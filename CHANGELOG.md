@@ -1,5 +1,22 @@
 # Changelog
 
+## 4.29.0 (2026-03-17)
+
+Full Changelog: [v4.28.0...v4.29.0](https://github.com/openai/openai-java/compare/v4.28.0...v4.29.0)
+
+### Features
+
+* **api:** 5.4 nano and mini model slugs ([397027a](https://github.com/openai/openai-java/commit/397027a4117ab49e0a500b8dec8594ad34763011))
+* **api:** add defer_loading field to NamespaceTool.Tool.Function ([ff60586](https://github.com/openai/openai-java/commit/ff60586659f25204a545cb08623fe0a12810cbfa))
+* **api:** add IN and NIN filter types to ComparisonFilter ([6d0eac3](https://github.com/openai/openai-java/commit/6d0eac374f8eab9de341ae1a19c185512614893b))
+* **api:** add v1/videos endpoint to batch create ([421acd8](https://github.com/openai/openai-java/commit/421acd884ef736944c5368a7282fda8a890f0aed))
+
+
+### Chores
+
+* **internal:** tweak CI branches ([bfe3f0a](https://github.com/openai/openai-java/commit/bfe3f0ac8ac068443a40b4b7b23e7d179e8b4837))
+* **internal:** update retry delay tests ([dfcccf1](https://github.com/openai/openai-java/commit/dfcccf14f4f3a72e85db513955a3ede7bcdb1d6b))
+
 ## 4.28.0 (2026-03-13)
 
 Full Changelog: [v4.27.0...v4.28.0](https://github.com/openai/openai-java/compare/v4.27.0...v4.28.0)
