@@ -160,6 +160,9 @@ private constructor(
         /** A file input to the model. */
         @JvmStatic
         fun ofInputFile(inputFile: ResponseInputFile) = ResponseInputContent(inputFile = inputFile)
+
+        @JvmStatic
+        fun ofJson(json: JsonValue) = ResponseInputContent(_json = json)
     }
 
     /**
