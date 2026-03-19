@@ -1,6 +1,18 @@
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.InputFile
+import org.gradle.process.CommandLineArgumentProvider
+
 plugins {
     id("openai.kotlin")
     id("com.gradleup.shadow") version "8.3.8"
+}
+
+abstract class InputJarArgumentProvider : CommandLineArgumentProvider {
+    @get:InputFile
+    abstract val inputJar: RegularFileProperty
+
+    override fun asArguments(): Iterable<String> =
+        listOf(inputJar.get().asFile.absolutePath)
 }
 
 buildscript {
@@ -27,13 +39,16 @@ tasks.shadowJar {
     configurations = listOf(project.configurations.testRuntimeClasspath.get())
 }
 
+val shadowJar = tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar")
+val shadowJarPath = shadowJar.flatMap { it.archiveFile }.map { it.asFile.absolutePath }
+
 val proguardJarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.version}-proguard.jar"
 val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
     group = "verification"
-    dependsOn(tasks.shadowJar)
+    dependsOn(shadowJar)
     notCompatibleWithConfigurationCache("ProGuard")
 
-    injars(tasks.shadowJar)
+    injars(shadowJar.flatMap { it.archiveFile })
     outjars(proguardJarPath)
     printmapping("${layout.buildDirectory.get()}/proguard-mapping.txt")
 
@@ -66,7 +81,7 @@ val testProGuard by tasks.registering(JavaExec::class) {
 val r8JarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.version}-r8.jar"
 val r8Jar by tasks.registering(JavaExec::class) {
     group = "verification"
-    dependsOn(tasks.shadowJar)
+    dependsOn(shadowJar)
     notCompatibleWithConfigurationCache("R8")
 
     mainClass.set("com.android.tools.r8.R8")
@@ -80,8 +95,10 @@ val r8Jar by tasks.registering(JavaExec::class) {
         "--pg-conf", "./test.pro",
         "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro",
         "--pg-map-output", "${layout.buildDirectory.get()}/r8-mapping.txt",
-        tasks.shadowJar.get().archiveFile.get().asFile.absolutePath,
     )
+    argumentProviders += objects.newInstance(InputJarArgumentProvider::class.java).apply {
+        inputJar.set(shadowJar.flatMap { it.archiveFile })
+    }
 }
 
 val testR8 by tasks.registering(JavaExec::class) {
