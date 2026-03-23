@@ -22,7 +22,6 @@ internal class ResponseItemTest {
                 .addInputTextContent("text")
                 .role(ResponseInputMessageItem.Role.USER)
                 .status(ResponseInputMessageItem.Status.IN_PROGRESS)
-                .type(ResponseInputMessageItem.Type.MESSAGE)
                 .build()
 
         val responseItem = ResponseItem.ofResponseInputMessageItem(responseInputMessageItem)
@@ -61,7 +60,6 @@ internal class ResponseItemTest {
                     .addInputTextContent("text")
                     .role(ResponseInputMessageItem.Role.USER)
                     .status(ResponseInputMessageItem.Status.IN_PROGRESS)
-                    .type(ResponseInputMessageItem.Type.MESSAGE)
                     .build()
             )
 

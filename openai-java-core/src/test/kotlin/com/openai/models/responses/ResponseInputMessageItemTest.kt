@@ -17,7 +17,6 @@ internal class ResponseInputMessageItemTest {
                 .addInputTextContent("text")
                 .role(ResponseInputMessageItem.Role.USER)
                 .status(ResponseInputMessageItem.Status.IN_PROGRESS)
-                .type(ResponseInputMessageItem.Type.MESSAGE)
                 .build()
 
         assertThat(responseInputMessageItem.id()).isEqualTo("id")
@@ -28,7 +27,6 @@ internal class ResponseInputMessageItemTest {
         assertThat(responseInputMessageItem.role()).isEqualTo(ResponseInputMessageItem.Role.USER)
         assertThat(responseInputMessageItem.status())
             .contains(ResponseInputMessageItem.Status.IN_PROGRESS)
-        assertThat(responseInputMessageItem.type()).contains(ResponseInputMessageItem.Type.MESSAGE)
     }
 
     @Test
@@ -40,7 +38,6 @@ internal class ResponseInputMessageItemTest {
                 .addInputTextContent("text")
                 .role(ResponseInputMessageItem.Role.USER)
                 .status(ResponseInputMessageItem.Status.IN_PROGRESS)
-                .type(ResponseInputMessageItem.Type.MESSAGE)
                 .build()
 
         val roundtrippedResponseInputMessageItem =
