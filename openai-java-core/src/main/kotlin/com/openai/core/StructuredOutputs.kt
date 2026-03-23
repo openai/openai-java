@@ -111,11 +111,7 @@ internal fun textConfigFromClass(
     ResponseTextConfig.builder().format(jsonSchemaFromClass(type, localValidation)).build()
 
 // "internal" instead of "private" for testing purposes.
-internal data class FunctionInfo(
-    val name: String,
-    val description: String?,
-    val schema: ObjectNode,
-)
+internal data class FunctionInfo(val name: String, val description: String?, val schema: ObjectNode)
 
 @JvmSynthetic
 // "internal" instead of "private" for testing purposes.
