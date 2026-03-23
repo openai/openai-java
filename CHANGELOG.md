@@ -1,5 +1,29 @@
 # Changelog
 
+## 4.29.1 (2026-03-23)
+
+Full Changelog: [v4.29.0...v4.29.1](https://github.com/openai/openai-java/compare/v4.29.0...v4.29.1)
+
+### Bug Fixes
+
+* **client:** allow updating header/query affecting fields in `toBuilder()` ([fd3b67c](https://github.com/openai/openai-java/commit/fd3b67cef9c4457506a76b9e994210e512e0181f))
+* **client:** remove redundant apiKey override ([8383a7d](https://github.com/openai/openai-java/commit/8383a7de659aa6f17e1707614f5a246ced127532))
+* **core:** format StructuredOutputs ([256718e](https://github.com/openai/openai-java/commit/256718e5ac3f3bd821d97829c5af09b2db6f113d))
+* **types:** change type field to constant in ResponseInputMessageItem ([a8ae57f](https://github.com/openai/openai-java/commit/a8ae57f73a04878013869f75bc331fa60f02b979))
+
+
+### Chores
+
+* **internal:** update gitignore ([2663595](https://github.com/openai/openai-java/commit/26635957cbcfb2438bcece6476eea1e206d54115))
+* **tests:** bump steady to v0.19.4 ([f0d4ba8](https://github.com/openai/openai-java/commit/f0d4ba8685e6376e72a928da9aaf2bdc9e1655e5))
+* **tests:** bump steady to v0.19.5 ([cbd424e](https://github.com/openai/openai-java/commit/cbd424e5e2220cc8c88522b9850fe1a923a2e523))
+* **tests:** bump steady to v0.19.6 ([28a4c27](https://github.com/openai/openai-java/commit/28a4c278d4f81e61f732d1576e09b91e85e48ca8))
+
+
+### Refactors
+
+* **tests:** switch from prism to steady ([a8cb9e8](https://github.com/openai/openai-java/commit/a8cb9e8c62c492a6aeda6fcdd6e9b09afc4f71fa))
+
 ## 4.29.0 (2026-03-17)
 
 Full Changelog: [v4.28.0...v4.29.0](https://github.com/openai/openai-java/compare/v4.28.0...v4.29.0)
