@@ -169,6 +169,13 @@ private constructor(
         fun item(functionCall: ResponseFunctionToolCall) =
             item(ResponseOutputItem.ofFunctionCall(functionCall))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofFunctionCallOutput(functionCallOutput)`.
+         */
+        fun item(functionCallOutput: ResponseFunctionToolCallOutputItem) =
+            item(ResponseOutputItem.ofFunctionCallOutput(functionCallOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofWebSearchCall(webSearchCall)`. */
         fun item(webSearchCall: ResponseFunctionWebSearch) =
             item(ResponseOutputItem.ofWebSearchCall(webSearchCall))
@@ -176,6 +183,13 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofComputerCall(computerCall)`. */
         fun item(computerCall: ResponseComputerToolCall) =
             item(ResponseOutputItem.ofComputerCall(computerCall))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofComputerCallOutput(computerCallOutput)`.
+         */
+        fun item(computerCallOutput: ResponseComputerToolCallOutputItem) =
+            item(ResponseOutputItem.ofComputerCallOutput(computerCallOutput))
 
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
@@ -212,6 +226,13 @@ private constructor(
         fun item(localShellCall: ResponseOutputItem.LocalShellCall) =
             item(ResponseOutputItem.ofLocalShellCall(localShellCall))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)`.
+         */
+        fun item(localShellCallOutput: ResponseOutputItem.LocalShellCallOutput) =
+            item(ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofShellCall(shellCall)`. */
         fun item(shellCall: ResponseFunctionShellToolCall) =
             item(ResponseOutputItem.ofShellCall(shellCall))
@@ -247,9 +268,23 @@ private constructor(
         fun item(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest) =
             item(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         */
+        fun item(mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse) =
+            item(ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofCustomToolCall(customToolCall)`. */
         fun item(customToolCall: ResponseCustomToolCall) =
             item(ResponseOutputItem.ofCustomToolCall(customToolCall))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         */
+        fun item(customToolCallOutput: ResponseCustomToolCallOutputItem) =
+            item(ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /** The index of the output item that was added. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))

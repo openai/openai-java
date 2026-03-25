@@ -8,8 +8,11 @@ import com.openai.core.checkRequired
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
+import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseCustomToolCallItem
+import com.openai.models.responses.ResponseCustomToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
 import com.openai.models.responses.ResponseFunctionShellToolCall
 import com.openai.models.responses.ResponseFunctionShellToolCallOutput
@@ -19,6 +22,7 @@ import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseItem
 import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseReasoningItem
 import com.openai.models.responses.ResponseToolSearchCall
 import com.openai.models.responses.ResponseToolSearchOutputItem
 import com.openai.services.async.responses.InputItemServiceAsync
@@ -103,6 +107,14 @@ private constructor(
                                 toolSearchOutput: ResponseToolSearchOutputItem
                             ): Optional<String> = toolSearchOutput._id().getOptional("id")
 
+                            override fun visitReasoning(
+                                reasoning: ResponseReasoningItem
+                            ): Optional<String> = reasoning._id().getOptional("id")
+
+                            override fun visitCompaction(
+                                compaction: ResponseCompactionItem
+                            ): Optional<String> = compaction._id().getOptional("id")
+
                             override fun visitImageGenerationCall(
                                 imageGenerationCall: ResponseItem.ImageGenerationCall
                             ): Optional<String> = imageGenerationCall._id().getOptional("id")
@@ -150,6 +162,14 @@ private constructor(
                             override fun visitMcpCall(
                                 mcpCall: ResponseItem.McpCall
                             ): Optional<String> = mcpCall._id().getOptional("id")
+
+                            override fun visitCustomToolCall(
+                                customToolCall: ResponseCustomToolCallItem
+                            ): Optional<String> = customToolCall._id().getOptional("id")
+
+                            override fun visitCustomToolCallOutput(
+                                customToolCallOutput: ResponseCustomToolCallOutputItem
+                            ): Optional<String> = customToolCallOutput._id().getOptional("id")
                         }
                     )
             )
