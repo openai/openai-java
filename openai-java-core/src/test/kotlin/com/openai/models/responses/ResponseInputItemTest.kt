@@ -364,6 +364,7 @@ internal class ResponseInputItemTest {
                         .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
                         .x(0L)
                         .y(0L)
+                        .addKey("string")
                         .build()
                 )
                 .addAction(
@@ -371,6 +372,7 @@ internal class ResponseInputItemTest {
                         .button(ComputerAction.Click.Button.LEFT)
                         .x(0L)
                         .y(0L)
+                        .addKey("string")
                         .build()
                 )
                 .build()
@@ -429,6 +431,7 @@ internal class ResponseInputItemTest {
                             .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
                             .x(0L)
                             .y(0L)
+                            .addKey("string")
                             .build()
                     )
                     .addAction(
@@ -436,6 +439,7 @@ internal class ResponseInputItemTest {
                             .button(ComputerAction.Click.Button.LEFT)
                             .x(0L)
                             .y(0L)
+                            .addKey("string")
                             .build()
                     )
                     .build()
