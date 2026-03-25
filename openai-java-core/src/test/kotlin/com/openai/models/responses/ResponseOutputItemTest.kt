@@ -354,6 +354,7 @@ internal class ResponseOutputItemTest {
                         .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
                         .x(0L)
                         .y(0L)
+                        .addKey("string")
                         .build()
                 )
                 .addAction(
@@ -361,6 +362,7 @@ internal class ResponseOutputItemTest {
                         .button(ComputerAction.Click.Button.LEFT)
                         .x(0L)
                         .y(0L)
+                        .addKey("string")
                         .build()
                 )
                 .build()
@@ -411,6 +413,7 @@ internal class ResponseOutputItemTest {
                             .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
                             .x(0L)
                             .y(0L)
+                            .addKey("string")
                             .build()
                     )
                     .addAction(
@@ -418,6 +421,7 @@ internal class ResponseOutputItemTest {
                             .button(ComputerAction.Click.Button.LEFT)
                             .x(0L)
                             .y(0L)
+                            .addKey("string")
                             .build()
                     )
                     .build()
