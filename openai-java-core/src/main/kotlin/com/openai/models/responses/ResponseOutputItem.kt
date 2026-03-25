@@ -38,8 +38,10 @@ private constructor(
     private val message: ResponseOutputMessage? = null,
     private val fileSearchCall: ResponseFileSearchToolCall? = null,
     private val functionCall: ResponseFunctionToolCall? = null,
+    private val functionCallOutput: ResponseFunctionToolCallOutputItem? = null,
     private val webSearchCall: ResponseFunctionWebSearch? = null,
     private val computerCall: ResponseComputerToolCall? = null,
+    private val computerCallOutput: ResponseComputerToolCallOutputItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
@@ -47,6 +49,7 @@ private constructor(
     private val imageGenerationCall: ImageGenerationCall? = null,
     private val codeInterpreterCall: ResponseCodeInterpreterToolCall? = null,
     private val localShellCall: LocalShellCall? = null,
+    private val localShellCallOutput: LocalShellCallOutput? = null,
     private val shellCall: ResponseFunctionShellToolCall? = null,
     private val shellCallOutput: ResponseFunctionShellToolCallOutput? = null,
     private val applyPatchCall: ResponseApplyPatchToolCall? = null,
@@ -54,7 +57,9 @@ private constructor(
     private val mcpCall: McpCall? = null,
     private val mcpListTools: McpListTools? = null,
     private val mcpApprovalRequest: McpApprovalRequest? = null,
+    private val mcpApprovalResponse: McpApprovalResponse? = null,
     private val customToolCall: ResponseCustomToolCall? = null,
+    private val customToolCallOutput: ResponseCustomToolCallOutputItem? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -75,6 +80,9 @@ private constructor(
      */
     fun functionCall(): Optional<ResponseFunctionToolCall> = Optional.ofNullable(functionCall)
 
+    fun functionCallOutput(): Optional<ResponseFunctionToolCallOutputItem> =
+        Optional.ofNullable(functionCallOutput)
+
     /**
      * The results of a web search tool call. See the
      * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
@@ -88,6 +96,9 @@ private constructor(
      * information.
      */
     fun computerCall(): Optional<ResponseComputerToolCall> = Optional.ofNullable(computerCall)
+
+    fun computerCallOutput(): Optional<ResponseComputerToolCallOutputItem> =
+        Optional.ofNullable(computerCallOutput)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -119,6 +130,10 @@ private constructor(
     /** A tool call to run a command on the local shell. */
     fun localShellCall(): Optional<LocalShellCall> = Optional.ofNullable(localShellCall)
 
+    /** The output of a local shell tool call. */
+    fun localShellCallOutput(): Optional<LocalShellCallOutput> =
+        Optional.ofNullable(localShellCallOutput)
+
     /** A tool call that executes one or more shell commands in a managed environment. */
     fun shellCall(): Optional<ResponseFunctionShellToolCall> = Optional.ofNullable(shellCall)
 
@@ -142,8 +157,16 @@ private constructor(
     /** A request for human approval of a tool invocation. */
     fun mcpApprovalRequest(): Optional<McpApprovalRequest> = Optional.ofNullable(mcpApprovalRequest)
 
+    /** A response to an MCP approval request. */
+    fun mcpApprovalResponse(): Optional<McpApprovalResponse> =
+        Optional.ofNullable(mcpApprovalResponse)
+
     /** A call to a custom tool created by the model. */
     fun customToolCall(): Optional<ResponseCustomToolCall> = Optional.ofNullable(customToolCall)
+
+    /** The output of a custom tool call from your code, being sent back to the model. */
+    fun customToolCallOutput(): Optional<ResponseCustomToolCallOutputItem> =
+        Optional.ofNullable(customToolCallOutput)
 
     fun isMessage(): Boolean = message != null
 
@@ -151,9 +174,13 @@ private constructor(
 
     fun isFunctionCall(): Boolean = functionCall != null
 
+    fun isFunctionCallOutput(): Boolean = functionCallOutput != null
+
     fun isWebSearchCall(): Boolean = webSearchCall != null
 
     fun isComputerCall(): Boolean = computerCall != null
+
+    fun isComputerCallOutput(): Boolean = computerCallOutput != null
 
     fun isReasoning(): Boolean = reasoning != null
 
@@ -169,6 +196,8 @@ private constructor(
 
     fun isLocalShellCall(): Boolean = localShellCall != null
 
+    fun isLocalShellCallOutput(): Boolean = localShellCallOutput != null
+
     fun isShellCall(): Boolean = shellCall != null
 
     fun isShellCallOutput(): Boolean = shellCallOutput != null
@@ -183,7 +212,11 @@ private constructor(
 
     fun isMcpApprovalRequest(): Boolean = mcpApprovalRequest != null
 
+    fun isMcpApprovalResponse(): Boolean = mcpApprovalResponse != null
+
     fun isCustomToolCall(): Boolean = customToolCall != null
+
+    fun isCustomToolCallOutput(): Boolean = customToolCallOutput != null
 
     /** An output message from the model. */
     fun asMessage(): ResponseOutputMessage = message.getOrThrow("message")
@@ -202,6 +235,9 @@ private constructor(
      */
     fun asFunctionCall(): ResponseFunctionToolCall = functionCall.getOrThrow("functionCall")
 
+    fun asFunctionCallOutput(): ResponseFunctionToolCallOutputItem =
+        functionCallOutput.getOrThrow("functionCallOutput")
+
     /**
      * The results of a web search tool call. See the
      * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
@@ -215,6 +251,9 @@ private constructor(
      * information.
      */
     fun asComputerCall(): ResponseComputerToolCall = computerCall.getOrThrow("computerCall")
+
+    fun asComputerCallOutput(): ResponseComputerToolCallOutputItem =
+        computerCallOutput.getOrThrow("computerCallOutput")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -246,6 +285,10 @@ private constructor(
     /** A tool call to run a command on the local shell. */
     fun asLocalShellCall(): LocalShellCall = localShellCall.getOrThrow("localShellCall")
 
+    /** The output of a local shell tool call. */
+    fun asLocalShellCallOutput(): LocalShellCallOutput =
+        localShellCallOutput.getOrThrow("localShellCallOutput")
+
     /** A tool call that executes one or more shell commands in a managed environment. */
     fun asShellCall(): ResponseFunctionShellToolCall = shellCall.getOrThrow("shellCall")
 
@@ -270,8 +313,16 @@ private constructor(
     fun asMcpApprovalRequest(): McpApprovalRequest =
         mcpApprovalRequest.getOrThrow("mcpApprovalRequest")
 
+    /** A response to an MCP approval request. */
+    fun asMcpApprovalResponse(): McpApprovalResponse =
+        mcpApprovalResponse.getOrThrow("mcpApprovalResponse")
+
     /** A call to a custom tool created by the model. */
     fun asCustomToolCall(): ResponseCustomToolCall = customToolCall.getOrThrow("customToolCall")
+
+    /** The output of a custom tool call from your code, being sent back to the model. */
+    fun asCustomToolCallOutput(): ResponseCustomToolCallOutputItem =
+        customToolCallOutput.getOrThrow("customToolCallOutput")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -280,8 +331,10 @@ private constructor(
             message != null -> visitor.visitMessage(message)
             fileSearchCall != null -> visitor.visitFileSearchCall(fileSearchCall)
             functionCall != null -> visitor.visitFunctionCall(functionCall)
+            functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
             webSearchCall != null -> visitor.visitWebSearchCall(webSearchCall)
             computerCall != null -> visitor.visitComputerCall(computerCall)
+            computerCallOutput != null -> visitor.visitComputerCallOutput(computerCallOutput)
             reasoning != null -> visitor.visitReasoning(reasoning)
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
@@ -289,6 +342,7 @@ private constructor(
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
             codeInterpreterCall != null -> visitor.visitCodeInterpreterCall(codeInterpreterCall)
             localShellCall != null -> visitor.visitLocalShellCall(localShellCall)
+            localShellCallOutput != null -> visitor.visitLocalShellCallOutput(localShellCallOutput)
             shellCall != null -> visitor.visitShellCall(shellCall)
             shellCallOutput != null -> visitor.visitShellCallOutput(shellCallOutput)
             applyPatchCall != null -> visitor.visitApplyPatchCall(applyPatchCall)
@@ -296,7 +350,9 @@ private constructor(
             mcpCall != null -> visitor.visitMcpCall(mcpCall)
             mcpListTools != null -> visitor.visitMcpListTools(mcpListTools)
             mcpApprovalRequest != null -> visitor.visitMcpApprovalRequest(mcpApprovalRequest)
+            mcpApprovalResponse != null -> visitor.visitMcpApprovalResponse(mcpApprovalResponse)
             customToolCall != null -> visitor.visitCustomToolCall(customToolCall)
+            customToolCallOutput != null -> visitor.visitCustomToolCallOutput(customToolCallOutput)
             else -> visitor.unknown(_json)
         }
 
@@ -321,12 +377,24 @@ private constructor(
                     functionCall.validate()
                 }
 
+                override fun visitFunctionCallOutput(
+                    functionCallOutput: ResponseFunctionToolCallOutputItem
+                ) {
+                    functionCallOutput.validate()
+                }
+
                 override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) {
                     webSearchCall.validate()
                 }
 
                 override fun visitComputerCall(computerCall: ResponseComputerToolCall) {
                     computerCall.validate()
+                }
+
+                override fun visitComputerCallOutput(
+                    computerCallOutput: ResponseComputerToolCallOutputItem
+                ) {
+                    computerCallOutput.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -357,6 +425,10 @@ private constructor(
 
                 override fun visitLocalShellCall(localShellCall: LocalShellCall) {
                     localShellCall.validate()
+                }
+
+                override fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) {
+                    localShellCallOutput.validate()
                 }
 
                 override fun visitShellCall(shellCall: ResponseFunctionShellToolCall) {
@@ -391,8 +463,18 @@ private constructor(
                     mcpApprovalRequest.validate()
                 }
 
+                override fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse) {
+                    mcpApprovalResponse.validate()
+                }
+
                 override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) {
                     customToolCall.validate()
+                }
+
+                override fun visitCustomToolCallOutput(
+                    customToolCallOutput: ResponseCustomToolCallOutputItem
+                ) {
+                    customToolCallOutput.validate()
                 }
             }
         )
@@ -424,11 +506,19 @@ private constructor(
                 override fun visitFunctionCall(functionCall: ResponseFunctionToolCall) =
                     functionCall.validity()
 
+                override fun visitFunctionCallOutput(
+                    functionCallOutput: ResponseFunctionToolCallOutputItem
+                ) = functionCallOutput.validity()
+
                 override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) =
                     webSearchCall.validity()
 
                 override fun visitComputerCall(computerCall: ResponseComputerToolCall) =
                     computerCall.validity()
+
+                override fun visitComputerCallOutput(
+                    computerCallOutput: ResponseComputerToolCallOutputItem
+                ) = computerCallOutput.validity()
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
@@ -451,6 +541,9 @@ private constructor(
                 override fun visitLocalShellCall(localShellCall: LocalShellCall) =
                     localShellCall.validity()
 
+                override fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) =
+                    localShellCallOutput.validity()
+
                 override fun visitShellCall(shellCall: ResponseFunctionShellToolCall) =
                     shellCall.validity()
 
@@ -472,8 +565,15 @@ private constructor(
                 override fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) =
                     mcpApprovalRequest.validity()
 
+                override fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse) =
+                    mcpApprovalResponse.validity()
+
                 override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) =
                     customToolCall.validity()
+
+                override fun visitCustomToolCallOutput(
+                    customToolCallOutput: ResponseCustomToolCallOutputItem
+                ) = customToolCallOutput.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -488,8 +588,10 @@ private constructor(
             message == other.message &&
             fileSearchCall == other.fileSearchCall &&
             functionCall == other.functionCall &&
+            functionCallOutput == other.functionCallOutput &&
             webSearchCall == other.webSearchCall &&
             computerCall == other.computerCall &&
+            computerCallOutput == other.computerCallOutput &&
             reasoning == other.reasoning &&
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
@@ -497,6 +599,7 @@ private constructor(
             imageGenerationCall == other.imageGenerationCall &&
             codeInterpreterCall == other.codeInterpreterCall &&
             localShellCall == other.localShellCall &&
+            localShellCallOutput == other.localShellCallOutput &&
             shellCall == other.shellCall &&
             shellCallOutput == other.shellCallOutput &&
             applyPatchCall == other.applyPatchCall &&
@@ -504,7 +607,9 @@ private constructor(
             mcpCall == other.mcpCall &&
             mcpListTools == other.mcpListTools &&
             mcpApprovalRequest == other.mcpApprovalRequest &&
-            customToolCall == other.customToolCall
+            mcpApprovalResponse == other.mcpApprovalResponse &&
+            customToolCall == other.customToolCall &&
+            customToolCallOutput == other.customToolCallOutput
     }
 
     override fun hashCode(): Int =
@@ -512,8 +617,10 @@ private constructor(
             message,
             fileSearchCall,
             functionCall,
+            functionCallOutput,
             webSearchCall,
             computerCall,
+            computerCallOutput,
             reasoning,
             toolSearchCall,
             toolSearchOutput,
@@ -521,6 +628,7 @@ private constructor(
             imageGenerationCall,
             codeInterpreterCall,
             localShellCall,
+            localShellCallOutput,
             shellCall,
             shellCallOutput,
             applyPatchCall,
@@ -528,7 +636,9 @@ private constructor(
             mcpCall,
             mcpListTools,
             mcpApprovalRequest,
+            mcpApprovalResponse,
             customToolCall,
+            customToolCallOutput,
         )
 
     override fun toString(): String =
@@ -536,8 +646,12 @@ private constructor(
             message != null -> "ResponseOutputItem{message=$message}"
             fileSearchCall != null -> "ResponseOutputItem{fileSearchCall=$fileSearchCall}"
             functionCall != null -> "ResponseOutputItem{functionCall=$functionCall}"
+            functionCallOutput != null ->
+                "ResponseOutputItem{functionCallOutput=$functionCallOutput}"
             webSearchCall != null -> "ResponseOutputItem{webSearchCall=$webSearchCall}"
             computerCall != null -> "ResponseOutputItem{computerCall=$computerCall}"
+            computerCallOutput != null ->
+                "ResponseOutputItem{computerCallOutput=$computerCallOutput}"
             reasoning != null -> "ResponseOutputItem{reasoning=$reasoning}"
             toolSearchCall != null -> "ResponseOutputItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ResponseOutputItem{toolSearchOutput=$toolSearchOutput}"
@@ -547,6 +661,8 @@ private constructor(
             codeInterpreterCall != null ->
                 "ResponseOutputItem{codeInterpreterCall=$codeInterpreterCall}"
             localShellCall != null -> "ResponseOutputItem{localShellCall=$localShellCall}"
+            localShellCallOutput != null ->
+                "ResponseOutputItem{localShellCallOutput=$localShellCallOutput}"
             shellCall != null -> "ResponseOutputItem{shellCall=$shellCall}"
             shellCallOutput != null -> "ResponseOutputItem{shellCallOutput=$shellCallOutput}"
             applyPatchCall != null -> "ResponseOutputItem{applyPatchCall=$applyPatchCall}"
@@ -556,7 +672,11 @@ private constructor(
             mcpListTools != null -> "ResponseOutputItem{mcpListTools=$mcpListTools}"
             mcpApprovalRequest != null ->
                 "ResponseOutputItem{mcpApprovalRequest=$mcpApprovalRequest}"
+            mcpApprovalResponse != null ->
+                "ResponseOutputItem{mcpApprovalResponse=$mcpApprovalResponse}"
             customToolCall != null -> "ResponseOutputItem{customToolCall=$customToolCall}"
+            customToolCallOutput != null ->
+                "ResponseOutputItem{customToolCallOutput=$customToolCallOutput}"
             _json != null -> "ResponseOutputItem{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseOutputItem")
         }
@@ -585,6 +705,10 @@ private constructor(
         fun ofFunctionCall(functionCall: ResponseFunctionToolCall) =
             ResponseOutputItem(functionCall = functionCall)
 
+        @JvmStatic
+        fun ofFunctionCallOutput(functionCallOutput: ResponseFunctionToolCallOutputItem) =
+            ResponseOutputItem(functionCallOutput = functionCallOutput)
+
         /**
          * The results of a web search tool call. See the
          * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
@@ -602,6 +726,10 @@ private constructor(
         @JvmStatic
         fun ofComputerCall(computerCall: ResponseComputerToolCall) =
             ResponseOutputItem(computerCall = computerCall)
+
+        @JvmStatic
+        fun ofComputerCallOutput(computerCallOutput: ResponseComputerToolCallOutputItem) =
+            ResponseOutputItem(computerCallOutput = computerCallOutput)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -644,6 +772,11 @@ private constructor(
         fun ofLocalShellCall(localShellCall: LocalShellCall) =
             ResponseOutputItem(localShellCall = localShellCall)
 
+        /** The output of a local shell tool call. */
+        @JvmStatic
+        fun ofLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) =
+            ResponseOutputItem(localShellCallOutput = localShellCallOutput)
+
         /** A tool call that executes one or more shell commands in a managed environment. */
         @JvmStatic
         fun ofShellCall(shellCall: ResponseFunctionShellToolCall) =
@@ -677,10 +810,20 @@ private constructor(
         fun ofMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) =
             ResponseOutputItem(mcpApprovalRequest = mcpApprovalRequest)
 
+        /** A response to an MCP approval request. */
+        @JvmStatic
+        fun ofMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse) =
+            ResponseOutputItem(mcpApprovalResponse = mcpApprovalResponse)
+
         /** A call to a custom tool created by the model. */
         @JvmStatic
         fun ofCustomToolCall(customToolCall: ResponseCustomToolCall) =
             ResponseOutputItem(customToolCall = customToolCall)
+
+        /** The output of a custom tool call from your code, being sent back to the model. */
+        @JvmStatic
+        fun ofCustomToolCallOutput(customToolCallOutput: ResponseCustomToolCallOutputItem) =
+            ResponseOutputItem(customToolCallOutput = customToolCallOutput)
     }
 
     /**
@@ -706,6 +849,8 @@ private constructor(
          */
         fun visitFunctionCall(functionCall: ResponseFunctionToolCall): T
 
+        fun visitFunctionCallOutput(functionCallOutput: ResponseFunctionToolCallOutputItem): T
+
         /**
          * The results of a web search tool call. See the
          * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
@@ -719,6 +864,8 @@ private constructor(
          * information.
          */
         fun visitComputerCall(computerCall: ResponseComputerToolCall): T
+
+        fun visitComputerCallOutput(computerCallOutput: ResponseComputerToolCallOutputItem): T
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -747,6 +894,9 @@ private constructor(
         /** A tool call to run a command on the local shell. */
         fun visitLocalShellCall(localShellCall: LocalShellCall): T
 
+        /** The output of a local shell tool call. */
+        fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput): T
+
         /** A tool call that executes one or more shell commands in a managed environment. */
         fun visitShellCall(shellCall: ResponseFunctionShellToolCall): T
 
@@ -768,8 +918,14 @@ private constructor(
         /** A request for human approval of a tool invocation. */
         fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest): T
 
+        /** A response to an MCP approval request. */
+        fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse): T
+
         /** A call to a custom tool created by the model. */
         fun visitCustomToolCall(customToolCall: ResponseCustomToolCall): T
+
+        /** The output of a custom tool call from your code, being sent back to the model. */
+        fun visitCustomToolCallOutput(customToolCallOutput: ResponseCustomToolCallOutputItem): T
 
         /**
          * Maps an unknown variant of [ResponseOutputItem] to a value of type [T].
@@ -808,6 +964,14 @@ private constructor(
                         ResponseOutputItem(functionCall = it, _json = json)
                     } ?: ResponseOutputItem(_json = json)
                 }
+                "function_call_output" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFunctionToolCallOutputItem>(),
+                        )
+                        ?.let { ResponseOutputItem(functionCallOutput = it, _json = json) }
+                        ?: ResponseOutputItem(_json = json)
+                }
                 "web_search_call" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>())?.let {
                         ResponseOutputItem(webSearchCall = it, _json = json)
@@ -817,6 +981,14 @@ private constructor(
                     return tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCall>())?.let {
                         ResponseOutputItem(computerCall = it, _json = json)
                     } ?: ResponseOutputItem(_json = json)
+                }
+                "computer_call_output" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseComputerToolCallOutputItem>(),
+                        )
+                        ?.let { ResponseOutputItem(computerCallOutput = it, _json = json) }
+                        ?: ResponseOutputItem(_json = json)
                 }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
@@ -851,6 +1023,11 @@ private constructor(
                 "local_shell_call" -> {
                     return tryDeserialize(node, jacksonTypeRef<LocalShellCall>())?.let {
                         ResponseOutputItem(localShellCall = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
+                }
+                "local_shell_call_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<LocalShellCallOutput>())?.let {
+                        ResponseOutputItem(localShellCallOutput = it, _json = json)
                     } ?: ResponseOutputItem(_json = json)
                 }
                 "shell_call" -> {
@@ -891,10 +1068,20 @@ private constructor(
                         ResponseOutputItem(mcpApprovalRequest = it, _json = json)
                     } ?: ResponseOutputItem(_json = json)
                 }
+                "mcp_approval_response" -> {
+                    return tryDeserialize(node, jacksonTypeRef<McpApprovalResponse>())?.let {
+                        ResponseOutputItem(mcpApprovalResponse = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
+                }
                 "custom_tool_call" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseCustomToolCall>())?.let {
                         ResponseOutputItem(customToolCall = it, _json = json)
                     } ?: ResponseOutputItem(_json = json)
+                }
+                "custom_tool_call_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCustomToolCallOutputItem>())
+                        ?.let { ResponseOutputItem(customToolCallOutput = it, _json = json) }
+                        ?: ResponseOutputItem(_json = json)
                 }
             }
 
@@ -913,8 +1100,10 @@ private constructor(
                 value.message != null -> generator.writeObject(value.message)
                 value.fileSearchCall != null -> generator.writeObject(value.fileSearchCall)
                 value.functionCall != null -> generator.writeObject(value.functionCall)
+                value.functionCallOutput != null -> generator.writeObject(value.functionCallOutput)
                 value.webSearchCall != null -> generator.writeObject(value.webSearchCall)
                 value.computerCall != null -> generator.writeObject(value.computerCall)
+                value.computerCallOutput != null -> generator.writeObject(value.computerCallOutput)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
@@ -924,6 +1113,8 @@ private constructor(
                 value.codeInterpreterCall != null ->
                     generator.writeObject(value.codeInterpreterCall)
                 value.localShellCall != null -> generator.writeObject(value.localShellCall)
+                value.localShellCallOutput != null ->
+                    generator.writeObject(value.localShellCallOutput)
                 value.shellCall != null -> generator.writeObject(value.shellCall)
                 value.shellCallOutput != null -> generator.writeObject(value.shellCallOutput)
                 value.applyPatchCall != null -> generator.writeObject(value.applyPatchCall)
@@ -932,7 +1123,11 @@ private constructor(
                 value.mcpCall != null -> generator.writeObject(value.mcpCall)
                 value.mcpListTools != null -> generator.writeObject(value.mcpListTools)
                 value.mcpApprovalRequest != null -> generator.writeObject(value.mcpApprovalRequest)
+                value.mcpApprovalResponse != null ->
+                    generator.writeObject(value.mcpApprovalResponse)
                 value.customToolCall != null -> generator.writeObject(value.customToolCall)
+                value.customToolCallOutput != null ->
+                    generator.writeObject(value.customToolCallOutput)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseOutputItem")
             }
@@ -2324,6 +2519,420 @@ private constructor(
 
         override fun toString() =
             "LocalShellCall{id=$id, action=$action, callId=$callId, status=$status, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    /** The output of a local shell tool call. */
+    class LocalShellCallOutput
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val output: JsonField<String>,
+        private val type: JsonValue,
+        private val status: JsonField<Status>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(id, output, type, status, mutableMapOf())
+
+        /**
+         * The unique ID of the local shell tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun id(): String = id.getRequired("id")
+
+        /**
+         * A JSON string of the output of the local shell tool call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun output(): String = output.getRequired("output")
+
+        /**
+         * The type of the local shell tool call output. Always `local_shell_call_output`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("local_shell_call_output")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The status of the item. One of `in_progress`, `completed`, or `incomplete`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun status(): Optional<Status> = status.getOptional("status")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [LocalShellCallOutput].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .output()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [LocalShellCallOutput]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String>? = null
+            private var output: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("local_shell_call_output")
+            private var status: JsonField<Status> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(localShellCallOutput: LocalShellCallOutput) = apply {
+                id = localShellCallOutput.id
+                output = localShellCallOutput.output
+                type = localShellCallOutput.type
+                status = localShellCallOutput.status
+                additionalProperties = localShellCallOutput.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the local shell tool call generated by the model. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** A JSON string of the output of the local shell tool call. */
+            fun output(output: String) = output(JsonField.of(output))
+
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun output(output: JsonField<String>) = apply { this.output = output }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("local_shell_call_output")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /** The status of the item. One of `in_progress`, `completed`, or `incomplete`. */
+            fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+            /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+            fun status(status: Optional<Status>) = status(status.getOrNull())
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [LocalShellCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): LocalShellCallOutput =
+                LocalShellCallOutput(
+                    checkRequired("id", id),
+                    checkRequired("output", output),
+                    type,
+                    status,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): LocalShellCallOutput = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            output()
+            _type().let {
+                if (it != JsonValue.from("local_shell_call_output")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            status().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (output.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("local_shell_call_output")) 1 else 0 } +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The status of the item. One of `in_progress`, `completed`, or `incomplete`. */
+        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IN_PROGRESS = of("in_progress")
+
+                @JvmField val COMPLETED = of("completed")
+
+                @JvmField val INCOMPLETE = of("incomplete")
+
+                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+            }
+
+            /** An enum containing [Status]'s known values. */
+            enum class Known {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+            }
+
+            /**
+             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Status] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+                /**
+                 * An enum member indicating that [Status] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IN_PROGRESS -> Value.IN_PROGRESS
+                    COMPLETED -> Value.COMPLETED
+                    INCOMPLETE -> Value.INCOMPLETE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IN_PROGRESS -> Known.IN_PROGRESS
+                    COMPLETED -> Known.COMPLETED
+                    INCOMPLETE -> Known.INCOMPLETE
+                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is LocalShellCallOutput &&
+                id == other.id &&
+                output == other.output &&
+                type == other.type &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, output, type, status, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "LocalShellCallOutput{id=$id, output=$output, type=$type, status=$status, additionalProperties=$additionalProperties}"
     }
 
     /** An invocation of a tool on an MCP server. */
@@ -3910,5 +4519,328 @@ private constructor(
 
         override fun toString() =
             "McpApprovalRequest{id=$id, arguments=$arguments, name=$name, serverLabel=$serverLabel, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    /** A response to an MCP approval request. */
+    class McpApprovalResponse
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val approvalRequestId: JsonField<String>,
+        private val approve: JsonField<Boolean>,
+        private val type: JsonValue,
+        private val reason: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("approval_request_id")
+            @ExcludeMissing
+            approvalRequestId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("approve") @ExcludeMissing approve: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("reason") @ExcludeMissing reason: JsonField<String> = JsonMissing.of(),
+        ) : this(id, approvalRequestId, approve, type, reason, mutableMapOf())
+
+        /**
+         * The unique ID of the approval response
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun id(): String = id.getRequired("id")
+
+        /**
+         * The ID of the approval request being answered.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun approvalRequestId(): String = approvalRequestId.getRequired("approval_request_id")
+
+        /**
+         * Whether the request was approved.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun approve(): Boolean = approve.getRequired("approve")
+
+        /**
+         * The type of the item. Always `mcp_approval_response`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("mcp_approval_response")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Optional reason for the decision.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun reason(): Optional<String> = reason.getOptional("reason")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [approvalRequestId].
+         *
+         * Unlike [approvalRequestId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("approval_request_id")
+        @ExcludeMissing
+        fun _approvalRequestId(): JsonField<String> = approvalRequestId
+
+        /**
+         * Returns the raw JSON value of [approve].
+         *
+         * Unlike [approve], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("approve") @ExcludeMissing fun _approve(): JsonField<Boolean> = approve
+
+        /**
+         * Returns the raw JSON value of [reason].
+         *
+         * Unlike [reason], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<String> = reason
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [McpApprovalResponse].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .approvalRequestId()
+             * .approve()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [McpApprovalResponse]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String>? = null
+            private var approvalRequestId: JsonField<String>? = null
+            private var approve: JsonField<Boolean>? = null
+            private var type: JsonValue = JsonValue.from("mcp_approval_response")
+            private var reason: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(mcpApprovalResponse: McpApprovalResponse) = apply {
+                id = mcpApprovalResponse.id
+                approvalRequestId = mcpApprovalResponse.approvalRequestId
+                approve = mcpApprovalResponse.approve
+                type = mcpApprovalResponse.type
+                reason = mcpApprovalResponse.reason
+                additionalProperties = mcpApprovalResponse.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the approval response */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The ID of the approval request being answered. */
+            fun approvalRequestId(approvalRequestId: String) =
+                approvalRequestId(JsonField.of(approvalRequestId))
+
+            /**
+             * Sets [Builder.approvalRequestId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.approvalRequestId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun approvalRequestId(approvalRequestId: JsonField<String>) = apply {
+                this.approvalRequestId = approvalRequestId
+            }
+
+            /** Whether the request was approved. */
+            fun approve(approve: Boolean) = approve(JsonField.of(approve))
+
+            /**
+             * Sets [Builder.approve] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.approve] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun approve(approve: JsonField<Boolean>) = apply { this.approve = approve }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("mcp_approval_response")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /** Optional reason for the decision. */
+            fun reason(reason: String?) = reason(JsonField.ofNullable(reason))
+
+            /** Alias for calling [Builder.reason] with `reason.orElse(null)`. */
+            fun reason(reason: Optional<String>) = reason(reason.getOrNull())
+
+            /**
+             * Sets [Builder.reason] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reason] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun reason(reason: JsonField<String>) = apply { this.reason = reason }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [McpApprovalResponse].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .approvalRequestId()
+             * .approve()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): McpApprovalResponse =
+                McpApprovalResponse(
+                    checkRequired("id", id),
+                    checkRequired("approvalRequestId", approvalRequestId),
+                    checkRequired("approve", approve),
+                    type,
+                    reason,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): McpApprovalResponse = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            approvalRequestId()
+            approve()
+            _type().let {
+                if (it != JsonValue.from("mcp_approval_response")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            reason()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
+                (if (approve.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("mcp_approval_response")) 1 else 0 } +
+                (if (reason.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is McpApprovalResponse &&
+                id == other.id &&
+                approvalRequestId == other.approvalRequestId &&
+                approve == other.approve &&
+                type == other.type &&
+                reason == other.reason &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, approvalRequestId, approve, type, reason, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "McpApprovalResponse{id=$id, approvalRequestId=$approvalRequestId, approve=$approve, type=$type, reason=$reason, additionalProperties=$additionalProperties}"
     }
 }

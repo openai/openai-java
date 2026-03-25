@@ -18,6 +18,7 @@ import com.openai.models.conversations.Message
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
+import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
 import com.openai.models.responses.ResponseCustomToolCall
@@ -258,6 +259,10 @@ private constructor(
         /** Alias for calling [addData] with `ConversationItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) =
             addData(ConversationItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addData] with `ConversationItem.ofCompaction(compaction)`. */
+        fun addData(compaction: ResponseCompactionItem) =
+            addData(ConversationItem.ofCompaction(compaction))
 
         /**
          * Alias for calling [addData] with

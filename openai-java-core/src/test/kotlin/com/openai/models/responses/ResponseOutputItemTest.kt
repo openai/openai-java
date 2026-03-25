@@ -54,8 +54,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).contains(message)
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -63,6 +65,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -70,7 +73,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -147,8 +152,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).contains(fileSearchCall)
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -156,6 +163,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -163,7 +171,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -217,8 +227,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).contains(functionCall)
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -226,6 +238,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -233,7 +246,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -248,6 +263,69 @@ internal class ResponseOutputItemTest {
                     .id("id")
                     .namespace("namespace")
                     .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
+    fun ofFunctionCallOutput() {
+        val functionCallOutput =
+            ResponseFunctionToolCallOutputItem.builder()
+                .id("id")
+                .callId("call_id")
+                .output("string")
+                .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .createdBy("created_by")
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofFunctionCallOutput(functionCallOutput)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).contains(functionCallOutput)
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.toolSearchCall()).isEmpty
+        assertThat(responseOutputItem.toolSearchOutput()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
+        assertThat(responseOutputItem.shellCall()).isEmpty
+        assertThat(responseOutputItem.shellCallOutput()).isEmpty
+        assertThat(responseOutputItem.applyPatchCall()).isEmpty
+        assertThat(responseOutputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofFunctionCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofFunctionCallOutput(
+                ResponseFunctionToolCallOutputItem.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .output("string")
+                    .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                    .createdBy("created_by")
                     .build()
             )
 
@@ -284,8 +362,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).contains(webSearchCall)
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -293,6 +373,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -300,7 +381,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -372,8 +455,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).contains(computerCall)
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -381,6 +466,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -388,7 +474,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -437,6 +525,93 @@ internal class ResponseOutputItemTest {
     }
 
     @Test
+    fun ofComputerCallOutput() {
+        val computerCallOutput =
+            ResponseComputerToolCallOutputItem.builder()
+                .id("id")
+                .callId("call_id")
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId("file_id")
+                        .imageUrl("image_url")
+                        .build()
+                )
+                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+                .addAcknowledgedSafetyCheck(
+                    ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .createdBy("created_by")
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofComputerCallOutput(computerCallOutput)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).contains(computerCallOutput)
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.toolSearchCall()).isEmpty
+        assertThat(responseOutputItem.toolSearchOutput()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
+        assertThat(responseOutputItem.shellCall()).isEmpty
+        assertThat(responseOutputItem.shellCallOutput()).isEmpty
+        assertThat(responseOutputItem.applyPatchCall()).isEmpty
+        assertThat(responseOutputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofComputerCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofComputerCallOutput(
+                ResponseComputerToolCallOutputItem.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .output(
+                        ResponseComputerToolCallOutputScreenshot.builder()
+                            .fileId("file_id")
+                            .imageUrl("image_url")
+                            .build()
+                    )
+                    .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+                    .addAcknowledgedSafetyCheck(
+                        ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                            .id("id")
+                            .code("code")
+                            .message("message")
+                            .build()
+                    )
+                    .createdBy("created_by")
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
     fun ofReasoning() {
         val reasoning =
             ResponseReasoningItem.builder()
@@ -452,8 +627,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).contains(reasoning)
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -461,6 +638,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -468,7 +646,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -511,8 +691,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).contains(toolSearchCall)
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -520,6 +702,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -527,7 +710,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -583,8 +768,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).contains(toolSearchOutput)
@@ -592,6 +779,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -599,7 +787,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -652,8 +842,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -661,6 +853,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -668,7 +861,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -706,8 +901,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -715,6 +912,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).contains(imageGenerationCall)
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -722,7 +920,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -762,8 +962,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -771,6 +973,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).contains(codeInterpreterCall)
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -778,7 +981,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -831,8 +1036,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -840,6 +1047,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).contains(localShellCall)
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -847,7 +1055,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -885,6 +1095,65 @@ internal class ResponseOutputItemTest {
     }
 
     @Test
+    fun ofLocalShellCallOutput() {
+        val localShellCallOutput =
+            ResponseOutputItem.LocalShellCallOutput.builder()
+                .id("id")
+                .output("output")
+                .status(ResponseOutputItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.toolSearchCall()).isEmpty
+        assertThat(responseOutputItem.toolSearchOutput()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).contains(localShellCallOutput)
+        assertThat(responseOutputItem.shellCall()).isEmpty
+        assertThat(responseOutputItem.shellCallOutput()).isEmpty
+        assertThat(responseOutputItem.applyPatchCall()).isEmpty
+        assertThat(responseOutputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofLocalShellCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofLocalShellCallOutput(
+                ResponseOutputItem.LocalShellCallOutput.builder()
+                    .id("id")
+                    .output("output")
+                    .status(ResponseOutputItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
     fun ofShellCall() {
         val shellCall =
             ResponseFunctionShellToolCall.builder()
@@ -907,8 +1176,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -916,6 +1187,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).contains(shellCall)
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -923,7 +1195,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -980,8 +1254,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -989,6 +1265,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).contains(shellCallOutput)
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -996,7 +1273,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1051,8 +1330,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -1060,6 +1341,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).contains(applyPatchCall)
@@ -1067,7 +1349,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1114,8 +1398,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -1123,6 +1409,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -1130,7 +1417,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1175,8 +1464,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -1184,6 +1475,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -1191,7 +1483,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).contains(mcpCall)
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1242,8 +1536,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -1251,6 +1547,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -1258,7 +1555,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).contains(mcpListTools)
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1305,8 +1604,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -1314,6 +1615,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -1321,7 +1623,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).contains(mcpApprovalRequest)
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1334,6 +1638,67 @@ internal class ResponseOutputItemTest {
                     .arguments("arguments")
                     .name("name")
                     .serverLabel("server_label")
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
+    fun ofMcpApprovalResponse() {
+        val mcpApprovalResponse =
+            ResponseOutputItem.McpApprovalResponse.builder()
+                .id("id")
+                .approvalRequestId("approval_request_id")
+                .approve(true)
+                .reason("reason")
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.toolSearchCall()).isEmpty
+        assertThat(responseOutputItem.toolSearchOutput()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
+        assertThat(responseOutputItem.shellCall()).isEmpty
+        assertThat(responseOutputItem.shellCallOutput()).isEmpty
+        assertThat(responseOutputItem.applyPatchCall()).isEmpty
+        assertThat(responseOutputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).contains(mcpApprovalResponse)
+        assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofMcpApprovalResponseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofMcpApprovalResponse(
+                ResponseOutputItem.McpApprovalResponse.builder()
+                    .id("id")
+                    .approvalRequestId("approval_request_id")
+                    .approve(true)
+                    .reason("reason")
                     .build()
             )
 
@@ -1362,8 +1727,10 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.message()).isEmpty
         assertThat(responseOutputItem.fileSearchCall()).isEmpty
         assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
         assertThat(responseOutputItem.toolSearchCall()).isEmpty
         assertThat(responseOutputItem.toolSearchOutput()).isEmpty
@@ -1371,6 +1738,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
         assertThat(responseOutputItem.shellCall()).isEmpty
         assertThat(responseOutputItem.shellCallOutput()).isEmpty
         assertThat(responseOutputItem.applyPatchCall()).isEmpty
@@ -1378,7 +1746,9 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
         assertThat(responseOutputItem.customToolCall()).contains(customToolCall)
+        assertThat(responseOutputItem.customToolCallOutput()).isEmpty
     }
 
     @Test
@@ -1392,6 +1762,69 @@ internal class ResponseOutputItemTest {
                     .name("name")
                     .id("id")
                     .namespace("namespace")
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
+    fun ofCustomToolCallOutput() {
+        val customToolCallOutput =
+            ResponseCustomToolCallOutputItem.builder()
+                .callId("call_id")
+                .output("string")
+                .id("id")
+                .status(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
+                .createdBy("created_by")
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.functionCallOutput()).isEmpty
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.computerCallOutput()).isEmpty
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.toolSearchCall()).isEmpty
+        assertThat(responseOutputItem.toolSearchOutput()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.localShellCallOutput()).isEmpty
+        assertThat(responseOutputItem.shellCall()).isEmpty
+        assertThat(responseOutputItem.shellCallOutput()).isEmpty
+        assertThat(responseOutputItem.applyPatchCall()).isEmpty
+        assertThat(responseOutputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
+        assertThat(responseOutputItem.customToolCallOutput()).contains(customToolCallOutput)
+    }
+
+    @Test
+    fun ofCustomToolCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofCustomToolCallOutput(
+                ResponseCustomToolCallOutputItem.builder()
+                    .callId("call_id")
+                    .output("string")
+                    .id("id")
+                    .status(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
+                    .createdBy("created_by")
                     .build()
             )
 
