@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.30.0 (2026-03-25)
+
+Full Changelog: [v4.29.1...v4.30.0](https://github.com/openai/openai-java/compare/v4.29.1...v4.30.0)
+
+### Features
+
+* **api:** add keys field to computer action types in ComputerAction/ResponseComputerToolCall ([67e4a24](https://github.com/openai/openai-java/commit/67e4a24686d73de70335e169baba3c9b5774cf6d))
+
+
+### Bug Fixes
+
+* **api:** align SDK response types with expanded item schemas ([f05a663](https://github.com/openai/openai-java/commit/f05a6636cbf87672a6ba31004b8fdcee124994e1))
+
+
+### Chores
+
+* **ci:** skip lint on metadata-only changes ([ed9e951](https://github.com/openai/openai-java/commit/ed9e95194d3cf44c896f44b6d57f310c12fd39b9))
+* **tests:** bump steady to v0.19.7 ([924632a](https://github.com/openai/openai-java/commit/924632a2c973f7fac6e67cd063f906efbf7148f4))
+
 ## 4.29.1 (2026-03-23)
 
 Full Changelog: [v4.29.0...v4.29.1](https://github.com/openai/openai-java/compare/v4.29.0...v4.29.1)
