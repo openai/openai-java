@@ -1455,6 +1455,7 @@ private constructor(
             private val type: JsonValue,
             private val x: JsonField<Long>,
             private val y: JsonField<Long>,
+            private val keys: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -1466,7 +1467,10 @@ private constructor(
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
-            ) : this(button, type, x, y, mutableMapOf())
+                @JsonProperty("keys")
+                @ExcludeMissing
+                keys: JsonField<List<String>> = JsonMissing.of(),
+            ) : this(button, type, x, y, keys, mutableMapOf())
 
             /**
              * Indicates which mouse button was pressed during the click. One of `left`, `right`,
@@ -1510,6 +1514,14 @@ private constructor(
             fun y(): Long = y.getRequired("y")
 
             /**
+             * The keys being held while clicking.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun keys(): Optional<List<String>> = keys.getOptional("keys")
+
+            /**
              * Returns the raw JSON value of [button].
              *
              * Unlike [button], this method doesn't throw if the JSON field has an unexpected type.
@@ -1529,6 +1541,13 @@ private constructor(
              * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
+
+            /**
+             * Returns the raw JSON value of [keys].
+             *
+             * Unlike [keys], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1564,6 +1583,7 @@ private constructor(
                 private var type: JsonValue = JsonValue.from("click")
                 private var x: JsonField<Long>? = null
                 private var y: JsonField<Long>? = null
+                private var keys: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -1572,6 +1592,7 @@ private constructor(
                     type = click.type
                     x = click.x
                     y = click.y
+                    keys = click.keys.map { it.toMutableList() }
                     additionalProperties = click.additionalProperties.toMutableMap()
                 }
 
@@ -1628,6 +1649,35 @@ private constructor(
                  */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
+                /** The keys being held while clicking. */
+                fun keys(keys: List<String>?) = keys(JsonField.ofNullable(keys))
+
+                /** Alias for calling [Builder.keys] with `keys.orElse(null)`. */
+                fun keys(keys: Optional<List<String>>) = keys(keys.getOrNull())
+
+                /**
+                 * Sets [Builder.keys] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keys] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keys(keys: JsonField<List<String>>) = apply {
+                    this.keys = keys.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [keys].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addKey(key: String) = apply {
+                    keys =
+                        (keys ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("keys", it).add(key)
+                        }
+                }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -1670,6 +1720,7 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
+                        (keys ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -1689,6 +1740,7 @@ private constructor(
                 }
                 x()
                 y()
+                keys()
                 validated = true
             }
 
@@ -1711,7 +1763,8 @@ private constructor(
                 (button.asKnown().getOrNull()?.validity() ?: 0) +
                     type.let { if (it == JsonValue.from("click")) 1 else 0 } +
                     (if (x.asKnown().isPresent) 1 else 0) +
-                    (if (y.asKnown().isPresent) 1 else 0)
+                    (if (y.asKnown().isPresent) 1 else 0) +
+                    (keys.asKnown().getOrNull()?.size ?: 0)
 
             /**
              * Indicates which mouse button was pressed during the click. One of `left`, `right`,
@@ -1876,23 +1929,25 @@ private constructor(
                     type == other.type &&
                     x == other.x &&
                     y == other.y &&
+                    keys == other.keys &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(button, type, x, y, additionalProperties)
+                Objects.hash(button, type, x, y, keys, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Click{button=$button, type=$type, x=$x, y=$y, additionalProperties=$additionalProperties}"
+                "Click{button=$button, type=$type, x=$x, y=$y, keys=$keys, additionalProperties=$additionalProperties}"
         }
 
         /** A double click action. */
         class DoubleClick
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
+            private val keys: JsonField<List<String>>,
             private val type: JsonValue,
             private val x: JsonField<Long>,
             private val y: JsonField<Long>,
@@ -1901,10 +1956,21 @@ private constructor(
 
             @JsonCreator
             private constructor(
+                @JsonProperty("keys")
+                @ExcludeMissing
+                keys: JsonField<List<String>> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
-            ) : this(type, x, y, mutableMapOf())
+            ) : this(keys, type, x, y, mutableMapOf())
+
+            /**
+             * The keys being held while double-clicking.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun keys(): Optional<List<String>> = keys.getOptional("keys")
 
             /**
              * Specifies the event type. For a double click action, this property is always set to
@@ -1939,6 +2005,13 @@ private constructor(
             fun y(): Long = y.getRequired("y")
 
             /**
+             * Returns the raw JSON value of [keys].
+             *
+             * Unlike [keys], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
+
+            /**
              * Returns the raw JSON value of [x].
              *
              * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
@@ -1971,6 +2044,7 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
+                 * .keys()
                  * .x()
                  * .y()
                  * ```
@@ -1981,6 +2055,7 @@ private constructor(
             /** A builder for [DoubleClick]. */
             class Builder internal constructor() {
 
+                private var keys: JsonField<MutableList<String>>? = null
                 private var type: JsonValue = JsonValue.from("double_click")
                 private var x: JsonField<Long>? = null
                 private var y: JsonField<Long>? = null
@@ -1988,10 +2063,40 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(doubleClick: DoubleClick) = apply {
+                    keys = doubleClick.keys.map { it.toMutableList() }
                     type = doubleClick.type
                     x = doubleClick.x
                     y = doubleClick.y
                     additionalProperties = doubleClick.additionalProperties.toMutableMap()
+                }
+
+                /** The keys being held while double-clicking. */
+                fun keys(keys: List<String>?) = keys(JsonField.ofNullable(keys))
+
+                /** Alias for calling [Builder.keys] with `keys.orElse(null)`. */
+                fun keys(keys: Optional<List<String>>) = keys(keys.getOrNull())
+
+                /**
+                 * Sets [Builder.keys] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keys] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keys(keys: JsonField<List<String>>) = apply {
+                    this.keys = keys.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [keys].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addKey(key: String) = apply {
+                    keys =
+                        (keys ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("keys", it).add(key)
+                        }
                 }
 
                 /**
@@ -2061,6 +2166,7 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
+                 * .keys()
                  * .x()
                  * .y()
                  * ```
@@ -2069,6 +2175,7 @@ private constructor(
                  */
                 fun build(): DoubleClick =
                     DoubleClick(
+                        checkRequired("keys", keys).map { it.toImmutable() },
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
@@ -2083,6 +2190,7 @@ private constructor(
                     return@apply
                 }
 
+                keys()
                 _type().let {
                     if (it != JsonValue.from("double_click")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -2109,7 +2217,8 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                type.let { if (it == JsonValue.from("double_click")) 1 else 0 } +
+                (keys.asKnown().getOrNull()?.size ?: 0) +
+                    type.let { if (it == JsonValue.from("double_click")) 1 else 0 } +
                     (if (x.asKnown().isPresent) 1 else 0) +
                     (if (y.asKnown().isPresent) 1 else 0)
 
@@ -2119,18 +2228,21 @@ private constructor(
                 }
 
                 return other is DoubleClick &&
+                    keys == other.keys &&
                     type == other.type &&
                     x == other.x &&
                     y == other.y &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(type, x, y, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(keys, type, x, y, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "DoubleClick{type=$type, x=$x, y=$y, additionalProperties=$additionalProperties}"
+                "DoubleClick{keys=$keys, type=$type, x=$x, y=$y, additionalProperties=$additionalProperties}"
         }
 
         /** A drag action. */
@@ -2139,6 +2251,7 @@ private constructor(
         private constructor(
             private val path: JsonField<List<Path>>,
             private val type: JsonValue,
+            private val keys: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -2148,7 +2261,10 @@ private constructor(
                 @ExcludeMissing
                 path: JsonField<List<Path>> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(path, type, mutableMapOf())
+                @JsonProperty("keys")
+                @ExcludeMissing
+                keys: JsonField<List<String>> = JsonMissing.of(),
+            ) : this(path, type, keys, mutableMapOf())
 
             /**
              * An array of coordinates representing the path of the drag action. Coordinates will
@@ -2181,11 +2297,26 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * The keys being held while dragging the mouse.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun keys(): Optional<List<String>> = keys.getOptional("keys")
+
+            /**
              * Returns the raw JSON value of [path].
              *
              * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<List<Path>> = path
+
+            /**
+             * Returns the raw JSON value of [keys].
+             *
+             * Unlike [keys], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2217,12 +2348,14 @@ private constructor(
 
                 private var path: JsonField<MutableList<Path>>? = null
                 private var type: JsonValue = JsonValue.from("drag")
+                private var keys: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(drag: Drag) = apply {
                     path = drag.path.map { it.toMutableList() }
                     type = drag.type
+                    keys = drag.keys.map { it.toMutableList() }
                     additionalProperties = drag.additionalProperties.toMutableMap()
                 }
 
@@ -2276,6 +2409,35 @@ private constructor(
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
+                /** The keys being held while dragging the mouse. */
+                fun keys(keys: List<String>?) = keys(JsonField.ofNullable(keys))
+
+                /** Alias for calling [Builder.keys] with `keys.orElse(null)`. */
+                fun keys(keys: Optional<List<String>>) = keys(keys.getOrNull())
+
+                /**
+                 * Sets [Builder.keys] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keys] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keys(keys: JsonField<List<String>>) = apply {
+                    this.keys = keys.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [keys].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addKey(key: String) = apply {
+                    keys =
+                        (keys ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("keys", it).add(key)
+                        }
+                }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -2314,6 +2476,7 @@ private constructor(
                     Drag(
                         checkRequired("path", path).map { it.toImmutable() },
                         type,
+                        (keys ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -2331,6 +2494,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
+                keys()
                 validated = true
             }
 
@@ -2351,7 +2515,8 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (path.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-                    type.let { if (it == JsonValue.from("drag")) 1 else 0 }
+                    type.let { if (it == JsonValue.from("drag")) 1 else 0 } +
+                    (keys.asKnown().getOrNull()?.size ?: 0)
 
             /** An x/y coordinate pair, e.g. `{ x: 100, y: 200 }`. */
             class Path
@@ -2564,15 +2729,18 @@ private constructor(
                 return other is Drag &&
                     path == other.path &&
                     type == other.type &&
+                    keys == other.keys &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(path, type, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(path, type, keys, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Drag{path=$path, type=$type, additionalProperties=$additionalProperties}"
+                "Drag{path=$path, type=$type, keys=$keys, additionalProperties=$additionalProperties}"
         }
 
         /** A collection of keypresses the model would like to perform. */
@@ -2808,6 +2976,7 @@ private constructor(
             private val type: JsonValue,
             private val x: JsonField<Long>,
             private val y: JsonField<Long>,
+            private val keys: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -2816,7 +2985,10 @@ private constructor(
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
-            ) : this(type, x, y, mutableMapOf())
+                @JsonProperty("keys")
+                @ExcludeMissing
+                keys: JsonField<List<String>> = JsonMissing.of(),
+            ) : this(type, x, y, keys, mutableMapOf())
 
             /**
              * Specifies the event type. For a move action, this property is always set to `move`.
@@ -2850,6 +3022,14 @@ private constructor(
             fun y(): Long = y.getRequired("y")
 
             /**
+             * The keys being held while moving the mouse.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun keys(): Optional<List<String>> = keys.getOptional("keys")
+
+            /**
              * Returns the raw JSON value of [x].
              *
              * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
@@ -2862,6 +3042,13 @@ private constructor(
              * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
+
+            /**
+             * Returns the raw JSON value of [keys].
+             *
+             * Unlike [keys], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2895,6 +3082,7 @@ private constructor(
                 private var type: JsonValue = JsonValue.from("move")
                 private var x: JsonField<Long>? = null
                 private var y: JsonField<Long>? = null
+                private var keys: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -2902,6 +3090,7 @@ private constructor(
                     type = move.type
                     x = move.x
                     y = move.y
+                    keys = move.keys.map { it.toMutableList() }
                     additionalProperties = move.additionalProperties.toMutableMap()
                 }
 
@@ -2943,6 +3132,35 @@ private constructor(
                  */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
+                /** The keys being held while moving the mouse. */
+                fun keys(keys: List<String>?) = keys(JsonField.ofNullable(keys))
+
+                /** Alias for calling [Builder.keys] with `keys.orElse(null)`. */
+                fun keys(keys: Optional<List<String>>) = keys(keys.getOrNull())
+
+                /**
+                 * Sets [Builder.keys] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keys] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keys(keys: JsonField<List<String>>) = apply {
+                    this.keys = keys.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [keys].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addKey(key: String) = apply {
+                    keys =
+                        (keys ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("keys", it).add(key)
+                        }
+                }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -2983,6 +3201,7 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
+                        (keys ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -3001,6 +3220,7 @@ private constructor(
                 }
                 x()
                 y()
+                keys()
                 validated = true
             }
 
@@ -3022,7 +3242,8 @@ private constructor(
             internal fun validity(): Int =
                 type.let { if (it == JsonValue.from("move")) 1 else 0 } +
                     (if (x.asKnown().isPresent) 1 else 0) +
-                    (if (y.asKnown().isPresent) 1 else 0)
+                    (if (y.asKnown().isPresent) 1 else 0) +
+                    (keys.asKnown().getOrNull()?.size ?: 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -3033,15 +3254,18 @@ private constructor(
                     type == other.type &&
                     x == other.x &&
                     y == other.y &&
+                    keys == other.keys &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(type, x, y, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(type, x, y, keys, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Move{type=$type, x=$x, y=$y, additionalProperties=$additionalProperties}"
+                "Move{type=$type, x=$x, y=$y, keys=$keys, additionalProperties=$additionalProperties}"
         }
 
         /** A scroll action. */
@@ -3053,6 +3277,7 @@ private constructor(
             private val type: JsonValue,
             private val x: JsonField<Long>,
             private val y: JsonField<Long>,
+            private val keys: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -3067,7 +3292,10 @@ private constructor(
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
-            ) : this(scrollX, scrollY, type, x, y, mutableMapOf())
+                @JsonProperty("keys")
+                @ExcludeMissing
+                keys: JsonField<List<String>> = JsonMissing.of(),
+            ) : this(scrollX, scrollY, type, x, y, keys, mutableMapOf())
 
             /**
              * The horizontal scroll distance.
@@ -3120,6 +3348,14 @@ private constructor(
             fun y(): Long = y.getRequired("y")
 
             /**
+             * The keys being held while scrolling.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun keys(): Optional<List<String>> = keys.getOptional("keys")
+
+            /**
              * Returns the raw JSON value of [scrollX].
              *
              * Unlike [scrollX], this method doesn't throw if the JSON field has an unexpected type.
@@ -3146,6 +3382,13 @@ private constructor(
              * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
+
+            /**
+             * Returns the raw JSON value of [keys].
+             *
+             * Unlike [keys], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3183,6 +3426,7 @@ private constructor(
                 private var type: JsonValue = JsonValue.from("scroll")
                 private var x: JsonField<Long>? = null
                 private var y: JsonField<Long>? = null
+                private var keys: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -3192,6 +3436,7 @@ private constructor(
                     type = scroll.type
                     x = scroll.x
                     y = scroll.y
+                    keys = scroll.keys.map { it.toMutableList() }
                     additionalProperties = scroll.additionalProperties.toMutableMap()
                 }
 
@@ -3257,6 +3502,35 @@ private constructor(
                  */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
+                /** The keys being held while scrolling. */
+                fun keys(keys: List<String>?) = keys(JsonField.ofNullable(keys))
+
+                /** Alias for calling [Builder.keys] with `keys.orElse(null)`. */
+                fun keys(keys: Optional<List<String>>) = keys(keys.getOrNull())
+
+                /**
+                 * Sets [Builder.keys] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keys] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keys(keys: JsonField<List<String>>) = apply {
+                    this.keys = keys.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [keys].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addKey(key: String) = apply {
+                    keys =
+                        (keys ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("keys", it).add(key)
+                        }
+                }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -3301,6 +3575,7 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
+                        (keys ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -3321,6 +3596,7 @@ private constructor(
                 }
                 x()
                 y()
+                keys()
                 validated = true
             }
 
@@ -3344,7 +3620,8 @@ private constructor(
                     (if (scrollY.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("scroll")) 1 else 0 } +
                     (if (x.asKnown().isPresent) 1 else 0) +
-                    (if (y.asKnown().isPresent) 1 else 0)
+                    (if (y.asKnown().isPresent) 1 else 0) +
+                    (keys.asKnown().getOrNull()?.size ?: 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -3357,17 +3634,18 @@ private constructor(
                     type == other.type &&
                     x == other.x &&
                     y == other.y &&
+                    keys == other.keys &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(scrollX, scrollY, type, x, y, additionalProperties)
+                Objects.hash(scrollX, scrollY, type, x, y, keys, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Scroll{scrollX=$scrollX, scrollY=$scrollY, type=$type, x=$x, y=$y, additionalProperties=$additionalProperties}"
+                "Scroll{scrollX=$scrollX, scrollY=$scrollY, type=$type, x=$x, y=$y, keys=$keys, additionalProperties=$additionalProperties}"
         }
 
         /** An action to type in text. */

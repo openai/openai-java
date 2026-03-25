@@ -21,6 +21,7 @@ internal class ComputerActionTest {
                 .button(ComputerAction.Click.Button.LEFT)
                 .x(0L)
                 .y(0L)
+                .addKey("string")
                 .build()
 
         val computerAction = ComputerAction.ofClick(click)
@@ -45,6 +46,7 @@ internal class ComputerActionTest {
                     .button(ComputerAction.Click.Button.LEFT)
                     .x(0L)
                     .y(0L)
+                    .addKey("string")
                     .build()
             )
 
@@ -59,7 +61,7 @@ internal class ComputerActionTest {
 
     @Test
     fun ofDoubleClick() {
-        val doubleClick = ComputerAction.DoubleClick.builder().x(0L).y(0L).build()
+        val doubleClick = ComputerAction.DoubleClick.builder().addKey("string").x(0L).y(0L).build()
 
         val computerAction = ComputerAction.ofDoubleClick(doubleClick)
 
@@ -78,7 +80,9 @@ internal class ComputerActionTest {
     fun ofDoubleClickRoundtrip() {
         val jsonMapper = jsonMapper()
         val computerAction =
-            ComputerAction.ofDoubleClick(ComputerAction.DoubleClick.builder().x(0L).y(0L).build())
+            ComputerAction.ofDoubleClick(
+                ComputerAction.DoubleClick.builder().addKey("string").x(0L).y(0L).build()
+            )
 
         val roundtrippedComputerAction =
             jsonMapper.readValue(
@@ -94,6 +98,7 @@ internal class ComputerActionTest {
         val drag =
             ComputerAction.Drag.builder()
                 .addPath(ComputerAction.Drag.Path.builder().x(0L).y(0L).build())
+                .addKey("string")
                 .build()
 
         val computerAction = ComputerAction.ofDrag(drag)
@@ -116,6 +121,7 @@ internal class ComputerActionTest {
             ComputerAction.ofDrag(
                 ComputerAction.Drag.builder()
                     .addPath(ComputerAction.Drag.Path.builder().x(0L).y(0L).build())
+                    .addKey("string")
                     .build()
             )
 
@@ -162,7 +168,7 @@ internal class ComputerActionTest {
 
     @Test
     fun ofMove() {
-        val move = ComputerAction.Move.builder().x(0L).y(0L).build()
+        val move = ComputerAction.Move.builder().x(0L).y(0L).addKey("string").build()
 
         val computerAction = ComputerAction.ofMove(move)
 
@@ -181,7 +187,9 @@ internal class ComputerActionTest {
     fun ofMoveRoundtrip() {
         val jsonMapper = jsonMapper()
         val computerAction =
-            ComputerAction.ofMove(ComputerAction.Move.builder().x(0L).y(0L).build())
+            ComputerAction.ofMove(
+                ComputerAction.Move.builder().x(0L).y(0L).addKey("string").build()
+            )
 
         val roundtrippedComputerAction =
             jsonMapper.readValue(
@@ -224,7 +232,14 @@ internal class ComputerActionTest {
 
     @Test
     fun ofScroll() {
-        val scroll = ComputerAction.Scroll.builder().scrollX(0L).scrollY(0L).x(0L).y(0L).build()
+        val scroll =
+            ComputerAction.Scroll.builder()
+                .scrollX(0L)
+                .scrollY(0L)
+                .x(0L)
+                .y(0L)
+                .addKey("string")
+                .build()
 
         val computerAction = ComputerAction.ofScroll(scroll)
 
@@ -244,7 +259,13 @@ internal class ComputerActionTest {
         val jsonMapper = jsonMapper()
         val computerAction =
             ComputerAction.ofScroll(
-                ComputerAction.Scroll.builder().scrollX(0L).scrollY(0L).x(0L).y(0L).build()
+                ComputerAction.Scroll.builder()
+                    .scrollX(0L)
+                    .scrollY(0L)
+                    .x(0L)
+                    .y(0L)
+                    .addKey("string")
+                    .build()
             )
 
         val roundtrippedComputerAction =
