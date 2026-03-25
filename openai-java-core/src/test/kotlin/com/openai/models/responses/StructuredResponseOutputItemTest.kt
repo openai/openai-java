@@ -41,6 +41,14 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val FUNCTION_TOOL_CALL =
             ResponseFunctionToolCall.builder().arguments(STRING).callId(STRING).name(STRING).build()
+        private val FUNCTION_TOOL_CALL_OUTPUT =
+            ResponseFunctionToolCallOutputItem.builder()
+                .id(STRING)
+                .callId(STRING)
+                .output(STRING)
+                .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .createdBy(STRING)
+                .build()
         private val TOOL_SEARCH_CALL =
             ResponseToolSearchCall.builder()
                 .id(STRING)
@@ -82,6 +90,26 @@ internal class StructuredResponseOutputItemTest {
                 .status(ResponseComputerToolCall.Status.COMPLETED)
                 .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
                 .build()
+        private val COMPUTER_TOOL_CALL_OUTPUT =
+            ResponseComputerToolCallOutputItem.builder()
+                .id(STRING)
+                .callId(STRING)
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId(STRING)
+                        .imageUrl(STRING)
+                        .build()
+                )
+                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+                .addAcknowledgedSafetyCheck(
+                    ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                        .id(STRING)
+                        .code(STRING)
+                        .message(STRING)
+                        .build()
+                )
+                .createdBy(STRING)
+                .build()
         private val REASONING_ITEM =
             ResponseReasoningItem.builder().id(STRING).summary(listOf()).build()
         private val COMPACTION_ITEM =
@@ -111,6 +139,12 @@ internal class StructuredResponseOutputItemTest {
                         .build()
                 )
                 .status(ResponseOutputItem.LocalShellCall.Status.COMPLETED)
+                .build()
+        private val LOCAL_SHELL_CALL_OUTPUT =
+            ResponseOutputItem.LocalShellCallOutput.builder()
+                .id(STRING)
+                .output(STRING)
+                .status(ResponseOutputItem.LocalShellCallOutput.Status.IN_PROGRESS)
                 .build()
         private val SHELL_TOOL_CALL =
             ResponseFunctionShellToolCall.builder()
@@ -168,6 +202,13 @@ internal class StructuredResponseOutputItemTest {
                 .name(STRING)
                 .serverLabel(STRING)
                 .build()
+        private val MCP_APPROVAL_RESPONSE =
+            ResponseOutputItem.McpApprovalResponse.builder()
+                .id(STRING)
+                .approvalRequestId(STRING)
+                .approve(true)
+                .reason(STRING)
+                .build()
         private val MCP_CALL =
             ResponseOutputItem.McpCall.builder()
                 .id(STRING)
@@ -184,6 +225,14 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val CUSTOM_TOOL_CALL =
             ResponseCustomToolCall.builder().callId(STRING).input(STRING).name(STRING).build()
+        private val CUSTOM_TOOL_CALL_OUTPUT =
+            ResponseCustomToolCallOutputItem.builder()
+                .callId(STRING)
+                .output(STRING)
+                .id(STRING)
+                .status(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
+                .createdBy(STRING)
+                .build()
         private val MESSAGE =
             ResponseOutputMessage.builder()
                 .id(STRING)
@@ -199,17 +248,26 @@ internal class StructuredResponseOutputItemTest {
                 // `message()` is a special case and has its own test function.
                 DelegationReadTestCase("fileSearchCall", OPTIONAL),
                 DelegationReadTestCase("functionCall", OPTIONAL),
+                DelegationReadTestCase("functionCallOutput", OPTIONAL),
                 DelegationReadTestCase("toolSearchCall", OPTIONAL),
                 DelegationReadTestCase("toolSearchOutput", OPTIONAL),
                 DelegationReadTestCase("webSearchCall", OPTIONAL),
                 DelegationReadTestCase("computerCall", OPTIONAL),
+                DelegationReadTestCase("computerCallOutput", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
                 DelegationReadTestCase("compaction", OPTIONAL),
                 DelegationReadTestCase("localShellCall", OPTIONAL),
+                DelegationReadTestCase("localShellCallOutput", OPTIONAL),
                 DelegationReadTestCase("shellCall", OPTIONAL),
                 DelegationReadTestCase("shellCallOutput", OPTIONAL),
                 DelegationReadTestCase("applyPatchCall", OPTIONAL),
                 DelegationReadTestCase("applyPatchCallOutput", OPTIONAL),
+                DelegationReadTestCase("mcpApprovalRequest", OPTIONAL),
+                DelegationReadTestCase("mcpApprovalResponse", OPTIONAL),
+                DelegationReadTestCase("mcpCall", OPTIONAL),
+                DelegationReadTestCase("mcpListTools", OPTIONAL),
+                DelegationReadTestCase("customToolCall", OPTIONAL),
+                DelegationReadTestCase("customToolCallOutput", OPTIONAL),
                 // `isMessage()` is a special case and has its own test function.
                 // For the Boolean functions, call each in turn with both `true` and `false` to
                 // ensure that a return value is not hard-coded.
@@ -217,6 +275,8 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isFileSearchCall", false),
                 DelegationReadTestCase("isFunctionCall", true),
                 DelegationReadTestCase("isFunctionCall", false),
+                DelegationReadTestCase("isFunctionCallOutput", true),
+                DelegationReadTestCase("isFunctionCallOutput", false),
                 DelegationReadTestCase("isToolSearchCall", true),
                 DelegationReadTestCase("isToolSearchCall", false),
                 DelegationReadTestCase("isToolSearchOutput", true),
@@ -225,12 +285,16 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isWebSearchCall", false),
                 DelegationReadTestCase("isComputerCall", true),
                 DelegationReadTestCase("isComputerCall", false),
+                DelegationReadTestCase("isComputerCallOutput", true),
+                DelegationReadTestCase("isComputerCallOutput", false),
                 DelegationReadTestCase("isReasoning", true),
                 DelegationReadTestCase("isReasoning", false),
                 DelegationReadTestCase("isCompaction", true),
                 DelegationReadTestCase("isCompaction", false),
                 DelegationReadTestCase("isLocalShellCall", true),
                 DelegationReadTestCase("isLocalShellCall", false),
+                DelegationReadTestCase("isLocalShellCallOutput", true),
+                DelegationReadTestCase("isLocalShellCallOutput", false),
                 DelegationReadTestCase("isShellCall", true),
                 DelegationReadTestCase("isShellCall", false),
                 DelegationReadTestCase("isShellCallOutput", true),
@@ -239,29 +303,43 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isApplyPatchCall", false),
                 DelegationReadTestCase("isApplyPatchCallOutput", true),
                 DelegationReadTestCase("isApplyPatchCallOutput", false),
+                DelegationReadTestCase("isMcpApprovalRequest", true),
+                DelegationReadTestCase("isMcpApprovalRequest", false),
+                DelegationReadTestCase("isMcpApprovalResponse", true),
+                DelegationReadTestCase("isMcpApprovalResponse", false),
+                DelegationReadTestCase("isMcpCall", true),
+                DelegationReadTestCase("isMcpCall", false),
+                DelegationReadTestCase("isMcpListTools", true),
+                DelegationReadTestCase("isMcpListTools", false),
+                DelegationReadTestCase("isCustomToolCall", true),
+                DelegationReadTestCase("isCustomToolCall", false),
+                DelegationReadTestCase("isCustomToolCallOutput", true),
+                DelegationReadTestCase("isCustomToolCallOutput", false),
                 // `asMessage()` is a special case and has its own test function.
                 DelegationReadTestCase("asFileSearchCall", FILE_SEARCH_TOOL_CALL),
                 DelegationReadTestCase("asFunctionCall", FUNCTION_TOOL_CALL),
+                DelegationReadTestCase("asFunctionCallOutput", FUNCTION_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asToolSearchCall", TOOL_SEARCH_CALL),
                 DelegationReadTestCase("asToolSearchOutput", TOOL_SEARCH_OUTPUT),
                 DelegationReadTestCase("asWebSearchCall", FUNCTION_WEB_SEARCH),
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
+                DelegationReadTestCase("asComputerCallOutput", COMPUTER_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asReasoning", REASONING_ITEM),
                 DelegationReadTestCase("asCompaction", COMPACTION_ITEM),
                 DelegationReadTestCase("asCodeInterpreterCall", CODE_INTERPRETER_CALL),
                 DelegationReadTestCase("asImageGenerationCall", IMAGE_GENERATION_CALL),
                 DelegationReadTestCase("asLocalShellCall", LOCAL_SHELL_CALL),
+                DelegationReadTestCase("asLocalShellCallOutput", LOCAL_SHELL_CALL_OUTPUT),
                 DelegationReadTestCase("asShellCall", SHELL_TOOL_CALL),
                 DelegationReadTestCase("asShellCallOutput", SHELL_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asApplyPatchCall", APPLY_PATCH_TOOL_CALL),
                 DelegationReadTestCase("asApplyPatchCallOutput", APPLY_PATCH_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asMcpApprovalRequest", MCP_APPROVAL_REQUEST),
+                DelegationReadTestCase("asMcpApprovalResponse", MCP_APPROVAL_RESPONSE),
                 DelegationReadTestCase("asMcpCall", MCP_CALL),
                 DelegationReadTestCase("asMcpListTools", MCP_LIST_TOOLS),
-                DelegationReadTestCase("customToolCall", OPTIONAL),
-                DelegationReadTestCase("isCustomToolCall", true),
-                DelegationReadTestCase("isCustomToolCall", false),
                 DelegationReadTestCase("asCustomToolCall", CUSTOM_TOOL_CALL),
+                DelegationReadTestCase("asCustomToolCallOutput", CUSTOM_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("_json", OPTIONAL),
             )
     }
@@ -274,8 +352,7 @@ internal class StructuredResponseOutputItemTest {
     @Test
     fun allDelegateFunctionsExistInDelegator() {
         // `toBuilder()` is deliberately not implemented. `accept()` has a different signature.
-        // We're also skipping all the newly added tool methods related to Code Interpreter, Image
-        // Generation, etc.
+        // A few methods remain excluded because they have bespoke tests or visitor behavior.
         checkAllDelegation(
             mockDelegate::class,
             delegator::class,
@@ -333,12 +410,18 @@ internal class StructuredResponseOutputItemTest {
                     "visitCodeInterpreterCall",
                     "visitImageGenerationCall",
                     "visitCompaction",
+                    "visitFunctionCallOutput",
+                    "visitComputerCallOutput",
                     "visitMcpApprovalRequest",
+                    "visitMcpApprovalResponse",
                     "visitMcpCall",
                     "visitMcpListTools",
                     "visitLocalShellCall",
+                    "visitLocalShellCallOutput",
                     "visitToolSearchCall",
                     "visitToolSearchOutput",
+                    "visitCustomToolCall",
+                    "visitCustomToolCallOutput",
                     // All the functions added for new tools:
                     "asCodeInterpreterCall",
                     "asImageGenerationCall",

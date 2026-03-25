@@ -36,8 +36,9 @@ private constructor(
     private val id: JsonField<String>,
     private val callId: JsonField<String>,
     private val output: JsonField<Output>,
-    private val type: JsonValue,
     private val status: JsonField<Status>,
+    private val type: JsonValue,
+    private val createdBy: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -46,9 +47,10 @@ private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output") @ExcludeMissing output: JsonField<Output> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(id, callId, output, type, status, mutableMapOf())
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
+    ) : this(id, callId, output, status, type, createdBy, mutableMapOf())
 
     /**
      * The unique ID of the function call tool output.
@@ -76,6 +78,15 @@ private constructor(
     fun output(): Output = output.getRequired("output")
 
     /**
+     * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
+     * items are returned via API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun status(): Status = status.getRequired("status")
+
+    /**
      * The type of the function tool call output. Always `function_call_output`.
      *
      * Expected to always return the following:
@@ -89,13 +100,12 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
-     * items are returned via API.
+     * The identifier of the actor that created the item.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun status(): Optional<Status> = status.getOptional("status")
+    fun createdBy(): Optional<String> = createdBy.getOptional("created_by")
 
     /**
      * Returns the raw JSON value of [id].
@@ -125,6 +135,13 @@ private constructor(
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+    /**
+     * Returns the raw JSON value of [createdBy].
+     *
+     * Unlike [createdBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("created_by") @ExcludeMissing fun _createdBy(): JsonField<String> = createdBy
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -148,6 +165,7 @@ private constructor(
          * .id()
          * .callId()
          * .output()
+         * .status()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -159,8 +177,9 @@ private constructor(
         private var id: JsonField<String>? = null
         private var callId: JsonField<String>? = null
         private var output: JsonField<Output>? = null
+        private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("function_call_output")
-        private var status: JsonField<Status> = JsonMissing.of()
+        private var createdBy: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -169,8 +188,9 @@ private constructor(
                 id = responseFunctionToolCallOutputItem.id
                 callId = responseFunctionToolCallOutputItem.callId
                 output = responseFunctionToolCallOutputItem.output
-                type = responseFunctionToolCallOutputItem.type
                 status = responseFunctionToolCallOutputItem.status
+                type = responseFunctionToolCallOutputItem.type
+                createdBy = responseFunctionToolCallOutputItem.createdBy
                 additionalProperties =
                     responseFunctionToolCallOutputItem.additionalProperties.toMutableMap()
             }
@@ -219,6 +239,20 @@ private constructor(
             output(Output.ofContentList(contentList))
 
         /**
+         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
+         * when items are returned via API.
+         */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
@@ -232,19 +266,17 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
-        /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
-         */
-        fun status(status: Status) = status(JsonField.of(status))
+        /** The identifier of the actor that created the item. */
+        fun createdBy(createdBy: String) = createdBy(JsonField.of(createdBy))
 
         /**
-         * Sets [Builder.status] to an arbitrary JSON value.
+         * Sets [Builder.createdBy] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.createdBy] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun status(status: JsonField<Status>) = apply { this.status = status }
+        fun createdBy(createdBy: JsonField<String>) = apply { this.createdBy = createdBy }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -275,6 +307,7 @@ private constructor(
          * .id()
          * .callId()
          * .output()
+         * .status()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -284,8 +317,9 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("callId", callId),
                 checkRequired("output", output),
+                checkRequired("status", status),
                 type,
-                status,
+                createdBy,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -300,12 +334,13 @@ private constructor(
         id()
         callId()
         output().validate()
+        status().validate()
         _type().let {
             if (it != JsonValue.from("function_call_output")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
-        status().ifPresent { it.validate() }
+        createdBy()
         validated = true
     }
 
@@ -327,8 +362,9 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (callId.asKnown().isPresent) 1 else 0) +
             (output.asKnown().getOrNull()?.validity() ?: 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
-            (status.asKnown().getOrNull()?.validity() ?: 0)
+            (if (createdBy.asKnown().isPresent) 1 else 0)
 
     /**
      * The output from the function call generated by your code. Can be a string or an list of
@@ -906,17 +942,18 @@ private constructor(
             id == other.id &&
             callId == other.callId &&
             output == other.output &&
-            type == other.type &&
             status == other.status &&
+            type == other.type &&
+            createdBy == other.createdBy &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, callId, output, type, status, additionalProperties)
+        Objects.hash(id, callId, output, status, type, createdBy, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionToolCallOutputItem{id=$id, callId=$callId, output=$output, type=$type, status=$status, additionalProperties=$additionalProperties}"
+        "ResponseFunctionToolCallOutputItem{id=$id, callId=$callId, output=$output, status=$status, type=$type, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

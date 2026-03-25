@@ -244,6 +244,13 @@ private constructor(
             addOutput(ResponseOutputItem.ofFunctionCall(functionCall))
 
         /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofFunctionCallOutput(functionCallOutput)`.
+         */
+        fun addOutput(functionCallOutput: ResponseFunctionToolCallOutputItem) =
+            addOutput(ResponseOutputItem.ofFunctionCallOutput(functionCallOutput))
+
+        /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofWebSearchCall(webSearchCall)`.
          */
         fun addOutput(webSearchCall: ResponseFunctionWebSearch) =
@@ -252,6 +259,13 @@ private constructor(
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofComputerCall(computerCall)`. */
         fun addOutput(computerCall: ResponseComputerToolCall) =
             addOutput(ResponseOutputItem.ofComputerCall(computerCall))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofComputerCallOutput(computerCallOutput)`.
+         */
+        fun addOutput(computerCallOutput: ResponseComputerToolCallOutputItem) =
+            addOutput(ResponseOutputItem.ofComputerCallOutput(computerCallOutput))
 
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun addOutput(reasoning: ResponseReasoningItem) =
@@ -294,6 +308,13 @@ private constructor(
         fun addOutput(localShellCall: ResponseOutputItem.LocalShellCall) =
             addOutput(ResponseOutputItem.ofLocalShellCall(localShellCall))
 
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)`.
+         */
+        fun addOutput(localShellCallOutput: ResponseOutputItem.LocalShellCallOutput) =
+            addOutput(ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput))
+
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofShellCall(shellCall)`. */
         fun addOutput(shellCall: ResponseFunctionShellToolCall) =
             addOutput(ResponseOutputItem.ofShellCall(shellCall))
@@ -334,10 +355,24 @@ private constructor(
             addOutput(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
         /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         */
+        fun addOutput(mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse) =
+            addOutput(ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse))
+
+        /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofCustomToolCall(customToolCall)`.
          */
         fun addOutput(customToolCall: ResponseCustomToolCall) =
             addOutput(ResponseOutputItem.ofCustomToolCall(customToolCall))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         */
+        fun addOutput(customToolCallOutput: ResponseCustomToolCallOutputItem) =
+            addOutput(ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /**
          * Token accounting for the compaction pass, including cached, reasoning, and total tokens.
