@@ -42,7 +42,10 @@ private constructor(
 
     /**
      * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-     * should use. Useful for tools like `file_search` that can access files.
+     * should use. Useful for tools like `file_search` that can access files. For multi-file
+     * ingestion, we recommend
+     * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+     * to minimize per-vector-store write requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -149,7 +152,10 @@ private constructor(
 
         /**
          * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files.
+         * should use. Useful for tools like `file_search` that can access files. For multi-file
+         * ingestion, we recommend
+         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * to minimize per-vector-store write requests.
          */
         fun fileId(fileId: String) = apply { body.fileId(fileId) }
 
@@ -397,7 +403,10 @@ private constructor(
 
         /**
          * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files.
+         * should use. Useful for tools like `file_search` that can access files. For multi-file
+         * ingestion, we recommend
+         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * to minimize per-vector-store write requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -495,7 +504,10 @@ private constructor(
 
             /**
              * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector
-             * store should use. Useful for tools like `file_search` that can access files.
+             * store should use. Useful for tools like `file_search` that can access files. For
+             * multi-file ingestion, we recommend
+             * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+             * to minimize per-vector-store write requests.
              */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
