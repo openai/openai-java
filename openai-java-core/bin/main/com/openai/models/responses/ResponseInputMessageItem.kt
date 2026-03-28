@@ -26,8 +26,8 @@ private constructor(
     private val id: JsonField<String>,
     private val content: JsonField<List<ResponseInputContent>>,
     private val role: JsonField<Role>,
-    private val type: JsonValue,
     private val status: JsonField<Status>,
+    private val type: JsonField<Type>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -38,9 +38,9 @@ private constructor(
         @ExcludeMissing
         content: JsonField<List<ResponseInputContent>> = JsonMissing.of(),
         @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(id, content, role, type, status, mutableMapOf())
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+    ) : this(id, content, role, status, type, mutableMapOf())
 
     /**
      * The unique ID of the message input.
@@ -67,19 +67,6 @@ private constructor(
     fun role(): Role = role.getRequired("role")
 
     /**
-     * The type of the message input. Always set to `message`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("message")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-    /**
      * The status of item. One of `in_progress`, `completed`, or `incomplete`. Populated when items
      * are returned via API.
      *
@@ -87,6 +74,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun status(): Optional<Status> = status.getOptional("status")
+
+    /**
+     * The type of the message input. Always set to `message`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun type(): Optional<Type> = type.getOptional("type")
 
     /**
      * Returns the raw JSON value of [id].
@@ -117,6 +112,13 @@ private constructor(
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -151,8 +153,8 @@ private constructor(
         private var id: JsonField<String>? = null
         private var content: JsonField<MutableList<ResponseInputContent>>? = null
         private var role: JsonField<Role>? = null
-        private var type: JsonValue = JsonValue.from("message")
         private var status: JsonField<Status> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -160,8 +162,8 @@ private constructor(
             id = responseInputMessageItem.id
             content = responseInputMessageItem.content.map { it.toMutableList() }
             role = responseInputMessageItem.role
-            type = responseInputMessageItem.type
             status = responseInputMessageItem.status
+            type = responseInputMessageItem.type
             additionalProperties = responseInputMessageItem.additionalProperties.toMutableMap()
         }
 
@@ -248,20 +250,6 @@ private constructor(
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
-         * Sets the field to an arbitrary JSON value.
-         *
-         * It is usually unnecessary to call this method because the field defaults to the
-         * following:
-         * ```java
-         * JsonValue.from("message")
-         * ```
-         *
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun type(type: JsonValue) = apply { this.type = type }
-
-        /**
          * The status of item. One of `in_progress`, `completed`, or `incomplete`. Populated when
          * items are returned via API.
          */
@@ -274,6 +262,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /** The type of the message input. Always set to `message`. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -313,8 +312,8 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("content", content).map { it.toImmutable() },
                 checkRequired("role", role),
-                type,
                 status,
+                type,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -329,12 +328,8 @@ private constructor(
         id()
         content().forEach { it.validate() }
         role().validate()
-        _type().let {
-            if (it != JsonValue.from("message")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
         status().ifPresent { it.validate() }
+        type().ifPresent { it.validate() }
         validated = true
     }
 
@@ -356,8 +351,8 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (role.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("message")) 1 else 0 } +
-            (status.asKnown().getOrNull()?.validity() ?: 0)
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            (type.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The role of the message input. One of `user`, `system`, `developer`, or `assistant`. */
     class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -632,6 +627,126 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The type of the message input. Always set to `message`. */
+    class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val MESSAGE = of("message")
+
+            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+        }
+
+        /** An enum containing [Type]'s known values. */
+        enum class Known {
+            MESSAGE
+        }
+
+        /**
+         * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Type] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            MESSAGE,
+            /** An enum member indicating that [Type] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                MESSAGE -> Value.MESSAGE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                MESSAGE -> Known.MESSAGE
+                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Type = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Type && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -641,17 +756,17 @@ private constructor(
             id == other.id &&
             content == other.content &&
             role == other.role &&
-            type == other.type &&
             status == other.status &&
+            type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, content, role, type, status, additionalProperties)
+        Objects.hash(id, content, role, status, type, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseInputMessageItem{id=$id, content=$content, role=$role, type=$type, status=$status, additionalProperties=$additionalProperties}"
+        "ResponseInputMessageItem{id=$id, content=$content, role=$role, status=$status, type=$type, additionalProperties=$additionalProperties}"
 }
