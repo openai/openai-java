@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.30.1 (2026-03-29)
+
+Full Changelog: [v4.30.0...v4.30.1](https://github.com/openai/openai-java/compare/v4.30.0...v4.30.1)
+
+### Bug Fixes
+
+* **api:** remove web_search_call.results from ResponseIncludable ([936b2ab](https://github.com/openai/openai-java/commit/936b2ab08e8641bd1d6a1b2432140762185e22eb))
+
+
+### Chores
+
+* **internal:** update multipart form array serialization ([240ca42](https://github.com/openai/openai-java/commit/240ca42401366b75cf70b0eb0ff9f63425c9b358))
+
+
+### Documentation
+
+* **api:** clarify file_batches usage in vector stores files and file batches ([9c56841](https://github.com/openai/openai-java/commit/9c56841ff2f052a7e54290b36c3f74528be3de19))
+
 ## 4.30.0 (2026-03-25)
 
 Full Changelog: [v4.29.1...v4.30.0](https://github.com/openai/openai-java/compare/v4.29.1...v4.30.0)
