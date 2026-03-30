@@ -45,6 +45,7 @@ internal class ConversationItemTest {
                 .addInputTextContent("text")
                 .role(Message.Role.UNKNOWN)
                 .status(Message.Status.IN_PROGRESS)
+                .phase(Message.Phase.COMMENTARY)
                 .build()
 
         val conversationItem = ConversationItem.ofMessage(message)
@@ -86,6 +87,7 @@ internal class ConversationItemTest {
                     .addInputTextContent("text")
                     .role(Message.Role.UNKNOWN)
                     .status(Message.Status.IN_PROGRESS)
+                    .phase(Message.Phase.COMMENTARY)
                     .build()
             )
 
