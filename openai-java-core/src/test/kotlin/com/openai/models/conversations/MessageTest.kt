@@ -18,6 +18,7 @@ internal class MessageTest {
                 .addInputTextContent("text")
                 .role(Message.Role.UNKNOWN)
                 .status(Message.Status.IN_PROGRESS)
+                .phase(Message.Phase.COMMENTARY)
                 .build()
 
         assertThat(message.id()).isEqualTo("id")
@@ -27,6 +28,7 @@ internal class MessageTest {
             )
         assertThat(message.role()).isEqualTo(Message.Role.UNKNOWN)
         assertThat(message.status()).isEqualTo(Message.Status.IN_PROGRESS)
+        assertThat(message.phase()).contains(Message.Phase.COMMENTARY)
     }
 
     @Test
@@ -38,6 +40,7 @@ internal class MessageTest {
                 .addInputTextContent("text")
                 .role(Message.Role.UNKNOWN)
                 .status(Message.Status.IN_PROGRESS)
+                .phase(Message.Phase.COMMENTARY)
                 .build()
 
         val roundtrippedMessage =

@@ -44,6 +44,7 @@ private constructor(
     private val role: JsonField<Role>,
     private val status: JsonField<Status>,
     private val type: JsonValue,
+    private val phase: JsonField<Phase>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -56,7 +57,8 @@ private constructor(
         @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(id, content, role, status, type, mutableMapOf())
+        @JsonProperty("phase") @ExcludeMissing phase: JsonField<Phase> = JsonMissing.of(),
+    ) : this(id, content, role, status, type, phase, mutableMapOf())
 
     /**
      * The unique ID of the message.
@@ -106,6 +108,17 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
+     * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
+     * requests, preserve and resend phase on all assistant messages — dropping it can degrade
+     * performance. Not used for user messages.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun phase(): Optional<Phase> = phase.getOptional("phase")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -132,6 +145,13 @@ private constructor(
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [phase].
+     *
+     * Unlike [phase], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("phase") @ExcludeMissing fun _phase(): JsonField<Phase> = phase
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -169,6 +189,7 @@ private constructor(
         private var role: JsonField<Role>? = null
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("message")
+        private var phase: JsonField<Phase> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -178,6 +199,7 @@ private constructor(
             role = message.role
             status = message.status
             type = message.type
+            phase = message.phase
             additionalProperties = message.additionalProperties.toMutableMap()
         }
 
@@ -359,6 +381,25 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /**
+         * Labels an `assistant` message as intermediate commentary (`commentary`) or the final
+         * answer (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending
+         * follow-up requests, preserve and resend phase on all assistant messages — dropping it can
+         * degrade performance. Not used for user messages.
+         */
+        fun phase(phase: Phase?) = phase(JsonField.ofNullable(phase))
+
+        /** Alias for calling [Builder.phase] with `phase.orElse(null)`. */
+        fun phase(phase: Optional<Phase>) = phase(phase.getOrNull())
+
+        /**
+         * Sets [Builder.phase] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.phase] with a well-typed [Phase] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun phase(phase: JsonField<Phase>) = apply { this.phase = phase }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -400,6 +441,7 @@ private constructor(
                 checkRequired("role", role),
                 checkRequired("status", status),
                 type,
+                phase,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -420,6 +462,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        phase().ifPresent { it.validate() }
         validated = true
     }
 
@@ -442,7 +485,8 @@ private constructor(
             (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (role.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("message")) 1 else 0 }
+            type.let { if (it == JsonValue.from("message")) 1 else 0 } +
+            (phase.asKnown().getOrNull()?.validity() ?: 0)
 
     /** A content part that makes up an input or output item. */
     @JsonDeserialize(using = Content.Deserializer::class)
@@ -1379,6 +1423,137 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
+     * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
+     * requests, preserve and resend phase on all assistant messages — dropping it can degrade
+     * performance. Not used for user messages.
+     */
+    class Phase @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val COMMENTARY = of("commentary")
+
+            @JvmField val FINAL_ANSWER = of("final_answer")
+
+            @JvmStatic fun of(value: String) = Phase(JsonField.of(value))
+        }
+
+        /** An enum containing [Phase]'s known values. */
+        enum class Known {
+            COMMENTARY,
+            FINAL_ANSWER,
+        }
+
+        /**
+         * An enum containing [Phase]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Phase] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            COMMENTARY,
+            FINAL_ANSWER,
+            /** An enum member indicating that [Phase] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                COMMENTARY -> Value.COMMENTARY
+                FINAL_ANSWER -> Value.FINAL_ANSWER
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                COMMENTARY -> Known.COMMENTARY
+                FINAL_ANSWER -> Known.FINAL_ANSWER
+                else -> throw OpenAIInvalidDataException("Unknown Phase: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Phase = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Phase && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1390,15 +1565,16 @@ private constructor(
             role == other.role &&
             status == other.status &&
             type == other.type &&
+            phase == other.phase &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, content, role, status, type, additionalProperties)
+        Objects.hash(id, content, role, status, type, phase, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Message{id=$id, content=$content, role=$role, status=$status, type=$type, additionalProperties=$additionalProperties}"
+        "Message{id=$id, content=$content, role=$role, status=$status, type=$type, phase=$phase, additionalProperties=$additionalProperties}"
 }
