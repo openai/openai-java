@@ -795,7 +795,7 @@ static class GetSdkScore {
 ```
 
 When your functions are defined, add them to the input parameters using `addTool(Class<T>)` and then
-call them if requested to do so in the AI model's response. `Function.argments(Class<T>)` can be
+call them if requested to do so in the AI model's response. `Function.arguments(Class<T>)` can be
 used to parse a function's parameters in JSON form to an instance of your function-defining class.
 The fields of that instance will be set to the values of the parameters to the function call.
 
