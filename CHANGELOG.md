@@ -1,5 +1,33 @@
 # Changelog
 
+## 4.31.0 (2026-04-08)
+
+Full Changelog: [v4.30.0...v4.31.0](https://github.com/openai/openai-java/compare/v4.30.0...v4.31.0)
+
+### Features
+
+* **api:** add phase field to conversations Message ([e562a17](https://github.com/openai/openai-java/commit/e562a1701cfb7c92aa308d80d7bfe8e99c6394c8))
+* **api:** add WEB_SEARCH_CALL_RESULTS to ResponseIncludable enum ([eda0a61](https://github.com/openai/openai-java/commit/eda0a61f837af3a0aba2851a23320aadfce82979))
+* **client:** add support for short-lived tokens ([#1185](https://github.com/openai/openai-java/issues/1185)) ([40e729d](https://github.com/openai/openai-java/commit/40e729ddc83f37dfe6429d257072cd39396fb104))
+
+
+### Bug Fixes
+
+* **api:** remove web_search_call.results from ResponseIncludable ([936b2ab](https://github.com/openai/openai-java/commit/936b2ab08e8641bd1d6a1b2432140762185e22eb))
+
+
+### Chores
+
+* **internal:** update multipart form array serialization ([240ca42](https://github.com/openai/openai-java/commit/240ca42401366b75cf70b0eb0ff9f63425c9b358))
+* **tests:** bump steady to v0.20.1 ([a3c95b0](https://github.com/openai/openai-java/commit/a3c95b073d7b10a13ce83865947ab4fbec5a95d0))
+* **tests:** bump steady to v0.20.2 ([78b1d56](https://github.com/openai/openai-java/commit/78b1d5629bf7d31173ec1cec50f3191959cdba9d))
+
+
+### Documentation
+
+* **api:** clarify file_batches usage in vector stores files and file batches ([9c56841](https://github.com/openai/openai-java/commit/9c56841ff2f052a7e54290b36c3f74528be3de19))
+* fix function arguments typo in README ([#713](https://github.com/openai/openai-java/issues/713)) ([36c4888](https://github.com/openai/openai-java/commit/36c48883fa898da1b41ccc03fe1682934079923c))
+
 ## 4.30.0 (2026-03-25)
 
 Full Changelog: [v4.29.1...v4.30.0](https://github.com/openai/openai-java/compare/v4.29.1...v4.30.0)
