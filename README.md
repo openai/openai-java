@@ -156,6 +156,83 @@ OpenAIClient clientWithOptions = client.withOptions(optionsBuilder -> {
 
 The `withOptions()` method does not affect the original client or service.
 
+### Workload identity authentication
+
+Workload identity authentication allows applications running in cloud environments (Kubernetes, Azure, GCP) to authenticate using short-lived tokens issued by the cloud provider, instead of long-lived API keys.
+
+#### Basic setup
+
+```java
+import com.openai.auth.*;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+
+SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder().build();
+
+WorkloadIdentity workloadIdentity = WorkloadIdentity.builder()
+    .clientId("your-client-id")
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .provider(provider)
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .workloadIdentity(workloadIdentity)
+    .build();
+```
+
+#### Kubernetes service account token provider
+
+```java
+// Use default token path (/var/run/secrets/kubernetes.io/serviceaccount/token)
+SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder().build();
+```
+
+```java
+// Or specify a custom token path
+SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder()
+    .tokenPath("/custom/path/to/token")
+    .build();
+```
+
+#### Azure Managed Identity provider
+
+```java
+import com.openai.auth.*;
+
+// Use defaults (resource: https://management.azure.com/, api-version: 2018-02-01)
+SubjectTokenProvider provider = AzureManagedIdentityTokenProvider.builder()
+    .build();
+```
+
+```java
+import com.openai.auth.*;
+
+// Or customize
+SubjectTokenProvider provider = AzureManagedIdentityTokenProvider.builder()
+    .resource("https://management.azure.com/")
+    .apiVersion("2018-02-01")
+    .build();
+```
+
+#### GCP ID token provider
+
+```java
+import com.openai.auth.*;
+
+SubjectTokenProvider provider = GcpIdTokenProvider.builder()
+    .build();
+```
+
+```java
+import com.openai.auth.*;
+
+// Or customize the audience
+SubjectTokenProvider provider = GcpIdTokenProvider.builder()
+    .audience("https://api.openai.com/v1")
+    .build();
+```
+
 ## Requests and responses
 
 To send a request to the OpenAI API, build an instance of some `Params` class and pass it to the corresponding client method. When the response is received, it will be deserialized into an instance of a Java class.

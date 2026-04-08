@@ -57,7 +57,7 @@ internal class ClientOptionsTest {
         // Assert
         assertThatThrownBy { clientOptionsBuilder.build() }
             .isInstanceOf(IllegalStateException::class.java)
-            .hasMessage("`credential` is required, but was not set")
+            .hasMessage("Either credential (apiKey) or workloadIdentity must be specified")
     }
 
     @Test

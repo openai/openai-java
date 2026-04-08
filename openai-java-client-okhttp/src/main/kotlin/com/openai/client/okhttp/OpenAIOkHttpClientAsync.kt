@@ -3,6 +3,7 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.auth.WorkloadIdentity
 import com.openai.azure.AzureOpenAIServiceVersion
 import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClientAsync
@@ -276,6 +277,14 @@ class OpenAIOkHttpClientAsync private constructor() {
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
 
         fun credential(credential: Credential) = apply { clientOptions.credential(credential) }
+
+        fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
+            clientOptions.workloadIdentity(workloadIdentity)
+        }
+
+        /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
+        fun workloadIdentity(workloadIdentity: Optional<WorkloadIdentity>) =
+            workloadIdentity(workloadIdentity.getOrNull())
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             clientOptions.azureServiceVersion(azureServiceVersion)

@@ -3,6 +3,8 @@
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.auth.WorkloadIdentity
+import com.openai.auth.WorkloadIdentityAuth
 import com.openai.azure.AzureOpenAIServiceVersion
 import com.openai.azure.AzureUrlCategory
 import com.openai.azure.AzureUrlPathMode
@@ -13,8 +15,10 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
+import com.openai.core.http.WorkloadIdentityHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
+import com.openai.credential.WorkloadIdentityCredential
 import java.time.Clock
 import java.time.Duration
 import java.util.Optional
@@ -152,7 +156,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey()
+         * .apiKey() // or .workloadIdentity()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -186,6 +190,7 @@ private constructor(
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
+        private var workloadIdentity: WorkloadIdentity? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -357,6 +362,14 @@ private constructor(
         fun webhookSecret(webhookSecret: Optional<String>) =
             webhookSecret(webhookSecret.getOrNull())
 
+        fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
+            this.workloadIdentity = workloadIdentity
+        }
+
+        /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
+        fun workloadIdentity(workloadIdentity: Optional<WorkloadIdentity>) =
+            workloadIdentity(workloadIdentity.getOrNull())
+
         fun headers(headers: Headers) = apply {
             this.headers.clear()
             putAllHeaders(headers)
@@ -439,6 +452,36 @@ private constructor(
 
         fun timeout(): Timeout = timeout
 
+        private fun effectiveCredential(
+            httpClient: HttpClient,
+            jsonMapper: JsonMapper,
+        ): Credential {
+            if (
+                credential != null &&
+                    credential !is WorkloadIdentityCredential &&
+                    workloadIdentity != null
+            ) {
+                throw IllegalStateException(
+                    "Cannot specify both credential (apiKey) and workloadIdentity. Please specify only one."
+                )
+            }
+            return when {
+                workloadIdentity != null ->
+                    WorkloadIdentityCredential(
+                        WorkloadIdentityAuth(
+                            config = workloadIdentity!!,
+                            httpClient = httpClient,
+                            jsonMapper = jsonMapper,
+                        )
+                    )
+                credential != null -> credential!!
+                else ->
+                    throw IllegalStateException(
+                        "Either credential (apiKey) or workloadIdentity must be specified"
+                    )
+            }
+        }
+
         /**
          * Updates configuration using system properties and environment variables.
          *
@@ -495,7 +538,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey()
+         * .apiKey() // or .workloadIdentity()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -521,7 +564,8 @@ private constructor(
                         )
                     )
             val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
-            val credential = checkRequired("credential", credential)
+
+            val credential = effectiveCredential(httpClient, jsonMapper)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -542,6 +586,7 @@ private constructor(
                 is BearerTokenCredential -> {
                     headers.replace("Authorization", "Bearer ${credential.token()}")
                 }
+                is WorkloadIdentityCredential -> {}
                 else -> {
                     throw IllegalArgumentException("Invalid credential type")
                 }
@@ -569,14 +614,26 @@ private constructor(
             organization?.let { headers.replace("OpenAI-Organization", it) }
             project?.let { headers.replace("OpenAI-Project", it) }
 
-            return ClientOptions(
-                httpClient,
+            val effectiveWorkloadIdentityAuth =
+                (credential as? WorkloadIdentityCredential)?.getAuth()
+
+            val workloadIdentityHttpClient =
+                WorkloadIdentityHttpClient(
+                    delegate = httpClient,
+                    workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                )
+
+            val wrappedHttpClient =
                 RetryingHttpClient.builder()
-                    .httpClient(httpClient)
+                    .httpClient(workloadIdentityHttpClient)
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
-                    .build(),
+                    .build()
+
+            return ClientOptions(
+                httpClient,
+                wrappedHttpClient,
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor,
