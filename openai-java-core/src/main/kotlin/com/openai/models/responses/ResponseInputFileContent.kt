@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -21,6 +22,7 @@ class ResponseInputFileContent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
+    private val detail: JsonField<Detail>,
     private val fileData: JsonField<String>,
     private val fileId: JsonField<String>,
     private val fileUrl: JsonField<String>,
@@ -31,11 +33,12 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("detail") @ExcludeMissing detail: JsonField<Detail> = JsonMissing.of(),
         @JsonProperty("file_data") @ExcludeMissing fileData: JsonField<String> = JsonMissing.of(),
         @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("file_url") @ExcludeMissing fileUrl: JsonField<String> = JsonMissing.of(),
         @JsonProperty("filename") @ExcludeMissing filename: JsonField<String> = JsonMissing.of(),
-    ) : this(type, fileData, fileId, fileUrl, filename, mutableMapOf())
+    ) : this(type, detail, fileData, fileId, fileUrl, filename, mutableMapOf())
 
     /**
      * The type of the input item. Always `input_file`.
@@ -49,6 +52,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The detail level of the file to be sent to the model. Use `low` for the default rendering
+     * behavior, or `high` to render the file at higher quality. Defaults to `low`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun detail(): Optional<Detail> = detail.getOptional("detail")
 
     /**
      * The base64-encoded data of the file to be sent to the model.
@@ -81,6 +93,13 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun filename(): Optional<String> = filename.getOptional("filename")
+
+    /**
+     * Returns the raw JSON value of [detail].
+     *
+     * Unlike [detail], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
     /**
      * Returns the raw JSON value of [fileData].
@@ -132,6 +151,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var type: JsonValue = JsonValue.from("input_file")
+        private var detail: JsonField<Detail> = JsonMissing.of()
         private var fileData: JsonField<String> = JsonMissing.of()
         private var fileId: JsonField<String> = JsonMissing.of()
         private var fileUrl: JsonField<String> = JsonMissing.of()
@@ -141,6 +161,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(responseInputFileContent: ResponseInputFileContent) = apply {
             type = responseInputFileContent.type
+            detail = responseInputFileContent.detail
             fileData = responseInputFileContent.fileData
             fileId = responseInputFileContent.fileId
             fileUrl = responseInputFileContent.fileUrl
@@ -161,6 +182,20 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /**
+         * The detail level of the file to be sent to the model. Use `low` for the default rendering
+         * behavior, or `high` to render the file at higher quality. Defaults to `low`.
+         */
+        fun detail(detail: Detail) = detail(JsonField.of(detail))
+
+        /**
+         * Sets [Builder.detail] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.detail] with a well-typed [Detail] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
         /** The base64-encoded data of the file to be sent to the model. */
         fun fileData(fileData: String?) = fileData(JsonField.ofNullable(fileData))
@@ -245,6 +280,7 @@ private constructor(
         fun build(): ResponseInputFileContent =
             ResponseInputFileContent(
                 type,
+                detail,
                 fileData,
                 fileId,
                 fileUrl,
@@ -265,6 +301,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        detail().ifPresent { it.validate() }
         fileData()
         fileId()
         fileUrl()
@@ -288,10 +325,140 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         type.let { if (it == JsonValue.from("input_file")) 1 else 0 } +
+            (detail.asKnown().getOrNull()?.validity() ?: 0) +
             (if (fileData.asKnown().isPresent) 1 else 0) +
             (if (fileId.asKnown().isPresent) 1 else 0) +
             (if (fileUrl.asKnown().isPresent) 1 else 0) +
             (if (filename.asKnown().isPresent) 1 else 0)
+
+    /**
+     * The detail level of the file to be sent to the model. Use `low` for the default rendering
+     * behavior, or `high` to render the file at higher quality. Defaults to `low`.
+     */
+    class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = Detail(JsonField.of(value))
+        }
+
+        /** An enum containing [Detail]'s known values. */
+        enum class Known {
+            LOW,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [Detail]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Detail] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            HIGH,
+            /** An enum member indicating that [Detail] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown Detail: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Detail = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Detail && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -300,6 +467,7 @@ private constructor(
 
         return other is ResponseInputFileContent &&
             type == other.type &&
+            detail == other.detail &&
             fileData == other.fileData &&
             fileId == other.fileId &&
             fileUrl == other.fileUrl &&
@@ -308,11 +476,11 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, fileData, fileId, fileUrl, filename, additionalProperties)
+        Objects.hash(type, detail, fileData, fileId, fileUrl, filename, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseInputFileContent{type=$type, fileData=$fileData, fileId=$fileId, fileUrl=$fileUrl, filename=$filename, additionalProperties=$additionalProperties}"
+        "ResponseInputFileContent{type=$type, detail=$detail, fileData=$fileData, fileId=$fileId, fileUrl=$fileUrl, filename=$filename, additionalProperties=$additionalProperties}"
 }

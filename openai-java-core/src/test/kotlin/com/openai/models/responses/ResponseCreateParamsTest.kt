@@ -28,7 +28,7 @@ internal class ResponseCreateParamsTest {
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
             .input("string")
             .instructions("instructions")
-            .maxOutputTokens(0L)
+            .maxOutputTokens(16L)
             .maxToolCalls(0L)
             .metadata(
                 ResponseCreateParams.Metadata.builder()
@@ -107,7 +107,7 @@ internal class ResponseCreateParamsTest {
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .input("string")
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokens(16L)
                 .maxToolCalls(0L)
                 .metadata(
                     ResponseCreateParams.Metadata.builder()
@@ -185,7 +185,7 @@ internal class ResponseCreateParamsTest {
             .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
         assertThat(body.input()).contains(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.instructions()).contains("instructions")
-        assertThat(body.maxOutputTokens()).contains(0L)
+        assertThat(body.maxOutputTokens()).contains(16L)
         assertThat(body.maxToolCalls()).contains(0L)
         assertThat(body.metadata())
             .contains(
