@@ -86,7 +86,7 @@ internal class ClientSecretCreateResponseTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
@@ -183,7 +183,7 @@ internal class ClientSecretCreateResponseTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
@@ -284,7 +284,7 @@ internal class ClientSecretCreateResponseTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(

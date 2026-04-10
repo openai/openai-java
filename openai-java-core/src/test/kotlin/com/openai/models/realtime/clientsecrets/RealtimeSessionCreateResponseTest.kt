@@ -80,7 +80,7 @@ internal class RealtimeSessionCreateResponseTest {
                     RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(
@@ -165,7 +165,7 @@ internal class RealtimeSessionCreateResponseTest {
             )
         assertThat(realtimeSessionCreateResponse.instructions()).contains("instructions")
         assertThat(realtimeSessionCreateResponse.maxOutputTokens())
-            .contains(RealtimeSessionCreateResponse.MaxOutputTokens.ofInteger(0L))
+            .contains(RealtimeSessionCreateResponse.MaxOutputTokens.ofInf())
         assertThat(realtimeSessionCreateResponse.model())
             .contains(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateResponse.outputModalities().getOrNull())
@@ -266,7 +266,7 @@ internal class RealtimeSessionCreateResponseTest {
                     RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(

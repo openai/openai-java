@@ -32,7 +32,7 @@ internal class RealtimeResponseTest {
                         .build()
                 )
                 .conversationId("conversation_id")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .metadata(
                     RealtimeResponse.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -113,7 +113,7 @@ internal class RealtimeResponseTest {
             )
         assertThat(realtimeResponse.conversationId()).contains("conversation_id")
         assertThat(realtimeResponse.maxOutputTokens())
-            .contains(RealtimeResponse.MaxOutputTokens.ofInteger(0L))
+            .contains(RealtimeResponse.MaxOutputTokens.ofInf())
         assertThat(realtimeResponse.metadata())
             .contains(
                 RealtimeResponse.Metadata.builder()
@@ -201,7 +201,7 @@ internal class RealtimeResponseTest {
                         .build()
                 )
                 .conversationId("conversation_id")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .metadata(
                     RealtimeResponse.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
