@@ -46,7 +46,7 @@ internal class ResponseServiceAsyncTest {
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
                     .instructions("instructions")
-                    .maxOutputTokens(0L)
+                    .maxOutputTokens(16L)
                     .maxToolCalls(0L)
                     .metadata(
                         ResponseCreateParams.Metadata.builder()
@@ -139,7 +139,7 @@ internal class ResponseServiceAsyncTest {
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
                     .instructions("instructions")
-                    .maxOutputTokens(0L)
+                    .maxOutputTokens(16L)
                     .maxToolCalls(0L)
                     .metadata(
                         ResponseCreateParams.Metadata.builder()
