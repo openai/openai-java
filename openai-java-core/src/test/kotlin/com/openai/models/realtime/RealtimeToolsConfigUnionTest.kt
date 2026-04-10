@@ -67,23 +67,7 @@ internal class RealtimeToolsConfigUnionTest {
                         .build()
                 )
                 .requireApproval(
-                    RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter.builder()
-                        .always(
-                            RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter
-                                .Always
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .never(
-                            RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter.Never
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .build()
+                    RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
                 .serverUrl("server_url")
@@ -112,24 +96,7 @@ internal class RealtimeToolsConfigUnionTest {
                             .build()
                     )
                     .requireApproval(
-                        RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter.builder()
-                            .always(
-                                RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter
-                                    .Always
-                                    .builder()
-                                    .readOnly(true)
-                                    .addToolName("string")
-                                    .build()
-                            )
-                            .never(
-                                RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter
-                                    .Never
-                                    .builder()
-                                    .readOnly(true)
-                                    .addToolName("string")
-                                    .build()
-                            )
-                            .build()
+                        RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS
                     )
                     .serverDescription("server_description")
                     .serverUrl("server_url")

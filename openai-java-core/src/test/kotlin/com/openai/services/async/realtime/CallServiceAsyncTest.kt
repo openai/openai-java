@@ -88,7 +88,9 @@ internal class CallServiceAsyncTest {
                                                     .build()
                                             )
                                             .speed(0.25)
-                                            .voice("string")
+                                            .voice(
+                                                RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY
+                                            )
                                             .build()
                                     )
                                     .build()
@@ -98,7 +100,7 @@ internal class CallServiceAsyncTest {
                                     .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                             )
                             .instructions("instructions")
-                            .maxOutputTokens(0L)
+                            .maxOutputTokensInf()
                             .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                             .prompt(

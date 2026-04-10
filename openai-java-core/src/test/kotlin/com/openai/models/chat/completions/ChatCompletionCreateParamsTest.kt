@@ -24,7 +24,7 @@ internal class ChatCompletionCreateParamsTest {
             .audio(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
-                    .voice("string")
+                    .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                     .build()
             )
             .frequencyPenalty(-2.0)
@@ -128,7 +128,7 @@ internal class ChatCompletionCreateParamsTest {
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
-                        .voice("string")
+                        .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                         .build()
                 )
                 .frequencyPenalty(-2.0)
@@ -234,7 +234,7 @@ internal class ChatCompletionCreateParamsTest {
             .contains(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
-                    .voice("string")
+                    .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                     .build()
             )
         assertThat(body.frequencyPenalty()).contains(-2.0)
