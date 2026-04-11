@@ -1,4 +1,0 @@
-## 2024-04-10 - Optimizing jsonMapper() creation
-**Learning:** `jsonMapper()` is a global function in `com.openai.core.ObjectMappers` that calls `JsonMapper.builder()...build()` every time it's invoked. This is a very expensive operation in Jackson, as module registration and builder construction are slow. This method is called in many places like parsing exceptions, initializing clients, tests, and webhooks. Jackson documentation recommends configuring `ObjectMapper` (or `JsonMapper`) once and reusing it.
-
-**Action:** Convert `jsonMapper()` to return a single lazily-initialized or statically-initialized `JsonMapper` instance. Or, change it to a lazy property like `val jsonMapper: JsonMapper by lazy { ... }` (but since it's an API, keep `fun jsonMapper(): JsonMapper` and back it with a private constant).
