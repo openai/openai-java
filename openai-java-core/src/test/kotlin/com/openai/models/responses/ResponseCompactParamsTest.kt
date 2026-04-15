@@ -15,6 +15,7 @@ internal class ResponseCompactParamsTest {
             .instructions("instructions")
             .previousResponseId("resp_123")
             .promptCacheKey("prompt_cache_key")
+            .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
             .build()
     }
 
@@ -27,6 +28,7 @@ internal class ResponseCompactParamsTest {
                 .instructions("instructions")
                 .previousResponseId("resp_123")
                 .promptCacheKey("prompt_cache_key")
+                .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
                 .build()
 
         val body = params._body()
@@ -36,6 +38,8 @@ internal class ResponseCompactParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.previousResponseId()).contains("resp_123")
         assertThat(body.promptCacheKey()).contains("prompt_cache_key")
+        assertThat(body.promptCacheRetention())
+            .contains(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
     }
 
     @Test
