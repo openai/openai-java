@@ -98,6 +98,14 @@ private constructor(
     fun promptCacheKey(): Optional<String> = body.promptCacheKey()
 
     /**
+     * How long to retain a prompt cache entry created by this request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
+
+    /**
      * Returns the raw JSON value of [model].
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -132,6 +140,14 @@ private constructor(
      * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
+
+    /**
+     * Returns the raw JSON value of [promptCacheRetention].
+     *
+     * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -300,6 +316,29 @@ private constructor(
             body.promptCacheKey(promptCacheKey)
         }
 
+        /** How long to retain a prompt cache entry created by this request. */
+        fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) = apply {
+            body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheRetention] with
+         * `promptCacheRetention.orElse(null)`.
+         */
+        fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
+            promptCacheRetention(promptCacheRetention.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheRetention] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheRetention] with a well-typed
+         * [PromptCacheRetention] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
+            body.promptCacheRetention(promptCacheRetention)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -451,6 +490,7 @@ private constructor(
         private val instructions: JsonField<String>,
         private val previousResponseId: JsonField<String>,
         private val promptCacheKey: JsonField<String>,
+        private val promptCacheRetention: JsonField<PromptCacheRetention>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -467,7 +507,18 @@ private constructor(
             @JsonProperty("prompt_cache_key")
             @ExcludeMissing
             promptCacheKey: JsonField<String> = JsonMissing.of(),
-        ) : this(model, input, instructions, previousResponseId, promptCacheKey, mutableMapOf())
+            @JsonProperty("prompt_cache_retention")
+            @ExcludeMissing
+            promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
+        ) : this(
+            model,
+            input,
+            instructions,
+            previousResponseId,
+            promptCacheKey,
+            promptCacheRetention,
+            mutableMapOf(),
+        )
 
         /**
          * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
@@ -520,6 +571,15 @@ private constructor(
         fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
         /**
+         * How long to retain a prompt cache entry created by this request.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheRetention(): Optional<PromptCacheRetention> =
+            promptCacheRetention.getOptional("prompt_cache_retention")
+
+        /**
          * Returns the raw JSON value of [model].
          *
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -563,6 +623,16 @@ private constructor(
         @ExcludeMissing
         fun _promptCacheKey(): JsonField<String> = promptCacheKey
 
+        /**
+         * Returns the raw JSON value of [promptCacheRetention].
+         *
+         * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_retention")
+        @ExcludeMissing
+        fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -596,6 +666,7 @@ private constructor(
             private var instructions: JsonField<String> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
+            private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -605,6 +676,7 @@ private constructor(
                 instructions = body.instructions
                 previousResponseId = body.previousResponseId
                 promptCacheKey = body.promptCacheKey
+                promptCacheRetention = body.promptCacheRetention
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -729,6 +801,29 @@ private constructor(
                 this.promptCacheKey = promptCacheKey
             }
 
+            /** How long to retain a prompt cache entry created by this request. */
+            fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
+                promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
+
+            /**
+             * Alias for calling [Builder.promptCacheRetention] with
+             * `promptCacheRetention.orElse(null)`.
+             */
+            fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
+                promptCacheRetention(promptCacheRetention.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheRetention] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheRetention] with a well-typed
+             * [PromptCacheRetention] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) =
+                apply {
+                    this.promptCacheRetention = promptCacheRetention
+                }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -767,6 +862,7 @@ private constructor(
                     instructions,
                     previousResponseId,
                     promptCacheKey,
+                    promptCacheRetention,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -783,6 +879,7 @@ private constructor(
             instructions()
             previousResponseId()
             promptCacheKey()
+            promptCacheRetention().ifPresent { it.validate() }
             validated = true
         }
 
@@ -806,7 +903,8 @@ private constructor(
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
-                (if (promptCacheKey.asKnown().isPresent) 1 else 0)
+                (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
+                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -819,6 +917,7 @@ private constructor(
                 instructions == other.instructions &&
                 previousResponseId == other.previousResponseId &&
                 promptCacheKey == other.promptCacheKey &&
+                promptCacheRetention == other.promptCacheRetention &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -829,6 +928,7 @@ private constructor(
                 instructions,
                 previousResponseId,
                 promptCacheKey,
+                promptCacheRetention,
                 additionalProperties,
             )
         }
@@ -836,7 +936,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, additionalProperties=$additionalProperties}"
+            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1703,6 +1803,138 @@ private constructor(
                 }
             }
         }
+    }
+
+    /** How long to retain a prompt cache entry created by this request. */
+    class PromptCacheRetention
+    @JsonCreator
+    private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_MEMORY = of("in_memory")
+
+            @JvmField val _24H = of("24h")
+
+            @JvmStatic fun of(value: String) = PromptCacheRetention(JsonField.of(value))
+        }
+
+        /** An enum containing [PromptCacheRetention]'s known values. */
+        enum class Known {
+            IN_MEMORY,
+            _24H,
+        }
+
+        /**
+         * An enum containing [PromptCacheRetention]'s known values, as well as an [_UNKNOWN]
+         * member.
+         *
+         * An instance of [PromptCacheRetention] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            IN_MEMORY,
+            _24H,
+            /**
+             * An enum member indicating that [PromptCacheRetention] was instantiated with an
+             * unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                IN_MEMORY -> Value.IN_MEMORY
+                _24H -> Value._24H
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                IN_MEMORY -> Known.IN_MEMORY
+                _24H -> Known._24H
+                else -> throw OpenAIInvalidDataException("Unknown PromptCacheRetention: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): PromptCacheRetention = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheRetention && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {
