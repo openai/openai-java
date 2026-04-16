@@ -60,7 +60,7 @@ internal class RealtimeSessionCreateRequestTest {
                                         .build()
                                 )
                                 .speed(0.25)
-                                .voice("string")
+                                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                 .build()
                         )
                         .build()
@@ -69,7 +69,7 @@ internal class RealtimeSessionCreateRequestTest {
                     RealtimeSessionCreateRequest.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                 .prompt(
@@ -140,7 +140,7 @@ internal class RealtimeSessionCreateRequestTest {
                                     .build()
                             )
                             .speed(0.25)
-                            .voice("string")
+                            .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                             .build()
                     )
                     .build()
@@ -151,7 +151,7 @@ internal class RealtimeSessionCreateRequestTest {
             )
         assertThat(realtimeSessionCreateRequest.instructions()).contains("instructions")
         assertThat(realtimeSessionCreateRequest.maxOutputTokens())
-            .contains(RealtimeSessionCreateRequest.MaxOutputTokens.ofInteger(0L))
+            .contains(RealtimeSessionCreateRequest.MaxOutputTokens.ofInf())
         assertThat(realtimeSessionCreateRequest.model())
             .contains(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateRequest.outputModalities().getOrNull())
@@ -236,7 +236,7 @@ internal class RealtimeSessionCreateRequestTest {
                                         .build()
                                 )
                                 .speed(0.25)
-                                .voice("string")
+                                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                 .build()
                         )
                         .build()
@@ -245,7 +245,7 @@ internal class RealtimeSessionCreateRequestTest {
                     RealtimeSessionCreateRequest.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                 .prompt(

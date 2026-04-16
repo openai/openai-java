@@ -31,7 +31,7 @@ internal class ResponsesClientEventTest {
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .input("string")
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokens(16L)
                 .maxToolCalls(0L)
                 .metadata(
                     ResponsesClientEvent.Metadata.builder()
@@ -110,7 +110,7 @@ internal class ResponsesClientEventTest {
         assertThat(responsesClientEvent.input())
             .contains(ResponsesClientEvent.Input.ofText("string"))
         assertThat(responsesClientEvent.instructions()).contains("instructions")
-        assertThat(responsesClientEvent.maxOutputTokens()).contains(0L)
+        assertThat(responsesClientEvent.maxOutputTokens()).contains(16L)
         assertThat(responsesClientEvent.maxToolCalls()).contains(0L)
         assertThat(responsesClientEvent.metadata())
             .contains(
@@ -199,7 +199,7 @@ internal class ResponsesClientEventTest {
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .input("string")
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokens(16L)
                 .maxToolCalls(0L)
                 .metadata(
                     ResponsesClientEvent.Metadata.builder()

@@ -25,24 +25,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                         .build()
                 )
                 .requireApproval(
-                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter.builder()
-                        .always(
-                            RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter
-                                .Always
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .never(
-                            RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter
-                                .Never
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .build()
+                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
                 .serverUrl("server_url")
@@ -63,25 +46,8 @@ internal class RealtimeResponseCreateMcpToolTest {
             )
         assertThat(realtimeResponseCreateMcpTool.requireApproval())
             .contains(
-                RealtimeResponseCreateMcpTool.RequireApproval.ofMcpToolApprovalFilter(
-                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter.builder()
-                        .always(
-                            RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter
-                                .Always
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .never(
-                            RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter
-                                .Never
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .build()
+                RealtimeResponseCreateMcpTool.RequireApproval.ofMcpToolApprovalSetting(
+                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
             )
         assertThat(realtimeResponseCreateMcpTool.serverDescription()).contains("server_description")
@@ -104,24 +70,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                         .build()
                 )
                 .requireApproval(
-                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter.builder()
-                        .always(
-                            RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter
-                                .Always
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .never(
-                            RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalFilter
-                                .Never
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .build()
+                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
                 .serverUrl("server_url")

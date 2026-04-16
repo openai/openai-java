@@ -29,7 +29,11 @@ internal class ResponseCreateEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice("string")
+                                        .voice(
+                                            RealtimeResponseCreateAudioOutput.Output.Voice
+                                                .UnionMember1
+                                                .ALLOY
+                                        )
                                         .build()
                                 )
                                 .build()
@@ -52,7 +56,7 @@ internal class ResponseCreateEventTest {
                                 .build()
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponseCreateParams.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -97,7 +101,10 @@ internal class ResponseCreateEventTest {
                                             .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                             .build()
                                     )
-                                    .voice("string")
+                                    .voice(
+                                        RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1
+                                            .ALLOY
+                                    )
                                     .build()
                             )
                             .build()
@@ -120,7 +127,7 @@ internal class ResponseCreateEventTest {
                             .build()
                     )
                     .instructions("instructions")
-                    .maxOutputTokens(0L)
+                    .maxOutputTokensInf()
                     .metadata(
                         RealtimeResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -169,7 +176,11 @@ internal class ResponseCreateEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice("string")
+                                        .voice(
+                                            RealtimeResponseCreateAudioOutput.Output.Voice
+                                                .UnionMember1
+                                                .ALLOY
+                                        )
                                         .build()
                                 )
                                 .build()
@@ -192,7 +203,7 @@ internal class ResponseCreateEventTest {
                                 .build()
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponseCreateParams.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))

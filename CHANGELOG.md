@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.32.0 (2026-04-16)
+
+Full Changelog: [v4.31.0...v4.32.0](https://github.com/openai/openai-java/compare/v4.31.0...v4.32.0)
+
+### Features
+
+* **api:** Add detail to InputFileContent ([0c8418c](https://github.com/openai/openai-java/commit/0c8418cb584103e273b12f70b1cf535364d44bfd))
+* **api:** add OAuthErrorCode type ([09b41e1](https://github.com/openai/openai-java/commit/09b41e1d925371b6b6c94b8a147dce6264be6120))
+
+
+### Documentation
+
+* improve examples ([717a8d5](https://github.com/openai/openai-java/commit/717a8d5cc331c2746ed1548ef89418f70707d23a))
+
 ## 4.31.0 (2026-04-08)
 
 Full Changelog: [v4.30.0...v4.31.0](https://github.com/openai/openai-java/compare/v4.30.0...v4.31.0)
