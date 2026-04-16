@@ -116,7 +116,13 @@ class ResponseAccumulator private constructor() {
      *   accumulated. A [ResponseAccumulator] can only be used to accumulate a single [Response].
      */
     fun accumulate(event: ResponseStreamEvent): ResponseStreamEvent {
-        check(response == null) { "Response has already been completed." }
+        // The API may send non-terminal events (e.g. `response.rate_limits.updated`) after a
+        // terminal event (`response.completed`, `response.failed`, `response.incomplete`).
+        // These events do not carry response data and are safe to ignore. Throwing here would
+        // break callers that pass every streamed event to the accumulator.
+        if (response != null) {
+            return event
+        }
 
         event.accept(
             object : ResponseStreamEvent.Visitor<Unit> {

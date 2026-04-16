@@ -62,16 +62,17 @@ internal class ResponseAccumulatorTest {
     }
 
     @Test
-    fun accumulateAfterCompleted() {
+    fun accumulateAfterCompletedIgnoresPostCompletionEvents() {
         val accumulator = ResponseAccumulator.create()
 
         accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
 
-        assertThatThrownBy {
-                accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
-            }
-            .isExactlyInstanceOf(IllegalStateException::class.java)
-            .hasMessage("Response has already been completed.")
+        // Post-completion events (e.g. `response.rate_limits.updated`) should be silently
+        // ignored rather than throwing. The original response should remain intact.
+        assertThatNoException().isThrownBy {
+            accumulator.accumulate(ResponseStreamEvent.ofCreated(responseCreatedEvent()))
+        }
+        assertThat(accumulator.response().id()).isEqualTo("response-id")
     }
 
     @Test
