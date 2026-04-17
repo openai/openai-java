@@ -29,7 +29,10 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
-fun jsonMapper(): JsonMapper =
+// Cache the Jackson JsonMapper instance to avoid the massive performance overhead of
+// registering modules and building the mapper on every single invocation.
+// This single lazily-initialized instance is thread-safe and can be reused globally.
+private val JSON_MAPPER: JsonMapper by lazy {
     JsonMapper.builder()
         .addModule(kotlinModule())
         .addModule(Jdk8Module())
@@ -112,6 +115,9 @@ fun jsonMapper(): JsonMapper =
         .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
         .disable(MapperFeature.AUTO_DETECT_SETTERS)
         .build()
+}
+
+fun jsonMapper(): JsonMapper = JSON_MAPPER
 
 /** A serializer that serializes [InputStream] to bytes. */
 private object InputStreamSerializer : BaseSerializer<InputStream>(InputStream::class) {
