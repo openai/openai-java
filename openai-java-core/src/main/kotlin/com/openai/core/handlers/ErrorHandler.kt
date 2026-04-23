@@ -4,7 +4,6 @@
 
 package com.openai.core.handlers
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.http.HttpResponse
@@ -21,17 +20,59 @@ import com.openai.models.ErrorObject
 
 @JvmSynthetic
 internal fun errorBodyHandler(jsonMapper: JsonMapper): Handler<ErrorObject?> {
-    val handler = jsonHandler<JsonNode>(jsonMapper)
-
     return object : Handler<ErrorObject?> {
-        override fun handle(response: HttpResponse): ErrorObject? =
+        override fun handle(response: HttpResponse): ErrorObject? {
+            val bodyBytes = try {
+                response.body().readBytes()
+            } catch (_: Exception) {
+                return null
+            }
+            if (bodyBytes.isEmpty()) return null
+
+            // Try to parse the body as JSON and extract the error object.
             try {
-                handler.handle(response).get("error")?.let {
-                    jsonMapper.readerFor(jacksonTypeRef<ErrorObject>()).readValue(it)
+                val node = jsonMapper.readTree(bodyBytes)
+                if (node != null) {
+                    // Standard OpenAI format: {"error": {...}}
+                    val errorNode = node.get("error") ?: node
+
+                    // Try full deserialization first.
+                    try {
+                        return jsonMapper.readerFor(jacksonTypeRef<ErrorObject>()).readValue(errorNode)
+                    } catch (_: Exception) {
+                        // Full deserialization failed (e.g. non-standard field types from
+                        // third-party OpenAI-compatible APIs like Google Gemini, which returns
+                        // "code" as an integer instead of a string). Try extracting just the
+                        // "message" field directly so callers still see a meaningful error.
+                        val messageText = errorNode.get("message")
+                            ?.takeIf { it.isTextual }
+                            ?.textValue()
+                        if (messageText != null) {
+                            try {
+                                val fallbackNode = jsonMapper.createObjectNode().put("message", messageText)
+                                return jsonMapper.readerFor(jacksonTypeRef<ErrorObject>()).readValue(fallbackNode)
+                            } catch (_: Exception) {
+                                // ignore
+                            }
+                        }
+                    }
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
+                // JSON parsing failed – fall through to raw-body fallback below.
+            }
+
+            // Body is not valid JSON (or not an object): wrap the raw text as the message so
+            // callers can see the actual server error instead of a useless "null".
+            return try {
+                val rawMessage = bodyBytes.toString(Charsets.UTF_8).trim()
+                if (rawMessage.isNotEmpty()) {
+                    val fallbackNode = jsonMapper.createObjectNode().put("message", rawMessage)
+                    jsonMapper.readerFor(jacksonTypeRef<ErrorObject>()).readValue(fallbackNode)
+                } else null
+            } catch (_: Exception) {
                 null
             }
+        }
     }
 }
 
