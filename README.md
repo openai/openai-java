@@ -709,6 +709,8 @@ properties can be derived. This may occur if, for example:
 - All fields and getter methods are non-`public`, but none are annotated with `@JsonProperty`.
 - A field or getter method is declared with a `Map` type. A `Map` is treated like a separate class
   with no named properties, so it will result in an empty `"properties"` field in the JSON schema.
+  If you need arbitrary key/value data, model it as a list of entry objects with named fields so the
+  generated schema still has concrete property names.
 
 ### Annotating classes and JSON schemas
 
