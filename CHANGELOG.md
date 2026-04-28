@@ -1,5 +1,29 @@
 # Changelog
 
+## 4.33.0 (2026-04-28)
+
+Full Changelog: [v4.32.0...v4.33.0](https://github.com/openai/openai-java/compare/v4.32.0...v4.33.0)
+
+### Features
+
+* **api:** api update ([059c9d4](https://github.com/openai/openai-java/commit/059c9d4bf7b78bdf14bc976aaf1e5df07d6c266c))
+
+
+### Bug Fixes
+
+* **types:** correct IN_MEMORY constant value in chat completions/responses ([7c39981](https://github.com/openai/openai-java/commit/7c39981b37c3a6d531667aa8519f2608f6058dc1))
+
+
+### Chores
+
+* **ci:** remove release-doctor workflow ([db2b3e3](https://github.com/openai/openai-java/commit/db2b3e350610bd3918ccb94dea12924811d4a414))
+* **tests:** bump steady to v0.22.1 ([4cc89dd](https://github.com/openai/openai-java/commit/4cc89dd91dcd6e4a7af6de613220eaa8422ba156))
+
+
+### Documentation
+
+* **api:** add rate limits and vector store guidance to file upload ([83f4731](https://github.com/openai/openai-java/commit/83f4731121e83b213b969ecf5e00b65bd0f95aa9))
+
 ## 4.32.0 (2026-04-16)
 
 Full Changelog: [v4.31.0...v4.32.0](https://github.com/openai/openai-java/compare/v4.31.0...v4.32.0)

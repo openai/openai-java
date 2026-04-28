@@ -4284,7 +4284,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val IN_MEMORY = of("in-memory")
+            @JvmField val IN_MEMORY = of("in_memory")
 
             @JvmField val _24H = of("24h")
 
