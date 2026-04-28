@@ -29,6 +29,7 @@ internal class ChatCompletionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
@@ -146,6 +147,7 @@ internal class ChatCompletionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
@@ -266,6 +268,7 @@ internal class ChatCompletionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
@@ -281,6 +284,7 @@ internal class ChatCompletionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
@@ -306,6 +310,7 @@ internal class ChatCompletionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
@@ -321,6 +326,7 @@ internal class ChatCompletionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 

@@ -52,7 +52,11 @@ internal class ProGuardCompatibilityTest {
 
     @Test
     fun client() {
-        val client = OpenAIOkHttpClient.builder().apiKey("My API Key").build()
+        val client =
+            OpenAIOkHttpClient.builder()
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
 
         assertThat(client).isNotNull()
         assertThat(client.completions()).isNotNull()
@@ -70,6 +74,7 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.beta()).isNotNull()
         assertThat(client.batches()).isNotNull()
         assertThat(client.uploads()).isNotNull()
+        assertThat(client.admin()).isNotNull()
         assertThat(client.responses()).isNotNull()
         assertThat(client.realtime()).isNotNull()
         assertThat(client.conversations()).isNotNull()

@@ -13,7 +13,11 @@ internal class WebhookServiceTest {
 
     @Test
     fun unwrap() {
-        val client = OpenAIOkHttpClient.builder().apiKey("My API Key").build()
+        val client =
+            OpenAIOkHttpClient.builder()
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
         val webhookService = client.webhooks()
 
         val payload =

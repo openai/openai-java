@@ -5,6 +5,7 @@ package com.openai.services.async.audio
 import com.openai.core.ClientOptions
 import com.openai.core.MultipartField
 import com.openai.core.RequestOptions
+import com.openai.core.SecurityOptions
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -85,7 +86,11 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                     .addPathSegments("audio", "transcriptions")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -122,7 +127,11 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                         )
                     )
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

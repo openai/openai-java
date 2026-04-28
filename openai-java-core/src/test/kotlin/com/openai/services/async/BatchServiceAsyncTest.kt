@@ -18,6 +18,7 @@ internal class BatchServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val batchServiceAsync = client.batches()
 
@@ -48,6 +49,7 @@ internal class BatchServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val batchServiceAsync = client.batches()
 
@@ -63,6 +65,7 @@ internal class BatchServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val batchServiceAsync = client.batches()
 
@@ -78,6 +81,7 @@ internal class BatchServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val batchServiceAsync = client.batches()
 

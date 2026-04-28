@@ -35,6 +35,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -58,6 +59,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -72,6 +74,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -86,6 +89,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -100,6 +104,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -120,6 +125,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
@@ -141,6 +147,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -161,6 +168,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -182,6 +190,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 
@@ -196,6 +205,7 @@ internal class VideoServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoService = client.videos()
 

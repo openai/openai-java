@@ -4,6 +4,7 @@ package com.openai.services.blocking.evals.runs
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
@@ -86,7 +87,11 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
                         params._pathParam(2),
                     )
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -122,7 +127,11 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
                         "output_items",
                     )
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

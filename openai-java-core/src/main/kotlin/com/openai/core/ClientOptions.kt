@@ -107,7 +107,8 @@ private constructor(
      * Defaults to 2.
      */
     @get:JvmName("maxRetries") val maxRetries: Int,
-    @get:JvmName("apiKey") val apiKey: String,
+    private val apiKey: String?,
+    private val adminApiKey: String?,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -125,6 +126,10 @@ private constructor(
      * Defaults to the production environment: `https://api.openai.com/v1`.
      */
     fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
+
+    fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
+
+    fun adminApiKey(): Optional<String> = Optional.ofNullable(adminApiKey)
 
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
@@ -144,7 +149,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -173,6 +177,7 @@ private constructor(
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
         private var apiKey: String? = null
+        private var adminApiKey: String? = null
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
@@ -192,6 +197,7 @@ private constructor(
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             apiKey = clientOptions.apiKey
+            adminApiKey = clientOptions.adminApiKey
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
@@ -315,7 +321,15 @@ private constructor(
          */
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
-        fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
+        fun apiKey(apiKey: String?) = apply { this.apiKey = apiKey }
+
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
+
+        fun adminApiKey(adminApiKey: String?) = apply { this.adminApiKey = adminApiKey }
+
+        /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
+        fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
 
         fun organization(organization: String?) = apply { this.organization = organization }
 
@@ -422,7 +436,8 @@ private constructor(
          *
          * |Setter         |System property       |Environment variable   |Required|Default value                |
          * |---------------|----------------------|-----------------------|--------|-----------------------------|
-         * |`apiKey`       |`openai.apiKey`       |`OPENAI_API_KEY`       |true    |-                            |
+         * |`apiKey`       |`openai.apiKey`       |`OPENAI_API_KEY`       |false   |-                            |
+         * |`adminApiKey`  |`openai.adminKey`     |`OPENAI_ADMIN_KEY`     |false   |-                            |
          * |`organization` |`openai.orgId`        |`OPENAI_ORG_ID`        |false   |-                            |
          * |`project`      |`openai.projectId`    |`OPENAI_PROJECT_ID`    |false   |-                            |
          * |`webhookSecret`|`openai.webhookSecret`|`OPENAI_WEBHOOK_SECRET`|false   |-                            |
@@ -436,6 +451,9 @@ private constructor(
             }
             (System.getProperty("openai.apiKey") ?: System.getenv("OPENAI_API_KEY"))?.let {
                 apiKey(it)
+            }
+            (System.getProperty("openai.adminKey") ?: System.getenv("OPENAI_ADMIN_KEY"))?.let {
+                adminApiKey(it)
             }
             (System.getProperty("openai.orgId") ?: System.getenv("OPENAI_ORG_ID"))?.let {
                 organization(it)
@@ -463,7 +481,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -489,7 +506,6 @@ private constructor(
                         )
                     )
             val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
-            val apiKey = checkRequired("apiKey", apiKey)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -506,11 +522,6 @@ private constructor(
             queryParams.replaceAll(this.queryParams.build())
             organization?.let { headers.replace("OpenAI-Organization", it) }
             project?.let { headers.replace("OpenAI-Project", it) }
-            apiKey.let {
-                if (!it.isEmpty()) {
-                    headers.replace("Authorization", "Bearer $it")
-                }
-            }
 
             return ClientOptions(
                 httpClient,
@@ -532,6 +543,7 @@ private constructor(
                 timeout,
                 maxRetries,
                 apiKey,
+                adminApiKey,
                 organization,
                 project,
                 webhookSecret,
@@ -553,5 +565,25 @@ private constructor(
         httpClient.close()
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
         sleeper.close()
+    }
+
+    @JvmSynthetic
+    internal fun securityHeaders(security: SecurityOptions): Headers {
+        val headers = Headers.builder()
+        if (security.bearerAuth) {
+            apiKey?.let {
+                if (!it.isEmpty()) {
+                    headers.replace("Authorization", "Bearer $it")
+                }
+            }
+        }
+        if (security.adminApiKeyAuth) {
+            adminApiKey?.let {
+                if (!it.isEmpty()) {
+                    headers.replace("Authorization", "Bearer $it")
+                }
+            }
+        }
+        return headers.build()
     }
 }

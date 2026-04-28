@@ -19,6 +19,7 @@ internal class StepServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val stepService = client.beta().threads().runs().steps()
 
@@ -41,6 +42,7 @@ internal class StepServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val stepService = client.beta().threads().runs().steps()
 

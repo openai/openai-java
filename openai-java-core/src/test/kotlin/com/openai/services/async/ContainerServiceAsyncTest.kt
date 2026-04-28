@@ -19,6 +19,7 @@ internal class ContainerServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val containerServiceAsync = client.containers()
 
@@ -49,6 +50,7 @@ internal class ContainerServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val containerServiceAsync = client.containers()
 
@@ -64,6 +66,7 @@ internal class ContainerServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val containerServiceAsync = client.containers()
 
@@ -79,6 +82,7 @@ internal class ContainerServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val containerServiceAsync = client.containers()
 
