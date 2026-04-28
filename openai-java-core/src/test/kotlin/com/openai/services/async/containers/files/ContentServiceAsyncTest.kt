@@ -27,6 +27,7 @@ internal class ContentServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val contentServiceAsync = client.containers().files().content()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))

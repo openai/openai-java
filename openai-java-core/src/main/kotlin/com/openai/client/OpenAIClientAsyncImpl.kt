@@ -4,6 +4,8 @@ package com.openai.client
 
 import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
+import com.openai.services.async.AdminServiceAsync
+import com.openai.services.async.AdminServiceAsyncImpl
 import com.openai.services.async.AudioServiceAsync
 import com.openai.services.async.AudioServiceAsyncImpl
 import com.openai.services.async.BatchServiceAsync
@@ -121,6 +123,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         UploadServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val admin: AdminServiceAsync by lazy {
+        AdminServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val responses: ResponseServiceAsync by lazy {
         ResponseServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -201,6 +207,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     /** Use Uploads to upload large files in multiple parts. */
     override fun uploads(): UploadServiceAsync = uploads
 
+    override fun admin(): AdminServiceAsync = admin
+
     override fun responses(): ResponseServiceAsync = responses
 
     override fun realtime(): RealtimeServiceAsync = realtime
@@ -280,6 +288,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         private val uploads: UploadServiceAsync.WithRawResponse by lazy {
             UploadServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val admin: AdminServiceAsync.WithRawResponse by lazy {
+            AdminServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val responses: ResponseServiceAsync.WithRawResponse by lazy {
@@ -363,6 +375,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         /** Use Uploads to upload large files in multiple parts. */
         override fun uploads(): UploadServiceAsync.WithRawResponse = uploads
+
+        override fun admin(): AdminServiceAsync.WithRawResponse = admin
 
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 

@@ -42,6 +42,7 @@ internal class ServiceParamsTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
     }
 

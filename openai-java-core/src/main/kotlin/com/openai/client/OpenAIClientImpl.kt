@@ -4,6 +4,8 @@ package com.openai.client
 
 import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
+import com.openai.services.blocking.AdminService
+import com.openai.services.blocking.AdminServiceImpl
 import com.openai.services.blocking.AudioService
 import com.openai.services.blocking.AudioServiceImpl
 import com.openai.services.blocking.BatchService
@@ -107,6 +109,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     private val uploads: UploadService by lazy { UploadServiceImpl(clientOptionsWithUserAgent) }
 
+    private val admin: AdminService by lazy { AdminServiceImpl(clientOptionsWithUserAgent) }
+
     private val responses: ResponseService by lazy {
         ResponseServiceImpl(clientOptionsWithUserAgent)
     }
@@ -182,6 +186,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     /** Use Uploads to upload large files in multiple parts. */
     override fun uploads(): UploadService = uploads
+
+    override fun admin(): AdminService = admin
 
     override fun responses(): ResponseService = responses
 
@@ -262,6 +268,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         private val uploads: UploadService.WithRawResponse by lazy {
             UploadServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val admin: AdminService.WithRawResponse by lazy {
+            AdminServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val responses: ResponseService.WithRawResponse by lazy {
@@ -345,6 +355,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         /** Use Uploads to upload large files in multiple parts. */
         override fun uploads(): UploadService.WithRawResponse = uploads
+
+        override fun admin(): AdminService.WithRawResponse = admin
 
         override fun responses(): ResponseService.WithRawResponse = responses
 

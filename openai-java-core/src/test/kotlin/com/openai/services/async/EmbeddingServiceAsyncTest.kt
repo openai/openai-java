@@ -18,6 +18,7 @@ internal class EmbeddingServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val embeddingServiceAsync = client.embeddings()
 

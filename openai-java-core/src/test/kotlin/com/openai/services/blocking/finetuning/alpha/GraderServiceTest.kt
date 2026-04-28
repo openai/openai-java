@@ -20,6 +20,7 @@ internal class GraderServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val graderService = client.fineTuning().alpha().graders()
 
@@ -48,6 +49,7 @@ internal class GraderServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val graderService = client.fineTuning().alpha().graders()
 

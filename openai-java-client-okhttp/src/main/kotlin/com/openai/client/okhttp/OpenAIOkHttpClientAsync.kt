@@ -274,7 +274,15 @@ class OpenAIOkHttpClientAsync private constructor() {
          */
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
 
-        fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
+        fun apiKey(apiKey: String?) = apply { clientOptions.apiKey(apiKey) }
+
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
+
+        fun adminApiKey(adminApiKey: String?) = apply { clientOptions.adminApiKey(adminApiKey) }
+
+        /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
+        fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
 
         fun credential(credential: Credential) = apply { clientOptions.credential(credential) }
 

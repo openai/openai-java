@@ -76,8 +76,8 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -95,8 +95,8 @@ Configure the client using system properties or environment variables:
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 ```
 
@@ -108,6 +108,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
     .apiKey("My API Key")
+    .adminApiKey("My Admin API Key")
     .build();
 ```
 
@@ -118,8 +119,8 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
-    // Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-    // Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+    // Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+    // Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -129,7 +130,8 @@ See this table for the available options:
 
 | Setter          | System property        | Environment variable    | Required | Default value                 |
 | --------------- | ---------------------- | ----------------------- | -------- | ----------------------------- |
-| `apiKey`        | `openai.apiKey`        | `OPENAI_API_KEY`        | true     | -                             |
+| `apiKey`        | `openai.apiKey`        | `OPENAI_API_KEY`        | false    | -                             |
+| `adminApiKey`   | `openai.adminKey`      | `OPENAI_ADMIN_KEY`      | false    | -                             |
 | `organization`  | `openai.orgId`         | `OPENAI_ORG_ID`         | false    | -                             |
 | `project`       | `openai.projectId`     | `OPENAI_PROJECT_ID`     | false    | -                             |
 | `webhookSecret` | `openai.webhookSecret` | `OPENAI_WEBHOOK_SECRET` | false    | -                             |
@@ -259,8 +261,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -280,8 +282,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -1443,6 +1445,7 @@ The [client's environment variable options](#client-configuration) can be config
 ```properties
 openai.base-url=https://api.openai.com/v1
 openai.api-key=My API Key
+openai.admin-key=My Admin API Key
 openai.org-id=My Organization
 openai.project-id=My Project
 openai.webhook-secret=My Webhook Secret
@@ -1454,6 +1457,7 @@ openai.webhook-secret=My Webhook Secret
 openai:
   base-url: https://api.openai.com/v1
   api-key: My API Key
+  admin-key: My Admin API Key
   org-id: My Organization
   project-id: My Project
   webhook-secret: My Webhook Secret

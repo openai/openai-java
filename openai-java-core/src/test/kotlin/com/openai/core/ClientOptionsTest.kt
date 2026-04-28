@@ -24,12 +24,87 @@ internal class ClientOptionsTest {
     private val httpClient = mock<HttpClient>()
 
     @Test
+    fun build_withApiKey_success() {
+        val clientOptions =
+            ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
+
+        assertThat(
+                clientOptions
+                    .securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer My API Key")
+    }
+
+    @Test
+    fun build_withApiKeyAndAdminApiKey_usesRouteSpecificAuth() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+
+        assertThat(
+                clientOptions
+                    .securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer My API Key")
+        assertThat(
+                clientOptions
+                    .securityHeaders(SecurityOptions.builder().adminApiKeyAuth(true).build())
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer My Admin API Key")
+    }
+
+    @Test
+    fun build_withAdminApiKeyOnly_success() {
+        val clientOptions =
+            ClientOptions.builder().httpClient(httpClient).adminApiKey("My Admin API Key").build()
+
+        assertThat(clientOptions.apiKey()).isEmpty()
+        assertThat(clientOptions.adminApiKey()).contains("My Admin API Key")
+        assertThat(
+                clientOptions
+                    .securityHeaders(SecurityOptions.builder().adminApiKeyAuth(true).build())
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer My Admin API Key")
+    }
+
+    @Test
+    fun build_withAdminApiKeyOnly_bearerAuthThrows() {
+        val clientOptions =
+            ClientOptions.builder().httpClient(httpClient).adminApiKey("My Admin API Key").build()
+
+        val thrown =
+            assertThrows<IllegalStateException> {
+                clientOptions.securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+            }
+
+        assertThat(thrown.message).contains("requires apiKey or workloadIdentity")
+    }
+
+    @Test
+    fun build_withoutCredentials_throws() {
+        val thrown =
+            assertThrows<IllegalStateException> {
+                ClientOptions.builder().httpClient(httpClient).build()
+            }
+
+        assertThat(thrown.message).contains("At least one credential source")
+    }
+
+    @Test
     fun putHeader_canOverwriteDefaultHeader() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(httpClient)
                 .putHeader("User-Agent", "My User Agent")
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
 
         assertThat(clientOptions.headers.values("User-Agent")).containsExactly("My User Agent")
@@ -42,6 +117,7 @@ internal class ClientOptionsTest {
                 .httpClient(httpClient)
                 .organization("My Organization")
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
 
         clientOptions = clientOptions.toBuilder().organization("another My Organization").build()
@@ -51,20 +127,13 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun toBuilder_bearerAuthCanBeUpdated() {
-        var clientOptions =
-            ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
-
-        clientOptions = clientOptions.toBuilder().apiKey("another My API Key").build()
-
-        assertThat(clientOptions.headers.values("Authorization"))
-            .containsExactly("Bearer another My API Key")
-    }
-
-    @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
         var clientOptions =
-            ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
         verify(httpClient, never()).close()
 
         // Overwrite the `clientOptions` variable so that the original `ClientOptions` is GC'd.

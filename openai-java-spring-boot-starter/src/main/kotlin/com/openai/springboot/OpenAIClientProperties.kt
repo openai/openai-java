@@ -12,6 +12,7 @@ internal data class OpenAIClientProperties
 constructor(
     @Name("base-url") val baseUrl: String? = null,
     @Name("api-key") val apiKey: String? = null,
+    @Name("admin-key") val adminApiKey: String? = null,
     @Name("org-id") val organization: String? = null,
     @Name("project-id") val project: String? = null,
     @Name("webhook-secret") val webhookSecret: String? = null,
