@@ -35,6 +35,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -59,6 +60,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -74,6 +76,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -89,6 +92,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -104,6 +108,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -125,6 +130,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
@@ -147,6 +153,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -168,6 +175,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -190,6 +198,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 
@@ -205,6 +214,7 @@ internal class VideoServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val videoServiceAsync = client.videos()
 

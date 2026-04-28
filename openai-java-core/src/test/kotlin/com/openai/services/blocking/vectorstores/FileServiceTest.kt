@@ -23,6 +23,7 @@ internal class FileServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileService = client.vectorStores().files()
 
@@ -49,6 +50,7 @@ internal class FileServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileService = client.vectorStores().files()
 
@@ -69,6 +71,7 @@ internal class FileServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileService = client.vectorStores().files()
 
@@ -94,6 +97,7 @@ internal class FileServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileService = client.vectorStores().files()
 
@@ -108,6 +112,7 @@ internal class FileServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileService = client.vectorStores().files()
 
@@ -128,6 +133,7 @@ internal class FileServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileService = client.vectorStores().files()
 

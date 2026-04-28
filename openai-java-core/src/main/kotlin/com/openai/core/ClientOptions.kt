@@ -117,6 +117,8 @@ private constructor(
      * Defaults to 2.
      */
     @get:JvmName("maxRetries") val maxRetries: Int,
+    private val apiKey: String?,
+    private val adminApiKey: String?,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     @get:JvmName("azureUrlPathMode") val azureUrlPathMode: AzureUrlPathMode,
@@ -138,6 +140,10 @@ private constructor(
      */
     fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
 
+    fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
+
+    fun adminApiKey(): Optional<String> = Optional.ofNullable(adminApiKey)
+
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
     fun project(): Optional<String> = Optional.ofNullable(project)
@@ -156,7 +162,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey() // or .workloadIdentity()
+         *
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -184,9 +190,11 @@ private constructor(
         private var responseValidation: Boolean = false
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
+        private var apiKey: String? = null
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
         private var azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.AUTO
+        private var adminApiKey: String? = null
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
@@ -206,6 +214,8 @@ private constructor(
             responseValidation = clientOptions.responseValidation
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
+            apiKey = clientOptions.apiKey
+            adminApiKey = clientOptions.adminApiKey
             credential = clientOptions.credential
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
@@ -332,9 +342,18 @@ private constructor(
          */
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
-        fun apiKey(apiKey: String) = apply {
-            this.credential = BearerTokenCredential.create(apiKey)
+        fun apiKey(apiKey: String?) = apply {
+            this.apiKey = apiKey
+            this.credential = apiKey?.let { BearerTokenCredential.create(it) }
         }
+
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
+
+        fun adminApiKey(adminApiKey: String?) = apply { this.adminApiKey = adminApiKey }
+
+        /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
+        fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
 
         fun credential(credential: Credential) = apply { this.credential = credential }
 
@@ -489,7 +508,8 @@ private constructor(
          *
          * |Setter         |System property       |Environment variable   |Required|Default value                |
          * |---------------|----------------------|-----------------------|--------|-----------------------------|
-         * |`apiKey`       |`openai.apiKey`       |`OPENAI_API_KEY`       |true    |-                            |
+         * |`apiKey`       |`openai.apiKey`       |`OPENAI_API_KEY`       |false   |-                            |
+         * |`adminApiKey`  |`openai.adminKey`     |`OPENAI_ADMIN_KEY`     |false   |-                            |
          * |`organization` |`openai.orgId`        |`OPENAI_ORG_ID`        |false   |-                            |
          * |`project`      |`openai.projectId`    |`OPENAI_PROJECT_ID`    |false   |-                            |
          * |`webhookSecret`|`openai.webhookSecret`|`OPENAI_WEBHOOK_SECRET`|false   |-                            |
@@ -512,6 +532,9 @@ private constructor(
             if (!openAIWebhookSecret.isNullOrEmpty()) {
                 webhookSecret(openAIWebhookSecret)
             }
+            (System.getProperty("openai.adminKey") ?: System.getenv("OPENAI_ADMIN_KEY"))?.let {
+                adminApiKey(it)
+            }
 
             when {
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
@@ -520,7 +543,7 @@ private constructor(
                     )
                 }
                 !openAIKey.isNullOrEmpty() -> {
-                    credential(BearerTokenCredential.create(openAIKey))
+                    apiKey(openAIKey)
                     organization(openAIOrgId)
                     project(openAIProjectId)
                 }
@@ -547,7 +570,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey() // or .workloadIdentity()
+         *
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -574,8 +597,6 @@ private constructor(
                     )
             val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
 
-            val credential = effectiveCredential(httpClient, jsonMapper)
-
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
             headers.put("X-Stainless-Lang", "java")
@@ -588,18 +609,6 @@ private constructor(
             headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
             // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
-            when (credential) {
-                is AzureApiKeyCredential -> {
-                    headers.replace("api-key", credential.apiKey())
-                }
-                is BearerTokenCredential -> {
-                    headers.replace("Authorization", "Bearer ${credential.token()}")
-                }
-                is WorkloadIdentityCredential -> {}
-                else -> {
-                    throw IllegalArgumentException("Invalid credential type")
-                }
-            }
 
             baseUrl?.let {
                 when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
@@ -622,6 +631,8 @@ private constructor(
             queryParams.replaceAll(this.queryParams.build())
             organization?.let { headers.replace("OpenAI-Organization", it) }
             project?.let { headers.replace("OpenAI-Project", it) }
+
+            val credential = effectiveCredential(httpClient, jsonMapper)
 
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
@@ -654,6 +665,8 @@ private constructor(
                 responseValidation,
                 timeout,
                 maxRetries,
+                apiKey,
+                adminApiKey,
                 credential,
                 azureServiceVersion,
                 azureUrlPathMode,
@@ -678,5 +691,25 @@ private constructor(
         httpClient.close()
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
         sleeper.close()
+    }
+
+    @JvmSynthetic
+    internal fun securityHeaders(security: SecurityOptions): Headers {
+        val headers = Headers.builder()
+        if (security.bearerAuth) {
+            apiKey?.let {
+                if (!it.isEmpty()) {
+                    headers.replace("Authorization", "Bearer $it")
+                }
+            }
+        }
+        if (security.adminApiKeyAuth) {
+            adminApiKey?.let {
+                if (!it.isEmpty()) {
+                    headers.replace("Authorization", "Bearer $it")
+                }
+            }
+        }
+        return headers.build()
     }
 }

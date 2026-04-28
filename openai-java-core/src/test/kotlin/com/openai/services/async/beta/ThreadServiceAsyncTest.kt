@@ -24,6 +24,7 @@ internal class ThreadServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
 
@@ -97,6 +98,7 @@ internal class ThreadServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
 
@@ -112,6 +114,7 @@ internal class ThreadServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
 
@@ -151,6 +154,7 @@ internal class ThreadServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
 
@@ -166,6 +170,7 @@ internal class ThreadServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
 
@@ -287,6 +292,7 @@ internal class ThreadServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
 

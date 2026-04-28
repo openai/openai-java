@@ -22,6 +22,7 @@ internal class FileBatchServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileBatchService = client.vectorStores().fileBatches()
 
@@ -59,6 +60,7 @@ internal class FileBatchServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileBatchService = client.vectorStores().fileBatches()
 
@@ -79,6 +81,7 @@ internal class FileBatchServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileBatchService = client.vectorStores().fileBatches()
 
@@ -99,6 +102,7 @@ internal class FileBatchServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val fileBatchService = client.vectorStores().fileBatches()
 

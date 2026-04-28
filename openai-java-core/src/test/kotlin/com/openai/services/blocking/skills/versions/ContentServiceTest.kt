@@ -27,6 +27,7 @@ internal class ContentServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val contentService = client.skills().versions().content()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))

@@ -21,6 +21,7 @@ internal class ImageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val imageService = client.images()
 
@@ -45,6 +46,7 @@ internal class ImageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val imageService = client.images()
 
@@ -78,6 +80,7 @@ internal class ImageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val imageService = client.images()
 
@@ -114,6 +117,7 @@ internal class ImageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val imageService = client.images()
 
@@ -146,6 +150,7 @@ internal class ImageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val imageService = client.images()
 
