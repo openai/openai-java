@@ -315,7 +315,7 @@ internal class ToolTest {
                 )
                 .requireApproval(Tool.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS)
                 .serverDescription("server_description")
-                .serverUrl("server_url")
+                .serverUrl("https://example.com")
                 .build()
 
         val tool = Tool.ofMcp(mcp)
@@ -355,7 +355,7 @@ internal class ToolTest {
                     )
                     .requireApproval(Tool.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS)
                     .serverDescription("server_description")
-                    .serverUrl("server_url")
+                    .serverUrl("https://example.com")
                     .build()
             )
 

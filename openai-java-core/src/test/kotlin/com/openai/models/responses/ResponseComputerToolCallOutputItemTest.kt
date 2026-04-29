@@ -19,7 +19,7 @@ internal class ResponseComputerToolCallOutputItemTest {
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
-                        .imageUrl("image_url")
+                        .imageUrl("https://example.com")
                         .build()
                 )
                 .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
@@ -39,7 +39,7 @@ internal class ResponseComputerToolCallOutputItemTest {
             .isEqualTo(
                 ResponseComputerToolCallOutputScreenshot.builder()
                     .fileId("file_id")
-                    .imageUrl("image_url")
+                    .imageUrl("https://example.com")
                     .build()
             )
         assertThat(responseComputerToolCallOutputItem.status())
@@ -65,7 +65,7 @@ internal class ResponseComputerToolCallOutputItemTest {
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
-                        .imageUrl("image_url")
+                        .imageUrl("https://example.com")
                         .build()
                 )
                 .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)

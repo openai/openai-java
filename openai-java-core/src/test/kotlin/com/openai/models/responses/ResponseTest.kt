@@ -20,7 +20,7 @@ internal class ResponseTest {
         val response =
             Response.builder()
                 .id("id")
-                .createdAt(0.0)
+                .createdAt(0L)
                 .error(
                     ResponseError.builder()
                         .code(ResponseError.Code.SERVER_ERROR)
@@ -90,7 +90,7 @@ internal class ResponseTest {
                 )
                 .topP(1.0)
                 .background(true)
-                .completedAt(0.0)
+                .completedAt(0L)
                 .conversation(Response.Conversation.builder().id("id").build())
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
@@ -143,7 +143,7 @@ internal class ResponseTest {
                 .build()
 
         assertThat(response.id()).isEqualTo("id")
-        assertThat(response.createdAt()).isEqualTo(0.0)
+        assertThat(response.createdAt()).isEqualTo(0L)
         assertThat(response.error())
             .contains(
                 ResponseError.builder()
@@ -223,7 +223,7 @@ internal class ResponseTest {
             )
         assertThat(response.topP()).contains(1.0)
         assertThat(response.background()).contains(true)
-        assertThat(response.completedAt()).contains(0.0)
+        assertThat(response.completedAt()).contains(0L)
         assertThat(response.conversation())
             .contains(Response.Conversation.builder().id("id").build())
         assertThat(response.maxOutputTokens()).contains(0L)
@@ -287,7 +287,7 @@ internal class ResponseTest {
         val response =
             Response.builder()
                 .id("id")
-                .createdAt(0.0)
+                .createdAt(0L)
                 .error(
                     ResponseError.builder()
                         .code(ResponseError.Code.SERVER_ERROR)
@@ -357,7 +357,7 @@ internal class ResponseTest {
                 )
                 .topP(1.0)
                 .background(true)
-                .completedAt(0.0)
+                .completedAt(0L)
                 .conversation(Response.Conversation.builder().id("id").build())
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)

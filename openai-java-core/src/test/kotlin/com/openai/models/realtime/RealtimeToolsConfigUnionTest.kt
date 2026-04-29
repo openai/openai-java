@@ -70,7 +70,7 @@ internal class RealtimeToolsConfigUnionTest {
                     RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
-                .serverUrl("server_url")
+                .serverUrl("https://example.com")
                 .build()
 
         val realtimeToolsConfigUnion = RealtimeToolsConfigUnion.ofMcp(mcp)
@@ -99,7 +99,7 @@ internal class RealtimeToolsConfigUnionTest {
                         RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS
                     )
                     .serverDescription("server_description")
-                    .serverUrl("server_url")
+                    .serverUrl("https://example.com")
                     .build()
             )
 

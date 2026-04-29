@@ -137,7 +137,7 @@ internal class ProGuardCompatibilityTest {
                                                 .endIndex(0L)
                                                 .startIndex(0L)
                                                 .title("title")
-                                                .url("url")
+                                                .url("https://example.com")
                                                 .build()
                                         )
                                         .build()

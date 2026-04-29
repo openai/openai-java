@@ -20,7 +20,7 @@ internal class ResponseFunctionWebSearchTest {
                         .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
@@ -37,7 +37,7 @@ internal class ResponseFunctionWebSearchTest {
                         .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
@@ -59,7 +59,7 @@ internal class ResponseFunctionWebSearchTest {
                         .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
