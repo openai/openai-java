@@ -216,7 +216,7 @@ private constructor(
             maxRetries = clientOptions.maxRetries
             apiKey = clientOptions.apiKey
             adminApiKey = clientOptions.adminApiKey
-            credential = clientOptions.credential
+            credential = clientOptions.credential.takeUnless { it === AdminApiKeyOnlyCredential }
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
             organization = clientOptions.organization
@@ -477,6 +477,7 @@ private constructor(
         ): Credential {
             if (
                 credential != null &&
+                    credential !== AdminApiKeyOnlyCredential &&
                     credential !is WorkloadIdentityCredential &&
                     workloadIdentity != null
             ) {
@@ -493,10 +494,11 @@ private constructor(
                             jsonMapper = jsonMapper,
                         )
                     )
-                credential != null -> credential!!
+                credential != null && credential !== AdminApiKeyOnlyCredential -> credential!!
+                !adminApiKey.isNullOrEmpty() -> AdminApiKeyOnlyCredential
                 else ->
                     throw IllegalStateException(
-                        "Either credential (apiKey) or workloadIdentity must be specified"
+                        "At least one credential source must be specified: credential (apiKey), workloadIdentity, or adminApiKey"
                     )
             }
         }
@@ -696,10 +698,26 @@ private constructor(
     @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {
         val headers = Headers.builder()
+        var isSatisfied = false
+
         if (security.bearerAuth) {
-            apiKey?.let {
-                if (!it.isEmpty()) {
-                    headers.replace("Authorization", "Bearer $it")
+            when {
+                !apiKey.isNullOrEmpty() -> {
+                    headers.replace("Authorization", "Bearer $apiKey")
+                    isSatisfied = true
+                }
+                credential is BearerTokenCredential -> {
+                    val token = credential.token()
+                    if (!token.isEmpty()) {
+                        headers.replace("Authorization", "Bearer $token")
+                        isSatisfied = true
+                    }
+                }
+                credential is WorkloadIdentityCredential -> {
+                    isSatisfied = true
+                }
+                credential !== AdminApiKeyOnlyCredential -> {
+                    isSatisfied = true
                 }
             }
         }
@@ -707,9 +725,24 @@ private constructor(
             adminApiKey?.let {
                 if (!it.isEmpty()) {
                     headers.replace("Authorization", "Bearer $it")
+                    isSatisfied = true
                 }
             }
         }
+
+        if (!isSatisfied && (security.bearerAuth || security.adminApiKeyAuth)) {
+            throw IllegalStateException(
+                when {
+                    security.bearerAuth && security.adminApiKeyAuth ->
+                        "This request requires apiKey, workloadIdentity, or adminApiKey"
+                    security.bearerAuth -> "This request requires apiKey or workloadIdentity"
+                    else -> "This request requires adminApiKey"
+                }
+            )
+        }
+
         return headers.build()
     }
 }
+
+private object AdminApiKeyOnlyCredential : Credential
