@@ -244,7 +244,12 @@ internal class ClientOptionsTest {
         val updated = original.toBuilder().workloadIdentity(null).apiKey("new-api-key").build()
 
         assertThat(updated.credential).isNotInstanceOf(WorkloadIdentityCredential::class.java)
-        assertThat(updated.headers.values("Authorization")).containsExactly("Bearer new-api-key")
+        assertThat(
+                updated
+                    .securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer new-api-key")
     }
 
     @Test
