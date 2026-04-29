@@ -1,6 +1,10 @@
 package com.openai.helpers
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonNull
+import com.openai.core.http.StreamResponse
+import com.openai.core.http.map
+import com.openai.core.jsonMapper
 import com.openai.models.ResponsesModel
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCompletedEvent
@@ -12,6 +16,7 @@ import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputMessage
 import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseStreamEvent
+import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -62,16 +67,51 @@ internal class ResponseAccumulatorTest {
     }
 
     @Test
-    fun accumulateAfterCompleted() {
+    fun accumulateAfterCompletedIgnoresPostCompletionEvents() {
         val accumulator = ResponseAccumulator.create()
 
         accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
 
+        assertThatNoException().isThrownBy {
+            accumulator.accumulate(responseRateLimitsUpdatedEvent())
+        }
+        assertThat(accumulator.response().id()).isEqualTo("response-id")
+    }
+
+    @Test
+    fun responseValidationRejectsUnknownPostCompletionEventBeforeAccumulation() {
+        val accumulator = ResponseAccumulator.create()
+
+        accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
+        val streamResponse = streamResponseOf(responseRateLimitsUpdatedEvent())
+        val validatedStreamResponse = streamResponse.map { it.validate() }
+
+        // This mirrors the realistic client path when response validation is enabled:
+        //
+        // OpenAIClient client = OpenAIOkHttpClient.builder()
+        //     .fromEnv()
+        //     .responseValidation(true)
+        //     .build();
+        //
+        // ResponseCreateParams params = ResponseCreateParams.builder()
+        //     .input("example input")
+        //     .build();
+        //
+        // ResponseAccumulator accumulator = ResponseAccumulator.create();
+        //
+        // try (StreamResponse<ResponseStreamEvent> stream =
+        //         client.responses().createStreaming(params)) {
+        //     stream.stream().forEach(accumulator::accumulate);
+        // }
+        //
+        // In that client configuration, generated service code validates each streamed event with
+        // `streamResponse.map { it.validate() }` before user code receives it. So an unknown
+        // post-completion event can throw during validation before `ResponseAccumulator` gets the
+        // chance to ignore it.
         assertThatThrownBy {
-                accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
+                validatedStreamResponse.stream().forEach { accumulator.accumulate(it) }
             }
-            .isExactlyInstanceOf(IllegalStateException::class.java)
-            .hasMessage("Response has already been completed.")
+            .hasMessageStartingWith("Unknown ResponseStreamEvent")
     }
 
     @Test
@@ -133,6 +173,20 @@ internal class ResponseAccumulatorTest {
 
     private fun responseIncompleteEvent() =
         ResponseIncompleteEvent.builder().response(response()).sequenceNumber(1L).build()
+
+    private fun responseRateLimitsUpdatedEvent(): ResponseStreamEvent =
+        jsonMapper()
+            .readValue(
+                """{"type":"response.rate_limits.updated","sequence_number":2,"rate_limits":[]}""",
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+    private fun streamResponseOf(event: ResponseStreamEvent): StreamResponse<ResponseStreamEvent> =
+        object : StreamResponse<ResponseStreamEvent> {
+            override fun stream(): Stream<ResponseStreamEvent> = Stream.of(event)
+
+            override fun close() {}
+        }
 
     private fun response() =
         Response.builder()
