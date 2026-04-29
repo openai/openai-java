@@ -3,6 +3,7 @@
 package com.openai.services.blocking.admin
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.admin.organization.AuditLogService
 import java.util.function.Consumer
 
 interface OrganizationService {
@@ -19,6 +20,9 @@ interface OrganizationService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationService
 
+    /** List user actions and configuration changes within this organization. */
+    fun auditLogs(): AuditLogService
+
     /**
      * A view of [OrganizationService] that provides access to raw HTTP responses for each method.
      */
@@ -32,5 +36,8 @@ interface OrganizationService {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationService.WithRawResponse
+
+        /** List user actions and configuration changes within this organization. */
+        fun auditLogs(): AuditLogService.WithRawResponse
     }
 }

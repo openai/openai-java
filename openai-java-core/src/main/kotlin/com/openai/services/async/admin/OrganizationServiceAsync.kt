@@ -3,6 +3,7 @@
 package com.openai.services.async.admin
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.admin.organization.AuditLogServiceAsync
 import java.util.function.Consumer
 
 interface OrganizationServiceAsync {
@@ -19,6 +20,9 @@ interface OrganizationServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync
 
+    /** List user actions and configuration changes within this organization. */
+    fun auditLogs(): AuditLogServiceAsync
+
     /**
      * A view of [OrganizationServiceAsync] that provides access to raw HTTP responses for each
      * method.
@@ -33,5 +37,8 @@ interface OrganizationServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationServiceAsync.WithRawResponse
+
+        /** List user actions and configuration changes within this organization. */
+        fun auditLogs(): AuditLogServiceAsync.WithRawResponse
     }
 }
