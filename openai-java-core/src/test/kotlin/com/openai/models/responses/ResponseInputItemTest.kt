@@ -462,7 +462,7 @@ internal class ResponseInputItemTest {
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
-                        .imageUrl("image_url")
+                        .imageUrl("https://example.com")
                         .build()
                 )
                 .id("cuo_123")
@@ -518,7 +518,7 @@ internal class ResponseInputItemTest {
                     .output(
                         ResponseComputerToolCallOutputScreenshot.builder()
                             .fileId("file_id")
-                            .imageUrl("image_url")
+                            .imageUrl("https://example.com")
                             .build()
                     )
                     .id("cuo_123")
@@ -553,7 +553,7 @@ internal class ResponseInputItemTest {
                         .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
@@ -606,7 +606,7 @@ internal class ResponseInputItemTest {
                             .addQuery("string")
                             .addSource(
                                 ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                    .url("url")
+                                    .url("https://example.com")
                                     .build()
                             )
                             .build()

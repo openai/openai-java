@@ -14,16 +14,16 @@ internal class TranscriptionTextSegmentEventTest {
         val transcriptionTextSegmentEvent =
             TranscriptionTextSegmentEvent.builder()
                 .id("id")
-                .end(0.0f)
+                .end(0.0)
                 .speaker("speaker")
-                .start(0.0f)
+                .start(0.0)
                 .text("text")
                 .build()
 
         assertThat(transcriptionTextSegmentEvent.id()).isEqualTo("id")
-        assertThat(transcriptionTextSegmentEvent.end()).isEqualTo(0.0f)
+        assertThat(transcriptionTextSegmentEvent.end()).isEqualTo(0.0)
         assertThat(transcriptionTextSegmentEvent.speaker()).isEqualTo("speaker")
-        assertThat(transcriptionTextSegmentEvent.start()).isEqualTo(0.0f)
+        assertThat(transcriptionTextSegmentEvent.start()).isEqualTo(0.0)
         assertThat(transcriptionTextSegmentEvent.text()).isEqualTo("text")
     }
 
@@ -33,9 +33,9 @@ internal class TranscriptionTextSegmentEventTest {
         val transcriptionTextSegmentEvent =
             TranscriptionTextSegmentEvent.builder()
                 .id("id")
-                .end(0.0f)
+                .end(0.0)
                 .speaker("speaker")
-                .start(0.0f)
+                .start(0.0)
                 .text("text")
                 .build()
 

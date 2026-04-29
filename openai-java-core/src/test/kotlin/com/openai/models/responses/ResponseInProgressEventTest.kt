@@ -21,7 +21,7 @@ internal class ResponseInProgressEventTest {
                 .response(
                     Response.builder()
                         .id("id")
-                        .createdAt(0.0)
+                        .createdAt(0L)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
@@ -91,7 +91,7 @@ internal class ResponseInProgressEventTest {
                         )
                         .topP(1.0)
                         .background(true)
-                        .completedAt(0.0)
+                        .completedAt(0L)
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
@@ -154,7 +154,7 @@ internal class ResponseInProgressEventTest {
             .isEqualTo(
                 Response.builder()
                     .id("id")
-                    .createdAt(0.0)
+                    .createdAt(0L)
                     .error(
                         ResponseError.builder()
                             .code(ResponseError.Code.SERVER_ERROR)
@@ -224,7 +224,7 @@ internal class ResponseInProgressEventTest {
                     )
                     .topP(1.0)
                     .background(true)
-                    .completedAt(0.0)
+                    .completedAt(0L)
                     .conversation(Response.Conversation.builder().id("id").build())
                     .maxOutputTokens(0L)
                     .maxToolCalls(0L)
@@ -289,7 +289,7 @@ internal class ResponseInProgressEventTest {
                 .response(
                     Response.builder()
                         .id("id")
-                        .createdAt(0.0)
+                        .createdAt(0L)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
@@ -359,7 +359,7 @@ internal class ResponseInProgressEventTest {
                         )
                         .topP(1.0)
                         .background(true)
-                        .completedAt(0.0)
+                        .completedAt(0L)
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)

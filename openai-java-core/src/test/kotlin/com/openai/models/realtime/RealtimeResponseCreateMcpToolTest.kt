@@ -28,7 +28,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                     RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
-                .serverUrl("server_url")
+                .serverUrl("https://example.com")
                 .build()
 
         assertThat(realtimeResponseCreateMcpTool.serverLabel()).isEqualTo("server_label")
@@ -51,7 +51,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                 )
             )
         assertThat(realtimeResponseCreateMcpTool.serverDescription()).contains("server_description")
-        assertThat(realtimeResponseCreateMcpTool.serverUrl()).contains("server_url")
+        assertThat(realtimeResponseCreateMcpTool.serverUrl()).contains("https://example.com")
     }
 
     @Test
@@ -73,7 +73,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                     RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
-                .serverUrl("server_url")
+                .serverUrl("https://example.com")
                 .build()
 
         val roundtrippedRealtimeResponseCreateMcpTool =

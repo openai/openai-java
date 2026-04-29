@@ -14,16 +14,16 @@ internal class TranscriptionDiarizedSegmentTest {
         val transcriptionDiarizedSegment =
             TranscriptionDiarizedSegment.builder()
                 .id("id")
-                .end(0.0f)
+                .end(0.0)
                 .speaker("speaker")
-                .start(0.0f)
+                .start(0.0)
                 .text("text")
                 .build()
 
         assertThat(transcriptionDiarizedSegment.id()).isEqualTo("id")
-        assertThat(transcriptionDiarizedSegment.end()).isEqualTo(0.0f)
+        assertThat(transcriptionDiarizedSegment.end()).isEqualTo(0.0)
         assertThat(transcriptionDiarizedSegment.speaker()).isEqualTo("speaker")
-        assertThat(transcriptionDiarizedSegment.start()).isEqualTo(0.0f)
+        assertThat(transcriptionDiarizedSegment.start()).isEqualTo(0.0)
         assertThat(transcriptionDiarizedSegment.text()).isEqualTo("text")
     }
 
@@ -33,9 +33,9 @@ internal class TranscriptionDiarizedSegmentTest {
         val transcriptionDiarizedSegment =
             TranscriptionDiarizedSegment.builder()
                 .id("id")
-                .end(0.0f)
+                .end(0.0)
                 .speaker("speaker")
-                .start(0.0f)
+                .start(0.0)
                 .text("text")
                 .build()
 

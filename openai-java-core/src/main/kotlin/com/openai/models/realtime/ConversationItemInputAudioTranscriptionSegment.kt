@@ -21,11 +21,11 @@ class ConversationItemInputAudioTranscriptionSegment
 private constructor(
     private val id: JsonField<String>,
     private val contentIndex: JsonField<Long>,
-    private val end: JsonField<Float>,
+    private val end: JsonField<Double>,
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,
     private val speaker: JsonField<String>,
-    private val start: JsonField<Float>,
+    private val start: JsonField<Double>,
     private val text: JsonField<String>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -37,11 +37,11 @@ private constructor(
         @JsonProperty("content_index")
         @ExcludeMissing
         contentIndex: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("end") @ExcludeMissing end: JsonField<Float> = JsonMissing.of(),
+        @JsonProperty("end") @ExcludeMissing end: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("speaker") @ExcludeMissing speaker: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("start") @ExcludeMissing start: JsonField<Float> = JsonMissing.of(),
+        @JsonProperty("start") @ExcludeMissing start: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
     ) : this(id, contentIndex, end, eventId, itemId, speaker, start, text, type, mutableMapOf())
@@ -68,7 +68,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun end(): Float = end.getRequired("end")
+    fun end(): Double = end.getRequired("end")
 
     /**
      * The unique ID of the server event.
@@ -100,7 +100,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun start(): Float = start.getRequired("start")
+    fun start(): Double = start.getRequired("start")
 
     /**
      * The text for this segment.
@@ -144,7 +144,7 @@ private constructor(
      *
      * Unlike [end], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Float> = end
+    @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Double> = end
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -172,7 +172,7 @@ private constructor(
      *
      * Unlike [start], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Float> = start
+    @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Double> = start
 
     /**
      * Returns the raw JSON value of [text].
@@ -219,11 +219,11 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var contentIndex: JsonField<Long>? = null
-        private var end: JsonField<Float>? = null
+        private var end: JsonField<Double>? = null
         private var eventId: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
         private var speaker: JsonField<String>? = null
-        private var start: JsonField<Float>? = null
+        private var start: JsonField<Double>? = null
         private var text: JsonField<String>? = null
         private var type: JsonValue =
             JsonValue.from("conversation.item.input_audio_transcription.segment")
@@ -271,15 +271,15 @@ private constructor(
         fun contentIndex(contentIndex: JsonField<Long>) = apply { this.contentIndex = contentIndex }
 
         /** End time of the segment in seconds. */
-        fun end(end: Float) = end(JsonField.of(end))
+        fun end(end: Double) = end(JsonField.of(end))
 
         /**
          * Sets [Builder.end] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.end] with a well-typed [Float] value instead. This
+         * You should usually call [Builder.end] with a well-typed [Double] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun end(end: JsonField<Float>) = apply { this.end = end }
+        fun end(end: JsonField<Double>) = apply { this.end = end }
 
         /** The unique ID of the server event. */
         fun eventId(eventId: String) = eventId(JsonField.of(eventId))
@@ -315,15 +315,15 @@ private constructor(
         fun speaker(speaker: JsonField<String>) = apply { this.speaker = speaker }
 
         /** Start time of the segment in seconds. */
-        fun start(start: Float) = start(JsonField.of(start))
+        fun start(start: Double) = start(JsonField.of(start))
 
         /**
          * Sets [Builder.start] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.start] with a well-typed [Float] value instead. This
+         * You should usually call [Builder.start] with a well-typed [Double] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun start(start: JsonField<Float>) = apply { this.start = start }
+        fun start(start: JsonField<Double>) = apply { this.start = start }
 
         /** The text for this segment. */
         fun text(text: String) = text(JsonField.of(text))
