@@ -102,7 +102,10 @@ internal class EvalContentItemTest {
     @Test
     fun ofInputImage() {
         val inputImage =
-            EvalContentItem.InputImage.builder().imageUrl("image_url").detail("detail").build()
+            EvalContentItem.InputImage.builder()
+                .imageUrl("https://example.com")
+                .detail("detail")
+                .build()
 
         val evalContentItem = EvalContentItem.ofInputImage(inputImage)
 
@@ -118,7 +121,10 @@ internal class EvalContentItemTest {
         val jsonMapper = jsonMapper()
         val evalContentItem =
             EvalContentItem.ofInputImage(
-                EvalContentItem.InputImage.builder().imageUrl("image_url").detail("detail").build()
+                EvalContentItem.InputImage.builder()
+                    .imageUrl("https://example.com")
+                    .detail("detail")
+                    .build()
             )
 
         val roundtrippedEvalContentItem =

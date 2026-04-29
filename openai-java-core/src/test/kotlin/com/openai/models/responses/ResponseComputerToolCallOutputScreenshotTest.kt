@@ -14,11 +14,12 @@ internal class ResponseComputerToolCallOutputScreenshotTest {
         val responseComputerToolCallOutputScreenshot =
             ResponseComputerToolCallOutputScreenshot.builder()
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
                 .build()
 
         assertThat(responseComputerToolCallOutputScreenshot.fileId()).contains("file_id")
-        assertThat(responseComputerToolCallOutputScreenshot.imageUrl()).contains("image_url")
+        assertThat(responseComputerToolCallOutputScreenshot.imageUrl())
+            .contains("https://example.com")
     }
 
     @Test
@@ -27,7 +28,7 @@ internal class ResponseComputerToolCallOutputScreenshotTest {
         val responseComputerToolCallOutputScreenshot =
             ResponseComputerToolCallOutputScreenshot.builder()
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
                 .build()
 
         val roundtrippedResponseComputerToolCallOutputScreenshot =

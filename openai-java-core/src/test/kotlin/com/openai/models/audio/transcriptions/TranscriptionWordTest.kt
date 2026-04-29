@@ -11,19 +11,17 @@ internal class TranscriptionWordTest {
 
     @Test
     fun create() {
-        val transcriptionWord =
-            TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build()
+        val transcriptionWord = TranscriptionWord.builder().end(0.0).start(0.0).word("word").build()
 
-        assertThat(transcriptionWord.end()).isEqualTo(0.0f)
-        assertThat(transcriptionWord.start()).isEqualTo(0.0f)
+        assertThat(transcriptionWord.end()).isEqualTo(0.0)
+        assertThat(transcriptionWord.start()).isEqualTo(0.0)
         assertThat(transcriptionWord.word()).isEqualTo("word")
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionWord =
-            TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build()
+        val transcriptionWord = TranscriptionWord.builder().end(0.0).start(0.0).word("word").build()
 
         val roundtrippedTranscriptionWord =
             jsonMapper.readValue(

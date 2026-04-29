@@ -326,7 +326,7 @@ internal class ConversationItemTest {
                         .addQuery("string")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
@@ -376,7 +376,7 @@ internal class ConversationItemTest {
                             .addQuery("string")
                             .addSource(
                                 ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                    .url("url")
+                                    .url("https://example.com")
                                     .build()
                             )
                             .build()
@@ -569,7 +569,7 @@ internal class ConversationItemTest {
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
-                        .imageUrl("image_url")
+                        .imageUrl("https://example.com")
                         .build()
                 )
                 .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
@@ -623,7 +623,7 @@ internal class ConversationItemTest {
                     .output(
                         ResponseComputerToolCallOutputScreenshot.builder()
                             .fileId("file_id")
-                            .imageUrl("image_url")
+                            .imageUrl("https://example.com")
                             .build()
                     )
                     .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
