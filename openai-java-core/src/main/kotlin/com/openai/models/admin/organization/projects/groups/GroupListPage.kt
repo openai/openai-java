@@ -1,0 +1,127 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.openai.models.admin.organization.projects.groups
+
+import com.openai.core.AutoPager
+import com.openai.core.Page
+import com.openai.core.checkRequired
+import com.openai.services.blocking.admin.organization.projects.GroupService
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/** @see GroupService.list */
+class GroupListPage
+private constructor(
+    private val service: GroupService,
+    private val params: GroupListParams,
+    private val response: GroupListPageResponse,
+) : Page<ProjectGroup> {
+
+    /**
+     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
+     *
+     * @see GroupListPageResponse.data
+     */
+    fun data(): List<ProjectGroup> = response._data().getOptional("data").getOrNull() ?: emptyList()
+
+    /**
+     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
+     *
+     * @see GroupListPageResponse.hasMore
+     */
+    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+
+    override fun items(): List<ProjectGroup> = data()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): GroupListParams =
+        throw IllegalStateException("Cannot construct next page params")
+
+    override fun nextPage(): GroupListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<ProjectGroup> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): GroupListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): GroupListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [GroupListPage].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [GroupListPage]. */
+    class Builder internal constructor() {
+
+        private var service: GroupService? = null
+        private var params: GroupListParams? = null
+        private var response: GroupListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(groupListPage: GroupListPage) = apply {
+            service = groupListPage.service
+            params = groupListPage.params
+            response = groupListPage.response
+        }
+
+        fun service(service: GroupService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: GroupListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: GroupListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [GroupListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): GroupListPage =
+            GroupListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is GroupListPage &&
+            service == other.service &&
+            params == other.params &&
+            response == other.response
+    }
+
+    override fun hashCode(): Int = Objects.hash(service, params, response)
+
+    override fun toString() = "GroupListPage{service=$service, params=$params, response=$response}"
+}
