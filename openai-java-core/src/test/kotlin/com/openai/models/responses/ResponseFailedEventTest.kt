@@ -21,7 +21,7 @@ internal class ResponseFailedEventTest {
                 .response(
                     Response.builder()
                         .id("id")
-                        .createdAt(0L)
+                        .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
@@ -91,7 +91,7 @@ internal class ResponseFailedEventTest {
                         )
                         .topP(1.0)
                         .background(true)
-                        .completedAt(0L)
+                        .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
@@ -154,7 +154,7 @@ internal class ResponseFailedEventTest {
             .isEqualTo(
                 Response.builder()
                     .id("id")
-                    .createdAt(0L)
+                    .createdAt(0.0)
                     .error(
                         ResponseError.builder()
                             .code(ResponseError.Code.SERVER_ERROR)
@@ -224,7 +224,7 @@ internal class ResponseFailedEventTest {
                     )
                     .topP(1.0)
                     .background(true)
-                    .completedAt(0L)
+                    .completedAt(0.0)
                     .conversation(Response.Conversation.builder().id("id").build())
                     .maxOutputTokens(0L)
                     .maxToolCalls(0L)
@@ -289,7 +289,7 @@ internal class ResponseFailedEventTest {
                 .response(
                     Response.builder()
                         .id("id")
-                        .createdAt(0L)
+                        .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
@@ -359,7 +359,7 @@ internal class ResponseFailedEventTest {
                         )
                         .topP(1.0)
                         .background(true)
-                        .completedAt(0L)
+                        .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
