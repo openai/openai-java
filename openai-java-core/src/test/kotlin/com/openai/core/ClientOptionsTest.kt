@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.auth.SubjectTokenProvider
 import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
+import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.HttpClient
+import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
 import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
@@ -34,6 +36,40 @@ internal class ClientOptionsTest {
                     .values("Authorization")
             )
             .containsExactly("Bearer My API Key")
+    }
+
+    @Test
+    fun build_withAzureApiKeyCredential_success() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .credential(AzureApiKeyCredential.create("My Azure API Key"))
+                .build()
+
+        assertThat(
+                clientOptions
+                    .securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+                    .values("api-key")
+            )
+            .containsExactly("My Azure API Key")
+    }
+
+    @Test
+    fun build_withCredentialAfterApiKey_usesCredential() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("Old API Key")
+                .credential(BearerTokenCredential.create("New API Key"))
+                .build()
+
+        assertThat(clientOptions.apiKey()).isEmpty()
+        assertThat(
+                clientOptions
+                    .securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer New API Key")
     }
 
     @Test
