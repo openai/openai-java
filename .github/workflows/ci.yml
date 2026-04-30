@@ -137,7 +137,7 @@ jobs:
       - name: Run tests
         run: ./scripts/test
   examples:
-    timeout-minutes: 10
+    timeout-minutes: 20
     name: examples
     runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
     if: github.repository == 'openai/openai-java' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
