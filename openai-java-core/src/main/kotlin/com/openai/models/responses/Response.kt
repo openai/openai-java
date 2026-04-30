@@ -38,7 +38,7 @@ class Response
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val createdAt: JsonField<Long>,
+    private val createdAt: JsonField<Double>,
     private val error: JsonField<ResponseError>,
     private val incompleteDetails: JsonField<IncompleteDetails>,
     private val instructions: JsonField<Instructions>,
@@ -52,7 +52,7 @@ private constructor(
     private val tools: JsonField<List<Tool>>,
     private val topP: JsonField<Double>,
     private val background: JsonField<Boolean>,
-    private val completedAt: JsonField<Long>,
+    private val completedAt: JsonField<Double>,
     private val conversation: JsonField<Conversation>,
     private val maxOutputTokens: JsonField<Long>,
     private val maxToolCalls: JsonField<Long>,
@@ -75,7 +75,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("error") @ExcludeMissing error: JsonField<ResponseError> = JsonMissing.of(),
         @JsonProperty("incomplete_details")
         @ExcludeMissing
@@ -105,7 +105,7 @@ private constructor(
         background: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("completed_at")
         @ExcludeMissing
-        completedAt: JsonField<Long> = JsonMissing.of(),
+        completedAt: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("conversation")
         @ExcludeMissing
         conversation: JsonField<Conversation> = JsonMissing.of(),
@@ -200,7 +200,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun createdAt(): Double = createdAt.getRequired("created_at")
 
     /**
      * An error object returned when the model fails to generate a Response.
@@ -357,7 +357,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
+    fun completedAt(): Optional<Double> = completedAt.getOptional("completed_at")
 
     /**
      * The conversation that this response belonged to. Input items and output items from this
@@ -548,7 +548,7 @@ private constructor(
      *
      * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Double> = createdAt
 
     /**
      * Returns the raw JSON value of [error].
@@ -651,7 +651,9 @@ private constructor(
      *
      * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
+    @JsonProperty("completed_at")
+    @ExcludeMissing
+    fun _completedAt(): JsonField<Double> = completedAt
 
     /**
      * Returns the raw JSON value of [conversation].
@@ -830,7 +832,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var createdAt: JsonField<Long>? = null
+        private var createdAt: JsonField<Double>? = null
         private var error: JsonField<ResponseError>? = null
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
         private var instructions: JsonField<Instructions>? = null
@@ -844,7 +846,7 @@ private constructor(
         private var tools: JsonField<MutableList<Tool>>? = null
         private var topP: JsonField<Double>? = null
         private var background: JsonField<Boolean> = JsonMissing.of()
-        private var completedAt: JsonField<Long> = JsonMissing.of()
+        private var completedAt: JsonField<Double> = JsonMissing.of()
         private var conversation: JsonField<Conversation> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
         private var maxToolCalls: JsonField<Long> = JsonMissing.of()
@@ -912,15 +914,16 @@ private constructor(
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Unix timestamp (in seconds) of when this Response was created. */
-        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
+        fun createdAt(createdAt: Double) = createdAt(JsonField.of(createdAt))
 
         /**
          * Sets [Builder.createdAt] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.createdAt] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+        fun createdAt(createdAt: JsonField<Double>) = apply { this.createdAt = createdAt }
 
         /** An error object returned when the model fails to generate a Response. */
         fun error(error: ResponseError?) = error(JsonField.ofNullable(error))
@@ -1516,26 +1519,26 @@ private constructor(
          * Unix timestamp (in seconds) of when this Response was completed. Only present when the
          * status is `completed`.
          */
-        fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
+        fun completedAt(completedAt: Double?) = completedAt(JsonField.ofNullable(completedAt))
 
         /**
          * Alias for [Builder.completedAt].
          *
          * This unboxed primitive overload exists for backwards compatibility.
          */
-        fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
+        fun completedAt(completedAt: Double) = completedAt(completedAt as Double?)
 
         /** Alias for calling [Builder.completedAt] with `completedAt.orElse(null)`. */
-        fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
+        fun completedAt(completedAt: Optional<Double>) = completedAt(completedAt.getOrNull())
 
         /**
          * Sets [Builder.completedAt] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.completedAt] with a well-typed [Long] value instead.
+         * You should usually call [Builder.completedAt] with a well-typed [Double] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
+        fun completedAt(completedAt: JsonField<Double>) = apply { this.completedAt = completedAt }
 
         /**
          * The conversation that this response belonged to. Input items and output items from this
