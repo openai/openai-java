@@ -110,7 +110,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                     .prepare(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
@@ -157,7 +157,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                     .prepare(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
@@ -196,7 +196,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                     .prepare(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
@@ -244,7 +244,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                     .prepare(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)

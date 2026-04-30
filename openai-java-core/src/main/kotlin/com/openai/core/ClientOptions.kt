@@ -355,7 +355,10 @@ private constructor(
         /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
         fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
 
-        fun credential(credential: Credential) = apply { this.credential = credential }
+        fun credential(credential: Credential) = apply {
+            this.apiKey = null
+            this.credential = credential
+        }
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             this.azureServiceVersion = azureServiceVersion
@@ -702,10 +705,6 @@ private constructor(
 
         if (security.bearerAuth) {
             when {
-                !apiKey.isNullOrEmpty() -> {
-                    headers.replace("Authorization", "Bearer $apiKey")
-                    isSatisfied = true
-                }
                 credential is BearerTokenCredential -> {
                     val token = credential.token()
                     if (!token.isEmpty()) {
@@ -713,10 +712,11 @@ private constructor(
                         isSatisfied = true
                     }
                 }
-                credential is WorkloadIdentityCredential -> {
+                credential is AzureApiKeyCredential -> {
+                    headers.replace("api-key", credential.apiKey())
                     isSatisfied = true
                 }
-                credential !== AdminApiKeyOnlyCredential -> {
+                credential is WorkloadIdentityCredential -> {
                     isSatisfied = true
                 }
             }
