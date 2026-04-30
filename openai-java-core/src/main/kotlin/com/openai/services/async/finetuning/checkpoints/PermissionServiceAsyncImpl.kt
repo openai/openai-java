@@ -111,7 +111,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
@@ -162,7 +162,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
@@ -204,7 +204,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
@@ -256,7 +256,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .prepareAsync(
                         clientOptions,
                         params,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
