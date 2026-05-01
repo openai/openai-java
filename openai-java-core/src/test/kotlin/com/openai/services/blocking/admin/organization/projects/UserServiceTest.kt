@@ -28,7 +28,8 @@ internal class UserServiceTest {
             userService.create(
                 UserCreateParams.builder()
                     .projectId("project_id")
-                    .role(UserCreateParams.Role.OWNER)
+                    .role("role")
+                    .email("email")
                     .userId("user_id")
                     .build()
             )
@@ -69,7 +70,7 @@ internal class UserServiceTest {
                 UserUpdateParams.builder()
                     .projectId("project_id")
                     .userId("user_id")
-                    .role(UserUpdateParams.Role.OWNER)
+                    .role("role")
                     .build()
             )
 

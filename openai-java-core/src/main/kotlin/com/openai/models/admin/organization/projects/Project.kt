@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -24,10 +23,11 @@ class Project
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
-    private val name: JsonField<String>,
     private val object_: JsonValue,
-    private val status: JsonField<Status>,
     private val archivedAt: JsonField<Long>,
+    private val externalKeyId: JsonField<String>,
+    private val name: JsonField<String>,
+    private val status: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -35,11 +35,14 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("archived_at") @ExcludeMissing archivedAt: JsonField<Long> = JsonMissing.of(),
-    ) : this(id, createdAt, name, object_, status, archivedAt, mutableMapOf())
+        @JsonProperty("external_key_id")
+        @ExcludeMissing
+        externalKeyId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<String> = JsonMissing.of(),
+    ) : this(id, createdAt, object_, archivedAt, externalKeyId, name, status, mutableMapOf())
 
     /**
      * The identifier, which can be referenced in API endpoints
@@ -58,14 +61,6 @@ private constructor(
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The name of the project. This appears in reporting.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = name.getRequired("name")
-
-    /**
      * The object type, which is always `organization.project`
      *
      * Expected to always return the following:
@@ -79,20 +74,36 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * `active` or `archived`
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun status(): Status = status.getRequired("status")
-
-    /**
      * The Unix timestamp (in seconds) of when the project was archived or `null`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun archivedAt(): Optional<Long> = archivedAt.getOptional("archived_at")
+
+    /**
+     * The external key associated with the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
+
+    /**
+     * The name of the project. This appears in reporting.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun name(): Optional<String> = name.getOptional("name")
+
+    /**
+     * `active` or `archived`
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun status(): Optional<String> = status.getOptional("status")
 
     /**
      * Returns the raw JSON value of [id].
@@ -109,6 +120,22 @@ private constructor(
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
+     * Returns the raw JSON value of [archivedAt].
+     *
+     * Unlike [archivedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("archived_at") @ExcludeMissing fun _archivedAt(): JsonField<Long> = archivedAt
+
+    /**
+     * Returns the raw JSON value of [externalKeyId].
+     *
+     * Unlike [externalKeyId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("external_key_id")
+    @ExcludeMissing
+    fun _externalKeyId(): JsonField<String> = externalKeyId
+
+    /**
      * Returns the raw JSON value of [name].
      *
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
@@ -120,14 +147,7 @@ private constructor(
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-    /**
-     * Returns the raw JSON value of [archivedAt].
-     *
-     * Unlike [archivedAt], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("archived_at") @ExcludeMissing fun _archivedAt(): JsonField<Long> = archivedAt
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<String> = status
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -150,8 +170,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .name()
-         * .status()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -162,20 +180,22 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("organization.project")
-        private var status: JsonField<Status>? = null
         private var archivedAt: JsonField<Long> = JsonMissing.of()
+        private var externalKeyId: JsonField<String> = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
+        private var status: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(project: Project) = apply {
             id = project.id
             createdAt = project.createdAt
-            name = project.name
             object_ = project.object_
-            status = project.status
             archivedAt = project.archivedAt
+            externalKeyId = project.externalKeyId
+            name = project.name
+            status = project.status
             additionalProperties = project.additionalProperties.toMutableMap()
         }
 
@@ -201,17 +221,6 @@ private constructor(
          */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
-        /** The name of the project. This appears in reporting. */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /**
-         * Sets [Builder.name] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun name(name: JsonField<String>) = apply { this.name = name }
-
         /**
          * Sets the field to an arbitrary JSON value.
          *
@@ -225,17 +234,6 @@ private constructor(
          * value.
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
-
-        /** `active` or `archived` */
-        fun status(status: Status) = status(JsonField.of(status))
-
-        /**
-         * Sets [Builder.status] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The Unix timestamp (in seconds) of when the project was archived or `null`. */
         fun archivedAt(archivedAt: Long?) = archivedAt(JsonField.ofNullable(archivedAt))
@@ -257,6 +255,53 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun archivedAt(archivedAt: JsonField<Long>) = apply { this.archivedAt = archivedAt }
+
+        /** The external key associated with the project. */
+        fun externalKeyId(externalKeyId: String?) =
+            externalKeyId(JsonField.ofNullable(externalKeyId))
+
+        /** Alias for calling [Builder.externalKeyId] with `externalKeyId.orElse(null)`. */
+        fun externalKeyId(externalKeyId: Optional<String>) =
+            externalKeyId(externalKeyId.getOrNull())
+
+        /**
+         * Sets [Builder.externalKeyId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalKeyId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun externalKeyId(externalKeyId: JsonField<String>) = apply {
+            this.externalKeyId = externalKeyId
+        }
+
+        /** The name of the project. This appears in reporting. */
+        fun name(name: String?) = name(JsonField.ofNullable(name))
+
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+        fun name(name: Optional<String>) = name(name.getOrNull())
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /** `active` or `archived` */
+        fun status(status: String?) = status(JsonField.ofNullable(status))
+
+        /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+        fun status(status: Optional<String>) = status(status.getOrNull())
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<String>) = apply { this.status = status }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -286,8 +331,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .name()
-         * .status()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -296,10 +339,11 @@ private constructor(
             Project(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
-                checkRequired("name", name),
                 object_,
-                checkRequired("status", status),
                 archivedAt,
+                externalKeyId,
+                name,
+                status,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -313,14 +357,15 @@ private constructor(
 
         id()
         createdAt()
-        name()
         _object_().let {
             if (it != JsonValue.from("organization.project")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
-        status().validate()
         archivedAt()
+        externalKeyId()
+        name()
+        status()
         validated = true
     }
 
@@ -341,136 +386,11 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
-            (if (name.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.project")) 1 else 0 } +
-            (status.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (archivedAt.asKnown().isPresent) 1 else 0)
-
-    /** `active` or `archived` */
-    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val ACTIVE = of("active")
-
-            @JvmField val ARCHIVED = of("archived")
-
-            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
-        }
-
-        /** An enum containing [Status]'s known values. */
-        enum class Known {
-            ACTIVE,
-            ARCHIVED,
-        }
-
-        /**
-         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Status] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            ACTIVE,
-            ARCHIVED,
-            /** An enum member indicating that [Status] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                ACTIVE -> Value.ACTIVE
-                ARCHIVED -> Value.ARCHIVED
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                ACTIVE -> Known.ACTIVE
-                ARCHIVED -> Known.ARCHIVED
-                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Status = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Status && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
+            (if (archivedAt.asKnown().isPresent) 1 else 0) +
+            (if (externalKeyId.asKnown().isPresent) 1 else 0) +
+            (if (name.asKnown().isPresent) 1 else 0) +
+            (if (status.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -480,19 +400,29 @@ private constructor(
         return other is Project &&
             id == other.id &&
             createdAt == other.createdAt &&
-            name == other.name &&
             object_ == other.object_ &&
-            status == other.status &&
             archivedAt == other.archivedAt &&
+            externalKeyId == other.externalKeyId &&
+            name == other.name &&
+            status == other.status &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, createdAt, name, object_, status, archivedAt, additionalProperties)
+        Objects.hash(
+            id,
+            createdAt,
+            object_,
+            archivedAt,
+            externalKeyId,
+            name,
+            status,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Project{id=$id, createdAt=$createdAt, name=$name, object_=$object_, status=$status, archivedAt=$archivedAt, additionalProperties=$additionalProperties}"
+        "Project{id=$id, createdAt=$createdAt, object_=$object_, archivedAt=$archivedAt, externalKeyId=$externalKeyId, name=$name, status=$status, additionalProperties=$additionalProperties}"
 }

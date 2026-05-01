@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -41,22 +40,37 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun role(): Role = body.role()
+    fun role(): String = body.role()
+
+    /**
+     * Email of the user to add.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun email(): Optional<String> = body.email()
 
     /**
      * The ID of the user.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun userId(): String = body.userId()
+    fun userId(): Optional<String> = body.userId()
 
     /**
      * Returns the raw JSON value of [role].
      *
      * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _role(): JsonField<Role> = body._role()
+    fun _role(): JsonField<String> = body._role()
+
+    /**
+     * Returns the raw JSON value of [email].
+     *
+     * Unlike [email], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _email(): JsonField<String> = body._email()
 
     /**
      * Returns the raw JSON value of [userId].
@@ -83,7 +97,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .role()
-         * .userId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -116,23 +129,41 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [role]
+         * - [email]
          * - [userId]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** `owner` or `member` */
-        fun role(role: Role) = apply { body.role(role) }
+        fun role(role: String) = apply { body.role(role) }
 
         /**
          * Sets [Builder.role] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+         * You should usually call [Builder.role] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun role(role: JsonField<Role>) = apply { body.role(role) }
+        fun role(role: JsonField<String>) = apply { body.role(role) }
+
+        /** Email of the user to add. */
+        fun email(email: String?) = apply { body.email(email) }
+
+        /** Alias for calling [Builder.email] with `email.orElse(null)`. */
+        fun email(email: Optional<String>) = email(email.getOrNull())
+
+        /**
+         * Sets [Builder.email] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.email] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun email(email: JsonField<String>) = apply { body.email(email) }
 
         /** The ID of the user. */
-        fun userId(userId: String) = apply { body.userId(userId) }
+        fun userId(userId: String?) = apply { body.userId(userId) }
+
+        /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+        fun userId(userId: Optional<String>) = userId(userId.getOrNull())
 
         /**
          * Sets [Builder.userId] to an arbitrary JSON value.
@@ -267,7 +298,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .role()
-         * .userId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -296,16 +326,18 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val role: JsonField<Role>,
+        private val role: JsonField<String>,
+        private val email: JsonField<String>,
         private val userId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+            @JsonProperty("role") @ExcludeMissing role: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("email") @ExcludeMissing email: JsonField<String> = JsonMissing.of(),
             @JsonProperty("user_id") @ExcludeMissing userId: JsonField<String> = JsonMissing.of(),
-        ) : this(role, userId, mutableMapOf())
+        ) : this(role, email, userId, mutableMapOf())
 
         /**
          * `owner` or `member`
@@ -313,22 +345,37 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun role(): Role = role.getRequired("role")
+        fun role(): String = role.getRequired("role")
+
+        /**
+         * Email of the user to add.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun email(): Optional<String> = email.getOptional("email")
 
         /**
          * The ID of the user.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun userId(): String = userId.getRequired("user_id")
+        fun userId(): Optional<String> = userId.getOptional("user_id")
 
         /**
          * Returns the raw JSON value of [role].
          *
          * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<String> = role
+
+        /**
+         * Returns the raw JSON value of [email].
+         *
+         * Unlike [email], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("email") @ExcludeMissing fun _email(): JsonField<String> = email
 
         /**
          * Returns the raw JSON value of [userId].
@@ -357,7 +404,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .role()
-             * .userId()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -366,31 +412,51 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var role: JsonField<Role>? = null
-            private var userId: JsonField<String>? = null
+            private var role: JsonField<String>? = null
+            private var email: JsonField<String> = JsonMissing.of()
+            private var userId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 role = body.role
+                email = body.email
                 userId = body.userId
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** `owner` or `member` */
-            fun role(role: Role) = role(JsonField.of(role))
+            fun role(role: String) = role(JsonField.of(role))
 
             /**
              * Sets [Builder.role] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+             * You should usually call [Builder.role] with a well-typed [String] value instead. This
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
-            fun role(role: JsonField<Role>) = apply { this.role = role }
+            fun role(role: JsonField<String>) = apply { this.role = role }
+
+            /** Email of the user to add. */
+            fun email(email: String?) = email(JsonField.ofNullable(email))
+
+            /** Alias for calling [Builder.email] with `email.orElse(null)`. */
+            fun email(email: Optional<String>) = email(email.getOrNull())
+
+            /**
+             * Sets [Builder.email] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.email] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun email(email: JsonField<String>) = apply { this.email = email }
 
             /** The ID of the user. */
-            fun userId(userId: String) = userId(JsonField.of(userId))
+            fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+            /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+            fun userId(userId: Optional<String>) = userId(userId.getOrNull())
 
             /**
              * Sets [Builder.userId] to an arbitrary JSON value.
@@ -428,7 +494,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .role()
-             * .userId()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -436,7 +501,8 @@ private constructor(
             fun build(): Body =
                 Body(
                     checkRequired("role", role),
-                    checkRequired("userId", userId),
+                    email,
+                    userId,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -448,7 +514,8 @@ private constructor(
                 return@apply
             }
 
-            role().validate()
+            role()
+            email()
             userId()
             validated = true
         }
@@ -469,7 +536,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (role.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (role.asKnown().isPresent) 1 else 0) +
+                (if (email.asKnown().isPresent) 1 else 0) +
                 (if (userId.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -479,142 +547,19 @@ private constructor(
 
             return other is Body &&
                 role == other.role &&
+                email == other.email &&
                 userId == other.userId &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(role, userId, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(role, email, userId, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{role=$role, userId=$userId, additionalProperties=$additionalProperties}"
-    }
-
-    /** `owner` or `member` */
-    class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val OWNER = of("owner")
-
-            @JvmField val MEMBER = of("member")
-
-            @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-        }
-
-        /** An enum containing [Role]'s known values. */
-        enum class Known {
-            OWNER,
-            MEMBER,
-        }
-
-        /**
-         * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Role] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            OWNER,
-            MEMBER,
-            /** An enum member indicating that [Role] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                OWNER -> Value.OWNER
-                MEMBER -> Value.MEMBER
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                OWNER -> Known.OWNER
-                MEMBER -> Known.MEMBER
-                else -> throw OpenAIInvalidDataException("Unknown Role: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Role = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Role && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
+            "Body{role=$role, email=$email, userId=$userId, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

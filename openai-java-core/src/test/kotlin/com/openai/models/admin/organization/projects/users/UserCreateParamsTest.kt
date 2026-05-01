@@ -11,19 +11,15 @@ internal class UserCreateParamsTest {
     fun create() {
         UserCreateParams.builder()
             .projectId("project_id")
-            .role(UserCreateParams.Role.OWNER)
+            .role("role")
+            .email("email")
             .userId("user_id")
             .build()
     }
 
     @Test
     fun pathParams() {
-        val params =
-            UserCreateParams.builder()
-                .projectId("project_id")
-                .role(UserCreateParams.Role.OWNER)
-                .userId("user_id")
-                .build()
+        val params = UserCreateParams.builder().projectId("project_id").role("role").build()
 
         assertThat(params._pathParam(0)).isEqualTo("project_id")
         // out-of-bound path param
@@ -35,13 +31,24 @@ internal class UserCreateParamsTest {
         val params =
             UserCreateParams.builder()
                 .projectId("project_id")
-                .role(UserCreateParams.Role.OWNER)
+                .role("role")
+                .email("email")
                 .userId("user_id")
                 .build()
 
         val body = params._body()
 
-        assertThat(body.role()).isEqualTo(UserCreateParams.Role.OWNER)
-        assertThat(body.userId()).isEqualTo("user_id")
+        assertThat(body.role()).isEqualTo("role")
+        assertThat(body.email()).contains("email")
+        assertThat(body.userId()).contains("user_id")
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
+        val params = UserCreateParams.builder().projectId("project_id").role("role").build()
+
+        val body = params._body()
+
+        assertThat(body.role()).isEqualTo("role")
     }
 }

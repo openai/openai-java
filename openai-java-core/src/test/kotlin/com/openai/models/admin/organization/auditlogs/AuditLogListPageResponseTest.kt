@@ -392,8 +392,8 @@ internal class AuditLogListPageResponseTest {
                         )
                         .build()
                 )
-                .firstId("audit_log-defb456h8dks")
                 .hasMore(true)
+                .firstId("audit_log-defb456h8dks")
                 .lastId("audit_log-hnbkd8s93s")
                 .build()
 
@@ -758,9 +758,9 @@ internal class AuditLogListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(auditLogListPageResponse.firstId()).isEqualTo("audit_log-defb456h8dks")
         assertThat(auditLogListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(auditLogListPageResponse.lastId()).isEqualTo("audit_log-hnbkd8s93s")
+        assertThat(auditLogListPageResponse.firstId()).contains("audit_log-defb456h8dks")
+        assertThat(auditLogListPageResponse.lastId()).contains("audit_log-hnbkd8s93s")
     }
 
     @Test
@@ -1146,8 +1146,8 @@ internal class AuditLogListPageResponseTest {
                         )
                         .build()
                 )
-                .firstId("audit_log-defb456h8dks")
                 .hasMore(true)
+                .firstId("audit_log-defb456h8dks")
                 .lastId("audit_log-hnbkd8s93s")
                 .build()
 

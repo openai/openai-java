@@ -92,24 +92,33 @@ interface ProjectService {
         retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
     /** Modifies a project in the organization. */
-    fun update(projectId: String, params: ProjectUpdateParams): Project =
-        update(projectId, params, RequestOptions.none())
+    fun update(projectId: String): Project = update(projectId, ProjectUpdateParams.none())
 
     /** @see update */
     fun update(
         projectId: String,
-        params: ProjectUpdateParams,
+        params: ProjectUpdateParams = ProjectUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project = update(params.toBuilder().projectId(projectId).build(), requestOptions)
 
     /** @see update */
-    fun update(params: ProjectUpdateParams): Project = update(params, RequestOptions.none())
+    fun update(
+        projectId: String,
+        params: ProjectUpdateParams = ProjectUpdateParams.none(),
+    ): Project = update(projectId, params, RequestOptions.none())
 
     /** @see update */
     fun update(
         params: ProjectUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Project
+
+    /** @see update */
+    fun update(params: ProjectUpdateParams): Project = update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(projectId: String, requestOptions: RequestOptions): Project =
+        update(projectId, ProjectUpdateParams.none(), requestOptions)
 
     /** Returns a list of projects. */
     fun list(): ProjectListPage = list(ProjectListParams.none())
@@ -242,17 +251,31 @@ interface ProjectService {
          * otherwise the same as [ProjectService.update].
          */
         @MustBeClosed
-        fun update(projectId: String, params: ProjectUpdateParams): HttpResponseFor<Project> =
-            update(projectId, params, RequestOptions.none())
+        fun update(projectId: String): HttpResponseFor<Project> =
+            update(projectId, ProjectUpdateParams.none())
 
         /** @see update */
         @MustBeClosed
         fun update(
             projectId: String,
-            params: ProjectUpdateParams,
+            params: ProjectUpdateParams = ProjectUpdateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Project> =
             update(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            projectId: String,
+            params: ProjectUpdateParams = ProjectUpdateParams.none(),
+        ): HttpResponseFor<Project> = update(projectId, params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: ProjectUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Project>
 
         /** @see update */
         @MustBeClosed
@@ -261,10 +284,8 @@ interface ProjectService {
 
         /** @see update */
         @MustBeClosed
-        fun update(
-            params: ProjectUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<Project>
+        fun update(projectId: String, requestOptions: RequestOptions): HttpResponseFor<Project> =
+            update(projectId, ProjectUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /organization/projects`, but is otherwise the same

@@ -15,16 +15,16 @@ internal class ProjectUserTest {
             ProjectUser.builder()
                 .id("id")
                 .addedAt(0L)
+                .role("role")
                 .email("email")
                 .name("name")
-                .role(ProjectUser.Role.OWNER)
                 .build()
 
         assertThat(projectUser.id()).isEqualTo("id")
         assertThat(projectUser.addedAt()).isEqualTo(0L)
-        assertThat(projectUser.email()).isEqualTo("email")
-        assertThat(projectUser.name()).isEqualTo("name")
-        assertThat(projectUser.role()).isEqualTo(ProjectUser.Role.OWNER)
+        assertThat(projectUser.role()).isEqualTo("role")
+        assertThat(projectUser.email()).contains("email")
+        assertThat(projectUser.name()).contains("name")
     }
 
     @Test
@@ -34,9 +34,9 @@ internal class ProjectUserTest {
             ProjectUser.builder()
                 .id("id")
                 .addedAt(0L)
+                .role("role")
                 .email("email")
                 .name("name")
-                .role(ProjectUser.Role.OWNER)
                 .build()
 
         val roundtrippedProjectUser =

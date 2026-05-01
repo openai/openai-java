@@ -15,8 +15,6 @@ internal class AdminApiKeyCreateResponseTest {
             AdminApiKeyCreateResponse.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
-                .lastUsedAt(1711471534L)
-                .name("Administration Key")
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -28,13 +26,13 @@ internal class AdminApiKeyCreateResponseTest {
                         .build()
                 )
                 .redactedValue("sk-admin...def")
+                .lastUsedAt(1711471534L)
+                .name("Administration Key")
                 .value("sk-admin-1234abcd")
                 .build()
 
         assertThat(adminApiKeyCreateResponse.id()).isEqualTo("key_abc")
         assertThat(adminApiKeyCreateResponse.createdAt()).isEqualTo(1711471533L)
-        assertThat(adminApiKeyCreateResponse.lastUsedAt()).contains(1711471534L)
-        assertThat(adminApiKeyCreateResponse.name()).isEqualTo("Administration Key")
         assertThat(adminApiKeyCreateResponse.owner())
             .isEqualTo(
                 AdminApiKey.Owner.builder()
@@ -47,7 +45,9 @@ internal class AdminApiKeyCreateResponseTest {
                     .build()
             )
         assertThat(adminApiKeyCreateResponse.redactedValue()).isEqualTo("sk-admin...def")
-        assertThat(adminApiKeyCreateResponse.value()).contains("sk-admin-1234abcd")
+        assertThat(adminApiKeyCreateResponse.lastUsedAt()).contains(1711471534L)
+        assertThat(adminApiKeyCreateResponse.name()).contains("Administration Key")
+        assertThat(adminApiKeyCreateResponse.value()).isEqualTo("sk-admin-1234abcd")
     }
 
     @Test
@@ -57,8 +57,6 @@ internal class AdminApiKeyCreateResponseTest {
             AdminApiKeyCreateResponse.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
-                .lastUsedAt(1711471534L)
-                .name("Administration Key")
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -70,6 +68,8 @@ internal class AdminApiKeyCreateResponseTest {
                         .build()
                 )
                 .redactedValue("sk-admin...def")
+                .lastUsedAt(1711471534L)
+                .name("Administration Key")
                 .value("sk-admin-1234abcd")
                 .build()
 

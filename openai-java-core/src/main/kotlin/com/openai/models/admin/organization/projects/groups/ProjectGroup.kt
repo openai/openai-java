@@ -22,6 +22,7 @@ private constructor(
     private val createdAt: JsonField<Long>,
     private val groupId: JsonField<String>,
     private val groupName: JsonField<String>,
+    private val groupType: JsonField<String>,
     private val object_: JsonValue,
     private val projectId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -32,9 +33,10 @@ private constructor(
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("group_id") @ExcludeMissing groupId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("group_name") @ExcludeMissing groupName: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("group_type") @ExcludeMissing groupType: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("project_id") @ExcludeMissing projectId: JsonField<String> = JsonMissing.of(),
-    ) : this(createdAt, groupId, groupName, object_, projectId, mutableMapOf())
+    ) : this(createdAt, groupId, groupName, groupType, object_, projectId, mutableMapOf())
 
     /**
      * Unix timestamp (in seconds) when the group was granted project access.
@@ -59,6 +61,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun groupName(): String = groupName.getRequired("group_name")
+
+    /**
+     * The type of the group.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun groupType(): String = groupType.getRequired("group_type")
 
     /**
      * Always `project.group`.
@@ -103,6 +113,13 @@ private constructor(
     @JsonProperty("group_name") @ExcludeMissing fun _groupName(): JsonField<String> = groupName
 
     /**
+     * Returns the raw JSON value of [groupType].
+     *
+     * Unlike [groupType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("group_type") @ExcludeMissing fun _groupType(): JsonField<String> = groupType
+
+    /**
      * Returns the raw JSON value of [projectId].
      *
      * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
@@ -131,6 +148,7 @@ private constructor(
          * .createdAt()
          * .groupId()
          * .groupName()
+         * .groupType()
          * .projectId()
          * ```
          */
@@ -143,6 +161,7 @@ private constructor(
         private var createdAt: JsonField<Long>? = null
         private var groupId: JsonField<String>? = null
         private var groupName: JsonField<String>? = null
+        private var groupType: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("project.group")
         private var projectId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -152,6 +171,7 @@ private constructor(
             createdAt = projectGroup.createdAt
             groupId = projectGroup.groupId
             groupName = projectGroup.groupName
+            groupType = projectGroup.groupType
             object_ = projectGroup.object_
             projectId = projectGroup.projectId
             additionalProperties = projectGroup.additionalProperties.toMutableMap()
@@ -190,6 +210,18 @@ private constructor(
          * value.
          */
         fun groupName(groupName: JsonField<String>) = apply { this.groupName = groupName }
+
+        /** The type of the group. */
+        fun groupType(groupType: String) = groupType(JsonField.of(groupType))
+
+        /**
+         * Sets [Builder.groupType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.groupType] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun groupType(groupType: JsonField<String>) = apply { this.groupType = groupType }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -246,6 +278,7 @@ private constructor(
          * .createdAt()
          * .groupId()
          * .groupName()
+         * .groupType()
          * .projectId()
          * ```
          *
@@ -256,6 +289,7 @@ private constructor(
                 checkRequired("createdAt", createdAt),
                 checkRequired("groupId", groupId),
                 checkRequired("groupName", groupName),
+                checkRequired("groupType", groupType),
                 object_,
                 checkRequired("projectId", projectId),
                 additionalProperties.toMutableMap(),
@@ -272,6 +306,7 @@ private constructor(
         createdAt()
         groupId()
         groupName()
+        groupType()
         _object_().let {
             if (it != JsonValue.from("project.group")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -299,6 +334,7 @@ private constructor(
         (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (groupId.asKnown().isPresent) 1 else 0) +
             (if (groupName.asKnown().isPresent) 1 else 0) +
+            (if (groupType.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("project.group")) 1 else 0 } +
             (if (projectId.asKnown().isPresent) 1 else 0)
 
@@ -311,17 +347,26 @@ private constructor(
             createdAt == other.createdAt &&
             groupId == other.groupId &&
             groupName == other.groupName &&
+            groupType == other.groupType &&
             object_ == other.object_ &&
             projectId == other.projectId &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(createdAt, groupId, groupName, object_, projectId, additionalProperties)
+        Objects.hash(
+            createdAt,
+            groupId,
+            groupName,
+            groupType,
+            object_,
+            projectId,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ProjectGroup{createdAt=$createdAt, groupId=$groupId, groupName=$groupName, object_=$object_, projectId=$projectId, additionalProperties=$additionalProperties}"
+        "ProjectGroup{createdAt=$createdAt, groupId=$groupId, groupName=$groupName, groupType=$groupType, object_=$object_, projectId=$projectId, additionalProperties=$additionalProperties}"
 }
