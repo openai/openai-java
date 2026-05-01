@@ -14,6 +14,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ServiceAccountCreateResponse
@@ -45,10 +46,10 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun apiKey(): ApiKey = apiKey.getRequired("api_key")
+    fun apiKey(): Optional<ApiKey> = apiKey.getOptional("api_key")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -174,7 +175,10 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        fun apiKey(apiKey: ApiKey) = apiKey(JsonField.of(apiKey))
+        fun apiKey(apiKey: ApiKey?) = apiKey(JsonField.ofNullable(apiKey))
+
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<ApiKey>) = apiKey(apiKey.getOrNull())
 
         /**
          * Sets [Builder.apiKey] to an arbitrary JSON value.
@@ -286,7 +290,7 @@ private constructor(
         }
 
         id()
-        apiKey().validate()
+        apiKey().ifPresent { it.validate() }
         createdAt()
         name()
         _object_().let {

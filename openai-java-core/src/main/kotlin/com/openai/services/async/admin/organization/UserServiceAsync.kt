@@ -68,16 +68,28 @@ interface UserServiceAsync {
         retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
     /** Modifies a user's role in the organization. */
-    fun update(userId: String, params: UserUpdateParams): CompletableFuture<OrganizationUser> =
-        update(userId, params, RequestOptions.none())
+    fun update(userId: String): CompletableFuture<OrganizationUser> =
+        update(userId, UserUpdateParams.none())
 
     /** @see update */
     fun update(
         userId: String,
-        params: UserUpdateParams,
+        params: UserUpdateParams = UserUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<OrganizationUser> =
         update(params.toBuilder().userId(userId).build(), requestOptions)
+
+    /** @see update */
+    fun update(
+        userId: String,
+        params: UserUpdateParams = UserUpdateParams.none(),
+    ): CompletableFuture<OrganizationUser> = update(userId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: UserUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<OrganizationUser>
 
     /** @see update */
     fun update(params: UserUpdateParams): CompletableFuture<OrganizationUser> =
@@ -85,9 +97,9 @@ interface UserServiceAsync {
 
     /** @see update */
     fun update(
-        params: UserUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<OrganizationUser>
+        userId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<OrganizationUser> = update(userId, UserUpdateParams.none(), requestOptions)
 
     /** Lists all of the users in the organization. */
     fun list(): CompletableFuture<UserListPageAsync> = list(UserListParams.none())
@@ -198,19 +210,29 @@ interface UserServiceAsync {
          * Returns a raw HTTP response for `post /organization/users/{user_id}`, but is otherwise
          * the same as [UserServiceAsync.update].
          */
+        fun update(userId: String): CompletableFuture<HttpResponseFor<OrganizationUser>> =
+            update(userId, UserUpdateParams.none())
+
+        /** @see update */
         fun update(
             userId: String,
-            params: UserUpdateParams,
+            params: UserUpdateParams = UserUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<OrganizationUser>> =
+            update(params.toBuilder().userId(userId).build(), requestOptions)
+
+        /** @see update */
+        fun update(
+            userId: String,
+            params: UserUpdateParams = UserUpdateParams.none(),
         ): CompletableFuture<HttpResponseFor<OrganizationUser>> =
             update(userId, params, RequestOptions.none())
 
         /** @see update */
         fun update(
-            userId: String,
             params: UserUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<OrganizationUser>> =
-            update(params.toBuilder().userId(userId).build(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<OrganizationUser>>
 
         /** @see update */
         fun update(params: UserUpdateParams): CompletableFuture<HttpResponseFor<OrganizationUser>> =
@@ -218,9 +240,10 @@ interface UserServiceAsync {
 
         /** @see update */
         fun update(
-            params: UserUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<OrganizationUser>>
+            userId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<OrganizationUser>> =
+            update(userId, UserUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /organization/users`, but is otherwise the same as

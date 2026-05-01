@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
+import com.openai.core.checkRequired
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -25,7 +26,7 @@ private constructor(
     private val firstId: JsonField<String>,
     private val hasMore: JsonField<Boolean>,
     private val lastId: JsonField<String>,
-    private val object_: JsonField<String>,
+    private val object_: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -35,14 +36,14 @@ private constructor(
         @JsonProperty("first_id") @ExcludeMissing firstId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("has_more") @ExcludeMissing hasMore: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("last_id") @ExcludeMissing lastId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("object") @ExcludeMissing object_: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
     ) : this(data, firstId, hasMore, lastId, object_, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun data(): Optional<List<AdminApiKey>> = data.getOptional("data")
+    fun data(): List<AdminApiKey> = data.getRequired("data")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -51,10 +52,10 @@ private constructor(
     fun firstId(): Optional<String> = firstId.getOptional("first_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun hasMore(): Optional<Boolean> = hasMore.getOptional("has_more")
+    fun hasMore(): Boolean = hasMore.getRequired("has_more")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -63,10 +64,15 @@ private constructor(
     fun lastId(): Optional<String> = lastId.getOptional("last_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("list")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
-    fun object_(): Optional<String> = object_.getOptional("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -96,13 +102,6 @@ private constructor(
      */
     @JsonProperty("last_id") @ExcludeMissing fun _lastId(): JsonField<String> = lastId
 
-    /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -119,6 +118,14 @@ private constructor(
 
         /**
          * Returns a mutable builder for constructing an instance of [AdminApiKeyListPageResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .data()
+         * .firstId()
+         * .hasMore()
+         * .lastId()
+         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -127,10 +134,10 @@ private constructor(
     class Builder internal constructor() {
 
         private var data: JsonField<MutableList<AdminApiKey>>? = null
-        private var firstId: JsonField<String> = JsonMissing.of()
-        private var hasMore: JsonField<Boolean> = JsonMissing.of()
-        private var lastId: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<String> = JsonMissing.of()
+        private var firstId: JsonField<String>? = null
+        private var hasMore: JsonField<Boolean>? = null
+        private var lastId: JsonField<String>? = null
+        private var object_: JsonValue = JsonValue.from("list")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -168,7 +175,10 @@ private constructor(
                 }
         }
 
-        fun firstId(firstId: String) = firstId(JsonField.of(firstId))
+        fun firstId(firstId: String?) = firstId(JsonField.ofNullable(firstId))
+
+        /** Alias for calling [Builder.firstId] with `firstId.orElse(null)`. */
+        fun firstId(firstId: Optional<String>) = firstId(firstId.getOrNull())
 
         /**
          * Sets [Builder.firstId] to an arbitrary JSON value.
@@ -188,7 +198,10 @@ private constructor(
          */
         fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
 
-        fun lastId(lastId: String) = lastId(JsonField.of(lastId))
+        fun lastId(lastId: String?) = lastId(JsonField.ofNullable(lastId))
+
+        /** Alias for calling [Builder.lastId] with `lastId.orElse(null)`. */
+        fun lastId(lastId: Optional<String>) = lastId(lastId.getOrNull())
 
         /**
          * Sets [Builder.lastId] to an arbitrary JSON value.
@@ -198,15 +211,19 @@ private constructor(
          */
         fun lastId(lastId: JsonField<String>) = apply { this.lastId = lastId }
 
-        fun object_(object_: String) = object_(JsonField.of(object_))
-
         /**
-         * Sets [Builder.object_] to an arbitrary JSON value.
+         * Sets the field to an arbitrary JSON value.
          *
-         * You should usually call [Builder.object_] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("list")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun object_(object_: JsonField<String>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -231,13 +248,23 @@ private constructor(
          * Returns an immutable instance of [AdminApiKeyListPageResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .data()
+         * .firstId()
+         * .hasMore()
+         * .lastId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AdminApiKeyListPageResponse =
             AdminApiKeyListPageResponse(
-                (data ?: JsonMissing.of()).map { it.toImmutable() },
-                firstId,
-                hasMore,
-                lastId,
+                checkRequired("data", data).map { it.toImmutable() },
+                checkRequired("firstId", firstId),
+                checkRequired("hasMore", hasMore),
+                checkRequired("lastId", lastId),
                 object_,
                 additionalProperties.toMutableMap(),
             )
@@ -250,11 +277,15 @@ private constructor(
             return@apply
         }
 
-        data().ifPresent { it.forEach { it.validate() } }
+        data().forEach { it.validate() }
         firstId()
         hasMore()
         lastId()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("list")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -277,7 +308,7 @@ private constructor(
             (if (firstId.asKnown().isPresent) 1 else 0) +
             (if (hasMore.asKnown().isPresent) 1 else 0) +
             (if (lastId.asKnown().isPresent) 1 else 0) +
-            (if (object_.asKnown().isPresent) 1 else 0)
+            object_.let { if (it == JsonValue.from("list")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

@@ -65,7 +65,7 @@ internal class UsageVectorStoresResponseTest {
                     .build()
             )
         assertThat(usageVectorStoresResponse.hasMore()).isEqualTo(true)
-        assertThat(usageVectorStoresResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageVectorStoresResponse.nextPage()).contains("next_page")
     }
 
     @Test

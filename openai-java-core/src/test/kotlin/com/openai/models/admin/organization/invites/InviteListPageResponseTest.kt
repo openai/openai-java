@@ -16,9 +16,9 @@ internal class InviteListPageResponseTest {
                 .addData(
                     Invite.builder()
                         .id("id")
+                        .createdAt(0L)
                         .email("email")
                         .expiresAt(0L)
-                        .invitedAt(0L)
                         .role(Invite.Role.OWNER)
                         .status(Invite.Status.ACCEPTED)
                         .acceptedAt(0L)
@@ -39,9 +39,9 @@ internal class InviteListPageResponseTest {
             .containsExactly(
                 Invite.builder()
                     .id("id")
+                    .createdAt(0L)
                     .email("email")
                     .expiresAt(0L)
-                    .invitedAt(0L)
                     .role(Invite.Role.OWNER)
                     .status(Invite.Status.ACCEPTED)
                     .acceptedAt(0L)
@@ -63,9 +63,9 @@ internal class InviteListPageResponseTest {
                 .addData(
                     Invite.builder()
                         .id("id")
+                        .createdAt(0L)
                         .email("email")
                         .expiresAt(0L)
-                        .invitedAt(0L)
                         .role(Invite.Role.OWNER)
                         .status(Invite.Status.ACCEPTED)
                         .acceptedAt(0L)

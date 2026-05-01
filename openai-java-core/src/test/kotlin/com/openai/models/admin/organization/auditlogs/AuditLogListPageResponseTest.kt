@@ -17,6 +17,8 @@ internal class AuditLogListPageResponseTest {
                 .addData(
                     AuditLogListResponse.builder()
                         .id("id")
+                        .effectiveAt(0L)
+                        .type(AuditLogListResponse.Type.API_KEY_CREATED)
                         .actor(
                             AuditLogListResponse.Actor.builder()
                                 .apiKey(
@@ -51,8 +53,6 @@ internal class AuditLogListPageResponseTest {
                                 .type(AuditLogListResponse.Actor.Type.SESSION)
                                 .build()
                         )
-                        .effectiveAt(0L)
-                        .type(AuditLogListResponse.Type.API_KEY_CREATED)
                         .apiKeyCreated(
                             AuditLogListResponse.ApiKeyCreated.builder()
                                 .id("id")
@@ -401,6 +401,8 @@ internal class AuditLogListPageResponseTest {
             .containsExactly(
                 AuditLogListResponse.builder()
                     .id("id")
+                    .effectiveAt(0L)
+                    .type(AuditLogListResponse.Type.API_KEY_CREATED)
                     .actor(
                         AuditLogListResponse.Actor.builder()
                             .apiKey(
@@ -434,8 +436,6 @@ internal class AuditLogListPageResponseTest {
                             .type(AuditLogListResponse.Actor.Type.SESSION)
                             .build()
                     )
-                    .effectiveAt(0L)
-                    .type(AuditLogListResponse.Type.API_KEY_CREATED)
                     .apiKeyCreated(
                         AuditLogListResponse.ApiKeyCreated.builder()
                             .id("id")
@@ -771,6 +771,8 @@ internal class AuditLogListPageResponseTest {
                 .addData(
                     AuditLogListResponse.builder()
                         .id("id")
+                        .effectiveAt(0L)
+                        .type(AuditLogListResponse.Type.API_KEY_CREATED)
                         .actor(
                             AuditLogListResponse.Actor.builder()
                                 .apiKey(
@@ -805,8 +807,6 @@ internal class AuditLogListPageResponseTest {
                                 .type(AuditLogListResponse.Actor.Type.SESSION)
                                 .build()
                         )
-                        .effectiveAt(0L)
-                        .type(AuditLogListResponse.Type.API_KEY_CREATED)
                         .apiKeyCreated(
                             AuditLogListResponse.ApiKeyCreated.builder()
                                 .id("id")

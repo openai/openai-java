@@ -4,8 +4,6 @@ package com.openai.models.admin.organization.projects.apikeys
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import com.openai.models.admin.organization.projects.serviceaccounts.ProjectServiceAccount
-import com.openai.models.admin.organization.projects.users.ProjectUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -24,21 +22,21 @@ internal class ApiKeyListPageResponseTest {
                         .owner(
                             ProjectApiKey.Owner.builder()
                                 .serviceAccount(
-                                    ProjectServiceAccount.builder()
+                                    ProjectApiKey.Owner.ServiceAccount.builder()
                                         .id("id")
                                         .createdAt(0L)
                                         .name("name")
-                                        .role(ProjectServiceAccount.Role.OWNER)
+                                        .role("role")
                                         .build()
                                 )
                                 .type(ProjectApiKey.Owner.Type.USER)
                                 .user(
-                                    ProjectUser.builder()
+                                    ProjectApiKey.Owner.User.builder()
                                         .id("id")
-                                        .addedAt(0L)
+                                        .createdAt(0L)
                                         .email("email")
                                         .name("name")
-                                        .role(ProjectUser.Role.OWNER)
+                                        .role("role")
                                         .build()
                                 )
                                 .build()
@@ -61,21 +59,21 @@ internal class ApiKeyListPageResponseTest {
                     .owner(
                         ProjectApiKey.Owner.builder()
                             .serviceAccount(
-                                ProjectServiceAccount.builder()
+                                ProjectApiKey.Owner.ServiceAccount.builder()
                                     .id("id")
                                     .createdAt(0L)
                                     .name("name")
-                                    .role(ProjectServiceAccount.Role.OWNER)
+                                    .role("role")
                                     .build()
                             )
                             .type(ProjectApiKey.Owner.Type.USER)
                             .user(
-                                ProjectUser.builder()
+                                ProjectApiKey.Owner.User.builder()
                                     .id("id")
-                                    .addedAt(0L)
+                                    .createdAt(0L)
                                     .email("email")
                                     .name("name")
-                                    .role(ProjectUser.Role.OWNER)
+                                    .role("role")
                                     .build()
                             )
                             .build()
@@ -102,21 +100,21 @@ internal class ApiKeyListPageResponseTest {
                         .owner(
                             ProjectApiKey.Owner.builder()
                                 .serviceAccount(
-                                    ProjectServiceAccount.builder()
+                                    ProjectApiKey.Owner.ServiceAccount.builder()
                                         .id("id")
                                         .createdAt(0L)
                                         .name("name")
-                                        .role(ProjectServiceAccount.Role.OWNER)
+                                        .role("role")
                                         .build()
                                 )
                                 .type(ProjectApiKey.Owner.Type.USER)
                                 .user(
-                                    ProjectUser.builder()
+                                    ProjectApiKey.Owner.User.builder()
                                         .id("id")
-                                        .addedAt(0L)
+                                        .createdAt(0L)
                                         .email("email")
                                         .name("name")
-                                        .role(ProjectUser.Role.OWNER)
+                                        .role("role")
                                         .build()
                                 )
                                 .build()

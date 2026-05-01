@@ -19,6 +19,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.admin.organization.adminapikeys.AdminApiKey
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyCreateParams
+import com.openai.models.admin.organization.adminapikeys.AdminApiKeyCreateResponse
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyDeleteParams
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyDeleteResponse
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyListPageAsync
@@ -44,7 +45,7 @@ class AdminApiKeyServiceAsyncImpl internal constructor(private val clientOptions
     override fun create(
         params: AdminApiKeyCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<AdminApiKey> =
+    ): CompletableFuture<AdminApiKeyCreateResponse> =
         // post /organization/admin_api_keys
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
@@ -82,13 +83,13 @@ class AdminApiKeyServiceAsyncImpl internal constructor(private val clientOptions
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val createHandler: Handler<AdminApiKey> =
-            jsonHandler<AdminApiKey>(clientOptions.jsonMapper)
+        private val createHandler: Handler<AdminApiKeyCreateResponse> =
+            jsonHandler<AdminApiKeyCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: AdminApiKeyCreateParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<AdminApiKey>> {
+        ): CompletableFuture<HttpResponseFor<AdminApiKeyCreateResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

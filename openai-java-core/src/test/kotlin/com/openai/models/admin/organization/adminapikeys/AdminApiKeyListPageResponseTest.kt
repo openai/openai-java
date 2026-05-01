@@ -4,7 +4,6 @@ package com.openai.models.admin.organization.adminapikeys
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -20,7 +19,6 @@ internal class AdminApiKeyListPageResponseTest {
                         .createdAt(1711471533L)
                         .lastUsedAt(1711471534L)
                         .name("Administration Key")
-                        .object_("organization.admin_api_key")
                         .owner(
                             AdminApiKey.Owner.builder()
                                 .id("sa_456")
@@ -38,17 +36,15 @@ internal class AdminApiKeyListPageResponseTest {
                 .firstId("key_abc")
                 .hasMore(false)
                 .lastId("key_xyz")
-                .object_("list")
                 .build()
 
-        assertThat(adminApiKeyListPageResponse.data().getOrNull())
+        assertThat(adminApiKeyListPageResponse.data())
             .containsExactly(
                 AdminApiKey.builder()
                     .id("key_abc")
                     .createdAt(1711471533L)
                     .lastUsedAt(1711471534L)
                     .name("Administration Key")
-                    .object_("organization.admin_api_key")
                     .owner(
                         AdminApiKey.Owner.builder()
                             .id("sa_456")
@@ -64,9 +60,8 @@ internal class AdminApiKeyListPageResponseTest {
                     .build()
             )
         assertThat(adminApiKeyListPageResponse.firstId()).contains("key_abc")
-        assertThat(adminApiKeyListPageResponse.hasMore()).contains(false)
+        assertThat(adminApiKeyListPageResponse.hasMore()).isEqualTo(false)
         assertThat(adminApiKeyListPageResponse.lastId()).contains("key_xyz")
-        assertThat(adminApiKeyListPageResponse.object_()).contains("list")
     }
 
     @Test
@@ -80,7 +75,6 @@ internal class AdminApiKeyListPageResponseTest {
                         .createdAt(1711471533L)
                         .lastUsedAt(1711471534L)
                         .name("Administration Key")
-                        .object_("organization.admin_api_key")
                         .owner(
                             AdminApiKey.Owner.builder()
                                 .id("sa_456")
@@ -98,7 +92,6 @@ internal class AdminApiKeyListPageResponseTest {
                 .firstId("key_abc")
                 .hasMore(false)
                 .lastId("key_xyz")
-                .object_("list")
                 .build()
 
         val roundtrippedAdminApiKeyListPageResponse =

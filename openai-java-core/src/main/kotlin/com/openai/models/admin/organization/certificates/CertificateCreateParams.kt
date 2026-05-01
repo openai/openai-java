@@ -38,7 +38,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun content(): String = body.content()
+    fun certificate(): String = body.certificate()
 
     /**
      * An optional name for the certificate
@@ -49,11 +49,11 @@ private constructor(
     fun name(): Optional<String> = body.name()
 
     /**
-     * Returns the raw JSON value of [content].
+     * Returns the raw JSON value of [certificate].
      *
-     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [certificate], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _content(): JsonField<String> = body._content()
+    fun _certificate(): JsonField<String> = body._certificate()
 
     /**
      * Returns the raw JSON value of [name].
@@ -79,7 +79,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .content()
+         * .certificate()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -104,21 +104,22 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [content]
+         * - [certificate]
          * - [name]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The certificate content in PEM format */
-        fun content(content: String) = apply { body.content(content) }
+        fun certificate(certificate: String) = apply { body.certificate(certificate) }
 
         /**
-         * Sets [Builder.content] to an arbitrary JSON value.
+         * Sets [Builder.certificate] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.content] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.certificate] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun content(content: JsonField<String>) = apply { body.content(content) }
+        fun certificate(certificate: JsonField<String>) = apply { body.certificate(certificate) }
 
         /** An optional name for the certificate */
         fun name(name: String) = apply { body.name(name) }
@@ -255,7 +256,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .content()
+         * .certificate()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -277,16 +278,18 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val content: JsonField<String>,
+        private val certificate: JsonField<String>,
         private val name: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("content") @ExcludeMissing content: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("certificate")
+            @ExcludeMissing
+            certificate: JsonField<String> = JsonMissing.of(),
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-        ) : this(content, name, mutableMapOf())
+        ) : this(certificate, name, mutableMapOf())
 
         /**
          * The certificate content in PEM format
@@ -294,7 +297,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun content(): String = content.getRequired("content")
+        fun certificate(): String = certificate.getRequired("certificate")
 
         /**
          * An optional name for the certificate
@@ -305,11 +308,13 @@ private constructor(
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
-         * Returns the raw JSON value of [content].
+         * Returns the raw JSON value of [certificate].
          *
-         * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [certificate], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<String> = content
+        @JsonProperty("certificate")
+        @ExcludeMissing
+        fun _certificate(): JsonField<String> = certificate
 
         /**
          * Returns the raw JSON value of [name].
@@ -337,7 +342,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .content()
+             * .certificate()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -346,28 +351,30 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var content: JsonField<String>? = null
+            private var certificate: JsonField<String>? = null
             private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                content = body.content
+                certificate = body.certificate
                 name = body.name
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The certificate content in PEM format */
-            fun content(content: String) = content(JsonField.of(content))
+            fun certificate(certificate: String) = certificate(JsonField.of(certificate))
 
             /**
-             * Sets [Builder.content] to an arbitrary JSON value.
+             * Sets [Builder.certificate] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.content] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.certificate] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun content(content: JsonField<String>) = apply { this.content = content }
+            fun certificate(certificate: JsonField<String>) = apply {
+                this.certificate = certificate
+            }
 
             /** An optional name for the certificate */
             fun name(name: String) = name(JsonField.of(name))
@@ -407,13 +414,17 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .content()
+             * .certificate()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
-                Body(checkRequired("content", content), name, additionalProperties.toMutableMap())
+                Body(
+                    checkRequired("certificate", certificate),
+                    name,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -423,7 +434,7 @@ private constructor(
                 return@apply
             }
 
-            content()
+            certificate()
             name()
             validated = true
         }
@@ -444,7 +455,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (content.asKnown().isPresent) 1 else 0) + (if (name.asKnown().isPresent) 1 else 0)
+            (if (certificate.asKnown().isPresent) 1 else 0) +
+                (if (name.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -452,17 +464,17 @@ private constructor(
             }
 
             return other is Body &&
-                content == other.content &&
+                certificate == other.certificate &&
                 name == other.name &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(content, name, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(certificate, name, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{content=$content, name=$name, additionalProperties=$additionalProperties}"
+            "Body{certificate=$certificate, name=$name, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

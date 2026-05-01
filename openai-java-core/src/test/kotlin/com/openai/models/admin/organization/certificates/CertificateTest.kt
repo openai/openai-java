@@ -37,7 +37,7 @@ internal class CertificateTest {
                     .build()
             )
         assertThat(certificate.createdAt()).isEqualTo(0L)
-        assertThat(certificate.name()).isEqualTo("name")
+        assertThat(certificate.name()).contains("name")
         assertThat(certificate.object_()).isEqualTo(Certificate.Object.CERTIFICATE)
         assertThat(certificate.active()).contains(true)
     }

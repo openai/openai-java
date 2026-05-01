@@ -16,45 +16,36 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class CertificateDeactivatePageResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val data: JsonField<List<Certificate>>,
-    private val hasMore: JsonField<Boolean>,
+    private val data: JsonField<List<CertificateDeactivateResponse>>,
     private val object_: JsonValue,
-    private val firstId: JsonField<String>,
-    private val lastId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("data") @ExcludeMissing data: JsonField<List<Certificate>> = JsonMissing.of(),
-        @JsonProperty("has_more") @ExcludeMissing hasMore: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("data")
+        @ExcludeMissing
+        data: JsonField<List<CertificateDeactivateResponse>> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
-        @JsonProperty("first_id") @ExcludeMissing firstId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("last_id") @ExcludeMissing lastId: JsonField<String> = JsonMissing.of(),
-    ) : this(data, hasMore, object_, firstId, lastId, mutableMapOf())
+    ) : this(data, object_, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun data(): List<Certificate> = data.getRequired("data")
+    fun data(): List<CertificateDeactivateResponse> = data.getRequired("data")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
-
-    /**
+     * The organization certificate deactivation result type.
+     *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("list")
+     * JsonValue.from("organization.certificate.deactivation")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -63,44 +54,13 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun firstId(): Optional<String> = firstId.getOptional("first_id")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun lastId(): Optional<String> = lastId.getOptional("last_id")
-
-    /**
      * Returns the raw JSON value of [data].
      *
      * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<Certificate>> = data
-
-    /**
-     * Returns the raw JSON value of [hasMore].
-     *
-     * Unlike [hasMore], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("has_more") @ExcludeMissing fun _hasMore(): JsonField<Boolean> = hasMore
-
-    /**
-     * Returns the raw JSON value of [firstId].
-     *
-     * Unlike [firstId], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("first_id") @ExcludeMissing fun _firstId(): JsonField<String> = firstId
-
-    /**
-     * Returns the raw JSON value of [lastId].
-     *
-     * Unlike [lastId], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("last_id") @ExcludeMissing fun _lastId(): JsonField<String> = lastId
+    @JsonProperty("data")
+    @ExcludeMissing
+    fun _data(): JsonField<List<CertificateDeactivateResponse>> = data
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -123,7 +83,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
-         * .hasMore()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -132,59 +91,43 @@ private constructor(
     /** A builder for [CertificateDeactivatePageResponse]. */
     class Builder internal constructor() {
 
-        private var data: JsonField<MutableList<Certificate>>? = null
-        private var hasMore: JsonField<Boolean>? = null
-        private var object_: JsonValue = JsonValue.from("list")
-        private var firstId: JsonField<String> = JsonMissing.of()
-        private var lastId: JsonField<String> = JsonMissing.of()
+        private var data: JsonField<MutableList<CertificateDeactivateResponse>>? = null
+        private var object_: JsonValue = JsonValue.from("organization.certificate.deactivation")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(certificateDeactivatePageResponse: CertificateDeactivatePageResponse) =
             apply {
                 data = certificateDeactivatePageResponse.data.map { it.toMutableList() }
-                hasMore = certificateDeactivatePageResponse.hasMore
                 object_ = certificateDeactivatePageResponse.object_
-                firstId = certificateDeactivatePageResponse.firstId
-                lastId = certificateDeactivatePageResponse.lastId
                 additionalProperties =
                     certificateDeactivatePageResponse.additionalProperties.toMutableMap()
             }
 
-        fun data(data: List<Certificate>) = data(JsonField.of(data))
+        fun data(data: List<CertificateDeactivateResponse>) = data(JsonField.of(data))
 
         /**
          * Sets [Builder.data] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.data] with a well-typed `List<Certificate>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.data] with a well-typed
+         * `List<CertificateDeactivateResponse>` value instead. This method is primarily for setting
+         * the field to an undocumented or not yet supported value.
          */
-        fun data(data: JsonField<List<Certificate>>) = apply {
+        fun data(data: JsonField<List<CertificateDeactivateResponse>>) = apply {
             this.data = data.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Certificate] to [Builder.data].
+         * Adds a single [CertificateDeactivateResponse] to [Builder.data].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addData(data: Certificate) = apply {
+        fun addData(data: CertificateDeactivateResponse) = apply {
             this.data =
                 (this.data ?: JsonField.of(mutableListOf())).also {
                     checkKnown("data", it).add(data)
                 }
         }
-
-        fun hasMore(hasMore: Boolean) = hasMore(JsonField.of(hasMore))
-
-        /**
-         * Sets [Builder.hasMore] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.hasMore] with a well-typed [Boolean] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -192,33 +135,13 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("list")
+         * JsonValue.from("organization.certificate.deactivation")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
-
-        fun firstId(firstId: String) = firstId(JsonField.of(firstId))
-
-        /**
-         * Sets [Builder.firstId] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.firstId] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun firstId(firstId: JsonField<String>) = apply { this.firstId = firstId }
-
-        fun lastId(lastId: String) = lastId(JsonField.of(lastId))
-
-        /**
-         * Sets [Builder.lastId] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.lastId] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun lastId(lastId: JsonField<String>) = apply { this.lastId = lastId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -247,7 +170,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
-         * .hasMore()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -255,10 +177,7 @@ private constructor(
         fun build(): CertificateDeactivatePageResponse =
             CertificateDeactivatePageResponse(
                 checkRequired("data", data).map { it.toImmutable() },
-                checkRequired("hasMore", hasMore),
                 object_,
-                firstId,
-                lastId,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -271,14 +190,11 @@ private constructor(
         }
 
         data().forEach { it.validate() }
-        hasMore()
         _object_().let {
-            if (it != JsonValue.from("list")) {
+            if (it != JsonValue.from("organization.certificate.deactivation")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
-        firstId()
-        lastId()
         validated = true
     }
 
@@ -298,10 +214,9 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (data.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (if (hasMore.asKnown().isPresent) 1 else 0) +
-            object_.let { if (it == JsonValue.from("list")) 1 else 0 } +
-            (if (firstId.asKnown().isPresent) 1 else 0) +
-            (if (lastId.asKnown().isPresent) 1 else 0)
+            object_.let {
+                if (it == JsonValue.from("organization.certificate.deactivation")) 1 else 0
+            }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -310,19 +225,14 @@ private constructor(
 
         return other is CertificateDeactivatePageResponse &&
             data == other.data &&
-            hasMore == other.hasMore &&
             object_ == other.object_ &&
-            firstId == other.firstId &&
-            lastId == other.lastId &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy {
-        Objects.hash(data, hasMore, object_, firstId, lastId, additionalProperties)
-    }
+    private val hashCode: Int by lazy { Objects.hash(data, object_, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CertificateDeactivatePageResponse{data=$data, hasMore=$hasMore, object_=$object_, firstId=$firstId, lastId=$lastId, additionalProperties=$additionalProperties}"
+        "CertificateDeactivatePageResponse{data=$data, object_=$object_, additionalProperties=$additionalProperties}"
 }

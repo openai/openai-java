@@ -25,9 +25,9 @@ class Invite
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
     private val email: JsonField<String>,
     private val expiresAt: JsonField<Long>,
-    private val invitedAt: JsonField<Long>,
     private val object_: JsonValue,
     private val role: JsonField<Role>,
     private val status: JsonField<Status>,
@@ -39,9 +39,9 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("email") @ExcludeMissing email: JsonField<String> = JsonMissing.of(),
         @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("invited_at") @ExcludeMissing invitedAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
@@ -51,9 +51,9 @@ private constructor(
         projects: JsonField<List<Project>> = JsonMissing.of(),
     ) : this(
         id,
+        createdAt,
         email,
         expiresAt,
-        invitedAt,
         object_,
         role,
         status,
@@ -71,6 +71,14 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
+     * The Unix timestamp (in seconds) of when the invite was sent.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    /**
      * The email address of the individual to whom the invite was sent
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -81,18 +89,10 @@ private constructor(
     /**
      * The Unix timestamp (in seconds) of when the invite expires.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun expiresAt(): Long = expiresAt.getRequired("expires_at")
-
-    /**
-     * The Unix timestamp (in seconds) of when the invite was sent.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun invitedAt(): Long = invitedAt.getRequired("invited_at")
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * The object type, which is always `organization.invite`
@@ -147,6 +147,13 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
+
+    /**
      * Returns the raw JSON value of [email].
      *
      * Unlike [email], this method doesn't throw if the JSON field has an unexpected type.
@@ -159,13 +166,6 @@ private constructor(
      * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
-
-    /**
-     * Returns the raw JSON value of [invitedAt].
-     *
-     * Unlike [invitedAt], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("invited_at") @ExcludeMissing fun _invitedAt(): JsonField<Long> = invitedAt
 
     /**
      * Returns the raw JSON value of [role].
@@ -215,9 +215,9 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
+         * .createdAt()
          * .email()
          * .expiresAt()
-         * .invitedAt()
          * .role()
          * .status()
          * ```
@@ -229,9 +229,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
         private var email: JsonField<String>? = null
         private var expiresAt: JsonField<Long>? = null
-        private var invitedAt: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("organization.invite")
         private var role: JsonField<Role>? = null
         private var status: JsonField<Status>? = null
@@ -242,9 +242,9 @@ private constructor(
         @JvmSynthetic
         internal fun from(invite: Invite) = apply {
             id = invite.id
+            createdAt = invite.createdAt
             email = invite.email
             expiresAt = invite.expiresAt
-            invitedAt = invite.invitedAt
             object_ = invite.object_
             role = invite.role
             status = invite.status
@@ -264,6 +264,17 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** The Unix timestamp (in seconds) of when the invite was sent. */
+        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
+
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
         /** The email address of the individual to whom the invite was sent */
         fun email(email: String) = email(JsonField.of(email))
 
@@ -276,7 +287,17 @@ private constructor(
         fun email(email: JsonField<String>) = apply { this.email = email }
 
         /** The Unix timestamp (in seconds) of when the invite expires. */
-        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /**
+         * Alias for [Builder.expiresAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
 
         /**
          * Sets [Builder.expiresAt] to an arbitrary JSON value.
@@ -285,17 +306,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
-
-        /** The Unix timestamp (in seconds) of when the invite was sent. */
-        fun invitedAt(invitedAt: Long) = invitedAt(JsonField.of(invitedAt))
-
-        /**
-         * Sets [Builder.invitedAt] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.invitedAt] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun invitedAt(invitedAt: JsonField<Long>) = apply { this.invitedAt = invitedAt }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -334,7 +344,17 @@ private constructor(
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The Unix timestamp (in seconds) of when the invite was accepted. */
-        fun acceptedAt(acceptedAt: Long) = acceptedAt(JsonField.of(acceptedAt))
+        fun acceptedAt(acceptedAt: Long?) = acceptedAt(JsonField.ofNullable(acceptedAt))
+
+        /**
+         * Alias for [Builder.acceptedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun acceptedAt(acceptedAt: Long) = acceptedAt(acceptedAt as Long?)
+
+        /** Alias for calling [Builder.acceptedAt] with `acceptedAt.orElse(null)`. */
+        fun acceptedAt(acceptedAt: Optional<Long>) = acceptedAt(acceptedAt.getOrNull())
 
         /**
          * Sets [Builder.acceptedAt] to an arbitrary JSON value.
@@ -397,9 +417,9 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
+         * .createdAt()
          * .email()
          * .expiresAt()
-         * .invitedAt()
          * .role()
          * .status()
          * ```
@@ -409,9 +429,9 @@ private constructor(
         fun build(): Invite =
             Invite(
                 checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
                 checkRequired("email", email),
                 checkRequired("expiresAt", expiresAt),
-                checkRequired("invitedAt", invitedAt),
                 object_,
                 checkRequired("role", role),
                 checkRequired("status", status),
@@ -429,9 +449,9 @@ private constructor(
         }
 
         id()
+        createdAt()
         email()
         expiresAt()
-        invitedAt()
         _object_().let {
             if (it != JsonValue.from("organization.invite")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -460,9 +480,9 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
+            (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (email.asKnown().isPresent) 1 else 0) +
             (if (expiresAt.asKnown().isPresent) 1 else 0) +
-            (if (invitedAt.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.invite")) 1 else 0 } +
             (role.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1038,9 +1058,9 @@ private constructor(
 
         return other is Invite &&
             id == other.id &&
+            createdAt == other.createdAt &&
             email == other.email &&
             expiresAt == other.expiresAt &&
-            invitedAt == other.invitedAt &&
             object_ == other.object_ &&
             role == other.role &&
             status == other.status &&
@@ -1052,9 +1072,9 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
+            createdAt,
             email,
             expiresAt,
-            invitedAt,
             object_,
             role,
             status,
@@ -1067,5 +1087,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Invite{id=$id, email=$email, expiresAt=$expiresAt, invitedAt=$invitedAt, object_=$object_, role=$role, status=$status, acceptedAt=$acceptedAt, projects=$projects, additionalProperties=$additionalProperties}"
+        "Invite{id=$id, createdAt=$createdAt, email=$email, expiresAt=$expiresAt, object_=$object_, role=$role, status=$status, acceptedAt=$acceptedAt, projects=$projects, additionalProperties=$additionalProperties}"
 }

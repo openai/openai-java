@@ -65,7 +65,7 @@ internal class UsageEmbeddingsResponseTest {
                     .build()
             )
         assertThat(usageEmbeddingsResponse.hasMore()).isEqualTo(true)
-        assertThat(usageEmbeddingsResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageEmbeddingsResponse.nextPage()).contains("next_page")
     }
 
     @Test

@@ -43,7 +43,7 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
         params: ApiKeyRetrieveParams,
         requestOptions: RequestOptions,
     ): ProjectApiKey =
-        // get /organization/projects/{project_id}/api_keys/{key_id}
+        // get /organization/projects/{project_id}/api_keys/{api_key_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun list(params: ApiKeyListParams, requestOptions: RequestOptions): ApiKeyListPage =
@@ -54,7 +54,7 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
         params: ApiKeyDeleteParams,
         requestOptions: RequestOptions,
     ): ApiKeyDeleteResponse =
-        // delete /organization/projects/{project_id}/api_keys/{key_id}
+        // delete /organization/projects/{project_id}/api_keys/{api_key_id}
         withRawResponse().delete(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -79,7 +79,7 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
         ): HttpResponseFor<ProjectApiKey> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
-            checkRequired("keyId", params.keyId().getOrNull())
+            checkRequired("apiKeyId", params.apiKeyId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -160,7 +160,7 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
         ): HttpResponseFor<ApiKeyDeleteResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
-            checkRequired("keyId", params.keyId().getOrNull())
+            checkRequired("apiKeyId", params.apiKeyId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

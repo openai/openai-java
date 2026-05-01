@@ -16,19 +16,20 @@ private constructor(
     private val service: CertificateService,
     private val params: CertificateDeactivateParams,
     private val response: CertificateDeactivatePageResponse,
-) : Page<Certificate> {
+) : Page<CertificateDeactivateResponse> {
 
     /**
      * Delegates to [CertificateDeactivatePageResponse], but gracefully handles missing data.
      *
      * @see CertificateDeactivatePageResponse.data
      */
-    fun data(): List<Certificate> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    fun data(): List<CertificateDeactivateResponse> =
+        response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /** @see CertificateDeactivatePageResponse.object_ */
     fun object_(): JsonValue = response._object_()
 
-    override fun items(): List<Certificate> = data()
+    override fun items(): List<CertificateDeactivateResponse> = data()
 
     override fun hasNextPage(): Boolean = false
 
@@ -37,7 +38,7 @@ private constructor(
 
     override fun nextPage(): CertificateDeactivatePage = service.deactivate(nextPageParams())
 
-    fun autoPager(): AutoPager<Certificate> = AutoPager.from(this)
+    fun autoPager(): AutoPager<CertificateDeactivateResponse> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): CertificateDeactivateParams = params
