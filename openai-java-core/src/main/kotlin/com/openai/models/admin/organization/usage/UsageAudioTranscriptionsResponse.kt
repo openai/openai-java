@@ -60,10 +60,10 @@ private constructor(
     fun hasMore(): Boolean = hasMore.getRequired("has_more")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun nextPage(): String = nextPage.getRequired("next_page")
+    fun nextPage(): Optional<String> = nextPage.getOptional("next_page")
 
     /**
      * Expected to always return the following:
@@ -179,7 +179,10 @@ private constructor(
          */
         fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
 
-        fun nextPage(nextPage: String) = nextPage(JsonField.of(nextPage))
+        fun nextPage(nextPage: String?) = nextPage(JsonField.ofNullable(nextPage))
+
+        /** Alias for calling [Builder.nextPage] with `nextPage.orElse(null)`. */
+        fun nextPage(nextPage: Optional<String>) = nextPage(nextPage.getOrNull())
 
         /**
          * Sets [Builder.nextPage] to an arbitrary JSON value.
@@ -289,7 +292,7 @@ private constructor(
     private constructor(
         private val endTime: JsonField<Long>,
         private val object_: JsonValue,
-        private val result: JsonField<List<Result>>,
+        private val results: JsonField<List<Result>>,
         private val startTime: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -298,13 +301,13 @@ private constructor(
         private constructor(
             @JsonProperty("end_time") @ExcludeMissing endTime: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
-            @JsonProperty("result")
+            @JsonProperty("results")
             @ExcludeMissing
-            result: JsonField<List<Result>> = JsonMissing.of(),
+            results: JsonField<List<Result>> = JsonMissing.of(),
             @JsonProperty("start_time")
             @ExcludeMissing
             startTime: JsonField<Long> = JsonMissing.of(),
-        ) : this(endTime, object_, result, startTime, mutableMapOf())
+        ) : this(endTime, object_, results, startTime, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -327,7 +330,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun result(): List<Result> = result.getRequired("result")
+        fun results(): List<Result> = results.getRequired("results")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -343,11 +346,11 @@ private constructor(
         @JsonProperty("end_time") @ExcludeMissing fun _endTime(): JsonField<Long> = endTime
 
         /**
-         * Returns the raw JSON value of [result].
+         * Returns the raw JSON value of [results].
          *
-         * Unlike [result], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [results], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("result") @ExcludeMissing fun _result(): JsonField<List<Result>> = result
+        @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Result>> = results
 
         /**
          * Returns the raw JSON value of [startTime].
@@ -376,7 +379,7 @@ private constructor(
              * The following fields are required:
              * ```java
              * .endTime()
-             * .result()
+             * .results()
              * .startTime()
              * ```
              */
@@ -388,7 +391,7 @@ private constructor(
 
             private var endTime: JsonField<Long>? = null
             private var object_: JsonValue = JsonValue.from("bucket")
-            private var result: JsonField<MutableList<Result>>? = null
+            private var results: JsonField<MutableList<Result>>? = null
             private var startTime: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -396,7 +399,7 @@ private constructor(
             internal fun from(data: Data) = apply {
                 endTime = data.endTime
                 object_ = data.object_
-                result = data.result.map { it.toMutableList() }
+                results = data.results.map { it.toMutableList() }
                 startTime = data.startTime
                 additionalProperties = data.additionalProperties.toMutableMap()
             }
@@ -426,28 +429,28 @@ private constructor(
              */
             fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-            fun result(result: List<Result>) = result(JsonField.of(result))
+            fun results(results: List<Result>) = results(JsonField.of(results))
 
             /**
-             * Sets [Builder.result] to an arbitrary JSON value.
+             * Sets [Builder.results] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.result] with a well-typed `List<Result>` value
+             * You should usually call [Builder.results] with a well-typed `List<Result>` value
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun result(result: JsonField<List<Result>>) = apply {
-                this.result = result.map { it.toMutableList() }
+            fun results(results: JsonField<List<Result>>) = apply {
+                this.results = results.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [Result] to [Builder.result].
+             * Adds a single [Result] to [results].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addResult(result: Result) = apply {
-                this.result =
-                    (this.result ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("result", it).add(result)
+                results =
+                    (results ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("results", it).add(result)
                     }
             }
 
@@ -539,6 +542,21 @@ private constructor(
                 )
 
             /**
+             * Alias for calling [addResult] with the following:
+             * ```java
+             * Result.OrganizationUsageCodeInterpreterSessionsResult.builder()
+             *     .numSessions(numSessions)
+             *     .build()
+             * ```
+             */
+            fun addOrganizationUsageCodeInterpreterSessionsResult(numSessions: Long) =
+                addResult(
+                    Result.OrganizationUsageCodeInterpreterSessionsResult.builder()
+                        .numSessions(numSessions)
+                        .build()
+                )
+
+            /**
              * Alias for calling [addResult] with `Result.ofOrganizationCosts(organizationCosts)`.
              */
             fun addResult(organizationCosts: Result.OrganizationCostsResult) =
@@ -582,7 +600,7 @@ private constructor(
              * The following fields are required:
              * ```java
              * .endTime()
-             * .result()
+             * .results()
              * .startTime()
              * ```
              *
@@ -592,7 +610,7 @@ private constructor(
                 Data(
                     checkRequired("endTime", endTime),
                     object_,
-                    checkRequired("result", result).map { it.toImmutable() },
+                    checkRequired("results", results).map { it.toImmutable() },
                     checkRequired("startTime", startTime),
                     additionalProperties.toMutableMap(),
                 )
@@ -611,7 +629,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'object_' is invalid, received $it")
                 }
             }
-            result().forEach { it.validate() }
+            results().forEach { it.validate() }
             startTime()
             validated = true
         }
@@ -634,7 +652,7 @@ private constructor(
         internal fun validity(): Int =
             (if (endTime.asKnown().isPresent) 1 else 0) +
                 object_.let { if (it == JsonValue.from("bucket")) 1 else 0 } +
-                (result.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (startTime.asKnown().isPresent) 1 else 0)
 
         /** The aggregated completions usage details of the specific time bucket. */
@@ -4731,22 +4749,31 @@ private constructor(
             class OrganizationUsageCodeInterpreterSessionsResult
             @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
-                private val object_: JsonValue,
                 private val numSessions: JsonField<Long>,
+                private val object_: JsonValue,
                 private val projectId: JsonField<String>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
                 @JsonCreator
                 private constructor(
-                    @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
                     @JsonProperty("num_sessions")
                     @ExcludeMissing
                     numSessions: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
                     @JsonProperty("project_id")
                     @ExcludeMissing
                     projectId: JsonField<String> = JsonMissing.of(),
-                ) : this(object_, numSessions, projectId, mutableMapOf())
+                ) : this(numSessions, object_, projectId, mutableMapOf())
+
+                /**
+                 * The number of code interpreter sessions.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numSessions(): Long = numSessions.getRequired("num_sessions")
 
                 /**
                  * Expected to always return the following:
@@ -4758,14 +4785,6 @@ private constructor(
                  * responded with an unexpected value).
                  */
                 @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
-
-                /**
-                 * The number of code interpreter sessions.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun numSessions(): Optional<Long> = numSessions.getOptional("num_sessions")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
@@ -4813,6 +4832,11 @@ private constructor(
                     /**
                      * Returns a mutable builder for constructing an instance of
                      * [OrganizationUsageCodeInterpreterSessionsResult].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numSessions()
+                     * ```
                      */
                     @JvmStatic fun builder() = Builder()
                 }
@@ -4820,9 +4844,9 @@ private constructor(
                 /** A builder for [OrganizationUsageCodeInterpreterSessionsResult]. */
                 class Builder internal constructor() {
 
+                    private var numSessions: JsonField<Long>? = null
                     private var object_: JsonValue =
                         JsonValue.from("organization.usage.code_interpreter_sessions.result")
-                    private var numSessions: JsonField<Long> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -4831,12 +4855,26 @@ private constructor(
                         organizationUsageCodeInterpreterSessionsResult:
                             OrganizationUsageCodeInterpreterSessionsResult
                     ) = apply {
-                        object_ = organizationUsageCodeInterpreterSessionsResult.object_
                         numSessions = organizationUsageCodeInterpreterSessionsResult.numSessions
+                        object_ = organizationUsageCodeInterpreterSessionsResult.object_
                         projectId = organizationUsageCodeInterpreterSessionsResult.projectId
                         additionalProperties =
                             organizationUsageCodeInterpreterSessionsResult.additionalProperties
                                 .toMutableMap()
+                    }
+
+                    /** The number of code interpreter sessions. */
+                    fun numSessions(numSessions: Long) = numSessions(JsonField.of(numSessions))
+
+                    /**
+                     * Sets [Builder.numSessions] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numSessions] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun numSessions(numSessions: JsonField<Long>) = apply {
+                        this.numSessions = numSessions
                     }
 
                     /**
@@ -4852,20 +4890,6 @@ private constructor(
                      * supported value.
                      */
                     fun object_(object_: JsonValue) = apply { this.object_ = object_ }
-
-                    /** The number of code interpreter sessions. */
-                    fun numSessions(numSessions: Long) = numSessions(JsonField.of(numSessions))
-
-                    /**
-                     * Sets [Builder.numSessions] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.numSessions] with a well-typed [Long] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun numSessions(numSessions: JsonField<Long>) = apply {
-                        this.numSessions = numSessions
-                    }
 
                     /**
                      * When `group_by=project_id`, this field provides the project ID of the grouped
@@ -4914,11 +4938,18 @@ private constructor(
                      * [OrganizationUsageCodeInterpreterSessionsResult].
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numSessions()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
                      */
                     fun build(): OrganizationUsageCodeInterpreterSessionsResult =
                         OrganizationUsageCodeInterpreterSessionsResult(
+                            checkRequired("numSessions", numSessions),
                             object_,
-                            numSessions,
                             projectId,
                             additionalProperties.toMutableMap(),
                         )
@@ -4931,6 +4962,7 @@ private constructor(
                         return@apply
                     }
 
+                    numSessions()
                     _object_().let {
                         if (
                             it !=
@@ -4941,7 +4973,6 @@ private constructor(
                             throw OpenAIInvalidDataException("'object_' is invalid, received $it")
                         }
                     }
-                    numSessions()
                     projectId()
                     validated = true
                 }
@@ -4962,17 +4993,17 @@ private constructor(
                  */
                 @JvmSynthetic
                 internal fun validity(): Int =
-                    object_.let {
-                        if (
-                            it ==
-                                JsonValue.from(
-                                    "organization.usage.code_interpreter_sessions.result"
-                                )
-                        )
-                            1
-                        else 0
-                    } +
-                        (if (numSessions.asKnown().isPresent) 1 else 0) +
+                    (if (numSessions.asKnown().isPresent) 1 else 0) +
+                        object_.let {
+                            if (
+                                it ==
+                                    JsonValue.from(
+                                        "organization.usage.code_interpreter_sessions.result"
+                                    )
+                            )
+                                1
+                            else 0
+                        } +
                         (if (projectId.asKnown().isPresent) 1 else 0)
 
                 override fun equals(other: Any?): Boolean {
@@ -4981,20 +5012,20 @@ private constructor(
                     }
 
                     return other is OrganizationUsageCodeInterpreterSessionsResult &&
-                        object_ == other.object_ &&
                         numSessions == other.numSessions &&
+                        object_ == other.object_ &&
                         projectId == other.projectId &&
                         additionalProperties == other.additionalProperties
                 }
 
                 private val hashCode: Int by lazy {
-                    Objects.hash(object_, numSessions, projectId, additionalProperties)
+                    Objects.hash(numSessions, object_, projectId, additionalProperties)
                 }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageCodeInterpreterSessionsResult{object_=$object_, numSessions=$numSessions, projectId=$projectId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageCodeInterpreterSessionsResult{numSessions=$numSessions, object_=$object_, projectId=$projectId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated costs details of the specific time bucket. */
@@ -5550,19 +5581,19 @@ private constructor(
             return other is Data &&
                 endTime == other.endTime &&
                 object_ == other.object_ &&
-                result == other.result &&
+                results == other.results &&
                 startTime == other.startTime &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(endTime, object_, result, startTime, additionalProperties)
+            Objects.hash(endTime, object_, results, startTime, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Data{endTime=$endTime, object_=$object_, result=$result, startTime=$startTime, additionalProperties=$additionalProperties}"
+            "Data{endTime=$endTime, object_=$object_, results=$results, startTime=$startTime, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

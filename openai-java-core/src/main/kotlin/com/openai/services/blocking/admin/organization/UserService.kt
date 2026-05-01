@@ -63,24 +63,33 @@ interface UserService {
         retrieve(userId, UserRetrieveParams.none(), requestOptions)
 
     /** Modifies a user's role in the organization. */
-    fun update(userId: String, params: UserUpdateParams): OrganizationUser =
-        update(userId, params, RequestOptions.none())
+    fun update(userId: String): OrganizationUser = update(userId, UserUpdateParams.none())
 
     /** @see update */
     fun update(
         userId: String,
-        params: UserUpdateParams,
+        params: UserUpdateParams = UserUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationUser = update(params.toBuilder().userId(userId).build(), requestOptions)
 
     /** @see update */
-    fun update(params: UserUpdateParams): OrganizationUser = update(params, RequestOptions.none())
+    fun update(
+        userId: String,
+        params: UserUpdateParams = UserUpdateParams.none(),
+    ): OrganizationUser = update(userId, params, RequestOptions.none())
 
     /** @see update */
     fun update(
         params: UserUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationUser
+
+    /** @see update */
+    fun update(params: UserUpdateParams): OrganizationUser = update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(userId: String, requestOptions: RequestOptions): OrganizationUser =
+        update(userId, UserUpdateParams.none(), requestOptions)
 
     /** Lists all of the users in the organization. */
     fun list(): UserListPage = list(UserListParams.none())
@@ -189,17 +198,31 @@ interface UserService {
          * the same as [UserService.update].
          */
         @MustBeClosed
-        fun update(userId: String, params: UserUpdateParams): HttpResponseFor<OrganizationUser> =
-            update(userId, params, RequestOptions.none())
+        fun update(userId: String): HttpResponseFor<OrganizationUser> =
+            update(userId, UserUpdateParams.none())
 
         /** @see update */
         @MustBeClosed
         fun update(
             userId: String,
-            params: UserUpdateParams,
+            params: UserUpdateParams = UserUpdateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<OrganizationUser> =
             update(params.toBuilder().userId(userId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            userId: String,
+            params: UserUpdateParams = UserUpdateParams.none(),
+        ): HttpResponseFor<OrganizationUser> = update(userId, params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: UserUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OrganizationUser>
 
         /** @see update */
         @MustBeClosed
@@ -209,9 +232,10 @@ interface UserService {
         /** @see update */
         @MustBeClosed
         fun update(
-            params: UserUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<OrganizationUser>
+            userId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<OrganizationUser> =
+            update(userId, UserUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /organization/users`, but is otherwise the same as

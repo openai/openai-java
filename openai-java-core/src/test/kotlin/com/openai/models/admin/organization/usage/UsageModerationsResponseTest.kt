@@ -65,7 +65,7 @@ internal class UsageModerationsResponseTest {
                     .build()
             )
         assertThat(usageModerationsResponse.hasMore()).isEqualTo(true)
-        assertThat(usageModerationsResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageModerationsResponse.nextPage()).contains("next_page")
     }
 
     @Test

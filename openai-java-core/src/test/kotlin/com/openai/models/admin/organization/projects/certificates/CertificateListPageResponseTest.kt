@@ -4,7 +4,6 @@ package com.openai.models.admin.organization.projects.certificates
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import com.openai.models.admin.organization.certificates.Certificate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,45 +14,41 @@ internal class CertificateListPageResponseTest {
         val certificateListPageResponse =
             CertificateListPageResponse.builder()
                 .addData(
-                    Certificate.builder()
+                    CertificateListResponse.builder()
                         .id("id")
+                        .active(true)
                         .certificateDetails(
-                            Certificate.CertificateDetails.builder()
-                                .content("content")
+                            CertificateListResponse.CertificateDetails.builder()
                                 .expiresAt(0L)
                                 .validAt(0L)
                                 .build()
                         )
                         .createdAt(0L)
                         .name("name")
-                        .object_(Certificate.Object.CERTIFICATE)
-                        .active(true)
                         .build()
                 )
-                .hasMore(true)
                 .firstId("cert_abc")
+                .hasMore(true)
                 .lastId("cert_abc")
                 .build()
 
         assertThat(certificateListPageResponse.data())
             .containsExactly(
-                Certificate.builder()
+                CertificateListResponse.builder()
                     .id("id")
+                    .active(true)
                     .certificateDetails(
-                        Certificate.CertificateDetails.builder()
-                            .content("content")
+                        CertificateListResponse.CertificateDetails.builder()
                             .expiresAt(0L)
                             .validAt(0L)
                             .build()
                     )
                     .createdAt(0L)
                     .name("name")
-                    .object_(Certificate.Object.CERTIFICATE)
-                    .active(true)
                     .build()
             )
-        assertThat(certificateListPageResponse.hasMore()).isEqualTo(true)
         assertThat(certificateListPageResponse.firstId()).contains("cert_abc")
+        assertThat(certificateListPageResponse.hasMore()).isEqualTo(true)
         assertThat(certificateListPageResponse.lastId()).contains("cert_abc")
     }
 
@@ -63,23 +58,21 @@ internal class CertificateListPageResponseTest {
         val certificateListPageResponse =
             CertificateListPageResponse.builder()
                 .addData(
-                    Certificate.builder()
+                    CertificateListResponse.builder()
                         .id("id")
+                        .active(true)
                         .certificateDetails(
-                            Certificate.CertificateDetails.builder()
-                                .content("content")
+                            CertificateListResponse.CertificateDetails.builder()
                                 .expiresAt(0L)
                                 .validAt(0L)
                                 .build()
                         )
                         .createdAt(0L)
                         .name("name")
-                        .object_(Certificate.Object.CERTIFICATE)
-                        .active(true)
                         .build()
                 )
-                .hasMore(true)
                 .firstId("cert_abc")
+                .hasMore(true)
                 .lastId("cert_abc")
                 .build()
 

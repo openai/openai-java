@@ -14,8 +14,7 @@ internal class UserUpdateParamsTest {
 
     @Test
     fun pathParams() {
-        val params =
-            UserUpdateParams.builder().userId("user_id").role(UserUpdateParams.Role.OWNER).build()
+        val params = UserUpdateParams.builder().userId("user_id").build()
 
         assertThat(params._pathParam(0)).isEqualTo("user_id")
         // out-of-bound path param
@@ -29,6 +28,13 @@ internal class UserUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.role()).isEqualTo(UserUpdateParams.Role.OWNER)
+        assertThat(body.role()).contains(UserUpdateParams.Role.OWNER)
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
+        val params = UserUpdateParams.builder().userId("user_id").build()
+
+        val body = params._body()
     }
 }

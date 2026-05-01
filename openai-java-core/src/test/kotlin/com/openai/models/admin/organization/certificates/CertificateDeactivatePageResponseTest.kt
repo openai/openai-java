@@ -14,46 +14,36 @@ internal class CertificateDeactivatePageResponseTest {
         val certificateDeactivatePageResponse =
             CertificateDeactivatePageResponse.builder()
                 .addData(
-                    Certificate.builder()
+                    CertificateDeactivateResponse.builder()
                         .id("id")
+                        .active(true)
                         .certificateDetails(
-                            Certificate.CertificateDetails.builder()
-                                .content("content")
+                            CertificateDeactivateResponse.CertificateDetails.builder()
                                 .expiresAt(0L)
                                 .validAt(0L)
                                 .build()
                         )
                         .createdAt(0L)
                         .name("name")
-                        .object_(Certificate.Object.CERTIFICATE)
-                        .active(true)
                         .build()
                 )
-                .hasMore(true)
-                .firstId("cert_abc")
-                .lastId("cert_abc")
                 .build()
 
         assertThat(certificateDeactivatePageResponse.data())
             .containsExactly(
-                Certificate.builder()
+                CertificateDeactivateResponse.builder()
                     .id("id")
+                    .active(true)
                     .certificateDetails(
-                        Certificate.CertificateDetails.builder()
-                            .content("content")
+                        CertificateDeactivateResponse.CertificateDetails.builder()
                             .expiresAt(0L)
                             .validAt(0L)
                             .build()
                     )
                     .createdAt(0L)
                     .name("name")
-                    .object_(Certificate.Object.CERTIFICATE)
-                    .active(true)
                     .build()
             )
-        assertThat(certificateDeactivatePageResponse.hasMore()).isEqualTo(true)
-        assertThat(certificateDeactivatePageResponse.firstId()).contains("cert_abc")
-        assertThat(certificateDeactivatePageResponse.lastId()).contains("cert_abc")
     }
 
     @Test
@@ -62,24 +52,19 @@ internal class CertificateDeactivatePageResponseTest {
         val certificateDeactivatePageResponse =
             CertificateDeactivatePageResponse.builder()
                 .addData(
-                    Certificate.builder()
+                    CertificateDeactivateResponse.builder()
                         .id("id")
+                        .active(true)
                         .certificateDetails(
-                            Certificate.CertificateDetails.builder()
-                                .content("content")
+                            CertificateDeactivateResponse.CertificateDetails.builder()
                                 .expiresAt(0L)
                                 .validAt(0L)
                                 .build()
                         )
                         .createdAt(0L)
                         .name("name")
-                        .object_(Certificate.Object.CERTIFICATE)
-                        .active(true)
                         .build()
                 )
-                .hasMore(true)
-                .firstId("cert_abc")
-                .lastId("cert_abc")
                 .build()
 
         val roundtrippedCertificateDeactivatePageResponse =

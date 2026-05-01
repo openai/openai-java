@@ -64,7 +64,7 @@ internal class UsageImagesResponseTest {
                     .build()
             )
         assertThat(usageImagesResponse.hasMore()).isEqualTo(true)
-        assertThat(usageImagesResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageImagesResponse.nextPage()).contains("next_page")
     }
 
     @Test

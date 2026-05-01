@@ -14,14 +14,14 @@ import kotlin.jvm.optionals.getOrNull
 class ApiKeyRetrieveParams
 private constructor(
     private val projectId: String,
-    private val keyId: String?,
+    private val apiKeyId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun projectId(): String = projectId
 
-    fun keyId(): Optional<String> = Optional.ofNullable(keyId)
+    fun apiKeyId(): Optional<String> = Optional.ofNullable(apiKeyId)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -48,24 +48,24 @@ private constructor(
     class Builder internal constructor() {
 
         private var projectId: String? = null
-        private var keyId: String? = null
+        private var apiKeyId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(apiKeyRetrieveParams: ApiKeyRetrieveParams) = apply {
             projectId = apiKeyRetrieveParams.projectId
-            keyId = apiKeyRetrieveParams.keyId
+            apiKeyId = apiKeyRetrieveParams.apiKeyId
             additionalHeaders = apiKeyRetrieveParams.additionalHeaders.toBuilder()
             additionalQueryParams = apiKeyRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         fun projectId(projectId: String) = apply { this.projectId = projectId }
 
-        fun keyId(keyId: String?) = apply { this.keyId = keyId }
+        fun apiKeyId(apiKeyId: String?) = apply { this.apiKeyId = apiKeyId }
 
-        /** Alias for calling [Builder.keyId] with `keyId.orElse(null)`. */
-        fun keyId(keyId: Optional<String>) = keyId(keyId.getOrNull())
+        /** Alias for calling [Builder.apiKeyId] with `apiKeyId.orElse(null)`. */
+        fun apiKeyId(apiKeyId: Optional<String>) = apiKeyId(apiKeyId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -180,7 +180,7 @@ private constructor(
         fun build(): ApiKeyRetrieveParams =
             ApiKeyRetrieveParams(
                 checkRequired("projectId", projectId),
-                keyId,
+                apiKeyId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -189,7 +189,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> projectId
-            1 -> keyId ?: ""
+            1 -> apiKeyId ?: ""
             else -> ""
         }
 
@@ -204,14 +204,14 @@ private constructor(
 
         return other is ApiKeyRetrieveParams &&
             projectId == other.projectId &&
-            keyId == other.keyId &&
+            apiKeyId == other.apiKeyId &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
     override fun hashCode(): Int =
-        Objects.hash(projectId, keyId, additionalHeaders, additionalQueryParams)
+        Objects.hash(projectId, apiKeyId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ApiKeyRetrieveParams{projectId=$projectId, keyId=$keyId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ApiKeyRetrieveParams{projectId=$projectId, apiKeyId=$apiKeyId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

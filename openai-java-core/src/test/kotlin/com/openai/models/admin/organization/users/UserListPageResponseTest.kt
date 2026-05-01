@@ -37,9 +37,9 @@ internal class UserListPageResponseTest {
                     .role(OrganizationUser.Role.OWNER)
                     .build()
             )
-        assertThat(userListPageResponse.firstId()).isEqualTo("first_id")
+        assertThat(userListPageResponse.firstId()).contains("first_id")
         assertThat(userListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(userListPageResponse.lastId()).isEqualTo("last_id")
+        assertThat(userListPageResponse.lastId()).contains("last_id")
     }
 
     @Test

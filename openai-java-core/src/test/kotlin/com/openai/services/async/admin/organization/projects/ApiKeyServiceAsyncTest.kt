@@ -24,7 +24,10 @@ internal class ApiKeyServiceAsyncTest {
 
         val projectApiKeyFuture =
             apiKeyServiceAsync.retrieve(
-                ApiKeyRetrieveParams.builder().projectId("project_id").keyId("key_id").build()
+                ApiKeyRetrieveParams.builder()
+                    .projectId("project_id")
+                    .apiKeyId("api_key_id")
+                    .build()
             )
 
         val projectApiKey = projectApiKeyFuture.get()
@@ -59,7 +62,7 @@ internal class ApiKeyServiceAsyncTest {
 
         val apiKeyFuture =
             apiKeyServiceAsync.delete(
-                ApiKeyDeleteParams.builder().projectId("project_id").keyId("key_id").build()
+                ApiKeyDeleteParams.builder().projectId("project_id").apiKeyId("api_key_id").build()
             )
 
         val apiKey = apiKeyFuture.get()

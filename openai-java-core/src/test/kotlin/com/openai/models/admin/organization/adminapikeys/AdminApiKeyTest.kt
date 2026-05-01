@@ -17,7 +17,6 @@ internal class AdminApiKeyTest {
                 .createdAt(1711471533L)
                 .lastUsedAt(1711471534L)
                 .name("Administration Key")
-                .object_("organization.admin_api_key")
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -36,7 +35,6 @@ internal class AdminApiKeyTest {
         assertThat(adminApiKey.createdAt()).isEqualTo(1711471533L)
         assertThat(adminApiKey.lastUsedAt()).contains(1711471534L)
         assertThat(adminApiKey.name()).isEqualTo("Administration Key")
-        assertThat(adminApiKey.object_()).isEqualTo("organization.admin_api_key")
         assertThat(adminApiKey.owner())
             .isEqualTo(
                 AdminApiKey.Owner.builder()
@@ -61,7 +59,6 @@ internal class AdminApiKeyTest {
                 .createdAt(1711471533L)
                 .lastUsedAt(1711471534L)
                 .name("Administration Key")
-                .object_("organization.admin_api_key")
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")

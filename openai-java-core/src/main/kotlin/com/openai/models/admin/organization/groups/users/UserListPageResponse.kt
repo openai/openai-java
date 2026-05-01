@@ -14,7 +14,6 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.admin.organization.users.OrganizationUser
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -24,7 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 class UserListPageResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val data: JsonField<List<OrganizationUser>>,
+    private val data: JsonField<List<OrganizationGroupUser>>,
     private val hasMore: JsonField<Boolean>,
     private val next: JsonField<String>,
     private val object_: JsonValue,
@@ -35,7 +34,7 @@ private constructor(
     private constructor(
         @JsonProperty("data")
         @ExcludeMissing
-        data: JsonField<List<OrganizationUser>> = JsonMissing.of(),
+        data: JsonField<List<OrganizationGroupUser>> = JsonMissing.of(),
         @JsonProperty("has_more") @ExcludeMissing hasMore: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("next") @ExcludeMissing next: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
@@ -47,7 +46,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun data(): List<OrganizationUser> = data.getRequired("data")
+    fun data(): List<OrganizationGroupUser> = data.getRequired("data")
 
     /**
      * Whether more users are available when paginating.
@@ -83,7 +82,7 @@ private constructor(
      *
      * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<OrganizationUser>> = data
+    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<OrganizationGroupUser>> = data
 
     /**
      * Returns the raw JSON value of [hasMore].
@@ -129,7 +128,7 @@ private constructor(
     /** A builder for [UserListPageResponse]. */
     class Builder internal constructor() {
 
-        private var data: JsonField<MutableList<OrganizationUser>>? = null
+        private var data: JsonField<MutableList<OrganizationGroupUser>>? = null
         private var hasMore: JsonField<Boolean>? = null
         private var next: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("list")
@@ -145,25 +144,25 @@ private constructor(
         }
 
         /** Users in the current page. */
-        fun data(data: List<OrganizationUser>) = data(JsonField.of(data))
+        fun data(data: List<OrganizationGroupUser>) = data(JsonField.of(data))
 
         /**
          * Sets [Builder.data] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.data] with a well-typed `List<OrganizationUser>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.data] with a well-typed `List<OrganizationGroupUser>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
-        fun data(data: JsonField<List<OrganizationUser>>) = apply {
+        fun data(data: JsonField<List<OrganizationGroupUser>>) = apply {
             this.data = data.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [OrganizationUser] to [Builder.data].
+         * Adds a single [OrganizationGroupUser] to [Builder.data].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addData(data: OrganizationUser) = apply {
+        fun addData(data: OrganizationGroupUser) = apply {
             this.data =
                 (this.data ?: JsonField.of(mutableListOf())).also {
                     checkKnown("data", it).add(data)

@@ -9,15 +9,16 @@ internal class ApiKeyRetrieveParamsTest {
 
     @Test
     fun create() {
-        ApiKeyRetrieveParams.builder().projectId("project_id").keyId("key_id").build()
+        ApiKeyRetrieveParams.builder().projectId("project_id").apiKeyId("api_key_id").build()
     }
 
     @Test
     fun pathParams() {
-        val params = ApiKeyRetrieveParams.builder().projectId("project_id").keyId("key_id").build()
+        val params =
+            ApiKeyRetrieveParams.builder().projectId("project_id").apiKeyId("api_key_id").build()
 
         assertThat(params._pathParam(0)).isEqualTo("project_id")
-        assertThat(params._pathParam(1)).isEqualTo("key_id")
+        assertThat(params._pathParam(1)).isEqualTo("api_key_id")
         // out-of-bound path param
         assertThat(params._pathParam(2)).isEqualTo("")
     }

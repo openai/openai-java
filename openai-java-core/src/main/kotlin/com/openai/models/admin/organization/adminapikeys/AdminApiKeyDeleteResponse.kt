@@ -10,17 +10,17 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import java.util.Optional
 
 class AdminApiKeyDeleteResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val deleted: JsonField<Boolean>,
-    private val object_: JsonField<String>,
+    private val object_: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -28,26 +28,31 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("deleted") @ExcludeMissing deleted: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("object") @ExcludeMissing object_: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
     ) : this(id, deleted, object_, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun id(): String = id.getRequired("id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun deleted(): Optional<Boolean> = deleted.getOptional("deleted")
+    fun deleted(): Boolean = deleted.getRequired("deleted")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("organization.admin_api_key.deleted")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
-    fun object_(): Optional<String> = object_.getOptional("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * Returns the raw JSON value of [id].
@@ -62,13 +67,6 @@ private constructor(
      * Unlike [deleted], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("deleted") @ExcludeMissing fun _deleted(): JsonField<Boolean> = deleted
-
-    /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -86,6 +84,12 @@ private constructor(
 
         /**
          * Returns a mutable builder for constructing an instance of [AdminApiKeyDeleteResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -93,9 +97,9 @@ private constructor(
     /** A builder for [AdminApiKeyDeleteResponse]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var deleted: JsonField<Boolean> = JsonMissing.of()
-        private var object_: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var deleted: JsonField<Boolean>? = null
+        private var object_: JsonValue = JsonValue.from("organization.admin_api_key.deleted")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -126,15 +130,19 @@ private constructor(
          */
         fun deleted(deleted: JsonField<Boolean>) = apply { this.deleted = deleted }
 
-        fun object_(object_: String) = object_(JsonField.of(object_))
-
         /**
-         * Sets [Builder.object_] to an arbitrary JSON value.
+         * Sets the field to an arbitrary JSON value.
          *
-         * You should usually call [Builder.object_] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("organization.admin_api_key.deleted")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun object_(object_: JsonField<String>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -159,9 +167,22 @@ private constructor(
          * Returns an immutable instance of [AdminApiKeyDeleteResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AdminApiKeyDeleteResponse =
-            AdminApiKeyDeleteResponse(id, deleted, object_, additionalProperties.toMutableMap())
+            AdminApiKeyDeleteResponse(
+                checkRequired("id", id),
+                checkRequired("deleted", deleted),
+                object_,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -173,7 +194,11 @@ private constructor(
 
         id()
         deleted()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("organization.admin_api_key.deleted")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -194,7 +219,7 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (deleted.asKnown().isPresent) 1 else 0) +
-            (if (object_.asKnown().isPresent) 1 else 0)
+            object_.let { if (it == JsonValue.from("organization.admin_api_key.deleted")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

@@ -15,9 +15,9 @@ internal class InviteTest {
         val invite =
             Invite.builder()
                 .id("id")
+                .createdAt(0L)
                 .email("email")
                 .expiresAt(0L)
-                .invitedAt(0L)
                 .role(Invite.Role.OWNER)
                 .status(Invite.Status.ACCEPTED)
                 .acceptedAt(0L)
@@ -27,9 +27,9 @@ internal class InviteTest {
                 .build()
 
         assertThat(invite.id()).isEqualTo("id")
+        assertThat(invite.createdAt()).isEqualTo(0L)
         assertThat(invite.email()).isEqualTo("email")
-        assertThat(invite.expiresAt()).isEqualTo(0L)
-        assertThat(invite.invitedAt()).isEqualTo(0L)
+        assertThat(invite.expiresAt()).contains(0L)
         assertThat(invite.role()).isEqualTo(Invite.Role.OWNER)
         assertThat(invite.status()).isEqualTo(Invite.Status.ACCEPTED)
         assertThat(invite.acceptedAt()).contains(0L)
@@ -45,9 +45,9 @@ internal class InviteTest {
         val invite =
             Invite.builder()
                 .id("id")
+                .createdAt(0L)
                 .email("email")
                 .expiresAt(0L)
-                .invitedAt(0L)
                 .role(Invite.Role.OWNER)
                 .status(Invite.Status.ACCEPTED)
                 .acceptedAt(0L)

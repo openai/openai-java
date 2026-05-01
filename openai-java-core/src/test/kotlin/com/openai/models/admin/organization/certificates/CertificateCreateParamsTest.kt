@@ -9,25 +9,26 @@ internal class CertificateCreateParamsTest {
 
     @Test
     fun create() {
-        CertificateCreateParams.builder().content("content").name("name").build()
+        CertificateCreateParams.builder().certificate("certificate").name("name").build()
     }
 
     @Test
     fun body() {
-        val params = CertificateCreateParams.builder().content("content").name("name").build()
+        val params =
+            CertificateCreateParams.builder().certificate("certificate").name("name").build()
 
         val body = params._body()
 
-        assertThat(body.content()).isEqualTo("content")
+        assertThat(body.certificate()).isEqualTo("certificate")
         assertThat(body.name()).contains("name")
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = CertificateCreateParams.builder().content("content").build()
+        val params = CertificateCreateParams.builder().certificate("certificate").build()
 
         val body = params._body()
 
-        assertThat(body.content()).isEqualTo("content")
+        assertThat(body.certificate()).isEqualTo("certificate")
     }
 }

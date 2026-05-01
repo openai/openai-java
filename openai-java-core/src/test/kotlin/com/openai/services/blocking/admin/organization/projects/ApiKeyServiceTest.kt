@@ -24,7 +24,10 @@ internal class ApiKeyServiceTest {
 
         val projectApiKey =
             apiKeyService.retrieve(
-                ApiKeyRetrieveParams.builder().projectId("project_id").keyId("key_id").build()
+                ApiKeyRetrieveParams.builder()
+                    .projectId("project_id")
+                    .apiKeyId("api_key_id")
+                    .build()
             )
 
         projectApiKey.validate()
@@ -57,7 +60,7 @@ internal class ApiKeyServiceTest {
 
         val apiKey =
             apiKeyService.delete(
-                ApiKeyDeleteParams.builder().projectId("project_id").keyId("key_id").build()
+                ApiKeyDeleteParams.builder().projectId("project_id").apiKeyId("api_key_id").build()
             )
 
         apiKey.validate()

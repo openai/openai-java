@@ -67,7 +67,7 @@ internal class UsageCodeInterpreterSessionsResponseTest {
                     .build()
             )
         assertThat(usageCodeInterpreterSessionsResponse.hasMore()).isEqualTo(true)
-        assertThat(usageCodeInterpreterSessionsResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageCodeInterpreterSessionsResponse.nextPage()).contains("next_page")
     }
 
     @Test

@@ -5,7 +5,6 @@ package com.openai.models.admin.organization.projects.certificates
 import com.openai.core.AutoPager
 import com.openai.core.Page
 import com.openai.core.checkRequired
-import com.openai.models.admin.organization.certificates.Certificate
 import com.openai.services.blocking.admin.organization.projects.CertificateService
 import java.util.Objects
 import java.util.Optional
@@ -17,14 +16,15 @@ private constructor(
     private val service: CertificateService,
     private val params: CertificateListParams,
     private val response: CertificateListPageResponse,
-) : Page<Certificate> {
+) : Page<CertificateListResponse> {
 
     /**
      * Delegates to [CertificateListPageResponse], but gracefully handles missing data.
      *
      * @see CertificateListPageResponse.data
      */
-    fun data(): List<Certificate> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    fun data(): List<CertificateListResponse> =
+        response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [CertificateListPageResponse], but gracefully handles missing data.
@@ -40,7 +40,7 @@ private constructor(
      */
     fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
 
-    override fun items(): List<Certificate> = data()
+    override fun items(): List<CertificateListResponse> = data()
 
     override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
 
@@ -52,7 +52,7 @@ private constructor(
 
     override fun nextPage(): CertificateListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager<Certificate> = AutoPager.from(this)
+    fun autoPager(): AutoPager<CertificateListResponse> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): CertificateListParams = params

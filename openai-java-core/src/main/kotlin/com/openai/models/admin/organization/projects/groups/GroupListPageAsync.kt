@@ -35,12 +35,22 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
+    /**
+     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
+     *
+     * @see GroupListPageResponse.next
+     */
+    fun next(): Optional<String> = response._next().getOptional("next")
+
     override fun items(): List<ProjectGroup> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
 
-    fun nextPageParams(): GroupListParams =
-        throw IllegalStateException("Cannot construct next page params")
+    fun nextPageParams(): GroupListParams {
+        val nextCursor =
+            next().getOrNull() ?: throw IllegalStateException("Cannot construct next page params")
+        return params.toBuilder().after(nextCursor).build()
+    }
 
     override fun nextPage(): CompletableFuture<GroupListPageAsync> = service.list(nextPageParams())
 

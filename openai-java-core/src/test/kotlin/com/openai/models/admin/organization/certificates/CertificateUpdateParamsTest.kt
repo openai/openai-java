@@ -14,8 +14,7 @@ internal class CertificateUpdateParamsTest {
 
     @Test
     fun pathParams() {
-        val params =
-            CertificateUpdateParams.builder().certificateId("certificate_id").name("name").build()
+        val params = CertificateUpdateParams.builder().certificateId("certificate_id").build()
 
         assertThat(params._pathParam(0)).isEqualTo("certificate_id")
         // out-of-bound path param
@@ -29,6 +28,13 @@ internal class CertificateUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.name()).contains("name")
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
+        val params = CertificateUpdateParams.builder().certificateId("certificate_id").build()
+
+        val body = params._body()
     }
 }

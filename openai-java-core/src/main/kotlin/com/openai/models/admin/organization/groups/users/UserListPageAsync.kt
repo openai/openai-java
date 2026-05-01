@@ -5,7 +5,6 @@ package com.openai.models.admin.organization.groups.users
 import com.openai.core.AutoPagerAsync
 import com.openai.core.PageAsync
 import com.openai.core.checkRequired
-import com.openai.models.admin.organization.users.OrganizationUser
 import com.openai.services.async.admin.organization.groups.UserServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -20,14 +19,14 @@ private constructor(
     private val streamHandlerExecutor: Executor,
     private val params: UserListParams,
     private val response: UserListPageResponse,
-) : PageAsync<OrganizationUser> {
+) : PageAsync<OrganizationGroupUser> {
 
     /**
      * Delegates to [UserListPageResponse], but gracefully handles missing data.
      *
      * @see UserListPageResponse.data
      */
-    fun data(): List<OrganizationUser> =
+    fun data(): List<OrganizationGroupUser> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
@@ -37,16 +36,26 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun items(): List<OrganizationUser> = data()
+    /**
+     * Delegates to [UserListPageResponse], but gracefully handles missing data.
+     *
+     * @see UserListPageResponse.next
+     */
+    fun next(): Optional<String> = response._next().getOptional("next")
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun items(): List<OrganizationGroupUser> = data()
 
-    fun nextPageParams(): UserListParams =
-        params.toBuilder().after(items().last()._id().getOptional("id")).build()
+    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
+
+    fun nextPageParams(): UserListParams {
+        val nextCursor =
+            next().getOrNull() ?: throw IllegalStateException("Cannot construct next page params")
+        return params.toBuilder().after(nextCursor).build()
+    }
 
     override fun nextPage(): CompletableFuture<UserListPageAsync> = service.list(nextPageParams())
 
-    fun autoPager(): AutoPagerAsync<OrganizationUser> =
+    fun autoPager(): AutoPagerAsync<OrganizationGroupUser> =
         AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */

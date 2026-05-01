@@ -19,14 +19,15 @@ private constructor(
     private val streamHandlerExecutor: Executor,
     private val params: CertificateListParams,
     private val response: CertificateListPageResponse,
-) : PageAsync<Certificate> {
+) : PageAsync<CertificateListResponse> {
 
     /**
      * Delegates to [CertificateListPageResponse], but gracefully handles missing data.
      *
      * @see CertificateListPageResponse.data
      */
-    fun data(): List<Certificate> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    fun data(): List<CertificateListResponse> =
+        response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [CertificateListPageResponse], but gracefully handles missing data.
@@ -42,7 +43,7 @@ private constructor(
      */
     fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
 
-    override fun items(): List<Certificate> = data()
+    override fun items(): List<CertificateListResponse> = data()
 
     override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
 
@@ -55,7 +56,8 @@ private constructor(
     override fun nextPage(): CompletableFuture<CertificateListPageAsync> =
         service.list(nextPageParams())
 
-    fun autoPager(): AutoPagerAsync<Certificate> = AutoPagerAsync.from(this, streamHandlerExecutor)
+    fun autoPager(): AutoPagerAsync<CertificateListResponse> =
+        AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): CertificateListParams = params

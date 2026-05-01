@@ -25,7 +25,7 @@ private constructor(
     private val createdAt: JsonField<Long>,
     private val lastUsedAt: JsonField<Long>,
     private val name: JsonField<String>,
-    private val object_: JsonField<String>,
+    private val object_: JsonValue,
     private val owner: JsonField<Owner>,
     private val redactedValue: JsonField<String>,
     private val value: JsonField<String>,
@@ -40,7 +40,7 @@ private constructor(
         @ExcludeMissing
         lastUsedAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("object") @ExcludeMissing object_: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("owner") @ExcludeMissing owner: JsonField<Owner> = JsonMissing.of(),
         @JsonProperty("redacted_value")
         @ExcludeMissing
@@ -83,10 +83,15 @@ private constructor(
     /**
      * The object type, which is always `organization.admin_api_key`
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("organization.admin_api_key")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
-    fun object_(): String = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -139,13 +144,6 @@ private constructor(
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
-
-    /**
      * Returns the raw JSON value of [owner].
      *
      * Unlike [owner], this method doesn't throw if the JSON field has an unexpected type.
@@ -191,7 +189,6 @@ private constructor(
          * .createdAt()
          * .lastUsedAt()
          * .name()
-         * .object_()
          * .owner()
          * .redactedValue()
          * ```
@@ -206,7 +203,7 @@ private constructor(
         private var createdAt: JsonField<Long>? = null
         private var lastUsedAt: JsonField<Long>? = null
         private var name: JsonField<String>? = null
-        private var object_: JsonField<String>? = null
+        private var object_: JsonValue = JsonValue.from("organization.admin_api_key")
         private var owner: JsonField<Owner>? = null
         private var redactedValue: JsonField<String>? = null
         private var value: JsonField<String> = JsonMissing.of()
@@ -279,16 +276,19 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
-        /** The object type, which is always `organization.admin_api_key` */
-        fun object_(object_: String) = object_(JsonField.of(object_))
-
         /**
-         * Sets [Builder.object_] to an arbitrary JSON value.
+         * Sets the field to an arbitrary JSON value.
          *
-         * You should usually call [Builder.object_] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("organization.admin_api_key")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun object_(object_: JsonField<String>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun owner(owner: Owner) = owner(JsonField.of(owner))
 
@@ -355,7 +355,6 @@ private constructor(
          * .createdAt()
          * .lastUsedAt()
          * .name()
-         * .object_()
          * .owner()
          * .redactedValue()
          * ```
@@ -368,7 +367,7 @@ private constructor(
                 checkRequired("createdAt", createdAt),
                 checkRequired("lastUsedAt", lastUsedAt),
                 checkRequired("name", name),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("owner", owner),
                 checkRequired("redactedValue", redactedValue),
                 value,
@@ -387,7 +386,11 @@ private constructor(
         createdAt()
         lastUsedAt()
         name()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("organization.admin_api_key")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         owner().validate()
         redactedValue()
         value()
@@ -413,7 +416,7 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (lastUsedAt.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
-            (if (object_.asKnown().isPresent) 1 else 0) +
+            object_.let { if (it == JsonValue.from("organization.admin_api_key")) 1 else 0 } +
             (owner.asKnown().getOrNull()?.validity() ?: 0) +
             (if (redactedValue.asKnown().isPresent) 1 else 0) +
             (if (value.asKnown().isPresent) 1 else 0)
