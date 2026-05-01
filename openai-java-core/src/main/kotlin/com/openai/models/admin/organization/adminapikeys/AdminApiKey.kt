@@ -23,12 +23,11 @@ class AdminApiKey
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
-    private val lastUsedAt: JsonField<Long>,
-    private val name: JsonField<String>,
     private val object_: JsonValue,
     private val owner: JsonField<Owner>,
     private val redactedValue: JsonField<String>,
-    private val value: JsonField<String>,
+    private val lastUsedAt: JsonField<Long>,
+    private val name: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -36,17 +35,16 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("last_used_at")
-        @ExcludeMissing
-        lastUsedAt: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("owner") @ExcludeMissing owner: JsonField<Owner> = JsonMissing.of(),
         @JsonProperty("redacted_value")
         @ExcludeMissing
         redactedValue: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("value") @ExcludeMissing value: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, lastUsedAt, name, object_, owner, redactedValue, value, mutableMapOf())
+        @JsonProperty("last_used_at")
+        @ExcludeMissing
+        lastUsedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+    ) : this(id, createdAt, object_, owner, redactedValue, lastUsedAt, name, mutableMapOf())
 
     /**
      * The identifier, which can be referenced in API endpoints
@@ -63,22 +61,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun createdAt(): Long = createdAt.getRequired("created_at")
-
-    /**
-     * The Unix timestamp (in seconds) of when the API key was last used
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun lastUsedAt(): Optional<Long> = lastUsedAt.getOptional("last_used_at")
-
-    /**
-     * The name of the API key
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = name.getRequired("name")
 
     /**
      * The object type, which is always `organization.admin_api_key`
@@ -108,12 +90,20 @@ private constructor(
     fun redactedValue(): String = redactedValue.getRequired("redacted_value")
 
     /**
-     * The value of the API key. Only shown on create.
+     * The Unix timestamp (in seconds) of when the API key was last used
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun value(): Optional<String> = value.getOptional("value")
+    fun lastUsedAt(): Optional<Long> = lastUsedAt.getOptional("last_used_at")
+
+    /**
+     * The name of the API key
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun name(): Optional<String> = name.getOptional("name")
 
     /**
      * Returns the raw JSON value of [id].
@@ -128,20 +118,6 @@ private constructor(
      * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
-
-    /**
-     * Returns the raw JSON value of [lastUsedAt].
-     *
-     * Unlike [lastUsedAt], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("last_used_at") @ExcludeMissing fun _lastUsedAt(): JsonField<Long> = lastUsedAt
-
-    /**
-     * Returns the raw JSON value of [name].
-     *
-     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
      * Returns the raw JSON value of [owner].
@@ -160,11 +136,18 @@ private constructor(
     fun _redactedValue(): JsonField<String> = redactedValue
 
     /**
-     * Returns the raw JSON value of [value].
+     * Returns the raw JSON value of [lastUsedAt].
      *
-     * Unlike [value], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [lastUsedAt], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<String> = value
+    @JsonProperty("last_used_at") @ExcludeMissing fun _lastUsedAt(): JsonField<Long> = lastUsedAt
+
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -187,8 +170,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .lastUsedAt()
-         * .name()
          * .owner()
          * .redactedValue()
          * ```
@@ -201,24 +182,22 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var lastUsedAt: JsonField<Long>? = null
-        private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("organization.admin_api_key")
         private var owner: JsonField<Owner>? = null
         private var redactedValue: JsonField<String>? = null
-        private var value: JsonField<String> = JsonMissing.of()
+        private var lastUsedAt: JsonField<Long> = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(adminApiKey: AdminApiKey) = apply {
             id = adminApiKey.id
             createdAt = adminApiKey.createdAt
-            lastUsedAt = adminApiKey.lastUsedAt
-            name = adminApiKey.name
             object_ = adminApiKey.object_
             owner = adminApiKey.owner
             redactedValue = adminApiKey.redactedValue
-            value = adminApiKey.value
+            lastUsedAt = adminApiKey.lastUsedAt
+            name = adminApiKey.name
             additionalProperties = adminApiKey.additionalProperties.toMutableMap()
         }
 
@@ -243,38 +222,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
-
-        /** The Unix timestamp (in seconds) of when the API key was last used */
-        fun lastUsedAt(lastUsedAt: Long?) = lastUsedAt(JsonField.ofNullable(lastUsedAt))
-
-        /**
-         * Alias for [Builder.lastUsedAt].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun lastUsedAt(lastUsedAt: Long) = lastUsedAt(lastUsedAt as Long?)
-
-        /** Alias for calling [Builder.lastUsedAt] with `lastUsedAt.orElse(null)`. */
-        fun lastUsedAt(lastUsedAt: Optional<Long>) = lastUsedAt(lastUsedAt.getOrNull())
-
-        /**
-         * Sets [Builder.lastUsedAt] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.lastUsedAt] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun lastUsedAt(lastUsedAt: JsonField<Long>) = apply { this.lastUsedAt = lastUsedAt }
-
-        /** The name of the API key */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /**
-         * Sets [Builder.name] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -314,16 +261,40 @@ private constructor(
             this.redactedValue = redactedValue
         }
 
-        /** The value of the API key. Only shown on create. */
-        fun value(value: String) = value(JsonField.of(value))
+        /** The Unix timestamp (in seconds) of when the API key was last used */
+        fun lastUsedAt(lastUsedAt: Long?) = lastUsedAt(JsonField.ofNullable(lastUsedAt))
 
         /**
-         * Sets [Builder.value] to an arbitrary JSON value.
+         * Alias for [Builder.lastUsedAt].
          *
-         * You should usually call [Builder.value] with a well-typed [String] value instead. This
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun lastUsedAt(lastUsedAt: Long) = lastUsedAt(lastUsedAt as Long?)
+
+        /** Alias for calling [Builder.lastUsedAt] with `lastUsedAt.orElse(null)`. */
+        fun lastUsedAt(lastUsedAt: Optional<Long>) = lastUsedAt(lastUsedAt.getOrNull())
+
+        /**
+         * Sets [Builder.lastUsedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.lastUsedAt] with a well-typed [Long] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun value(value: JsonField<String>) = apply { this.value = value }
+        fun lastUsedAt(lastUsedAt: JsonField<Long>) = apply { this.lastUsedAt = lastUsedAt }
+
+        /** The name of the API key */
+        fun name(name: String?) = name(JsonField.ofNullable(name))
+
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+        fun name(name: Optional<String>) = name(name.getOrNull())
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -353,8 +324,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .lastUsedAt()
-         * .name()
          * .owner()
          * .redactedValue()
          * ```
@@ -365,12 +334,11 @@ private constructor(
             AdminApiKey(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
-                checkRequired("lastUsedAt", lastUsedAt),
-                checkRequired("name", name),
                 object_,
                 checkRequired("owner", owner),
                 checkRequired("redactedValue", redactedValue),
-                value,
+                lastUsedAt,
+                name,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -384,8 +352,6 @@ private constructor(
 
         id()
         createdAt()
-        lastUsedAt()
-        name()
         _object_().let {
             if (it != JsonValue.from("organization.admin_api_key")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -393,7 +359,8 @@ private constructor(
         }
         owner().validate()
         redactedValue()
-        value()
+        lastUsedAt()
+        name()
         validated = true
     }
 
@@ -414,12 +381,11 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
-            (if (lastUsedAt.asKnown().isPresent) 1 else 0) +
-            (if (name.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.admin_api_key")) 1 else 0 } +
             (owner.asKnown().getOrNull()?.validity() ?: 0) +
             (if (redactedValue.asKnown().isPresent) 1 else 0) +
-            (if (value.asKnown().isPresent) 1 else 0)
+            (if (lastUsedAt.asKnown().isPresent) 1 else 0) +
+            (if (name.asKnown().isPresent) 1 else 0)
 
     class Owner
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -747,12 +713,11 @@ private constructor(
         return other is AdminApiKey &&
             id == other.id &&
             createdAt == other.createdAt &&
-            lastUsedAt == other.lastUsedAt &&
-            name == other.name &&
             object_ == other.object_ &&
             owner == other.owner &&
             redactedValue == other.redactedValue &&
-            value == other.value &&
+            lastUsedAt == other.lastUsedAt &&
+            name == other.name &&
             additionalProperties == other.additionalProperties
     }
 
@@ -760,12 +725,11 @@ private constructor(
         Objects.hash(
             id,
             createdAt,
-            lastUsedAt,
-            name,
             object_,
             owner,
             redactedValue,
-            value,
+            lastUsedAt,
+            name,
             additionalProperties,
         )
     }
@@ -773,5 +737,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AdminApiKey{id=$id, createdAt=$createdAt, lastUsedAt=$lastUsedAt, name=$name, object_=$object_, owner=$owner, redactedValue=$redactedValue, value=$value, additionalProperties=$additionalProperties}"
+        "AdminApiKey{id=$id, createdAt=$createdAt, object_=$object_, owner=$owner, redactedValue=$redactedValue, lastUsedAt=$lastUsedAt, name=$name, additionalProperties=$additionalProperties}"
 }

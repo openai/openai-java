@@ -25,8 +25,8 @@ internal class RateLimitListRateLimitsPageResponseTest {
                         .maxRequestsPer1Day(0L)
                         .build()
                 )
-                .firstId("first_id")
                 .hasMore(true)
+                .firstId("first_id")
                 .lastId("last_id")
                 .build()
 
@@ -43,9 +43,9 @@ internal class RateLimitListRateLimitsPageResponseTest {
                     .maxRequestsPer1Day(0L)
                     .build()
             )
-        assertThat(rateLimitListRateLimitsPageResponse.firstId()).isEqualTo("first_id")
         assertThat(rateLimitListRateLimitsPageResponse.hasMore()).isEqualTo(true)
-        assertThat(rateLimitListRateLimitsPageResponse.lastId()).isEqualTo("last_id")
+        assertThat(rateLimitListRateLimitsPageResponse.firstId()).contains("first_id")
+        assertThat(rateLimitListRateLimitsPageResponse.lastId()).contains("last_id")
     }
 
     @Test
@@ -65,8 +65,8 @@ internal class RateLimitListRateLimitsPageResponseTest {
                         .maxRequestsPer1Day(0L)
                         .build()
                 )
-                .firstId("first_id")
                 .hasMore(true)
+                .firstId("first_id")
                 .lastId("last_id")
                 .build()
 

@@ -11,10 +11,18 @@ internal class GroupTest {
 
     @Test
     fun create() {
-        val group = Group.builder().id("id").createdAt(0L).isScimManaged(true).name("name").build()
+        val group =
+            Group.builder()
+                .id("id")
+                .createdAt(0L)
+                .groupType("group_type")
+                .isScimManaged(true)
+                .name("name")
+                .build()
 
         assertThat(group.id()).isEqualTo("id")
         assertThat(group.createdAt()).isEqualTo(0L)
+        assertThat(group.groupType()).isEqualTo("group_type")
         assertThat(group.isScimManaged()).isEqualTo(true)
         assertThat(group.name()).isEqualTo("name")
     }
@@ -22,7 +30,14 @@ internal class GroupTest {
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val group = Group.builder().id("id").createdAt(0L).isScimManaged(true).name("name").build()
+        val group =
+            Group.builder()
+                .id("id")
+                .createdAt(0L)
+                .groupType("group_type")
+                .isScimManaged(true)
+                .name("name")
+                .build()
 
         val roundtrippedGroup =
             jsonMapper.readValue(jsonMapper.writeValueAsString(group), jacksonTypeRef<Group>())

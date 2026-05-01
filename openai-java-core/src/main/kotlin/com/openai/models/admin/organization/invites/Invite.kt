@@ -27,12 +27,12 @@ private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
     private val email: JsonField<String>,
-    private val expiresAt: JsonField<Long>,
     private val object_: JsonValue,
+    private val projects: JsonField<List<Project>>,
     private val role: JsonField<Role>,
     private val status: JsonField<Status>,
     private val acceptedAt: JsonField<Long>,
-    private val projects: JsonField<List<Project>>,
+    private val expiresAt: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -41,24 +41,24 @@ private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("email") @ExcludeMissing email: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
-        @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        @JsonProperty("accepted_at") @ExcludeMissing acceptedAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("projects")
         @ExcludeMissing
         projects: JsonField<List<Project>> = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("accepted_at") @ExcludeMissing acceptedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
     ) : this(
         id,
         createdAt,
         email,
-        expiresAt,
         object_,
+        projects,
         role,
         status,
         acceptedAt,
-        projects,
+        expiresAt,
         mutableMapOf(),
     )
 
@@ -87,14 +87,6 @@ private constructor(
     fun email(): String = email.getRequired("email")
 
     /**
-     * The Unix timestamp (in seconds) of when the invite expires.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
-
-    /**
      * The object type, which is always `organization.invite`
      *
      * Expected to always return the following:
@@ -106,6 +98,14 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+
+    /**
+     * The projects that were granted membership upon acceptance of the invite.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun projects(): List<Project> = projects.getRequired("projects")
 
     /**
      * `owner` or `reader`
@@ -132,12 +132,12 @@ private constructor(
     fun acceptedAt(): Optional<Long> = acceptedAt.getOptional("accepted_at")
 
     /**
-     * The projects that were granted membership upon acceptance of the invite.
+     * The Unix timestamp (in seconds) of when the invite expires.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun projects(): Optional<List<Project>> = projects.getOptional("projects")
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * Returns the raw JSON value of [id].
@@ -161,11 +161,11 @@ private constructor(
     @JsonProperty("email") @ExcludeMissing fun _email(): JsonField<String> = email
 
     /**
-     * Returns the raw JSON value of [expiresAt].
+     * Returns the raw JSON value of [projects].
      *
-     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [projects], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
+    @JsonProperty("projects") @ExcludeMissing fun _projects(): JsonField<List<Project>> = projects
 
     /**
      * Returns the raw JSON value of [role].
@@ -189,11 +189,11 @@ private constructor(
     @JsonProperty("accepted_at") @ExcludeMissing fun _acceptedAt(): JsonField<Long> = acceptedAt
 
     /**
-     * Returns the raw JSON value of [projects].
+     * Returns the raw JSON value of [expiresAt].
      *
-     * Unlike [projects], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("projects") @ExcludeMissing fun _projects(): JsonField<List<Project>> = projects
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -217,7 +217,7 @@ private constructor(
          * .id()
          * .createdAt()
          * .email()
-         * .expiresAt()
+         * .projects()
          * .role()
          * .status()
          * ```
@@ -231,12 +231,12 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var email: JsonField<String>? = null
-        private var expiresAt: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("organization.invite")
+        private var projects: JsonField<MutableList<Project>>? = null
         private var role: JsonField<Role>? = null
         private var status: JsonField<Status>? = null
         private var acceptedAt: JsonField<Long> = JsonMissing.of()
-        private var projects: JsonField<MutableList<Project>>? = null
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -244,12 +244,12 @@ private constructor(
             id = invite.id
             createdAt = invite.createdAt
             email = invite.email
-            expiresAt = invite.expiresAt
             object_ = invite.object_
+            projects = invite.projects.map { it.toMutableList() }
             role = invite.role
             status = invite.status
             acceptedAt = invite.acceptedAt
-            projects = invite.projects.map { it.toMutableList() }
+            expiresAt = invite.expiresAt
             additionalProperties = invite.additionalProperties.toMutableMap()
         }
 
@@ -286,27 +286,6 @@ private constructor(
          */
         fun email(email: JsonField<String>) = apply { this.email = email }
 
-        /** The Unix timestamp (in seconds) of when the invite expires. */
-        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
-
-        /**
-         * Alias for [Builder.expiresAt].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
-
-        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
-        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
-
-        /**
-         * Sets [Builder.expiresAt] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
-
         /**
          * Sets the field to an arbitrary JSON value.
          *
@@ -320,6 +299,32 @@ private constructor(
          * value.
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
+
+        /** The projects that were granted membership upon acceptance of the invite. */
+        fun projects(projects: List<Project>) = projects(JsonField.of(projects))
+
+        /**
+         * Sets [Builder.projects] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.projects] with a well-typed `List<Project>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun projects(projects: JsonField<List<Project>>) = apply {
+            this.projects = projects.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Project] to [projects].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addProject(project: Project) = apply {
+            projects =
+                (projects ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("projects", it).add(project)
+                }
+        }
 
         /** `owner` or `reader` */
         fun role(role: Role) = role(JsonField.of(role))
@@ -364,31 +369,26 @@ private constructor(
          */
         fun acceptedAt(acceptedAt: JsonField<Long>) = apply { this.acceptedAt = acceptedAt }
 
-        /** The projects that were granted membership upon acceptance of the invite. */
-        fun projects(projects: List<Project>) = projects(JsonField.of(projects))
+        /** The Unix timestamp (in seconds) of when the invite expires. */
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
 
         /**
-         * Sets [Builder.projects] to an arbitrary JSON value.
+         * Alias for [Builder.expiresAt].
          *
-         * You should usually call [Builder.projects] with a well-typed `List<Project>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * This unboxed primitive overload exists for backwards compatibility.
          */
-        fun projects(projects: JsonField<List<Project>>) = apply {
-            this.projects = projects.map { it.toMutableList() }
-        }
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
 
         /**
-         * Adds a single [Project] to [projects].
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
          *
-         * @throws IllegalStateException if the field was previously set to a non-list.
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun addProject(project: Project) = apply {
-            projects =
-                (projects ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("projects", it).add(project)
-                }
-        }
+        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -419,7 +419,7 @@ private constructor(
          * .id()
          * .createdAt()
          * .email()
-         * .expiresAt()
+         * .projects()
          * .role()
          * .status()
          * ```
@@ -431,12 +431,12 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("email", email),
-                checkRequired("expiresAt", expiresAt),
                 object_,
+                checkRequired("projects", projects).map { it.toImmutable() },
                 checkRequired("role", role),
                 checkRequired("status", status),
                 acceptedAt,
-                (projects ?: JsonMissing.of()).map { it.toImmutable() },
+                expiresAt,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -451,16 +451,16 @@ private constructor(
         id()
         createdAt()
         email()
-        expiresAt()
         _object_().let {
             if (it != JsonValue.from("organization.invite")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
+        projects().forEach { it.validate() }
         role().validate()
         status().validate()
         acceptedAt()
-        projects().ifPresent { it.forEach { it.validate() } }
+        expiresAt()
         validated = true
     }
 
@@ -482,12 +482,337 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (email.asKnown().isPresent) 1 else 0) +
-            (if (expiresAt.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.invite")) 1 else 0 } +
+            (projects.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (role.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (acceptedAt.asKnown().isPresent) 1 else 0) +
-            (projects.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (if (expiresAt.asKnown().isPresent) 1 else 0)
+
+    class Project
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val role: JsonField<Role>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+        ) : this(id, role, mutableMapOf())
+
+        /**
+         * Project's public ID
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun id(): String = id.getRequired("id")
+
+        /**
+         * Project membership role
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun role(): Role = role.getRequired("role")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [role].
+         *
+         * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Project].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .role()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Project]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String>? = null
+            private var role: JsonField<Role>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(project: Project) = apply {
+                id = project.id
+                role = project.role
+                additionalProperties = project.additionalProperties.toMutableMap()
+            }
+
+            /** Project's public ID */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** Project membership role */
+            fun role(role: Role) = role(JsonField.of(role))
+
+            /**
+             * Sets [Builder.role] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun role(role: JsonField<Role>) = apply { this.role = role }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Project].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .role()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Project =
+                Project(
+                    checkRequired("id", id),
+                    checkRequired("role", role),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Project = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            role().validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) + (role.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Project membership role */
+        class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val MEMBER = of("member")
+
+                @JvmField val OWNER = of("owner")
+
+                @JvmStatic fun of(value: String) = Role(JsonField.of(value))
+            }
+
+            /** An enum containing [Role]'s known values. */
+            enum class Known {
+                MEMBER,
+                OWNER,
+            }
+
+            /**
+             * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Role] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                MEMBER,
+                OWNER,
+                /** An enum member indicating that [Role] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    MEMBER -> Value.MEMBER
+                    OWNER -> Value.OWNER
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    MEMBER -> Known.MEMBER
+                    OWNER -> Known.OWNER
+                    else -> throw OpenAIInvalidDataException("Unknown Role: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Role = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Role && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Project &&
+                id == other.id &&
+                role == other.role &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, role, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Project{id=$id, role=$role, additionalProperties=$additionalProperties}"
+    }
 
     /** `owner` or `reader` */
     class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -747,310 +1072,6 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    class Project
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val id: JsonField<String>,
-        private val role: JsonField<Role>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
-        ) : this(id, role, mutableMapOf())
-
-        /**
-         * Project's public ID
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun id(): Optional<String> = id.getOptional("id")
-
-        /**
-         * Project membership role
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun role(): Optional<Role> = role.getOptional("role")
-
-        /**
-         * Returns the raw JSON value of [id].
-         *
-         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        /**
-         * Returns the raw JSON value of [role].
-         *
-         * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Project]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Project]. */
-        class Builder internal constructor() {
-
-            private var id: JsonField<String> = JsonMissing.of()
-            private var role: JsonField<Role> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(project: Project) = apply {
-                id = project.id
-                role = project.role
-                additionalProperties = project.additionalProperties.toMutableMap()
-            }
-
-            /** Project's public ID */
-            fun id(id: String) = id(JsonField.of(id))
-
-            /**
-             * Sets [Builder.id] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.id] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun id(id: JsonField<String>) = apply { this.id = id }
-
-            /** Project membership role */
-            fun role(role: Role) = role(JsonField.of(role))
-
-            /**
-             * Sets [Builder.role] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun role(role: JsonField<Role>) = apply { this.role = role }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Project].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Project = Project(id, role, additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Project = apply {
-            if (validated) {
-                return@apply
-            }
-
-            id()
-            role().ifPresent { it.validate() }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (id.asKnown().isPresent) 1 else 0) + (role.asKnown().getOrNull()?.validity() ?: 0)
-
-        /** Project membership role */
-        class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val MEMBER = of("member")
-
-                @JvmField val OWNER = of("owner")
-
-                @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-            }
-
-            /** An enum containing [Role]'s known values. */
-            enum class Known {
-                MEMBER,
-                OWNER,
-            }
-
-            /**
-             * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Role] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                MEMBER,
-                OWNER,
-                /** An enum member indicating that [Role] was instantiated with an unknown value. */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    MEMBER -> Value.MEMBER
-                    OWNER -> Value.OWNER
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    MEMBER -> Known.MEMBER
-                    OWNER -> Known.OWNER
-                    else -> throw OpenAIInvalidDataException("Unknown Role: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Role = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Role && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Project &&
-                id == other.id &&
-                role == other.role &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(id, role, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Project{id=$id, role=$role, additionalProperties=$additionalProperties}"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1060,12 +1081,12 @@ private constructor(
             id == other.id &&
             createdAt == other.createdAt &&
             email == other.email &&
-            expiresAt == other.expiresAt &&
             object_ == other.object_ &&
+            projects == other.projects &&
             role == other.role &&
             status == other.status &&
             acceptedAt == other.acceptedAt &&
-            projects == other.projects &&
+            expiresAt == other.expiresAt &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1074,12 +1095,12 @@ private constructor(
             id,
             createdAt,
             email,
-            expiresAt,
             object_,
+            projects,
             role,
             status,
             acceptedAt,
-            projects,
+            expiresAt,
             additionalProperties,
         )
     }
@@ -1087,5 +1108,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Invite{id=$id, createdAt=$createdAt, email=$email, expiresAt=$expiresAt, object_=$object_, role=$role, status=$status, acceptedAt=$acceptedAt, projects=$projects, additionalProperties=$additionalProperties}"
+        "Invite{id=$id, createdAt=$createdAt, email=$email, object_=$object_, projects=$projects, role=$role, status=$status, acceptedAt=$acceptedAt, expiresAt=$expiresAt, additionalProperties=$additionalProperties}"
 }

@@ -44,8 +44,8 @@ internal class ApiKeyListPageResponseTest {
                         .redactedValue("redacted_value")
                         .build()
                 )
-                .firstId("first_id")
                 .hasMore(true)
+                .firstId("first_id")
                 .lastId("last_id")
                 .build()
 
@@ -81,9 +81,9 @@ internal class ApiKeyListPageResponseTest {
                     .redactedValue("redacted_value")
                     .build()
             )
-        assertThat(apiKeyListPageResponse.firstId()).isEqualTo("first_id")
         assertThat(apiKeyListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(apiKeyListPageResponse.lastId()).isEqualTo("last_id")
+        assertThat(apiKeyListPageResponse.firstId()).contains("first_id")
+        assertThat(apiKeyListPageResponse.lastId()).contains("last_id")
     }
 
     @Test
@@ -122,8 +122,8 @@ internal class ApiKeyListPageResponseTest {
                         .redactedValue("redacted_value")
                         .build()
                 )
-                .firstId("first_id")
                 .hasMore(true)
+                .firstId("first_id")
                 .lastId("last_id")
                 .build()
 

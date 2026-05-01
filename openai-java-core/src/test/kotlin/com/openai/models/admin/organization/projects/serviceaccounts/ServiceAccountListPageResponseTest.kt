@@ -21,8 +21,8 @@ internal class ServiceAccountListPageResponseTest {
                         .role(ProjectServiceAccount.Role.OWNER)
                         .build()
                 )
-                .firstId("first_id")
                 .hasMore(true)
+                .firstId("first_id")
                 .lastId("last_id")
                 .build()
 
@@ -35,9 +35,9 @@ internal class ServiceAccountListPageResponseTest {
                     .role(ProjectServiceAccount.Role.OWNER)
                     .build()
             )
-        assertThat(serviceAccountListPageResponse.firstId()).isEqualTo("first_id")
         assertThat(serviceAccountListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(serviceAccountListPageResponse.lastId()).isEqualTo("last_id")
+        assertThat(serviceAccountListPageResponse.firstId()).contains("first_id")
+        assertThat(serviceAccountListPageResponse.lastId()).contains("last_id")
     }
 
     @Test
@@ -53,8 +53,8 @@ internal class ServiceAccountListPageResponseTest {
                         .role(ProjectServiceAccount.Role.OWNER)
                         .build()
                 )
-                .firstId("first_id")
                 .hasMore(true)
+                .firstId("first_id")
                 .lastId("last_id")
                 .build()
 

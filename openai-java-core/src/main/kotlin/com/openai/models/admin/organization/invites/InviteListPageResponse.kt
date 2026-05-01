@@ -23,9 +23,9 @@ class InviteListPageResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<Invite>>,
+    private val hasMore: JsonField<Boolean>,
     private val object_: JsonValue,
     private val firstId: JsonField<String>,
-    private val hasMore: JsonField<Boolean>,
     private val lastId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -33,17 +33,25 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing data: JsonField<List<Invite>> = JsonMissing.of(),
+        @JsonProperty("has_more") @ExcludeMissing hasMore: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("first_id") @ExcludeMissing firstId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("has_more") @ExcludeMissing hasMore: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("last_id") @ExcludeMissing lastId: JsonField<String> = JsonMissing.of(),
-    ) : this(data, object_, firstId, hasMore, lastId, mutableMapOf())
+    ) : this(data, hasMore, object_, firstId, lastId, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun data(): List<Invite> = data.getRequired("data")
+
+    /**
+     * The `has_more` property is used for pagination to indicate there are additional results.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun hasMore(): Boolean = hasMore.getRequired("has_more")
 
     /**
      * The object type, which is always `list`
@@ -67,14 +75,6 @@ private constructor(
     fun firstId(): Optional<String> = firstId.getOptional("first_id")
 
     /**
-     * The `has_more` property is used for pagination to indicate there are additional results.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun hasMore(): Optional<Boolean> = hasMore.getOptional("has_more")
-
-    /**
      * The last `invite_id` in the retrieved `list`
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -90,18 +90,18 @@ private constructor(
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<Invite>> = data
 
     /**
-     * Returns the raw JSON value of [firstId].
-     *
-     * Unlike [firstId], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("first_id") @ExcludeMissing fun _firstId(): JsonField<String> = firstId
-
-    /**
      * Returns the raw JSON value of [hasMore].
      *
      * Unlike [hasMore], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("has_more") @ExcludeMissing fun _hasMore(): JsonField<Boolean> = hasMore
+
+    /**
+     * Returns the raw JSON value of [firstId].
+     *
+     * Unlike [firstId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("first_id") @ExcludeMissing fun _firstId(): JsonField<String> = firstId
 
     /**
      * Returns the raw JSON value of [lastId].
@@ -130,6 +130,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
+         * .hasMore()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -139,18 +140,18 @@ private constructor(
     class Builder internal constructor() {
 
         private var data: JsonField<MutableList<Invite>>? = null
+        private var hasMore: JsonField<Boolean>? = null
         private var object_: JsonValue = JsonValue.from("list")
         private var firstId: JsonField<String> = JsonMissing.of()
-        private var hasMore: JsonField<Boolean> = JsonMissing.of()
         private var lastId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(inviteListPageResponse: InviteListPageResponse) = apply {
             data = inviteListPageResponse.data.map { it.toMutableList() }
+            hasMore = inviteListPageResponse.hasMore
             object_ = inviteListPageResponse.object_
             firstId = inviteListPageResponse.firstId
-            hasMore = inviteListPageResponse.hasMore
             lastId = inviteListPageResponse.lastId
             additionalProperties = inviteListPageResponse.additionalProperties.toMutableMap()
         }
@@ -181,6 +182,19 @@ private constructor(
         }
 
         /**
+         * The `has_more` property is used for pagination to indicate there are additional results.
+         */
+        fun hasMore(hasMore: Boolean) = hasMore(JsonField.of(hasMore))
+
+        /**
+         * Sets [Builder.hasMore] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.hasMore] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
+
+        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
@@ -195,7 +209,10 @@ private constructor(
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The first `invite_id` in the retrieved `list` */
-        fun firstId(firstId: String) = firstId(JsonField.of(firstId))
+        fun firstId(firstId: String?) = firstId(JsonField.ofNullable(firstId))
+
+        /** Alias for calling [Builder.firstId] with `firstId.orElse(null)`. */
+        fun firstId(firstId: Optional<String>) = firstId(firstId.getOrNull())
 
         /**
          * Sets [Builder.firstId] to an arbitrary JSON value.
@@ -205,21 +222,11 @@ private constructor(
          */
         fun firstId(firstId: JsonField<String>) = apply { this.firstId = firstId }
 
-        /**
-         * The `has_more` property is used for pagination to indicate there are additional results.
-         */
-        fun hasMore(hasMore: Boolean) = hasMore(JsonField.of(hasMore))
-
-        /**
-         * Sets [Builder.hasMore] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.hasMore] with a well-typed [Boolean] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
-
         /** The last `invite_id` in the retrieved `list` */
-        fun lastId(lastId: String) = lastId(JsonField.of(lastId))
+        fun lastId(lastId: String?) = lastId(JsonField.ofNullable(lastId))
+
+        /** Alias for calling [Builder.lastId] with `lastId.orElse(null)`. */
+        fun lastId(lastId: Optional<String>) = lastId(lastId.getOrNull())
 
         /**
          * Sets [Builder.lastId] to an arbitrary JSON value.
@@ -256,6 +263,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
+         * .hasMore()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -263,9 +271,9 @@ private constructor(
         fun build(): InviteListPageResponse =
             InviteListPageResponse(
                 checkRequired("data", data).map { it.toImmutable() },
+                checkRequired("hasMore", hasMore),
                 object_,
                 firstId,
-                hasMore,
                 lastId,
                 additionalProperties.toMutableMap(),
             )
@@ -279,13 +287,13 @@ private constructor(
         }
 
         data().forEach { it.validate() }
+        hasMore()
         _object_().let {
             if (it != JsonValue.from("list")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
         firstId()
-        hasMore()
         lastId()
         validated = true
     }
@@ -306,9 +314,9 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (data.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (hasMore.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("list")) 1 else 0 } +
             (if (firstId.asKnown().isPresent) 1 else 0) +
-            (if (hasMore.asKnown().isPresent) 1 else 0) +
             (if (lastId.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
@@ -318,19 +326,19 @@ private constructor(
 
         return other is InviteListPageResponse &&
             data == other.data &&
+            hasMore == other.hasMore &&
             object_ == other.object_ &&
             firstId == other.firstId &&
-            hasMore == other.hasMore &&
             lastId == other.lastId &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(data, object_, firstId, hasMore, lastId, additionalProperties)
+        Objects.hash(data, hasMore, object_, firstId, lastId, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "InviteListPageResponse{data=$data, object_=$object_, firstId=$firstId, hasMore=$hasMore, lastId=$lastId, additionalProperties=$additionalProperties}"
+        "InviteListPageResponse{data=$data, hasMore=$hasMore, object_=$object_, firstId=$firstId, lastId=$lastId, additionalProperties=$additionalProperties}"
 }

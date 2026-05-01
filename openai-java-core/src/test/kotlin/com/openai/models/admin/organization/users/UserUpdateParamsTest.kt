@@ -9,7 +9,13 @@ internal class UserUpdateParamsTest {
 
     @Test
     fun create() {
-        UserUpdateParams.builder().userId("user_id").role(UserUpdateParams.Role.OWNER).build()
+        UserUpdateParams.builder()
+            .userId("user_id")
+            .developerPersona("developer_persona")
+            .role("role")
+            .roleId("role_id")
+            .technicalLevel("technical_level")
+            .build()
     }
 
     @Test
@@ -24,11 +30,20 @@ internal class UserUpdateParamsTest {
     @Test
     fun body() {
         val params =
-            UserUpdateParams.builder().userId("user_id").role(UserUpdateParams.Role.OWNER).build()
+            UserUpdateParams.builder()
+                .userId("user_id")
+                .developerPersona("developer_persona")
+                .role("role")
+                .roleId("role_id")
+                .technicalLevel("technical_level")
+                .build()
 
         val body = params._body()
 
-        assertThat(body.role()).contains(UserUpdateParams.Role.OWNER)
+        assertThat(body.developerPersona()).contains("developer_persona")
+        assertThat(body.role()).contains("role")
+        assertThat(body.roleId()).contains("role_id")
+        assertThat(body.technicalLevel()).contains("technical_level")
     }
 
     @Test

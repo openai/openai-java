@@ -9,21 +9,12 @@ internal class UserUpdateParamsTest {
 
     @Test
     fun create() {
-        UserUpdateParams.builder()
-            .projectId("project_id")
-            .userId("user_id")
-            .role(UserUpdateParams.Role.OWNER)
-            .build()
+        UserUpdateParams.builder().projectId("project_id").userId("user_id").role("role").build()
     }
 
     @Test
     fun pathParams() {
-        val params =
-            UserUpdateParams.builder()
-                .projectId("project_id")
-                .userId("user_id")
-                .role(UserUpdateParams.Role.OWNER)
-                .build()
+        val params = UserUpdateParams.builder().projectId("project_id").userId("user_id").build()
 
         assertThat(params._pathParam(0)).isEqualTo("project_id")
         assertThat(params._pathParam(1)).isEqualTo("user_id")
@@ -37,11 +28,18 @@ internal class UserUpdateParamsTest {
             UserUpdateParams.builder()
                 .projectId("project_id")
                 .userId("user_id")
-                .role(UserUpdateParams.Role.OWNER)
+                .role("role")
                 .build()
 
         val body = params._body()
 
-        assertThat(body.role()).isEqualTo(UserUpdateParams.Role.OWNER)
+        assertThat(body.role()).contains("role")
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
+        val params = UserUpdateParams.builder().projectId("project_id").userId("user_id").build()
+
+        val body = params._body()
     }
 }
