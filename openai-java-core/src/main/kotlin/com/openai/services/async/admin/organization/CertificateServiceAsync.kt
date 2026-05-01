@@ -89,18 +89,28 @@ interface CertificateServiceAsync {
         retrieve(certificateId, CertificateRetrieveParams.none(), requestOptions)
 
     /** Modify a certificate. Note that only the name can be modified. */
-    fun update(
-        certificateId: String,
-        params: CertificateUpdateParams,
-    ): CompletableFuture<Certificate> = update(certificateId, params, RequestOptions.none())
+    fun update(certificateId: String): CompletableFuture<Certificate> =
+        update(certificateId, CertificateUpdateParams.none())
 
     /** @see update */
     fun update(
         certificateId: String,
-        params: CertificateUpdateParams,
+        params: CertificateUpdateParams = CertificateUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Certificate> =
         update(params.toBuilder().certificateId(certificateId).build(), requestOptions)
+
+    /** @see update */
+    fun update(
+        certificateId: String,
+        params: CertificateUpdateParams = CertificateUpdateParams.none(),
+    ): CompletableFuture<Certificate> = update(certificateId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: CertificateUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Certificate>
 
     /** @see update */
     fun update(params: CertificateUpdateParams): CompletableFuture<Certificate> =
@@ -108,9 +118,10 @@ interface CertificateServiceAsync {
 
     /** @see update */
     fun update(
-        params: CertificateUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Certificate>
+        certificateId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Certificate> =
+        update(certificateId, CertificateUpdateParams.none(), requestOptions)
 
     /** List uploaded certificates for this organization. */
     fun list(): CompletableFuture<CertificateListPageAsync> = list(CertificateListParams.none())
@@ -273,19 +284,29 @@ interface CertificateServiceAsync {
          * Returns a raw HTTP response for `post /organization/certificates/{certificate_id}`, but
          * is otherwise the same as [CertificateServiceAsync.update].
          */
+        fun update(certificateId: String): CompletableFuture<HttpResponseFor<Certificate>> =
+            update(certificateId, CertificateUpdateParams.none())
+
+        /** @see update */
         fun update(
             certificateId: String,
-            params: CertificateUpdateParams,
+            params: CertificateUpdateParams = CertificateUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Certificate>> =
+            update(params.toBuilder().certificateId(certificateId).build(), requestOptions)
+
+        /** @see update */
+        fun update(
+            certificateId: String,
+            params: CertificateUpdateParams = CertificateUpdateParams.none(),
         ): CompletableFuture<HttpResponseFor<Certificate>> =
             update(certificateId, params, RequestOptions.none())
 
         /** @see update */
         fun update(
-            certificateId: String,
             params: CertificateUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<Certificate>> =
-            update(params.toBuilder().certificateId(certificateId).build(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<Certificate>>
 
         /** @see update */
         fun update(
@@ -294,9 +315,10 @@ interface CertificateServiceAsync {
 
         /** @see update */
         fun update(
-            params: CertificateUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<Certificate>>
+            certificateId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Certificate>> =
+            update(certificateId, CertificateUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /organization/certificates`, but is otherwise the

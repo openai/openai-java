@@ -25,9 +25,9 @@ class AuditLogListResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val actor: JsonField<Actor>,
     private val effectiveAt: JsonField<Long>,
     private val type: JsonField<Type>,
+    private val actor: JsonField<Actor>,
     private val apiKeyCreated: JsonField<ApiKeyCreated>,
     private val apiKeyDeleted: JsonField<ApiKeyDeleted>,
     private val apiKeyUpdated: JsonField<ApiKeyUpdated>,
@@ -82,11 +82,11 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("actor") @ExcludeMissing actor: JsonField<Actor> = JsonMissing.of(),
         @JsonProperty("effective_at")
         @ExcludeMissing
         effectiveAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("actor") @ExcludeMissing actor: JsonField<Actor> = JsonMissing.of(),
         @JsonProperty("api_key.created")
         @ExcludeMissing
         apiKeyCreated: JsonField<ApiKeyCreated> = JsonMissing.of(),
@@ -231,9 +231,9 @@ private constructor(
         userUpdated: JsonField<UserUpdated> = JsonMissing.of(),
     ) : this(
         id,
-        actor,
         effectiveAt,
         type,
+        actor,
         apiKeyCreated,
         apiKeyDeleted,
         apiKeyUpdated,
@@ -294,14 +294,6 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The actor who performed the audit logged action.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun actor(): Actor = actor.getRequired("actor")
-
-    /**
      * The Unix timestamp (in seconds) of the event.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -316,6 +308,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
+
+    /**
+     * The actor who performed the audit logged action.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun actor(): Optional<Actor> = actor.getOptional("actor")
 
     /**
      * The details for events with this `type`.
@@ -741,13 +741,6 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
-     * Returns the raw JSON value of [actor].
-     *
-     * Unlike [actor], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("actor") @ExcludeMissing fun _actor(): JsonField<Actor> = actor
-
-    /**
      * Returns the raw JSON value of [effectiveAt].
      *
      * Unlike [effectiveAt], this method doesn't throw if the JSON field has an unexpected type.
@@ -760,6 +753,13 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+    /**
+     * Returns the raw JSON value of [actor].
+     *
+     * Unlike [actor], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("actor") @ExcludeMissing fun _actor(): JsonField<Actor> = actor
 
     /**
      * Returns the raw JSON value of [apiKeyCreated].
@@ -1217,7 +1217,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .actor()
          * .effectiveAt()
          * .type()
          * ```
@@ -1229,9 +1228,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var actor: JsonField<Actor>? = null
         private var effectiveAt: JsonField<Long>? = null
         private var type: JsonField<Type>? = null
+        private var actor: JsonField<Actor> = JsonMissing.of()
         private var apiKeyCreated: JsonField<ApiKeyCreated> = JsonMissing.of()
         private var apiKeyDeleted: JsonField<ApiKeyDeleted> = JsonMissing.of()
         private var apiKeyUpdated: JsonField<ApiKeyUpdated> = JsonMissing.of()
@@ -1289,9 +1288,9 @@ private constructor(
         @JvmSynthetic
         internal fun from(auditLogListResponse: AuditLogListResponse) = apply {
             id = auditLogListResponse.id
-            actor = auditLogListResponse.actor
             effectiveAt = auditLogListResponse.effectiveAt
             type = auditLogListResponse.type
+            actor = auditLogListResponse.actor
             apiKeyCreated = auditLogListResponse.apiKeyCreated
             apiKeyDeleted = auditLogListResponse.apiKeyDeleted
             apiKeyUpdated = auditLogListResponse.apiKeyUpdated
@@ -1354,17 +1353,6 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The actor who performed the audit logged action. */
-        fun actor(actor: Actor) = actor(JsonField.of(actor))
-
-        /**
-         * Sets [Builder.actor] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.actor] with a well-typed [Actor] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun actor(actor: JsonField<Actor>) = apply { this.actor = actor }
-
         /** The Unix timestamp (in seconds) of the event. */
         fun effectiveAt(effectiveAt: Long) = effectiveAt(JsonField.of(effectiveAt))
 
@@ -1387,6 +1375,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
+
+        /** The actor who performed the audit logged action. */
+        fun actor(actor: Actor?) = actor(JsonField.ofNullable(actor))
+
+        /** Alias for calling [Builder.actor] with `actor.orElse(null)`. */
+        fun actor(actor: Optional<Actor>) = actor(actor.getOrNull())
+
+        /**
+         * Sets [Builder.actor] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.actor] with a well-typed [Actor] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun actor(actor: JsonField<Actor>) = apply { this.actor = actor }
 
         /** The details for events with this `type`. */
         fun apiKeyCreated(apiKeyCreated: ApiKeyCreated) = apiKeyCreated(JsonField.of(apiKeyCreated))
@@ -2098,7 +2100,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .actor()
          * .effectiveAt()
          * .type()
          * ```
@@ -2108,9 +2109,9 @@ private constructor(
         fun build(): AuditLogListResponse =
             AuditLogListResponse(
                 checkRequired("id", id),
-                checkRequired("actor", actor),
                 checkRequired("effectiveAt", effectiveAt),
                 checkRequired("type", type),
+                actor,
                 apiKeyCreated,
                 apiKeyDeleted,
                 apiKeyUpdated,
@@ -2171,9 +2172,9 @@ private constructor(
         }
 
         id()
-        actor().validate()
         effectiveAt()
         type().validate()
+        actor().ifPresent { it.validate() }
         apiKeyCreated().ifPresent { it.validate() }
         apiKeyDeleted().ifPresent { it.validate() }
         apiKeyUpdated().ifPresent { it.validate() }
@@ -2239,9 +2240,9 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
-            (actor.asKnown().getOrNull()?.validity() ?: 0) +
             (if (effectiveAt.asKnown().isPresent) 1 else 0) +
             (type.asKnown().getOrNull()?.validity() ?: 0) +
+            (actor.asKnown().getOrNull()?.validity() ?: 0) +
             (apiKeyCreated.asKnown().getOrNull()?.validity() ?: 0) +
             (apiKeyDeleted.asKnown().getOrNull()?.validity() ?: 0) +
             (apiKeyUpdated.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2288,6 +2289,426 @@ private constructor(
             (userAdded.asKnown().getOrNull()?.validity() ?: 0) +
             (userDeleted.asKnown().getOrNull()?.validity() ?: 0) +
             (userUpdated.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** The event type. */
+    class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val API_KEY_CREATED = of("api_key.created")
+
+            @JvmField val API_KEY_UPDATED = of("api_key.updated")
+
+            @JvmField val API_KEY_DELETED = of("api_key.deleted")
+
+            @JvmField val CERTIFICATE_CREATED = of("certificate.created")
+
+            @JvmField val CERTIFICATE_UPDATED = of("certificate.updated")
+
+            @JvmField val CERTIFICATE_DELETED = of("certificate.deleted")
+
+            @JvmField val CERTIFICATES_ACTIVATED = of("certificates.activated")
+
+            @JvmField val CERTIFICATES_DEACTIVATED = of("certificates.deactivated")
+
+            @JvmField val CHECKPOINT_PERMISSION_CREATED = of("checkpoint.permission.created")
+
+            @JvmField val CHECKPOINT_PERMISSION_DELETED = of("checkpoint.permission.deleted")
+
+            @JvmField val EXTERNAL_KEY_REGISTERED = of("external_key.registered")
+
+            @JvmField val EXTERNAL_KEY_REMOVED = of("external_key.removed")
+
+            @JvmField val GROUP_CREATED = of("group.created")
+
+            @JvmField val GROUP_UPDATED = of("group.updated")
+
+            @JvmField val GROUP_DELETED = of("group.deleted")
+
+            @JvmField val INVITE_SENT = of("invite.sent")
+
+            @JvmField val INVITE_ACCEPTED = of("invite.accepted")
+
+            @JvmField val INVITE_DELETED = of("invite.deleted")
+
+            @JvmField val IP_ALLOWLIST_CREATED = of("ip_allowlist.created")
+
+            @JvmField val IP_ALLOWLIST_UPDATED = of("ip_allowlist.updated")
+
+            @JvmField val IP_ALLOWLIST_DELETED = of("ip_allowlist.deleted")
+
+            @JvmField val IP_ALLOWLIST_CONFIG_ACTIVATED = of("ip_allowlist.config.activated")
+
+            @JvmField val IP_ALLOWLIST_CONFIG_DEACTIVATED = of("ip_allowlist.config.deactivated")
+
+            @JvmField val LOGIN_SUCCEEDED = of("login.succeeded")
+
+            @JvmField val LOGIN_FAILED = of("login.failed")
+
+            @JvmField val LOGOUT_SUCCEEDED = of("logout.succeeded")
+
+            @JvmField val LOGOUT_FAILED = of("logout.failed")
+
+            @JvmField val ORGANIZATION_UPDATED = of("organization.updated")
+
+            @JvmField val PROJECT_CREATED = of("project.created")
+
+            @JvmField val PROJECT_UPDATED = of("project.updated")
+
+            @JvmField val PROJECT_ARCHIVED = of("project.archived")
+
+            @JvmField val PROJECT_DELETED = of("project.deleted")
+
+            @JvmField val RATE_LIMIT_UPDATED = of("rate_limit.updated")
+
+            @JvmField val RATE_LIMIT_DELETED = of("rate_limit.deleted")
+
+            @JvmField val RESOURCE_DELETED = of("resource.deleted")
+
+            @JvmField val TUNNEL_CREATED = of("tunnel.created")
+
+            @JvmField val TUNNEL_UPDATED = of("tunnel.updated")
+
+            @JvmField val TUNNEL_DELETED = of("tunnel.deleted")
+
+            @JvmField val ROLE_CREATED = of("role.created")
+
+            @JvmField val ROLE_UPDATED = of("role.updated")
+
+            @JvmField val ROLE_DELETED = of("role.deleted")
+
+            @JvmField val ROLE_ASSIGNMENT_CREATED = of("role.assignment.created")
+
+            @JvmField val ROLE_ASSIGNMENT_DELETED = of("role.assignment.deleted")
+
+            @JvmField val SCIM_ENABLED = of("scim.enabled")
+
+            @JvmField val SCIM_DISABLED = of("scim.disabled")
+
+            @JvmField val SERVICE_ACCOUNT_CREATED = of("service_account.created")
+
+            @JvmField val SERVICE_ACCOUNT_UPDATED = of("service_account.updated")
+
+            @JvmField val SERVICE_ACCOUNT_DELETED = of("service_account.deleted")
+
+            @JvmField val USER_ADDED = of("user.added")
+
+            @JvmField val USER_UPDATED = of("user.updated")
+
+            @JvmField val USER_DELETED = of("user.deleted")
+
+            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+        }
+
+        /** An enum containing [Type]'s known values. */
+        enum class Known {
+            API_KEY_CREATED,
+            API_KEY_UPDATED,
+            API_KEY_DELETED,
+            CERTIFICATE_CREATED,
+            CERTIFICATE_UPDATED,
+            CERTIFICATE_DELETED,
+            CERTIFICATES_ACTIVATED,
+            CERTIFICATES_DEACTIVATED,
+            CHECKPOINT_PERMISSION_CREATED,
+            CHECKPOINT_PERMISSION_DELETED,
+            EXTERNAL_KEY_REGISTERED,
+            EXTERNAL_KEY_REMOVED,
+            GROUP_CREATED,
+            GROUP_UPDATED,
+            GROUP_DELETED,
+            INVITE_SENT,
+            INVITE_ACCEPTED,
+            INVITE_DELETED,
+            IP_ALLOWLIST_CREATED,
+            IP_ALLOWLIST_UPDATED,
+            IP_ALLOWLIST_DELETED,
+            IP_ALLOWLIST_CONFIG_ACTIVATED,
+            IP_ALLOWLIST_CONFIG_DEACTIVATED,
+            LOGIN_SUCCEEDED,
+            LOGIN_FAILED,
+            LOGOUT_SUCCEEDED,
+            LOGOUT_FAILED,
+            ORGANIZATION_UPDATED,
+            PROJECT_CREATED,
+            PROJECT_UPDATED,
+            PROJECT_ARCHIVED,
+            PROJECT_DELETED,
+            RATE_LIMIT_UPDATED,
+            RATE_LIMIT_DELETED,
+            RESOURCE_DELETED,
+            TUNNEL_CREATED,
+            TUNNEL_UPDATED,
+            TUNNEL_DELETED,
+            ROLE_CREATED,
+            ROLE_UPDATED,
+            ROLE_DELETED,
+            ROLE_ASSIGNMENT_CREATED,
+            ROLE_ASSIGNMENT_DELETED,
+            SCIM_ENABLED,
+            SCIM_DISABLED,
+            SERVICE_ACCOUNT_CREATED,
+            SERVICE_ACCOUNT_UPDATED,
+            SERVICE_ACCOUNT_DELETED,
+            USER_ADDED,
+            USER_UPDATED,
+            USER_DELETED,
+        }
+
+        /**
+         * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Type] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            API_KEY_CREATED,
+            API_KEY_UPDATED,
+            API_KEY_DELETED,
+            CERTIFICATE_CREATED,
+            CERTIFICATE_UPDATED,
+            CERTIFICATE_DELETED,
+            CERTIFICATES_ACTIVATED,
+            CERTIFICATES_DEACTIVATED,
+            CHECKPOINT_PERMISSION_CREATED,
+            CHECKPOINT_PERMISSION_DELETED,
+            EXTERNAL_KEY_REGISTERED,
+            EXTERNAL_KEY_REMOVED,
+            GROUP_CREATED,
+            GROUP_UPDATED,
+            GROUP_DELETED,
+            INVITE_SENT,
+            INVITE_ACCEPTED,
+            INVITE_DELETED,
+            IP_ALLOWLIST_CREATED,
+            IP_ALLOWLIST_UPDATED,
+            IP_ALLOWLIST_DELETED,
+            IP_ALLOWLIST_CONFIG_ACTIVATED,
+            IP_ALLOWLIST_CONFIG_DEACTIVATED,
+            LOGIN_SUCCEEDED,
+            LOGIN_FAILED,
+            LOGOUT_SUCCEEDED,
+            LOGOUT_FAILED,
+            ORGANIZATION_UPDATED,
+            PROJECT_CREATED,
+            PROJECT_UPDATED,
+            PROJECT_ARCHIVED,
+            PROJECT_DELETED,
+            RATE_LIMIT_UPDATED,
+            RATE_LIMIT_DELETED,
+            RESOURCE_DELETED,
+            TUNNEL_CREATED,
+            TUNNEL_UPDATED,
+            TUNNEL_DELETED,
+            ROLE_CREATED,
+            ROLE_UPDATED,
+            ROLE_DELETED,
+            ROLE_ASSIGNMENT_CREATED,
+            ROLE_ASSIGNMENT_DELETED,
+            SCIM_ENABLED,
+            SCIM_DISABLED,
+            SERVICE_ACCOUNT_CREATED,
+            SERVICE_ACCOUNT_UPDATED,
+            SERVICE_ACCOUNT_DELETED,
+            USER_ADDED,
+            USER_UPDATED,
+            USER_DELETED,
+            /** An enum member indicating that [Type] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                API_KEY_CREATED -> Value.API_KEY_CREATED
+                API_KEY_UPDATED -> Value.API_KEY_UPDATED
+                API_KEY_DELETED -> Value.API_KEY_DELETED
+                CERTIFICATE_CREATED -> Value.CERTIFICATE_CREATED
+                CERTIFICATE_UPDATED -> Value.CERTIFICATE_UPDATED
+                CERTIFICATE_DELETED -> Value.CERTIFICATE_DELETED
+                CERTIFICATES_ACTIVATED -> Value.CERTIFICATES_ACTIVATED
+                CERTIFICATES_DEACTIVATED -> Value.CERTIFICATES_DEACTIVATED
+                CHECKPOINT_PERMISSION_CREATED -> Value.CHECKPOINT_PERMISSION_CREATED
+                CHECKPOINT_PERMISSION_DELETED -> Value.CHECKPOINT_PERMISSION_DELETED
+                EXTERNAL_KEY_REGISTERED -> Value.EXTERNAL_KEY_REGISTERED
+                EXTERNAL_KEY_REMOVED -> Value.EXTERNAL_KEY_REMOVED
+                GROUP_CREATED -> Value.GROUP_CREATED
+                GROUP_UPDATED -> Value.GROUP_UPDATED
+                GROUP_DELETED -> Value.GROUP_DELETED
+                INVITE_SENT -> Value.INVITE_SENT
+                INVITE_ACCEPTED -> Value.INVITE_ACCEPTED
+                INVITE_DELETED -> Value.INVITE_DELETED
+                IP_ALLOWLIST_CREATED -> Value.IP_ALLOWLIST_CREATED
+                IP_ALLOWLIST_UPDATED -> Value.IP_ALLOWLIST_UPDATED
+                IP_ALLOWLIST_DELETED -> Value.IP_ALLOWLIST_DELETED
+                IP_ALLOWLIST_CONFIG_ACTIVATED -> Value.IP_ALLOWLIST_CONFIG_ACTIVATED
+                IP_ALLOWLIST_CONFIG_DEACTIVATED -> Value.IP_ALLOWLIST_CONFIG_DEACTIVATED
+                LOGIN_SUCCEEDED -> Value.LOGIN_SUCCEEDED
+                LOGIN_FAILED -> Value.LOGIN_FAILED
+                LOGOUT_SUCCEEDED -> Value.LOGOUT_SUCCEEDED
+                LOGOUT_FAILED -> Value.LOGOUT_FAILED
+                ORGANIZATION_UPDATED -> Value.ORGANIZATION_UPDATED
+                PROJECT_CREATED -> Value.PROJECT_CREATED
+                PROJECT_UPDATED -> Value.PROJECT_UPDATED
+                PROJECT_ARCHIVED -> Value.PROJECT_ARCHIVED
+                PROJECT_DELETED -> Value.PROJECT_DELETED
+                RATE_LIMIT_UPDATED -> Value.RATE_LIMIT_UPDATED
+                RATE_LIMIT_DELETED -> Value.RATE_LIMIT_DELETED
+                RESOURCE_DELETED -> Value.RESOURCE_DELETED
+                TUNNEL_CREATED -> Value.TUNNEL_CREATED
+                TUNNEL_UPDATED -> Value.TUNNEL_UPDATED
+                TUNNEL_DELETED -> Value.TUNNEL_DELETED
+                ROLE_CREATED -> Value.ROLE_CREATED
+                ROLE_UPDATED -> Value.ROLE_UPDATED
+                ROLE_DELETED -> Value.ROLE_DELETED
+                ROLE_ASSIGNMENT_CREATED -> Value.ROLE_ASSIGNMENT_CREATED
+                ROLE_ASSIGNMENT_DELETED -> Value.ROLE_ASSIGNMENT_DELETED
+                SCIM_ENABLED -> Value.SCIM_ENABLED
+                SCIM_DISABLED -> Value.SCIM_DISABLED
+                SERVICE_ACCOUNT_CREATED -> Value.SERVICE_ACCOUNT_CREATED
+                SERVICE_ACCOUNT_UPDATED -> Value.SERVICE_ACCOUNT_UPDATED
+                SERVICE_ACCOUNT_DELETED -> Value.SERVICE_ACCOUNT_DELETED
+                USER_ADDED -> Value.USER_ADDED
+                USER_UPDATED -> Value.USER_UPDATED
+                USER_DELETED -> Value.USER_DELETED
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                API_KEY_CREATED -> Known.API_KEY_CREATED
+                API_KEY_UPDATED -> Known.API_KEY_UPDATED
+                API_KEY_DELETED -> Known.API_KEY_DELETED
+                CERTIFICATE_CREATED -> Known.CERTIFICATE_CREATED
+                CERTIFICATE_UPDATED -> Known.CERTIFICATE_UPDATED
+                CERTIFICATE_DELETED -> Known.CERTIFICATE_DELETED
+                CERTIFICATES_ACTIVATED -> Known.CERTIFICATES_ACTIVATED
+                CERTIFICATES_DEACTIVATED -> Known.CERTIFICATES_DEACTIVATED
+                CHECKPOINT_PERMISSION_CREATED -> Known.CHECKPOINT_PERMISSION_CREATED
+                CHECKPOINT_PERMISSION_DELETED -> Known.CHECKPOINT_PERMISSION_DELETED
+                EXTERNAL_KEY_REGISTERED -> Known.EXTERNAL_KEY_REGISTERED
+                EXTERNAL_KEY_REMOVED -> Known.EXTERNAL_KEY_REMOVED
+                GROUP_CREATED -> Known.GROUP_CREATED
+                GROUP_UPDATED -> Known.GROUP_UPDATED
+                GROUP_DELETED -> Known.GROUP_DELETED
+                INVITE_SENT -> Known.INVITE_SENT
+                INVITE_ACCEPTED -> Known.INVITE_ACCEPTED
+                INVITE_DELETED -> Known.INVITE_DELETED
+                IP_ALLOWLIST_CREATED -> Known.IP_ALLOWLIST_CREATED
+                IP_ALLOWLIST_UPDATED -> Known.IP_ALLOWLIST_UPDATED
+                IP_ALLOWLIST_DELETED -> Known.IP_ALLOWLIST_DELETED
+                IP_ALLOWLIST_CONFIG_ACTIVATED -> Known.IP_ALLOWLIST_CONFIG_ACTIVATED
+                IP_ALLOWLIST_CONFIG_DEACTIVATED -> Known.IP_ALLOWLIST_CONFIG_DEACTIVATED
+                LOGIN_SUCCEEDED -> Known.LOGIN_SUCCEEDED
+                LOGIN_FAILED -> Known.LOGIN_FAILED
+                LOGOUT_SUCCEEDED -> Known.LOGOUT_SUCCEEDED
+                LOGOUT_FAILED -> Known.LOGOUT_FAILED
+                ORGANIZATION_UPDATED -> Known.ORGANIZATION_UPDATED
+                PROJECT_CREATED -> Known.PROJECT_CREATED
+                PROJECT_UPDATED -> Known.PROJECT_UPDATED
+                PROJECT_ARCHIVED -> Known.PROJECT_ARCHIVED
+                PROJECT_DELETED -> Known.PROJECT_DELETED
+                RATE_LIMIT_UPDATED -> Known.RATE_LIMIT_UPDATED
+                RATE_LIMIT_DELETED -> Known.RATE_LIMIT_DELETED
+                RESOURCE_DELETED -> Known.RESOURCE_DELETED
+                TUNNEL_CREATED -> Known.TUNNEL_CREATED
+                TUNNEL_UPDATED -> Known.TUNNEL_UPDATED
+                TUNNEL_DELETED -> Known.TUNNEL_DELETED
+                ROLE_CREATED -> Known.ROLE_CREATED
+                ROLE_UPDATED -> Known.ROLE_UPDATED
+                ROLE_DELETED -> Known.ROLE_DELETED
+                ROLE_ASSIGNMENT_CREATED -> Known.ROLE_ASSIGNMENT_CREATED
+                ROLE_ASSIGNMENT_DELETED -> Known.ROLE_ASSIGNMENT_DELETED
+                SCIM_ENABLED -> Known.SCIM_ENABLED
+                SCIM_DISABLED -> Known.SCIM_DISABLED
+                SERVICE_ACCOUNT_CREATED -> Known.SERVICE_ACCOUNT_CREATED
+                SERVICE_ACCOUNT_UPDATED -> Known.SERVICE_ACCOUNT_UPDATED
+                SERVICE_ACCOUNT_DELETED -> Known.SERVICE_ACCOUNT_DELETED
+                USER_ADDED -> Known.USER_ADDED
+                USER_UPDATED -> Known.USER_UPDATED
+                USER_DELETED -> Known.USER_DELETED
+                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Type = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Type && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     /** The actor who performed the audit logged action. */
     class Actor
@@ -3725,426 +4146,6 @@ private constructor(
 
         override fun toString() =
             "Actor{apiKey=$apiKey, session=$session, type=$type, additionalProperties=$additionalProperties}"
-    }
-
-    /** The event type. */
-    class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val API_KEY_CREATED = of("api_key.created")
-
-            @JvmField val API_KEY_UPDATED = of("api_key.updated")
-
-            @JvmField val API_KEY_DELETED = of("api_key.deleted")
-
-            @JvmField val CERTIFICATE_CREATED = of("certificate.created")
-
-            @JvmField val CERTIFICATE_UPDATED = of("certificate.updated")
-
-            @JvmField val CERTIFICATE_DELETED = of("certificate.deleted")
-
-            @JvmField val CERTIFICATES_ACTIVATED = of("certificates.activated")
-
-            @JvmField val CERTIFICATES_DEACTIVATED = of("certificates.deactivated")
-
-            @JvmField val CHECKPOINT_PERMISSION_CREATED = of("checkpoint.permission.created")
-
-            @JvmField val CHECKPOINT_PERMISSION_DELETED = of("checkpoint.permission.deleted")
-
-            @JvmField val EXTERNAL_KEY_REGISTERED = of("external_key.registered")
-
-            @JvmField val EXTERNAL_KEY_REMOVED = of("external_key.removed")
-
-            @JvmField val GROUP_CREATED = of("group.created")
-
-            @JvmField val GROUP_UPDATED = of("group.updated")
-
-            @JvmField val GROUP_DELETED = of("group.deleted")
-
-            @JvmField val INVITE_SENT = of("invite.sent")
-
-            @JvmField val INVITE_ACCEPTED = of("invite.accepted")
-
-            @JvmField val INVITE_DELETED = of("invite.deleted")
-
-            @JvmField val IP_ALLOWLIST_CREATED = of("ip_allowlist.created")
-
-            @JvmField val IP_ALLOWLIST_UPDATED = of("ip_allowlist.updated")
-
-            @JvmField val IP_ALLOWLIST_DELETED = of("ip_allowlist.deleted")
-
-            @JvmField val IP_ALLOWLIST_CONFIG_ACTIVATED = of("ip_allowlist.config.activated")
-
-            @JvmField val IP_ALLOWLIST_CONFIG_DEACTIVATED = of("ip_allowlist.config.deactivated")
-
-            @JvmField val LOGIN_SUCCEEDED = of("login.succeeded")
-
-            @JvmField val LOGIN_FAILED = of("login.failed")
-
-            @JvmField val LOGOUT_SUCCEEDED = of("logout.succeeded")
-
-            @JvmField val LOGOUT_FAILED = of("logout.failed")
-
-            @JvmField val ORGANIZATION_UPDATED = of("organization.updated")
-
-            @JvmField val PROJECT_CREATED = of("project.created")
-
-            @JvmField val PROJECT_UPDATED = of("project.updated")
-
-            @JvmField val PROJECT_ARCHIVED = of("project.archived")
-
-            @JvmField val PROJECT_DELETED = of("project.deleted")
-
-            @JvmField val RATE_LIMIT_UPDATED = of("rate_limit.updated")
-
-            @JvmField val RATE_LIMIT_DELETED = of("rate_limit.deleted")
-
-            @JvmField val RESOURCE_DELETED = of("resource.deleted")
-
-            @JvmField val TUNNEL_CREATED = of("tunnel.created")
-
-            @JvmField val TUNNEL_UPDATED = of("tunnel.updated")
-
-            @JvmField val TUNNEL_DELETED = of("tunnel.deleted")
-
-            @JvmField val ROLE_CREATED = of("role.created")
-
-            @JvmField val ROLE_UPDATED = of("role.updated")
-
-            @JvmField val ROLE_DELETED = of("role.deleted")
-
-            @JvmField val ROLE_ASSIGNMENT_CREATED = of("role.assignment.created")
-
-            @JvmField val ROLE_ASSIGNMENT_DELETED = of("role.assignment.deleted")
-
-            @JvmField val SCIM_ENABLED = of("scim.enabled")
-
-            @JvmField val SCIM_DISABLED = of("scim.disabled")
-
-            @JvmField val SERVICE_ACCOUNT_CREATED = of("service_account.created")
-
-            @JvmField val SERVICE_ACCOUNT_UPDATED = of("service_account.updated")
-
-            @JvmField val SERVICE_ACCOUNT_DELETED = of("service_account.deleted")
-
-            @JvmField val USER_ADDED = of("user.added")
-
-            @JvmField val USER_UPDATED = of("user.updated")
-
-            @JvmField val USER_DELETED = of("user.deleted")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        /** An enum containing [Type]'s known values. */
-        enum class Known {
-            API_KEY_CREATED,
-            API_KEY_UPDATED,
-            API_KEY_DELETED,
-            CERTIFICATE_CREATED,
-            CERTIFICATE_UPDATED,
-            CERTIFICATE_DELETED,
-            CERTIFICATES_ACTIVATED,
-            CERTIFICATES_DEACTIVATED,
-            CHECKPOINT_PERMISSION_CREATED,
-            CHECKPOINT_PERMISSION_DELETED,
-            EXTERNAL_KEY_REGISTERED,
-            EXTERNAL_KEY_REMOVED,
-            GROUP_CREATED,
-            GROUP_UPDATED,
-            GROUP_DELETED,
-            INVITE_SENT,
-            INVITE_ACCEPTED,
-            INVITE_DELETED,
-            IP_ALLOWLIST_CREATED,
-            IP_ALLOWLIST_UPDATED,
-            IP_ALLOWLIST_DELETED,
-            IP_ALLOWLIST_CONFIG_ACTIVATED,
-            IP_ALLOWLIST_CONFIG_DEACTIVATED,
-            LOGIN_SUCCEEDED,
-            LOGIN_FAILED,
-            LOGOUT_SUCCEEDED,
-            LOGOUT_FAILED,
-            ORGANIZATION_UPDATED,
-            PROJECT_CREATED,
-            PROJECT_UPDATED,
-            PROJECT_ARCHIVED,
-            PROJECT_DELETED,
-            RATE_LIMIT_UPDATED,
-            RATE_LIMIT_DELETED,
-            RESOURCE_DELETED,
-            TUNNEL_CREATED,
-            TUNNEL_UPDATED,
-            TUNNEL_DELETED,
-            ROLE_CREATED,
-            ROLE_UPDATED,
-            ROLE_DELETED,
-            ROLE_ASSIGNMENT_CREATED,
-            ROLE_ASSIGNMENT_DELETED,
-            SCIM_ENABLED,
-            SCIM_DISABLED,
-            SERVICE_ACCOUNT_CREATED,
-            SERVICE_ACCOUNT_UPDATED,
-            SERVICE_ACCOUNT_DELETED,
-            USER_ADDED,
-            USER_UPDATED,
-            USER_DELETED,
-        }
-
-        /**
-         * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Type] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            API_KEY_CREATED,
-            API_KEY_UPDATED,
-            API_KEY_DELETED,
-            CERTIFICATE_CREATED,
-            CERTIFICATE_UPDATED,
-            CERTIFICATE_DELETED,
-            CERTIFICATES_ACTIVATED,
-            CERTIFICATES_DEACTIVATED,
-            CHECKPOINT_PERMISSION_CREATED,
-            CHECKPOINT_PERMISSION_DELETED,
-            EXTERNAL_KEY_REGISTERED,
-            EXTERNAL_KEY_REMOVED,
-            GROUP_CREATED,
-            GROUP_UPDATED,
-            GROUP_DELETED,
-            INVITE_SENT,
-            INVITE_ACCEPTED,
-            INVITE_DELETED,
-            IP_ALLOWLIST_CREATED,
-            IP_ALLOWLIST_UPDATED,
-            IP_ALLOWLIST_DELETED,
-            IP_ALLOWLIST_CONFIG_ACTIVATED,
-            IP_ALLOWLIST_CONFIG_DEACTIVATED,
-            LOGIN_SUCCEEDED,
-            LOGIN_FAILED,
-            LOGOUT_SUCCEEDED,
-            LOGOUT_FAILED,
-            ORGANIZATION_UPDATED,
-            PROJECT_CREATED,
-            PROJECT_UPDATED,
-            PROJECT_ARCHIVED,
-            PROJECT_DELETED,
-            RATE_LIMIT_UPDATED,
-            RATE_LIMIT_DELETED,
-            RESOURCE_DELETED,
-            TUNNEL_CREATED,
-            TUNNEL_UPDATED,
-            TUNNEL_DELETED,
-            ROLE_CREATED,
-            ROLE_UPDATED,
-            ROLE_DELETED,
-            ROLE_ASSIGNMENT_CREATED,
-            ROLE_ASSIGNMENT_DELETED,
-            SCIM_ENABLED,
-            SCIM_DISABLED,
-            SERVICE_ACCOUNT_CREATED,
-            SERVICE_ACCOUNT_UPDATED,
-            SERVICE_ACCOUNT_DELETED,
-            USER_ADDED,
-            USER_UPDATED,
-            USER_DELETED,
-            /** An enum member indicating that [Type] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                API_KEY_CREATED -> Value.API_KEY_CREATED
-                API_KEY_UPDATED -> Value.API_KEY_UPDATED
-                API_KEY_DELETED -> Value.API_KEY_DELETED
-                CERTIFICATE_CREATED -> Value.CERTIFICATE_CREATED
-                CERTIFICATE_UPDATED -> Value.CERTIFICATE_UPDATED
-                CERTIFICATE_DELETED -> Value.CERTIFICATE_DELETED
-                CERTIFICATES_ACTIVATED -> Value.CERTIFICATES_ACTIVATED
-                CERTIFICATES_DEACTIVATED -> Value.CERTIFICATES_DEACTIVATED
-                CHECKPOINT_PERMISSION_CREATED -> Value.CHECKPOINT_PERMISSION_CREATED
-                CHECKPOINT_PERMISSION_DELETED -> Value.CHECKPOINT_PERMISSION_DELETED
-                EXTERNAL_KEY_REGISTERED -> Value.EXTERNAL_KEY_REGISTERED
-                EXTERNAL_KEY_REMOVED -> Value.EXTERNAL_KEY_REMOVED
-                GROUP_CREATED -> Value.GROUP_CREATED
-                GROUP_UPDATED -> Value.GROUP_UPDATED
-                GROUP_DELETED -> Value.GROUP_DELETED
-                INVITE_SENT -> Value.INVITE_SENT
-                INVITE_ACCEPTED -> Value.INVITE_ACCEPTED
-                INVITE_DELETED -> Value.INVITE_DELETED
-                IP_ALLOWLIST_CREATED -> Value.IP_ALLOWLIST_CREATED
-                IP_ALLOWLIST_UPDATED -> Value.IP_ALLOWLIST_UPDATED
-                IP_ALLOWLIST_DELETED -> Value.IP_ALLOWLIST_DELETED
-                IP_ALLOWLIST_CONFIG_ACTIVATED -> Value.IP_ALLOWLIST_CONFIG_ACTIVATED
-                IP_ALLOWLIST_CONFIG_DEACTIVATED -> Value.IP_ALLOWLIST_CONFIG_DEACTIVATED
-                LOGIN_SUCCEEDED -> Value.LOGIN_SUCCEEDED
-                LOGIN_FAILED -> Value.LOGIN_FAILED
-                LOGOUT_SUCCEEDED -> Value.LOGOUT_SUCCEEDED
-                LOGOUT_FAILED -> Value.LOGOUT_FAILED
-                ORGANIZATION_UPDATED -> Value.ORGANIZATION_UPDATED
-                PROJECT_CREATED -> Value.PROJECT_CREATED
-                PROJECT_UPDATED -> Value.PROJECT_UPDATED
-                PROJECT_ARCHIVED -> Value.PROJECT_ARCHIVED
-                PROJECT_DELETED -> Value.PROJECT_DELETED
-                RATE_LIMIT_UPDATED -> Value.RATE_LIMIT_UPDATED
-                RATE_LIMIT_DELETED -> Value.RATE_LIMIT_DELETED
-                RESOURCE_DELETED -> Value.RESOURCE_DELETED
-                TUNNEL_CREATED -> Value.TUNNEL_CREATED
-                TUNNEL_UPDATED -> Value.TUNNEL_UPDATED
-                TUNNEL_DELETED -> Value.TUNNEL_DELETED
-                ROLE_CREATED -> Value.ROLE_CREATED
-                ROLE_UPDATED -> Value.ROLE_UPDATED
-                ROLE_DELETED -> Value.ROLE_DELETED
-                ROLE_ASSIGNMENT_CREATED -> Value.ROLE_ASSIGNMENT_CREATED
-                ROLE_ASSIGNMENT_DELETED -> Value.ROLE_ASSIGNMENT_DELETED
-                SCIM_ENABLED -> Value.SCIM_ENABLED
-                SCIM_DISABLED -> Value.SCIM_DISABLED
-                SERVICE_ACCOUNT_CREATED -> Value.SERVICE_ACCOUNT_CREATED
-                SERVICE_ACCOUNT_UPDATED -> Value.SERVICE_ACCOUNT_UPDATED
-                SERVICE_ACCOUNT_DELETED -> Value.SERVICE_ACCOUNT_DELETED
-                USER_ADDED -> Value.USER_ADDED
-                USER_UPDATED -> Value.USER_UPDATED
-                USER_DELETED -> Value.USER_DELETED
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                API_KEY_CREATED -> Known.API_KEY_CREATED
-                API_KEY_UPDATED -> Known.API_KEY_UPDATED
-                API_KEY_DELETED -> Known.API_KEY_DELETED
-                CERTIFICATE_CREATED -> Known.CERTIFICATE_CREATED
-                CERTIFICATE_UPDATED -> Known.CERTIFICATE_UPDATED
-                CERTIFICATE_DELETED -> Known.CERTIFICATE_DELETED
-                CERTIFICATES_ACTIVATED -> Known.CERTIFICATES_ACTIVATED
-                CERTIFICATES_DEACTIVATED -> Known.CERTIFICATES_DEACTIVATED
-                CHECKPOINT_PERMISSION_CREATED -> Known.CHECKPOINT_PERMISSION_CREATED
-                CHECKPOINT_PERMISSION_DELETED -> Known.CHECKPOINT_PERMISSION_DELETED
-                EXTERNAL_KEY_REGISTERED -> Known.EXTERNAL_KEY_REGISTERED
-                EXTERNAL_KEY_REMOVED -> Known.EXTERNAL_KEY_REMOVED
-                GROUP_CREATED -> Known.GROUP_CREATED
-                GROUP_UPDATED -> Known.GROUP_UPDATED
-                GROUP_DELETED -> Known.GROUP_DELETED
-                INVITE_SENT -> Known.INVITE_SENT
-                INVITE_ACCEPTED -> Known.INVITE_ACCEPTED
-                INVITE_DELETED -> Known.INVITE_DELETED
-                IP_ALLOWLIST_CREATED -> Known.IP_ALLOWLIST_CREATED
-                IP_ALLOWLIST_UPDATED -> Known.IP_ALLOWLIST_UPDATED
-                IP_ALLOWLIST_DELETED -> Known.IP_ALLOWLIST_DELETED
-                IP_ALLOWLIST_CONFIG_ACTIVATED -> Known.IP_ALLOWLIST_CONFIG_ACTIVATED
-                IP_ALLOWLIST_CONFIG_DEACTIVATED -> Known.IP_ALLOWLIST_CONFIG_DEACTIVATED
-                LOGIN_SUCCEEDED -> Known.LOGIN_SUCCEEDED
-                LOGIN_FAILED -> Known.LOGIN_FAILED
-                LOGOUT_SUCCEEDED -> Known.LOGOUT_SUCCEEDED
-                LOGOUT_FAILED -> Known.LOGOUT_FAILED
-                ORGANIZATION_UPDATED -> Known.ORGANIZATION_UPDATED
-                PROJECT_CREATED -> Known.PROJECT_CREATED
-                PROJECT_UPDATED -> Known.PROJECT_UPDATED
-                PROJECT_ARCHIVED -> Known.PROJECT_ARCHIVED
-                PROJECT_DELETED -> Known.PROJECT_DELETED
-                RATE_LIMIT_UPDATED -> Known.RATE_LIMIT_UPDATED
-                RATE_LIMIT_DELETED -> Known.RATE_LIMIT_DELETED
-                RESOURCE_DELETED -> Known.RESOURCE_DELETED
-                TUNNEL_CREATED -> Known.TUNNEL_CREATED
-                TUNNEL_UPDATED -> Known.TUNNEL_UPDATED
-                TUNNEL_DELETED -> Known.TUNNEL_DELETED
-                ROLE_CREATED -> Known.ROLE_CREATED
-                ROLE_UPDATED -> Known.ROLE_UPDATED
-                ROLE_DELETED -> Known.ROLE_DELETED
-                ROLE_ASSIGNMENT_CREATED -> Known.ROLE_ASSIGNMENT_CREATED
-                ROLE_ASSIGNMENT_DELETED -> Known.ROLE_ASSIGNMENT_DELETED
-                SCIM_ENABLED -> Known.SCIM_ENABLED
-                SCIM_DISABLED -> Known.SCIM_DISABLED
-                SERVICE_ACCOUNT_CREATED -> Known.SERVICE_ACCOUNT_CREATED
-                SERVICE_ACCOUNT_UPDATED -> Known.SERVICE_ACCOUNT_UPDATED
-                SERVICE_ACCOUNT_DELETED -> Known.SERVICE_ACCOUNT_DELETED
-                USER_ADDED -> Known.USER_ADDED
-                USER_UPDATED -> Known.USER_UPDATED
-                USER_DELETED -> Known.USER_DELETED
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Type = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Type && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** The details for events with this `type`. */
@@ -16439,9 +16440,9 @@ private constructor(
 
         return other is AuditLogListResponse &&
             id == other.id &&
-            actor == other.actor &&
             effectiveAt == other.effectiveAt &&
             type == other.type &&
+            actor == other.actor &&
             apiKeyCreated == other.apiKeyCreated &&
             apiKeyDeleted == other.apiKeyDeleted &&
             apiKeyUpdated == other.apiKeyUpdated &&
@@ -16496,9 +16497,9 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
-            actor,
             effectiveAt,
             type,
+            actor,
             apiKeyCreated,
             apiKeyDeleted,
             apiKeyUpdated,
@@ -16554,5 +16555,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AuditLogListResponse{id=$id, actor=$actor, effectiveAt=$effectiveAt, type=$type, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, additionalProperties=$additionalProperties}"
+        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, additionalProperties=$additionalProperties}"
 }

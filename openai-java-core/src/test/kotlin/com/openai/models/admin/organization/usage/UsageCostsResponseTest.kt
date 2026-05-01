@@ -64,7 +64,7 @@ internal class UsageCostsResponseTest {
                     .build()
             )
         assertThat(usageCostsResponse.hasMore()).isEqualTo(true)
-        assertThat(usageCostsResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageCostsResponse.nextPage()).contains("next_page")
     }
 
     @Test

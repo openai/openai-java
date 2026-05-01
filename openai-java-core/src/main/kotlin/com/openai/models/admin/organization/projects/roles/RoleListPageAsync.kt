@@ -36,12 +36,22 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
+    /**
+     * Delegates to [RoleListPageResponse], but gracefully handles missing data.
+     *
+     * @see RoleListPageResponse.next
+     */
+    fun next(): Optional<String> = response._next().getOptional("next")
+
     override fun items(): List<Role> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
 
-    fun nextPageParams(): RoleListParams =
-        params.toBuilder().after(items().last()._id().getOptional("id")).build()
+    fun nextPageParams(): RoleListParams {
+        val nextCursor =
+            next().getOrNull() ?: throw IllegalStateException("Cannot construct next page params")
+        return params.toBuilder().after(nextCursor).build()
+    }
 
     override fun nextPage(): CompletableFuture<RoleListPageAsync> = service.list(nextPageParams())
 

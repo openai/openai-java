@@ -8,6 +8,7 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.admin.organization.adminapikeys.AdminApiKey
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyCreateParams
+import com.openai.models.admin.organization.adminapikeys.AdminApiKeyCreateResponse
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyDeleteParams
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyDeleteResponse
 import com.openai.models.admin.organization.adminapikeys.AdminApiKeyListPage
@@ -30,13 +31,14 @@ interface AdminApiKeyService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AdminApiKeyService
 
     /** Create an organization admin API key */
-    fun create(params: AdminApiKeyCreateParams): AdminApiKey = create(params, RequestOptions.none())
+    fun create(params: AdminApiKeyCreateParams): AdminApiKeyCreateResponse =
+        create(params, RequestOptions.none())
 
     /** @see create */
     fun create(
         params: AdminApiKeyCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): AdminApiKey
+    ): AdminApiKeyCreateResponse
 
     /** Retrieve a single organization API key */
     fun retrieve(keyId: String): AdminApiKey = retrieve(keyId, AdminApiKeyRetrieveParams.none())
@@ -135,7 +137,7 @@ interface AdminApiKeyService {
          * same as [AdminApiKeyService.create].
          */
         @MustBeClosed
-        fun create(params: AdminApiKeyCreateParams): HttpResponseFor<AdminApiKey> =
+        fun create(params: AdminApiKeyCreateParams): HttpResponseFor<AdminApiKeyCreateResponse> =
             create(params, RequestOptions.none())
 
         /** @see create */
@@ -143,7 +145,7 @@ interface AdminApiKeyService {
         fun create(
             params: AdminApiKeyCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<AdminApiKey>
+        ): HttpResponseFor<AdminApiKeyCreateResponse>
 
         /**
          * Returns a raw HTTP response for `get /organization/admin_api_keys/{key_id}`, but is

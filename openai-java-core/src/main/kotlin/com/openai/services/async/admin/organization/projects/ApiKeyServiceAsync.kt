@@ -29,16 +29,16 @@ interface ApiKeyServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ApiKeyServiceAsync
 
     /** Retrieves an API key in the project. */
-    fun retrieve(keyId: String, params: ApiKeyRetrieveParams): CompletableFuture<ProjectApiKey> =
-        retrieve(keyId, params, RequestOptions.none())
+    fun retrieve(apiKeyId: String, params: ApiKeyRetrieveParams): CompletableFuture<ProjectApiKey> =
+        retrieve(apiKeyId, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
-        keyId: String,
+        apiKeyId: String,
         params: ApiKeyRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ProjectApiKey> =
-        retrieve(params.toBuilder().keyId(keyId).build(), requestOptions)
+        retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
     /** @see retrieve */
     fun retrieve(params: ApiKeyRetrieveParams): CompletableFuture<ProjectApiKey> =
@@ -91,16 +91,18 @@ interface ApiKeyServiceAsync {
      * Returns confirmation of the key deletion, or an error if the key belonged to a service
      * account.
      */
-    fun delete(keyId: String, params: ApiKeyDeleteParams): CompletableFuture<ApiKeyDeleteResponse> =
-        delete(keyId, params, RequestOptions.none())
+    fun delete(
+        apiKeyId: String,
+        params: ApiKeyDeleteParams,
+    ): CompletableFuture<ApiKeyDeleteResponse> = delete(apiKeyId, params, RequestOptions.none())
 
     /** @see delete */
     fun delete(
-        keyId: String,
+        apiKeyId: String,
         params: ApiKeyDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ApiKeyDeleteResponse> =
-        delete(params.toBuilder().keyId(keyId).build(), requestOptions)
+        delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
     /** @see delete */
     fun delete(params: ApiKeyDeleteParams): CompletableFuture<ApiKeyDeleteResponse> =
@@ -128,22 +130,22 @@ interface ApiKeyServiceAsync {
 
         /**
          * Returns a raw HTTP response for `get
-         * /organization/projects/{project_id}/api_keys/{key_id}`, but is otherwise the same as
+         * /organization/projects/{project_id}/api_keys/{api_key_id}`, but is otherwise the same as
          * [ApiKeyServiceAsync.retrieve].
          */
         fun retrieve(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyRetrieveParams,
         ): CompletableFuture<HttpResponseFor<ProjectApiKey>> =
-            retrieve(keyId, params, RequestOptions.none())
+            retrieve(apiKeyId, params, RequestOptions.none())
 
         /** @see retrieve */
         fun retrieve(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ProjectApiKey>> =
-            retrieve(params.toBuilder().keyId(keyId).build(), requestOptions)
+            retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
         /** @see retrieve */
         fun retrieve(
@@ -200,22 +202,22 @@ interface ApiKeyServiceAsync {
 
         /**
          * Returns a raw HTTP response for `delete
-         * /organization/projects/{project_id}/api_keys/{key_id}`, but is otherwise the same as
+         * /organization/projects/{project_id}/api_keys/{api_key_id}`, but is otherwise the same as
          * [ApiKeyServiceAsync.delete].
          */
         fun delete(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyDeleteParams,
         ): CompletableFuture<HttpResponseFor<ApiKeyDeleteResponse>> =
-            delete(keyId, params, RequestOptions.none())
+            delete(apiKeyId, params, RequestOptions.none())
 
         /** @see delete */
         fun delete(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ApiKeyDeleteResponse>> =
-            delete(params.toBuilder().keyId(keyId).build(), requestOptions)
+            delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
         /** @see delete */
         fun delete(

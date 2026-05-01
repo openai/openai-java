@@ -15,6 +15,8 @@ internal class AuditLogListResponseTest {
         val auditLogListResponse =
             AuditLogListResponse.builder()
                 .id("id")
+                .effectiveAt(0L)
+                .type(AuditLogListResponse.Type.API_KEY_CREATED)
                 .actor(
                     AuditLogListResponse.Actor.builder()
                         .apiKey(
@@ -48,8 +50,6 @@ internal class AuditLogListResponseTest {
                         .type(AuditLogListResponse.Actor.Type.SESSION)
                         .build()
                 )
-                .effectiveAt(0L)
-                .type(AuditLogListResponse.Type.API_KEY_CREATED)
                 .apiKeyCreated(
                     AuditLogListResponse.ApiKeyCreated.builder()
                         .id("id")
@@ -360,8 +360,10 @@ internal class AuditLogListResponseTest {
                 .build()
 
         assertThat(auditLogListResponse.id()).isEqualTo("id")
+        assertThat(auditLogListResponse.effectiveAt()).isEqualTo(0L)
+        assertThat(auditLogListResponse.type()).isEqualTo(AuditLogListResponse.Type.API_KEY_CREATED)
         assertThat(auditLogListResponse.actor())
-            .isEqualTo(
+            .contains(
                 AuditLogListResponse.Actor.builder()
                     .apiKey(
                         AuditLogListResponse.Actor.ApiKey.builder()
@@ -394,8 +396,6 @@ internal class AuditLogListResponseTest {
                     .type(AuditLogListResponse.Actor.Type.SESSION)
                     .build()
             )
-        assertThat(auditLogListResponse.effectiveAt()).isEqualTo(0L)
-        assertThat(auditLogListResponse.type()).isEqualTo(AuditLogListResponse.Type.API_KEY_CREATED)
         assertThat(auditLogListResponse.apiKeyCreated())
             .contains(
                 AuditLogListResponse.ApiKeyCreated.builder()
@@ -751,6 +751,8 @@ internal class AuditLogListResponseTest {
         val auditLogListResponse =
             AuditLogListResponse.builder()
                 .id("id")
+                .effectiveAt(0L)
+                .type(AuditLogListResponse.Type.API_KEY_CREATED)
                 .actor(
                     AuditLogListResponse.Actor.builder()
                         .apiKey(
@@ -784,8 +786,6 @@ internal class AuditLogListResponseTest {
                         .type(AuditLogListResponse.Actor.Type.SESSION)
                         .build()
                 )
-                .effectiveAt(0L)
-                .type(AuditLogListResponse.Type.API_KEY_CREATED)
                 .apiKeyCreated(
                     AuditLogListResponse.ApiKeyCreated.builder()
                         .id("id")

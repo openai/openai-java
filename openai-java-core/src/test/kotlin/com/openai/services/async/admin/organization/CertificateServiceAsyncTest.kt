@@ -27,7 +27,7 @@ internal class CertificateServiceAsyncTest {
 
         val certificateFuture =
             certificateServiceAsync.create(
-                CertificateCreateParams.builder().content("content").name("name").build()
+                CertificateCreateParams.builder().certificate("certificate").name("name").build()
             )
 
         val certificate = certificateFuture.get()

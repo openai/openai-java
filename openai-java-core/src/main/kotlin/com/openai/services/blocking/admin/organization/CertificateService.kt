@@ -85,24 +85,34 @@ interface CertificateService {
         retrieve(certificateId, CertificateRetrieveParams.none(), requestOptions)
 
     /** Modify a certificate. Note that only the name can be modified. */
-    fun update(certificateId: String, params: CertificateUpdateParams): Certificate =
-        update(certificateId, params, RequestOptions.none())
+    fun update(certificateId: String): Certificate =
+        update(certificateId, CertificateUpdateParams.none())
 
     /** @see update */
     fun update(
         certificateId: String,
-        params: CertificateUpdateParams,
+        params: CertificateUpdateParams = CertificateUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Certificate = update(params.toBuilder().certificateId(certificateId).build(), requestOptions)
 
     /** @see update */
-    fun update(params: CertificateUpdateParams): Certificate = update(params, RequestOptions.none())
+    fun update(
+        certificateId: String,
+        params: CertificateUpdateParams = CertificateUpdateParams.none(),
+    ): Certificate = update(certificateId, params, RequestOptions.none())
 
     /** @see update */
     fun update(
         params: CertificateUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Certificate
+
+    /** @see update */
+    fun update(params: CertificateUpdateParams): Certificate = update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(certificateId: String, requestOptions: RequestOptions): Certificate =
+        update(certificateId, CertificateUpdateParams.none(), requestOptions)
 
     /** List uploaded certificates for this organization. */
     fun list(): CertificateListPage = list(CertificateListParams.none())
@@ -263,19 +273,31 @@ interface CertificateService {
          * is otherwise the same as [CertificateService.update].
          */
         @MustBeClosed
-        fun update(
-            certificateId: String,
-            params: CertificateUpdateParams,
-        ): HttpResponseFor<Certificate> = update(certificateId, params, RequestOptions.none())
+        fun update(certificateId: String): HttpResponseFor<Certificate> =
+            update(certificateId, CertificateUpdateParams.none())
 
         /** @see update */
         @MustBeClosed
         fun update(
             certificateId: String,
-            params: CertificateUpdateParams,
+            params: CertificateUpdateParams = CertificateUpdateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Certificate> =
             update(params.toBuilder().certificateId(certificateId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            certificateId: String,
+            params: CertificateUpdateParams = CertificateUpdateParams.none(),
+        ): HttpResponseFor<Certificate> = update(certificateId, params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: CertificateUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Certificate>
 
         /** @see update */
         @MustBeClosed
@@ -285,9 +307,10 @@ interface CertificateService {
         /** @see update */
         @MustBeClosed
         fun update(
-            params: CertificateUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<Certificate>
+            certificateId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Certificate> =
+            update(certificateId, CertificateUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /organization/certificates`, but is otherwise the

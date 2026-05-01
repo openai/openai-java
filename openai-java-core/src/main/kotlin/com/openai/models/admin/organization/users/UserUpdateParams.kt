@@ -12,7 +12,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -35,10 +34,10 @@ private constructor(
     /**
      * `owner` or `reader`
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun role(): Role = body.role()
+    fun role(): Optional<Role> = body.role()
 
     /**
      * Returns the raw JSON value of [role].
@@ -59,14 +58,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [UserUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .role()
-         * ```
-         */
+        @JvmStatic fun none(): UserUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [UserUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -232,13 +226,6 @@ private constructor(
          * Returns an immutable instance of [UserUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .role()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): UserUpdateParams =
             UserUpdateParams(
@@ -276,10 +263,10 @@ private constructor(
         /**
          * `owner` or `reader`
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun role(): Role = role.getRequired("role")
+        fun role(): Optional<Role> = role.getOptional("role")
 
         /**
          * Returns the raw JSON value of [role].
@@ -302,21 +289,14 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .role()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var role: JsonField<Role>? = null
+            private var role: JsonField<Role> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -360,16 +340,8 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .role()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body =
-                Body(checkRequired("role", role), additionalProperties.toMutableMap())
+            fun build(): Body = Body(role, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -379,7 +351,7 @@ private constructor(
                 return@apply
             }
 
-            role().validate()
+            role().ifPresent { it.validate() }
             validated = true
         }
 

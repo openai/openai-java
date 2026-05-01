@@ -27,7 +27,7 @@ internal class CertificateServiceTest {
 
         val certificate =
             certificateService.create(
-                CertificateCreateParams.builder().content("content").name("name").build()
+                CertificateCreateParams.builder().certificate("certificate").name("name").build()
             )
 
         certificate.validate()

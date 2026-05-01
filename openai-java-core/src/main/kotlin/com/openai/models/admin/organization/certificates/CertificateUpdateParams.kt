@@ -11,7 +11,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -34,10 +33,10 @@ private constructor(
     /**
      * The updated name for the certificate
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun name(): String = body.name()
+    fun name(): Optional<String> = body.name()
 
     /**
      * Returns the raw JSON value of [name].
@@ -58,14 +57,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [CertificateUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .name()
-         * ```
-         */
+        @JvmStatic fun none(): CertificateUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [CertificateUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -232,13 +226,6 @@ private constructor(
          * Returns an immutable instance of [CertificateUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .name()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): CertificateUpdateParams =
             CertificateUpdateParams(
@@ -276,10 +263,10 @@ private constructor(
         /**
          * The updated name for the certificate
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): Optional<String> = name.getOptional("name")
 
         /**
          * Returns the raw JSON value of [name].
@@ -302,21 +289,14 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .name()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var name: JsonField<String>? = null
+            private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -360,16 +340,8 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .name()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body =
-                Body(checkRequired("name", name), additionalProperties.toMutableMap())
+            fun build(): Body = Body(name, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false

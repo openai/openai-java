@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class ApiKeyDeleteParams
 private constructor(
     private val projectId: String,
-    private val keyId: String?,
+    private val apiKeyId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -28,7 +28,7 @@ private constructor(
 
     fun projectId(): String = projectId
 
-    fun keyId(): Optional<String> = Optional.ofNullable(keyId)
+    fun apiKeyId(): Optional<String> = Optional.ofNullable(apiKeyId)
 
     /** Additional body properties to send with the request. */
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
@@ -58,7 +58,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var projectId: String? = null
-        private var keyId: String? = null
+        private var apiKeyId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -66,7 +66,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(apiKeyDeleteParams: ApiKeyDeleteParams) = apply {
             projectId = apiKeyDeleteParams.projectId
-            keyId = apiKeyDeleteParams.keyId
+            apiKeyId = apiKeyDeleteParams.apiKeyId
             additionalHeaders = apiKeyDeleteParams.additionalHeaders.toBuilder()
             additionalQueryParams = apiKeyDeleteParams.additionalQueryParams.toBuilder()
             additionalBodyProperties = apiKeyDeleteParams.additionalBodyProperties.toMutableMap()
@@ -74,10 +74,10 @@ private constructor(
 
         fun projectId(projectId: String) = apply { this.projectId = projectId }
 
-        fun keyId(keyId: String?) = apply { this.keyId = keyId }
+        fun apiKeyId(apiKeyId: String?) = apply { this.apiKeyId = apiKeyId }
 
-        /** Alias for calling [Builder.keyId] with `keyId.orElse(null)`. */
-        fun keyId(keyId: Optional<String>) = keyId(keyId.getOrNull())
+        /** Alias for calling [Builder.apiKeyId] with `apiKeyId.orElse(null)`. */
+        fun apiKeyId(apiKeyId: Optional<String>) = apiKeyId(apiKeyId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -214,7 +214,7 @@ private constructor(
         fun build(): ApiKeyDeleteParams =
             ApiKeyDeleteParams(
                 checkRequired("projectId", projectId),
-                keyId,
+                apiKeyId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -227,7 +227,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> projectId
-            1 -> keyId ?: ""
+            1 -> apiKeyId ?: ""
             else -> ""
         }
 
@@ -242,7 +242,7 @@ private constructor(
 
         return other is ApiKeyDeleteParams &&
             projectId == other.projectId &&
-            keyId == other.keyId &&
+            apiKeyId == other.apiKeyId &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams &&
             additionalBodyProperties == other.additionalBodyProperties
@@ -251,12 +251,12 @@ private constructor(
     override fun hashCode(): Int =
         Objects.hash(
             projectId,
-            keyId,
+            apiKeyId,
             additionalHeaders,
             additionalQueryParams,
             additionalBodyProperties,
         )
 
     override fun toString() =
-        "ApiKeyDeleteParams{projectId=$projectId, keyId=$keyId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "ApiKeyDeleteParams{projectId=$projectId, apiKeyId=$apiKeyId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

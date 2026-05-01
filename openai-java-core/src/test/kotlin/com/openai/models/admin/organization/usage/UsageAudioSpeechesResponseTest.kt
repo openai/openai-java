@@ -66,7 +66,7 @@ internal class UsageAudioSpeechesResponseTest {
                     .build()
             )
         assertThat(usageAudioSpeechesResponse.hasMore()).isEqualTo(true)
-        assertThat(usageAudioSpeechesResponse.nextPage()).isEqualTo("next_page")
+        assertThat(usageAudioSpeechesResponse.nextPage()).contains("next_page")
     }
 
     @Test

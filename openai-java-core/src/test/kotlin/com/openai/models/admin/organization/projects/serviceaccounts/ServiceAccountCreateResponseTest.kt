@@ -28,7 +28,7 @@ internal class ServiceAccountCreateResponseTest {
 
         assertThat(serviceAccountCreateResponse.id()).isEqualTo("id")
         assertThat(serviceAccountCreateResponse.apiKey())
-            .isEqualTo(
+            .contains(
                 ServiceAccountCreateResponse.ApiKey.builder()
                     .id("id")
                     .createdAt(0L)

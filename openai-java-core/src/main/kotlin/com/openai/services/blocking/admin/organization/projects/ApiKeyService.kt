@@ -29,15 +29,15 @@ interface ApiKeyService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ApiKeyService
 
     /** Retrieves an API key in the project. */
-    fun retrieve(keyId: String, params: ApiKeyRetrieveParams): ProjectApiKey =
-        retrieve(keyId, params, RequestOptions.none())
+    fun retrieve(apiKeyId: String, params: ApiKeyRetrieveParams): ProjectApiKey =
+        retrieve(apiKeyId, params, RequestOptions.none())
 
     /** @see retrieve */
     fun retrieve(
-        keyId: String,
+        apiKeyId: String,
         params: ApiKeyRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): ProjectApiKey = retrieve(params.toBuilder().keyId(keyId).build(), requestOptions)
+    ): ProjectApiKey = retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
     /** @see retrieve */
     fun retrieve(params: ApiKeyRetrieveParams): ProjectApiKey =
@@ -84,15 +84,15 @@ interface ApiKeyService {
      * Returns confirmation of the key deletion, or an error if the key belonged to a service
      * account.
      */
-    fun delete(keyId: String, params: ApiKeyDeleteParams): ApiKeyDeleteResponse =
-        delete(keyId, params, RequestOptions.none())
+    fun delete(apiKeyId: String, params: ApiKeyDeleteParams): ApiKeyDeleteResponse =
+        delete(apiKeyId, params, RequestOptions.none())
 
     /** @see delete */
     fun delete(
-        keyId: String,
+        apiKeyId: String,
         params: ApiKeyDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): ApiKeyDeleteResponse = delete(params.toBuilder().keyId(keyId).build(), requestOptions)
+    ): ApiKeyDeleteResponse = delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
     /** @see delete */
     fun delete(params: ApiKeyDeleteParams): ApiKeyDeleteResponse =
@@ -116,21 +116,23 @@ interface ApiKeyService {
 
         /**
          * Returns a raw HTTP response for `get
-         * /organization/projects/{project_id}/api_keys/{key_id}`, but is otherwise the same as
+         * /organization/projects/{project_id}/api_keys/{api_key_id}`, but is otherwise the same as
          * [ApiKeyService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(keyId: String, params: ApiKeyRetrieveParams): HttpResponseFor<ProjectApiKey> =
-            retrieve(keyId, params, RequestOptions.none())
+        fun retrieve(
+            apiKeyId: String,
+            params: ApiKeyRetrieveParams,
+        ): HttpResponseFor<ProjectApiKey> = retrieve(apiKeyId, params, RequestOptions.none())
 
         /** @see retrieve */
         @MustBeClosed
         fun retrieve(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectApiKey> =
-            retrieve(params.toBuilder().keyId(keyId).build(), requestOptions)
+            retrieve(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
         /** @see retrieve */
         @MustBeClosed
@@ -190,23 +192,23 @@ interface ApiKeyService {
 
         /**
          * Returns a raw HTTP response for `delete
-         * /organization/projects/{project_id}/api_keys/{key_id}`, but is otherwise the same as
+         * /organization/projects/{project_id}/api_keys/{api_key_id}`, but is otherwise the same as
          * [ApiKeyService.delete].
          */
         @MustBeClosed
         fun delete(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyDeleteParams,
-        ): HttpResponseFor<ApiKeyDeleteResponse> = delete(keyId, params, RequestOptions.none())
+        ): HttpResponseFor<ApiKeyDeleteResponse> = delete(apiKeyId, params, RequestOptions.none())
 
         /** @see delete */
         @MustBeClosed
         fun delete(
-            keyId: String,
+            apiKeyId: String,
             params: ApiKeyDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ApiKeyDeleteResponse> =
-            delete(params.toBuilder().keyId(keyId).build(), requestOptions)
+            delete(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
 
         /** @see delete */
         @MustBeClosed

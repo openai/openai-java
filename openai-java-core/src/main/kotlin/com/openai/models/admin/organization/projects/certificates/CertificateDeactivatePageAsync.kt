@@ -6,7 +6,6 @@ import com.openai.core.AutoPagerAsync
 import com.openai.core.JsonValue
 import com.openai.core.PageAsync
 import com.openai.core.checkRequired
-import com.openai.models.admin.organization.certificates.Certificate
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsync
 import java.util.Objects
 import java.util.concurrent.CompletableFuture
@@ -20,19 +19,20 @@ private constructor(
     private val streamHandlerExecutor: Executor,
     private val params: CertificateDeactivateParams,
     private val response: CertificateDeactivatePageResponse,
-) : PageAsync<Certificate> {
+) : PageAsync<CertificateDeactivateResponse> {
 
     /**
      * Delegates to [CertificateDeactivatePageResponse], but gracefully handles missing data.
      *
      * @see CertificateDeactivatePageResponse.data
      */
-    fun data(): List<Certificate> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    fun data(): List<CertificateDeactivateResponse> =
+        response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /** @see CertificateDeactivatePageResponse.object_ */
     fun object_(): JsonValue = response._object_()
 
-    override fun items(): List<Certificate> = data()
+    override fun items(): List<CertificateDeactivateResponse> = data()
 
     override fun hasNextPage(): Boolean = false
 
@@ -42,7 +42,8 @@ private constructor(
     override fun nextPage(): CompletableFuture<CertificateDeactivatePageAsync> =
         service.deactivate(nextPageParams())
 
-    fun autoPager(): AutoPagerAsync<Certificate> = AutoPagerAsync.from(this, streamHandlerExecutor)
+    fun autoPager(): AutoPagerAsync<CertificateDeactivateResponse> =
+        AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): CertificateDeactivateParams = params

@@ -4,7 +4,6 @@ package com.openai.models.admin.organization.groups.users
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import com.openai.models.admin.organization.users.OrganizationUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,13 +14,7 @@ internal class UserListPageResponseTest {
         val userListPageResponse =
             UserListPageResponse.builder()
                 .addData(
-                    OrganizationUser.builder()
-                        .id("id")
-                        .addedAt(0L)
-                        .email("email")
-                        .name("name")
-                        .role(OrganizationUser.Role.OWNER)
-                        .build()
+                    OrganizationGroupUser.builder().id("id").email("email").name("name").build()
                 )
                 .hasMore(true)
                 .next("next")
@@ -29,13 +22,7 @@ internal class UserListPageResponseTest {
 
         assertThat(userListPageResponse.data())
             .containsExactly(
-                OrganizationUser.builder()
-                    .id("id")
-                    .addedAt(0L)
-                    .email("email")
-                    .name("name")
-                    .role(OrganizationUser.Role.OWNER)
-                    .build()
+                OrganizationGroupUser.builder().id("id").email("email").name("name").build()
             )
         assertThat(userListPageResponse.hasMore()).isEqualTo(true)
         assertThat(userListPageResponse.next()).contains("next")
@@ -47,13 +34,7 @@ internal class UserListPageResponseTest {
         val userListPageResponse =
             UserListPageResponse.builder()
                 .addData(
-                    OrganizationUser.builder()
-                        .id("id")
-                        .addedAt(0L)
-                        .email("email")
-                        .name("name")
-                        .role(OrganizationUser.Role.OWNER)
-                        .build()
+                    OrganizationGroupUser.builder().id("id").email("email").name("name").build()
                 )
                 .hasMore(true)
                 .next("next")
