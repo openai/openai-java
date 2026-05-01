@@ -41,7 +41,10 @@ internal class UserServiceAsyncTest {
             userServiceAsync.update(
                 UserUpdateParams.builder()
                     .userId("user_id")
-                    .role(UserUpdateParams.Role.OWNER)
+                    .developerPersona("developer_persona")
+                    .role("role")
+                    .roleId("role_id")
+                    .technicalLevel("technical_level")
                     .build()
             )
 

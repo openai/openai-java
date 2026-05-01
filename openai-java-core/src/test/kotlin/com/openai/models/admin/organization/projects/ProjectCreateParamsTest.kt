@@ -11,7 +11,8 @@ internal class ProjectCreateParamsTest {
     fun create() {
         ProjectCreateParams.builder()
             .name("name")
-            .geography(ProjectCreateParams.Geography.US)
+            .externalKeyId("external_key_id")
+            .geography("geography")
             .build()
     }
 
@@ -20,13 +21,15 @@ internal class ProjectCreateParamsTest {
         val params =
             ProjectCreateParams.builder()
                 .name("name")
-                .geography(ProjectCreateParams.Geography.US)
+                .externalKeyId("external_key_id")
+                .geography("geography")
                 .build()
 
         val body = params._body()
 
         assertThat(body.name()).isEqualTo("name")
-        assertThat(body.geography()).contains(ProjectCreateParams.Geography.US)
+        assertThat(body.externalKeyId()).contains("external_key_id")
+        assertThat(body.geography()).contains("geography")
     }
 
     @Test

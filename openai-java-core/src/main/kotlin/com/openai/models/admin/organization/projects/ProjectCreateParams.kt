@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -41,6 +40,14 @@ private constructor(
     fun name(): String = body.name()
 
     /**
+     * External key ID to associate with the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalKeyId(): Optional<String> = body.externalKeyId()
+
+    /**
      * Create the project with the specified data residency region. Your organization must have
      * access to Data residency functionality in order to use. See
      * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
@@ -49,7 +56,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun geography(): Optional<Geography> = body.geography()
+    fun geography(): Optional<String> = body.geography()
 
     /**
      * Returns the raw JSON value of [name].
@@ -59,11 +66,18 @@ private constructor(
     fun _name(): JsonField<String> = body._name()
 
     /**
+     * Returns the raw JSON value of [externalKeyId].
+     *
+     * Unlike [externalKeyId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _externalKeyId(): JsonField<String> = body._externalKeyId()
+
+    /**
      * Returns the raw JSON value of [geography].
      *
      * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _geography(): JsonField<Geography> = body._geography()
+    fun _geography(): JsonField<String> = body._geography()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -108,6 +122,7 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [name]
+         * - [externalKeyId]
          * - [geography]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -123,22 +138,43 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
+        /** External key ID to associate with the project. */
+        fun externalKeyId(externalKeyId: String?) = apply { body.externalKeyId(externalKeyId) }
+
+        /** Alias for calling [Builder.externalKeyId] with `externalKeyId.orElse(null)`. */
+        fun externalKeyId(externalKeyId: Optional<String>) =
+            externalKeyId(externalKeyId.getOrNull())
+
+        /**
+         * Sets [Builder.externalKeyId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalKeyId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun externalKeyId(externalKeyId: JsonField<String>) = apply {
+            body.externalKeyId(externalKeyId)
+        }
+
         /**
          * Create the project with the specified data residency region. Your organization must have
          * access to Data residency functionality in order to use. See
          * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
          * to review the functionality and limitations of setting this field.
          */
-        fun geography(geography: Geography) = apply { body.geography(geography) }
+        fun geography(geography: String?) = apply { body.geography(geography) }
+
+        /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+        fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
         /**
          * Sets [Builder.geography] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.geography] with a well-typed [Geography] value instead.
+         * You should usually call [Builder.geography] with a well-typed [String] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun geography(geography: JsonField<Geography>) = apply { body.geography(geography) }
+        fun geography(geography: JsonField<String>) = apply { body.geography(geography) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -287,17 +323,21 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
-        private val geography: JsonField<Geography>,
+        private val externalKeyId: JsonField<String>,
+        private val geography: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("external_key_id")
+            @ExcludeMissing
+            externalKeyId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("geography")
             @ExcludeMissing
-            geography: JsonField<Geography> = JsonMissing.of(),
-        ) : this(name, geography, mutableMapOf())
+            geography: JsonField<String> = JsonMissing.of(),
+        ) : this(name, externalKeyId, geography, mutableMapOf())
 
         /**
          * The friendly name of the project, this name appears in reports.
@@ -308,6 +348,14 @@ private constructor(
         fun name(): String = name.getRequired("name")
 
         /**
+         * External key ID to associate with the project.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
+
+        /**
          * Create the project with the specified data residency region. Your organization must have
          * access to Data residency functionality in order to use. See
          * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
@@ -316,7 +364,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun geography(): Optional<Geography> = geography.getOptional("geography")
+        fun geography(): Optional<String> = geography.getOptional("geography")
 
         /**
          * Returns the raw JSON value of [name].
@@ -326,13 +374,21 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
+         * Returns the raw JSON value of [externalKeyId].
+         *
+         * Unlike [externalKeyId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("external_key_id")
+        @ExcludeMissing
+        fun _externalKeyId(): JsonField<String> = externalKeyId
+
+        /**
          * Returns the raw JSON value of [geography].
          *
          * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("geography")
-        @ExcludeMissing
-        fun _geography(): JsonField<Geography> = geography
+        @JsonProperty("geography") @ExcludeMissing fun _geography(): JsonField<String> = geography
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -363,12 +419,14 @@ private constructor(
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
-            private var geography: JsonField<Geography> = JsonMissing.of()
+            private var externalKeyId: JsonField<String> = JsonMissing.of()
+            private var geography: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 name = body.name
+                externalKeyId = body.externalKeyId
                 geography = body.geography
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -385,22 +443,44 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
+            /** External key ID to associate with the project. */
+            fun externalKeyId(externalKeyId: String?) =
+                externalKeyId(JsonField.ofNullable(externalKeyId))
+
+            /** Alias for calling [Builder.externalKeyId] with `externalKeyId.orElse(null)`. */
+            fun externalKeyId(externalKeyId: Optional<String>) =
+                externalKeyId(externalKeyId.getOrNull())
+
+            /**
+             * Sets [Builder.externalKeyId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.externalKeyId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun externalKeyId(externalKeyId: JsonField<String>) = apply {
+                this.externalKeyId = externalKeyId
+            }
+
             /**
              * Create the project with the specified data residency region. Your organization must
              * have access to Data residency functionality in order to use. See
              * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
              * to review the functionality and limitations of setting this field.
              */
-            fun geography(geography: Geography) = geography(JsonField.of(geography))
+            fun geography(geography: String?) = geography(JsonField.ofNullable(geography))
+
+            /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+            fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
             /**
              * Sets [Builder.geography] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.geography] with a well-typed [Geography] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.geography] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun geography(geography: JsonField<Geography>) = apply { this.geography = geography }
+            fun geography(geography: JsonField<String>) = apply { this.geography = geography }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -434,7 +514,12 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
-                Body(checkRequired("name", name), geography, additionalProperties.toMutableMap())
+                Body(
+                    checkRequired("name", name),
+                    externalKeyId,
+                    geography,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -445,7 +530,8 @@ private constructor(
             }
 
             name()
-            geography().ifPresent { it.validate() }
+            externalKeyId()
+            geography()
             validated = true
         }
 
@@ -466,7 +552,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (name.asKnown().isPresent) 1 else 0) +
-                (geography.asKnown().getOrNull()?.validity() ?: 0)
+                (if (externalKeyId.asKnown().isPresent) 1 else 0) +
+                (if (geography.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -475,185 +562,19 @@ private constructor(
 
             return other is Body &&
                 name == other.name &&
+                externalKeyId == other.externalKeyId &&
                 geography == other.geography &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(name, geography, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(name, externalKeyId, geography, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, geography=$geography, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * Create the project with the specified data residency region. Your organization must have
-     * access to Data residency functionality in order to use. See
-     * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
-     * to review the functionality and limitations of setting this field.
-     */
-    class Geography @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val US = of("US")
-
-            @JvmField val EU = of("EU")
-
-            @JvmField val JP = of("JP")
-
-            @JvmField val IN = of("IN")
-
-            @JvmField val KR = of("KR")
-
-            @JvmField val CA = of("CA")
-
-            @JvmField val AU = of("AU")
-
-            @JvmField val SG = of("SG")
-
-            @JvmStatic fun of(value: String) = Geography(JsonField.of(value))
-        }
-
-        /** An enum containing [Geography]'s known values. */
-        enum class Known {
-            US,
-            EU,
-            JP,
-            IN,
-            KR,
-            CA,
-            AU,
-            SG,
-        }
-
-        /**
-         * An enum containing [Geography]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Geography] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            US,
-            EU,
-            JP,
-            IN,
-            KR,
-            CA,
-            AU,
-            SG,
-            /**
-             * An enum member indicating that [Geography] was instantiated with an unknown value.
-             */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                US -> Value.US
-                EU -> Value.EU
-                JP -> Value.JP
-                IN -> Value.IN
-                KR -> Value.KR
-                CA -> Value.CA
-                AU -> Value.AU
-                SG -> Value.SG
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                US -> Known.US
-                EU -> Known.EU
-                JP -> Known.JP
-                IN -> Known.IN
-                KR -> Known.KR
-                CA -> Known.CA
-                AU -> Known.AU
-                SG -> Known.SG
-                else -> throw OpenAIInvalidDataException("Unknown Geography: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Geography = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Geography && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
+            "Body{name=$name, externalKeyId=$externalKeyId, geography=$geography, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

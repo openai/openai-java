@@ -96,26 +96,36 @@ interface ProjectServiceAsync {
         retrieve(projectId, ProjectRetrieveParams.none(), requestOptions)
 
     /** Modifies a project in the organization. */
-    fun update(projectId: String, params: ProjectUpdateParams): CompletableFuture<Project> =
-        update(projectId, params, RequestOptions.none())
+    fun update(projectId: String): CompletableFuture<Project> =
+        update(projectId, ProjectUpdateParams.none())
 
     /** @see update */
     fun update(
         projectId: String,
-        params: ProjectUpdateParams,
+        params: ProjectUpdateParams = ProjectUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Project> =
         update(params.toBuilder().projectId(projectId).build(), requestOptions)
 
     /** @see update */
-    fun update(params: ProjectUpdateParams): CompletableFuture<Project> =
-        update(params, RequestOptions.none())
+    fun update(
+        projectId: String,
+        params: ProjectUpdateParams = ProjectUpdateParams.none(),
+    ): CompletableFuture<Project> = update(projectId, params, RequestOptions.none())
 
     /** @see update */
     fun update(
         params: ProjectUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Project>
+
+    /** @see update */
+    fun update(params: ProjectUpdateParams): CompletableFuture<Project> =
+        update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(projectId: String, requestOptions: RequestOptions): CompletableFuture<Project> =
+        update(projectId, ProjectUpdateParams.none(), requestOptions)
 
     /** Returns a list of projects. */
     fun list(): CompletableFuture<ProjectListPageAsync> = list(ProjectListParams.none())
@@ -251,19 +261,29 @@ interface ProjectServiceAsync {
          * Returns a raw HTTP response for `post /organization/projects/{project_id}`, but is
          * otherwise the same as [ProjectServiceAsync.update].
          */
+        fun update(projectId: String): CompletableFuture<HttpResponseFor<Project>> =
+            update(projectId, ProjectUpdateParams.none())
+
+        /** @see update */
         fun update(
             projectId: String,
-            params: ProjectUpdateParams,
+            params: ProjectUpdateParams = ProjectUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Project>> =
+            update(params.toBuilder().projectId(projectId).build(), requestOptions)
+
+        /** @see update */
+        fun update(
+            projectId: String,
+            params: ProjectUpdateParams = ProjectUpdateParams.none(),
         ): CompletableFuture<HttpResponseFor<Project>> =
             update(projectId, params, RequestOptions.none())
 
         /** @see update */
         fun update(
-            projectId: String,
             params: ProjectUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<Project>> =
-            update(params.toBuilder().projectId(projectId).build(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<Project>>
 
         /** @see update */
         fun update(params: ProjectUpdateParams): CompletableFuture<HttpResponseFor<Project>> =
@@ -271,9 +291,10 @@ interface ProjectServiceAsync {
 
         /** @see update */
         fun update(
-            params: ProjectUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<Project>>
+            projectId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Project>> =
+            update(projectId, ProjectUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /organization/projects`, but is otherwise the same

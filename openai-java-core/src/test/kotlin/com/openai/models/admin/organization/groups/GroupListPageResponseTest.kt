@@ -14,7 +14,13 @@ internal class GroupListPageResponseTest {
         val groupListPageResponse =
             GroupListPageResponse.builder()
                 .addData(
-                    Group.builder().id("id").createdAt(0L).isScimManaged(true).name("name").build()
+                    Group.builder()
+                        .id("id")
+                        .createdAt(0L)
+                        .groupType("group_type")
+                        .isScimManaged(true)
+                        .name("name")
+                        .build()
                 )
                 .hasMore(true)
                 .next("next")
@@ -22,7 +28,13 @@ internal class GroupListPageResponseTest {
 
         assertThat(groupListPageResponse.data())
             .containsExactly(
-                Group.builder().id("id").createdAt(0L).isScimManaged(true).name("name").build()
+                Group.builder()
+                    .id("id")
+                    .createdAt(0L)
+                    .groupType("group_type")
+                    .isScimManaged(true)
+                    .name("name")
+                    .build()
             )
         assertThat(groupListPageResponse.hasMore()).isEqualTo(true)
         assertThat(groupListPageResponse.next()).contains("next")
@@ -34,7 +46,13 @@ internal class GroupListPageResponseTest {
         val groupListPageResponse =
             GroupListPageResponse.builder()
                 .addData(
-                    Group.builder().id("id").createdAt(0L).isScimManaged(true).name("name").build()
+                    Group.builder()
+                        .id("id")
+                        .createdAt(0L)
+                        .groupType("group_type")
+                        .isScimManaged(true)
+                        .name("name")
+                        .build()
                 )
                 .hasMore(true)
                 .next("next")

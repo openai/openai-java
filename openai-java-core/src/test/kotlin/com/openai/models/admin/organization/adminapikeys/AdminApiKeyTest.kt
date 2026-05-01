@@ -15,8 +15,6 @@ internal class AdminApiKeyTest {
             AdminApiKey.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
-                .lastUsedAt(1711471534L)
-                .name("Administration Key")
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -28,13 +26,12 @@ internal class AdminApiKeyTest {
                         .build()
                 )
                 .redactedValue("sk-admin...def")
-                .value("sk-admin-1234abcd")
+                .lastUsedAt(1711471534L)
+                .name("Administration Key")
                 .build()
 
         assertThat(adminApiKey.id()).isEqualTo("key_abc")
         assertThat(adminApiKey.createdAt()).isEqualTo(1711471533L)
-        assertThat(adminApiKey.lastUsedAt()).contains(1711471534L)
-        assertThat(adminApiKey.name()).isEqualTo("Administration Key")
         assertThat(adminApiKey.owner())
             .isEqualTo(
                 AdminApiKey.Owner.builder()
@@ -47,7 +44,8 @@ internal class AdminApiKeyTest {
                     .build()
             )
         assertThat(adminApiKey.redactedValue()).isEqualTo("sk-admin...def")
-        assertThat(adminApiKey.value()).contains("sk-admin-1234abcd")
+        assertThat(adminApiKey.lastUsedAt()).contains(1711471534L)
+        assertThat(adminApiKey.name()).contains("Administration Key")
     }
 
     @Test
@@ -57,8 +55,6 @@ internal class AdminApiKeyTest {
             AdminApiKey.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
-                .lastUsedAt(1711471534L)
-                .name("Administration Key")
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -70,7 +66,8 @@ internal class AdminApiKeyTest {
                         .build()
                 )
                 .redactedValue("sk-admin...def")
-                .value("sk-admin-1234abcd")
+                .lastUsedAt(1711471534L)
+                .name("Administration Key")
                 .build()
 
         val roundtrippedAdminApiKey =

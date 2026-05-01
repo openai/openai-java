@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -32,19 +31,65 @@ private constructor(
     fun userId(): Optional<String> = Optional.ofNullable(userId)
 
     /**
+     * Developer persona metadata.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun developerPersona(): Optional<String> = body.developerPersona()
+
+    /**
      * `owner` or `reader`
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun role(): Optional<Role> = body.role()
+    fun role(): Optional<String> = body.role()
+
+    /**
+     * Role ID to assign to the user.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun roleId(): Optional<String> = body.roleId()
+
+    /**
+     * Technical level metadata.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun technicalLevel(): Optional<String> = body.technicalLevel()
+
+    /**
+     * Returns the raw JSON value of [developerPersona].
+     *
+     * Unlike [developerPersona], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _developerPersona(): JsonField<String> = body._developerPersona()
 
     /**
      * Returns the raw JSON value of [role].
      *
      * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _role(): JsonField<Role> = body._role()
+    fun _role(): JsonField<String> = body._role()
+
+    /**
+     * Returns the raw JSON value of [roleId].
+     *
+     * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _roleId(): JsonField<String> = body._roleId()
+
+    /**
+     * Returns the raw JSON value of [technicalLevel].
+     *
+     * Unlike [technicalLevel], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _technicalLevel(): JsonField<String> = body._technicalLevel()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -90,20 +135,78 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [developerPersona]
          * - [role]
+         * - [roleId]
+         * - [technicalLevel]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
+        /** Developer persona metadata. */
+        fun developerPersona(developerPersona: String?) = apply {
+            body.developerPersona(developerPersona)
+        }
+
+        /** Alias for calling [Builder.developerPersona] with `developerPersona.orElse(null)`. */
+        fun developerPersona(developerPersona: Optional<String>) =
+            developerPersona(developerPersona.getOrNull())
+
+        /**
+         * Sets [Builder.developerPersona] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.developerPersona] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun developerPersona(developerPersona: JsonField<String>) = apply {
+            body.developerPersona(developerPersona)
+        }
+
         /** `owner` or `reader` */
-        fun role(role: Role) = apply { body.role(role) }
+        fun role(role: String?) = apply { body.role(role) }
+
+        /** Alias for calling [Builder.role] with `role.orElse(null)`. */
+        fun role(role: Optional<String>) = role(role.getOrNull())
 
         /**
          * Sets [Builder.role] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+         * You should usually call [Builder.role] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun role(role: JsonField<Role>) = apply { body.role(role) }
+        fun role(role: JsonField<String>) = apply { body.role(role) }
+
+        /** Role ID to assign to the user. */
+        fun roleId(roleId: String?) = apply { body.roleId(roleId) }
+
+        /** Alias for calling [Builder.roleId] with `roleId.orElse(null)`. */
+        fun roleId(roleId: Optional<String>) = roleId(roleId.getOrNull())
+
+        /**
+         * Sets [Builder.roleId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.roleId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun roleId(roleId: JsonField<String>) = apply { body.roleId(roleId) }
+
+        /** Technical level metadata. */
+        fun technicalLevel(technicalLevel: String?) = apply { body.technicalLevel(technicalLevel) }
+
+        /** Alias for calling [Builder.technicalLevel] with `technicalLevel.orElse(null)`. */
+        fun technicalLevel(technicalLevel: Optional<String>) =
+            technicalLevel(technicalLevel.getOrNull())
+
+        /**
+         * Sets [Builder.technicalLevel] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.technicalLevel] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun technicalLevel(technicalLevel: JsonField<String>) = apply {
+            body.technicalLevel(technicalLevel)
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -251,14 +354,32 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val role: JsonField<Role>,
+        private val developerPersona: JsonField<String>,
+        private val role: JsonField<String>,
+        private val roleId: JsonField<String>,
+        private val technicalLevel: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of()
-        ) : this(role, mutableMapOf())
+            @JsonProperty("developer_persona")
+            @ExcludeMissing
+            developerPersona: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role") @ExcludeMissing role: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role_id") @ExcludeMissing roleId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("technical_level")
+            @ExcludeMissing
+            technicalLevel: JsonField<String> = JsonMissing.of(),
+        ) : this(developerPersona, role, roleId, technicalLevel, mutableMapOf())
+
+        /**
+         * Developer persona metadata.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun developerPersona(): Optional<String> = developerPersona.getOptional("developer_persona")
 
         /**
          * `owner` or `reader`
@@ -266,14 +387,57 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun role(): Optional<Role> = role.getOptional("role")
+        fun role(): Optional<String> = role.getOptional("role")
+
+        /**
+         * Role ID to assign to the user.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun roleId(): Optional<String> = roleId.getOptional("role_id")
+
+        /**
+         * Technical level metadata.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun technicalLevel(): Optional<String> = technicalLevel.getOptional("technical_level")
+
+        /**
+         * Returns the raw JSON value of [developerPersona].
+         *
+         * Unlike [developerPersona], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("developer_persona")
+        @ExcludeMissing
+        fun _developerPersona(): JsonField<String> = developerPersona
 
         /**
          * Returns the raw JSON value of [role].
          *
          * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<String> = role
+
+        /**
+         * Returns the raw JSON value of [roleId].
+         *
+         * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
+
+        /**
+         * Returns the raw JSON value of [technicalLevel].
+         *
+         * Unlike [technicalLevel], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("technical_level")
+        @ExcludeMissing
+        fun _technicalLevel(): JsonField<String> = technicalLevel
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -296,26 +460,90 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var role: JsonField<Role> = JsonMissing.of()
+            private var developerPersona: JsonField<String> = JsonMissing.of()
+            private var role: JsonField<String> = JsonMissing.of()
+            private var roleId: JsonField<String> = JsonMissing.of()
+            private var technicalLevel: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                developerPersona = body.developerPersona
                 role = body.role
+                roleId = body.roleId
+                technicalLevel = body.technicalLevel
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** Developer persona metadata. */
+            fun developerPersona(developerPersona: String?) =
+                developerPersona(JsonField.ofNullable(developerPersona))
+
+            /**
+             * Alias for calling [Builder.developerPersona] with `developerPersona.orElse(null)`.
+             */
+            fun developerPersona(developerPersona: Optional<String>) =
+                developerPersona(developerPersona.getOrNull())
+
+            /**
+             * Sets [Builder.developerPersona] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.developerPersona] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun developerPersona(developerPersona: JsonField<String>) = apply {
+                this.developerPersona = developerPersona
+            }
+
             /** `owner` or `reader` */
-            fun role(role: Role) = role(JsonField.of(role))
+            fun role(role: String?) = role(JsonField.ofNullable(role))
+
+            /** Alias for calling [Builder.role] with `role.orElse(null)`. */
+            fun role(role: Optional<String>) = role(role.getOrNull())
 
             /**
              * Sets [Builder.role] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+             * You should usually call [Builder.role] with a well-typed [String] value instead. This
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
-            fun role(role: JsonField<Role>) = apply { this.role = role }
+            fun role(role: JsonField<String>) = apply { this.role = role }
+
+            /** Role ID to assign to the user. */
+            fun roleId(roleId: String?) = roleId(JsonField.ofNullable(roleId))
+
+            /** Alias for calling [Builder.roleId] with `roleId.orElse(null)`. */
+            fun roleId(roleId: Optional<String>) = roleId(roleId.getOrNull())
+
+            /**
+             * Sets [Builder.roleId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.roleId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
+
+            /** Technical level metadata. */
+            fun technicalLevel(technicalLevel: String?) =
+                technicalLevel(JsonField.ofNullable(technicalLevel))
+
+            /** Alias for calling [Builder.technicalLevel] with `technicalLevel.orElse(null)`. */
+            fun technicalLevel(technicalLevel: Optional<String>) =
+                technicalLevel(technicalLevel.getOrNull())
+
+            /**
+             * Sets [Builder.technicalLevel] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.technicalLevel] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun technicalLevel(technicalLevel: JsonField<String>) = apply {
+                this.technicalLevel = technicalLevel
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -341,7 +569,14 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Body = Body(role, additionalProperties.toMutableMap())
+            fun build(): Body =
+                Body(
+                    developerPersona,
+                    role,
+                    roleId,
+                    technicalLevel,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -351,7 +586,10 @@ private constructor(
                 return@apply
             }
 
-            role().ifPresent { it.validate() }
+            developerPersona()
+            role()
+            roleId()
+            technicalLevel()
             validated = true
         }
 
@@ -369,7 +607,12 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = (role.asKnown().getOrNull()?.validity() ?: 0)
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (developerPersona.asKnown().isPresent) 1 else 0) +
+                (if (role.asKnown().isPresent) 1 else 0) +
+                (if (roleId.asKnown().isPresent) 1 else 0) +
+                (if (technicalLevel.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -377,141 +620,21 @@ private constructor(
             }
 
             return other is Body &&
+                developerPersona == other.developerPersona &&
                 role == other.role &&
+                roleId == other.roleId &&
+                technicalLevel == other.technicalLevel &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(role, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(developerPersona, role, roleId, technicalLevel, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{role=$role, additionalProperties=$additionalProperties}"
-    }
-
-    /** `owner` or `reader` */
-    class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val OWNER = of("owner")
-
-            @JvmField val READER = of("reader")
-
-            @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-        }
-
-        /** An enum containing [Role]'s known values. */
-        enum class Known {
-            OWNER,
-            READER,
-        }
-
-        /**
-         * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Role] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            OWNER,
-            READER,
-            /** An enum member indicating that [Role] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                OWNER -> Value.OWNER
-                READER -> Value.READER
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                OWNER -> Known.OWNER
-                READER -> Known.READER
-                else -> throw OpenAIInvalidDataException("Unknown Role: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Role = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Role && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
+        override fun toString() =
+            "Body{developerPersona=$developerPersona, role=$role, roleId=$roleId, technicalLevel=$technicalLevel, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

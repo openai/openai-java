@@ -26,7 +26,8 @@ internal class ProjectServiceAsyncTest {
             projectServiceAsync.create(
                 ProjectCreateParams.builder()
                     .name("name")
-                    .geography(ProjectCreateParams.Geography.US)
+                    .externalKeyId("external_key_id")
+                    .geography("geography")
                     .build()
             )
 
@@ -62,7 +63,12 @@ internal class ProjectServiceAsyncTest {
 
         val projectFuture =
             projectServiceAsync.update(
-                ProjectUpdateParams.builder().projectId("project_id").name("name").build()
+                ProjectUpdateParams.builder()
+                    .projectId("project_id")
+                    .externalKeyId("external_key_id")
+                    .geography("geography")
+                    .name("name")
+                    .build()
             )
 
         val project = projectFuture.get()

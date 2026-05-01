@@ -15,16 +15,18 @@ internal class ProjectTest {
             Project.builder()
                 .id("id")
                 .createdAt(0L)
-                .name("name")
-                .status(Project.Status.ACTIVE)
                 .archivedAt(0L)
+                .externalKeyId("external_key_id")
+                .name("name")
+                .status("status")
                 .build()
 
         assertThat(project.id()).isEqualTo("id")
         assertThat(project.createdAt()).isEqualTo(0L)
-        assertThat(project.name()).isEqualTo("name")
-        assertThat(project.status()).isEqualTo(Project.Status.ACTIVE)
         assertThat(project.archivedAt()).contains(0L)
+        assertThat(project.externalKeyId()).contains("external_key_id")
+        assertThat(project.name()).contains("name")
+        assertThat(project.status()).contains("status")
     }
 
     @Test
@@ -34,9 +36,10 @@ internal class ProjectTest {
             Project.builder()
                 .id("id")
                 .createdAt(0L)
-                .name("name")
-                .status(Project.Status.ACTIVE)
                 .archivedAt(0L)
+                .externalKeyId("external_key_id")
+                .name("name")
+                .status("status")
                 .build()
 
         val roundtrippedProject =

@@ -11,7 +11,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -32,12 +31,42 @@ private constructor(
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
     /**
+     * External key ID to associate with the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalKeyId(): Optional<String> = body.externalKeyId()
+
+    /**
+     * Geography for the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun geography(): Optional<String> = body.geography()
+
+    /**
      * The updated name of the project, this name appears in reports.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun name(): String = body.name()
+    fun name(): Optional<String> = body.name()
+
+    /**
+     * Returns the raw JSON value of [externalKeyId].
+     *
+     * Unlike [externalKeyId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _externalKeyId(): JsonField<String> = body._externalKeyId()
+
+    /**
+     * Returns the raw JSON value of [geography].
+     *
+     * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _geography(): JsonField<String> = body._geography()
 
     /**
      * Returns the raw JSON value of [name].
@@ -58,14 +87,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ProjectUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .name()
-         * ```
-         */
+        @JvmStatic fun none(): ProjectUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ProjectUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -95,12 +119,50 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [externalKeyId]
+         * - [geography]
          * - [name]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
+        /** External key ID to associate with the project. */
+        fun externalKeyId(externalKeyId: String?) = apply { body.externalKeyId(externalKeyId) }
+
+        /** Alias for calling [Builder.externalKeyId] with `externalKeyId.orElse(null)`. */
+        fun externalKeyId(externalKeyId: Optional<String>) =
+            externalKeyId(externalKeyId.getOrNull())
+
+        /**
+         * Sets [Builder.externalKeyId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalKeyId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun externalKeyId(externalKeyId: JsonField<String>) = apply {
+            body.externalKeyId(externalKeyId)
+        }
+
+        /** Geography for the project. */
+        fun geography(geography: String?) = apply { body.geography(geography) }
+
+        /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+        fun geography(geography: Optional<String>) = geography(geography.getOrNull())
+
+        /**
+         * Sets [Builder.geography] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.geography] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun geography(geography: JsonField<String>) = apply { body.geography(geography) }
+
         /** The updated name of the project, this name appears in reports. */
-        fun name(name: String) = apply { body.name(name) }
+        fun name(name: String?) = apply { body.name(name) }
+
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+        fun name(name: Optional<String>) = name(name.getOrNull())
 
         /**
          * Sets [Builder.name] to an arbitrary JSON value.
@@ -231,13 +293,6 @@ private constructor(
          * Returns an immutable instance of [ProjectUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .name()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ProjectUpdateParams =
             ProjectUpdateParams(
@@ -263,22 +318,63 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val externalKeyId: JsonField<String>,
+        private val geography: JsonField<String>,
         private val name: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of()
-        ) : this(name, mutableMapOf())
+            @JsonProperty("external_key_id")
+            @ExcludeMissing
+            externalKeyId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("geography")
+            @ExcludeMissing
+            geography: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        ) : this(externalKeyId, geography, name, mutableMapOf())
+
+        /**
+         * External key ID to associate with the project.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
+
+        /**
+         * Geography for the project.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun geography(): Optional<String> = geography.getOptional("geography")
 
         /**
          * The updated name of the project, this name appears in reports.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the raw JSON value of [externalKeyId].
+         *
+         * Unlike [externalKeyId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("external_key_id")
+        @ExcludeMissing
+        fun _externalKeyId(): JsonField<String> = externalKeyId
+
+        /**
+         * Returns the raw JSON value of [geography].
+         *
+         * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("geography") @ExcludeMissing fun _geography(): JsonField<String> = geography
 
         /**
          * Returns the raw JSON value of [name].
@@ -301,31 +397,65 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .name()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var name: JsonField<String>? = null
+            private var externalKeyId: JsonField<String> = JsonMissing.of()
+            private var geography: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                externalKeyId = body.externalKeyId
+                geography = body.geography
                 name = body.name
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** External key ID to associate with the project. */
+            fun externalKeyId(externalKeyId: String?) =
+                externalKeyId(JsonField.ofNullable(externalKeyId))
+
+            /** Alias for calling [Builder.externalKeyId] with `externalKeyId.orElse(null)`. */
+            fun externalKeyId(externalKeyId: Optional<String>) =
+                externalKeyId(externalKeyId.getOrNull())
+
+            /**
+             * Sets [Builder.externalKeyId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.externalKeyId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun externalKeyId(externalKeyId: JsonField<String>) = apply {
+                this.externalKeyId = externalKeyId
+            }
+
+            /** Geography for the project. */
+            fun geography(geography: String?) = geography(JsonField.ofNullable(geography))
+
+            /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+            fun geography(geography: Optional<String>) = geography(geography.getOrNull())
+
+            /**
+             * Sets [Builder.geography] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.geography] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun geography(geography: JsonField<String>) = apply { this.geography = geography }
+
             /** The updated name of the project, this name appears in reports. */
-            fun name(name: String) = name(JsonField.of(name))
+            fun name(name: String?) = name(JsonField.ofNullable(name))
+
+            /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+            fun name(name: Optional<String>) = name(name.getOrNull())
 
             /**
              * Sets [Builder.name] to an arbitrary JSON value.
@@ -359,16 +489,9 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .name()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
-                Body(checkRequired("name", name), additionalProperties.toMutableMap())
+                Body(externalKeyId, geography, name, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -378,6 +501,8 @@ private constructor(
                 return@apply
             }
 
+            externalKeyId()
+            geography()
             name()
             validated = true
         }
@@ -396,7 +521,11 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = (if (name.asKnown().isPresent) 1 else 0)
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (externalKeyId.asKnown().isPresent) 1 else 0) +
+                (if (geography.asKnown().isPresent) 1 else 0) +
+                (if (name.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -404,15 +533,20 @@ private constructor(
             }
 
             return other is Body &&
+                externalKeyId == other.externalKeyId &&
+                geography == other.geography &&
                 name == other.name &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(name, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(externalKeyId, geography, name, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{name=$name, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Body{externalKeyId=$externalKeyId, geography=$geography, name=$name, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

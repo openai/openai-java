@@ -21,6 +21,7 @@ class Group
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
+    private val groupType: JsonField<String>,
     private val isScimManaged: JsonField<Boolean>,
     private val name: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -30,11 +31,12 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("group_type") @ExcludeMissing groupType: JsonField<String> = JsonMissing.of(),
         @JsonProperty("is_scim_managed")
         @ExcludeMissing
         isScimManaged: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, isScimManaged, name, mutableMapOf())
+    ) : this(id, createdAt, groupType, isScimManaged, name, mutableMapOf())
 
     /**
      * Identifier for the group.
@@ -51,6 +53,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The type of the group.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun groupType(): String = groupType.getRequired("group_type")
 
     /**
      * Whether the group is managed through SCIM and controlled by your identity provider.
@@ -81,6 +91,13 @@ private constructor(
      * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
+
+    /**
+     * Returns the raw JSON value of [groupType].
+     *
+     * Unlike [groupType], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("group_type") @ExcludeMissing fun _groupType(): JsonField<String> = groupType
 
     /**
      * Returns the raw JSON value of [isScimManaged].
@@ -119,6 +136,7 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
+         * .groupType()
          * .isScimManaged()
          * .name()
          * ```
@@ -131,6 +149,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
+        private var groupType: JsonField<String>? = null
         private var isScimManaged: JsonField<Boolean>? = null
         private var name: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -139,6 +158,7 @@ private constructor(
         internal fun from(group: Group) = apply {
             id = group.id
             createdAt = group.createdAt
+            groupType = group.groupType
             isScimManaged = group.isScimManaged
             name = group.name
             additionalProperties = group.additionalProperties.toMutableMap()
@@ -165,6 +185,18 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
+        /** The type of the group. */
+        fun groupType(groupType: String) = groupType(JsonField.of(groupType))
+
+        /**
+         * Sets [Builder.groupType] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.groupType] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun groupType(groupType: JsonField<String>) = apply { this.groupType = groupType }
 
         /** Whether the group is managed through SCIM and controlled by your identity provider. */
         fun isScimManaged(isScimManaged: Boolean) = isScimManaged(JsonField.of(isScimManaged))
@@ -219,6 +251,7 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
+         * .groupType()
          * .isScimManaged()
          * .name()
          * ```
@@ -229,6 +262,7 @@ private constructor(
             Group(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
+                checkRequired("groupType", groupType),
                 checkRequired("isScimManaged", isScimManaged),
                 checkRequired("name", name),
                 additionalProperties.toMutableMap(),
@@ -244,6 +278,7 @@ private constructor(
 
         id()
         createdAt()
+        groupType()
         isScimManaged()
         name()
         validated = true
@@ -266,6 +301,7 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (if (groupType.asKnown().isPresent) 1 else 0) +
             (if (isScimManaged.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0)
 
@@ -277,17 +313,18 @@ private constructor(
         return other is Group &&
             id == other.id &&
             createdAt == other.createdAt &&
+            groupType == other.groupType &&
             isScimManaged == other.isScimManaged &&
             name == other.name &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, createdAt, isScimManaged, name, additionalProperties)
+        Objects.hash(id, createdAt, groupType, isScimManaged, name, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Group{id=$id, createdAt=$createdAt, isScimManaged=$isScimManaged, name=$name, additionalProperties=$additionalProperties}"
+        "Group{id=$id, createdAt=$createdAt, groupType=$groupType, isScimManaged=$isScimManaged, name=$name, additionalProperties=$additionalProperties}"
 }
