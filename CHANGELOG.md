@@ -1,5 +1,37 @@
 # Changelog
 
+## 4.34.0 (2026-05-01)
+
+Full Changelog: [v4.33.0...v4.34.0](https://github.com/openai/openai-java/compare/v4.33.0...v4.34.0)
+
+### Features
+
+* **api:** add fields to groups/projects/users, remove enums, update types ([abda696](https://github.com/openai/openai-java/commit/abda69632b75ac30f6e89669bd7a04120748830f))
+* **api:** add support for Admin API Keys per endpoint ([52840e8](https://github.com/openai/openai-java/commit/52840e83e8f16eb7e9399386d1c9f94ea8d76419))
+* **api:** admin API updates ([ce01f2c](https://github.com/openai/openai-java/commit/ce01f2c9f2c49ae548804a76c219f3bfd1f8c4c3))
+* **api:** manual updates ([4ce7800](https://github.com/openai/openai-java/commit/4ce7800d39b240ef3792794c0bbf56ec071b22b2))
+* **api:** manual updates ([54bb616](https://github.com/openai/openai-java/commit/54bb6169b1d6294044d707e0c4f9592ed9396717))
+* support setting headers via env ([f37acbd](https://github.com/openai/openai-java/commit/f37acbd918c36fa77f135414aefd87dfe06d17bb))
+
+
+### Bug Fixes
+
+* **api:** allow admin api key credential auth ([d0ea12d](https://github.com/openai/openai-java/commit/d0ea12d06f4e193ac6321a93a3d93108ab630d6c))
+* **auth:** apply route-specific security options ([4203865](https://github.com/openai/openai-java/commit/4203865e860f7862ac3b009c36dfd51a990cd944))
+* ignore post-completion response stream events ([65ea33e](https://github.com/openai/openai-java/commit/65ea33e4617b9648106a47dde3277dd2022620be))
+* **types:** correct createdAt and completedAt to Double in Response model ([e591f78](https://github.com/openai/openai-java/commit/e591f7864c5ba92777a663a9c9914f046a6b4b55))
+* **types:** correct timestamp precision in transcriptions/realtime, unix timestamps in responses ([cc8d80f](https://github.com/openai/openai-java/commit/cc8d80fd791cc86ea60812f8195f8b3290916184))
+
+
+### Chores
+
+* **internal:** regenerate SDK with no functional changes ([0a4327c](https://github.com/openai/openai-java/commit/0a4327ce9d043913cb3c3ee330e9f562e6914bf8))
+
+
+### Documentation
+
+* **api:** update rate limit documentation for file upload endpoint ([f4eb157](https://github.com/openai/openai-java/commit/f4eb1572450bf7cebb1a6e5148f422f741d7db14))
+
 ## 4.33.0 (2026-04-28)
 
 Full Changelog: [v4.32.0...v4.33.0](https://github.com/openai/openai-java/compare/v4.32.0...v4.33.0)
