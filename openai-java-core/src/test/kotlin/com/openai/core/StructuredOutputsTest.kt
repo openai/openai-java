@@ -882,7 +882,12 @@ internal class StructuredOutputsTest {
     @Test
     @Suppress("unused")
     fun schemaTest_deepNestingBeyondLimit() {
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -893,7 +898,7 @@ internal class StructuredOutputsTest {
         validator.validate(schema)
 
         assertThat(validator.errors()).hasSize(1)
-        assertThat(validator.errors()[0]).contains("Current nesting depth is 6, but maximum is 5.")
+        assertThat(validator.errors()[0]).contains("Current nesting depth is 11, but maximum is 10.")
     }
 
     @Test
@@ -1736,7 +1741,12 @@ internal class StructuredOutputsTest {
     @Suppress("unused")
     fun responseFormatFromClassFailureWithValidation() {
         // Exceed the maximum nesting depth and enable validation.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -1747,8 +1757,8 @@ internal class StructuredOutputsTest {
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -1757,20 +1767,24 @@ internal class StructuredOutputsTest {
     fun responseFormatFromClassFailureWithValidationDefault() {
         // Confirm that the default value of the `localValidation` argument is `YES` by expecting
         // a validation error when that argument is not given an explicit value.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
         class Y(val x: X)
         class Z(val y: Y)
-
         // Use default for `localValidation` flag.
         assertThatThrownBy { responseFormatFromClass(Z::class.java) }
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -1826,19 +1840,23 @@ internal class StructuredOutputsTest {
     @Suppress("unused")
     fun textConfigFromClassFailureWithValidation() {
         // Exceed the maximum nesting depth and enable validation.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
         class Y(val x: X)
         class Z(val y: Y)
-
         assertThatThrownBy { textConfigFromClass(Z::class.java, JsonSchemaLocalValidation.YES) }
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -1847,7 +1865,12 @@ internal class StructuredOutputsTest {
     fun textConfigFromClassFailureWithValidationDefault() {
         // Confirm that the default value of the `localValidation` argument is `YES` by expecting
         // a validation error when that argument is not given an explicit value.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -1859,8 +1882,8 @@ internal class StructuredOutputsTest {
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -1954,7 +1977,12 @@ internal class StructuredOutputsTest {
     @Suppress("unused")
     fun functionToolFromClassFailureWithValidation() {
         // Exceed the maximum nesting depth and enable validation.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -1965,8 +1993,8 @@ internal class StructuredOutputsTest {
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -1975,7 +2003,12 @@ internal class StructuredOutputsTest {
     fun functionToolFromClassFailureWithValidationDefault() {
         // Confirm that the default value of the `localValidation` argument is `YES` by expecting a
         // validation error when that argument is not given an explicit value.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -1987,8 +2020,8 @@ internal class StructuredOutputsTest {
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -2048,7 +2081,12 @@ internal class StructuredOutputsTest {
     @Suppress("unused")
     fun responseFunctionToolFromClassFailureWithValidation() {
         // Exceed the maximum nesting depth and enable validation.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -2061,8 +2099,8 @@ internal class StructuredOutputsTest {
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
@@ -2071,7 +2109,12 @@ internal class StructuredOutputsTest {
     fun responseFunctionToolFromClassFailureWithValidationDefault() {
         // Confirm that the default value of the `localValidation` argument is `YES` by expecting
         // a validation error when that argument is not given an explicit value.
-        class U(val s: String)
+        class A(val s: String)
+        class Q(val u: A)
+        class R(val u: Q)
+        class S(val u: R)
+        class T(val u: S)
+        class U(val u: T)
         class V(val u: U)
         class W(val v: V)
         class X(val w: W)
@@ -2083,8 +2126,8 @@ internal class StructuredOutputsTest {
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
-                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
-                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u/properties/u/properties/u/properties/u/properties/u/properties/u" +
+                    "/properties/s: Current nesting depth is 11, but maximum is 10."
             )
     }
 
