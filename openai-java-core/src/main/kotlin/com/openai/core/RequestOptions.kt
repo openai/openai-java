@@ -33,6 +33,15 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
         private var responseValidation: Boolean? = null
         private var timeout: Timeout? = null
 
+        /**
+         * Whether to call `validate` on the response before returning it.
+         *
+         * Setting this to `true` is _not_ forwards compatible with new types from the API for
+         * existing fields.
+         *
+         * Defaults to false, which means the shape of the response will not be validated upfront.
+         * Instead, validation will only occur for the parts of the response that are accessed.
+         */
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
         }
