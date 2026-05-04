@@ -7,6 +7,8 @@ package com.openai.core.handlers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.SseMessage
@@ -48,10 +50,10 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
                     .error(
                         try {
                             jsonMapper
-                                .readerFor(jacksonTypeRef<ErrorObject?>())
-                                .readValue<ErrorObject?>(it)
+                                .readerFor(jacksonTypeRef<JsonField<ErrorObject>>())
+                                .readValue<JsonField<ErrorObject>>(it)
                         } catch (e: Exception) {
-                            null
+                            JsonMissing.of()
                         }
                     )
                     .build()

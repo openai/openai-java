@@ -2,6 +2,7 @@
 
 package com.openai.errors
 
+import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
@@ -14,20 +15,27 @@ import kotlin.jvm.optionals.getOrNull
 class PermissionDeniedException
 private constructor(
     private val headers: Headers,
-    private val error: ErrorObject?,
+    private val error: JsonField<ErrorObject>,
     cause: Throwable?,
-) : OpenAIServiceException("403: ${error?._message()}", cause) {
+) :
+    OpenAIServiceException(
+        "403: ${error.asKnown().getOrNull()?._message()?.asKnown()?.getOrNull() ?: (if (error.isMissing()) "Unknown" else jsonMapper().writeValueAsString(error))}",
+        cause,
+    ) {
 
     override fun statusCode(): Int = 403
 
     override fun body(): JsonValue =
-        error?.let { JsonValue.fromJsonNode(jsonMapper().valueToTree(it)) } ?: JsonMissing.of()
+        if (error.isMissing()) JsonMissing.of()
+        else JsonValue.fromJsonNode(jsonMapper().valueToTree(error))
 
-    override fun code(): Optional<String> = Optional.ofNullable(error?.code()?.getOrNull())
+    override fun code(): Optional<String> =
+        Optional.ofNullable(error.asKnown().getOrNull()?.code()?.getOrNull())
 
-    override fun param(): Optional<String> = Optional.ofNullable(error?.param()?.getOrNull())
+    override fun param(): Optional<String> =
+        Optional.ofNullable(error.asKnown().getOrNull()?.param()?.getOrNull())
 
-    override fun type(): Optional<String> = Optional.ofNullable(error?.type())
+    override fun type(): Optional<String> = Optional.ofNullable(error.asKnown().getOrNull()?.type())
 
     override fun headers(): Headers = headers
 
@@ -50,7 +58,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var headers: Headers? = null
-        private var error: ErrorObject? = null
+        private var error: JsonField<ErrorObject> = JsonMissing.of()
         private var cause: Throwable? = null
 
         @JvmSynthetic
@@ -62,10 +70,12 @@ private constructor(
 
         fun headers(headers: Headers) = apply { this.headers = headers }
 
-        fun error(error: ErrorObject?) = apply { this.error = error }
+        fun error(error: ErrorObject?) = error(JsonField.ofNullable(error))
 
         /** Alias for calling [Builder.error] with `error.orElse(null)`. */
         fun error(error: Optional<ErrorObject>) = error(error.getOrNull())
+
+        fun error(error: JsonField<ErrorObject>) = apply { this.error = error }
 
         fun cause(cause: Throwable?) = apply { this.cause = cause }
 
