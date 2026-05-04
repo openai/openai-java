@@ -7,6 +7,9 @@ package com.openai.core.handlers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.errors.BadRequestException
@@ -20,23 +23,26 @@ import com.openai.errors.UnprocessableEntityException
 import com.openai.models.ErrorObject
 
 @JvmSynthetic
-internal fun errorBodyHandler(jsonMapper: JsonMapper): Handler<ErrorObject?> {
+internal fun errorBodyHandler(jsonMapper: JsonMapper): Handler<JsonField<ErrorObject>> {
     val handler = jsonHandler<JsonNode>(jsonMapper)
 
-    return object : Handler<ErrorObject?> {
-        override fun handle(response: HttpResponse): ErrorObject? =
+    return object : Handler<JsonField<ErrorObject>> {
+        override fun handle(response: HttpResponse): JsonField<ErrorObject> =
             try {
-                handler.handle(response).get("error")?.let {
-                    jsonMapper.readerFor(jacksonTypeRef<ErrorObject>()).readValue(it)
-                }
+                val node = handler.handle(response)
+                node.get("error")?.let {
+                    jsonMapper.readerFor(jacksonTypeRef<JsonField<ErrorObject>>()).readValue(it)
+                } ?: JsonValue.fromJsonNode(node)
             } catch (e: Exception) {
-                null
+                JsonMissing.of()
             }
     }
 }
 
 @JvmSynthetic
-internal fun errorHandler(errorBodyHandler: Handler<ErrorObject?>): Handler<HttpResponse> =
+internal fun errorHandler(
+    errorBodyHandler: Handler<JsonField<ErrorObject>>
+): Handler<HttpResponse> =
     object : Handler<HttpResponse> {
         override fun handle(response: HttpResponse): HttpResponse =
             when (val statusCode = response.statusCode()) {
