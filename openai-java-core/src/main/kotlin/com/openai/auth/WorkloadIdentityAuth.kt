@@ -2,6 +2,9 @@ package com.openai.auth
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
 import com.openai.core.handlers.errorHandler
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
@@ -31,22 +34,31 @@ internal class WorkloadIdentityAuth(
 ) : AutoCloseable {
     private val errorHandler =
         errorHandler(
-            object : HttpResponse.Handler<ErrorObject?> {
-                override fun handle(response: HttpResponse): ErrorObject? =
-                    try {
-                        val node = jsonMapper.readTree(response.body())
+            object : HttpResponse.Handler<JsonField<ErrorObject>> {
+                override fun handle(response: HttpResponse): JsonField<ErrorObject> {
+                    val node =
+                        try {
+                            jsonMapper.readTree(response.body())
+                        } catch (e: Exception) {
+                            return JsonMissing.of()
+                        }
+
+                    return try {
                         val errorCode = node.get("error")?.asText()
                         val errorMessage = node.get("error_description")?.asText() ?: errorCode
-                        jsonMapper.treeToValue(
-                            jsonMapper.createObjectNode().apply {
-                                errorCode?.let { put("code", it) }
-                                errorMessage?.let { put("message", it) }
-                            },
-                            ErrorObject::class.java,
+                        JsonField.of(
+                            jsonMapper.treeToValue(
+                                jsonMapper.createObjectNode().apply {
+                                    errorCode?.let { put("code", it) }
+                                    errorMessage?.let { put("message", it) }
+                                },
+                                ErrorObject::class.java,
+                            )
                         )
                     } catch (e: Exception) {
-                        null
+                        JsonValue.fromJsonNode(node)
                     }
+                }
             }
         )
     private val lock = ReentrantLock()
