@@ -49,7 +49,7 @@ internal class ResponseContentTest {
             ResponseInputImage.builder()
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
                 .build()
 
         val responseContent = ResponseContent.ofInputImage(inputImage)
@@ -70,7 +70,7 @@ internal class ResponseContentTest {
                 ResponseInputImage.builder()
                     .detail(ResponseInputImage.Detail.LOW)
                     .fileId("file_id")
-                    .imageUrl("image_url")
+                    .imageUrl("https://example.com")
                     .build()
             )
 
@@ -90,7 +90,7 @@ internal class ResponseContentTest {
                 .detail(ResponseInputFile.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file_id")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
                 .build()
 
@@ -113,7 +113,7 @@ internal class ResponseContentTest {
                     .detail(ResponseInputFile.Detail.LOW)
                     .fileData("file_data")
                     .fileId("file_id")
-                    .fileUrl("file_url")
+                    .fileUrl("https://example.com")
                     .filename("filename")
                     .build()
             )

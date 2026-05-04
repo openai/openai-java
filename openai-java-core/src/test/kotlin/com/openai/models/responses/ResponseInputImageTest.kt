@@ -15,12 +15,12 @@ internal class ResponseInputImageTest {
             ResponseInputImage.builder()
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
                 .build()
 
         assertThat(responseInputImage.detail()).isEqualTo(ResponseInputImage.Detail.LOW)
         assertThat(responseInputImage.fileId()).contains("file_id")
-        assertThat(responseInputImage.imageUrl()).contains("image_url")
+        assertThat(responseInputImage.imageUrl()).contains("https://example.com")
     }
 
     @Test
@@ -30,7 +30,7 @@ internal class ResponseInputImageTest {
             ResponseInputImage.builder()
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
                 .build()
 
         val roundtrippedResponseInputImage =
