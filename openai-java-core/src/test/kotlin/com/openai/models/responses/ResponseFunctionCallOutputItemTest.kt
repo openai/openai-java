@@ -49,7 +49,7 @@ internal class ResponseFunctionCallOutputItemTest {
             ResponseInputImageContent.builder()
                 .detail(ResponseInputImageContent.Detail.LOW)
                 .fileId("file-123")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
                 .build()
 
         val responseFunctionCallOutputItem = ResponseFunctionCallOutputItem.ofInputImage(inputImage)
@@ -67,7 +67,7 @@ internal class ResponseFunctionCallOutputItemTest {
                 ResponseInputImageContent.builder()
                     .detail(ResponseInputImageContent.Detail.LOW)
                     .fileId("file-123")
-                    .imageUrl("image_url")
+                    .imageUrl("https://example.com")
                     .build()
             )
 
@@ -88,7 +88,7 @@ internal class ResponseFunctionCallOutputItemTest {
                 .detail(ResponseInputFileContent.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file-123")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
                 .build()
 
@@ -108,7 +108,7 @@ internal class ResponseFunctionCallOutputItemTest {
                     .detail(ResponseInputFileContent.Detail.LOW)
                     .fileData("file_data")
                     .fileId("file-123")
-                    .fileUrl("file_url")
+                    .fileUrl("https://example.com")
                     .filename("filename")
                     .build()
             )

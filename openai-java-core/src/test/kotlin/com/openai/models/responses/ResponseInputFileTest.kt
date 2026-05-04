@@ -16,14 +16,14 @@ internal class ResponseInputFileTest {
                 .detail(ResponseInputFile.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file_id")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
                 .build()
 
         assertThat(responseInputFile.detail()).contains(ResponseInputFile.Detail.LOW)
         assertThat(responseInputFile.fileData()).contains("file_data")
         assertThat(responseInputFile.fileId()).contains("file_id")
-        assertThat(responseInputFile.fileUrl()).contains("file_url")
+        assertThat(responseInputFile.fileUrl()).contains("https://example.com")
         assertThat(responseInputFile.filename()).contains("filename")
     }
 
@@ -35,7 +35,7 @@ internal class ResponseInputFileTest {
                 .detail(ResponseInputFile.Detail.LOW)
                 .fileData("file_data")
                 .fileId("file_id")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
                 .build()
 
