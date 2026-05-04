@@ -1498,6 +1498,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -1654,6 +1663,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Metadata = apply {
             if (validated) {
                 return@apply
@@ -1839,6 +1857,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ToolResources = apply {
             if (validated) {
                 return@apply
@@ -1997,6 +2024,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): CodeInterpreter = apply {
                 if (validated) {
                     return@apply
@@ -2235,6 +2272,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): FileSearch = apply {
                 if (validated) {
                     return@apply
@@ -2514,6 +2561,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): VectorStore = apply {
                     if (validated) {
                         return@apply
@@ -2580,6 +2637,37 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+                    /**
+                     * Maps this instance's current variant to a value of type [T] using the given
+                     * [visitor].
+                     *
+                     * Note that this method is _not_ forwards compatible with new variants from the
+                     * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not
+                     * known to this version of the SDK gracefully, consider overriding
+                     * [Visitor.unknown]:
+                     * ```java
+                     * import com.openai.core.JsonValue;
+                     * import java.util.Optional;
+                     *
+                     * Optional<String> result = chunkingStrategy.accept(new ChunkingStrategy.Visitor<Optional<String>>() {
+                     *     @Override
+                     *     public Optional<String> visitAuto(JsonValue auto) {
+                     *         return Optional.of(auto.toString());
+                     *     }
+                     *
+                     *     // ...
+                     *
+                     *     @Override
+                     *     public Optional<String> unknown(JsonValue json) {
+                     *         // Or inspect the `json`.
+                     *         return Optional.empty();
+                     *     }
+                     * });
+                     * ```
+                     *
+                     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                     *   [visitor] and the current variant is unknown.
+                     */
                     fun <T> accept(visitor: Visitor<T>): T =
                         when {
                             auto != null -> visitor.visitAuto(auto)
@@ -2589,6 +2677,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): ChunkingStrategy = apply {
                         if (validated) {
                             return@apply
@@ -2906,6 +3004,16 @@ private constructor(
 
                         private var validated: Boolean = false
 
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
                         fun validate(): Static = apply {
                             if (validated) {
                                 return@apply
@@ -3136,6 +3244,16 @@ private constructor(
 
                             private var validated: Boolean = false
 
+                            /**
+                             * Validates that the types of all values in this object match their
+                             * expected types recursively.
+                             *
+                             * This method is _not_ forwards compatible with new types from the API
+                             * for existing fields.
+                             *
+                             * @throws OpenAIInvalidDataException if any value type in this object
+                             *   doesn't match its expected type.
+                             */
                             fun validate(): InnerStatic = apply {
                                 if (validated) {
                                     return@apply
@@ -3282,6 +3400,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): Metadata = apply {
                         if (validated) {
                             return@apply
