@@ -898,7 +898,8 @@ internal class StructuredOutputsTest {
         validator.validate(schema)
 
         assertThat(validator.errors()).hasSize(1)
-        assertThat(validator.errors()[0]).contains("Current nesting depth is 11, but maximum is 10.")
+        assertThat(validator.errors()[0])
+            .contains("Current nesting depth is 11, but maximum is 10.")
     }
 
     @Test
