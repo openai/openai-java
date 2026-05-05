@@ -42,9 +42,13 @@ private constructor(
 
     /**
      * Allows to set transparency for the background of the generated image(s). This parameter is
-     * only supported for the GPT image models. Must be one of `transparent`, `opaque` or `auto`
-     * (default value). When `auto` is used, the model will automatically determine the best
-     * background for the image.
+     * only supported for GPT image models that support transparent backgrounds. Must be one of
+     * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+     * automatically determine the best background for the image.
+     *
+     * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds. Requests
+     * with `background` set to `transparent` will return an error for these models; use `opaque` or
+     * `auto` instead.
      *
      * If `transparent`, the output format needs to support transparency, so it should be set to
      * either `png` (default value) or `webp`.
@@ -138,15 +142,20 @@ private constructor(
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
-     * The size of the generated images. Must be one of `1024x1024`, `1536x1024` (landscape),
-     * `1024x1536` (portrait), or `auto` (default value) for the GPT image models, one of `256x256`,
-     * `512x512`, or `1024x1024` for `dall-e-2`, and one of `1024x1024`, `1792x1024`, or `1024x1792`
-     * for `dall-e-3`.
+     * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary
+     * resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height
+     * must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
+     * Resolutions above `2560x1440` are experimental, and the maximum supported resolution is
+     * `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits.
+     * The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image
+     * models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one
+     * of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`,
+     * or `1024x1792`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun size(): Optional<Size> = body.size()
+    fun size(): Optional<String> = body.size()
 
     /**
      * The style of the generated images. This parameter is only supported for `dall-e-3`. Must be
@@ -245,7 +254,7 @@ private constructor(
      *
      * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _size(): JsonField<Size> = body._size()
+    fun _size(): JsonField<String> = body._size()
 
     /**
      * Returns the raw JSON value of [style].
@@ -328,9 +337,13 @@ private constructor(
 
         /**
          * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for the GPT image models. Must be one of `transparent`, `opaque` or
-         * `auto` (default value). When `auto` is used, the model will automatically determine the
-         * best background for the image.
+         * is only supported for GPT image models that support transparent backgrounds. Must be one
+         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+         * will automatically determine the best background for the image.
+         *
+         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
+         * Requests with `background` set to `transparent` will return an error for these models;
+         * use `opaque` or `auto` instead.
          *
          * If `transparent`, the output format needs to support transparency, so it should be set to
          * either `png` (default value) or `webp`.
@@ -548,23 +561,28 @@ private constructor(
         }
 
         /**
-         * The size of the generated images. Must be one of `1024x1024`, `1536x1024` (landscape),
-         * `1024x1536` (portrait), or `auto` (default value) for the GPT image models, one of
-         * `256x256`, `512x512`, or `1024x1024` for `dall-e-2`, and one of `1024x1024`, `1792x1024`,
-         * or `1024x1792` for `dall-e-3`.
+         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
+         * Width and height must both be divisible by 16 and the requested aspect ratio must be
+         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
+         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
+         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
+         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
+         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
+         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
          */
-        fun size(size: Size?) = apply { body.size(size) }
+        fun size(size: String?) = apply { body.size(size) }
 
         /** Alias for calling [Builder.size] with `size.orElse(null)`. */
-        fun size(size: Optional<Size>) = size(size.getOrNull())
+        fun size(size: Optional<String>) = size(size.getOrNull())
 
         /**
          * Sets [Builder.size] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+         * You should usually call [Builder.size] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun size(size: JsonField<Size>) = apply { body.size(size) }
+        fun size(size: JsonField<String>) = apply { body.size(size) }
 
         /**
          * The style of the generated images. This parameter is only supported for `dall-e-3`. Must
@@ -756,7 +774,7 @@ private constructor(
         private val partialImages: JsonField<Long>,
         private val quality: JsonField<Quality>,
         private val responseFormat: JsonField<ResponseFormat>,
-        private val size: JsonField<Size>,
+        private val size: JsonField<String>,
         private val style: JsonField<Style>,
         private val user: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -786,7 +804,7 @@ private constructor(
             @JsonProperty("response_format")
             @ExcludeMissing
             responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
-            @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
+            @JsonProperty("size") @ExcludeMissing size: JsonField<String> = JsonMissing.of(),
             @JsonProperty("style") @ExcludeMissing style: JsonField<Style> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
@@ -817,9 +835,13 @@ private constructor(
 
         /**
          * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for the GPT image models. Must be one of `transparent`, `opaque` or
-         * `auto` (default value). When `auto` is used, the model will automatically determine the
-         * best background for the image.
+         * is only supported for GPT image models that support transparent backgrounds. Must be one
+         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+         * will automatically determine the best background for the image.
+         *
+         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
+         * Requests with `background` set to `transparent` will return an error for these models;
+         * use `opaque` or `auto` instead.
          *
          * If `transparent`, the output format needs to support transparency, so it should be set to
          * either `png` (default value) or `webp`.
@@ -915,15 +937,20 @@ private constructor(
             responseFormat.getOptional("response_format")
 
         /**
-         * The size of the generated images. Must be one of `1024x1024`, `1536x1024` (landscape),
-         * `1024x1536` (portrait), or `auto` (default value) for the GPT image models, one of
-         * `256x256`, `512x512`, or `1024x1024` for `dall-e-2`, and one of `1024x1024`, `1792x1024`,
-         * or `1024x1792` for `dall-e-3`.
+         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
+         * Width and height must both be divisible by 16 and the requested aspect ratio must be
+         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
+         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
+         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
+         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
+         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
+         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun size(): Optional<Size> = size.getOptional("size")
+        fun size(): Optional<String> = size.getOptional("size")
 
         /**
          * The style of the generated images. This parameter is only supported for `dall-e-3`. Must
@@ -1037,7 +1064,7 @@ private constructor(
          *
          * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
+        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<String> = size
 
         /**
          * Returns the raw JSON value of [style].
@@ -1091,7 +1118,7 @@ private constructor(
             private var partialImages: JsonField<Long> = JsonMissing.of()
             private var quality: JsonField<Quality> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
-            private var size: JsonField<Size> = JsonMissing.of()
+            private var size: JsonField<String> = JsonMissing.of()
             private var style: JsonField<Style> = JsonMissing.of()
             private var user: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1132,9 +1159,14 @@ private constructor(
 
             /**
              * Allows to set transparency for the background of the generated image(s). This
-             * parameter is only supported for the GPT image models. Must be one of `transparent`,
-             * `opaque` or `auto` (default value). When `auto` is used, the model will automatically
-             * determine the best background for the image.
+             * parameter is only supported for GPT image models that support transparent
+             * backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value). When
+             * `auto` is used, the model will automatically determine the best background for the
+             * image.
+             *
+             * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
+             * Requests with `background` set to `transparent` will return an error for these
+             * models; use `opaque` or `auto` instead.
              *
              * If `transparent`, the output format needs to support transparency, so it should be
              * set to either `png` (default value) or `webp`.
@@ -1364,24 +1396,30 @@ private constructor(
             }
 
             /**
-             * The size of the generated images. Must be one of `1024x1024`, `1536x1024`
-             * (landscape), `1024x1536` (portrait), or `auto` (default value) for the GPT image
-             * models, one of `256x256`, `512x512`, or `1024x1024` for `dall-e-2`, and one of
-             * `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`.
+             * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+             * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example
+             * `1536x864`. Width and height must both be divisible by 16 and the requested aspect
+             * ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental,
+             * and the maximum supported resolution is `3840x2160`. The requested size must also
+             * satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
+             * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is
+             * supported for models that allow automatic sizing. For `dall-e-2`, use one of
+             * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
+             * `1792x1024`, or `1024x1792`.
              */
-            fun size(size: Size?) = size(JsonField.ofNullable(size))
+            fun size(size: String?) = size(JsonField.ofNullable(size))
 
             /** Alias for calling [Builder.size] with `size.orElse(null)`. */
-            fun size(size: Optional<Size>) = size(size.getOrNull())
+            fun size(size: Optional<String>) = size(size.getOrNull())
 
             /**
              * Sets [Builder.size] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+             * You should usually call [Builder.size] with a well-typed [String] value instead. This
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
-            fun size(size: JsonField<Size>) = apply { this.size = size }
+            fun size(size: JsonField<String>) = apply { this.size = size }
 
             /**
              * The style of the generated images. This parameter is only supported for `dall-e-3`.
@@ -1495,7 +1533,7 @@ private constructor(
             partialImages()
             quality().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
-            size().ifPresent { it.validate() }
+            size()
             style().ifPresent { it.validate() }
             user()
             validated = true
@@ -1527,7 +1565,7 @@ private constructor(
                 (if (partialImages.asKnown().isPresent) 1 else 0) +
                 (quality.asKnown().getOrNull()?.validity() ?: 0) +
                 (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
-                (size.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (size.asKnown().isPresent) 1 else 0) +
                 (style.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (user.asKnown().isPresent) 1 else 0)
 
@@ -1580,9 +1618,13 @@ private constructor(
 
     /**
      * Allows to set transparency for the background of the generated image(s). This parameter is
-     * only supported for the GPT image models. Must be one of `transparent`, `opaque` or `auto`
-     * (default value). When `auto` is used, the model will automatically determine the best
-     * background for the image.
+     * only supported for GPT image models that support transparent backgrounds. Must be one of
+     * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+     * automatically determine the best background for the image.
+     *
+     * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds. Requests
+     * with `background` set to `transparent` will return an error for these models; use `opaque` or
+     * `auto` instead.
      *
      * If `transparent`, the output format needs to support transparency, so it should be set to
      * either `png` (default value) or `webp`.
@@ -2318,182 +2360,6 @@ private constructor(
             }
 
             return other is ResponseFormat && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
-    /**
-     * The size of the generated images. Must be one of `1024x1024`, `1536x1024` (landscape),
-     * `1024x1536` (portrait), or `auto` (default value) for the GPT image models, one of `256x256`,
-     * `512x512`, or `1024x1024` for `dall-e-2`, and one of `1024x1024`, `1792x1024`, or `1024x1792`
-     * for `dall-e-3`.
-     */
-    class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val AUTO = of("auto")
-
-            @JvmField val _1024X1024 = of("1024x1024")
-
-            @JvmField val _1536X1024 = of("1536x1024")
-
-            @JvmField val _1024X1536 = of("1024x1536")
-
-            @JvmField val _256X256 = of("256x256")
-
-            @JvmField val _512X512 = of("512x512")
-
-            @JvmField val _1792X1024 = of("1792x1024")
-
-            @JvmField val _1024X1792 = of("1024x1792")
-
-            @JvmStatic fun of(value: String) = Size(JsonField.of(value))
-        }
-
-        /** An enum containing [Size]'s known values. */
-        enum class Known {
-            AUTO,
-            _1024X1024,
-            _1536X1024,
-            _1024X1536,
-            _256X256,
-            _512X512,
-            _1792X1024,
-            _1024X1792,
-        }
-
-        /**
-         * An enum containing [Size]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Size] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            AUTO,
-            _1024X1024,
-            _1536X1024,
-            _1024X1536,
-            _256X256,
-            _512X512,
-            _1792X1024,
-            _1024X1792,
-            /** An enum member indicating that [Size] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                AUTO -> Value.AUTO
-                _1024X1024 -> Value._1024X1024
-                _1536X1024 -> Value._1536X1024
-                _1024X1536 -> Value._1024X1536
-                _256X256 -> Value._256X256
-                _512X512 -> Value._512X512
-                _1792X1024 -> Value._1792X1024
-                _1024X1792 -> Value._1024X1792
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                AUTO -> Known.AUTO
-                _1024X1024 -> Known._1024X1024
-                _1536X1024 -> Known._1536X1024
-                _1024X1536 -> Known._1024X1536
-                _256X256 -> Known._256X256
-                _512X512 -> Known._512X512
-                _1792X1024 -> Known._1792X1024
-                _1024X1792 -> Known._1024X1792
-                else -> throw OpenAIInvalidDataException("Unknown Size: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): Size = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Size && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
