@@ -5809,7 +5809,13 @@ private constructor(
 
                 @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
 
+                @JvmField val GPT_IMAGE_2 = of("gpt-image-2")
+
+                @JvmField val GPT_IMAGE_2_2026_04_21 = of("gpt-image-2-2026-04-21")
+
                 @JvmField val GPT_IMAGE_1_5 = of("gpt-image-1.5")
+
+                @JvmField val CHATGPT_IMAGE_LATEST = of("chatgpt-image-latest")
 
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
@@ -5818,7 +5824,10 @@ private constructor(
             enum class Known {
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
+                GPT_IMAGE_2,
+                GPT_IMAGE_2_2026_04_21,
                 GPT_IMAGE_1_5,
+                CHATGPT_IMAGE_LATEST,
             }
 
             /**
@@ -5833,7 +5842,10 @@ private constructor(
             enum class Value {
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
+                GPT_IMAGE_2,
+                GPT_IMAGE_2_2026_04_21,
                 GPT_IMAGE_1_5,
+                CHATGPT_IMAGE_LATEST,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -5851,7 +5863,10 @@ private constructor(
                 when (this) {
                     GPT_IMAGE_1 -> Value.GPT_IMAGE_1
                     GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
+                    GPT_IMAGE_2 -> Value.GPT_IMAGE_2
+                    GPT_IMAGE_2_2026_04_21 -> Value.GPT_IMAGE_2_2026_04_21
                     GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
+                    CHATGPT_IMAGE_LATEST -> Value.CHATGPT_IMAGE_LATEST
                     else -> Value._UNKNOWN
                 }
 
@@ -5868,7 +5883,10 @@ private constructor(
                 when (this) {
                     GPT_IMAGE_1 -> Known.GPT_IMAGE_1
                     GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
+                    GPT_IMAGE_2 -> Known.GPT_IMAGE_2
+                    GPT_IMAGE_2_2026_04_21 -> Known.GPT_IMAGE_2_2026_04_21
                     GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
+                    CHATGPT_IMAGE_LATEST -> Known.CHATGPT_IMAGE_LATEST
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 

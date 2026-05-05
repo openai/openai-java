@@ -56,8 +56,9 @@ private constructor(
 
     /**
      * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image model
-     * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`). Defaults to `dall-e-2` unless a
-     * parameter specific to the GPT image models is used.
+     * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, or
+     * `gpt-image-2-2026-04-21`). Defaults to `dall-e-2` unless a parameter specific to the GPT
+     * image models is used.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -350,8 +351,9 @@ private constructor(
 
         /**
          * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`). Defaults to `dall-e-2` unless
-         * a parameter specific to the GPT image models is used.
+         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, or
+         * `gpt-image-2-2026-04-21`). Defaults to `dall-e-2` unless a parameter specific to the GPT
+         * image models is used.
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -829,8 +831,9 @@ private constructor(
 
         /**
          * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`). Defaults to `dall-e-2` unless
-         * a parameter specific to the GPT image models is used.
+         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, or
+         * `gpt-image-2-2026-04-21`). Defaults to `dall-e-2` unless a parameter specific to the GPT
+         * image models is used.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1154,8 +1157,9 @@ private constructor(
 
             /**
              * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-             * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`). Defaults to `dall-e-2`
-             * unless a parameter specific to the GPT image models is used.
+             * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, or
+             * `gpt-image-2-2026-04-21`). Defaults to `dall-e-2` unless a parameter specific to the
+             * GPT image models is used.
              */
             fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
