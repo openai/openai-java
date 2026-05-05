@@ -20,26 +20,35 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
 
     companion object {
 
+        @JvmField val GPT_IMAGE_1 = of("gpt-image-1")
+
+        @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
+
+        @JvmField val GPT_IMAGE_2 = of("gpt-image-2")
+
+        @JvmField val GPT_IMAGE_2_2026_04_21 = of("gpt-image-2-2026-04-21")
+
         @JvmField val GPT_IMAGE_1_5 = of("gpt-image-1.5")
+
+        @JvmField val CHATGPT_IMAGE_LATEST = of("chatgpt-image-latest")
 
         @JvmField val DALL_E_2 = of("dall-e-2")
 
         @JvmField val DALL_E_3 = of("dall-e-3")
-
-        @JvmField val GPT_IMAGE_1 = of("gpt-image-1")
-
-        @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
 
         @JvmStatic fun of(value: String) = ImageModel(JsonField.of(value))
     }
 
     /** An enum containing [ImageModel]'s known values. */
     enum class Known {
-        GPT_IMAGE_1_5,
-        DALL_E_2,
-        DALL_E_3,
         GPT_IMAGE_1,
         GPT_IMAGE_1_MINI,
+        GPT_IMAGE_2,
+        GPT_IMAGE_2_2026_04_21,
+        GPT_IMAGE_1_5,
+        CHATGPT_IMAGE_LATEST,
+        DALL_E_2,
+        DALL_E_3,
     }
 
     /**
@@ -52,11 +61,14 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
-        GPT_IMAGE_1_5,
-        DALL_E_2,
-        DALL_E_3,
         GPT_IMAGE_1,
         GPT_IMAGE_1_MINI,
+        GPT_IMAGE_2,
+        GPT_IMAGE_2_2026_04_21,
+        GPT_IMAGE_1_5,
+        CHATGPT_IMAGE_LATEST,
+        DALL_E_2,
+        DALL_E_3,
         /** An enum member indicating that [ImageModel] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -70,11 +82,14 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
      */
     fun value(): Value =
         when (this) {
-            GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
-            DALL_E_2 -> Value.DALL_E_2
-            DALL_E_3 -> Value.DALL_E_3
             GPT_IMAGE_1 -> Value.GPT_IMAGE_1
             GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
+            GPT_IMAGE_2 -> Value.GPT_IMAGE_2
+            GPT_IMAGE_2_2026_04_21 -> Value.GPT_IMAGE_2_2026_04_21
+            GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
+            CHATGPT_IMAGE_LATEST -> Value.CHATGPT_IMAGE_LATEST
+            DALL_E_2 -> Value.DALL_E_2
+            DALL_E_3 -> Value.DALL_E_3
             else -> Value._UNKNOWN
         }
 
@@ -88,11 +103,14 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
      */
     fun known(): Known =
         when (this) {
-            GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
-            DALL_E_2 -> Known.DALL_E_2
-            DALL_E_3 -> Known.DALL_E_3
             GPT_IMAGE_1 -> Known.GPT_IMAGE_1
             GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
+            GPT_IMAGE_2 -> Known.GPT_IMAGE_2
+            GPT_IMAGE_2_2026_04_21 -> Known.GPT_IMAGE_2_2026_04_21
+            GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
+            CHATGPT_IMAGE_LATEST -> Known.CHATGPT_IMAGE_LATEST
+            DALL_E_2 -> Known.DALL_E_2
+            DALL_E_3 -> Known.DALL_E_3
             else -> throw OpenAIInvalidDataException("Unknown ImageModel: $value")
         }
 

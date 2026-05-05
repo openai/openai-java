@@ -46,9 +46,9 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each image
-     * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-     * `chatgpt-image-latest` follows the same input constraints as GPT image models.
+     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should be a `png`, `webp`,
+     * or `jpg` file less than 50MB. You can provide up to 16 images.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
      * than 4MB.
@@ -104,7 +104,9 @@ private constructor(
     fun mask(): Optional<InputStream> = body.mask()
 
     /**
-     * The model to use for image generation. Defaults to `gpt-image-1.5`.
+     * The model to use for image generation. One of `dall-e-2` or a GPT image model (`gpt-image-1`,
+     * `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or
+     * `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -347,9 +349,9 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
-         * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
+         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
+         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -370,9 +372,9 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
-         * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
+         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
+         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -382,9 +384,9 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
-         * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
+         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
+         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -493,7 +495,11 @@ private constructor(
          */
         fun mask(path: Path) = apply { body.mask(path) }
 
-        /** The model to use for image generation. Defaults to `gpt-image-1.5`. */
+        /**
+         * The model to use for image generation. One of `dall-e-2` or a GPT image model
+         * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+         */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -874,9 +880,9 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each
-         * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-         * images. `chatgpt-image-latest` follows the same input constraints as GPT image models.
+         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
+         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -933,7 +939,9 @@ private constructor(
         fun mask(): Optional<InputStream> = mask.value.getOptional("mask")
 
         /**
-         * The model to use for image generation. Defaults to `gpt-image-1.5`.
+         * The model to use for image generation. One of `dall-e-2` or a GPT image model
+         * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1205,10 +1213,10 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`),
-             * each image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide
-             * up to 16 images. `chatgpt-image-latest` follows the same input constraints as GPT
-             * image models.
+             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image
+             * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
+             * images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1236,10 +1244,10 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`),
-             * each image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide
-             * up to 16 images. `chatgpt-image-latest` follows the same input constraints as GPT
-             * image models.
+             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image
+             * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
+             * images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1249,10 +1257,10 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`),
-             * each image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide
-             * up to 16 images. `chatgpt-image-latest` follows the same input constraints as GPT
-             * image models.
+             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image
+             * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
+             * images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1373,7 +1381,11 @@ private constructor(
                         .build()
                 )
 
-            /** The model to use for image generation. Defaults to `gpt-image-1.5`. */
+            /**
+             * The model to use for image generation. One of `dall-e-2` or a GPT image model
+             * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+             */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
             /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -1730,9 +1742,9 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, and `gpt-image-1.5`), each image
-     * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-     * `chatgpt-image-latest` follows the same input constraints as GPT image models.
+     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should be a `png`, `webp`,
+     * or `jpg` file less than 50MB. You can provide up to 16 images.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
      * than 4MB.

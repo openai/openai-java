@@ -1,14 +1,13 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.async
+package com.openai.services.async.realtime
 
 import com.openai.core.ClientOptions
-import com.openai.services.async.realtime.CallServiceAsync
-import com.openai.services.async.realtime.ClientSecretServiceAsync
-import com.openai.services.async.realtime.TranslationServiceAsync
+import com.openai.services.async.realtime.translations.CallServiceAsync
+import com.openai.services.async.realtime.translations.ClientSecretServiceAsync
 import java.util.function.Consumer
 
-interface RealtimeServiceAsync {
+interface TranslationServiceAsync {
 
     /**
      * Returns a view of this service that provides access to raw HTTP responses for each method.
@@ -20,16 +19,15 @@ interface RealtimeServiceAsync {
      *
      * The original service is not modified.
      */
-    fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeServiceAsync
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationServiceAsync
 
     fun clientSecrets(): ClientSecretServiceAsync
 
     fun calls(): CallServiceAsync
 
-    fun translations(): TranslationServiceAsync
-
     /**
-     * A view of [RealtimeServiceAsync] that provides access to raw HTTP responses for each method.
+     * A view of [TranslationServiceAsync] that provides access to raw HTTP responses for each
+     * method.
      */
     interface WithRawResponse {
 
@@ -40,12 +38,10 @@ interface RealtimeServiceAsync {
          */
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
-        ): RealtimeServiceAsync.WithRawResponse
+        ): TranslationServiceAsync.WithRawResponse
 
         fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse
 
         fun calls(): CallServiceAsync.WithRawResponse
-
-        fun translations(): TranslationServiceAsync.WithRawResponse
     }
 }
