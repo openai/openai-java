@@ -17,7 +17,7 @@ internal class ImageEditParamsTest {
             .background(ImageEditParams.Background.TRANSPARENT)
             .inputFidelity(ImageEditParams.InputFidelity.HIGH)
             .mask("Example data".byteInputStream())
-            .model(ImageModel.GPT_IMAGE_1_5)
+            .model(ImageModel.GPT_IMAGE_2)
             .n(1L)
             .outputCompression(100L)
             .outputFormat(ImageEditParams.OutputFormat.PNG)
@@ -38,7 +38,7 @@ internal class ImageEditParamsTest {
                 .background(ImageEditParams.Background.TRANSPARENT)
                 .inputFidelity(ImageEditParams.InputFidelity.HIGH)
                 .mask("Example data".byteInputStream())
-                .model(ImageModel.GPT_IMAGE_1_5)
+                .model(ImageModel.GPT_IMAGE_2)
                 .n(1L)
                 .outputCompression(100L)
                 .outputFormat(ImageEditParams.OutputFormat.PNG)
@@ -74,7 +74,7 @@ internal class ImageEditParamsTest {
                         "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
                         "input_fidelity" to MultipartField.of(ImageEditParams.InputFidelity.HIGH),
                         "mask" to MultipartField.of("Example data".byteInputStream()),
-                        "model" to MultipartField.of(ImageModel.GPT_IMAGE_1_5),
+                        "model" to MultipartField.of(ImageModel.GPT_IMAGE_2),
                         "n" to MultipartField.of(1L),
                         "output_compression" to MultipartField.of(100L),
                         "output_format" to MultipartField.of(ImageEditParams.OutputFormat.PNG),

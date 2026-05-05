@@ -1,14 +1,13 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.blocking.realtime
 
 import com.openai.core.ClientOptions
-import com.openai.services.blocking.realtime.CallService
-import com.openai.services.blocking.realtime.ClientSecretService
-import com.openai.services.blocking.realtime.TranslationService
+import com.openai.services.blocking.realtime.translations.CallService
+import com.openai.services.blocking.realtime.translations.ClientSecretService
 import java.util.function.Consumer
 
-interface RealtimeService {
+interface TranslationService {
 
     /**
      * Returns a view of this service that provides access to raw HTTP responses for each method.
@@ -20,15 +19,15 @@ interface RealtimeService {
      *
      * The original service is not modified.
      */
-    fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeService
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationService
 
     fun clientSecrets(): ClientSecretService
 
     fun calls(): CallService
 
-    fun translations(): TranslationService
-
-    /** A view of [RealtimeService] that provides access to raw HTTP responses for each method. */
+    /**
+     * A view of [TranslationService] that provides access to raw HTTP responses for each method.
+     */
     interface WithRawResponse {
 
         /**
@@ -36,12 +35,12 @@ interface RealtimeService {
          *
          * The original service is not modified.
          */
-        fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeService.WithRawResponse
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TranslationService.WithRawResponse
 
         fun clientSecrets(): ClientSecretService.WithRawResponse
 
         fun calls(): CallService.WithRawResponse
-
-        fun translations(): TranslationService.WithRawResponse
     }
 }
