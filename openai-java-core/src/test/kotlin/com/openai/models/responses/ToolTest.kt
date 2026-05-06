@@ -419,7 +419,7 @@ internal class ToolTest {
                 .outputFormat(Tool.ImageGeneration.OutputFormat.PNG)
                 .partialImages(0L)
                 .quality(Tool.ImageGeneration.Quality.LOW)
-                .size("size")
+                .size(Tool.ImageGeneration.Size._1024X1024)
                 .build()
 
         val tool = Tool.ofImageGeneration(imageGeneration)
@@ -462,7 +462,7 @@ internal class ToolTest {
                     .outputFormat(Tool.ImageGeneration.OutputFormat.PNG)
                     .partialImages(0L)
                     .quality(Tool.ImageGeneration.Quality.LOW)
-                    .size("size")
+                    .size(Tool.ImageGeneration.Size._1024X1024)
                     .build()
             )
 
