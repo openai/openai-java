@@ -463,7 +463,7 @@ private constructor(
         fun logprob(): Double = logprob.getRequired("logprob")
 
         /**
-         * The log probability of the top 20 most likely tokens.
+         * The log probabilities of up to 20 of the most likely tokens.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -559,7 +559,7 @@ private constructor(
              */
             fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
-            /** The log probability of the top 20 most likely tokens. */
+            /** The log probabilities of up to 20 of the most likely tokens. */
             fun topLogprobs(topLogprobs: List<TopLogprob>) = topLogprobs(JsonField.of(topLogprobs))
 
             /**
