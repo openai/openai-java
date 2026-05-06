@@ -35,7 +35,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import okhttp3.logging.HttpLoggingInterceptor
 import okio.BufferedSink
 import okio.buffer
 import okio.sink
@@ -92,21 +91,6 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
 
     private fun newCall(request: HttpRequest, requestOptions: RequestOptions): Call {
         val clientBuilder = okHttpClient.newBuilder()
-
-        val logLevel =
-            when (System.getenv("OPENAI_LOG")?.lowercase()) {
-                "info" -> HttpLoggingInterceptor.Level.BASIC
-                "debug" -> HttpLoggingInterceptor.Level.BODY
-                else -> null
-            }
-        if (logLevel != null) {
-            clientBuilder.addNetworkInterceptor(
-                HttpLoggingInterceptor().setLevel(logLevel).apply {
-                    redactHeader("Authorization")
-                    redactHeader("api-key")
-                }
-            )
-        }
 
         requestOptions.timeout?.let {
             clientBuilder

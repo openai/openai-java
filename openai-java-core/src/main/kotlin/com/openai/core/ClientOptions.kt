@@ -12,6 +12,7 @@ import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
@@ -120,6 +121,14 @@ private constructor(
      * Defaults to 2.
      */
     @get:JvmName("maxRetries") val maxRetries: Int,
+    /**
+     * The level at which to log request and response information.
+     *
+     * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+     *
+     * Defaults to [LogLevel.fromEnv].
+     */
+    @get:JvmName("logLevel") val logLevel: LogLevel,
     private val apiKey: String?,
     private val adminApiKey: String?,
     @get:JvmName("credential") val credential: Credential,
@@ -193,6 +202,7 @@ private constructor(
         private var responseValidation: Boolean = false
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
+        private var logLevel: LogLevel = LogLevel.fromEnv()
         private var apiKey: String? = null
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
@@ -217,6 +227,7 @@ private constructor(
             responseValidation = clientOptions.responseValidation
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
+            logLevel = clientOptions.logLevel
             apiKey = clientOptions.apiKey
             adminApiKey = clientOptions.adminApiKey
             credential = clientOptions.credential.takeUnless { it === AdminApiKeyOnlyCredential }
@@ -347,6 +358,15 @@ private constructor(
          * Defaults to 2.
          */
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
+
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { this.logLevel = logLevel }
 
         fun apiKey(apiKey: String?) = apply {
             this.apiKey = apiKey
@@ -529,6 +549,7 @@ private constructor(
          * System properties take precedence over environment variables.
          */
         fun fromEnv() = apply {
+            logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
                 baseUrl(it)
             }
@@ -656,7 +677,13 @@ private constructor(
 
             val wrappedHttpClient =
                 RetryingHttpClient.builder()
-                    .httpClient(workloadIdentityHttpClient)
+                    .httpClient(
+                        LoggingHttpClient.builder()
+                            .httpClient(workloadIdentityHttpClient)
+                            .clock(clock)
+                            .level(logLevel)
+                            .build()
+                    )
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
@@ -676,6 +703,7 @@ private constructor(
                 responseValidation,
                 timeout,
                 maxRetries,
+                logLevel,
                 apiKey,
                 adminApiKey,
                 credential,
