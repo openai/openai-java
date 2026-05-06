@@ -5,6 +5,7 @@ package com.openai.core
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.SortedMap
+import java.util.SortedSet
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.Lock
 
@@ -15,6 +16,11 @@ internal fun <T : Any> T?.getOrThrow(name: String): T =
 @JvmSynthetic
 internal fun <T> List<T>.toImmutable(): List<T> =
     if (isEmpty()) Collections.emptyList() else Collections.unmodifiableList(toList())
+
+@JvmSynthetic
+internal fun <V : Comparable<V>> SortedSet<V>.toImmutable(): SortedSet<V> =
+    if (isEmpty()) Collections.emptySortedSet()
+    else Collections.unmodifiableSortedSet(toSortedSet(comparator() ?: Comparator.naturalOrder()))
 
 @JvmSynthetic
 internal fun <K, V> Map<K, V>.toImmutable(): Map<K, V> =

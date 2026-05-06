@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.client.OpenAIClientAsync
 import com.openai.client.OpenAIClientAsyncImpl
 import com.openai.core.ClientOptions
+import com.openai.core.LogLevel
 import com.openai.core.Sleeper
 import com.openai.core.Timeout
 import com.openai.core.http.AsyncStreamResponse
@@ -289,6 +290,15 @@ class OpenAIOkHttpClientAsync private constructor() {
          * Defaults to 2.
          */
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
+
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { clientOptions.logLevel(logLevel) }
 
         fun apiKey(apiKey: String?) = apply { clientOptions.apiKey(apiKey) }
 
