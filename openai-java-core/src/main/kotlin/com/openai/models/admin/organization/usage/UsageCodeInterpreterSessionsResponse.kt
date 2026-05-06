@@ -5175,6 +5175,7 @@ private constructor(
                 private val apiKeyId: JsonField<String>,
                 private val lineItem: JsonField<String>,
                 private val projectId: JsonField<String>,
+                private val quantity: JsonField<Double>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -5193,7 +5194,10 @@ private constructor(
                     @JsonProperty("project_id")
                     @ExcludeMissing
                     projectId: JsonField<String> = JsonMissing.of(),
-                ) : this(object_, amount, apiKeyId, lineItem, projectId, mutableMapOf())
+                    @JsonProperty("quantity")
+                    @ExcludeMissing
+                    quantity: JsonField<Double> = JsonMissing.of(),
+                ) : this(object_, amount, apiKeyId, lineItem, projectId, quantity, mutableMapOf())
 
                 /**
                  * Expected to always return the following:
@@ -5242,6 +5246,15 @@ private constructor(
                 fun projectId(): Optional<String> = projectId.getOptional("project_id")
 
                 /**
+                 * When `group_by=line_item`, this field provides the quantity of the grouped costs
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun quantity(): Optional<Double> = quantity.getOptional("quantity")
+
+                /**
                  * Returns the raw JSON value of [amount].
                  *
                  * Unlike [amount], this method doesn't throw if the JSON field has an unexpected
@@ -5279,6 +5292,16 @@ private constructor(
                 @ExcludeMissing
                 fun _projectId(): JsonField<String> = projectId
 
+                /**
+                 * Returns the raw JSON value of [quantity].
+                 *
+                 * Unlike [quantity], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("quantity")
+                @ExcludeMissing
+                fun _quantity(): JsonField<Double> = quantity
+
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                     additionalProperties.put(key, value)
@@ -5308,6 +5331,7 @@ private constructor(
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
                     private var lineItem: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
+                    private var quantity: JsonField<Double> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -5317,6 +5341,7 @@ private constructor(
                         apiKeyId = organizationCostsResult.apiKeyId
                         lineItem = organizationCostsResult.lineItem
                         projectId = organizationCostsResult.projectId
+                        quantity = organizationCostsResult.quantity
                         additionalProperties =
                             organizationCostsResult.additionalProperties.toMutableMap()
                     }
@@ -5403,6 +5428,31 @@ private constructor(
                         this.projectId = projectId
                     }
 
+                    /**
+                     * When `group_by=line_item`, this field provides the quantity of the grouped
+                     * costs result.
+                     */
+                    fun quantity(quantity: Double?) = quantity(JsonField.ofNullable(quantity))
+
+                    /**
+                     * Alias for [Builder.quantity].
+                     *
+                     * This unboxed primitive overload exists for backwards compatibility.
+                     */
+                    fun quantity(quantity: Double) = quantity(quantity as Double?)
+
+                    /** Alias for calling [Builder.quantity] with `quantity.orElse(null)`. */
+                    fun quantity(quantity: Optional<Double>) = quantity(quantity.getOrNull())
+
+                    /**
+                     * Sets [Builder.quantity] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.quantity] with a well-typed [Double] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun quantity(quantity: JsonField<Double>) = apply { this.quantity = quantity }
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -5437,6 +5487,7 @@ private constructor(
                             apiKeyId,
                             lineItem,
                             projectId,
+                            quantity,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -5467,6 +5518,7 @@ private constructor(
                     apiKeyId()
                     lineItem()
                     projectId()
+                    quantity()
                     validated = true
                 }
 
@@ -5492,7 +5544,8 @@ private constructor(
                         (amount.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (lineItem.asKnown().isPresent) 1 else 0) +
-                        (if (projectId.asKnown().isPresent) 1 else 0)
+                        (if (projectId.asKnown().isPresent) 1 else 0) +
+                        (if (quantity.asKnown().isPresent) 1 else 0)
 
                 /** The monetary value in its associated currency. */
                 class Amount
@@ -5710,6 +5763,7 @@ private constructor(
                         apiKeyId == other.apiKeyId &&
                         lineItem == other.lineItem &&
                         projectId == other.projectId &&
+                        quantity == other.quantity &&
                         additionalProperties == other.additionalProperties
                 }
 
@@ -5720,6 +5774,7 @@ private constructor(
                         apiKeyId,
                         lineItem,
                         projectId,
+                        quantity,
                         additionalProperties,
                     )
                 }
@@ -5727,7 +5782,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, additionalProperties=$additionalProperties}"
+                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, additionalProperties=$additionalProperties}"
             }
         }
 
