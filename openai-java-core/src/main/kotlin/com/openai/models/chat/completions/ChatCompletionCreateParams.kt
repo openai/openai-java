@@ -419,9 +419,10 @@ private constructor(
     fun tools(): Optional<List<ChatCompletionTool>> = body.tools()
 
     /**
-     * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-     * token position, each with an associated log probability. `logprobs` must be set to `true` if
-     * this parameter is used.
+     * An integer between 0 and 20 specifying the maximum number of most likely tokens to return at
+     * each token position, each with an associated log probability. In some cases, the number of
+     * returned tokens may be fewer than requested. `logprobs` must be set to `true` if this
+     * parameter is used.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1787,8 +1788,9 @@ private constructor(
         }
 
         /**
-         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-         * token position, each with an associated log probability. `logprobs` must be set to `true`
+         * An integer between 0 and 20 specifying the maximum number of most likely tokens to return
+         * at each token position, each with an associated log probability. In some cases, the
+         * number of returned tokens may be fewer than requested. `logprobs` must be set to `true`
          * if this parameter is used.
          */
         fun topLogprobs(topLogprobs: Long?) = apply { body.topLogprobs(topLogprobs) }
@@ -2570,8 +2572,9 @@ private constructor(
         fun tools(): Optional<List<ChatCompletionTool>> = tools.getOptional("tools")
 
         /**
-         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-         * token position, each with an associated log probability. `logprobs` must be set to `true`
+         * An integer between 0 and 20 specifying the maximum number of most likely tokens to return
+         * at each token position, each with an associated log probability. In some cases, the
+         * number of returned tokens may be fewer than requested. `logprobs` must be set to `true`
          * if this parameter is used.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -4132,9 +4135,10 @@ private constructor(
                 addTool(ChatCompletionCustomTool.builder().custom(custom).build())
 
             /**
-             * An integer between 0 and 20 specifying the number of most likely tokens to return at
-             * each token position, each with an associated log probability. `logprobs` must be set
-             * to `true` if this parameter is used.
+             * An integer between 0 and 20 specifying the maximum number of most likely tokens to
+             * return at each token position, each with an associated log probability. In some
+             * cases, the number of returned tokens may be fewer than requested. `logprobs` must be
+             * set to `true` if this parameter is used.
              */
             fun topLogprobs(topLogprobs: Long?) = topLogprobs(JsonField.ofNullable(topLogprobs))
 

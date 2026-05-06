@@ -333,8 +333,9 @@ private constructor(
     fun tools(): Optional<List<Tool>> = body.tools()
 
     /**
-     * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-     * token position, each with an associated log probability.
+     * An integer between 0 and 20 specifying the maximum number of most likely tokens to return at
+     * each token position, each with an associated log probability. In some cases, the number of
+     * returned tokens may be fewer than requested.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1364,8 +1365,9 @@ private constructor(
         fun addTool(applyPatch: ApplyPatchTool) = apply { body.addTool(applyPatch) }
 
         /**
-         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-         * token position, each with an associated log probability.
+         * An integer between 0 and 20 specifying the maximum number of most likely tokens to return
+         * at each token position, each with an associated log probability. In some cases, the
+         * number of returned tokens may be fewer than requested.
          */
         fun topLogprobs(topLogprobs: Long?) = apply { body.topLogprobs(topLogprobs) }
 
@@ -2017,8 +2019,9 @@ private constructor(
         fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
         /**
-         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-         * token position, each with an associated log probability.
+         * An integer between 0 and 20 specifying the maximum number of most likely tokens to return
+         * at each token position, each with an associated log probability. In some cases, the
+         * number of returned tokens may be fewer than requested.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3172,8 +3175,9 @@ private constructor(
             fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
 
             /**
-             * An integer between 0 and 20 specifying the number of most likely tokens to return at
-             * each token position, each with an associated log probability.
+             * An integer between 0 and 20 specifying the maximum number of most likely tokens to
+             * return at each token position, each with an associated log probability. In some
+             * cases, the number of returned tokens may be fewer than requested.
              */
             fun topLogprobs(topLogprobs: Long?) = topLogprobs(JsonField.ofNullable(topLogprobs))
 
