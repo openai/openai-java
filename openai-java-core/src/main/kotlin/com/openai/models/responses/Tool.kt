@@ -4533,7 +4533,7 @@ private constructor(
         private val outputFormat: JsonField<OutputFormat>,
         private val partialImages: JsonField<Long>,
         private val quality: JsonField<Quality>,
-        private val size: JsonField<String>,
+        private val size: JsonField<Size>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -4564,7 +4564,7 @@ private constructor(
             @ExcludeMissing
             partialImages: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("quality") @ExcludeMissing quality: JsonField<Quality> = JsonMissing.of(),
-            @JsonProperty("size") @ExcludeMissing size: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
         ) : this(
             type,
             action,
@@ -4706,7 +4706,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun size(): Optional<String> = size.getOptional("size")
+        fun size(): Optional<Size> = size.getOptional("size")
 
         /**
          * Returns the raw JSON value of [action].
@@ -4802,7 +4802,7 @@ private constructor(
          *
          * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<String> = size
+        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -4836,7 +4836,7 @@ private constructor(
             private var outputFormat: JsonField<OutputFormat> = JsonMissing.of()
             private var partialImages: JsonField<Long> = JsonMissing.of()
             private var quality: JsonField<Quality> = JsonMissing.of()
-            private var size: JsonField<String> = JsonMissing.of()
+            private var size: JsonField<Size> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -5061,16 +5061,24 @@ private constructor(
              * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
              * `1792x1024`, or `1024x1792`.
              */
-            fun size(size: String) = size(JsonField.of(size))
+            fun size(size: Size) = size(JsonField.of(size))
 
             /**
              * Sets [Builder.size] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.size] with a well-typed [String] value instead. This
+             * You should usually call [Builder.size] with a well-typed [Size] value instead. This
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
-            fun size(size: JsonField<String>) = apply { this.size = size }
+            fun size(size: JsonField<Size>) = apply { this.size = size }
+
+            /**
+             * Sets [size] to an arbitrary [String].
+             *
+             * You should usually call [size] with a well-typed [Size] constant instead. This method
+             * is primarily for setting the field to an undocumented or not yet supported value.
+             */
+            fun size(value: String) = size(Size.of(value))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -6439,6 +6447,166 @@ private constructor(
                 }
 
                 return other is Quality && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /**
+         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
+         * Width and height must both be divisible by 16 and the requested aspect ratio must be
+         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
+         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
+         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
+         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
+         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
+         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+         */
+        class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _1024X1024 = of("1024x1024")
+
+                @JvmField val _1024X1536 = of("1024x1536")
+
+                @JvmField val _1536X1024 = of("1536x1024")
+
+                @JvmField val AUTO = of("auto")
+
+                @JvmStatic fun of(value: String) = Size(JsonField.of(value))
+            }
+
+            /** An enum containing [Size]'s known values. */
+            enum class Known {
+                _1024X1024,
+                _1024X1536,
+                _1536X1024,
+                AUTO,
+            }
+
+            /**
+             * An enum containing [Size]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Size] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _1024X1024,
+                _1024X1536,
+                _1536X1024,
+                AUTO,
+                /** An enum member indicating that [Size] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _1024X1024 -> Value._1024X1024
+                    _1024X1536 -> Value._1024X1536
+                    _1536X1024 -> Value._1536X1024
+                    AUTO -> Value.AUTO
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _1024X1024 -> Known._1024X1024
+                    _1024X1536 -> Known._1024X1536
+                    _1536X1024 -> Known._1536X1024
+                    AUTO -> Known.AUTO
+                    else -> throw OpenAIInvalidDataException("Unknown Size: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Size = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Size && value == other.value
             }
 
             override fun hashCode() = value.hashCode()

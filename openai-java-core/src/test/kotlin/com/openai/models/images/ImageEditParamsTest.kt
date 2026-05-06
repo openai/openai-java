@@ -24,7 +24,7 @@ internal class ImageEditParamsTest {
             .partialImages(1L)
             .quality(ImageEditParams.Quality.HIGH)
             .responseFormat(ImageEditParams.ResponseFormat.URL)
-            .size("1024x1024")
+            .size(ImageEditParams.Size._256X256)
             .user("user-1234")
             .build()
     }
@@ -45,7 +45,7 @@ internal class ImageEditParamsTest {
                 .partialImages(1L)
                 .quality(ImageEditParams.Quality.HIGH)
                 .responseFormat(ImageEditParams.ResponseFormat.URL)
-                .size("1024x1024")
+                .size(ImageEditParams.Size._256X256)
                 .user("user-1234")
                 .build()
 
@@ -81,7 +81,7 @@ internal class ImageEditParamsTest {
                         "partial_images" to MultipartField.of(1L),
                         "quality" to MultipartField.of(ImageEditParams.Quality.HIGH),
                         "response_format" to MultipartField.of(ImageEditParams.ResponseFormat.URL),
-                        "size" to MultipartField.of("1024x1024"),
+                        "size" to MultipartField.of(ImageEditParams.Size._256X256),
                         "user" to MultipartField.of("user-1234"),
                     )
                     .mapValues { (_, field) ->
