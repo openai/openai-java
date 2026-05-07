@@ -161,12 +161,12 @@ private constructor(
          * Alias for calling [session] with the following:
          * ```java
          * RealtimeSessionCreateResponse.builder()
-         *     .clientSecret(clientSecret)
+         *     .id(id)
          *     .build()
          * ```
          */
-        fun realtimeSession(clientSecret: RealtimeSessionClientSecret) =
-            session(RealtimeSessionCreateResponse.builder().clientSecret(clientSecret).build())
+        fun realtimeSession(id: String) =
+            session(RealtimeSessionCreateResponse.builder().id(id).build())
 
         /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
         fun session(transcription: RealtimeTranscriptionSessionCreateResponse) =
@@ -275,10 +275,7 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        /**
-         * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one
-         * minute.
-         */
+        /** A Realtime session configuration object. */
         fun realtime(): Optional<RealtimeSessionCreateResponse> = Optional.ofNullable(realtime)
 
         /** A Realtime transcription session configuration object. */
@@ -289,10 +286,7 @@ private constructor(
 
         fun isTranscription(): Boolean = transcription != null
 
-        /**
-         * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one
-         * minute.
-         */
+        /** A Realtime session configuration object. */
         fun asRealtime(): RealtimeSessionCreateResponse = realtime.getOrThrow("realtime")
 
         /** A Realtime transcription session configuration object. */
@@ -420,10 +414,7 @@ private constructor(
 
         companion object {
 
-            /**
-             * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is
-             * one minute.
-             */
+            /** A Realtime session configuration object. */
             @JvmStatic
             fun ofRealtime(realtime: RealtimeSessionCreateResponse) = Session(realtime = realtime)
 
@@ -438,10 +429,7 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            /**
-             * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is
-             * one minute.
-             */
+            /** A Realtime session configuration object. */
             fun visitRealtime(realtime: RealtimeSessionCreateResponse): T
 
             /** A Realtime transcription session configuration object. */

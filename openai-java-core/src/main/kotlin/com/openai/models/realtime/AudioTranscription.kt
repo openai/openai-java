@@ -15,10 +15,12 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class AudioTranscription
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val delay: JsonField<Delay>,
     private val language: JsonField<String>,
     private val model: JsonField<Model>,
     private val prompt: JsonField<String>,
@@ -27,10 +29,21 @@ private constructor(
 
     @JsonCreator
     private constructor(
+        @JsonProperty("delay") @ExcludeMissing delay: JsonField<Delay> = JsonMissing.of(),
         @JsonProperty("language") @ExcludeMissing language: JsonField<String> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
         @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
-    ) : this(language, model, prompt, mutableMapOf())
+    ) : this(delay, language, model, prompt, mutableMapOf())
+
+    /**
+     * Controls how long the model waits before emitting transcription text. Higher values can
+     * improve transcription accuracy at the cost of latency. Only supported with
+     * `gpt-realtime-whisper` in GA Realtime sessions.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun delay(): Optional<Delay> = delay.getOptional("delay")
 
     /**
      * The language of the input audio. Supplying the input language in
@@ -44,9 +57,9 @@ private constructor(
 
     /**
      * The model to use for transcription. Current options are `whisper-1`,
-     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, and
-     * `gpt-4o-transcribe-diarize`. Use `gpt-4o-transcribe-diarize` when you need diarization with
-     * speaker labels.
+     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`,
+     * `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize` when
+     * you need diarization with speaker labels.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -58,12 +71,20 @@ private constructor(
      * `whisper-1`, the
      * [prompt is a list of keywords](https://platform.openai.com/docs/guides/speech-to-text#prompting).
      * For `gpt-4o-transcribe` models (excluding `gpt-4o-transcribe-diarize`), the prompt is a free
-     * text string, for example "expect words related to technology".
+     * text string, for example "expect words related to technology". Prompt is not supported with
+     * `gpt-realtime-whisper` in GA Realtime sessions.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun prompt(): Optional<String> = prompt.getOptional("prompt")
+
+    /**
+     * Returns the raw JSON value of [delay].
+     *
+     * Unlike [delay], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("delay") @ExcludeMissing fun _delay(): JsonField<Delay> = delay
 
     /**
      * Returns the raw JSON value of [language].
@@ -107,6 +128,7 @@ private constructor(
     /** A builder for [AudioTranscription]. */
     class Builder internal constructor() {
 
+        private var delay: JsonField<Delay> = JsonMissing.of()
         private var language: JsonField<String> = JsonMissing.of()
         private var model: JsonField<Model> = JsonMissing.of()
         private var prompt: JsonField<String> = JsonMissing.of()
@@ -114,11 +136,27 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(audioTranscription: AudioTranscription) = apply {
+            delay = audioTranscription.delay
             language = audioTranscription.language
             model = audioTranscription.model
             prompt = audioTranscription.prompt
             additionalProperties = audioTranscription.additionalProperties.toMutableMap()
         }
+
+        /**
+         * Controls how long the model waits before emitting transcription text. Higher values can
+         * improve transcription accuracy at the cost of latency. Only supported with
+         * `gpt-realtime-whisper` in GA Realtime sessions.
+         */
+        fun delay(delay: Delay) = delay(JsonField.of(delay))
+
+        /**
+         * Sets [Builder.delay] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delay] with a well-typed [Delay] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun delay(delay: JsonField<Delay>) = apply { this.delay = delay }
 
         /**
          * The language of the input audio. Supplying the input language in
@@ -137,9 +175,9 @@ private constructor(
 
         /**
          * The model to use for transcription. Current options are `whisper-1`,
-         * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, and
-         * `gpt-4o-transcribe-diarize`. Use `gpt-4o-transcribe-diarize` when you need diarization
-         * with speaker labels.
+         * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`,
+         * `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize`
+         * when you need diarization with speaker labels.
          */
         fun model(model: Model) = model(JsonField.of(model))
 
@@ -164,7 +202,8 @@ private constructor(
          * `whisper-1`, the
          * [prompt is a list of keywords](https://platform.openai.com/docs/guides/speech-to-text#prompting).
          * For `gpt-4o-transcribe` models (excluding `gpt-4o-transcribe-diarize`), the prompt is a
-         * free text string, for example "expect words related to technology".
+         * free text string, for example "expect words related to technology". Prompt is not
+         * supported with `gpt-realtime-whisper` in GA Realtime sessions.
          */
         fun prompt(prompt: String) = prompt(JsonField.of(prompt))
 
@@ -201,7 +240,7 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): AudioTranscription =
-            AudioTranscription(language, model, prompt, additionalProperties.toMutableMap())
+            AudioTranscription(delay, language, model, prompt, additionalProperties.toMutableMap())
     }
 
     private var validated: Boolean = false
@@ -219,6 +258,7 @@ private constructor(
             return@apply
         }
 
+        delay().ifPresent { it.validate() }
         language()
         model()
         prompt()
@@ -240,15 +280,173 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (language.asKnown().isPresent) 1 else 0) +
+        (delay.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (language.asKnown().isPresent) 1 else 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (prompt.asKnown().isPresent) 1 else 0)
 
     /**
+     * Controls how long the model waits before emitting transcription text. Higher values can
+     * improve transcription accuracy at the cost of latency. Only supported with
+     * `gpt-realtime-whisper` in GA Realtime sessions.
+     */
+    class Delay @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val MINIMAL = of("minimal")
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmField val XHIGH = of("xhigh")
+
+            @JvmStatic fun of(value: String) = Delay(JsonField.of(value))
+        }
+
+        /** An enum containing [Delay]'s known values. */
+        enum class Known {
+            MINIMAL,
+            LOW,
+            MEDIUM,
+            HIGH,
+            XHIGH,
+        }
+
+        /**
+         * An enum containing [Delay]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Delay] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            MINIMAL,
+            LOW,
+            MEDIUM,
+            HIGH,
+            XHIGH,
+            /** An enum member indicating that [Delay] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                MINIMAL -> Value.MINIMAL
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                XHIGH -> Value.XHIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                MINIMAL -> Known.MINIMAL
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                XHIGH -> Known.XHIGH
+                else -> throw OpenAIInvalidDataException("Unknown Delay: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Delay = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Delay && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
      * The model to use for transcription. Current options are `whisper-1`,
-     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, and
-     * `gpt-4o-transcribe-diarize`. Use `gpt-4o-transcribe-diarize` when you need diarization with
-     * speaker labels.
+     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`,
+     * `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize` when
+     * you need diarization with speaker labels.
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -275,6 +473,8 @@ private constructor(
 
             @JvmField val GPT_4O_TRANSCRIBE_DIARIZE = of("gpt-4o-transcribe-diarize")
 
+            @JvmField val GPT_REALTIME_WHISPER = of("gpt-realtime-whisper")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
@@ -285,6 +485,7 @@ private constructor(
             GPT_4O_MINI_TRANSCRIBE_2025_12_15,
             GPT_4O_TRANSCRIBE,
             GPT_4O_TRANSCRIBE_DIARIZE,
+            GPT_REALTIME_WHISPER,
         }
 
         /**
@@ -302,6 +503,7 @@ private constructor(
             GPT_4O_MINI_TRANSCRIBE_2025_12_15,
             GPT_4O_TRANSCRIBE,
             GPT_4O_TRANSCRIBE_DIARIZE,
+            GPT_REALTIME_WHISPER,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -320,6 +522,7 @@ private constructor(
                 GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Value.GPT_4O_MINI_TRANSCRIBE_2025_12_15
                 GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
                 GPT_4O_TRANSCRIBE_DIARIZE -> Value.GPT_4O_TRANSCRIBE_DIARIZE
+                GPT_REALTIME_WHISPER -> Value.GPT_REALTIME_WHISPER
                 else -> Value._UNKNOWN
             }
 
@@ -339,6 +542,7 @@ private constructor(
                 GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Known.GPT_4O_MINI_TRANSCRIBE_2025_12_15
                 GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
                 GPT_4O_TRANSCRIBE_DIARIZE -> Known.GPT_4O_TRANSCRIBE_DIARIZE
+                GPT_REALTIME_WHISPER -> Known.GPT_REALTIME_WHISPER
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 
@@ -409,6 +613,7 @@ private constructor(
         }
 
         return other is AudioTranscription &&
+            delay == other.delay &&
             language == other.language &&
             model == other.model &&
             prompt == other.prompt &&
@@ -416,11 +621,11 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(language, model, prompt, additionalProperties)
+        Objects.hash(delay, language, model, prompt, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AudioTranscription{language=$language, model=$model, prompt=$prompt, additionalProperties=$additionalProperties}"
+        "AudioTranscription{delay=$delay, language=$language, model=$model, prompt=$prompt, additionalProperties=$additionalProperties}"
 }

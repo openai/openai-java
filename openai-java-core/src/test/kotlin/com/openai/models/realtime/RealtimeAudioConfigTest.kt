@@ -28,6 +28,7 @@ internal class RealtimeAudioConfigTest {
                         )
                         .transcription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
                                 .language("language")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
@@ -75,6 +76,7 @@ internal class RealtimeAudioConfigTest {
                     )
                     .transcription(
                         AudioTranscription.builder()
+                            .delay(AudioTranscription.Delay.MINIMAL)
                             .language("language")
                             .model(AudioTranscription.Model.WHISPER_1)
                             .prompt("prompt")
@@ -127,6 +129,7 @@ internal class RealtimeAudioConfigTest {
                         )
                         .transcription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
                                 .language("language")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
