@@ -42,7 +42,7 @@ internal class FileCreateParamsTest {
                         "file" to
                             MultipartField.builder<InputStream>()
                                 .value("Example data".byteInputStream())
-                                .filename("file.bin")
+                                .filename("assistant_data.jsonl")
                                 .build(),
                         "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
                         "expires_after" to
@@ -79,7 +79,7 @@ internal class FileCreateParamsTest {
                         "file" to
                             MultipartField.builder<InputStream>()
                                 .value("Example data".byteInputStream())
-                                .filename("file.bin")
+                                .filename("assistant_data.jsonl")
                                 .build(),
                         "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
                     )
@@ -97,16 +97,19 @@ internal class FileCreateParamsTest {
                 .purpose(FilePurpose.BATCH)
                 .build()
 
-        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().filename()).contains("batch_data.jsonl")
         assertThat(params._file().contentType).isEqualTo("application/octet-stream")
     }
 
     @Test
     fun fileWithBytesUsesDefaultFilename() {
         val params =
-            FileCreateParams.builder().file("Example data".toByteArray()).purpose(FilePurpose.BATCH).build()
+            FileCreateParams.builder()
+                .file("Example data".toByteArray())
+                .purpose(FilePurpose.BATCH)
+                .build()
 
-        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().filename()).contains("batch_data.jsonl")
         assertThat(params._file().contentType).isEqualTo("application/octet-stream")
     }
 

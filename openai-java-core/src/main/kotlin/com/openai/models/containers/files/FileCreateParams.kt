@@ -13,6 +13,8 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.files.FileNameMapper
+import com.openai.models.files.FilePurpose
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Collections
@@ -117,8 +119,14 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The File object (not file name) to be uploaded. */
-        fun file(file: InputStream) = apply { body.file(file, "file.bin") }
+        /**
+         * Sets the file to upload from an InputStream with a purpose-appropriate default filename.
+         * Default determined by [FileNameMapper] based on purpose. Use [file(InputStream, String)]
+         * for explicit control.
+         */
+        fun file(file: InputStream) = apply {
+            body.file(file, FileNameMapper.getDefaultFilename(body._purposeIfSet()))
+        }
 
         /** The File object (not file name) to be uploaded, with an explicit filename. */
         fun file(file: InputStream, filename: String) = apply { body.file(file, filename) }
@@ -132,8 +140,14 @@ private constructor(
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
-        /** The File object (not file name) to be uploaded. */
-        fun file(file: ByteArray) = apply { body.file(file, "file.bin") }
+        /**
+         * Sets the file to upload from a byte array with a purpose-appropriate default filename.
+         * Default determined by [FileNameMapper] based on purpose. Use [file(ByteArray, String)]
+         * for explicit control.
+         */
+        fun file(file: ByteArray): Builder = apply {
+            body.file(file, FileNameMapper.getDefaultFilename(body._purposeIfSet()))
+        }
 
         /** The File object (not file name) to be uploaded, with an explicit filename. */
         fun file(file: ByteArray, filename: String) = apply { body.file(file, filename) }
@@ -367,8 +381,16 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: InputStream) = file(file, "file.bin")
+            /**
+             * Returns the current purpose if set, or null (containers API doesn't have purpose).
+             */
+            @JvmSynthetic internal fun _purposeIfSet(): FilePurpose? = null
+
+            /**
+             * Sets the file to upload from an InputStream with a purpose-appropriate default
+             * filename. Default determined by [FileNameMapper].
+             */
+            fun file(file: InputStream) = file(file, FileNameMapper.getDefaultFilename(null))
 
             /** The File object (not file name) to be uploaded, with an explicit filename. */
             fun file(file: InputStream, filename: String) =
@@ -383,8 +405,11 @@ private constructor(
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(file, "file.bin")
+            /**
+             * Sets the file to upload from a byte array with a purpose-appropriate default
+             * filename. Default determined by [FileNameMapper].
+             */
+            fun file(file: ByteArray) = file(file, FileNameMapper.getDefaultFilename(null))
 
             /** The File object (not file name) to be uploaded, with an explicit filename. */
             fun file(file: ByteArray, filename: String) = file(file.inputStream(), filename)
