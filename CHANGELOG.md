@@ -1,5 +1,47 @@
 # Changelog
 
+## 4.35.0 (2026-05-07)
+
+Full Changelog: [v4.34.0...v4.35.0](https://github.com/openai/openai-java/compare/v4.34.0...v4.35.0)
+
+### Features
+
+* **api:** add quantity field to organization usage responses, update topLogprobs docs ([d4686cc](https://github.com/openai/openai-java/commit/d4686cc7eb9bcd551282d421811341518ddc8584))
+* **api:** launch realtime translate + update image 2 ([28ad918](https://github.com/openai/openai-java/commit/28ad9189d7293388d043ed83496333132afc517f))
+* **api:** manual updates ([7905ef6](https://github.com/openai/openai-java/commit/7905ef6cc30852f0d80bd10c937d949028ff1303))
+* **api:** manual updates ([8328a1e](https://github.com/openai/openai-java/commit/8328a1eb51291dd0a317989e31e0989572bbfa0b))
+* **client:** improve logging ([6393b34](https://github.com/openai/openai-java/commit/6393b3431e87d15ad3ee23cc274161f8e00a87ec))
+* **client:** more robust error parsing ([5a1bfdc](https://github.com/openai/openai-java/commit/5a1bfdcb283dc6efc1ab5058ef96740087112288))
+* **client:** support proxy authentication ([97c8087](https://github.com/openai/openai-java/commit/97c808706c3684892d309245a205fcfcf90738cd))
+
+
+### Bug Fixes
+
+* **api:** fix imagegen `size` enum regression ([aacb886](https://github.com/openai/openai-java/commit/aacb886fd99a7571dabe5bc8f1086bef650c11fc))
+* **client:** match `JsonSchemaValidator` heading levels to API ([#733](https://github.com/openai/openai-java/issues/733)) ([fc57ef7](https://github.com/openai/openai-java/commit/fc57ef7963e6ebdfde0c716adc4f29d315dc9021))
+* **logging:** redact Azure api-key header in logging ([#717](https://github.com/openai/openai-java/issues/717)) ([157207f](https://github.com/openai/openai-java/commit/157207fefe59174141a5aec6a983c546def242b4))
+
+
+### Performance Improvements
+
+* **client:** create one json mapper ([6bdc12e](https://github.com/openai/openai-java/commit/6bdc12ed832827d3e9bdb9825898bfa5aee94d26))
+
+
+### Chores
+
+* fix build error ([82a8527](https://github.com/openai/openai-java/commit/82a85274f613aad7ae277765b12bc3469832e1b1))
+* redact api-key headers in debug logs ([73d01b0](https://github.com/openai/openai-java/commit/73d01b0a5a9af1e4722381701654ff5880ff8986))
+* remove duplicated dokka setup ([06e43e2](https://github.com/openai/openai-java/commit/06e43e2ca1a630dd8b4d38b151724d6b3fb5e014))
+* **tests:** update test fixtures to use valid example URLs ([021f44a](https://github.com/openai/openai-java/commit/021f44a12a39f7e1b8e405e4f309f1a4d0223ed6))
+
+
+### Documentation
+
+* **api:** document web_search_call.results in response includables ([18fe08a](https://github.com/openai/openai-java/commit/18fe08af6a53d6ef9b35e03190e137b02231608e))
+* clarify forwards compat behavior ([d44f466](https://github.com/openai/openai-java/commit/d44f4664a550f4d34b2d1b14c7f376d1047514e0))
+* clarify structured output map limitations ([#726](https://github.com/openai/openai-java/issues/726)) ([e1e1161](https://github.com/openai/openai-java/commit/e1e1161d69d30bd6639ada5ead3a30f14c68cf8d))
+* remove bad semicolon ([#725](https://github.com/openai/openai-java/issues/725)) ([b5dbd07](https://github.com/openai/openai-java/commit/b5dbd07e1147f5554509481798978717e22b03af))
+
 ## 4.34.0 (2026-05-01)
 
 Full Changelog: [v4.33.0...v4.34.0](https://github.com/openai/openai-java/compare/v4.33.0...v4.34.0)
