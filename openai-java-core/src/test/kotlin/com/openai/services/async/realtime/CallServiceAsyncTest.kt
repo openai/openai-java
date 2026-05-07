@@ -13,6 +13,8 @@ import com.openai.models.realtime.RealtimeAudioConfigOutput
 import com.openai.models.realtime.RealtimeAudioFormats
 import com.openai.models.realtime.RealtimeAudioInputTurnDetection
 import com.openai.models.realtime.RealtimeFunctionTool
+import com.openai.models.realtime.RealtimeReasoning
+import com.openai.models.realtime.RealtimeReasoningEffort
 import com.openai.models.realtime.RealtimeSessionCreateRequest
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.realtime.calls.CallAcceptParams
@@ -61,6 +63,7 @@ internal class CallServiceAsyncTest {
                                             )
                                             .transcription(
                                                 AudioTranscription.builder()
+                                                    .delay(AudioTranscription.Delay.MINIMAL)
                                                     .language("language")
                                                     .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
@@ -104,6 +107,7 @@ internal class CallServiceAsyncTest {
                             .maxOutputTokensInf()
                             .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                            .parallelToolCalls(true)
                             .prompt(
                                 ResponsePrompt.builder()
                                     .id("id")
@@ -113,6 +117,11 @@ internal class CallServiceAsyncTest {
                                             .build()
                                     )
                                     .version("version")
+                                    .build()
+                            )
+                            .reasoning(
+                                RealtimeReasoning.builder()
+                                    .effort(RealtimeReasoningEffort.MINIMAL)
                                     .build()
                             )
                             .toolChoice(ToolChoiceOptions.NONE)

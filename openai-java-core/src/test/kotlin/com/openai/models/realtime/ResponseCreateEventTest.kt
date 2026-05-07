@@ -63,6 +63,7 @@ internal class ResponseCreateEventTest {
                                 .build()
                         )
                         .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -72,6 +73,11 @@ internal class ResponseCreateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -134,6 +140,7 @@ internal class ResponseCreateEventTest {
                             .build()
                     )
                     .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                    .parallelToolCalls(true)
                     .prompt(
                         ResponsePrompt.builder()
                             .id("id")
@@ -144,6 +151,9 @@ internal class ResponseCreateEventTest {
                             )
                             .version("version")
                             .build()
+                    )
+                    .reasoning(
+                        RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
@@ -210,6 +220,7 @@ internal class ResponseCreateEventTest {
                                 .build()
                         )
                         .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -219,6 +230,11 @@ internal class ResponseCreateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)

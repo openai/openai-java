@@ -25,6 +25,7 @@ internal class TranscriptionSessionUpdatedEventTest {
                         .inputAudioFormat("input_audio_format")
                         .inputAudioTranscription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
                                 .language("language")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
@@ -56,6 +57,7 @@ internal class TranscriptionSessionUpdatedEventTest {
                     .inputAudioFormat("input_audio_format")
                     .inputAudioTranscription(
                         AudioTranscription.builder()
+                            .delay(AudioTranscription.Delay.MINIMAL)
                             .language("language")
                             .model(AudioTranscription.Model.WHISPER_1)
                             .prompt("prompt")
@@ -91,6 +93,7 @@ internal class TranscriptionSessionUpdatedEventTest {
                         .inputAudioFormat("input_audio_format")
                         .inputAudioTranscription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
                                 .language("language")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")

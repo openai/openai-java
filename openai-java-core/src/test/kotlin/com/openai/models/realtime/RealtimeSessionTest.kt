@@ -27,6 +27,7 @@ internal class RealtimeSessionTest {
                 )
                 .inputAudioTranscription(
                     AudioTranscription.builder()
+                        .delay(AudioTranscription.Delay.MINIMAL)
                         .language("language")
                         .model(AudioTranscription.Model.WHISPER_1)
                         .prompt("prompt")
@@ -89,6 +90,7 @@ internal class RealtimeSessionTest {
         assertThat(realtimeSession.inputAudioTranscription())
             .contains(
                 AudioTranscription.builder()
+                    .delay(AudioTranscription.Delay.MINIMAL)
                     .language("language")
                     .model(AudioTranscription.Model.WHISPER_1)
                     .prompt("prompt")
@@ -160,6 +162,7 @@ internal class RealtimeSessionTest {
                 )
                 .inputAudioTranscription(
                     AudioTranscription.builder()
+                        .delay(AudioTranscription.Delay.MINIMAL)
                         .language("language")
                         .model(AudioTranscription.Model.WHISPER_1)
                         .prompt("prompt")

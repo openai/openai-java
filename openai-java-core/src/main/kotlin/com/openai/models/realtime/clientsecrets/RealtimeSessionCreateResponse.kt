@@ -30,6 +30,7 @@ import com.openai.models.realtime.AudioTranscription
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioFormats
 import com.openai.models.realtime.RealtimeFunctionTool
+import com.openai.models.realtime.RealtimeReasoning
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.realtime.RealtimeTruncationRetentionRatio
 import com.openai.models.responses.ResponsePrompt
@@ -41,21 +42,22 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one minute.
- */
+/** A Realtime session configuration object. */
 class RealtimeSessionCreateResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val clientSecret: JsonField<RealtimeSessionClientSecret>,
+    private val id: JsonField<String>,
+    private val object_: JsonValue,
     private val type: JsonValue,
     private val audio: JsonField<Audio>,
+    private val expiresAt: JsonField<Long>,
     private val include: JsonField<List<Include>>,
     private val instructions: JsonField<String>,
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
     private val model: JsonField<Model>,
     private val outputModalities: JsonField<List<OutputModality>>,
     private val prompt: JsonField<ResponsePrompt>,
+    private val reasoning: JsonField<RealtimeReasoning>,
     private val toolChoice: JsonField<ToolChoice>,
     private val tools: JsonField<List<Tool>>,
     private val tracing: JsonField<Tracing>,
@@ -65,11 +67,11 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("client_secret")
-        @ExcludeMissing
-        clientSecret: JsonField<RealtimeSessionClientSecret> = JsonMissing.of(),
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("audio") @ExcludeMissing audio: JsonField<Audio> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("include")
         @ExcludeMissing
         include: JsonField<List<Include>> = JsonMissing.of(),
@@ -86,6 +88,9 @@ private constructor(
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
+        @JsonProperty("reasoning")
+        @ExcludeMissing
+        reasoning: JsonField<RealtimeReasoning> = JsonMissing.of(),
         @JsonProperty("tool_choice")
         @ExcludeMissing
         toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
@@ -95,15 +100,18 @@ private constructor(
         @ExcludeMissing
         truncation: JsonField<RealtimeTruncation> = JsonMissing.of(),
     ) : this(
-        clientSecret,
+        id,
+        object_,
         type,
         audio,
+        expiresAt,
         include,
         instructions,
         maxOutputTokens,
         model,
         outputModalities,
         prompt,
+        reasoning,
         toolChoice,
         tools,
         tracing,
@@ -112,12 +120,25 @@ private constructor(
     )
 
     /**
-     * Ephemeral key returned by the API.
+     * Unique identifier for the session that looks like `sess_1234567890abcdef`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun clientSecret(): RealtimeSessionClientSecret = clientSecret.getRequired("client_secret")
+    fun id(): String = id.getRequired("id")
+
+    /**
+     * The object type. Always `realtime.session`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("realtime.session")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The type of session to create. Always `realtime` for the Realtime API.
@@ -139,6 +160,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun audio(): Optional<Audio> = audio.getOptional("audio")
+
+    /**
+     * Expiration timestamp for the session, in seconds since epoch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * Additional fields to include in server outputs.
@@ -207,6 +236,14 @@ private constructor(
     fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
     /**
+     * Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun reasoning(): Optional<RealtimeReasoning> = reasoning.getOptional("reasoning")
+
+    /**
      * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
      * tool.
      *
@@ -259,13 +296,11 @@ private constructor(
     fun truncation(): Optional<RealtimeTruncation> = truncation.getOptional("truncation")
 
     /**
-     * Returns the raw JSON value of [clientSecret].
+     * Returns the raw JSON value of [id].
      *
-     * Unlike [clientSecret], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("client_secret")
-    @ExcludeMissing
-    fun _clientSecret(): JsonField<RealtimeSessionClientSecret> = clientSecret
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
      * Returns the raw JSON value of [audio].
@@ -273,6 +308,13 @@ private constructor(
      * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<Audio> = audio
+
+    /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     /**
      * Returns the raw JSON value of [include].
@@ -322,6 +364,15 @@ private constructor(
      * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
+
+    /**
+     * Returns the raw JSON value of [reasoning].
+     *
+     * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("reasoning")
+    @ExcludeMissing
+    fun _reasoning(): JsonField<RealtimeReasoning> = reasoning
 
     /**
      * Returns the raw JSON value of [toolChoice].
@@ -375,7 +426,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .clientSecret()
+         * .id()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -384,15 +435,18 @@ private constructor(
     /** A builder for [RealtimeSessionCreateResponse]. */
     class Builder internal constructor() {
 
-        private var clientSecret: JsonField<RealtimeSessionClientSecret>? = null
+        private var id: JsonField<String>? = null
+        private var object_: JsonValue = JsonValue.from("realtime.session")
         private var type: JsonValue = JsonValue.from("realtime")
         private var audio: JsonField<Audio> = JsonMissing.of()
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var include: JsonField<MutableList<Include>>? = null
         private var instructions: JsonField<String> = JsonMissing.of()
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
         private var model: JsonField<Model> = JsonMissing.of()
         private var outputModalities: JsonField<MutableList<OutputModality>>? = null
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
+        private var reasoning: JsonField<RealtimeReasoning> = JsonMissing.of()
         private var toolChoice: JsonField<ToolChoice> = JsonMissing.of()
         private var tools: JsonField<MutableList<Tool>>? = null
         private var tracing: JsonField<Tracing> = JsonMissing.of()
@@ -401,9 +455,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(realtimeSessionCreateResponse: RealtimeSessionCreateResponse) = apply {
-            clientSecret = realtimeSessionCreateResponse.clientSecret
+            id = realtimeSessionCreateResponse.id
+            object_ = realtimeSessionCreateResponse.object_
             type = realtimeSessionCreateResponse.type
             audio = realtimeSessionCreateResponse.audio
+            expiresAt = realtimeSessionCreateResponse.expiresAt
             include = realtimeSessionCreateResponse.include.map { it.toMutableList() }
             instructions = realtimeSessionCreateResponse.instructions
             maxOutputTokens = realtimeSessionCreateResponse.maxOutputTokens
@@ -411,6 +467,7 @@ private constructor(
             outputModalities =
                 realtimeSessionCreateResponse.outputModalities.map { it.toMutableList() }
             prompt = realtimeSessionCreateResponse.prompt
+            reasoning = realtimeSessionCreateResponse.reasoning
             toolChoice = realtimeSessionCreateResponse.toolChoice
             tools = realtimeSessionCreateResponse.tools.map { it.toMutableList() }
             tracing = realtimeSessionCreateResponse.tracing
@@ -418,20 +475,30 @@ private constructor(
             additionalProperties = realtimeSessionCreateResponse.additionalProperties.toMutableMap()
         }
 
-        /** Ephemeral key returned by the API. */
-        fun clientSecret(clientSecret: RealtimeSessionClientSecret) =
-            clientSecret(JsonField.of(clientSecret))
+        /** Unique identifier for the session that looks like `sess_1234567890abcdef`. */
+        fun id(id: String) = id(JsonField.of(id))
 
         /**
-         * Sets [Builder.clientSecret] to an arbitrary JSON value.
+         * Sets [Builder.id] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.clientSecret] with a well-typed
-         * [RealtimeSessionClientSecret] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun clientSecret(clientSecret: JsonField<RealtimeSessionClientSecret>) = apply {
-            this.clientSecret = clientSecret
-        }
+        fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("realtime.session")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -457,6 +524,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun audio(audio: JsonField<Audio>) = apply { this.audio = audio }
+
+        /** Expiration timestamp for the session, in seconds since epoch. */
+        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /**
          * Additional fields to include in server outputs.
@@ -608,6 +686,20 @@ private constructor(
          */
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
 
+        /** Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`. */
+        fun reasoning(reasoning: RealtimeReasoning) = reasoning(JsonField.of(reasoning))
+
+        /**
+         * Sets [Builder.reasoning] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.reasoning] with a well-typed [RealtimeReasoning] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun reasoning(reasoning: JsonField<RealtimeReasoning>) = apply {
+            this.reasoning = reasoning
+        }
+
         /**
          * How the model chooses tools. Provide one of the string modes or force a specific
          * function/MCP tool.
@@ -758,22 +850,25 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .clientSecret()
+         * .id()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): RealtimeSessionCreateResponse =
             RealtimeSessionCreateResponse(
-                checkRequired("clientSecret", clientSecret),
+                checkRequired("id", id),
+                object_,
                 type,
                 audio,
+                expiresAt,
                 (include ?: JsonMissing.of()).map { it.toImmutable() },
                 instructions,
                 maxOutputTokens,
                 model,
                 (outputModalities ?: JsonMissing.of()).map { it.toImmutable() },
                 prompt,
+                reasoning,
                 toolChoice,
                 (tools ?: JsonMissing.of()).map { it.toImmutable() },
                 tracing,
@@ -797,19 +892,26 @@ private constructor(
             return@apply
         }
 
-        clientSecret().validate()
+        id()
+        _object_().let {
+            if (it != JsonValue.from("realtime.session")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         _type().let {
             if (it != JsonValue.from("realtime")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
         audio().ifPresent { it.validate() }
+        expiresAt()
         include().ifPresent { it.forEach { it.validate() } }
         instructions()
         maxOutputTokens().ifPresent { it.validate() }
         model()
         outputModalities().ifPresent { it.forEach { it.validate() } }
         prompt().ifPresent { it.validate() }
+        reasoning().ifPresent { it.validate() }
         toolChoice().ifPresent { it.validate() }
         tools().ifPresent { it.forEach { it.validate() } }
         tracing().ifPresent { it.validate() }
@@ -832,15 +934,18 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (clientSecret.asKnown().getOrNull()?.validity() ?: 0) +
+        (if (id.asKnown().isPresent) 1 else 0) +
+            object_.let { if (it == JsonValue.from("realtime.session")) 1 else 0 } +
             type.let { if (it == JsonValue.from("realtime")) 1 else 0 } +
             (audio.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (expiresAt.asKnown().isPresent) 1 else 0) +
             (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (instructions.asKnown().isPresent) 1 else 0) +
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (outputModalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (tracing.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1056,14 +1161,6 @@ private constructor(
                 noiseReduction.getOptional("noise_reduction")
 
             /**
-             * Configuration for input audio transcription, defaults to off and can be set to `null`
-             * to turn off once on. Input audio transcription is not native to the model, since the
-             * model consumes audio directly. Transcription runs asynchronously through
-             * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
-             * and should be treated as guidance of input audio content rather than precisely what
-             * the model heard. The client can optionally set the language and prompt for
-             * transcription, these offer additional guidance to the transcription service.
-             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -1083,6 +1180,9 @@ private constructor(
              * trails off with "uhhm", the model will score a low probability of turn end and wait
              * longer for the user to continue speaking. This can be useful for more natural
              * conversations, but may have a higher latency.
+             *
+             * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to
+             * `null`; VAD is not supported.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1214,16 +1314,6 @@ private constructor(
                     this.noiseReduction = noiseReduction
                 }
 
-                /**
-                 * Configuration for input audio transcription, defaults to off and can be set to
-                 * `null` to turn off once on. Input audio transcription is not native to the model,
-                 * since the model consumes audio directly. Transcription runs asynchronously
-                 * through
-                 * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
-                 * and should be treated as guidance of input audio content rather than precisely
-                 * what the model heard. The client can optionally set the language and prompt for
-                 * transcription, these offer additional guidance to the transcription service.
-                 */
                 fun transcription(transcription: AudioTranscription) =
                     transcription(JsonField.of(transcription))
 
@@ -1252,6 +1342,9 @@ private constructor(
                  * trails off with "uhhm", the model will score a low probability of turn end and
                  * wait longer for the user to continue speaking. This can be useful for more
                  * natural conversations, but may have a higher latency.
+                 *
+                 * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to
+                 * `null`; VAD is not supported.
                  */
                 fun turnDetection(turnDetection: TurnDetection?) =
                     turnDetection(JsonField.ofNullable(turnDetection))
@@ -1555,6 +1648,9 @@ private constructor(
              * trails off with "uhhm", the model will score a low probability of turn end and wait
              * longer for the user to continue speaking. This can be useful for more natural
              * conversations, but may have a higher latency.
+             *
+             * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to
+             * `null`; VAD is not supported.
              */
             @JsonDeserialize(using = TurnDetection.Deserializer::class)
             @JsonSerialize(using = TurnDetection.Serializer::class)
@@ -3724,6 +3820,8 @@ private constructor(
 
             @JvmField val GPT_REALTIME_1_5 = of("gpt-realtime-1.5")
 
+            @JvmField val GPT_REALTIME_2 = of("gpt-realtime-2")
+
             @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
 
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
@@ -3764,6 +3862,7 @@ private constructor(
         enum class Known {
             GPT_REALTIME,
             GPT_REALTIME_1_5,
+            GPT_REALTIME_2,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -3792,6 +3891,7 @@ private constructor(
         enum class Value {
             GPT_REALTIME,
             GPT_REALTIME_1_5,
+            GPT_REALTIME_2,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -3821,6 +3921,7 @@ private constructor(
             when (this) {
                 GPT_REALTIME -> Value.GPT_REALTIME
                 GPT_REALTIME_1_5 -> Value.GPT_REALTIME_1_5
+                GPT_REALTIME_2 -> Value.GPT_REALTIME_2
                 GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -3852,6 +3953,7 @@ private constructor(
             when (this) {
                 GPT_REALTIME -> Known.GPT_REALTIME
                 GPT_REALTIME_1_5 -> Known.GPT_REALTIME_1_5
+                GPT_REALTIME_2 -> Known.GPT_REALTIME_2
                 GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -7672,15 +7774,18 @@ private constructor(
         }
 
         return other is RealtimeSessionCreateResponse &&
-            clientSecret == other.clientSecret &&
+            id == other.id &&
+            object_ == other.object_ &&
             type == other.type &&
             audio == other.audio &&
+            expiresAt == other.expiresAt &&
             include == other.include &&
             instructions == other.instructions &&
             maxOutputTokens == other.maxOutputTokens &&
             model == other.model &&
             outputModalities == other.outputModalities &&
             prompt == other.prompt &&
+            reasoning == other.reasoning &&
             toolChoice == other.toolChoice &&
             tools == other.tools &&
             tracing == other.tracing &&
@@ -7690,15 +7795,18 @@ private constructor(
 
     private val hashCode: Int by lazy {
         Objects.hash(
-            clientSecret,
+            id,
+            object_,
             type,
             audio,
+            expiresAt,
             include,
             instructions,
             maxOutputTokens,
             model,
             outputModalities,
             prompt,
+            reasoning,
             toolChoice,
             tools,
             tracing,
@@ -7710,5 +7818,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeSessionCreateResponse{clientSecret=$clientSecret, type=$type, audio=$audio, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
+        "RealtimeSessionCreateResponse{id=$id, object_=$object_, type=$type, audio=$audio, expiresAt=$expiresAt, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, reasoning=$reasoning, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
 }
