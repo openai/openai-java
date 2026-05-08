@@ -229,6 +229,8 @@ private constructor(
          * generation.
          */
         @JvmStatic fun ofFile(file: File) = ChatCompletionContentPart(file = file)
+
+        @JvmStatic fun ofJson(json: JsonValue) = ChatCompletionContentPart(_json = json)
     }
 
     /**
