@@ -106,6 +106,14 @@ private constructor(
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
 
     /**
+     * The service tier to use for this request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
+
+    /**
      * Returns the raw JSON value of [model].
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -148,6 +156,13 @@ private constructor(
      * type.
      */
     fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
+
+    /**
+     * Returns the raw JSON value of [serviceTier].
+     *
+     * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _serviceTier(): JsonField<ServiceTier> = body._serviceTier()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -339,6 +354,23 @@ private constructor(
             body.promptCacheRetention(promptCacheRetention)
         }
 
+        /** The service tier to use for this request. */
+        fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
+
+        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
+
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+            body.serviceTier(serviceTier)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -491,6 +523,7 @@ private constructor(
         private val previousResponseId: JsonField<String>,
         private val promptCacheKey: JsonField<String>,
         private val promptCacheRetention: JsonField<PromptCacheRetention>,
+        private val serviceTier: JsonField<ServiceTier>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -510,6 +543,9 @@ private constructor(
             @JsonProperty("prompt_cache_retention")
             @ExcludeMissing
             promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
+            @JsonProperty("service_tier")
+            @ExcludeMissing
+            serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
         ) : this(
             model,
             input,
@@ -517,6 +553,7 @@ private constructor(
             previousResponseId,
             promptCacheKey,
             promptCacheRetention,
+            serviceTier,
             mutableMapOf(),
         )
 
@@ -580,6 +617,14 @@ private constructor(
             promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
+         * The service tier to use for this request.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
+
+        /**
          * Returns the raw JSON value of [model].
          *
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -633,6 +678,15 @@ private constructor(
         @ExcludeMissing
         fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
 
+        /**
+         * Returns the raw JSON value of [serviceTier].
+         *
+         * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("service_tier")
+        @ExcludeMissing
+        fun _serviceTier(): JsonField<ServiceTier> = serviceTier
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -667,6 +721,7 @@ private constructor(
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
             private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
+            private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -677,6 +732,7 @@ private constructor(
                 previousResponseId = body.previousResponseId
                 promptCacheKey = body.promptCacheKey
                 promptCacheRetention = body.promptCacheRetention
+                serviceTier = body.serviceTier
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -824,6 +880,25 @@ private constructor(
                     this.promptCacheRetention = promptCacheRetention
                 }
 
+            /** The service tier to use for this request. */
+            fun serviceTier(serviceTier: ServiceTier?) =
+                serviceTier(JsonField.ofNullable(serviceTier))
+
+            /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+            fun serviceTier(serviceTier: Optional<ServiceTier>) =
+                serviceTier(serviceTier.getOrNull())
+
+            /**
+             * Sets [Builder.serviceTier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+                this.serviceTier = serviceTier
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -863,6 +938,7 @@ private constructor(
                     previousResponseId,
                     promptCacheKey,
                     promptCacheRetention,
+                    serviceTier,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -889,6 +965,7 @@ private constructor(
             previousResponseId()
             promptCacheKey()
             promptCacheRetention().ifPresent { it.validate() }
+            serviceTier().ifPresent { it.validate() }
             validated = true
         }
 
@@ -913,7 +990,8 @@ private constructor(
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
-                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0)
+                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
+                (serviceTier.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -927,6 +1005,7 @@ private constructor(
                 previousResponseId == other.previousResponseId &&
                 promptCacheKey == other.promptCacheKey &&
                 promptCacheRetention == other.promptCacheRetention &&
+                serviceTier == other.serviceTier &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -938,6 +1017,7 @@ private constructor(
                 previousResponseId,
                 promptCacheKey,
                 promptCacheRetention,
+                serviceTier,
                 additionalProperties,
             )
         }
@@ -945,7 +1025,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, additionalProperties=$additionalProperties}"
+            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, serviceTier=$serviceTier, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1995,6 +2075,156 @@ private constructor(
             }
 
             return other is PromptCacheRetention && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** The service tier to use for this request. */
+    class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val AUTO = of("auto")
+
+            @JvmField val DEFAULT = of("default")
+
+            @JvmField val FLEX = of("flex")
+
+            @JvmField val PRIORITY = of("priority")
+
+            @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
+        }
+
+        /** An enum containing [ServiceTier]'s known values. */
+        enum class Known {
+            AUTO,
+            DEFAULT,
+            FLEX,
+            PRIORITY,
+        }
+
+        /**
+         * An enum containing [ServiceTier]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ServiceTier] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            AUTO,
+            DEFAULT,
+            FLEX,
+            PRIORITY,
+            /**
+             * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                AUTO -> Value.AUTO
+                DEFAULT -> Value.DEFAULT
+                FLEX -> Value.FLEX
+                PRIORITY -> Value.PRIORITY
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                AUTO -> Known.AUTO
+                DEFAULT -> Known.DEFAULT
+                FLEX -> Known.FLEX
+                PRIORITY -> Known.PRIORITY
+                else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ServiceTier = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ServiceTier && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
