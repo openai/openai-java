@@ -311,6 +311,7 @@ internal class ResponseServiceAsyncTest {
                     .previousResponseId("resp_123")
                     .promptCacheKey("prompt_cache_key")
                     .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+                    .serviceTier(ResponseCompactParams.ServiceTier.AUTO)
                     .build()
             )
 
