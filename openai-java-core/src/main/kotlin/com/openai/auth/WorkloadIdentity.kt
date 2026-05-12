@@ -6,7 +6,7 @@ import com.openai.core.checkRequired
 class WorkloadIdentity
 private constructor(
     /** A unique string that identifies the client. */
-    @get:JvmName("clientId") val clientId: String,
+    @get:JvmName("clientId") val clientId: String?,
     /** Identity provider resource id in WIFAPI. */
     @get:JvmName("identityProviderId") val identityProviderId: String,
     /** Service account id to bind the verified external identity to. */
@@ -58,7 +58,7 @@ private constructor(
 
         fun build(): WorkloadIdentity =
             WorkloadIdentity(
-                checkRequired("clientId", clientId),
+                clientId,
                 checkRequired("identityProviderId", identityProviderId),
                 checkRequired("serviceAccountId", serviceAccountId),
                 checkRequired("provider", provider),

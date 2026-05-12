@@ -7,6 +7,7 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.errors.BadRequestException
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -115,6 +116,122 @@ internal class WorkloadIdentityAuthTest {
 
         assertThat(token).isEqualTo(accessToken)
         verify(httpClient, times(1)).execute(any<HttpRequest>())
+    }
+
+    @Test
+    fun getToken_omitsClientIdFromTokenExchangeRequestWhenUnset() {
+        val subjectToken = "subject-token"
+        val accessToken = "test-access-token"
+        val oauthResponse =
+            """
+            {
+                "access_token": "$accessToken",
+                "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                "token_type": "Bearer",
+                "expires_in": 3600
+            }
+        """
+                .trimIndent()
+
+        val provider =
+            object : SubjectTokenProvider {
+                override fun tokenType() = SubjectTokenType.JWT
+
+                override fun getToken(httpClient: HttpClient, jsonMapper: JsonMapper): String =
+                    subjectToken
+
+                override fun getTokenAsync(
+                    httpClient: HttpClient,
+                    jsonMapper: JsonMapper,
+                ): CompletableFuture<String> = CompletableFuture.completedFuture(subjectToken)
+            }
+
+        val httpClient = mock<HttpClient>()
+        val response = mockResponse(200, oauthResponse)
+        var capturedRequest: HttpRequest? = null
+        whenever(httpClient.execute(any<HttpRequest>())).thenAnswer { invocation ->
+            capturedRequest = invocation.getArgument(0)
+            response
+        }
+
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+            )
+
+        val token = auth.getToken()
+
+        val requestJson = requestJson(checkNotNull(capturedRequest))
+        assertThat(token).isEqualTo(accessToken)
+        assertThat(requestJson.has("client_id")).isFalse()
+        assertThat(requestJson.get("grant_type").asText())
+            .isEqualTo("urn:ietf:params:oauth:grant-type:token-exchange")
+        assertThat(requestJson.get("subject_token").asText()).isEqualTo(subjectToken)
+        assertThat(requestJson.get("identity_provider_id").asText()).isEqualTo("provider-id")
+        assertThat(requestJson.get("service_account_id").asText()).isEqualTo("service-account-id")
+    }
+
+    @Test
+    fun getToken_includesClientIdInTokenExchangeRequestWhenSet() {
+        val subjectToken = "subject-token"
+        val accessToken = "test-access-token"
+        val oauthResponse =
+            """
+            {
+                "access_token": "$accessToken",
+                "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                "token_type": "Bearer",
+                "expires_in": 3600
+            }
+        """
+                .trimIndent()
+
+        val provider =
+            object : SubjectTokenProvider {
+                override fun tokenType() = SubjectTokenType.JWT
+
+                override fun getToken(httpClient: HttpClient, jsonMapper: JsonMapper): String =
+                    subjectToken
+
+                override fun getTokenAsync(
+                    httpClient: HttpClient,
+                    jsonMapper: JsonMapper,
+                ): CompletableFuture<String> = CompletableFuture.completedFuture(subjectToken)
+            }
+
+        val httpClient = mock<HttpClient>()
+        val response = mockResponse(200, oauthResponse)
+        var capturedRequest: HttpRequest? = null
+        whenever(httpClient.execute(any<HttpRequest>())).thenAnswer { invocation ->
+            capturedRequest = invocation.getArgument(0)
+            response
+        }
+
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .clientId("client-id")
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+            )
+
+        val token = auth.getToken()
+
+        val requestJson = requestJson(checkNotNull(capturedRequest))
+        assertThat(token).isEqualTo(accessToken)
+        assertThat(requestJson.get("client_id").asText()).isEqualTo("client-id")
     }
 
     @Test
@@ -414,5 +531,14 @@ internal class WorkloadIdentityAuthTest {
         if (stubHeaders) whenever(response.headers()).thenReturn(Headers.builder().build())
         whenever(response.body()).thenReturn(ByteArrayInputStream(body.toByteArray()))
         return response
+    }
+
+    private fun requestJson(request: HttpRequest) =
+        JsonMapper().readTree(ByteArrayInputStream(requestBodyBytes(request)))
+
+    private fun requestBodyBytes(request: HttpRequest): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        checkNotNull(request.body).writeTo(outputStream)
+        return outputStream.toByteArray()
     }
 }

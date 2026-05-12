@@ -199,7 +199,6 @@ internal class ClientOptionsTest {
 
         val workloadIdentity =
             WorkloadIdentity.builder()
-                .clientId("client-id")
                 .identityProviderId("provider-id")
                 .serviceAccountId("service-account-id")
                 .provider(provider)
@@ -231,7 +230,6 @@ internal class ClientOptionsTest {
 
         val workloadIdentity =
             WorkloadIdentity.builder()
-                .clientId("client-id")
                 .identityProviderId("provider-id")
                 .serviceAccountId("service-account-id")
                 .provider(provider)
@@ -265,7 +263,6 @@ internal class ClientOptionsTest {
 
         val workloadIdentity =
             WorkloadIdentity.builder()
-                .clientId("client-id")
                 .identityProviderId("provider-id")
                 .serviceAccountId("service-account-id")
                 .provider(provider)
@@ -305,7 +302,6 @@ internal class ClientOptionsTest {
 
         val workloadIdentity =
             WorkloadIdentity.builder()
-                .clientId("client-id")
                 .identityProviderId("provider-id")
                 .serviceAccountId("service-account-id")
                 .provider(provider)
