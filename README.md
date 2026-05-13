@@ -172,7 +172,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder().build();
 
 WorkloadIdentity workloadIdentity = WorkloadIdentity.builder()
-    .clientId("your-client-id")
     .identityProviderId("your-identity-provider-id")
     .serviceAccountId("your-service-account-id")
     .provider(provider)
