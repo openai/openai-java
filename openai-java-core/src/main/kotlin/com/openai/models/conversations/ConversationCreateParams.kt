@@ -346,6 +346,9 @@ private constructor(
          */
         fun addItem(customToolCall: ResponseCustomToolCall) = apply { body.addItem(customToolCall) }
 
+        /** Alias for calling [addItem] with `ResponseInputItem.ofCompactionTrigger()`. */
+        fun addItemCompactionTrigger() = apply { body.addItemCompactionTrigger() }
+
         /** Alias for calling [addItem] with `ResponseInputItem.ofItemReference(itemReference)`. */
         fun addItem(itemReference: ResponseInputItem.ItemReference) = apply {
             body.addItem(itemReference)
@@ -844,6 +847,9 @@ private constructor(
              */
             fun addItem(customToolCall: ResponseCustomToolCall) =
                 addItem(ResponseInputItem.ofCustomToolCall(customToolCall))
+
+            /** Alias for calling [addItem] with `ResponseInputItem.ofCompactionTrigger()`. */
+            fun addItemCompactionTrigger() = addItem(ResponseInputItem.ofCompactionTrigger())
 
             /**
              * Alias for calling [addItem] with `ResponseInputItem.ofItemReference(itemReference)`.

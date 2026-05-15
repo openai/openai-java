@@ -68,6 +68,7 @@ private constructor(
     private val mcpCall: McpCall? = null,
     private val customToolCallOutput: ResponseCustomToolCallOutput? = null,
     private val customToolCall: ResponseCustomToolCall? = null,
+    private val compactionTrigger: JsonValue? = null,
     private val itemReference: ItemReference? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -192,6 +193,9 @@ private constructor(
     /** A call to a custom tool created by the model. */
     fun customToolCall(): Optional<ResponseCustomToolCall> = Optional.ofNullable(customToolCall)
 
+    /** Compacts the current context. Must be the final input item. */
+    fun compactionTrigger(): Optional<JsonValue> = Optional.ofNullable(compactionTrigger)
+
     /** An internal identifier for an item to reference. */
     fun itemReference(): Optional<ItemReference> = Optional.ofNullable(itemReference)
 
@@ -248,6 +252,8 @@ private constructor(
     fun isCustomToolCallOutput(): Boolean = customToolCallOutput != null
 
     fun isCustomToolCall(): Boolean = customToolCall != null
+
+    fun isCompactionTrigger(): Boolean = compactionTrigger != null
 
     fun isItemReference(): Boolean = itemReference != null
 
@@ -374,6 +380,9 @@ private constructor(
     /** A call to a custom tool created by the model. */
     fun asCustomToolCall(): ResponseCustomToolCall = customToolCall.getOrThrow("customToolCall")
 
+    /** Compacts the current context. Must be the final input item. */
+    fun asCompactionTrigger(): JsonValue = compactionTrigger.getOrThrow("compactionTrigger")
+
     /** An internal identifier for an item to reference. */
     fun asItemReference(): ItemReference = itemReference.getOrThrow("itemReference")
 
@@ -438,6 +447,7 @@ private constructor(
             mcpCall != null -> visitor.visitMcpCall(mcpCall)
             customToolCallOutput != null -> visitor.visitCustomToolCallOutput(customToolCallOutput)
             customToolCall != null -> visitor.visitCustomToolCall(customToolCall)
+            compactionTrigger != null -> visitor.visitCompactionTrigger(compactionTrigger)
             itemReference != null -> visitor.visitItemReference(itemReference)
             else -> visitor.unknown(_json)
         }
@@ -575,6 +585,16 @@ private constructor(
                     customToolCall.validate()
                 }
 
+                override fun visitCompactionTrigger(compactionTrigger: JsonValue) {
+                    compactionTrigger.let {
+                        if (it != JsonValue.from(mapOf("type" to "compaction_trigger"))) {
+                            throw OpenAIInvalidDataException(
+                                "'compactionTrigger' is invalid, received $it"
+                            )
+                        }
+                    }
+                }
+
                 override fun visitItemReference(itemReference: ItemReference) {
                     itemReference.validate()
                 }
@@ -680,6 +700,11 @@ private constructor(
                 override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) =
                     customToolCall.validity()
 
+                override fun visitCompactionTrigger(compactionTrigger: JsonValue) =
+                    compactionTrigger.let {
+                        if (it == JsonValue.from(mapOf("type" to "compaction_trigger"))) 1 else 0
+                    }
+
                 override fun visitItemReference(itemReference: ItemReference) =
                     itemReference.validity()
 
@@ -720,6 +745,7 @@ private constructor(
             mcpCall == other.mcpCall &&
             customToolCallOutput == other.customToolCallOutput &&
             customToolCall == other.customToolCall &&
+            compactionTrigger == other.compactionTrigger &&
             itemReference == other.itemReference
     }
 
@@ -752,6 +778,7 @@ private constructor(
             mcpCall,
             customToolCallOutput,
             customToolCall,
+            compactionTrigger,
             itemReference,
         )
 
@@ -794,6 +821,7 @@ private constructor(
             customToolCallOutput != null ->
                 "ResponseInputItem{customToolCallOutput=$customToolCallOutput}"
             customToolCall != null -> "ResponseInputItem{customToolCall=$customToolCall}"
+            compactionTrigger != null -> "ResponseInputItem{compactionTrigger=$compactionTrigger}"
             itemReference != null -> "ResponseInputItem{itemReference=$itemReference}"
             _json != null -> "ResponseInputItem{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseInputItem")
@@ -962,6 +990,13 @@ private constructor(
         fun ofCustomToolCall(customToolCall: ResponseCustomToolCall) =
             ResponseInputItem(customToolCall = customToolCall)
 
+        /** Compacts the current context. Must be the final input item. */
+        @JvmStatic
+        fun ofCompactionTrigger() =
+            ResponseInputItem(
+                compactionTrigger = JsonValue.from(mapOf("type" to "compaction_trigger"))
+            )
+
         /** An internal identifier for an item to reference. */
         @JvmStatic
         fun ofItemReference(itemReference: ItemReference) =
@@ -1087,6 +1122,9 @@ private constructor(
 
         /** A call to a custom tool created by the model. */
         fun visitCustomToolCall(customToolCall: ResponseCustomToolCall): T
+
+        /** Compacts the current context. Must be the final input item. */
+        fun visitCompactionTrigger(compactionTrigger: JsonValue): T
 
         /** An internal identifier for an item to reference. */
         fun visitItemReference(itemReference: ItemReference): T
@@ -1260,6 +1298,11 @@ private constructor(
                         ResponseInputItem(customToolCall = it, _json = json)
                     } ?: ResponseInputItem(_json = json)
                 }
+                "compaction_trigger" -> {
+                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                        ?.let { ResponseInputItem(compactionTrigger = it, _json = json) }
+                        ?.takeIf { it.isValid() } ?: ResponseInputItem(_json = json)
+                }
                 "item_reference" -> {
                     return tryDeserialize(node, jacksonTypeRef<ItemReference>())?.let {
                         ResponseInputItem(itemReference = it, _json = json)
@@ -1313,6 +1356,7 @@ private constructor(
                 value.customToolCallOutput != null ->
                     generator.writeObject(value.customToolCallOutput)
                 value.customToolCall != null -> generator.writeObject(value.customToolCall)
+                value.compactionTrigger != null -> generator.writeObject(value.compactionTrigger)
                 value.itemReference != null -> generator.writeObject(value.itemReference)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseInputItem")
