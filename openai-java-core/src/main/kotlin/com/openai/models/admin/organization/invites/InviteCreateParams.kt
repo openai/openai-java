@@ -53,7 +53,8 @@ private constructor(
     /**
      * An array of projects to which membership is granted at the same time the org invite is
      * accepted. If omitted, the user will be invited to the default project for compatibility with
-     * legacy behavior.
+     * legacy behavior. If empty list is passed, the user will not be invited to any projects,
+     * including the default one.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -155,7 +156,8 @@ private constructor(
         /**
          * An array of projects to which membership is granted at the same time the org invite is
          * accepted. If omitted, the user will be invited to the default project for compatibility
-         * with legacy behavior.
+         * with legacy behavior. If empty list is passed, the user will not be invited to any
+         * projects, including the default one.
          */
         fun projects(projects: List<Project>) = apply { body.projects(projects) }
 
@@ -356,7 +358,8 @@ private constructor(
         /**
          * An array of projects to which membership is granted at the same time the org invite is
          * accepted. If omitted, the user will be invited to the default project for compatibility
-         * with legacy behavior.
+         * with legacy behavior. If empty list is passed, the user will not be invited to any
+         * projects, including the default one.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -455,7 +458,8 @@ private constructor(
             /**
              * An array of projects to which membership is granted at the same time the org invite
              * is accepted. If omitted, the user will be invited to the default project for
-             * compatibility with legacy behavior.
+             * compatibility with legacy behavior. If empty list is passed, the user will not be
+             * invited to any projects, including the default one.
              */
             fun projects(projects: List<Project>) = projects(JsonField.of(projects))
 

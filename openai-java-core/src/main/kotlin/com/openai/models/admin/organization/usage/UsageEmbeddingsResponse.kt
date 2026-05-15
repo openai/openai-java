@@ -562,6 +562,36 @@ private constructor(
                 )
 
             /**
+             * Alias for calling [addResult] with
+             * `Result.ofOrganizationUsageFileSearches(organizationUsageFileSearches)`.
+             */
+            fun addResult(
+                organizationUsageFileSearches: Result.OrganizationUsageFileSearchesResult
+            ) = addResult(Result.ofOrganizationUsageFileSearches(organizationUsageFileSearches))
+
+            /**
+             * Alias for calling [addResult] with the following:
+             * ```java
+             * Result.OrganizationUsageFileSearchesResult.builder()
+             *     .numRequests(numRequests)
+             *     .build()
+             * ```
+             */
+            fun addOrganizationUsageFileSearchesResult(numRequests: Long) =
+                addResult(
+                    Result.OrganizationUsageFileSearchesResult.builder()
+                        .numRequests(numRequests)
+                        .build()
+                )
+
+            /**
+             * Alias for calling [addResult] with
+             * `Result.ofOrganizationUsageWebSearches(organizationUsageWebSearches)`.
+             */
+            fun addResult(organizationUsageWebSearches: Result.OrganizationUsageWebSearchesResult) =
+                addResult(Result.ofOrganizationUsageWebSearches(organizationUsageWebSearches))
+
+            /**
              * Alias for calling [addResult] with `Result.ofOrganizationCosts(organizationCosts)`.
              */
             fun addResult(organizationCosts: Result.OrganizationCostsResult) =
@@ -687,6 +717,8 @@ private constructor(
             private val organizationUsageCodeInterpreterSessions:
                 OrganizationUsageCodeInterpreterSessionsResult? =
                 null,
+            private val organizationUsageFileSearches: OrganizationUsageFileSearchesResult? = null,
+            private val organizationUsageWebSearches: OrganizationUsageWebSearchesResult? = null,
             private val organizationCosts: OrganizationCostsResult? = null,
             private val _json: JsonValue? = null,
         ) {
@@ -727,6 +759,14 @@ private constructor(
                 Optional<OrganizationUsageCodeInterpreterSessionsResult> =
                 Optional.ofNullable(organizationUsageCodeInterpreterSessions)
 
+            /** The aggregated file search calls usage details of the specific time bucket. */
+            fun organizationUsageFileSearches(): Optional<OrganizationUsageFileSearchesResult> =
+                Optional.ofNullable(organizationUsageFileSearches)
+
+            /** The aggregated web search calls usage details of the specific time bucket. */
+            fun organizationUsageWebSearches(): Optional<OrganizationUsageWebSearchesResult> =
+                Optional.ofNullable(organizationUsageWebSearches)
+
             /** The aggregated costs details of the specific time bucket. */
             fun organizationCosts(): Optional<OrganizationCostsResult> =
                 Optional.ofNullable(organizationCosts)
@@ -748,6 +788,10 @@ private constructor(
 
             fun isOrganizationUsageCodeInterpreterSessions(): Boolean =
                 organizationUsageCodeInterpreterSessions != null
+
+            fun isOrganizationUsageFileSearches(): Boolean = organizationUsageFileSearches != null
+
+            fun isOrganizationUsageWebSearches(): Boolean = organizationUsageWebSearches != null
 
             fun isOrganizationCosts(): Boolean = organizationCosts != null
 
@@ -790,6 +834,14 @@ private constructor(
                 organizationUsageCodeInterpreterSessions.getOrThrow(
                     "organizationUsageCodeInterpreterSessions"
                 )
+
+            /** The aggregated file search calls usage details of the specific time bucket. */
+            fun asOrganizationUsageFileSearches(): OrganizationUsageFileSearchesResult =
+                organizationUsageFileSearches.getOrThrow("organizationUsageFileSearches")
+
+            /** The aggregated web search calls usage details of the specific time bucket. */
+            fun asOrganizationUsageWebSearches(): OrganizationUsageWebSearchesResult =
+                organizationUsageWebSearches.getOrThrow("organizationUsageWebSearches")
 
             /** The aggregated costs details of the specific time bucket. */
             fun asOrganizationCosts(): OrganizationCostsResult =
@@ -849,6 +901,10 @@ private constructor(
                         visitor.visitOrganizationUsageCodeInterpreterSessions(
                             organizationUsageCodeInterpreterSessions
                         )
+                    organizationUsageFileSearches != null ->
+                        visitor.visitOrganizationUsageFileSearches(organizationUsageFileSearches)
+                    organizationUsageWebSearches != null ->
+                        visitor.visitOrganizationUsageWebSearches(organizationUsageWebSearches)
                     organizationCosts != null -> visitor.visitOrganizationCosts(organizationCosts)
                     else -> visitor.unknown(_json)
                 }
@@ -922,6 +978,18 @@ private constructor(
                             organizationUsageCodeInterpreterSessions.validate()
                         }
 
+                        override fun visitOrganizationUsageFileSearches(
+                            organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                        ) {
+                            organizationUsageFileSearches.validate()
+                        }
+
+                        override fun visitOrganizationUsageWebSearches(
+                            organizationUsageWebSearches: OrganizationUsageWebSearchesResult
+                        ) {
+                            organizationUsageWebSearches.validate()
+                        }
+
                         override fun visitOrganizationCosts(
                             organizationCosts: OrganizationCostsResult
                         ) {
@@ -984,6 +1052,14 @@ private constructor(
                                 OrganizationUsageCodeInterpreterSessionsResult
                         ) = organizationUsageCodeInterpreterSessions.validity()
 
+                        override fun visitOrganizationUsageFileSearches(
+                            organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                        ) = organizationUsageFileSearches.validity()
+
+                        override fun visitOrganizationUsageWebSearches(
+                            organizationUsageWebSearches: OrganizationUsageWebSearchesResult
+                        ) = organizationUsageWebSearches.validity()
+
                         override fun visitOrganizationCosts(
                             organizationCosts: OrganizationCostsResult
                         ) = organizationCosts.validity()
@@ -1008,6 +1084,8 @@ private constructor(
                     organizationUsageVectorStores == other.organizationUsageVectorStores &&
                     organizationUsageCodeInterpreterSessions ==
                         other.organizationUsageCodeInterpreterSessions &&
+                    organizationUsageFileSearches == other.organizationUsageFileSearches &&
+                    organizationUsageWebSearches == other.organizationUsageWebSearches &&
                     organizationCosts == other.organizationCosts
             }
 
@@ -1021,6 +1099,8 @@ private constructor(
                     organizationUsageAudioTranscriptions,
                     organizationUsageVectorStores,
                     organizationUsageCodeInterpreterSessions,
+                    organizationUsageFileSearches,
+                    organizationUsageWebSearches,
                     organizationCosts,
                 )
 
@@ -1042,6 +1122,10 @@ private constructor(
                         "Result{organizationUsageVectorStores=$organizationUsageVectorStores}"
                     organizationUsageCodeInterpreterSessions != null ->
                         "Result{organizationUsageCodeInterpreterSessions=$organizationUsageCodeInterpreterSessions}"
+                    organizationUsageFileSearches != null ->
+                        "Result{organizationUsageFileSearches=$organizationUsageFileSearches}"
+                    organizationUsageWebSearches != null ->
+                        "Result{organizationUsageWebSearches=$organizationUsageWebSearches}"
                     organizationCosts != null -> "Result{organizationCosts=$organizationCosts}"
                     _json != null -> "Result{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid Result")
@@ -1110,6 +1194,18 @@ private constructor(
                             organizationUsageCodeInterpreterSessions
                     )
 
+                /** The aggregated file search calls usage details of the specific time bucket. */
+                @JvmStatic
+                fun ofOrganizationUsageFileSearches(
+                    organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                ) = Result(organizationUsageFileSearches = organizationUsageFileSearches)
+
+                /** The aggregated web search calls usage details of the specific time bucket. */
+                @JvmStatic
+                fun ofOrganizationUsageWebSearches(
+                    organizationUsageWebSearches: OrganizationUsageWebSearchesResult
+                ) = Result(organizationUsageWebSearches = organizationUsageWebSearches)
+
                 /** The aggregated costs details of the specific time bucket. */
                 @JvmStatic
                 fun ofOrganizationCosts(organizationCosts: OrganizationCostsResult) =
@@ -1165,6 +1261,16 @@ private constructor(
                 fun visitOrganizationUsageCodeInterpreterSessions(
                     organizationUsageCodeInterpreterSessions:
                         OrganizationUsageCodeInterpreterSessionsResult
+                ): T
+
+                /** The aggregated file search calls usage details of the specific time bucket. */
+                fun visitOrganizationUsageFileSearches(
+                    organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                ): T
+
+                /** The aggregated web search calls usage details of the specific time bucket. */
+                fun visitOrganizationUsageWebSearches(
+                    organizationUsageWebSearches: OrganizationUsageWebSearchesResult
                 ): T
 
                 /** The aggregated costs details of the specific time bucket. */
@@ -1262,6 +1368,22 @@ private constructor(
                                     )
                                 } ?: Result(_json = json)
                         }
+                        "organization.usage.file_searches.result" -> {
+                            return tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<OrganizationUsageFileSearchesResult>(),
+                                )
+                                ?.let { Result(organizationUsageFileSearches = it, _json = json) }
+                                ?: Result(_json = json)
+                        }
+                        "organization.usage.web_searches.result" -> {
+                            return tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<OrganizationUsageWebSearchesResult>(),
+                                )
+                                ?.let { Result(organizationUsageWebSearches = it, _json = json) }
+                                ?: Result(_json = json)
+                        }
                         "organization.costs.result" -> {
                             return tryDeserialize(node, jacksonTypeRef<OrganizationCostsResult>())
                                 ?.let { Result(organizationCosts = it, _json = json) }
@@ -1297,6 +1419,10 @@ private constructor(
                             generator.writeObject(value.organizationUsageVectorStores)
                         value.organizationUsageCodeInterpreterSessions != null ->
                             generator.writeObject(value.organizationUsageCodeInterpreterSessions)
+                        value.organizationUsageFileSearches != null ->
+                            generator.writeObject(value.organizationUsageFileSearches)
+                        value.organizationUsageWebSearches != null ->
+                            generator.writeObject(value.organizationUsageWebSearches)
                         value.organizationCosts != null ->
                             generator.writeObject(value.organizationCosts)
                         value._json != null -> generator.writeObject(value._json)
@@ -5160,6 +5286,981 @@ private constructor(
 
                 override fun toString() =
                     "OrganizationUsageCodeInterpreterSessionsResult{numSessions=$numSessions, object_=$object_, projectId=$projectId, additionalProperties=$additionalProperties}"
+            }
+
+            /** The aggregated file search calls usage details of the specific time bucket. */
+            class OrganizationUsageFileSearchesResult
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val numRequests: JsonField<Long>,
+                private val object_: JsonValue,
+                private val apiKeyId: JsonField<String>,
+                private val projectId: JsonField<String>,
+                private val userId: JsonField<String>,
+                private val vectorStoreId: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("num_requests")
+                    @ExcludeMissing
+                    numRequests: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+                    @JsonProperty("api_key_id")
+                    @ExcludeMissing
+                    apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("project_id")
+                    @ExcludeMissing
+                    projectId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("vector_store_id")
+                    @ExcludeMissing
+                    vectorStoreId: JsonField<String> = JsonMissing.of(),
+                ) : this(
+                    numRequests,
+                    object_,
+                    apiKeyId,
+                    projectId,
+                    userId,
+                    vectorStoreId,
+                    mutableMapOf(),
+                )
+
+                /**
+                 * The count of file search calls.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numRequests(): Long = numRequests.getRequired("num_requests")
+
+                /**
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("organization.usage.file_searches.result")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+
+                /**
+                 * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When `group_by=project_id`, this field provides the project ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun userId(): Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * When `group_by=vector_store_id`, this field provides the vector store ID of the
+                 * grouped usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun vectorStoreId(): Optional<String> = vectorStoreId.getOptional("vector_store_id")
+
+                /**
+                 * Returns the raw JSON value of [numRequests].
+                 *
+                 * Unlike [numRequests], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("num_requests")
+                @ExcludeMissing
+                fun _numRequests(): JsonField<Long> = numRequests
+
+                /**
+                 * Returns the raw JSON value of [apiKeyId].
+                 *
+                 * Unlike [apiKeyId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_key_id")
+                @ExcludeMissing
+                fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [projectId].
+                 *
+                 * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("project_id")
+                @ExcludeMissing
+                fun _projectId(): JsonField<String> = projectId
+
+                /**
+                 * Returns the raw JSON value of [userId].
+                 *
+                 * Unlike [userId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+                /**
+                 * Returns the raw JSON value of [vectorStoreId].
+                 *
+                 * Unlike [vectorStoreId], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("vector_store_id")
+                @ExcludeMissing
+                fun _vectorStoreId(): JsonField<String> = vectorStoreId
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [OrganizationUsageFileSearchesResult].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numRequests()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [OrganizationUsageFileSearchesResult]. */
+                class Builder internal constructor() {
+
+                    private var numRequests: JsonField<Long>? = null
+                    private var object_: JsonValue =
+                        JsonValue.from("organization.usage.file_searches.result")
+                    private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var projectId: JsonField<String> = JsonMissing.of()
+                    private var userId: JsonField<String> = JsonMissing.of()
+                    private var vectorStoreId: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(
+                        organizationUsageFileSearchesResult: OrganizationUsageFileSearchesResult
+                    ) = apply {
+                        numRequests = organizationUsageFileSearchesResult.numRequests
+                        object_ = organizationUsageFileSearchesResult.object_
+                        apiKeyId = organizationUsageFileSearchesResult.apiKeyId
+                        projectId = organizationUsageFileSearchesResult.projectId
+                        userId = organizationUsageFileSearchesResult.userId
+                        vectorStoreId = organizationUsageFileSearchesResult.vectorStoreId
+                        additionalProperties =
+                            organizationUsageFileSearchesResult.additionalProperties.toMutableMap()
+                    }
+
+                    /** The count of file search calls. */
+                    fun numRequests(numRequests: Long) = numRequests(JsonField.of(numRequests))
+
+                    /**
+                     * Sets [Builder.numRequests] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numRequests] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun numRequests(numRequests: JsonField<Long>) = apply {
+                        this.numRequests = numRequests
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("organization.usage.file_searches.result")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun object_(object_: JsonValue) = apply { this.object_ = object_ }
+
+                    /**
+                     * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                     * usage result.
+                     */
+                    fun apiKeyId(apiKeyId: String?) = apiKeyId(JsonField.ofNullable(apiKeyId))
+
+                    /** Alias for calling [Builder.apiKeyId] with `apiKeyId.orElse(null)`. */
+                    fun apiKeyId(apiKeyId: Optional<String>) = apiKeyId(apiKeyId.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiKeyId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiKeyId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When `group_by=project_id`, this field provides the project ID of the grouped
+                     * usage result.
+                     */
+                    fun projectId(projectId: String?) = projectId(JsonField.ofNullable(projectId))
+
+                    /** Alias for calling [Builder.projectId] with `projectId.orElse(null)`. */
+                    fun projectId(projectId: Optional<String>) = projectId(projectId.getOrNull())
+
+                    /**
+                     * Sets [Builder.projectId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.projectId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun projectId(projectId: JsonField<String>) = apply {
+                        this.projectId = projectId
+                    }
+
+                    /**
+                     * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                     * result.
+                     */
+                    fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+                    /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+                    fun userId(userId: Optional<String>) = userId(userId.getOrNull())
+
+                    /**
+                     * Sets [Builder.userId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.userId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
+                    /**
+                     * When `group_by=vector_store_id`, this field provides the vector store ID of
+                     * the grouped usage result.
+                     */
+                    fun vectorStoreId(vectorStoreId: String?) =
+                        vectorStoreId(JsonField.ofNullable(vectorStoreId))
+
+                    /**
+                     * Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`.
+                     */
+                    fun vectorStoreId(vectorStoreId: Optional<String>) =
+                        vectorStoreId(vectorStoreId.getOrNull())
+
+                    /**
+                     * Sets [Builder.vectorStoreId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.vectorStoreId] with a well-typed [String]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
+                        this.vectorStoreId = vectorStoreId
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [OrganizationUsageFileSearchesResult].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numRequests()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): OrganizationUsageFileSearchesResult =
+                        OrganizationUsageFileSearchesResult(
+                            checkRequired("numRequests", numRequests),
+                            object_,
+                            apiKeyId,
+                            projectId,
+                            userId,
+                            vectorStoreId,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): OrganizationUsageFileSearchesResult = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    numRequests()
+                    _object_().let {
+                        if (it != JsonValue.from("organization.usage.file_searches.result")) {
+                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+                        }
+                    }
+                    apiKeyId()
+                    projectId()
+                    userId()
+                    vectorStoreId()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (numRequests.asKnown().isPresent) 1 else 0) +
+                        object_.let {
+                            if (it == JsonValue.from("organization.usage.file_searches.result")) 1
+                            else 0
+                        } +
+                        (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (if (projectId.asKnown().isPresent) 1 else 0) +
+                        (if (userId.asKnown().isPresent) 1 else 0) +
+                        (if (vectorStoreId.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is OrganizationUsageFileSearchesResult &&
+                        numRequests == other.numRequests &&
+                        object_ == other.object_ &&
+                        apiKeyId == other.apiKeyId &&
+                        projectId == other.projectId &&
+                        userId == other.userId &&
+                        vectorStoreId == other.vectorStoreId &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(
+                        numRequests,
+                        object_,
+                        apiKeyId,
+                        projectId,
+                        userId,
+                        vectorStoreId,
+                        additionalProperties,
+                    )
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "OrganizationUsageFileSearchesResult{numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, projectId=$projectId, userId=$userId, vectorStoreId=$vectorStoreId, additionalProperties=$additionalProperties}"
+            }
+
+            /** The aggregated web search calls usage details of the specific time bucket. */
+            class OrganizationUsageWebSearchesResult
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val numModelRequests: JsonField<Long>,
+                private val numRequests: JsonField<Long>,
+                private val object_: JsonValue,
+                private val apiKeyId: JsonField<String>,
+                private val contextLevel: JsonField<String>,
+                private val model: JsonField<String>,
+                private val projectId: JsonField<String>,
+                private val userId: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("num_model_requests")
+                    @ExcludeMissing
+                    numModelRequests: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("num_requests")
+                    @ExcludeMissing
+                    numRequests: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+                    @JsonProperty("api_key_id")
+                    @ExcludeMissing
+                    apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("context_level")
+                    @ExcludeMissing
+                    contextLevel: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("model")
+                    @ExcludeMissing
+                    model: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("project_id")
+                    @ExcludeMissing
+                    projectId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of(),
+                ) : this(
+                    numModelRequests,
+                    numRequests,
+                    object_,
+                    apiKeyId,
+                    contextLevel,
+                    model,
+                    projectId,
+                    userId,
+                    mutableMapOf(),
+                )
+
+                /**
+                 * The count of model requests.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The count of web search calls.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numRequests(): Long = numRequests.getRequired("num_requests")
+
+                /**
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("organization.usage.web_searches.result")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+
+                /**
+                 * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When `group_by=context_level`, this field provides the search context size of the
+                 * grouped usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun contextLevel(): Optional<String> = contextLevel.getOptional("context_level")
+
+                /**
+                 * When `group_by=model`, this field provides the model name of the grouped usage
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun model(): Optional<String> = model.getOptional("model")
+
+                /**
+                 * When `group_by=project_id`, this field provides the project ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun userId(): Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the raw JSON value of [numModelRequests].
+                 *
+                 * Unlike [numModelRequests], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("num_model_requests")
+                @ExcludeMissing
+                fun _numModelRequests(): JsonField<Long> = numModelRequests
+
+                /**
+                 * Returns the raw JSON value of [numRequests].
+                 *
+                 * Unlike [numRequests], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("num_requests")
+                @ExcludeMissing
+                fun _numRequests(): JsonField<Long> = numRequests
+
+                /**
+                 * Returns the raw JSON value of [apiKeyId].
+                 *
+                 * Unlike [apiKeyId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_key_id")
+                @ExcludeMissing
+                fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [contextLevel].
+                 *
+                 * Unlike [contextLevel], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("context_level")
+                @ExcludeMissing
+                fun _contextLevel(): JsonField<String> = contextLevel
+
+                /**
+                 * Returns the raw JSON value of [model].
+                 *
+                 * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                /**
+                 * Returns the raw JSON value of [projectId].
+                 *
+                 * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("project_id")
+                @ExcludeMissing
+                fun _projectId(): JsonField<String> = projectId
+
+                /**
+                 * Returns the raw JSON value of [userId].
+                 *
+                 * Unlike [userId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [OrganizationUsageWebSearchesResult].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numModelRequests()
+                     * .numRequests()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [OrganizationUsageWebSearchesResult]. */
+                class Builder internal constructor() {
+
+                    private var numModelRequests: JsonField<Long>? = null
+                    private var numRequests: JsonField<Long>? = null
+                    private var object_: JsonValue =
+                        JsonValue.from("organization.usage.web_searches.result")
+                    private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var contextLevel: JsonField<String> = JsonMissing.of()
+                    private var model: JsonField<String> = JsonMissing.of()
+                    private var projectId: JsonField<String> = JsonMissing.of()
+                    private var userId: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(
+                        organizationUsageWebSearchesResult: OrganizationUsageWebSearchesResult
+                    ) = apply {
+                        numModelRequests = organizationUsageWebSearchesResult.numModelRequests
+                        numRequests = organizationUsageWebSearchesResult.numRequests
+                        object_ = organizationUsageWebSearchesResult.object_
+                        apiKeyId = organizationUsageWebSearchesResult.apiKeyId
+                        contextLevel = organizationUsageWebSearchesResult.contextLevel
+                        model = organizationUsageWebSearchesResult.model
+                        projectId = organizationUsageWebSearchesResult.projectId
+                        userId = organizationUsageWebSearchesResult.userId
+                        additionalProperties =
+                            organizationUsageWebSearchesResult.additionalProperties.toMutableMap()
+                    }
+
+                    /** The count of model requests. */
+                    fun numModelRequests(numModelRequests: Long) =
+                        numModelRequests(JsonField.of(numModelRequests))
+
+                    /**
+                     * Sets [Builder.numModelRequests] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numModelRequests] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun numModelRequests(numModelRequests: JsonField<Long>) = apply {
+                        this.numModelRequests = numModelRequests
+                    }
+
+                    /** The count of web search calls. */
+                    fun numRequests(numRequests: Long) = numRequests(JsonField.of(numRequests))
+
+                    /**
+                     * Sets [Builder.numRequests] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numRequests] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun numRequests(numRequests: JsonField<Long>) = apply {
+                        this.numRequests = numRequests
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("organization.usage.web_searches.result")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun object_(object_: JsonValue) = apply { this.object_ = object_ }
+
+                    /**
+                     * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                     * usage result.
+                     */
+                    fun apiKeyId(apiKeyId: String?) = apiKeyId(JsonField.ofNullable(apiKeyId))
+
+                    /** Alias for calling [Builder.apiKeyId] with `apiKeyId.orElse(null)`. */
+                    fun apiKeyId(apiKeyId: Optional<String>) = apiKeyId(apiKeyId.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiKeyId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiKeyId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When `group_by=context_level`, this field provides the search context size of
+                     * the grouped usage result.
+                     */
+                    fun contextLevel(contextLevel: String?) =
+                        contextLevel(JsonField.ofNullable(contextLevel))
+
+                    /**
+                     * Alias for calling [Builder.contextLevel] with `contextLevel.orElse(null)`.
+                     */
+                    fun contextLevel(contextLevel: Optional<String>) =
+                        contextLevel(contextLevel.getOrNull())
+
+                    /**
+                     * Sets [Builder.contextLevel] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.contextLevel] with a well-typed [String]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun contextLevel(contextLevel: JsonField<String>) = apply {
+                        this.contextLevel = contextLevel
+                    }
+
+                    /**
+                     * When `group_by=model`, this field provides the model name of the grouped
+                     * usage result.
+                     */
+                    fun model(model: String?) = model(JsonField.ofNullable(model))
+
+                    /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+                    fun model(model: Optional<String>) = model(model.getOrNull())
+
+                    /**
+                     * Sets [Builder.model] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.model] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun model(model: JsonField<String>) = apply { this.model = model }
+
+                    /**
+                     * When `group_by=project_id`, this field provides the project ID of the grouped
+                     * usage result.
+                     */
+                    fun projectId(projectId: String?) = projectId(JsonField.ofNullable(projectId))
+
+                    /** Alias for calling [Builder.projectId] with `projectId.orElse(null)`. */
+                    fun projectId(projectId: Optional<String>) = projectId(projectId.getOrNull())
+
+                    /**
+                     * Sets [Builder.projectId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.projectId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun projectId(projectId: JsonField<String>) = apply {
+                        this.projectId = projectId
+                    }
+
+                    /**
+                     * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                     * result.
+                     */
+                    fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+                    /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+                    fun userId(userId: Optional<String>) = userId(userId.getOrNull())
+
+                    /**
+                     * Sets [Builder.userId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.userId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [OrganizationUsageWebSearchesResult].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numModelRequests()
+                     * .numRequests()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): OrganizationUsageWebSearchesResult =
+                        OrganizationUsageWebSearchesResult(
+                            checkRequired("numModelRequests", numModelRequests),
+                            checkRequired("numRequests", numRequests),
+                            object_,
+                            apiKeyId,
+                            contextLevel,
+                            model,
+                            projectId,
+                            userId,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): OrganizationUsageWebSearchesResult = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    numModelRequests()
+                    numRequests()
+                    _object_().let {
+                        if (it != JsonValue.from("organization.usage.web_searches.result")) {
+                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+                        }
+                    }
+                    apiKeyId()
+                    contextLevel()
+                    model()
+                    projectId()
+                    userId()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (numModelRequests.asKnown().isPresent) 1 else 0) +
+                        (if (numRequests.asKnown().isPresent) 1 else 0) +
+                        object_.let {
+                            if (it == JsonValue.from("organization.usage.web_searches.result")) 1
+                            else 0
+                        } +
+                        (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (if (contextLevel.asKnown().isPresent) 1 else 0) +
+                        (if (model.asKnown().isPresent) 1 else 0) +
+                        (if (projectId.asKnown().isPresent) 1 else 0) +
+                        (if (userId.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is OrganizationUsageWebSearchesResult &&
+                        numModelRequests == other.numModelRequests &&
+                        numRequests == other.numRequests &&
+                        object_ == other.object_ &&
+                        apiKeyId == other.apiKeyId &&
+                        contextLevel == other.contextLevel &&
+                        model == other.model &&
+                        projectId == other.projectId &&
+                        userId == other.userId &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(
+                        numModelRequests,
+                        numRequests,
+                        object_,
+                        apiKeyId,
+                        contextLevel,
+                        model,
+                        projectId,
+                        userId,
+                        additionalProperties,
+                    )
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "OrganizationUsageWebSearchesResult{numModelRequests=$numModelRequests, numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, contextLevel=$contextLevel, model=$model, projectId=$projectId, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated costs details of the specific time bucket. */
