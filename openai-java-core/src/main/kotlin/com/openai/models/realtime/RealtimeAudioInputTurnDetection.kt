@@ -39,6 +39,9 @@ import kotlin.jvm.optionals.getOrNull
  * based on this probability. For example, if user audio trails off with "uhhm", the model will
  * score a low probability of turn end and wait longer for the user to continue speaking. This can
  * be useful for more natural conversations, but may have a higher latency.
+ *
+ * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to `null`; VAD is
+ * not supported.
  */
 @JsonDeserialize(using = RealtimeAudioInputTurnDetection.Deserializer::class)
 @JsonSerialize(using = RealtimeAudioInputTurnDetection.Serializer::class)

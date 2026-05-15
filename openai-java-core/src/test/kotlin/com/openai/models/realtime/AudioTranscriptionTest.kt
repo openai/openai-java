@@ -13,11 +13,13 @@ internal class AudioTranscriptionTest {
     fun create() {
         val audioTranscription =
             AudioTranscription.builder()
+                .delay(AudioTranscription.Delay.MINIMAL)
                 .language("language")
                 .model(AudioTranscription.Model.WHISPER_1)
                 .prompt("prompt")
                 .build()
 
+        assertThat(audioTranscription.delay()).contains(AudioTranscription.Delay.MINIMAL)
         assertThat(audioTranscription.language()).contains("language")
         assertThat(audioTranscription.model()).contains(AudioTranscription.Model.WHISPER_1)
         assertThat(audioTranscription.prompt()).contains("prompt")
@@ -28,6 +30,7 @@ internal class AudioTranscriptionTest {
         val jsonMapper = jsonMapper()
         val audioTranscription =
             AudioTranscription.builder()
+                .delay(AudioTranscription.Delay.MINIMAL)
                 .language("language")
                 .model(AudioTranscription.Model.WHISPER_1)
                 .prompt("prompt")

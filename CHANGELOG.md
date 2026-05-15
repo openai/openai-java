@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.36.0 (2026-05-13)
+
+Full Changelog: [v4.35.0...v4.36.0](https://github.com/openai/openai-java/compare/v4.35.0...v4.36.0)
+
+### Features
+
+* **api:** add service_tier parameter to response compact method ([c72b807](https://github.com/openai/openai-java/commit/c72b807908abb11b86f782bf93bcd26e18d6ab06))
+* **api:** realtime 2 ([8057452](https://github.com/openai/openai-java/commit/80574522eec0c84dad8e4e0a2a1e582f9d962850))
+
 ## 4.35.0 (2026-05-07)
 
 Full Changelog: [v4.34.0...v4.35.0](https://github.com/openai/openai-java/compare/v4.34.0...v4.35.0)
