@@ -10,9 +10,11 @@ import com.openai.models.admin.organization.usage.UsageCodeInterpreterSessionsPa
 import com.openai.models.admin.organization.usage.UsageCompletionsParams
 import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
 import com.openai.models.admin.organization.usage.UsageImagesParams
 import com.openai.models.admin.organization.usage.UsageModerationsParams
 import com.openai.models.admin.organization.usage.UsageVectorStoresParams
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -190,6 +192,35 @@ internal class UsageServiceTest {
     }
 
     @Test
+    fun fileSearchCalls() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val usageService = client.admin().organization().usage()
+
+        val response =
+            usageService.fileSearchCalls(
+                UsageFileSearchCallsParams.builder()
+                    .startTime(0L)
+                    .addApiKeyId("string")
+                    .bucketWidth(UsageFileSearchCallsParams.BucketWidth._1M)
+                    .endTime(0L)
+                    .addGroupBy(UsageFileSearchCallsParams.GroupBy.PROJECT_ID)
+                    .limit(0L)
+                    .page("page")
+                    .addProjectId("string")
+                    .addUserId("string")
+                    .addVectorStoreId("string")
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
     fun images() {
         val client =
             OpenAIOkHttpClient.builder()
@@ -269,6 +300,36 @@ internal class UsageServiceTest {
                     .limit(0L)
                     .page("page")
                     .addProjectId("string")
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
+    fun webSearchCalls() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val usageService = client.admin().organization().usage()
+
+        val response =
+            usageService.webSearchCalls(
+                UsageWebSearchCallsParams.builder()
+                    .startTime(0L)
+                    .addApiKeyId("string")
+                    .bucketWidth(UsageWebSearchCallsParams.BucketWidth._1M)
+                    .addContextLevel(UsageWebSearchCallsParams.ContextLevel.LOW)
+                    .endTime(0L)
+                    .addGroupBy(UsageWebSearchCallsParams.GroupBy.PROJECT_ID)
+                    .limit(0L)
+                    .addModel("string")
+                    .page("page")
+                    .addProjectId("string")
+                    .addUserId("string")
                     .build()
             )
 

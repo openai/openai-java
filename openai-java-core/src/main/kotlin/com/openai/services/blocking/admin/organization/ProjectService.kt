@@ -16,6 +16,8 @@ import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import com.openai.services.blocking.admin.organization.projects.ApiKeyService
 import com.openai.services.blocking.admin.organization.projects.CertificateService
 import com.openai.services.blocking.admin.organization.projects.GroupService
+import com.openai.services.blocking.admin.organization.projects.HostedToolPermissionService
+import com.openai.services.blocking.admin.organization.projects.ModelPermissionService
 import com.openai.services.blocking.admin.organization.projects.RateLimitService
 import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
@@ -43,6 +45,10 @@ interface ProjectService {
     fun apiKeys(): ApiKeyService
 
     fun rateLimits(): RateLimitService
+
+    fun modelPermissions(): ModelPermissionService
+
+    fun hostedToolPermissions(): HostedToolPermissionService
 
     fun groups(): GroupService
 
@@ -183,6 +189,10 @@ interface ProjectService {
         fun apiKeys(): ApiKeyService.WithRawResponse
 
         fun rateLimits(): RateLimitService.WithRawResponse
+
+        fun modelPermissions(): ModelPermissionService.WithRawResponse
+
+        fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse
 
         fun groups(): GroupService.WithRawResponse
 

@@ -17,12 +17,16 @@ import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsResponse
 import com.openai.models.admin.organization.usage.UsageImagesParams
 import com.openai.models.admin.organization.usage.UsageImagesResponse
 import com.openai.models.admin.organization.usage.UsageModerationsParams
 import com.openai.models.admin.organization.usage.UsageModerationsResponse
 import com.openai.models.admin.organization.usage.UsageVectorStoresParams
 import com.openai.models.admin.organization.usage.UsageVectorStoresResponse
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsParams
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -105,6 +109,18 @@ interface UsageServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<UsageEmbeddingsResponse>
 
+    /** Get file search calls usage details for the organization. */
+    fun fileSearchCalls(
+        params: UsageFileSearchCallsParams
+    ): CompletableFuture<UsageFileSearchCallsResponse> =
+        fileSearchCalls(params, RequestOptions.none())
+
+    /** @see fileSearchCalls */
+    fun fileSearchCalls(
+        params: UsageFileSearchCallsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<UsageFileSearchCallsResponse>
+
     /** Get images usage details for the organization. */
     fun images(params: UsageImagesParams): CompletableFuture<UsageImagesResponse> =
         images(params, RequestOptions.none())
@@ -135,6 +151,18 @@ interface UsageServiceAsync {
         params: UsageVectorStoresParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<UsageVectorStoresResponse>
+
+    /** Get web search calls usage details for the organization. */
+    fun webSearchCalls(
+        params: UsageWebSearchCallsParams
+    ): CompletableFuture<UsageWebSearchCallsResponse> =
+        webSearchCalls(params, RequestOptions.none())
+
+    /** @see webSearchCalls */
+    fun webSearchCalls(
+        params: UsageWebSearchCallsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<UsageWebSearchCallsResponse>
 
     /** A view of [UsageServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -239,6 +267,21 @@ interface UsageServiceAsync {
         ): CompletableFuture<HttpResponseFor<UsageEmbeddingsResponse>>
 
         /**
+         * Returns a raw HTTP response for `get /organization/usage/file_search_calls`, but is
+         * otherwise the same as [UsageServiceAsync.fileSearchCalls].
+         */
+        fun fileSearchCalls(
+            params: UsageFileSearchCallsParams
+        ): CompletableFuture<HttpResponseFor<UsageFileSearchCallsResponse>> =
+            fileSearchCalls(params, RequestOptions.none())
+
+        /** @see fileSearchCalls */
+        fun fileSearchCalls(
+            params: UsageFileSearchCallsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<UsageFileSearchCallsResponse>>
+
+        /**
          * Returns a raw HTTP response for `get /organization/usage/images`, but is otherwise the
          * same as [UsageServiceAsync.images].
          */
@@ -282,5 +325,20 @@ interface UsageServiceAsync {
             params: UsageVectorStoresParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<UsageVectorStoresResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/usage/web_search_calls`, but is
+         * otherwise the same as [UsageServiceAsync.webSearchCalls].
+         */
+        fun webSearchCalls(
+            params: UsageWebSearchCallsParams
+        ): CompletableFuture<HttpResponseFor<UsageWebSearchCallsResponse>> =
+            webSearchCalls(params, RequestOptions.none())
+
+        /** @see webSearchCalls */
+        fun webSearchCalls(
+            params: UsageWebSearchCallsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<UsageWebSearchCallsResponse>>
     }
 }

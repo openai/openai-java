@@ -15,6 +15,8 @@ import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import com.openai.services.async.admin.organization.projects.ApiKeyServiceAsync
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsync
 import com.openai.services.async.admin.organization.projects.GroupServiceAsync
+import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsync
+import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsync
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
@@ -43,6 +45,10 @@ interface ProjectServiceAsync {
     fun apiKeys(): ApiKeyServiceAsync
 
     fun rateLimits(): RateLimitServiceAsync
+
+    fun modelPermissions(): ModelPermissionServiceAsync
+
+    fun hostedToolPermissions(): HostedToolPermissionServiceAsync
 
     fun groups(): GroupServiceAsync
 
@@ -198,6 +204,10 @@ interface ProjectServiceAsync {
         fun apiKeys(): ApiKeyServiceAsync.WithRawResponse
 
         fun rateLimits(): RateLimitServiceAsync.WithRawResponse
+
+        fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse
+
+        fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse
 
         fun groups(): GroupServiceAsync.WithRawResponse
 
