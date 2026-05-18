@@ -31,6 +31,10 @@ import com.openai.services.async.admin.organization.projects.CertificateServiceA
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.GroupServiceAsync
 import com.openai.services.async.admin.organization.projects.GroupServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsync
+import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsync
+import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
@@ -62,6 +66,14 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         RateLimitServiceAsyncImpl(clientOptions)
     }
 
+    private val modelPermissions: ModelPermissionServiceAsync by lazy {
+        ModelPermissionServiceAsyncImpl(clientOptions)
+    }
+
+    private val hostedToolPermissions: HostedToolPermissionServiceAsync by lazy {
+        HostedToolPermissionServiceAsyncImpl(clientOptions)
+    }
+
     private val groups: GroupServiceAsync by lazy { GroupServiceAsyncImpl(clientOptions) }
 
     private val roles: RoleServiceAsync by lazy { RoleServiceAsyncImpl(clientOptions) }
@@ -82,6 +94,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun apiKeys(): ApiKeyServiceAsync = apiKeys
 
     override fun rateLimits(): RateLimitServiceAsync = rateLimits
+
+    override fun modelPermissions(): ModelPermissionServiceAsync = modelPermissions
+
+    override fun hostedToolPermissions(): HostedToolPermissionServiceAsync = hostedToolPermissions
 
     override fun groups(): GroupServiceAsync = groups
 
@@ -146,6 +162,15 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             RateLimitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val modelPermissions: ModelPermissionServiceAsync.WithRawResponse by lazy {
+            ModelPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val hostedToolPermissions:
+            HostedToolPermissionServiceAsync.WithRawResponse by lazy {
+            HostedToolPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val groups: GroupServiceAsync.WithRawResponse by lazy {
             GroupServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -172,6 +197,12 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun apiKeys(): ApiKeyServiceAsync.WithRawResponse = apiKeys
 
         override fun rateLimits(): RateLimitServiceAsync.WithRawResponse = rateLimits
+
+        override fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse =
+            modelPermissions
+
+        override fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse =
+            hostedToolPermissions
 
         override fun groups(): GroupServiceAsync.WithRawResponse = groups
 

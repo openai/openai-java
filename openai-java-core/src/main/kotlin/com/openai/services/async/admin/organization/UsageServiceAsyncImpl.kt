@@ -27,12 +27,16 @@ import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsResponse
 import com.openai.models.admin.organization.usage.UsageImagesParams
 import com.openai.models.admin.organization.usage.UsageImagesResponse
 import com.openai.models.admin.organization.usage.UsageModerationsParams
 import com.openai.models.admin.organization.usage.UsageModerationsResponse
 import com.openai.models.admin.organization.usage.UsageVectorStoresParams
 import com.openai.models.admin.organization.usage.UsageVectorStoresResponse
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsParams
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -90,6 +94,13 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // get /organization/usage/embeddings
         withRawResponse().embeddings(params, requestOptions).thenApply { it.parse() }
 
+    override fun fileSearchCalls(
+        params: UsageFileSearchCallsParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<UsageFileSearchCallsResponse> =
+        // get /organization/usage/file_search_calls
+        withRawResponse().fileSearchCalls(params, requestOptions).thenApply { it.parse() }
+
     override fun images(
         params: UsageImagesParams,
         requestOptions: RequestOptions,
@@ -110,6 +121,13 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<UsageVectorStoresResponse> =
         // get /organization/usage/vector_stores
         withRawResponse().vectorStores(params, requestOptions).thenApply { it.parse() }
+
+    override fun webSearchCalls(
+        params: UsageWebSearchCallsParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<UsageWebSearchCallsResponse> =
+        // get /organization/usage/web_search_calls
+        withRawResponse().webSearchCalls(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         UsageServiceAsync.WithRawResponse {
@@ -328,6 +346,40 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
+        private val fileSearchCallsHandler: Handler<UsageFileSearchCallsResponse> =
+            jsonHandler<UsageFileSearchCallsResponse>(clientOptions.jsonMapper)
+
+        override fun fileSearchCalls(
+            params: UsageFileSearchCallsParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<UsageFileSearchCallsResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "usage", "file_search_calls")
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { fileSearchCallsHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
         private val imagesHandler: Handler<UsageImagesResponse> =
             jsonHandler<UsageImagesResponse>(clientOptions.jsonMapper)
 
@@ -421,6 +473,40 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     errorHandler.handle(response).parseable {
                         response
                             .use { vectorStoresHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val webSearchCallsHandler: Handler<UsageWebSearchCallsResponse> =
+            jsonHandler<UsageWebSearchCallsResponse>(clientOptions.jsonMapper)
+
+        override fun webSearchCalls(
+            params: UsageWebSearchCallsParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<UsageWebSearchCallsResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "usage", "web_search_calls")
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { webSearchCallsHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
