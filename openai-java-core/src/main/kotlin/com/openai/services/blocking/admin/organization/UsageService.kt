@@ -18,12 +18,16 @@ import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
+import com.openai.models.admin.organization.usage.UsageFileSearchCallsResponse
 import com.openai.models.admin.organization.usage.UsageImagesParams
 import com.openai.models.admin.organization.usage.UsageImagesResponse
 import com.openai.models.admin.organization.usage.UsageModerationsParams
 import com.openai.models.admin.organization.usage.UsageModerationsResponse
 import com.openai.models.admin.organization.usage.UsageVectorStoresParams
 import com.openai.models.admin.organization.usage.UsageVectorStoresResponse
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsParams
+import com.openai.models.admin.organization.usage.UsageWebSearchCallsResponse
 import java.util.function.Consumer
 
 interface UsageService {
@@ -101,6 +105,16 @@ interface UsageService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UsageEmbeddingsResponse
 
+    /** Get file search calls usage details for the organization. */
+    fun fileSearchCalls(params: UsageFileSearchCallsParams): UsageFileSearchCallsResponse =
+        fileSearchCalls(params, RequestOptions.none())
+
+    /** @see fileSearchCalls */
+    fun fileSearchCalls(
+        params: UsageFileSearchCallsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): UsageFileSearchCallsResponse
+
     /** Get images usage details for the organization. */
     fun images(params: UsageImagesParams): UsageImagesResponse =
         images(params, RequestOptions.none())
@@ -130,6 +144,16 @@ interface UsageService {
         params: UsageVectorStoresParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UsageVectorStoresResponse
+
+    /** Get web search calls usage details for the organization. */
+    fun webSearchCalls(params: UsageWebSearchCallsParams): UsageWebSearchCallsResponse =
+        webSearchCalls(params, RequestOptions.none())
+
+    /** @see webSearchCalls */
+    fun webSearchCalls(
+        params: UsageWebSearchCallsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): UsageWebSearchCallsResponse
 
     /** A view of [UsageService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -238,6 +262,23 @@ interface UsageService {
         ): HttpResponseFor<UsageEmbeddingsResponse>
 
         /**
+         * Returns a raw HTTP response for `get /organization/usage/file_search_calls`, but is
+         * otherwise the same as [UsageService.fileSearchCalls].
+         */
+        @MustBeClosed
+        fun fileSearchCalls(
+            params: UsageFileSearchCallsParams
+        ): HttpResponseFor<UsageFileSearchCallsResponse> =
+            fileSearchCalls(params, RequestOptions.none())
+
+        /** @see fileSearchCalls */
+        @MustBeClosed
+        fun fileSearchCalls(
+            params: UsageFileSearchCallsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<UsageFileSearchCallsResponse>
+
+        /**
          * Returns a raw HTTP response for `get /organization/usage/images`, but is otherwise the
          * same as [UsageService.images].
          */
@@ -282,5 +323,22 @@ interface UsageService {
             params: UsageVectorStoresParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UsageVectorStoresResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/usage/web_search_calls`, but is
+         * otherwise the same as [UsageService.webSearchCalls].
+         */
+        @MustBeClosed
+        fun webSearchCalls(
+            params: UsageWebSearchCallsParams
+        ): HttpResponseFor<UsageWebSearchCallsResponse> =
+            webSearchCalls(params, RequestOptions.none())
+
+        /** @see webSearchCalls */
+        @MustBeClosed
+        fun webSearchCalls(
+            params: UsageWebSearchCallsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<UsageWebSearchCallsResponse>
     }
 }

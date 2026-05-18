@@ -31,6 +31,10 @@ import com.openai.services.blocking.admin.organization.projects.CertificateServi
 import com.openai.services.blocking.admin.organization.projects.CertificateServiceImpl
 import com.openai.services.blocking.admin.organization.projects.GroupService
 import com.openai.services.blocking.admin.organization.projects.GroupServiceImpl
+import com.openai.services.blocking.admin.organization.projects.HostedToolPermissionService
+import com.openai.services.blocking.admin.organization.projects.HostedToolPermissionServiceImpl
+import com.openai.services.blocking.admin.organization.projects.ModelPermissionService
+import com.openai.services.blocking.admin.organization.projects.ModelPermissionServiceImpl
 import com.openai.services.blocking.admin.organization.projects.RateLimitService
 import com.openai.services.blocking.admin.organization.projects.RateLimitServiceImpl
 import com.openai.services.blocking.admin.organization.projects.RoleService
@@ -59,6 +63,14 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val rateLimits: RateLimitService by lazy { RateLimitServiceImpl(clientOptions) }
 
+    private val modelPermissions: ModelPermissionService by lazy {
+        ModelPermissionServiceImpl(clientOptions)
+    }
+
+    private val hostedToolPermissions: HostedToolPermissionService by lazy {
+        HostedToolPermissionServiceImpl(clientOptions)
+    }
+
     private val groups: GroupService by lazy { GroupServiceImpl(clientOptions) }
 
     private val roles: RoleService by lazy { RoleServiceImpl(clientOptions) }
@@ -77,6 +89,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
     override fun apiKeys(): ApiKeyService = apiKeys
 
     override fun rateLimits(): RateLimitService = rateLimits
+
+    override fun modelPermissions(): ModelPermissionService = modelPermissions
+
+    override fun hostedToolPermissions(): HostedToolPermissionService = hostedToolPermissions
 
     override fun groups(): GroupService = groups
 
@@ -126,6 +142,14 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
             RateLimitServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val modelPermissions: ModelPermissionService.WithRawResponse by lazy {
+            ModelPermissionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val hostedToolPermissions: HostedToolPermissionService.WithRawResponse by lazy {
+            HostedToolPermissionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val groups: GroupService.WithRawResponse by lazy {
             GroupServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -152,6 +176,11 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         override fun apiKeys(): ApiKeyService.WithRawResponse = apiKeys
 
         override fun rateLimits(): RateLimitService.WithRawResponse = rateLimits
+
+        override fun modelPermissions(): ModelPermissionService.WithRawResponse = modelPermissions
+
+        override fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse =
+            hostedToolPermissions
 
         override fun groups(): GroupService.WithRawResponse = groups
 
