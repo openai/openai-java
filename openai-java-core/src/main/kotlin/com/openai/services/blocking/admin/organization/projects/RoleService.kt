@@ -11,6 +11,7 @@ import com.openai.models.admin.organization.projects.roles.RoleDeleteParams
 import com.openai.models.admin.organization.projects.roles.RoleDeleteResponse
 import com.openai.models.admin.organization.projects.roles.RoleListPage
 import com.openai.models.admin.organization.projects.roles.RoleListParams
+import com.openai.models.admin.organization.projects.roles.RoleRetrieveParams
 import com.openai.models.admin.organization.projects.roles.RoleUpdateParams
 import com.openai.models.admin.organization.roles.Role
 import java.util.function.Consumer
@@ -46,6 +47,26 @@ interface RoleService {
     /** @see create */
     fun create(
         params: RoleCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role
+
+    /** Retrieves a project role. */
+    fun retrieve(roleId: String, params: RoleRetrieveParams): Role =
+        retrieve(roleId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        roleId: String,
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Role = retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: RoleRetrieveParams): Role = retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: RoleRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Role
 
@@ -152,6 +173,35 @@ interface RoleService {
         @MustBeClosed
         fun create(
             params: RoleCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role>
+
+        /**
+         * Returns a raw HTTP response for `get /projects/{project_id}/roles/{role_id}`, but is
+         * otherwise the same as [RoleService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(roleId: String, params: RoleRetrieveParams): HttpResponseFor<Role> =
+            retrieve(roleId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Role> =
+            retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: RoleRetrieveParams): HttpResponseFor<Role> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: RoleRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Role>
 

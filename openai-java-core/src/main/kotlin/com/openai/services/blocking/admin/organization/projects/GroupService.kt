@@ -11,6 +11,7 @@ import com.openai.models.admin.organization.projects.groups.GroupDeleteParams
 import com.openai.models.admin.organization.projects.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.projects.groups.GroupListPage
 import com.openai.models.admin.organization.projects.groups.GroupListParams
+import com.openai.models.admin.organization.projects.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.projects.groups.ProjectGroup
 import com.openai.services.blocking.admin.organization.projects.groups.RoleService
 import java.util.function.Consumer
@@ -48,6 +49,27 @@ interface GroupService {
     /** @see create */
     fun create(
         params: GroupCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectGroup
+
+    /** Retrieves a project's group. */
+    fun retrieve(groupId: String, params: GroupRetrieveParams): ProjectGroup =
+        retrieve(groupId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        groupId: String,
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectGroup = retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: GroupRetrieveParams): ProjectGroup =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: GroupRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectGroup
 
@@ -137,6 +159,36 @@ interface GroupService {
         @MustBeClosed
         fun create(
             params: GroupCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectGroup>
+
+        /**
+         * Returns a raw HTTP response for `get
+         * /organization/projects/{project_id}/groups/{group_id}`, but is otherwise the same as
+         * [GroupService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(groupId: String, params: GroupRetrieveParams): HttpResponseFor<ProjectGroup> =
+            retrieve(groupId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectGroup> =
+            retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: GroupRetrieveParams): HttpResponseFor<ProjectGroup> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: GroupRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectGroup>
 

@@ -29,6 +29,22 @@ internal class GroupServiceAsyncTest {
     }
 
     @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val groupServiceAsync = client.admin().organization().groups()
+
+        val groupFuture = groupServiceAsync.retrieve("group_id")
+
+        val group = groupFuture.get()
+        group.validate()
+    }
+
+    @Test
     fun update() {
         val client =
             OpenAIOkHttpClientAsync.builder()

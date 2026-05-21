@@ -24,6 +24,8 @@ import com.openai.models.admin.organization.groups.users.UserDeleteResponse
 import com.openai.models.admin.organization.groups.users.UserListPage
 import com.openai.models.admin.organization.groups.users.UserListPageResponse
 import com.openai.models.admin.organization.groups.users.UserListParams
+import com.openai.models.admin.organization.groups.users.UserRetrieveParams
+import com.openai.models.admin.organization.groups.users.UserRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -44,6 +46,13 @@ class UserServiceImpl internal constructor(private val clientOptions: ClientOpti
     ): UserCreateResponse =
         // post /organization/groups/{group_id}/users
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun retrieve(
+        params: UserRetrieveParams,
+        requestOptions: RequestOptions,
+    ): UserRetrieveResponse =
+        // get /organization/groups/{group_id}/users/{user_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun list(params: UserListParams, requestOptions: RequestOptions): UserListPage =
         // get /organization/groups/{group_id}/users
@@ -96,6 +105,46 @@ class UserServiceImpl internal constructor(private val clientOptions: ClientOpti
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<UserRetrieveResponse> =
+            jsonHandler<UserRetrieveResponse>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: UserRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<UserRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("userId", params.userId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "groups",
+                        params._pathParam(0),
+                        "users",
+                        params._pathParam(1),
+                    )
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

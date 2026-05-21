@@ -24,6 +24,7 @@ import com.openai.models.admin.organization.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.groups.GroupListPage
 import com.openai.models.admin.organization.groups.GroupListPageResponse
 import com.openai.models.admin.organization.groups.GroupListParams
+import com.openai.models.admin.organization.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.groups.GroupUpdateParams
 import com.openai.models.admin.organization.groups.GroupUpdateResponse
 import com.openai.services.blocking.admin.organization.groups.RoleService
@@ -56,6 +57,10 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun create(params: GroupCreateParams, requestOptions: RequestOptions): Group =
         // post /organization/groups
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun retrieve(params: GroupRetrieveParams, requestOptions: RequestOptions): Group =
+        // get /organization/groups/{group_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun update(
         params: GroupUpdateParams,
@@ -123,6 +128,39 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Group> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "groups", params._pathParam(0))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

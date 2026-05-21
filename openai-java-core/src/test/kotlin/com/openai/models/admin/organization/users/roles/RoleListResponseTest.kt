@@ -5,6 +5,7 @@ package com.openai.models.admin.organization.users.roles
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,6 +16,12 @@ internal class RoleListResponseTest {
         val roleListResponse =
             RoleListResponse.builder()
                 .id("id")
+                .addAssignmentSource(
+                    RoleListResponse.AssignmentSource.builder()
+                        .principalId("principal_id")
+                        .principalType("principal_type")
+                        .build()
+                )
                 .createdAt(0L)
                 .createdBy("created_by")
                 .createdByUserObj(
@@ -36,6 +43,13 @@ internal class RoleListResponseTest {
                 .build()
 
         assertThat(roleListResponse.id()).isEqualTo("id")
+        assertThat(roleListResponse.assignmentSources().getOrNull())
+            .containsExactly(
+                RoleListResponse.AssignmentSource.builder()
+                    .principalId("principal_id")
+                    .principalType("principal_type")
+                    .build()
+            )
         assertThat(roleListResponse.createdAt()).contains(0L)
         assertThat(roleListResponse.createdBy()).contains("created_by")
         assertThat(roleListResponse.createdByUserObj())
@@ -64,6 +78,12 @@ internal class RoleListResponseTest {
         val roleListResponse =
             RoleListResponse.builder()
                 .id("id")
+                .addAssignmentSource(
+                    RoleListResponse.AssignmentSource.builder()
+                        .principalId("principal_id")
+                        .principalType("principal_type")
+                        .build()
+                )
                 .createdAt(0L)
                 .createdBy("created_by")
                 .createdByUserObj(

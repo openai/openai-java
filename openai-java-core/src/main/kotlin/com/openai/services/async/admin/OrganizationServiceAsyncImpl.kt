@@ -9,6 +9,8 @@ import com.openai.services.async.admin.organization.AuditLogServiceAsync
 import com.openai.services.async.admin.organization.AuditLogServiceAsyncImpl
 import com.openai.services.async.admin.organization.CertificateServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsyncImpl
+import com.openai.services.async.admin.organization.DataRetentionServiceAsync
+import com.openai.services.async.admin.organization.DataRetentionServiceAsyncImpl
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import com.openai.services.async.admin.organization.GroupServiceAsyncImpl
 import com.openai.services.async.admin.organization.InviteServiceAsync
@@ -17,6 +19,8 @@ import com.openai.services.async.admin.organization.ProjectServiceAsync
 import com.openai.services.async.admin.organization.ProjectServiceAsyncImpl
 import com.openai.services.async.admin.organization.RoleServiceAsync
 import com.openai.services.async.admin.organization.RoleServiceAsyncImpl
+import com.openai.services.async.admin.organization.SpendAlertServiceAsync
+import com.openai.services.async.admin.organization.SpendAlertServiceAsyncImpl
 import com.openai.services.async.admin.organization.UsageServiceAsync
 import com.openai.services.async.admin.organization.UsageServiceAsyncImpl
 import com.openai.services.async.admin.organization.UserServiceAsync
@@ -46,6 +50,14 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     private val roles: RoleServiceAsync by lazy { RoleServiceAsyncImpl(clientOptions) }
 
+    private val dataRetention: DataRetentionServiceAsync by lazy {
+        DataRetentionServiceAsyncImpl(clientOptions)
+    }
+
+    private val spendAlerts: SpendAlertServiceAsync by lazy {
+        SpendAlertServiceAsyncImpl(clientOptions)
+    }
+
     private val certificates: CertificateServiceAsync by lazy {
         CertificateServiceAsyncImpl(clientOptions)
     }
@@ -71,6 +83,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     override fun groups(): GroupServiceAsync = groups
 
     override fun roles(): RoleServiceAsync = roles
+
+    override fun dataRetention(): DataRetentionServiceAsync = dataRetention
+
+    override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
 
     override fun certificates(): CertificateServiceAsync = certificates
 
@@ -107,6 +123,14 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
             RoleServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val dataRetention: DataRetentionServiceAsync.WithRawResponse by lazy {
+            DataRetentionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val spendAlerts: SpendAlertServiceAsync.WithRawResponse by lazy {
+            SpendAlertServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val certificates: CertificateServiceAsync.WithRawResponse by lazy {
             CertificateServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -136,6 +160,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         override fun groups(): GroupServiceAsync.WithRawResponse = groups
 
         override fun roles(): RoleServiceAsync.WithRawResponse = roles
+
+        override fun dataRetention(): DataRetentionServiceAsync.WithRawResponse = dataRetention
+
+        override fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateServiceAsync.WithRawResponse = certificates
 

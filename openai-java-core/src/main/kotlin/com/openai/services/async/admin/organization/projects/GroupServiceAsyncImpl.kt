@@ -23,6 +23,7 @@ import com.openai.models.admin.organization.projects.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.projects.groups.GroupListPageAsync
 import com.openai.models.admin.organization.projects.groups.GroupListPageResponse
 import com.openai.models.admin.organization.projects.groups.GroupListParams
+import com.openai.models.admin.organization.projects.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.projects.groups.ProjectGroup
 import com.openai.services.async.admin.organization.projects.groups.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.groups.RoleServiceAsyncImpl
@@ -52,6 +53,13 @@ class GroupServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<ProjectGroup> =
         // post /organization/projects/{project_id}/groups
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+
+    override fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProjectGroup> =
+        // get /organization/projects/{project_id}/groups/{group_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: GroupListParams,
@@ -115,6 +123,49 @@ class GroupServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val retrieveHandler: Handler<ProjectGroup> =
+            jsonHandler<ProjectGroup>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProjectGroup>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "projects",
+                        params._pathParam(0),
+                        "groups",
+                        params._pathParam(1),
+                    )
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

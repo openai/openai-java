@@ -1110,7 +1110,7 @@ private constructor(
             ) : this(type, url, mutableMapOf())
 
             /**
-             * The action type. Always `open_page`.
+             * The action type.
              *
              * Expected to always return the following:
              * ```java

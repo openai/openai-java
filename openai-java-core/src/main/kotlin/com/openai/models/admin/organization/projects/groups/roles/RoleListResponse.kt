@@ -24,6 +24,7 @@ class RoleListResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
+    private val assignmentSources: JsonField<List<AssignmentSource>>,
     private val createdAt: JsonField<Long>,
     private val createdBy: JsonField<String>,
     private val createdByUserObj: JsonField<CreatedByUserObj>,
@@ -40,6 +41,9 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("assignment_sources")
+        @ExcludeMissing
+        assignmentSources: JsonField<List<AssignmentSource>> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_by_user_obj")
@@ -62,6 +66,7 @@ private constructor(
         @JsonProperty("updated_at") @ExcludeMissing updatedAt: JsonField<Long> = JsonMissing.of(),
     ) : this(
         id,
+        assignmentSources,
         createdAt,
         createdBy,
         createdByUserObj,
@@ -82,6 +87,15 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun id(): String = id.getRequired("id")
+
+    /**
+     * Principals from which the role assignment is inherited, when available.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun assignmentSources(): Optional<List<AssignmentSource>> =
+        assignmentSources.getOptional("assignment_sources")
 
     /**
      * When the role was created.
@@ -170,6 +184,16 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [assignmentSources].
+     *
+     * Unlike [assignmentSources], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("assignment_sources")
+    @ExcludeMissing
+    fun _assignmentSources(): JsonField<List<AssignmentSource>> = assignmentSources
 
     /**
      * Returns the raw JSON value of [createdAt].
@@ -270,6 +294,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
+         * .assignmentSources()
          * .createdAt()
          * .createdBy()
          * .createdByUserObj()
@@ -289,6 +314,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
+        private var assignmentSources: JsonField<MutableList<AssignmentSource>>? = null
         private var createdAt: JsonField<Long>? = null
         private var createdBy: JsonField<String>? = null
         private var createdByUserObj: JsonField<CreatedByUserObj>? = null
@@ -304,6 +330,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(roleListResponse: RoleListResponse) = apply {
             id = roleListResponse.id
+            assignmentSources = roleListResponse.assignmentSources.map { it.toMutableList() }
             createdAt = roleListResponse.createdAt
             createdBy = roleListResponse.createdBy
             createdByUserObj = roleListResponse.createdByUserObj
@@ -327,6 +354,37 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** Principals from which the role assignment is inherited, when available. */
+        fun assignmentSources(assignmentSources: List<AssignmentSource>?) =
+            assignmentSources(JsonField.ofNullable(assignmentSources))
+
+        /** Alias for calling [Builder.assignmentSources] with `assignmentSources.orElse(null)`. */
+        fun assignmentSources(assignmentSources: Optional<List<AssignmentSource>>) =
+            assignmentSources(assignmentSources.getOrNull())
+
+        /**
+         * Sets [Builder.assignmentSources] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.assignmentSources] with a well-typed
+         * `List<AssignmentSource>` value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun assignmentSources(assignmentSources: JsonField<List<AssignmentSource>>) = apply {
+            this.assignmentSources = assignmentSources.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [AssignmentSource] to [assignmentSources].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addAssignmentSource(assignmentSource: AssignmentSource) = apply {
+            assignmentSources =
+                (assignmentSources ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("assignmentSources", it).add(assignmentSource)
+                }
+        }
 
         /** When the role was created. */
         fun createdAt(createdAt: Long?) = createdAt(JsonField.ofNullable(createdAt))
@@ -526,6 +584,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
+         * .assignmentSources()
          * .createdAt()
          * .createdBy()
          * .createdByUserObj()
@@ -543,6 +602,7 @@ private constructor(
         fun build(): RoleListResponse =
             RoleListResponse(
                 checkRequired("id", id),
+                checkRequired("assignmentSources", assignmentSources).map { it.toImmutable() },
                 checkRequired("createdAt", createdAt),
                 checkRequired("createdBy", createdBy),
                 checkRequired("createdByUserObj", createdByUserObj),
@@ -573,6 +633,7 @@ private constructor(
         }
 
         id()
+        assignmentSources().ifPresent { it.forEach { it.validate() } }
         createdAt()
         createdBy()
         createdByUserObj().ifPresent { it.validate() }
@@ -602,6 +663,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
+            (assignmentSources.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (createdBy.asKnown().isPresent) 1 else 0) +
             (createdByUserObj.asKnown().getOrNull()?.validity() ?: 0) +
@@ -612,6 +674,222 @@ private constructor(
             (if (predefinedRole.asKnown().isPresent) 1 else 0) +
             (if (resourceType.asKnown().isPresent) 1 else 0) +
             (if (updatedAt.asKnown().isPresent) 1 else 0)
+
+    class AssignmentSource
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val principalId: JsonField<String>,
+        private val principalType: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("principal_id")
+            @ExcludeMissing
+            principalId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("principal_type")
+            @ExcludeMissing
+            principalType: JsonField<String> = JsonMissing.of(),
+        ) : this(principalId, principalType, mutableMapOf())
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun principalId(): String = principalId.getRequired("principal_id")
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun principalType(): String = principalType.getRequired("principal_type")
+
+        /**
+         * Returns the raw JSON value of [principalId].
+         *
+         * Unlike [principalId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("principal_id")
+        @ExcludeMissing
+        fun _principalId(): JsonField<String> = principalId
+
+        /**
+         * Returns the raw JSON value of [principalType].
+         *
+         * Unlike [principalType], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("principal_type")
+        @ExcludeMissing
+        fun _principalType(): JsonField<String> = principalType
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [AssignmentSource].
+             *
+             * The following fields are required:
+             * ```java
+             * .principalId()
+             * .principalType()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AssignmentSource]. */
+        class Builder internal constructor() {
+
+            private var principalId: JsonField<String>? = null
+            private var principalType: JsonField<String>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(assignmentSource: AssignmentSource) = apply {
+                principalId = assignmentSource.principalId
+                principalType = assignmentSource.principalType
+                additionalProperties = assignmentSource.additionalProperties.toMutableMap()
+            }
+
+            fun principalId(principalId: String) = principalId(JsonField.of(principalId))
+
+            /**
+             * Sets [Builder.principalId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.principalId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun principalId(principalId: JsonField<String>) = apply {
+                this.principalId = principalId
+            }
+
+            fun principalType(principalType: String) = principalType(JsonField.of(principalType))
+
+            /**
+             * Sets [Builder.principalType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.principalType] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun principalType(principalType: JsonField<String>) = apply {
+                this.principalType = principalType
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AssignmentSource].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .principalId()
+             * .principalType()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): AssignmentSource =
+                AssignmentSource(
+                    checkRequired("principalId", principalId),
+                    checkRequired("principalType", principalType),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AssignmentSource = apply {
+            if (validated) {
+                return@apply
+            }
+
+            principalId()
+            principalType()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (principalId.asKnown().isPresent) 1 else 0) +
+                (if (principalType.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AssignmentSource &&
+                principalId == other.principalId &&
+                principalType == other.principalType &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(principalId, principalType, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AssignmentSource{principalId=$principalId, principalType=$principalType, additionalProperties=$additionalProperties}"
+    }
 
     /** User details for the actor that created the role, when available. */
     class CreatedByUserObj
@@ -838,6 +1116,7 @@ private constructor(
 
         return other is RoleListResponse &&
             id == other.id &&
+            assignmentSources == other.assignmentSources &&
             createdAt == other.createdAt &&
             createdBy == other.createdBy &&
             createdByUserObj == other.createdByUserObj &&
@@ -854,6 +1133,7 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
+            assignmentSources,
             createdAt,
             createdBy,
             createdByUserObj,
@@ -871,5 +1151,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RoleListResponse{id=$id, createdAt=$createdAt, createdBy=$createdBy, createdByUserObj=$createdByUserObj, description=$description, metadata=$metadata, name=$name, permissions=$permissions, predefinedRole=$predefinedRole, resourceType=$resourceType, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
+        "RoleListResponse{id=$id, assignmentSources=$assignmentSources, createdAt=$createdAt, createdBy=$createdBy, createdByUserObj=$createdByUserObj, description=$description, metadata=$metadata, name=$name, permissions=$permissions, predefinedRole=$predefinedRole, resourceType=$resourceType, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
 }

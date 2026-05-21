@@ -12,6 +12,8 @@ import com.openai.models.admin.organization.groups.roles.RoleDeleteParams
 import com.openai.models.admin.organization.groups.roles.RoleDeleteResponse
 import com.openai.models.admin.organization.groups.roles.RoleListPage
 import com.openai.models.admin.organization.groups.roles.RoleListParams
+import com.openai.models.admin.organization.groups.roles.RoleRetrieveParams
+import com.openai.models.admin.organization.groups.roles.RoleRetrieveResponse
 import java.util.function.Consumer
 
 interface RoleService {
@@ -47,6 +49,27 @@ interface RoleService {
         params: RoleCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RoleCreateResponse
+
+    /** Retrieves an organization role assigned to a group. */
+    fun retrieve(roleId: String, params: RoleRetrieveParams): RoleRetrieveResponse =
+        retrieve(roleId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        roleId: String,
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RoleRetrieveResponse = retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: RoleRetrieveParams): RoleRetrieveResponse =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RoleRetrieveResponse
 
     /** Lists the organization roles assigned to a group within the organization. */
     fun list(groupId: String): RoleListPage = list(groupId, RoleListParams.none())
@@ -133,6 +156,37 @@ interface RoleService {
             params: RoleCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RoleCreateResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/groups/{group_id}/roles/{role_id}`,
+         * but is otherwise the same as [RoleService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+        ): HttpResponseFor<RoleRetrieveResponse> = retrieve(roleId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RoleRetrieveResponse> =
+            retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: RoleRetrieveParams): HttpResponseFor<RoleRetrieveResponse> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RoleRetrieveResponse>
 
         /**
          * Returns a raw HTTP response for `get /organization/groups/{group_id}/roles`, but is

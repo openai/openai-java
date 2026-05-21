@@ -12,6 +12,7 @@ import com.openai.models.admin.organization.groups.GroupDeleteParams
 import com.openai.models.admin.organization.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.groups.GroupListPage
 import com.openai.models.admin.organization.groups.GroupListParams
+import com.openai.models.admin.organization.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.groups.GroupUpdateParams
 import com.openai.models.admin.organization.groups.GroupUpdateResponse
 import com.openai.services.blocking.admin.organization.groups.RoleService
@@ -44,6 +45,33 @@ interface GroupService {
         params: GroupCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Group
+
+    /** Retrieves a group. */
+    fun retrieve(groupId: String): Group = retrieve(groupId, GroupRetrieveParams.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        groupId: String,
+        params: GroupRetrieveParams = GroupRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group = retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(groupId: String, params: GroupRetrieveParams = GroupRetrieveParams.none()): Group =
+        retrieve(groupId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Group
+
+    /** @see retrieve */
+    fun retrieve(params: GroupRetrieveParams): Group = retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(groupId: String, requestOptions: RequestOptions): Group =
+        retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
     /** Updates a group's information. */
     fun update(groupId: String, params: GroupUpdateParams): GroupUpdateResponse =
@@ -141,6 +169,47 @@ interface GroupService {
             params: GroupCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Group>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/groups/{group_id}`, but is otherwise
+         * the same as [GroupService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(groupId: String): HttpResponseFor<Group> =
+            retrieve(groupId, GroupRetrieveParams.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams = GroupRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group> =
+            retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams = GroupRetrieveParams.none(),
+        ): HttpResponseFor<Group> = retrieve(groupId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Group>
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: GroupRetrieveParams): HttpResponseFor<Group> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(groupId: String, requestOptions: RequestOptions): HttpResponseFor<Group> =
+            retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /organization/groups/{group_id}`, but is otherwise

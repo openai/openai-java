@@ -16,14 +16,14 @@ internal class ProjectGroupTest {
                 .createdAt(0L)
                 .groupId("group_id")
                 .groupName("group_name")
-                .groupType("group_type")
+                .groupType(ProjectGroup.GroupType.GROUP)
                 .projectId("project_id")
                 .build()
 
         assertThat(projectGroup.createdAt()).isEqualTo(0L)
         assertThat(projectGroup.groupId()).isEqualTo("group_id")
         assertThat(projectGroup.groupName()).isEqualTo("group_name")
-        assertThat(projectGroup.groupType()).isEqualTo("group_type")
+        assertThat(projectGroup.groupType()).isEqualTo(ProjectGroup.GroupType.GROUP)
         assertThat(projectGroup.projectId()).isEqualTo("project_id")
     }
 
@@ -35,7 +35,7 @@ internal class ProjectGroupTest {
                 .createdAt(0L)
                 .groupId("group_id")
                 .groupName("group_name")
-                .groupType("group_type")
+                .groupType(ProjectGroup.GroupType.GROUP)
                 .projectId("project_id")
                 .build()
 
