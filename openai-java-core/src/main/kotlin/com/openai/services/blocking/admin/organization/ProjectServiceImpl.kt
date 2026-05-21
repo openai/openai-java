@@ -29,6 +29,8 @@ import com.openai.services.blocking.admin.organization.projects.ApiKeyService
 import com.openai.services.blocking.admin.organization.projects.ApiKeyServiceImpl
 import com.openai.services.blocking.admin.organization.projects.CertificateService
 import com.openai.services.blocking.admin.organization.projects.CertificateServiceImpl
+import com.openai.services.blocking.admin.organization.projects.DataRetentionService
+import com.openai.services.blocking.admin.organization.projects.DataRetentionServiceImpl
 import com.openai.services.blocking.admin.organization.projects.GroupService
 import com.openai.services.blocking.admin.organization.projects.GroupServiceImpl
 import com.openai.services.blocking.admin.organization.projects.HostedToolPermissionService
@@ -41,6 +43,8 @@ import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.RoleServiceImpl
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountServiceImpl
+import com.openai.services.blocking.admin.organization.projects.SpendAlertService
+import com.openai.services.blocking.admin.organization.projects.SpendAlertServiceImpl
 import com.openai.services.blocking.admin.organization.projects.UserService
 import com.openai.services.blocking.admin.organization.projects.UserServiceImpl
 import java.util.function.Consumer
@@ -75,6 +79,12 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val roles: RoleService by lazy { RoleServiceImpl(clientOptions) }
 
+    private val dataRetention: DataRetentionService by lazy {
+        DataRetentionServiceImpl(clientOptions)
+    }
+
+    private val spendAlerts: SpendAlertService by lazy { SpendAlertServiceImpl(clientOptions) }
+
     private val certificates: CertificateService by lazy { CertificateServiceImpl(clientOptions) }
 
     override fun withRawResponse(): ProjectService.WithRawResponse = withRawResponse
@@ -97,6 +107,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
     override fun groups(): GroupService = groups
 
     override fun roles(): RoleService = roles
+
+    override fun dataRetention(): DataRetentionService = dataRetention
+
+    override fun spendAlerts(): SpendAlertService = spendAlerts
 
     override fun certificates(): CertificateService = certificates
 
@@ -158,6 +172,14 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
             RoleServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val dataRetention: DataRetentionService.WithRawResponse by lazy {
+            DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val spendAlerts: SpendAlertService.WithRawResponse by lazy {
+            SpendAlertServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val certificates: CertificateService.WithRawResponse by lazy {
             CertificateServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -185,6 +207,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         override fun groups(): GroupService.WithRawResponse = groups
 
         override fun roles(): RoleService.WithRawResponse = roles
+
+        override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
+
+        override fun spendAlerts(): SpendAlertService.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateService.WithRawResponse = certificates
 

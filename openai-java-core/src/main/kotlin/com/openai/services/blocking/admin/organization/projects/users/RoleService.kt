@@ -12,6 +12,8 @@ import com.openai.models.admin.organization.projects.users.roles.RoleDeleteParam
 import com.openai.models.admin.organization.projects.users.roles.RoleDeleteResponse
 import com.openai.models.admin.organization.projects.users.roles.RoleListPage
 import com.openai.models.admin.organization.projects.users.roles.RoleListParams
+import com.openai.models.admin.organization.projects.users.roles.RoleRetrieveParams
+import com.openai.models.admin.organization.projects.users.roles.RoleRetrieveResponse
 import java.util.function.Consumer
 
 interface RoleService {
@@ -47,6 +49,27 @@ interface RoleService {
         params: RoleCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RoleCreateResponse
+
+    /** Retrieves a project role assigned to a user. */
+    fun retrieve(roleId: String, params: RoleRetrieveParams): RoleRetrieveResponse =
+        retrieve(roleId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        roleId: String,
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RoleRetrieveResponse = retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: RoleRetrieveParams): RoleRetrieveResponse =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RoleRetrieveResponse
 
     /** Lists the project roles assigned to a user within a project. */
     fun list(userId: String, params: RoleListParams): RoleListPage =
@@ -126,6 +149,38 @@ interface RoleService {
             params: RoleCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RoleCreateResponse>
+
+        /**
+         * Returns a raw HTTP response for `get
+         * /projects/{project_id}/users/{user_id}/roles/{role_id}`, but is otherwise the same as
+         * [RoleService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+        ): HttpResponseFor<RoleRetrieveResponse> = retrieve(roleId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RoleRetrieveResponse> =
+            retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: RoleRetrieveParams): HttpResponseFor<RoleRetrieveResponse> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RoleRetrieveResponse>
 
         /**
          * Returns a raw HTTP response for `get /projects/{project_id}/users/{user_id}/roles`, but

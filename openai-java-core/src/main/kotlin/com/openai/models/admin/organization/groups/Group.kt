@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -14,6 +15,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /** Details about an organization group. */
 class Group
@@ -21,7 +23,7 @@ class Group
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
-    private val groupType: JsonField<String>,
+    private val groupType: JsonField<GroupType>,
     private val isScimManaged: JsonField<Boolean>,
     private val name: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -31,7 +33,9 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("group_type") @ExcludeMissing groupType: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("group_type")
+        @ExcludeMissing
+        groupType: JsonField<GroupType> = JsonMissing.of(),
         @JsonProperty("is_scim_managed")
         @ExcludeMissing
         isScimManaged: JsonField<Boolean> = JsonMissing.of(),
@@ -60,7 +64,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun groupType(): String = groupType.getRequired("group_type")
+    fun groupType(): GroupType = groupType.getRequired("group_type")
 
     /**
      * Whether the group is managed through SCIM and controlled by your identity provider.
@@ -97,7 +101,7 @@ private constructor(
      *
      * Unlike [groupType], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("group_type") @ExcludeMissing fun _groupType(): JsonField<String> = groupType
+    @JsonProperty("group_type") @ExcludeMissing fun _groupType(): JsonField<GroupType> = groupType
 
     /**
      * Returns the raw JSON value of [isScimManaged].
@@ -149,7 +153,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var groupType: JsonField<String>? = null
+        private var groupType: JsonField<GroupType>? = null
         private var isScimManaged: JsonField<Boolean>? = null
         private var name: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -187,16 +191,16 @@ private constructor(
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The type of the group. */
-        fun groupType(groupType: String) = groupType(JsonField.of(groupType))
+        fun groupType(groupType: GroupType) = groupType(JsonField.of(groupType))
 
         /**
          * Sets [Builder.groupType] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.groupType] with a well-typed [String] value instead.
+         * You should usually call [Builder.groupType] with a well-typed [GroupType] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun groupType(groupType: JsonField<String>) = apply { this.groupType = groupType }
+        fun groupType(groupType: JsonField<GroupType>) = apply { this.groupType = groupType }
 
         /** Whether the group is managed through SCIM and controlled by your identity provider. */
         fun isScimManaged(isScimManaged: Boolean) = isScimManaged(JsonField.of(isScimManaged))
@@ -286,7 +290,7 @@ private constructor(
 
         id()
         createdAt()
-        groupType()
+        groupType().validate()
         isScimManaged()
         name()
         validated = true
@@ -309,9 +313,146 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
-            (if (groupType.asKnown().isPresent) 1 else 0) +
+            (groupType.asKnown().getOrNull()?.validity() ?: 0) +
             (if (isScimManaged.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0)
+
+    /** The type of the group. */
+    class GroupType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val GROUP = of("group")
+
+            @JvmField val TENANT_GROUP = of("tenant_group")
+
+            @JvmStatic fun of(value: String) = GroupType(JsonField.of(value))
+        }
+
+        /** An enum containing [GroupType]'s known values. */
+        enum class Known {
+            GROUP,
+            TENANT_GROUP,
+        }
+
+        /**
+         * An enum containing [GroupType]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [GroupType] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            GROUP,
+            TENANT_GROUP,
+            /**
+             * An enum member indicating that [GroupType] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                GROUP -> Value.GROUP
+                TENANT_GROUP -> Value.TENANT_GROUP
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                GROUP -> Known.GROUP
+                TENANT_GROUP -> Known.TENANT_GROUP
+                else -> throw OpenAIInvalidDataException("Unknown GroupType: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): GroupType = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is GroupType && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

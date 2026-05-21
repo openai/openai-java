@@ -6,6 +6,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.admin.organization.groups.users.UserCreateParams
 import com.openai.models.admin.organization.groups.users.UserDeleteParams
+import com.openai.models.admin.organization.groups.users.UserRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -25,6 +26,25 @@ internal class UserServiceAsyncTest {
         val userFuture =
             userServiceAsync.create(
                 UserCreateParams.builder().groupId("group_id").userId("user_id").build()
+            )
+
+        val user = userFuture.get()
+        user.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val userServiceAsync = client.admin().organization().groups().users()
+
+        val userFuture =
+            userServiceAsync.retrieve(
+                UserRetrieveParams.builder().groupId("group_id").userId("user_id").build()
             )
 
         val user = userFuture.get()

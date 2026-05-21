@@ -6,10 +6,12 @@ import com.openai.core.ClientOptions
 import com.openai.services.blocking.admin.organization.AdminApiKeyService
 import com.openai.services.blocking.admin.organization.AuditLogService
 import com.openai.services.blocking.admin.organization.CertificateService
+import com.openai.services.blocking.admin.organization.DataRetentionService
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.InviteService
 import com.openai.services.blocking.admin.organization.ProjectService
 import com.openai.services.blocking.admin.organization.RoleService
+import com.openai.services.blocking.admin.organization.SpendAlertService
 import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UserService
 import java.util.function.Consumer
@@ -43,6 +45,10 @@ interface OrganizationService {
 
     fun roles(): RoleService
 
+    fun dataRetention(): DataRetentionService
+
+    fun spendAlerts(): SpendAlertService
+
     fun certificates(): CertificateService
 
     fun projects(): ProjectService
@@ -75,6 +81,10 @@ interface OrganizationService {
         fun groups(): GroupService.WithRawResponse
 
         fun roles(): RoleService.WithRawResponse
+
+        fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun spendAlerts(): SpendAlertService.WithRawResponse
 
         fun certificates(): CertificateService.WithRawResponse
 

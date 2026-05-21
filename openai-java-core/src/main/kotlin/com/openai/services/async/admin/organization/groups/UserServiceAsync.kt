@@ -11,6 +11,8 @@ import com.openai.models.admin.organization.groups.users.UserDeleteParams
 import com.openai.models.admin.organization.groups.users.UserDeleteResponse
 import com.openai.models.admin.organization.groups.users.UserListPageAsync
 import com.openai.models.admin.organization.groups.users.UserListParams
+import com.openai.models.admin.organization.groups.users.UserRetrieveParams
+import com.openai.models.admin.organization.groups.users.UserRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -49,6 +51,30 @@ interface UserServiceAsync {
         params: UserCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<UserCreateResponse>
+
+    /** Retrieves a user in a group. */
+    fun retrieve(
+        userId: String,
+        params: UserRetrieveParams,
+    ): CompletableFuture<UserRetrieveResponse> = retrieve(userId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        userId: String,
+        params: UserRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<UserRetrieveResponse> =
+        retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: UserRetrieveParams): CompletableFuture<UserRetrieveResponse> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: UserRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<UserRetrieveResponse>
 
     /** Lists the users assigned to a group. */
     fun list(groupId: String): CompletableFuture<UserListPageAsync> =
@@ -145,6 +171,36 @@ interface UserServiceAsync {
             params: UserCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<UserCreateResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/groups/{group_id}/users/{user_id}`,
+         * but is otherwise the same as [UserServiceAsync.retrieve].
+         */
+        fun retrieve(
+            userId: String,
+            params: UserRetrieveParams,
+        ): CompletableFuture<HttpResponseFor<UserRetrieveResponse>> =
+            retrieve(userId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            userId: String,
+            params: UserRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<UserRetrieveResponse>> =
+            retrieve(params.toBuilder().userId(userId).build(), requestOptions)
+
+        /** @see retrieve */
+        fun retrieve(
+            params: UserRetrieveParams
+        ): CompletableFuture<HttpResponseFor<UserRetrieveResponse>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            params: UserRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<UserRetrieveResponse>>
 
         /**
          * Returns a raw HTTP response for `get /organization/groups/{group_id}/users`, but is

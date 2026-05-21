@@ -11,6 +11,7 @@ import com.openai.models.admin.organization.groups.GroupDeleteParams
 import com.openai.models.admin.organization.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.groups.GroupListPageAsync
 import com.openai.models.admin.organization.groups.GroupListParams
+import com.openai.models.admin.organization.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.groups.GroupUpdateParams
 import com.openai.models.admin.organization.groups.GroupUpdateResponse
 import com.openai.services.async.admin.organization.groups.RoleServiceAsync
@@ -45,6 +46,38 @@ interface GroupServiceAsync {
         params: GroupCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Group>
+
+    /** Retrieves a group. */
+    fun retrieve(groupId: String): CompletableFuture<Group> =
+        retrieve(groupId, GroupRetrieveParams.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        groupId: String,
+        params: GroupRetrieveParams = GroupRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Group> =
+        retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(
+        groupId: String,
+        params: GroupRetrieveParams = GroupRetrieveParams.none(),
+    ): CompletableFuture<Group> = retrieve(groupId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Group>
+
+    /** @see retrieve */
+    fun retrieve(params: GroupRetrieveParams): CompletableFuture<Group> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(groupId: String, requestOptions: RequestOptions): CompletableFuture<Group> =
+        retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
     /** Updates a group's information. */
     fun update(groupId: String, params: GroupUpdateParams): CompletableFuture<GroupUpdateResponse> =
@@ -149,6 +182,45 @@ interface GroupServiceAsync {
             params: GroupCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Group>>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/groups/{group_id}`, but is otherwise
+         * the same as [GroupServiceAsync.retrieve].
+         */
+        fun retrieve(groupId: String): CompletableFuture<HttpResponseFor<Group>> =
+            retrieve(groupId, GroupRetrieveParams.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams = GroupRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Group>> =
+            retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see retrieve */
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams = GroupRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<Group>> =
+            retrieve(groupId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Group>>
+
+        /** @see retrieve */
+        fun retrieve(params: GroupRetrieveParams): CompletableFuture<HttpResponseFor<Group>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            groupId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Group>> =
+            retrieve(groupId, GroupRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /organization/groups/{group_id}`, but is otherwise
