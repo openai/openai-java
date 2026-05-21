@@ -23,6 +23,7 @@ import com.openai.models.admin.organization.projects.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.projects.groups.GroupListPage
 import com.openai.models.admin.organization.projects.groups.GroupListPageResponse
 import com.openai.models.admin.organization.projects.groups.GroupListParams
+import com.openai.models.admin.organization.projects.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.projects.groups.ProjectGroup
 import com.openai.services.blocking.admin.organization.projects.groups.RoleService
 import com.openai.services.blocking.admin.organization.projects.groups.RoleServiceImpl
@@ -48,6 +49,13 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun create(params: GroupCreateParams, requestOptions: RequestOptions): ProjectGroup =
         // post /organization/projects/{project_id}/groups
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions,
+    ): ProjectGroup =
+        // get /organization/projects/{project_id}/groups/{group_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun list(params: GroupListParams, requestOptions: RequestOptions): GroupListPage =
         // get /organization/projects/{project_id}/groups
@@ -106,6 +114,46 @@ class GroupServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<ProjectGroup> =
+            jsonHandler<ProjectGroup>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectGroup> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "projects",
+                        params._pathParam(0),
+                        "groups",
+                        params._pathParam(1),
+                    )
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

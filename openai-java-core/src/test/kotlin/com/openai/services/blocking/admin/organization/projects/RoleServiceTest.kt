@@ -6,6 +6,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.projects.roles.RoleCreateParams
 import com.openai.models.admin.organization.projects.roles.RoleDeleteParams
+import com.openai.models.admin.organization.projects.roles.RoleRetrieveParams
 import com.openai.models.admin.organization.projects.roles.RoleUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -31,6 +32,24 @@ internal class RoleServiceTest {
                     .roleName("role_name")
                     .description("description")
                     .build()
+            )
+
+        role.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val roleService = client.admin().organization().projects().roles()
+
+        val role =
+            roleService.retrieve(
+                RoleRetrieveParams.builder().projectId("project_id").roleId("role_id").build()
             )
 
         role.validate()

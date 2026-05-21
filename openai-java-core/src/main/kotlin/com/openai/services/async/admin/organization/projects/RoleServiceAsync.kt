@@ -10,6 +10,7 @@ import com.openai.models.admin.organization.projects.roles.RoleDeleteParams
 import com.openai.models.admin.organization.projects.roles.RoleDeleteResponse
 import com.openai.models.admin.organization.projects.roles.RoleListPageAsync
 import com.openai.models.admin.organization.projects.roles.RoleListParams
+import com.openai.models.admin.organization.projects.roles.RoleRetrieveParams
 import com.openai.models.admin.organization.projects.roles.RoleUpdateParams
 import com.openai.models.admin.organization.roles.Role
 import java.util.concurrent.CompletableFuture
@@ -48,6 +49,27 @@ interface RoleServiceAsync {
     /** @see create */
     fun create(
         params: RoleCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Role>
+
+    /** Retrieves a project role. */
+    fun retrieve(roleId: String, params: RoleRetrieveParams): CompletableFuture<Role> =
+        retrieve(roleId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        roleId: String,
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Role> = retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: RoleRetrieveParams): CompletableFuture<Role> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: RoleRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Role>
 
@@ -163,6 +185,34 @@ interface RoleServiceAsync {
         /** @see create */
         fun create(
             params: RoleCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Role>>
+
+        /**
+         * Returns a raw HTTP response for `get /projects/{project_id}/roles/{role_id}`, but is
+         * otherwise the same as [RoleServiceAsync.retrieve].
+         */
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+        ): CompletableFuture<HttpResponseFor<Role>> =
+            retrieve(roleId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            roleId: String,
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Role>> =
+            retrieve(params.toBuilder().roleId(roleId).build(), requestOptions)
+
+        /** @see retrieve */
+        fun retrieve(params: RoleRetrieveParams): CompletableFuture<HttpResponseFor<Role>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            params: RoleRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Role>>
 

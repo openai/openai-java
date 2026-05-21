@@ -24,6 +24,7 @@ import com.openai.models.admin.organization.roles.RoleDeleteResponse
 import com.openai.models.admin.organization.roles.RoleListPage
 import com.openai.models.admin.organization.roles.RoleListPageResponse
 import com.openai.models.admin.organization.roles.RoleListParams
+import com.openai.models.admin.organization.roles.RoleRetrieveParams
 import com.openai.models.admin.organization.roles.RoleUpdateParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -42,6 +43,10 @@ class RoleServiceImpl internal constructor(private val clientOptions: ClientOpti
     override fun create(params: RoleCreateParams, requestOptions: RequestOptions): Role =
         // post /organization/roles
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun retrieve(params: RoleRetrieveParams, requestOptions: RequestOptions): Role =
+        // get /organization/roles/{role_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun update(params: RoleUpdateParams, requestOptions: RequestOptions): Role =
         // post /organization/roles/{role_id}
@@ -94,6 +99,39 @@ class RoleServiceImpl internal constructor(private val clientOptions: ClientOpti
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Role> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("roleId", params.roleId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "roles", params._pathParam(0))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

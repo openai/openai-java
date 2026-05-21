@@ -15,12 +15,14 @@ import com.openai.models.admin.organization.projects.ProjectRetrieveParams
 import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import com.openai.services.blocking.admin.organization.projects.ApiKeyService
 import com.openai.services.blocking.admin.organization.projects.CertificateService
+import com.openai.services.blocking.admin.organization.projects.DataRetentionService
 import com.openai.services.blocking.admin.organization.projects.GroupService
 import com.openai.services.blocking.admin.organization.projects.HostedToolPermissionService
 import com.openai.services.blocking.admin.organization.projects.ModelPermissionService
 import com.openai.services.blocking.admin.organization.projects.RateLimitService
 import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
+import com.openai.services.blocking.admin.organization.projects.SpendAlertService
 import com.openai.services.blocking.admin.organization.projects.UserService
 import java.util.function.Consumer
 
@@ -53,6 +55,10 @@ interface ProjectService {
     fun groups(): GroupService
 
     fun roles(): RoleService
+
+    fun dataRetention(): DataRetentionService
+
+    fun spendAlerts(): SpendAlertService
 
     fun certificates(): CertificateService
 
@@ -197,6 +203,10 @@ interface ProjectService {
         fun groups(): GroupService.WithRawResponse
 
         fun roles(): RoleService.WithRawResponse
+
+        fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun spendAlerts(): SpendAlertService.WithRawResponse
 
         fun certificates(): CertificateService.WithRawResponse
 

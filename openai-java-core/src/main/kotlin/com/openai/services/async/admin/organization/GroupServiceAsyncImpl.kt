@@ -24,6 +24,7 @@ import com.openai.models.admin.organization.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.groups.GroupListPageAsync
 import com.openai.models.admin.organization.groups.GroupListPageResponse
 import com.openai.models.admin.organization.groups.GroupListParams
+import com.openai.models.admin.organization.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.groups.GroupUpdateParams
 import com.openai.models.admin.organization.groups.GroupUpdateResponse
 import com.openai.services.async.admin.organization.groups.RoleServiceAsync
@@ -60,6 +61,13 @@ class GroupServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<Group> =
         // post /organization/groups
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+
+    override fun retrieve(
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Group> =
+        // get /organization/groups/{group_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
         params: GroupUpdateParams,
@@ -132,6 +140,42 @@ class GroupServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val retrieveHandler: Handler<Group> = jsonHandler<Group>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Group>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("groupId", params.groupId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "groups", params._pathParam(0))
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

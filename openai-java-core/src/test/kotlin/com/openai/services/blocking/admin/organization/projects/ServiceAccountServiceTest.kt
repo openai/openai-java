@@ -7,6 +7,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountDeleteParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
+import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -46,6 +47,29 @@ internal class ServiceAccountServiceTest {
                 ServiceAccountRetrieveParams.builder()
                     .projectId("project_id")
                     .serviceAccountId("service_account_id")
+                    .build()
+            )
+
+        projectServiceAccount.validate()
+    }
+
+    @Test
+    fun update() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val serviceAccountService = client.admin().organization().projects().serviceAccounts()
+
+        val projectServiceAccount =
+            serviceAccountService.update(
+                ServiceAccountUpdateParams.builder()
+                    .projectId("project_id")
+                    .serviceAccountId("service_account_id")
+                    .name("name")
+                    .role(ServiceAccountUpdateParams.Role.MEMBER)
                     .build()
             )
 

@@ -14,12 +14,14 @@ import com.openai.models.admin.organization.projects.ProjectRetrieveParams
 import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import com.openai.services.async.admin.organization.projects.ApiKeyServiceAsync
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsync
+import com.openai.services.async.admin.organization.projects.DataRetentionServiceAsync
 import com.openai.services.async.admin.organization.projects.GroupServiceAsync
 import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsync
 import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsync
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
 import com.openai.services.async.admin.organization.projects.UserServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -53,6 +55,10 @@ interface ProjectServiceAsync {
     fun groups(): GroupServiceAsync
 
     fun roles(): RoleServiceAsync
+
+    fun dataRetention(): DataRetentionServiceAsync
+
+    fun spendAlerts(): SpendAlertServiceAsync
 
     fun certificates(): CertificateServiceAsync
 
@@ -212,6 +218,10 @@ interface ProjectServiceAsync {
         fun groups(): GroupServiceAsync.WithRawResponse
 
         fun roles(): RoleServiceAsync.WithRawResponse
+
+        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 
         fun certificates(): CertificateServiceAsync.WithRawResponse
 

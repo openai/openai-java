@@ -36,6 +36,22 @@ internal class RoleServiceAsyncTest {
     }
 
     @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val roleServiceAsync = client.admin().organization().roles()
+
+        val roleFuture = roleServiceAsync.retrieve("role_id")
+
+        val role = roleFuture.get()
+        role.validate()
+    }
+
+    @Test
     fun update() {
         val client =
             OpenAIOkHttpClientAsync.builder()

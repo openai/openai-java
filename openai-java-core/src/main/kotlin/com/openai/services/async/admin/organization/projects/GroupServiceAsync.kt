@@ -10,6 +10,7 @@ import com.openai.models.admin.organization.projects.groups.GroupDeleteParams
 import com.openai.models.admin.organization.projects.groups.GroupDeleteResponse
 import com.openai.models.admin.organization.projects.groups.GroupListPageAsync
 import com.openai.models.admin.organization.projects.groups.GroupListParams
+import com.openai.models.admin.organization.projects.groups.GroupRetrieveParams
 import com.openai.models.admin.organization.projects.groups.ProjectGroup
 import com.openai.services.async.admin.organization.projects.groups.RoleServiceAsync
 import java.util.concurrent.CompletableFuture
@@ -50,6 +51,28 @@ interface GroupServiceAsync {
     /** @see create */
     fun create(
         params: GroupCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ProjectGroup>
+
+    /** Retrieves a project's group. */
+    fun retrieve(groupId: String, params: GroupRetrieveParams): CompletableFuture<ProjectGroup> =
+        retrieve(groupId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        groupId: String,
+        params: GroupRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ProjectGroup> =
+        retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: GroupRetrieveParams): CompletableFuture<ProjectGroup> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: GroupRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ProjectGroup>
 
@@ -149,6 +172,37 @@ interface GroupServiceAsync {
         /** @see create */
         fun create(
             params: GroupCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ProjectGroup>>
+
+        /**
+         * Returns a raw HTTP response for `get
+         * /organization/projects/{project_id}/groups/{group_id}`, but is otherwise the same as
+         * [GroupServiceAsync.retrieve].
+         */
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams,
+        ): CompletableFuture<HttpResponseFor<ProjectGroup>> =
+            retrieve(groupId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            groupId: String,
+            params: GroupRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ProjectGroup>> =
+            retrieve(params.toBuilder().groupId(groupId).build(), requestOptions)
+
+        /** @see retrieve */
+        fun retrieve(
+            params: GroupRetrieveParams
+        ): CompletableFuture<HttpResponseFor<ProjectGroup>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            params: GroupRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ProjectGroup>>
 

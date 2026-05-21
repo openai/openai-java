@@ -26,6 +26,7 @@ import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAcco
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListPageResponse
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
+import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -57,6 +58,13 @@ internal constructor(private val clientOptions: ClientOptions) : ServiceAccountS
     ): CompletableFuture<ProjectServiceAccount> =
         // get /organization/projects/{project_id}/service_accounts/{service_account_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+
+    override fun update(
+        params: ServiceAccountUpdateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProjectServiceAccount> =
+        // post /organization/projects/{project_id}/service_accounts/{service_account_id}
+        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: ServiceAccountListParams,
@@ -162,6 +170,50 @@ internal constructor(private val clientOptions: ClientOptions) : ServiceAccountS
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val updateHandler: Handler<ProjectServiceAccount> =
+            jsonHandler<ProjectServiceAccount>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: ServiceAccountUpdateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProjectServiceAccount>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("serviceAccountId", params.serviceAccountId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "projects",
+                        params._pathParam(0),
+                        "service_accounts",
+                        params._pathParam(1),
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { updateHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

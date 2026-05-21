@@ -24,6 +24,8 @@ import com.openai.models.admin.organization.projects.users.roles.RoleDeleteRespo
 import com.openai.models.admin.organization.projects.users.roles.RoleListPage
 import com.openai.models.admin.organization.projects.users.roles.RoleListPageResponse
 import com.openai.models.admin.organization.projects.users.roles.RoleListParams
+import com.openai.models.admin.organization.projects.users.roles.RoleRetrieveParams
+import com.openai.models.admin.organization.projects.users.roles.RoleRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -44,6 +46,13 @@ class RoleServiceImpl internal constructor(private val clientOptions: ClientOpti
     ): RoleCreateResponse =
         // post /projects/{project_id}/users/{user_id}/roles
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun retrieve(
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions,
+    ): RoleRetrieveResponse =
+        // get /projects/{project_id}/users/{user_id}/roles/{role_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun list(params: RoleListParams, requestOptions: RequestOptions): RoleListPage =
         // get /projects/{project_id}/users/{user_id}/roles
@@ -102,6 +111,47 @@ class RoleServiceImpl internal constructor(private val clientOptions: ClientOpti
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<RoleRetrieveResponse> =
+            jsonHandler<RoleRetrieveResponse>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<RoleRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("roleId", params.roleId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "projects",
+                        params._pathParam(0),
+                        "users",
+                        params._pathParam(1),
+                        "roles",
+                        params._pathParam(2),
+                    )
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

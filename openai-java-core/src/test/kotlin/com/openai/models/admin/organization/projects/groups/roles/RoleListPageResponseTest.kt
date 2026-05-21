@@ -17,6 +17,12 @@ internal class RoleListPageResponseTest {
                 .addData(
                     RoleListResponse.builder()
                         .id("id")
+                        .addAssignmentSource(
+                            RoleListResponse.AssignmentSource.builder()
+                                .principalId("principal_id")
+                                .principalType("principal_type")
+                                .build()
+                        )
                         .createdAt(0L)
                         .createdBy("created_by")
                         .createdByUserObj(
@@ -45,6 +51,12 @@ internal class RoleListPageResponseTest {
             .containsExactly(
                 RoleListResponse.builder()
                     .id("id")
+                    .addAssignmentSource(
+                        RoleListResponse.AssignmentSource.builder()
+                            .principalId("principal_id")
+                            .principalType("principal_type")
+                            .build()
+                    )
                     .createdAt(0L)
                     .createdBy("created_by")
                     .createdByUserObj(
@@ -77,6 +89,12 @@ internal class RoleListPageResponseTest {
                 .addData(
                     RoleListResponse.builder()
                         .id("id")
+                        .addAssignmentSource(
+                            RoleListResponse.AssignmentSource.builder()
+                                .principalId("principal_id")
+                                .principalType("principal_type")
+                                .build()
+                        )
                         .createdAt(0L)
                         .createdBy("created_by")
                         .createdByUserObj(

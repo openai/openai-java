@@ -23,6 +23,7 @@ import com.openai.models.admin.organization.projects.roles.RoleDeleteResponse
 import com.openai.models.admin.organization.projects.roles.RoleListPageAsync
 import com.openai.models.admin.organization.projects.roles.RoleListPageResponse
 import com.openai.models.admin.organization.projects.roles.RoleListParams
+import com.openai.models.admin.organization.projects.roles.RoleRetrieveParams
 import com.openai.models.admin.organization.projects.roles.RoleUpdateParams
 import com.openai.models.admin.organization.roles.Role
 import java.util.concurrent.CompletableFuture
@@ -47,6 +48,13 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
     ): CompletableFuture<Role> =
         // post /projects/{project_id}/roles
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+
+    override fun retrieve(
+        params: RoleRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Role> =
+        // get /projects/{project_id}/roles/{role_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
         params: RoleUpdateParams,
@@ -110,6 +118,47 @@ class RoleServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val retrieveHandler: Handler<Role> = jsonHandler<Role>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: RoleRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Role>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("roleId", params.roleId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "projects",
+                        params._pathParam(0),
+                        "roles",
+                        params._pathParam(1),
+                    )
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
