@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.37.0 (2026-05-21)
+
+Full Changelog: [v4.36.0...v4.37.0](https://github.com/openai/openai-java/compare/v4.36.0...v4.37.0)
+
+### Features
+
+* **api:** manual updates ([751f476](https://github.com/openai/openai-java/commit/751f476ae83e88dcf122aa2d34bdc16983e800b4))
+* **api:** manual updates ([1a21364](https://github.com/openai/openai-java/commit/1a21364f95933116344b0ab703796fb559eb8735))
+* **api:** update OpenAPI spec or Stainless config ([33debac](https://github.com/openai/openai-java/commit/33debacb88320787265e083cbdb91ec6e3e812f5))
+
+
+### Chores
+
+* **api:** docs updates ([704032e](https://github.com/openai/openai-java/commit/704032ebbb3244054e5e8425c82dfe45562378e9))
+
 ## 4.36.0 (2026-05-13)
 
 Full Changelog: [v4.35.0...v4.36.0](https://github.com/openai/openai-java/compare/v4.35.0...v4.36.0)
