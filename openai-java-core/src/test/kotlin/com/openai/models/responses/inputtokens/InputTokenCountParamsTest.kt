@@ -23,6 +23,7 @@ internal class InputTokenCountParamsTest {
             .instructions("instructions")
             .model("model")
             .parallelToolCalls(true)
+            .personality(InputTokenCountParams.Personality.FRIENDLY)
             .previousResponseId("resp_123")
             .reasoning(
                 Reasoning.builder()
@@ -64,6 +65,7 @@ internal class InputTokenCountParamsTest {
                 .instructions("instructions")
                 .model("model")
                 .parallelToolCalls(true)
+                .personality(InputTokenCountParams.Personality.FRIENDLY)
                 .previousResponseId("resp_123")
                 .reasoning(
                     Reasoning.builder()
@@ -102,6 +104,7 @@ internal class InputTokenCountParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.model()).contains("model")
         assertThat(body.parallelToolCalls()).contains(true)
+        assertThat(body.personality()).contains(InputTokenCountParams.Personality.FRIENDLY)
         assertThat(body.previousResponseId()).contains("resp_123")
         assertThat(body.reasoning())
             .contains(
