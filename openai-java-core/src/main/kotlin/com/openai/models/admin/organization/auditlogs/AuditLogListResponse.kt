@@ -76,6 +76,15 @@ private constructor(
     private val userAdded: JsonField<UserAdded>,
     private val userDeleted: JsonField<UserDeleted>,
     private val userUpdated: JsonField<UserUpdated>,
+    private val workloadIdentityProviderMappingCreated:
+        JsonField<WorkloadIdentityProviderMappingCreated>,
+    private val workloadIdentityProviderMappingDeleted:
+        JsonField<WorkloadIdentityProviderMappingDeleted>,
+    private val workloadIdentityProviderMappingUpdated:
+        JsonField<WorkloadIdentityProviderMappingUpdated>,
+    private val workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated>,
+    private val workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted>,
+    private val workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -229,6 +238,30 @@ private constructor(
         @JsonProperty("user.updated")
         @ExcludeMissing
         userUpdated: JsonField<UserUpdated> = JsonMissing.of(),
+        @JsonProperty("workload_identity_provider_mapping.created")
+        @ExcludeMissing
+        workloadIdentityProviderMappingCreated: JsonField<WorkloadIdentityProviderMappingCreated> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider_mapping.deleted")
+        @ExcludeMissing
+        workloadIdentityProviderMappingDeleted: JsonField<WorkloadIdentityProviderMappingDeleted> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider_mapping.updated")
+        @ExcludeMissing
+        workloadIdentityProviderMappingUpdated: JsonField<WorkloadIdentityProviderMappingUpdated> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider.created")
+        @ExcludeMissing
+        workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider.deleted")
+        @ExcludeMissing
+        workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider.updated")
+        @ExcludeMissing
+        workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated> =
+            JsonMissing.of(),
     ) : this(
         id,
         effectiveAt,
@@ -282,6 +315,12 @@ private constructor(
         userAdded,
         userDeleted,
         userUpdated,
+        workloadIdentityProviderMappingCreated,
+        workloadIdentityProviderMappingDeleted,
+        workloadIdentityProviderMappingUpdated,
+        workloadIdentityProviderCreated,
+        workloadIdentityProviderDeleted,
+        workloadIdentityProviderUpdated,
         mutableMapOf(),
     )
 
@@ -732,6 +771,66 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun userUpdated(): Optional<UserUpdated> = userUpdated.getOptional("user.updated")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderMappingCreated(): Optional<WorkloadIdentityProviderMappingCreated> =
+        workloadIdentityProviderMappingCreated.getOptional(
+            "workload_identity_provider_mapping.created"
+        )
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderMappingDeleted(): Optional<WorkloadIdentityProviderMappingDeleted> =
+        workloadIdentityProviderMappingDeleted.getOptional(
+            "workload_identity_provider_mapping.deleted"
+        )
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderMappingUpdated(): Optional<WorkloadIdentityProviderMappingUpdated> =
+        workloadIdentityProviderMappingUpdated.getOptional(
+            "workload_identity_provider_mapping.updated"
+        )
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderCreated(): Optional<WorkloadIdentityProviderCreated> =
+        workloadIdentityProviderCreated.getOptional("workload_identity_provider.created")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderDeleted(): Optional<WorkloadIdentityProviderDeleted> =
+        workloadIdentityProviderDeleted.getOptional("workload_identity_provider.deleted")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderUpdated(): Optional<WorkloadIdentityProviderUpdated> =
+        workloadIdentityProviderUpdated.getOptional("workload_identity_provider.updated")
 
     /**
      * Returns the raw JSON value of [id].
@@ -1197,6 +1296,72 @@ private constructor(
     @ExcludeMissing
     fun _userUpdated(): JsonField<UserUpdated> = userUpdated
 
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderMappingCreated].
+     *
+     * Unlike [workloadIdentityProviderMappingCreated], this method doesn't throw if the JSON field
+     * has an unexpected type.
+     */
+    @JsonProperty("workload_identity_provider_mapping.created")
+    @ExcludeMissing
+    fun _workloadIdentityProviderMappingCreated():
+        JsonField<WorkloadIdentityProviderMappingCreated> = workloadIdentityProviderMappingCreated
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderMappingDeleted].
+     *
+     * Unlike [workloadIdentityProviderMappingDeleted], this method doesn't throw if the JSON field
+     * has an unexpected type.
+     */
+    @JsonProperty("workload_identity_provider_mapping.deleted")
+    @ExcludeMissing
+    fun _workloadIdentityProviderMappingDeleted():
+        JsonField<WorkloadIdentityProviderMappingDeleted> = workloadIdentityProviderMappingDeleted
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderMappingUpdated].
+     *
+     * Unlike [workloadIdentityProviderMappingUpdated], this method doesn't throw if the JSON field
+     * has an unexpected type.
+     */
+    @JsonProperty("workload_identity_provider_mapping.updated")
+    @ExcludeMissing
+    fun _workloadIdentityProviderMappingUpdated():
+        JsonField<WorkloadIdentityProviderMappingUpdated> = workloadIdentityProviderMappingUpdated
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderCreated].
+     *
+     * Unlike [workloadIdentityProviderCreated], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("workload_identity_provider.created")
+    @ExcludeMissing
+    fun _workloadIdentityProviderCreated(): JsonField<WorkloadIdentityProviderCreated> =
+        workloadIdentityProviderCreated
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderDeleted].
+     *
+     * Unlike [workloadIdentityProviderDeleted], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("workload_identity_provider.deleted")
+    @ExcludeMissing
+    fun _workloadIdentityProviderDeleted(): JsonField<WorkloadIdentityProviderDeleted> =
+        workloadIdentityProviderDeleted
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderUpdated].
+     *
+     * Unlike [workloadIdentityProviderUpdated], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("workload_identity_provider.updated")
+    @ExcludeMissing
+    fun _workloadIdentityProviderUpdated(): JsonField<WorkloadIdentityProviderUpdated> =
+        workloadIdentityProviderUpdated
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -1283,6 +1448,21 @@ private constructor(
         private var userAdded: JsonField<UserAdded> = JsonMissing.of()
         private var userDeleted: JsonField<UserDeleted> = JsonMissing.of()
         private var userUpdated: JsonField<UserUpdated> = JsonMissing.of()
+        private var workloadIdentityProviderMappingCreated:
+            JsonField<WorkloadIdentityProviderMappingCreated> =
+            JsonMissing.of()
+        private var workloadIdentityProviderMappingDeleted:
+            JsonField<WorkloadIdentityProviderMappingDeleted> =
+            JsonMissing.of()
+        private var workloadIdentityProviderMappingUpdated:
+            JsonField<WorkloadIdentityProviderMappingUpdated> =
+            JsonMissing.of()
+        private var workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated> =
+            JsonMissing.of()
+        private var workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted> =
+            JsonMissing.of()
+        private var workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated> =
+            JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -1339,6 +1519,15 @@ private constructor(
             userAdded = auditLogListResponse.userAdded
             userDeleted = auditLogListResponse.userDeleted
             userUpdated = auditLogListResponse.userUpdated
+            workloadIdentityProviderMappingCreated =
+                auditLogListResponse.workloadIdentityProviderMappingCreated
+            workloadIdentityProviderMappingDeleted =
+                auditLogListResponse.workloadIdentityProviderMappingDeleted
+            workloadIdentityProviderMappingUpdated =
+                auditLogListResponse.workloadIdentityProviderMappingUpdated
+            workloadIdentityProviderCreated = auditLogListResponse.workloadIdentityProviderCreated
+            workloadIdentityProviderDeleted = auditLogListResponse.workloadIdentityProviderDeleted
+            workloadIdentityProviderUpdated = auditLogListResponse.workloadIdentityProviderUpdated
             additionalProperties = auditLogListResponse.additionalProperties.toMutableMap()
         }
 
@@ -2073,6 +2262,120 @@ private constructor(
             this.userUpdated = userUpdated
         }
 
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderMappingCreated(
+            workloadIdentityProviderMappingCreated: WorkloadIdentityProviderMappingCreated
+        ) =
+            workloadIdentityProviderMappingCreated(
+                JsonField.of(workloadIdentityProviderMappingCreated)
+            )
+
+        /**
+         * Sets [Builder.workloadIdentityProviderMappingCreated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderMappingCreated] with a
+         * well-typed [WorkloadIdentityProviderMappingCreated] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderMappingCreated(
+            workloadIdentityProviderMappingCreated:
+                JsonField<WorkloadIdentityProviderMappingCreated>
+        ) = apply {
+            this.workloadIdentityProviderMappingCreated = workloadIdentityProviderMappingCreated
+        }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderMappingDeleted(
+            workloadIdentityProviderMappingDeleted: WorkloadIdentityProviderMappingDeleted
+        ) =
+            workloadIdentityProviderMappingDeleted(
+                JsonField.of(workloadIdentityProviderMappingDeleted)
+            )
+
+        /**
+         * Sets [Builder.workloadIdentityProviderMappingDeleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderMappingDeleted] with a
+         * well-typed [WorkloadIdentityProviderMappingDeleted] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderMappingDeleted(
+            workloadIdentityProviderMappingDeleted:
+                JsonField<WorkloadIdentityProviderMappingDeleted>
+        ) = apply {
+            this.workloadIdentityProviderMappingDeleted = workloadIdentityProviderMappingDeleted
+        }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderMappingUpdated(
+            workloadIdentityProviderMappingUpdated: WorkloadIdentityProviderMappingUpdated
+        ) =
+            workloadIdentityProviderMappingUpdated(
+                JsonField.of(workloadIdentityProviderMappingUpdated)
+            )
+
+        /**
+         * Sets [Builder.workloadIdentityProviderMappingUpdated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderMappingUpdated] with a
+         * well-typed [WorkloadIdentityProviderMappingUpdated] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderMappingUpdated(
+            workloadIdentityProviderMappingUpdated:
+                JsonField<WorkloadIdentityProviderMappingUpdated>
+        ) = apply {
+            this.workloadIdentityProviderMappingUpdated = workloadIdentityProviderMappingUpdated
+        }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderCreated(
+            workloadIdentityProviderCreated: WorkloadIdentityProviderCreated
+        ) = workloadIdentityProviderCreated(JsonField.of(workloadIdentityProviderCreated))
+
+        /**
+         * Sets [Builder.workloadIdentityProviderCreated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderCreated] with a well-typed
+         * [WorkloadIdentityProviderCreated] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderCreated(
+            workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated>
+        ) = apply { this.workloadIdentityProviderCreated = workloadIdentityProviderCreated }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderDeleted(
+            workloadIdentityProviderDeleted: WorkloadIdentityProviderDeleted
+        ) = workloadIdentityProviderDeleted(JsonField.of(workloadIdentityProviderDeleted))
+
+        /**
+         * Sets [Builder.workloadIdentityProviderDeleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderDeleted] with a well-typed
+         * [WorkloadIdentityProviderDeleted] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderDeleted(
+            workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted>
+        ) = apply { this.workloadIdentityProviderDeleted = workloadIdentityProviderDeleted }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderUpdated(
+            workloadIdentityProviderUpdated: WorkloadIdentityProviderUpdated
+        ) = workloadIdentityProviderUpdated(JsonField.of(workloadIdentityProviderUpdated))
+
+        /**
+         * Sets [Builder.workloadIdentityProviderUpdated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderUpdated] with a well-typed
+         * [WorkloadIdentityProviderUpdated] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderUpdated(
+            workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated>
+        ) = apply { this.workloadIdentityProviderUpdated = workloadIdentityProviderUpdated }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -2160,6 +2463,12 @@ private constructor(
                 userAdded,
                 userDeleted,
                 userUpdated,
+                workloadIdentityProviderMappingCreated,
+                workloadIdentityProviderMappingDeleted,
+                workloadIdentityProviderMappingUpdated,
+                workloadIdentityProviderCreated,
+                workloadIdentityProviderDeleted,
+                workloadIdentityProviderUpdated,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -2229,6 +2538,12 @@ private constructor(
         userAdded().ifPresent { it.validate() }
         userDeleted().ifPresent { it.validate() }
         userUpdated().ifPresent { it.validate() }
+        workloadIdentityProviderMappingCreated().ifPresent { it.validate() }
+        workloadIdentityProviderMappingDeleted().ifPresent { it.validate() }
+        workloadIdentityProviderMappingUpdated().ifPresent { it.validate() }
+        workloadIdentityProviderCreated().ifPresent { it.validate() }
+        workloadIdentityProviderDeleted().ifPresent { it.validate() }
+        workloadIdentityProviderUpdated().ifPresent { it.validate() }
         validated = true
     }
 
@@ -2296,7 +2611,13 @@ private constructor(
             (serviceAccountUpdated.asKnown().getOrNull()?.validity() ?: 0) +
             (userAdded.asKnown().getOrNull()?.validity() ?: 0) +
             (userDeleted.asKnown().getOrNull()?.validity() ?: 0) +
-            (userUpdated.asKnown().getOrNull()?.validity() ?: 0)
+            (userUpdated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderMappingCreated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderMappingDeleted.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderMappingUpdated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderCreated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderDeleted.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderUpdated.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The event type. */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -2389,6 +2710,27 @@ private constructor(
 
             @JvmField val TUNNEL_DELETED = of("tunnel.deleted")
 
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_CREATED = of("workload_identity_provider.created")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_UPDATED = of("workload_identity_provider.updated")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_DELETED = of("workload_identity_provider.deleted")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED =
+                of("workload_identity_provider_mapping.created")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED =
+                of("workload_identity_provider_mapping.updated")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED =
+                of("workload_identity_provider_mapping.deleted")
+
             @JvmField val ROLE_CREATED = of("role.created")
 
             @JvmField val ROLE_UPDATED = of("role.updated")
@@ -2458,6 +2800,12 @@ private constructor(
             TUNNEL_CREATED,
             TUNNEL_UPDATED,
             TUNNEL_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED,
             ROLE_CREATED,
             ROLE_UPDATED,
             ROLE_DELETED,
@@ -2521,6 +2869,12 @@ private constructor(
             TUNNEL_CREATED,
             TUNNEL_UPDATED,
             TUNNEL_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED,
             ROLE_CREATED,
             ROLE_UPDATED,
             ROLE_DELETED,
@@ -2585,6 +2939,15 @@ private constructor(
                 TUNNEL_CREATED -> Value.TUNNEL_CREATED
                 TUNNEL_UPDATED -> Value.TUNNEL_UPDATED
                 TUNNEL_DELETED -> Value.TUNNEL_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_CREATED -> Value.WORKLOAD_IDENTITY_PROVIDER_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_UPDATED -> Value.WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_DELETED -> Value.WORKLOAD_IDENTITY_PROVIDER_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED
                 ROLE_CREATED -> Value.ROLE_CREATED
                 ROLE_UPDATED -> Value.ROLE_UPDATED
                 ROLE_DELETED -> Value.ROLE_DELETED
@@ -2650,6 +3013,15 @@ private constructor(
                 TUNNEL_CREATED -> Known.TUNNEL_CREATED
                 TUNNEL_UPDATED -> Known.TUNNEL_UPDATED
                 TUNNEL_DELETED -> Known.TUNNEL_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_CREATED -> Known.WORKLOAD_IDENTITY_PROVIDER_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_UPDATED -> Known.WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_DELETED -> Known.WORKLOAD_IDENTITY_PROVIDER_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED
                 ROLE_CREATED -> Known.ROLE_CREATED
                 ROLE_UPDATED -> Known.ROLE_UPDATED
                 ROLE_DELETED -> Known.ROLE_DELETED
@@ -17133,6 +17505,1312 @@ private constructor(
             "UserUpdated{id=$id, changesRequested=$changesRequested, additionalProperties=$additionalProperties}"
     }
 
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderMappingCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val data: JsonValue,
+        private val identityProviderId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("data") @ExcludeMissing data: JsonValue = JsonMissing.of(),
+            @JsonProperty("identity_provider_id")
+            @ExcludeMissing
+            identityProviderId: JsonField<String> = JsonMissing.of(),
+        ) : this(id, data, identityProviderId, mutableMapOf())
+
+        /**
+         * The workload identity provider mapping ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to create the workload identity provider mapping.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderMappingCreated.data().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun identityProviderId(): Optional<String> =
+            identityProviderId.getOptional("identity_provider_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [identityProviderId].
+         *
+         * Unlike [identityProviderId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("identity_provider_id")
+        @ExcludeMissing
+        fun _identityProviderId(): JsonField<String> = identityProviderId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderMappingCreated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderMappingCreated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var data: JsonValue = JsonMissing.of()
+            private var identityProviderId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                workloadIdentityProviderMappingCreated: WorkloadIdentityProviderMappingCreated
+            ) = apply {
+                id = workloadIdentityProviderMappingCreated.id
+                data = workloadIdentityProviderMappingCreated.data
+                identityProviderId = workloadIdentityProviderMappingCreated.identityProviderId
+                additionalProperties =
+                    workloadIdentityProviderMappingCreated.additionalProperties.toMutableMap()
+            }
+
+            /** The workload identity provider mapping ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to create the workload identity provider mapping. */
+            fun data(data: JsonValue) = apply { this.data = data }
+
+            /** The workload identity provider ID. */
+            fun identityProviderId(identityProviderId: String) =
+                identityProviderId(JsonField.of(identityProviderId))
+
+            /**
+             * Sets [Builder.identityProviderId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.identityProviderId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun identityProviderId(identityProviderId: JsonField<String>) = apply {
+                this.identityProviderId = identityProviderId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderMappingCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderMappingCreated =
+                WorkloadIdentityProviderMappingCreated(
+                    id,
+                    data,
+                    identityProviderId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderMappingCreated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            identityProviderId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (identityProviderId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderMappingCreated &&
+                id == other.id &&
+                data == other.data &&
+                identityProviderId == other.identityProviderId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, data, identityProviderId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderMappingCreated{id=$id, data=$data, identityProviderId=$identityProviderId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderMappingDeleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val identityProviderId: JsonField<String>,
+        private val projectId: JsonField<String>,
+        private val serviceAccountId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("identity_provider_id")
+            @ExcludeMissing
+            identityProviderId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("project_id")
+            @ExcludeMissing
+            projectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("service_account_id")
+            @ExcludeMissing
+            serviceAccountId: JsonField<String> = JsonMissing.of(),
+        ) : this(id, identityProviderId, projectId, serviceAccountId, mutableMapOf())
+
+        /**
+         * The workload identity provider mapping ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun identityProviderId(): Optional<String> =
+            identityProviderId.getOptional("identity_provider_id")
+
+        /**
+         * The project ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun projectId(): Optional<String> = projectId.getOptional("project_id")
+
+        /**
+         * The mapped service account ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serviceAccountId(): Optional<String> =
+            serviceAccountId.getOptional("service_account_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [identityProviderId].
+         *
+         * Unlike [identityProviderId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("identity_provider_id")
+        @ExcludeMissing
+        fun _identityProviderId(): JsonField<String> = identityProviderId
+
+        /**
+         * Returns the raw JSON value of [projectId].
+         *
+         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
+
+        /**
+         * Returns the raw JSON value of [serviceAccountId].
+         *
+         * Unlike [serviceAccountId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("service_account_id")
+        @ExcludeMissing
+        fun _serviceAccountId(): JsonField<String> = serviceAccountId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderMappingDeleted].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderMappingDeleted]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var identityProviderId: JsonField<String> = JsonMissing.of()
+            private var projectId: JsonField<String> = JsonMissing.of()
+            private var serviceAccountId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                workloadIdentityProviderMappingDeleted: WorkloadIdentityProviderMappingDeleted
+            ) = apply {
+                id = workloadIdentityProviderMappingDeleted.id
+                identityProviderId = workloadIdentityProviderMappingDeleted.identityProviderId
+                projectId = workloadIdentityProviderMappingDeleted.projectId
+                serviceAccountId = workloadIdentityProviderMappingDeleted.serviceAccountId
+                additionalProperties =
+                    workloadIdentityProviderMappingDeleted.additionalProperties.toMutableMap()
+            }
+
+            /** The workload identity provider mapping ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The workload identity provider ID. */
+            fun identityProviderId(identityProviderId: String) =
+                identityProviderId(JsonField.of(identityProviderId))
+
+            /**
+             * Sets [Builder.identityProviderId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.identityProviderId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun identityProviderId(identityProviderId: JsonField<String>) = apply {
+                this.identityProviderId = identityProviderId
+            }
+
+            /** The project ID. */
+            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
+
+            /**
+             * Sets [Builder.projectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+
+            /** The mapped service account ID. */
+            fun serviceAccountId(serviceAccountId: String) =
+                serviceAccountId(JsonField.of(serviceAccountId))
+
+            /**
+             * Sets [Builder.serviceAccountId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serviceAccountId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serviceAccountId(serviceAccountId: JsonField<String>) = apply {
+                this.serviceAccountId = serviceAccountId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderMappingDeleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderMappingDeleted =
+                WorkloadIdentityProviderMappingDeleted(
+                    id,
+                    identityProviderId,
+                    projectId,
+                    serviceAccountId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderMappingDeleted = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            identityProviderId()
+            projectId()
+            serviceAccountId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (identityProviderId.asKnown().isPresent) 1 else 0) +
+                (if (projectId.asKnown().isPresent) 1 else 0) +
+                (if (serviceAccountId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderMappingDeleted &&
+                id == other.id &&
+                identityProviderId == other.identityProviderId &&
+                projectId == other.projectId &&
+                serviceAccountId == other.serviceAccountId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, identityProviderId, projectId, serviceAccountId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderMappingDeleted{id=$id, identityProviderId=$identityProviderId, projectId=$projectId, serviceAccountId=$serviceAccountId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderMappingUpdated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val changesRequested: JsonValue,
+        private val identityProviderId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("changes_requested")
+            @ExcludeMissing
+            changesRequested: JsonValue = JsonMissing.of(),
+            @JsonProperty("identity_provider_id")
+            @ExcludeMissing
+            identityProviderId: JsonField<String> = JsonMissing.of(),
+        ) : this(id, changesRequested, identityProviderId, mutableMapOf())
+
+        /**
+         * The workload identity provider mapping ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to update the workload identity provider mapping.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderMappingUpdated.changesRequested().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("changes_requested")
+        @ExcludeMissing
+        fun _changesRequested(): JsonValue = changesRequested
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun identityProviderId(): Optional<String> =
+            identityProviderId.getOptional("identity_provider_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [identityProviderId].
+         *
+         * Unlike [identityProviderId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("identity_provider_id")
+        @ExcludeMissing
+        fun _identityProviderId(): JsonField<String> = identityProviderId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderMappingUpdated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderMappingUpdated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var changesRequested: JsonValue = JsonMissing.of()
+            private var identityProviderId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                workloadIdentityProviderMappingUpdated: WorkloadIdentityProviderMappingUpdated
+            ) = apply {
+                id = workloadIdentityProviderMappingUpdated.id
+                changesRequested = workloadIdentityProviderMappingUpdated.changesRequested
+                identityProviderId = workloadIdentityProviderMappingUpdated.identityProviderId
+                additionalProperties =
+                    workloadIdentityProviderMappingUpdated.additionalProperties.toMutableMap()
+            }
+
+            /** The workload identity provider mapping ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to update the workload identity provider mapping. */
+            fun changesRequested(changesRequested: JsonValue) = apply {
+                this.changesRequested = changesRequested
+            }
+
+            /** The workload identity provider ID. */
+            fun identityProviderId(identityProviderId: String) =
+                identityProviderId(JsonField.of(identityProviderId))
+
+            /**
+             * Sets [Builder.identityProviderId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.identityProviderId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun identityProviderId(identityProviderId: JsonField<String>) = apply {
+                this.identityProviderId = identityProviderId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderMappingUpdated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderMappingUpdated =
+                WorkloadIdentityProviderMappingUpdated(
+                    id,
+                    changesRequested,
+                    identityProviderId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderMappingUpdated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            identityProviderId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (identityProviderId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderMappingUpdated &&
+                id == other.id &&
+                changesRequested == other.changesRequested &&
+                identityProviderId == other.identityProviderId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, changesRequested, identityProviderId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderMappingUpdated{id=$id, changesRequested=$changesRequested, identityProviderId=$identityProviderId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val data: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("data") @ExcludeMissing data: JsonValue = JsonMissing.of(),
+        ) : this(id, data, mutableMapOf())
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to create the workload identity provider.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderCreated.data().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderCreated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderCreated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var data: JsonValue = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(workloadIdentityProviderCreated: WorkloadIdentityProviderCreated) =
+                apply {
+                    id = workloadIdentityProviderCreated.id
+                    data = workloadIdentityProviderCreated.data
+                    additionalProperties =
+                        workloadIdentityProviderCreated.additionalProperties.toMutableMap()
+                }
+
+            /** The workload identity provider ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to create the workload identity provider. */
+            fun data(data: JsonValue) = apply { this.data = data }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderCreated =
+                WorkloadIdentityProviderCreated(id, data, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderCreated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderCreated &&
+                id == other.id &&
+                data == other.data &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, data, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderCreated{id=$id, data=$data, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderDeleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val name: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        ) : this(id, name, mutableMapOf())
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The workload identity provider name.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun name(): Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderDeleted].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderDeleted]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(workloadIdentityProviderDeleted: WorkloadIdentityProviderDeleted) =
+                apply {
+                    id = workloadIdentityProviderDeleted.id
+                    name = workloadIdentityProviderDeleted.name
+                    additionalProperties =
+                        workloadIdentityProviderDeleted.additionalProperties.toMutableMap()
+                }
+
+            /** The workload identity provider ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The workload identity provider name. */
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderDeleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderDeleted =
+                WorkloadIdentityProviderDeleted(id, name, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderDeleted = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            name()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) + (if (name.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderDeleted &&
+                id == other.id &&
+                name == other.name &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, name, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderDeleted{id=$id, name=$name, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderUpdated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val changesRequested: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("changes_requested")
+            @ExcludeMissing
+            changesRequested: JsonValue = JsonMissing.of(),
+        ) : this(id, changesRequested, mutableMapOf())
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to update the workload identity provider.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderUpdated.changesRequested().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("changes_requested")
+        @ExcludeMissing
+        fun _changesRequested(): JsonValue = changesRequested
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderUpdated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderUpdated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var changesRequested: JsonValue = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(workloadIdentityProviderUpdated: WorkloadIdentityProviderUpdated) =
+                apply {
+                    id = workloadIdentityProviderUpdated.id
+                    changesRequested = workloadIdentityProviderUpdated.changesRequested
+                    additionalProperties =
+                        workloadIdentityProviderUpdated.additionalProperties.toMutableMap()
+                }
+
+            /** The workload identity provider ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to update the workload identity provider. */
+            fun changesRequested(changesRequested: JsonValue) = apply {
+                this.changesRequested = changesRequested
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderUpdated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderUpdated =
+                WorkloadIdentityProviderUpdated(
+                    id,
+                    changesRequested,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderUpdated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderUpdated &&
+                id == other.id &&
+                changesRequested == other.changesRequested &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, changesRequested, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderUpdated{id=$id, changesRequested=$changesRequested, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -17191,6 +18869,15 @@ private constructor(
             userAdded == other.userAdded &&
             userDeleted == other.userDeleted &&
             userUpdated == other.userUpdated &&
+            workloadIdentityProviderMappingCreated ==
+                other.workloadIdentityProviderMappingCreated &&
+            workloadIdentityProviderMappingDeleted ==
+                other.workloadIdentityProviderMappingDeleted &&
+            workloadIdentityProviderMappingUpdated ==
+                other.workloadIdentityProviderMappingUpdated &&
+            workloadIdentityProviderCreated == other.workloadIdentityProviderCreated &&
+            workloadIdentityProviderDeleted == other.workloadIdentityProviderDeleted &&
+            workloadIdentityProviderUpdated == other.workloadIdentityProviderUpdated &&
             additionalProperties == other.additionalProperties
     }
 
@@ -17248,6 +18935,12 @@ private constructor(
             userAdded,
             userDeleted,
             userUpdated,
+            workloadIdentityProviderMappingCreated,
+            workloadIdentityProviderMappingDeleted,
+            workloadIdentityProviderMappingUpdated,
+            workloadIdentityProviderCreated,
+            workloadIdentityProviderDeleted,
+            workloadIdentityProviderUpdated,
             additionalProperties,
         )
     }
@@ -17255,5 +18948,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, additionalProperties=$additionalProperties}"
+        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, workloadIdentityProviderMappingCreated=$workloadIdentityProviderMappingCreated, workloadIdentityProviderMappingDeleted=$workloadIdentityProviderMappingDeleted, workloadIdentityProviderMappingUpdated=$workloadIdentityProviderMappingUpdated, workloadIdentityProviderCreated=$workloadIdentityProviderCreated, workloadIdentityProviderDeleted=$workloadIdentityProviderDeleted, workloadIdentityProviderUpdated=$workloadIdentityProviderUpdated, additionalProperties=$additionalProperties}"
 }

@@ -257,6 +257,23 @@ private constructor(
             body.addToolSearchOutputItem(tools)
         }
 
+        /**
+         * Alias for calling [addItem] with `ResponseInputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addItem(additionalTools: ResponseInputItem.AdditionalTools) = apply {
+            body.addItem(additionalTools)
+        }
+
+        /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseInputItem.AdditionalTools.builder()
+         *     .tools(tools)
+         *     .build()
+         * ```
+         */
+        fun addAdditionalToolsItem(tools: List<Tool>) = apply { body.addAdditionalToolsItem(tools) }
+
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
         fun addItem(reasoning: ResponseReasoningItem) = apply { body.addItem(reasoning) }
 
@@ -730,6 +747,24 @@ private constructor(
              */
             fun addToolSearchOutputItem(tools: List<Tool>) =
                 addItem(ResponseToolSearchOutputItemParam.builder().tools(tools).build())
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofAdditionalTools(additionalTools)`.
+             */
+            fun addItem(additionalTools: ResponseInputItem.AdditionalTools) =
+                addItem(ResponseInputItem.ofAdditionalTools(additionalTools))
+
+            /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseInputItem.AdditionalTools.builder()
+             *     .tools(tools)
+             *     .build()
+             * ```
+             */
+            fun addAdditionalToolsItem(tools: List<Tool>) =
+                addItem(ResponseInputItem.AdditionalTools.builder().tools(tools).build())
 
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =

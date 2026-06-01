@@ -204,6 +204,12 @@ private constructor(
         fun item(toolSearchOutput: ResponseToolSearchOutputItem) =
             item(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
 
+        /**
+         * Alias for calling [item] with `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun item(additionalTools: ResponseOutputItem.AdditionalTools) =
+            item(ResponseOutputItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun item(compaction: ResponseCompactionItem) =
             item(ResponseOutputItem.ofCompaction(compaction))

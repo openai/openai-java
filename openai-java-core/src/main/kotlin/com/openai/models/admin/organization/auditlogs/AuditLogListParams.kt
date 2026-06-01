@@ -688,6 +688,27 @@ private constructor(
 
             @JvmField val TUNNEL_DELETED = of("tunnel.deleted")
 
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_CREATED = of("workload_identity_provider.created")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_UPDATED = of("workload_identity_provider.updated")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_DELETED = of("workload_identity_provider.deleted")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED =
+                of("workload_identity_provider_mapping.created")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED =
+                of("workload_identity_provider_mapping.updated")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED =
+                of("workload_identity_provider_mapping.deleted")
+
             @JvmField val ROLE_CREATED = of("role.created")
 
             @JvmField val ROLE_UPDATED = of("role.updated")
@@ -757,6 +778,12 @@ private constructor(
             TUNNEL_CREATED,
             TUNNEL_UPDATED,
             TUNNEL_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED,
             ROLE_CREATED,
             ROLE_UPDATED,
             ROLE_DELETED,
@@ -820,6 +847,12 @@ private constructor(
             TUNNEL_CREATED,
             TUNNEL_UPDATED,
             TUNNEL_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED,
             ROLE_CREATED,
             ROLE_UPDATED,
             ROLE_DELETED,
@@ -886,6 +919,15 @@ private constructor(
                 TUNNEL_CREATED -> Value.TUNNEL_CREATED
                 TUNNEL_UPDATED -> Value.TUNNEL_UPDATED
                 TUNNEL_DELETED -> Value.TUNNEL_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_CREATED -> Value.WORKLOAD_IDENTITY_PROVIDER_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_UPDATED -> Value.WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_DELETED -> Value.WORKLOAD_IDENTITY_PROVIDER_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED
                 ROLE_CREATED -> Value.ROLE_CREATED
                 ROLE_UPDATED -> Value.ROLE_UPDATED
                 ROLE_DELETED -> Value.ROLE_DELETED
@@ -951,6 +993,15 @@ private constructor(
                 TUNNEL_CREATED -> Known.TUNNEL_CREATED
                 TUNNEL_UPDATED -> Known.TUNNEL_UPDATED
                 TUNNEL_DELETED -> Known.TUNNEL_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_CREATED -> Known.WORKLOAD_IDENTITY_PROVIDER_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_UPDATED -> Known.WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_DELETED -> Known.WORKLOAD_IDENTITY_PROVIDER_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED
                 ROLE_CREATED -> Known.ROLE_CREATED
                 ROLE_UPDATED -> Known.ROLE_UPDATED
                 ROLE_DELETED -> Known.ROLE_DELETED

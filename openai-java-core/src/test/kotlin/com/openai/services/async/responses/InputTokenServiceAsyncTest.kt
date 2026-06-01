@@ -35,6 +35,7 @@ internal class InputTokenServiceAsyncTest {
                     .instructions("instructions")
                     .model("model")
                     .parallelToolCalls(true)
+                    .personality(InputTokenCountParams.Personality.FRIENDLY)
                     .previousResponseId("resp_123")
                     .reasoning(
                         Reasoning.builder()

@@ -258,6 +258,10 @@ private constructor(
         fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
             addData(ResponseItem.ofToolSearchOutput(toolSearchOutput))
 
+        /** Alias for calling [addData] with `ResponseItem.ofAdditionalTools(additionalTools)`. */
+        fun addData(additionalTools: ResponseItem.AdditionalTools) =
+            addData(ResponseItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [addData] with `ResponseItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) = addData(ResponseItem.ofReasoning(reasoning))
 
