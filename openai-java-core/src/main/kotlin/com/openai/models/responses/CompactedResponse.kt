@@ -284,6 +284,13 @@ private constructor(
         fun addOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
             addOutput(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
 
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addOutput(additionalTools: ResponseOutputItem.AdditionalTools) =
+            addOutput(ResponseOutputItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: ResponseCompactionItem) =
             addOutput(ResponseOutputItem.ofCompaction(compaction))

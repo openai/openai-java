@@ -60,6 +60,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -125,6 +126,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -190,6 +192,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -264,6 +267,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -322,8 +326,8 @@ internal class ConversationItemTest {
                 .id("id")
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("https://example.com")
@@ -346,6 +350,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -372,8 +377,8 @@ internal class ConversationItemTest {
                     .id("id")
                     .action(
                         ResponseFunctionWebSearch.Action.Search.builder()
-                            .query("query")
                             .addQuery("string")
+                            .query("query")
                             .addSource(
                                 ResponseFunctionWebSearch.Action.Search.Source.builder()
                                     .url("https://example.com")
@@ -415,6 +420,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -498,6 +504,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -595,6 +602,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).contains(computerCallOutput)
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -671,6 +679,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).contains(toolSearchCall)
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -748,6 +757,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).contains(toolSearchOutput)
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -802,6 +812,90 @@ internal class ConversationItemTest {
     }
 
     @Test
+    fun ofAdditionalTools() {
+        val additionalTools =
+            ConversationItem.AdditionalTools.builder()
+                .id("id")
+                .role(ConversationItem.AdditionalTools.Role.UNKNOWN)
+                .addTool(
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .strict(true)
+                        .deferLoading(true)
+                        .description("description")
+                        .build()
+                )
+                .build()
+
+        val conversationItem = ConversationItem.ofAdditionalTools(additionalTools)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).contains(additionalTools)
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.compaction()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofAdditionalToolsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofAdditionalTools(
+                ConversationItem.AdditionalTools.builder()
+                    .id("id")
+                    .role(ConversationItem.AdditionalTools.Role.UNKNOWN)
+                    .addTool(
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .deferLoading(true)
+                            .description("description")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
     fun ofReasoning() {
         val reasoning =
             ResponseReasoningItem.builder()
@@ -824,6 +918,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).contains(reasoning)
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -885,6 +980,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).contains(compaction)
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -946,6 +1042,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).contains(codeInterpreterCall)
@@ -1020,6 +1117,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1092,6 +1190,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1160,6 +1259,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1238,6 +1338,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1314,6 +1415,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1382,6 +1484,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1451,6 +1554,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1519,6 +1623,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1580,6 +1685,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1645,6 +1751,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1711,6 +1818,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
@@ -1772,6 +1880,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.computerCallOutput()).isEmpty
         assertThat(conversationItem.toolSearchCall()).isEmpty
         assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty

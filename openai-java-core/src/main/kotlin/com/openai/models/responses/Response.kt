@@ -423,6 +423,13 @@ private constructor(
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
      * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+     *
+     * For older models that support both `in_memory` and `24h`, the default depends on your
+     * organization's data retention policy:
+     * - Organizations without ZDR enabled default to `24h`.
+     * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not
+     *   specified.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1142,6 +1149,13 @@ private constructor(
         fun addOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
             addOutput(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
 
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addOutput(additionalTools: ResponseOutputItem.AdditionalTools) =
+            addOutput(ResponseOutputItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: ResponseCompactionItem) =
             addOutput(ResponseOutputItem.ofCompaction(compaction))
@@ -1685,6 +1699,13 @@ private constructor(
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+         *
+         * For older models that support both `in_memory` and `24h`, the default depends on your
+         * organization's data retention policy:
+         * - Organizations without ZDR enabled default to `24h`.
+         * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is
+         *   not specified.
          */
         fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
             promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
@@ -3337,6 +3358,13 @@ private constructor(
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
      * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+     *
+     * For older models that support both `in_memory` and `24h`, the default depends on your
+     * organization's data retention policy:
+     * - Organizations without ZDR enabled default to `24h`.
+     * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not
+     *   specified.
      */
     class PromptCacheRetention
     @JsonCreator

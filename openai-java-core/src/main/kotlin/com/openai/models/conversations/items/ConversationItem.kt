@@ -26,6 +26,14 @@ import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.conversations.Message
+import com.openai.models.responses.ApplyPatchTool
+import com.openai.models.responses.ComputerTool
+import com.openai.models.responses.ComputerUsePreviewTool
+import com.openai.models.responses.CustomTool
+import com.openai.models.responses.FileSearchTool
+import com.openai.models.responses.FunctionShellTool
+import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.NamespaceTool
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
@@ -43,6 +51,10 @@ import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseReasoningItem
 import com.openai.models.responses.ResponseToolSearchCall
 import com.openai.models.responses.ResponseToolSearchOutputItem
+import com.openai.models.responses.Tool
+import com.openai.models.responses.ToolSearchTool
+import com.openai.models.responses.WebSearchPreviewTool
+import com.openai.models.responses.WebSearchTool
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -67,6 +79,7 @@ private constructor(
     private val computerCallOutput: ResponseComputerToolCallOutputItem? = null,
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
+    private val additionalTools: AdditionalTools? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val compaction: ResponseCompactionItem? = null,
     private val codeInterpreterCall: ResponseCodeInterpreterToolCall? = null,
@@ -130,6 +143,8 @@ private constructor(
 
     fun toolSearchOutput(): Optional<ResponseToolSearchOutputItem> =
         Optional.ofNullable(toolSearchOutput)
+
+    fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -210,6 +225,8 @@ private constructor(
 
     fun isToolSearchOutput(): Boolean = toolSearchOutput != null
 
+    fun isAdditionalTools(): Boolean = additionalTools != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isCompaction(): Boolean = compaction != null
@@ -285,6 +302,8 @@ private constructor(
 
     fun asToolSearchOutput(): ResponseToolSearchOutputItem =
         toolSearchOutput.getOrThrow("toolSearchOutput")
+
+    fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -389,6 +408,7 @@ private constructor(
             computerCallOutput != null -> visitor.visitComputerCallOutput(computerCallOutput)
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
+            additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
             reasoning != null -> visitor.visitReasoning(reasoning)
             compaction != null -> visitor.visitCompaction(compaction)
             codeInterpreterCall != null -> visitor.visitCodeInterpreterCall(codeInterpreterCall)
@@ -466,6 +486,10 @@ private constructor(
 
                 override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) {
                     toolSearchOutput.validate()
+                }
+
+                override fun visitAdditionalTools(additionalTools: AdditionalTools) {
+                    additionalTools.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -588,6 +612,9 @@ private constructor(
                 override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
                     toolSearchOutput.validity()
 
+                override fun visitAdditionalTools(additionalTools: AdditionalTools) =
+                    additionalTools.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitCompaction(compaction: ResponseCompactionItem) =
@@ -654,6 +681,7 @@ private constructor(
             computerCallOutput == other.computerCallOutput &&
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
+            additionalTools == other.additionalTools &&
             reasoning == other.reasoning &&
             compaction == other.compaction &&
             codeInterpreterCall == other.codeInterpreterCall &&
@@ -683,6 +711,7 @@ private constructor(
             computerCallOutput,
             toolSearchCall,
             toolSearchOutput,
+            additionalTools,
             reasoning,
             compaction,
             codeInterpreterCall,
@@ -713,6 +742,7 @@ private constructor(
             computerCallOutput != null -> "ConversationItem{computerCallOutput=$computerCallOutput}"
             toolSearchCall != null -> "ConversationItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ConversationItem{toolSearchOutput=$toolSearchOutput}"
+            additionalTools != null -> "ConversationItem{additionalTools=$additionalTools}"
             reasoning != null -> "ConversationItem{reasoning=$reasoning}"
             compaction != null -> "ConversationItem{compaction=$compaction}"
             codeInterpreterCall != null ->
@@ -798,6 +828,10 @@ private constructor(
         @JvmStatic
         fun ofToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
             ConversationItem(toolSearchOutput = toolSearchOutput)
+
+        @JvmStatic
+        fun ofAdditionalTools(additionalTools: AdditionalTools) =
+            ConversationItem(additionalTools = additionalTools)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -927,6 +961,8 @@ private constructor(
         fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall): T
 
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
+
+        fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1059,6 +1095,11 @@ private constructor(
                         ?.let { ConversationItem(toolSearchOutput = it, _json = json) }
                         ?: ConversationItem(_json = json)
                 }
+                "additional_tools" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AdditionalTools>())?.let {
+                        ConversationItem(additionalTools = it, _json = json)
+                    } ?: ConversationItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ConversationItem(reasoning = it, _json = json)
@@ -1162,6 +1203,7 @@ private constructor(
                 value.computerCallOutput != null -> generator.writeObject(value.computerCallOutput)
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
+                value.additionalTools != null -> generator.writeObject(value.additionalTools)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.compaction != null -> generator.writeObject(value.compaction)
                 value.codeInterpreterCall != null ->
@@ -1627,6 +1669,591 @@ private constructor(
 
         override fun toString() =
             "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    class AdditionalTools
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val role: JsonField<Role>,
+        private val tools: JsonField<List<Tool>>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+            @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(id, role, tools, type, mutableMapOf())
+
+        /**
+         * The unique ID of the additional tools item.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun id(): String = id.getRequired("id")
+
+        /**
+         * The role that provided the additional tools.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun role(): Role = role.getRequired("role")
+
+        /**
+         * The additional tool definitions made available at this item.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun tools(): List<Tool> = tools.getRequired("tools")
+
+        /**
+         * The type of the item. Always `additional_tools`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("additional_tools")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [role].
+         *
+         * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+        /**
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [AdditionalTools].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .role()
+             * .tools()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AdditionalTools]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String>? = null
+            private var role: JsonField<Role>? = null
+            private var tools: JsonField<MutableList<Tool>>? = null
+            private var type: JsonValue = JsonValue.from("additional_tools")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(additionalTools: AdditionalTools) = apply {
+                id = additionalTools.id
+                role = additionalTools.role
+                tools = additionalTools.tools.map { it.toMutableList() }
+                type = additionalTools.type
+                additionalProperties = additionalTools.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the additional tools item. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The role that provided the additional tools. */
+            fun role(role: Role) = role(JsonField.of(role))
+
+            /**
+             * Sets [Builder.role] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun role(role: JsonField<Role>) = apply { this.role = role }
+
+            /** The additional tool definitions made available at this item. */
+            fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
+
+            /**
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun tools(tools: JsonField<List<Tool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Tool] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTool(tool: Tool) = apply {
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
+                    }
+            }
+
+            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+
+            /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
+            fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * FileSearchTool.builder()
+             *     .vectorStoreIds(vectorStoreIds)
+             *     .build()
+             * ```
+             */
+            fun addFileSearchTool(vectorStoreIds: List<String>) =
+                addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
+
+            /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
+            fun addTool(computer: ComputerTool) = addTool(Tool.ofComputer(computer))
+
+            /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
+            fun addTool(computerUsePreview: ComputerUsePreviewTool) =
+                addTool(Tool.ofComputerUsePreview(computerUsePreview))
+
+            /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
+            fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
+
+            /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+            fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * Tool.Mcp.builder()
+             *     .serverLabel(serverLabel)
+             *     .build()
+             * ```
+             */
+            fun addMcpTool(serverLabel: String) =
+                addTool(Tool.Mcp.builder().serverLabel(serverLabel).build())
+
+            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+            fun addTool(codeInterpreter: Tool.CodeInterpreter) =
+                addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * Tool.CodeInterpreter.builder()
+             *     .container(container)
+             *     .build()
+             * ```
+             */
+            fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
+                addTool(Tool.CodeInterpreter.builder().container(container).build())
+
+            /**
+             * Alias for calling [addCodeInterpreterTool] with
+             * `Tool.CodeInterpreter.Container.ofString(string)`.
+             */
+            fun addCodeInterpreterTool(string: String) =
+                addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+
+            /**
+             * Alias for calling [addCodeInterpreterTool] with
+             * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+             */
+            fun addCodeInterpreterTool(
+                codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+            ) =
+                addCodeInterpreterTool(
+                    Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(
+                        codeInterpreterToolAuto
+                    )
+                )
+
+            /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
+            fun addTool(imageGeneration: Tool.ImageGeneration) =
+                addTool(Tool.ofImageGeneration(imageGeneration))
+
+            /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
+            fun addToolLocalShell() = addTool(Tool.ofLocalShell())
+
+            /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+            fun addTool(shell: FunctionShellTool) = addTool(Tool.ofShell(shell))
+
+            /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
+            fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * CustomTool.builder()
+             *     .name(name)
+             *     .build()
+             * ```
+             */
+            fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
+
+            /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
+            fun addTool(namespace: NamespaceTool) = addTool(Tool.ofNamespace(namespace))
+
+            /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
+            fun addTool(search: ToolSearchTool) = addTool(Tool.ofSearch(search))
+
+            /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
+            fun addTool(webSearchPreview: WebSearchPreviewTool) =
+                addTool(Tool.ofWebSearchPreview(webSearchPreview))
+
+            /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+            fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("additional_tools")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AdditionalTools].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .role()
+             * .tools()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): AdditionalTools =
+                AdditionalTools(
+                    checkRequired("id", id),
+                    checkRequired("role", role),
+                    checkRequired("tools", tools).map { it.toImmutable() },
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AdditionalTools = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            role().validate()
+            tools().forEach { it.validate() }
+            _type().let {
+                if (it != JsonValue.from("additional_tools")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (role.asKnown().getOrNull()?.validity() ?: 0) +
+                (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                type.let { if (it == JsonValue.from("additional_tools")) 1 else 0 }
+
+        /** The role that provided the additional tools. */
+        class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val UNKNOWN = of("unknown")
+
+                @JvmField val USER = of("user")
+
+                @JvmField val ASSISTANT = of("assistant")
+
+                @JvmField val SYSTEM = of("system")
+
+                @JvmField val CRITIC = of("critic")
+
+                @JvmField val DISCRIMINATOR = of("discriminator")
+
+                @JvmField val DEVELOPER = of("developer")
+
+                @JvmField val TOOL = of("tool")
+
+                @JvmStatic fun of(value: String) = Role(JsonField.of(value))
+            }
+
+            /** An enum containing [Role]'s known values. */
+            enum class Known {
+                UNKNOWN,
+                USER,
+                ASSISTANT,
+                SYSTEM,
+                CRITIC,
+                DISCRIMINATOR,
+                DEVELOPER,
+                TOOL,
+            }
+
+            /**
+             * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Role] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                UNKNOWN,
+                USER,
+                ASSISTANT,
+                SYSTEM,
+                CRITIC,
+                DISCRIMINATOR,
+                DEVELOPER,
+                TOOL,
+                /** An enum member indicating that [Role] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    UNKNOWN -> Value.UNKNOWN
+                    USER -> Value.USER
+                    ASSISTANT -> Value.ASSISTANT
+                    SYSTEM -> Value.SYSTEM
+                    CRITIC -> Value.CRITIC
+                    DISCRIMINATOR -> Value.DISCRIMINATOR
+                    DEVELOPER -> Value.DEVELOPER
+                    TOOL -> Value.TOOL
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    UNKNOWN -> Known.UNKNOWN
+                    USER -> Known.USER
+                    ASSISTANT -> Known.ASSISTANT
+                    SYSTEM -> Known.SYSTEM
+                    CRITIC -> Known.CRITIC
+                    DISCRIMINATOR -> Known.DISCRIMINATOR
+                    DEVELOPER -> Known.DEVELOPER
+                    TOOL -> Known.TOOL
+                    else -> throw OpenAIInvalidDataException("Unknown Role: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Role = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Role && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AdditionalTools &&
+                id == other.id &&
+                role == other.role &&
+                tools == other.tools &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, role, tools, type, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AdditionalTools{id=$id, role=$role, tools=$tools, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /** A tool call to run a command on the local shell. */

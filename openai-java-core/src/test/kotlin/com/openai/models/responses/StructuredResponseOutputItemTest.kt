@@ -71,6 +71,12 @@ internal class StructuredResponseOutputItemTest {
                         .build()
                 )
                 .build()
+        private val ADDITIONAL_TOOLS =
+            ResponseOutputItem.AdditionalTools.builder()
+                .id(STRING)
+                .role(ResponseOutputItem.AdditionalTools.Role.DEVELOPER)
+                .tools(listOf())
+                .build()
         private val FUNCTION_WEB_SEARCH =
             ResponseFunctionWebSearch.builder()
                 .id(STRING)
@@ -251,6 +257,7 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("functionCallOutput", OPTIONAL),
                 DelegationReadTestCase("toolSearchCall", OPTIONAL),
                 DelegationReadTestCase("toolSearchOutput", OPTIONAL),
+                DelegationReadTestCase("additionalTools", OPTIONAL),
                 DelegationReadTestCase("webSearchCall", OPTIONAL),
                 DelegationReadTestCase("computerCall", OPTIONAL),
                 DelegationReadTestCase("computerCallOutput", OPTIONAL),
@@ -281,6 +288,8 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isToolSearchCall", false),
                 DelegationReadTestCase("isToolSearchOutput", true),
                 DelegationReadTestCase("isToolSearchOutput", false),
+                DelegationReadTestCase("isAdditionalTools", true),
+                DelegationReadTestCase("isAdditionalTools", false),
                 DelegationReadTestCase("isWebSearchCall", true),
                 DelegationReadTestCase("isWebSearchCall", false),
                 DelegationReadTestCase("isComputerCall", true),
@@ -321,6 +330,7 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asFunctionCallOutput", FUNCTION_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asToolSearchCall", TOOL_SEARCH_CALL),
                 DelegationReadTestCase("asToolSearchOutput", TOOL_SEARCH_OUTPUT),
+                DelegationReadTestCase("asAdditionalTools", ADDITIONAL_TOOLS),
                 DelegationReadTestCase("asWebSearchCall", FUNCTION_WEB_SEARCH),
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
                 DelegationReadTestCase("asComputerCallOutput", COMPUTER_TOOL_CALL_OUTPUT),

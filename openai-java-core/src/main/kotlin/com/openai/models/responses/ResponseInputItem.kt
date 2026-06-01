@@ -53,6 +53,7 @@ private constructor(
     private val functionCallOutput: FunctionCallOutput? = null,
     private val toolSearchCall: ToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItemParam? = null,
+    private val additionalTools: AdditionalTools? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val compaction: ResponseCompactionItemParam? = null,
     private val imageGenerationCall: ImageGenerationCall? = null,
@@ -131,6 +132,8 @@ private constructor(
 
     fun toolSearchOutput(): Optional<ResponseToolSearchOutputItemParam> =
         Optional.ofNullable(toolSearchOutput)
+
+    fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -221,6 +224,8 @@ private constructor(
     fun isToolSearchCall(): Boolean = toolSearchCall != null
 
     fun isToolSearchOutput(): Boolean = toolSearchOutput != null
+
+    fun isAdditionalTools(): Boolean = additionalTools != null
 
     fun isReasoning(): Boolean = reasoning != null
 
@@ -317,6 +322,8 @@ private constructor(
 
     fun asToolSearchOutput(): ResponseToolSearchOutputItemParam =
         toolSearchOutput.getOrThrow("toolSearchOutput")
+
+    fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -432,6 +439,7 @@ private constructor(
             functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
+            additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
             reasoning != null -> visitor.visitReasoning(reasoning)
             compaction != null -> visitor.visitCompaction(compaction)
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
@@ -516,6 +524,10 @@ private constructor(
                     toolSearchOutput: ResponseToolSearchOutputItemParam
                 ) {
                     toolSearchOutput.validate()
+                }
+
+                override fun visitAdditionalTools(additionalTools: AdditionalTools) {
+                    additionalTools.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -655,6 +667,9 @@ private constructor(
                     toolSearchOutput: ResponseToolSearchOutputItemParam
                 ) = toolSearchOutput.validity()
 
+                override fun visitAdditionalTools(additionalTools: AdditionalTools) =
+                    additionalTools.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitCompaction(compaction: ResponseCompactionItemParam) =
@@ -730,6 +745,7 @@ private constructor(
             functionCallOutput == other.functionCallOutput &&
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
+            additionalTools == other.additionalTools &&
             reasoning == other.reasoning &&
             compaction == other.compaction &&
             imageGenerationCall == other.imageGenerationCall &&
@@ -763,6 +779,7 @@ private constructor(
             functionCallOutput,
             toolSearchCall,
             toolSearchOutput,
+            additionalTools,
             reasoning,
             compaction,
             imageGenerationCall,
@@ -799,6 +816,7 @@ private constructor(
                 "ResponseInputItem{functionCallOutput=$functionCallOutput}"
             toolSearchCall != null -> "ResponseInputItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ResponseInputItem{toolSearchOutput=$toolSearchOutput}"
+            additionalTools != null -> "ResponseInputItem{additionalTools=$additionalTools}"
             reasoning != null -> "ResponseInputItem{reasoning=$reasoning}"
             compaction != null -> "ResponseInputItem{compaction=$compaction}"
             imageGenerationCall != null ->
@@ -905,6 +923,10 @@ private constructor(
         @JvmStatic
         fun ofToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItemParam) =
             ResponseInputItem(toolSearchOutput = toolSearchOutput)
+
+        @JvmStatic
+        fun ofAdditionalTools(additionalTools: AdditionalTools) =
+            ResponseInputItem(additionalTools = additionalTools)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1066,6 +1088,8 @@ private constructor(
 
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItemParam): T
 
+        fun visitAdditionalTools(additionalTools: AdditionalTools): T
+
         /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
@@ -1219,6 +1243,11 @@ private constructor(
                         ?.let { ResponseInputItem(toolSearchOutput = it, _json = json) }
                         ?: ResponseInputItem(_json = json)
                 }
+                "additional_tools" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AdditionalTools>())?.let {
+                        ResponseInputItem(additionalTools = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ResponseInputItem(reasoning = it, _json = json)
@@ -1335,6 +1364,7 @@ private constructor(
                 value.functionCallOutput != null -> generator.writeObject(value.functionCallOutput)
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
+                value.additionalTools != null -> generator.writeObject(value.additionalTools)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.compaction != null -> generator.writeObject(value.compaction)
                 value.imageGenerationCall != null ->
@@ -4352,6 +4382,420 @@ private constructor(
 
         override fun toString() =
             "ToolSearchCall{arguments=$arguments, type=$type, id=$id, callId=$callId, execution=$execution, status=$status, additionalProperties=$additionalProperties}"
+    }
+
+    class AdditionalTools
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val role: JsonValue,
+        private val tools: JsonField<List<Tool>>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
+            @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        ) : this(role, tools, type, id, mutableMapOf())
+
+        /**
+         * The role that provided the additional tools. Only `developer` is supported.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("developer")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
+
+        /**
+         * A list of additional tools made available at this item.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun tools(): List<Tool> = tools.getRequired("tools")
+
+        /**
+         * The item type. Always `additional_tools`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("additional_tools")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The unique ID of this additional tools item.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [AdditionalTools].
+             *
+             * The following fields are required:
+             * ```java
+             * .tools()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AdditionalTools]. */
+        class Builder internal constructor() {
+
+            private var role: JsonValue = JsonValue.from("developer")
+            private var tools: JsonField<MutableList<Tool>>? = null
+            private var type: JsonValue = JsonValue.from("additional_tools")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(additionalTools: AdditionalTools) = apply {
+                role = additionalTools.role
+                tools = additionalTools.tools.map { it.toMutableList() }
+                type = additionalTools.type
+                id = additionalTools.id
+                additionalProperties = additionalTools.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("developer")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun role(role: JsonValue) = apply { this.role = role }
+
+            /** A list of additional tools made available at this item. */
+            fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
+
+            /**
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun tools(tools: JsonField<List<Tool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Tool] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTool(tool: Tool) = apply {
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
+                    }
+            }
+
+            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+
+            /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
+            fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * FileSearchTool.builder()
+             *     .vectorStoreIds(vectorStoreIds)
+             *     .build()
+             * ```
+             */
+            fun addFileSearchTool(vectorStoreIds: List<String>) =
+                addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
+
+            /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
+            fun addTool(computer: ComputerTool) = addTool(Tool.ofComputer(computer))
+
+            /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
+            fun addTool(computerUsePreview: ComputerUsePreviewTool) =
+                addTool(Tool.ofComputerUsePreview(computerUsePreview))
+
+            /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
+            fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
+
+            /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+            fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * Tool.Mcp.builder()
+             *     .serverLabel(serverLabel)
+             *     .build()
+             * ```
+             */
+            fun addMcpTool(serverLabel: String) =
+                addTool(Tool.Mcp.builder().serverLabel(serverLabel).build())
+
+            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+            fun addTool(codeInterpreter: Tool.CodeInterpreter) =
+                addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * Tool.CodeInterpreter.builder()
+             *     .container(container)
+             *     .build()
+             * ```
+             */
+            fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
+                addTool(Tool.CodeInterpreter.builder().container(container).build())
+
+            /**
+             * Alias for calling [addCodeInterpreterTool] with
+             * `Tool.CodeInterpreter.Container.ofString(string)`.
+             */
+            fun addCodeInterpreterTool(string: String) =
+                addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+
+            /**
+             * Alias for calling [addCodeInterpreterTool] with
+             * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+             */
+            fun addCodeInterpreterTool(
+                codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+            ) =
+                addCodeInterpreterTool(
+                    Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(
+                        codeInterpreterToolAuto
+                    )
+                )
+
+            /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
+            fun addTool(imageGeneration: Tool.ImageGeneration) =
+                addTool(Tool.ofImageGeneration(imageGeneration))
+
+            /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
+            fun addToolLocalShell() = addTool(Tool.ofLocalShell())
+
+            /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+            fun addTool(shell: FunctionShellTool) = addTool(Tool.ofShell(shell))
+
+            /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
+            fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * CustomTool.builder()
+             *     .name(name)
+             *     .build()
+             * ```
+             */
+            fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
+
+            /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
+            fun addTool(namespace: NamespaceTool) = addTool(Tool.ofNamespace(namespace))
+
+            /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
+            fun addTool(search: ToolSearchTool) = addTool(Tool.ofSearch(search))
+
+            /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
+            fun addTool(webSearchPreview: WebSearchPreviewTool) =
+                addTool(Tool.ofWebSearchPreview(webSearchPreview))
+
+            /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+            fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("additional_tools")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /** The unique ID of this additional tools item. */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AdditionalTools].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .tools()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): AdditionalTools =
+                AdditionalTools(
+                    role,
+                    checkRequired("tools", tools).map { it.toImmutable() },
+                    type,
+                    id,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AdditionalTools = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _role().let {
+                if (it != JsonValue.from("developer")) {
+                    throw OpenAIInvalidDataException("'role' is invalid, received $it")
+                }
+            }
+            tools().forEach { it.validate() }
+            _type().let {
+                if (it != JsonValue.from("additional_tools")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            role.let { if (it == JsonValue.from("developer")) 1 else 0 } +
+                (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                type.let { if (it == JsonValue.from("additional_tools")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AdditionalTools &&
+                role == other.role &&
+                tools == other.tools &&
+                type == other.type &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(role, tools, type, id, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AdditionalTools{role=$role, tools=$tools, type=$type, id=$id, additionalProperties=$additionalProperties}"
     }
 
     /** An image generation request made by the model. */

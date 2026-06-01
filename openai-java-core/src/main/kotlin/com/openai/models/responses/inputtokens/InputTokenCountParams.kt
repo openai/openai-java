@@ -121,6 +121,15 @@ private constructor(
     fun parallelToolCalls(): Optional<Boolean> = body.parallelToolCalls()
 
     /**
+     * A model-owned style preset to apply to this request. Omit this parameter to use the model's
+     * default style. Supported values may expand over time. Values must be at most 64 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun personality(): Optional<Personality> = body.personality()
+
+    /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
      * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
@@ -215,6 +224,13 @@ private constructor(
      * type.
      */
     fun _parallelToolCalls(): JsonField<Boolean> = body._parallelToolCalls()
+
+    /**
+     * Returns the raw JSON value of [personality].
+     *
+     * Unlike [personality], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _personality(): JsonField<Personality> = body._personality()
 
     /**
      * Returns the raw JSON value of [previousResponseId].
@@ -428,6 +444,33 @@ private constructor(
         fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
             body.parallelToolCalls(parallelToolCalls)
         }
+
+        /**
+         * A model-owned style preset to apply to this request. Omit this parameter to use the
+         * model's default style. Supported values may expand over time. Values must be at most 64
+         * characters.
+         */
+        fun personality(personality: Personality) = apply { body.personality(personality) }
+
+        /**
+         * Sets [Builder.personality] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.personality] with a well-typed [Personality] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun personality(personality: JsonField<Personality>) = apply {
+            body.personality(personality)
+        }
+
+        /**
+         * Sets [personality] to an arbitrary [String].
+         *
+         * You should usually call [personality] with a well-typed [Personality] constant instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun personality(value: String) = apply { body.personality(value) }
 
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -826,6 +869,7 @@ private constructor(
         private val instructions: JsonField<String>,
         private val model: JsonField<String>,
         private val parallelToolCalls: JsonField<Boolean>,
+        private val personality: JsonField<Personality>,
         private val previousResponseId: JsonField<String>,
         private val reasoning: JsonField<Reasoning>,
         private val text: JsonField<Text>,
@@ -848,6 +892,9 @@ private constructor(
             @JsonProperty("parallel_tool_calls")
             @ExcludeMissing
             parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("personality")
+            @ExcludeMissing
+            personality: JsonField<Personality> = JsonMissing.of(),
             @JsonProperty("previous_response_id")
             @ExcludeMissing
             previousResponseId: JsonField<String> = JsonMissing.of(),
@@ -868,6 +915,7 @@ private constructor(
             instructions,
             model,
             parallelToolCalls,
+            personality,
             previousResponseId,
             reasoning,
             text,
@@ -925,6 +973,16 @@ private constructor(
          */
         fun parallelToolCalls(): Optional<Boolean> =
             parallelToolCalls.getOptional("parallel_tool_calls")
+
+        /**
+         * A model-owned style preset to apply to this request. Omit this parameter to use the
+         * model's default style. Supported values may expand over time. Values must be at most 64
+         * characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun personality(): Optional<Personality> = personality.getOptional("personality")
 
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -1032,6 +1090,15 @@ private constructor(
         fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
 
         /**
+         * Returns the raw JSON value of [personality].
+         *
+         * Unlike [personality], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("personality")
+        @ExcludeMissing
+        fun _personality(): JsonField<Personality> = personality
+
+        /**
          * Returns the raw JSON value of [previousResponseId].
          *
          * Unlike [previousResponseId], this method doesn't throw if the JSON field has an
@@ -1108,6 +1175,7 @@ private constructor(
             private var instructions: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+            private var personality: JsonField<Personality> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var reasoning: JsonField<Reasoning> = JsonMissing.of()
             private var text: JsonField<Text> = JsonMissing.of()
@@ -1123,6 +1191,7 @@ private constructor(
                 instructions = body.instructions
                 model = body.model
                 parallelToolCalls = body.parallelToolCalls
+                personality = body.personality
                 previousResponseId = body.previousResponseId
                 reasoning = body.reasoning
                 text = body.text
@@ -1260,6 +1329,33 @@ private constructor(
             fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
                 this.parallelToolCalls = parallelToolCalls
             }
+
+            /**
+             * A model-owned style preset to apply to this request. Omit this parameter to use the
+             * model's default style. Supported values may expand over time. Values must be at most
+             * 64 characters.
+             */
+            fun personality(personality: Personality) = personality(JsonField.of(personality))
+
+            /**
+             * Sets [Builder.personality] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.personality] with a well-typed [Personality] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun personality(personality: JsonField<Personality>) = apply {
+                this.personality = personality
+            }
+
+            /**
+             * Sets [personality] to an arbitrary [String].
+             *
+             * You should usually call [personality] with a well-typed [Personality] constant
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun personality(value: String) = personality(Personality.of(value))
 
             /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -1564,6 +1660,7 @@ private constructor(
                     instructions,
                     model,
                     parallelToolCalls,
+                    personality,
                     previousResponseId,
                     reasoning,
                     text,
@@ -1595,6 +1692,7 @@ private constructor(
             instructions()
             model()
             parallelToolCalls()
+            personality()
             previousResponseId()
             reasoning().ifPresent { it.validate() }
             text().ifPresent { it.validate() }
@@ -1625,6 +1723,7 @@ private constructor(
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
+                (if (personality.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1643,6 +1742,7 @@ private constructor(
                 instructions == other.instructions &&
                 model == other.model &&
                 parallelToolCalls == other.parallelToolCalls &&
+                personality == other.personality &&
                 previousResponseId == other.previousResponseId &&
                 reasoning == other.reasoning &&
                 text == other.text &&
@@ -1659,6 +1759,7 @@ private constructor(
                 instructions,
                 model,
                 parallelToolCalls,
+                personality,
                 previousResponseId,
                 reasoning,
                 text,
@@ -1672,7 +1773,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{conversation=$conversation, input=$input, instructions=$instructions, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, text=$text, toolChoice=$toolChoice, tools=$tools, truncation=$truncation, additionalProperties=$additionalProperties}"
+            "Body{conversation=$conversation, input=$input, instructions=$instructions, model=$model, parallelToolCalls=$parallelToolCalls, personality=$personality, previousResponseId=$previousResponseId, reasoning=$reasoning, text=$text, toolChoice=$toolChoice, tools=$tools, truncation=$truncation, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2142,6 +2243,147 @@ private constructor(
                 }
             }
         }
+    }
+
+    /**
+     * A model-owned style preset to apply to this request. Omit this parameter to use the model's
+     * default style. Supported values may expand over time. Values must be at most 64 characters.
+     */
+    class Personality @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val FRIENDLY = of("friendly")
+
+            @JvmField val PRAGMATIC = of("pragmatic")
+
+            @JvmStatic fun of(value: String) = Personality(JsonField.of(value))
+        }
+
+        /** An enum containing [Personality]'s known values. */
+        enum class Known {
+            FRIENDLY,
+            PRAGMATIC,
+        }
+
+        /**
+         * An enum containing [Personality]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Personality] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            FRIENDLY,
+            PRAGMATIC,
+            /**
+             * An enum member indicating that [Personality] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                FRIENDLY -> Value.FRIENDLY
+                PRAGMATIC -> Value.PRAGMATIC
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                FRIENDLY -> Known.FRIENDLY
+                PRAGMATIC -> Known.PRAGMATIC
+                else -> throw OpenAIInvalidDataException("Unknown Personality: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Personality = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Personality && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**

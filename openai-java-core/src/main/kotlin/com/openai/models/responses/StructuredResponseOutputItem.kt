@@ -43,6 +43,10 @@ class StructuredResponseOutputItem<T : Any>(
     fun toolSearchOutput(): Optional<ResponseToolSearchOutputItem> =
         rawOutputItem.toolSearchOutput()
 
+    /** @see ResponseOutputItem.additionalTools */
+    fun additionalTools(): Optional<ResponseOutputItem.AdditionalTools> =
+        rawOutputItem.additionalTools()
+
     /** @see ResponseOutputItem.webSearchCall */
     fun webSearchCall(): Optional<ResponseFunctionWebSearch> = rawOutputItem.webSearchCall()
 
@@ -128,6 +132,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isToolSearchOutput */
     fun isToolSearchOutput(): Boolean = rawOutputItem.isToolSearchOutput()
 
+    /** @see ResponseOutputItem.isAdditionalTools */
+    fun isAdditionalTools(): Boolean = rawOutputItem.isAdditionalTools()
+
     /** @see ResponseOutputItem.isWebSearchCall */
     fun isWebSearchCall(): Boolean = rawOutputItem.isWebSearchCall()
 
@@ -208,6 +215,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asToolSearchOutput */
     fun asToolSearchOutput(): ResponseToolSearchOutputItem = rawOutputItem.asToolSearchOutput()
 
+    /** @see ResponseOutputItem.asAdditionalTools */
+    fun asAdditionalTools(): ResponseOutputItem.AdditionalTools = rawOutputItem.asAdditionalTools()
+
     /** @see ResponseOutputItem.asWebSearchCall */
     fun asWebSearchCall(): ResponseFunctionWebSearch = rawOutputItem.asWebSearchCall()
 
@@ -285,6 +295,7 @@ class StructuredResponseOutputItem<T : Any>(
             isFunctionCallOutput() -> visitor.visitFunctionCallOutput(asFunctionCallOutput())
             isToolSearchCall() -> visitor.visitToolSearchCall(asToolSearchCall())
             isToolSearchOutput() -> visitor.visitToolSearchOutput(asToolSearchOutput())
+            isAdditionalTools() -> visitor.visitAdditionalTools(asAdditionalTools())
             isWebSearchCall() -> visitor.visitWebSearchCall(asWebSearchCall())
             isComputerCall() -> visitor.visitComputerCall(asComputerCall())
             isComputerCallOutput() -> visitor.visitComputerCallOutput(asComputerCallOutput())
@@ -341,6 +352,12 @@ class StructuredResponseOutputItem<T : Any>(
 
                 override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) {
                     toolSearchOutput.validate()
+                }
+
+                override fun visitAdditionalTools(
+                    additionalTools: ResponseOutputItem.AdditionalTools
+                ) {
+                    additionalTools.validate()
                 }
 
                 override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) {
@@ -489,6 +506,9 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitToolSearchOutput */
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
+
+        /** @see ResponseOutputItem.Visitor.visitAdditionalTools */
+        fun visitAdditionalTools(additionalTools: ResponseOutputItem.AdditionalTools): T
 
         /** @see ResponseOutputItem.Visitor.visitWebSearchCall */
         fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch): T

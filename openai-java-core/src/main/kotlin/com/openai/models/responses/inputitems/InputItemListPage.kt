@@ -104,6 +104,10 @@ private constructor(
                                 toolSearchOutput: ResponseToolSearchOutputItem
                             ): Optional<String> = toolSearchOutput._id().getOptional("id")
 
+                            override fun visitAdditionalTools(
+                                additionalTools: ResponseItem.AdditionalTools
+                            ): Optional<String> = additionalTools._id().getOptional("id")
+
                             override fun visitReasoning(
                                 reasoning: ResponseReasoningItem
                             ): Optional<String> = reasoning._id().getOptional("id")
