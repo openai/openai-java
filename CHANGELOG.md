@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.38.0 (2026-06-01)
+
+Full Changelog: [v4.37.0...v4.38.0](https://github.com/openai/openai-java/compare/v4.37.0...v4.38.0)
+
+### Features
+
+* **api:** workload identity in audit logs, additional_tools item in responses, fix ActionSearch.query to be optional. ([76574c1](https://github.com/openai/openai-java/commit/76574c1d80aef8abeca6de1826c6479206899734))
+
 ## 4.37.0 (2026-05-21)
 
 Full Changelog: [v4.36.0...v4.37.0](https://github.com/openai/openai-java/compare/v4.36.0...v4.37.0)
