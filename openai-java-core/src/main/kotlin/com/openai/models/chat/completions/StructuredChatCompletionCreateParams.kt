@@ -331,6 +331,21 @@ internal constructor(
             paramsBuilder.metadata(metadata)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.moderation */
+        fun moderation(moderation: ChatCompletionCreateParams.Moderation?) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.moderation */
+        fun moderation(moderation: Optional<ChatCompletionCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.moderation */
+        fun moderation(moderation: JsonField<ChatCompletionCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
         /** @see ChatCompletionCreateParams.Builder.modalities */
         fun modalities(modalities: List<ChatCompletionCreateParams.Modality>?) = apply {
             paramsBuilder.modalities(modalities)

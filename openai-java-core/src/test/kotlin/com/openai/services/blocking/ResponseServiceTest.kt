@@ -56,6 +56,7 @@ internal class ResponseServiceTest {
                             .build()
                     )
                     .model(ChatModel.GPT_5_1)
+                    .moderation(ResponseCreateParams.Moderation.builder().model("model").build())
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
@@ -150,6 +151,7 @@ internal class ResponseServiceTest {
                             .build()
                     )
                     .model(ChatModel.GPT_5_1)
+                    .moderation(ResponseCreateParams.Moderation.builder().model("model").build())
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(

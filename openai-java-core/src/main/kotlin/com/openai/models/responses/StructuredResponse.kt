@@ -40,6 +40,9 @@ class StructuredResponse<T : Any>(
     /** @see Response.model */
     fun model(): ResponsesModel = rawResponse.model()
 
+    /** @see Response.moderation */
+    fun moderation(): Optional<Response.Moderation> = rawResponse.moderation()
+
     /** @see Response._object_ */
     fun _object_(): JsonValue = rawResponse._object_()
 
@@ -143,6 +146,9 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._model */
     fun _model(): JsonField<ResponsesModel> = rawResponse._model()
+
+    /** @see Response._moderation */
+    fun _moderation(): JsonField<Response.Moderation> = rawResponse._moderation()
 
     /** @see Response._output */
     fun _output(): JsonField<List<StructuredResponseOutputItem<T>>> = output

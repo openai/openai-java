@@ -103,6 +103,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val FUNCTION = ChatCompletionCreateParams.Function.builder().name(STRING).build()
         private val METADATA = ChatCompletionCreateParams.Metadata.builder().build()
+        private val MODERATION =
+            ChatCompletionCreateParams.Moderation.builder().model(STRING).build()
         private val MODALITY = ChatCompletionCreateParams.Modality.TEXT
         private val FUNCTION_DEFINITION = FunctionDefinition.builder().name(STRING).build()
         private val TOOL =
@@ -212,6 +214,9 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
+                DelegationWriteTestCase("moderation", MODERATION),
+                DelegationWriteTestCase("moderation", OPTIONAL),
+                DelegationWriteTestCase("moderation", JSON_FIELD),
                 DelegationWriteTestCase("modalities", LIST),
                 DelegationWriteTestCase("modalities", OPTIONAL),
                 DelegationWriteTestCase("modalities", JSON_FIELD),

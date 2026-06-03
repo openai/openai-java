@@ -6,6 +6,15 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
@@ -13,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.completions.CompletionUsage
@@ -33,6 +43,7 @@ private constructor(
     private val created: JsonField<Long>,
     private val model: JsonField<String>,
     private val object_: JsonValue,
+    private val moderation: JsonField<Moderation>,
     private val serviceTier: JsonField<ServiceTier>,
     private val systemFingerprint: JsonField<String>,
     private val usage: JsonField<CompletionUsage>,
@@ -48,6 +59,9 @@ private constructor(
         @JsonProperty("created") @ExcludeMissing created: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("moderation")
+        @ExcludeMissing
+        moderation: JsonField<Moderation> = JsonMissing.of(),
         @JsonProperty("service_tier")
         @ExcludeMissing
         serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
@@ -61,6 +75,7 @@ private constructor(
         created,
         model,
         object_,
+        moderation,
         serviceTier,
         systemFingerprint,
         usage,
@@ -114,6 +129,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+
+    /**
+     * Moderation results for the request input and generated output. Present on the moderation
+     * chunk when moderated completions are requested.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
 
     /**
      * Specifies the processing type used for serving the request.
@@ -188,6 +212,15 @@ private constructor(
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /**
+     * Returns the raw JSON value of [moderation].
+     *
+     * Unlike [moderation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("moderation")
+    @ExcludeMissing
+    fun _moderation(): JsonField<Moderation> = moderation
+
+    /**
      * Returns the raw JSON value of [serviceTier].
      *
      * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
@@ -250,6 +283,7 @@ private constructor(
         private var created: JsonField<Long>? = null
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("chat.completion.chunk")
+        private var moderation: JsonField<Moderation> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
@@ -262,6 +296,7 @@ private constructor(
             created = chatCompletionChunk.created
             model = chatCompletionChunk.model
             object_ = chatCompletionChunk.object_
+            moderation = chatCompletionChunk.moderation
             serviceTier = chatCompletionChunk.serviceTier
             systemFingerprint = chatCompletionChunk.systemFingerprint
             usage = chatCompletionChunk.usage
@@ -347,6 +382,24 @@ private constructor(
          * value.
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
+
+        /**
+         * Moderation results for the request input and generated output. Present on the moderation
+         * chunk when moderated completions are requested.
+         */
+        fun moderation(moderation: Moderation?) = moderation(JsonField.ofNullable(moderation))
+
+        /** Alias for calling [Builder.moderation] with `moderation.orElse(null)`. */
+        fun moderation(moderation: Optional<Moderation>) = moderation(moderation.getOrNull())
+
+        /**
+         * Sets [Builder.moderation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.moderation] with a well-typed [Moderation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun moderation(moderation: JsonField<Moderation>) = apply { this.moderation = moderation }
 
         /**
          * Specifies the processing type used for serving the request.
@@ -463,6 +516,7 @@ private constructor(
                 checkRequired("created", created),
                 checkRequired("model", model),
                 object_,
+                moderation,
                 serviceTier,
                 systemFingerprint,
                 usage,
@@ -494,6 +548,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
+        moderation().ifPresent { it.validate() }
         serviceTier().ifPresent { it.validate() }
         systemFingerprint()
         usage().ifPresent { it.validate() }
@@ -520,6 +575,7 @@ private constructor(
             (if (created.asKnown().isPresent) 1 else 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("chat.completion.chunk")) 1 else 0 } +
+            (moderation.asKnown().getOrNull()?.validity() ?: 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (if (systemFingerprint.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
@@ -2614,6 +2670,3379 @@ private constructor(
     }
 
     /**
+     * Moderation results for the request input and generated output. Present on the moderation
+     * chunk when moderated completions are requested.
+     */
+    class Moderation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val input: JsonField<Input>,
+        private val output: JsonField<Output>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
+            @JsonProperty("output") @ExcludeMissing output: JsonField<Output> = JsonMissing.of(),
+        ) : this(input, output, mutableMapOf())
+
+        /**
+         * Moderation for the request input.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun input(): Input = input.getRequired("input")
+
+        /**
+         * Moderation for the generated output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun output(): Output = output.getRequired("output")
+
+        /**
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
+
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<Output> = output
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Moderation].
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .output()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Moderation]. */
+        class Builder internal constructor() {
+
+            private var input: JsonField<Input>? = null
+            private var output: JsonField<Output>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(moderation: Moderation) = apply {
+                input = moderation.input
+                output = moderation.output
+                additionalProperties = moderation.additionalProperties.toMutableMap()
+            }
+
+            /** Moderation for the request input. */
+            fun input(input: Input) = input(JsonField.of(input))
+
+            /**
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun input(input: JsonField<Input>) = apply { this.input = input }
+
+            /** Alias for calling [input] with `Input.ofModerationResults(moderationResults)`. */
+            fun input(moderationResults: Input.ModerationResults) =
+                input(Input.ofModerationResults(moderationResults))
+
+            /** Alias for calling [input] with `Input.ofError(error)`. */
+            fun input(error: Input.Error) = input(Input.ofError(error))
+
+            /** Moderation for the generated output. */
+            fun output(output: Output) = output(JsonField.of(output))
+
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [Output] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun output(output: JsonField<Output>) = apply { this.output = output }
+
+            /** Alias for calling [output] with `Output.ofModerationResults(moderationResults)`. */
+            fun output(moderationResults: Output.ModerationResults) =
+                output(Output.ofModerationResults(moderationResults))
+
+            /** Alias for calling [output] with `Output.ofError(error)`. */
+            fun output(error: Output.Error) = output(Output.ofError(error))
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Moderation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Moderation =
+                Moderation(
+                    checkRequired("input", input),
+                    checkRequired("output", output),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Moderation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            input().validate()
+            output().validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (input.asKnown().getOrNull()?.validity() ?: 0) +
+                (output.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Moderation for the request input. */
+        @JsonDeserialize(using = Input.Deserializer::class)
+        @JsonSerialize(using = Input.Serializer::class)
+        class Input
+        private constructor(
+            private val moderationResults: ModerationResults? = null,
+            private val error: Error? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            /** Successful moderation results for the request input or generated output. */
+            fun moderationResults(): Optional<ModerationResults> =
+                Optional.ofNullable(moderationResults)
+
+            /** An error produced while attempting moderation. */
+            fun error(): Optional<Error> = Optional.ofNullable(error)
+
+            fun isModerationResults(): Boolean = moderationResults != null
+
+            fun isError(): Boolean = error != null
+
+            /** Successful moderation results for the request input or generated output. */
+            fun asModerationResults(): ModerationResults =
+                moderationResults.getOrThrow("moderationResults")
+
+            /** An error produced while attempting moderation. */
+            fun asError(): Error = error.getOrThrow("error")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            /**
+             * Maps this instance's current variant to a value of type [T] using the given
+             * [visitor].
+             *
+             * Note that this method is _not_ forwards compatible with new variants from the API,
+             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
+             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
+             * ```java
+             * import com.openai.core.JsonValue;
+             * import java.util.Optional;
+             *
+             * Optional<String> result = input.accept(new Input.Visitor<Optional<String>>() {
+             *     @Override
+             *     public Optional<String> visitModerationResults(ModerationResults moderationResults) {
+             *         return Optional.of(moderationResults.toString());
+             *     }
+             *
+             *     // ...
+             *
+             *     @Override
+             *     public Optional<String> unknown(JsonValue json) {
+             *         // Or inspect the `json`.
+             *         return Optional.empty();
+             *     }
+             * });
+             * ```
+             *
+             * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+             *   [visitor] and the current variant is unknown.
+             */
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    moderationResults != null -> visitor.visitModerationResults(moderationResults)
+                    error != null -> visitor.visitError(error)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Input = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitModerationResults(moderationResults: ModerationResults) {
+                            moderationResults.validate()
+                        }
+
+                        override fun visitError(error: Error) {
+                            error.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitModerationResults(moderationResults: ModerationResults) =
+                            moderationResults.validity()
+
+                        override fun visitError(error: Error) = error.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Input &&
+                    moderationResults == other.moderationResults &&
+                    error == other.error
+            }
+
+            override fun hashCode(): Int = Objects.hash(moderationResults, error)
+
+            override fun toString(): String =
+                when {
+                    moderationResults != null -> "Input{moderationResults=$moderationResults}"
+                    error != null -> "Input{error=$error}"
+                    _json != null -> "Input{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Input")
+                }
+
+            companion object {
+
+                /** Successful moderation results for the request input or generated output. */
+                @JvmStatic
+                fun ofModerationResults(moderationResults: ModerationResults) =
+                    Input(moderationResults = moderationResults)
+
+                /** An error produced while attempting moderation. */
+                @JvmStatic fun ofError(error: Error) = Input(error = error)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [Input] to a value of type [T].
+             */
+            interface Visitor<out T> {
+
+                /** Successful moderation results for the request input or generated output. */
+                fun visitModerationResults(moderationResults: ModerationResults): T
+
+                /** An error produced while attempting moderation. */
+                fun visitError(error: Error): T
+
+                /**
+                 * Maps an unknown variant of [Input] to a value of type [T].
+                 *
+                 * An instance of [Input] can contain an unknown variant if it was deserialized from
+                 * data that doesn't match any known variant. For example, if the SDK is on an older
+                 * version than the API, then the API may respond with new variants that the SDK is
+                 * unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown Input: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Input>(Input::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Input {
+                    val json = JsonValue.fromJsonNode(node)
+                    val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                    when (type) {
+                        "moderation_results" -> {
+                            return tryDeserialize(node, jacksonTypeRef<ModerationResults>())?.let {
+                                Input(moderationResults = it, _json = json)
+                            } ?: Input(_json = json)
+                        }
+                        "error" -> {
+                            return tryDeserialize(node, jacksonTypeRef<Error>())?.let {
+                                Input(error = it, _json = json)
+                            } ?: Input(_json = json)
+                        }
+                    }
+
+                    return Input(_json = json)
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Input>(Input::class) {
+
+                override fun serialize(
+                    value: Input,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.moderationResults != null ->
+                            generator.writeObject(value.moderationResults)
+                        value.error != null -> generator.writeObject(value.error)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Input")
+                    }
+                }
+            }
+
+            /** Successful moderation results for the request input or generated output. */
+            class ModerationResults
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val model: JsonField<String>,
+                private val results: JsonField<List<Result>>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("model")
+                    @ExcludeMissing
+                    model: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("results")
+                    @ExcludeMissing
+                    results: JsonField<List<Result>> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(model, results, type, mutableMapOf())
+
+                /**
+                 * The moderation model used to generate the results.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun model(): String = model.getRequired("model")
+
+                /**
+                 * A list of moderation results.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun results(): List<Result> = results.getRequired("results")
+
+                /**
+                 * The object type, which is always `moderation_results`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("moderation_results")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [model].
+                 *
+                 * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                /**
+                 * Returns the raw JSON value of [results].
+                 *
+                 * Unlike [results], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("results")
+                @ExcludeMissing
+                fun _results(): JsonField<List<Result>> = results
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [ModerationResults].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .model()
+                     * .results()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [ModerationResults]. */
+                class Builder internal constructor() {
+
+                    private var model: JsonField<String>? = null
+                    private var results: JsonField<MutableList<Result>>? = null
+                    private var type: JsonValue = JsonValue.from("moderation_results")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(moderationResults: ModerationResults) = apply {
+                        model = moderationResults.model
+                        results = moderationResults.results.map { it.toMutableList() }
+                        type = moderationResults.type
+                        additionalProperties = moderationResults.additionalProperties.toMutableMap()
+                    }
+
+                    /** The moderation model used to generate the results. */
+                    fun model(model: String) = model(JsonField.of(model))
+
+                    /**
+                     * Sets [Builder.model] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.model] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun model(model: JsonField<String>) = apply { this.model = model }
+
+                    /** A list of moderation results. */
+                    fun results(results: List<Result>) = results(JsonField.of(results))
+
+                    /**
+                     * Sets [Builder.results] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.results] with a well-typed `List<Result>`
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun results(results: JsonField<List<Result>>) = apply {
+                        this.results = results.map { it.toMutableList() }
+                    }
+
+                    /**
+                     * Adds a single [Result] to [results].
+                     *
+                     * @throws IllegalStateException if the field was previously set to a non-list.
+                     */
+                    fun addResult(result: Result) = apply {
+                        results =
+                            (results ?: JsonField.of(mutableListOf())).also {
+                                checkKnown("results", it).add(result)
+                            }
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("moderation_results")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [ModerationResults].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .model()
+                     * .results()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): ModerationResults =
+                        ModerationResults(
+                            checkRequired("model", model),
+                            checkRequired("results", results).map { it.toImmutable() },
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): ModerationResults = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    model()
+                    results().forEach { it.validate() }
+                    _type().let {
+                        if (it != JsonValue.from("moderation_results")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (model.asKnown().isPresent) 1 else 0) +
+                        (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                        type.let { if (it == JsonValue.from("moderation_results")) 1 else 0 }
+
+                /** A moderation result produced for the response input or output. */
+                class Result
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val categories: JsonField<Categories>,
+                    private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>,
+                    private val categoryScores: JsonField<CategoryScores>,
+                    private val flagged: JsonField<Boolean>,
+                    private val model: JsonField<String>,
+                    private val type: JsonValue,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("categories")
+                        @ExcludeMissing
+                        categories: JsonField<Categories> = JsonMissing.of(),
+                        @JsonProperty("category_applied_input_types")
+                        @ExcludeMissing
+                        categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes> =
+                            JsonMissing.of(),
+                        @JsonProperty("category_scores")
+                        @ExcludeMissing
+                        categoryScores: JsonField<CategoryScores> = JsonMissing.of(),
+                        @JsonProperty("flagged")
+                        @ExcludeMissing
+                        flagged: JsonField<Boolean> = JsonMissing.of(),
+                        @JsonProperty("model")
+                        @ExcludeMissing
+                        model: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    ) : this(
+                        categories,
+                        categoryAppliedInputTypes,
+                        categoryScores,
+                        flagged,
+                        model,
+                        type,
+                        mutableMapOf(),
+                    )
+
+                    /**
+                     * A dictionary of moderation categories to booleans, True if the input is
+                     * flagged under this category.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun categories(): Categories = categories.getRequired("categories")
+
+                    /**
+                     * Which modalities of input are reflected by the score for each category.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun categoryAppliedInputTypes(): CategoryAppliedInputTypes =
+                        categoryAppliedInputTypes.getRequired("category_applied_input_types")
+
+                    /**
+                     * A dictionary of moderation categories to scores.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun categoryScores(): CategoryScores =
+                        categoryScores.getRequired("category_scores")
+
+                    /**
+                     * A boolean indicating whether the content was flagged by any category.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun flagged(): Boolean = flagged.getRequired("flagged")
+
+                    /**
+                     * The moderation model that produced this result.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun model(): String = model.getRequired("model")
+
+                    /**
+                     * The object type, which was always `moderation_result` for successful
+                     * moderation results.
+                     *
+                     * Expected to always return the following:
+                     * ```java
+                     * JsonValue.from("moderation_result")
+                     * ```
+                     *
+                     * However, this method can be useful for debugging and logging (e.g. if the
+                     * server responded with an unexpected value).
+                     */
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                    /**
+                     * Returns the raw JSON value of [categories].
+                     *
+                     * Unlike [categories], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("categories")
+                    @ExcludeMissing
+                    fun _categories(): JsonField<Categories> = categories
+
+                    /**
+                     * Returns the raw JSON value of [categoryAppliedInputTypes].
+                     *
+                     * Unlike [categoryAppliedInputTypes], this method doesn't throw if the JSON
+                     * field has an unexpected type.
+                     */
+                    @JsonProperty("category_applied_input_types")
+                    @ExcludeMissing
+                    fun _categoryAppliedInputTypes(): JsonField<CategoryAppliedInputTypes> =
+                        categoryAppliedInputTypes
+
+                    /**
+                     * Returns the raw JSON value of [categoryScores].
+                     *
+                     * Unlike [categoryScores], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("category_scores")
+                    @ExcludeMissing
+                    fun _categoryScores(): JsonField<CategoryScores> = categoryScores
+
+                    /**
+                     * Returns the raw JSON value of [flagged].
+                     *
+                     * Unlike [flagged], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("flagged")
+                    @ExcludeMissing
+                    fun _flagged(): JsonField<Boolean> = flagged
+
+                    /**
+                     * Returns the raw JSON value of [model].
+                     *
+                     * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Result].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .categories()
+                         * .categoryAppliedInputTypes()
+                         * .categoryScores()
+                         * .flagged()
+                         * .model()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Result]. */
+                    class Builder internal constructor() {
+
+                        private var categories: JsonField<Categories>? = null
+                        private var categoryAppliedInputTypes:
+                            JsonField<CategoryAppliedInputTypes>? =
+                            null
+                        private var categoryScores: JsonField<CategoryScores>? = null
+                        private var flagged: JsonField<Boolean>? = null
+                        private var model: JsonField<String>? = null
+                        private var type: JsonValue = JsonValue.from("moderation_result")
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(result: Result) = apply {
+                            categories = result.categories
+                            categoryAppliedInputTypes = result.categoryAppliedInputTypes
+                            categoryScores = result.categoryScores
+                            flagged = result.flagged
+                            model = result.model
+                            type = result.type
+                            additionalProperties = result.additionalProperties.toMutableMap()
+                        }
+
+                        /**
+                         * A dictionary of moderation categories to booleans, True if the input is
+                         * flagged under this category.
+                         */
+                        fun categories(categories: Categories) =
+                            categories(JsonField.of(categories))
+
+                        /**
+                         * Sets [Builder.categories] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.categories] with a well-typed
+                         * [Categories] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
+                        fun categories(categories: JsonField<Categories>) = apply {
+                            this.categories = categories
+                        }
+
+                        /**
+                         * Which modalities of input are reflected by the score for each category.
+                         */
+                        fun categoryAppliedInputTypes(
+                            categoryAppliedInputTypes: CategoryAppliedInputTypes
+                        ) = categoryAppliedInputTypes(JsonField.of(categoryAppliedInputTypes))
+
+                        /**
+                         * Sets [Builder.categoryAppliedInputTypes] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.categoryAppliedInputTypes] with a
+                         * well-typed [CategoryAppliedInputTypes] value instead. This method is
+                         * primarily for setting the field to an undocumented or not yet supported
+                         * value.
+                         */
+                        fun categoryAppliedInputTypes(
+                            categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>
+                        ) = apply { this.categoryAppliedInputTypes = categoryAppliedInputTypes }
+
+                        /** A dictionary of moderation categories to scores. */
+                        fun categoryScores(categoryScores: CategoryScores) =
+                            categoryScores(JsonField.of(categoryScores))
+
+                        /**
+                         * Sets [Builder.categoryScores] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.categoryScores] with a well-typed
+                         * [CategoryScores] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
+                        fun categoryScores(categoryScores: JsonField<CategoryScores>) = apply {
+                            this.categoryScores = categoryScores
+                        }
+
+                        /** A boolean indicating whether the content was flagged by any category. */
+                        fun flagged(flagged: Boolean) = flagged(JsonField.of(flagged))
+
+                        /**
+                         * Sets [Builder.flagged] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.flagged] with a well-typed [Boolean]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun flagged(flagged: JsonField<Boolean>) = apply { this.flagged = flagged }
+
+                        /** The moderation model that produced this result. */
+                        fun model(model: String) = model(JsonField.of(model))
+
+                        /**
+                         * Sets [Builder.model] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.model] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun model(model: JsonField<String>) = apply { this.model = model }
+
+                        /**
+                         * Sets the field to an arbitrary JSON value.
+                         *
+                         * It is usually unnecessary to call this method because the field defaults
+                         * to the following:
+                         * ```java
+                         * JsonValue.from("moderation_result")
+                         * ```
+                         *
+                         * This method is primarily for setting the field to an undocumented or not
+                         * yet supported value.
+                         */
+                        fun type(type: JsonValue) = apply { this.type = type }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Result].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .categories()
+                         * .categoryAppliedInputTypes()
+                         * .categoryScores()
+                         * .flagged()
+                         * .model()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): Result =
+                            Result(
+                                checkRequired("categories", categories),
+                                checkRequired(
+                                    "categoryAppliedInputTypes",
+                                    categoryAppliedInputTypes,
+                                ),
+                                checkRequired("categoryScores", categoryScores),
+                                checkRequired("flagged", flagged),
+                                checkRequired("model", model),
+                                type,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): Result = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        categories().validate()
+                        categoryAppliedInputTypes().validate()
+                        categoryScores().validate()
+                        flagged()
+                        model()
+                        _type().let {
+                            if (it != JsonValue.from("moderation_result")) {
+                                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                            }
+                        }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (categories.asKnown().getOrNull()?.validity() ?: 0) +
+                            (categoryAppliedInputTypes.asKnown().getOrNull()?.validity() ?: 0) +
+                            (categoryScores.asKnown().getOrNull()?.validity() ?: 0) +
+                            (if (flagged.asKnown().isPresent) 1 else 0) +
+                            (if (model.asKnown().isPresent) 1 else 0) +
+                            type.let { if (it == JsonValue.from("moderation_result")) 1 else 0 }
+
+                    /**
+                     * A dictionary of moderation categories to booleans, True if the input is
+                     * flagged under this category.
+                     */
+                    class Categories
+                    @JsonCreator
+                    private constructor(
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        private val additionalProperties: Map<String, JsonValue>
+                    ) {
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [Categories].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [Categories]. */
+                        class Builder internal constructor() {
+
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(categories: Categories) = apply {
+                                additionalProperties =
+                                    categories.additionalProperties.toMutableMap()
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [Categories].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): Categories = Categories(additionalProperties.toImmutable())
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): Categories = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            additionalProperties.count { (_, value) ->
+                                !value.isNull() && !value.isMissing()
+                            }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Categories &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "Categories{additionalProperties=$additionalProperties}"
+                    }
+
+                    /** Which modalities of input are reflected by the score for each category. */
+                    class CategoryAppliedInputTypes
+                    @JsonCreator
+                    private constructor(
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        private val additionalProperties: Map<String, JsonValue>
+                    ) {
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [CategoryAppliedInputTypes].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [CategoryAppliedInputTypes]. */
+                        class Builder internal constructor() {
+
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(
+                                categoryAppliedInputTypes: CategoryAppliedInputTypes
+                            ) = apply {
+                                additionalProperties =
+                                    categoryAppliedInputTypes.additionalProperties.toMutableMap()
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [CategoryAppliedInputTypes].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): CategoryAppliedInputTypes =
+                                CategoryAppliedInputTypes(additionalProperties.toImmutable())
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): CategoryAppliedInputTypes = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            additionalProperties.count { (_, value) ->
+                                !value.isNull() && !value.isMissing()
+                            }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is CategoryAppliedInputTypes &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "CategoryAppliedInputTypes{additionalProperties=$additionalProperties}"
+                    }
+
+                    /** A dictionary of moderation categories to scores. */
+                    class CategoryScores
+                    @JsonCreator
+                    private constructor(
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        private val additionalProperties: Map<String, JsonValue>
+                    ) {
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [CategoryScores].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [CategoryScores]. */
+                        class Builder internal constructor() {
+
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(categoryScores: CategoryScores) = apply {
+                                additionalProperties =
+                                    categoryScores.additionalProperties.toMutableMap()
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [CategoryScores].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): CategoryScores =
+                                CategoryScores(additionalProperties.toImmutable())
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): CategoryScores = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            additionalProperties.count { (_, value) ->
+                                !value.isNull() && !value.isMissing()
+                            }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is CategoryScores &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "CategoryScores{additionalProperties=$additionalProperties}"
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Result &&
+                            categories == other.categories &&
+                            categoryAppliedInputTypes == other.categoryAppliedInputTypes &&
+                            categoryScores == other.categoryScores &&
+                            flagged == other.flagged &&
+                            model == other.model &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(
+                            categories,
+                            categoryAppliedInputTypes,
+                            categoryScores,
+                            flagged,
+                            model,
+                            type,
+                            additionalProperties,
+                        )
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Result{categories=$categories, categoryAppliedInputTypes=$categoryAppliedInputTypes, categoryScores=$categoryScores, flagged=$flagged, model=$model, type=$type, additionalProperties=$additionalProperties}"
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is ModerationResults &&
+                        model == other.model &&
+                        results == other.results &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(model, results, type, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "ModerationResults{model=$model, results=$results, type=$type, additionalProperties=$additionalProperties}"
+            }
+
+            /** An error produced while attempting moderation. */
+            class Error
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val code: JsonField<String>,
+                private val message: JsonField<String>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("code")
+                    @ExcludeMissing
+                    code: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("message")
+                    @ExcludeMissing
+                    message: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(code, message, type, mutableMapOf())
+
+                /**
+                 * The error code.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun code(): String = code.getRequired("code")
+
+                /**
+                 * The error message.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun message(): String = message.getRequired("message")
+
+                /**
+                 * The object type, which is always `error`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("error")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [code].
+                 *
+                 * Unlike [code], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
+
+                /**
+                 * Returns the raw JSON value of [message].
+                 *
+                 * Unlike [message], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Error].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .code()
+                     * .message()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Error]. */
+                class Builder internal constructor() {
+
+                    private var code: JsonField<String>? = null
+                    private var message: JsonField<String>? = null
+                    private var type: JsonValue = JsonValue.from("error")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(error: Error) = apply {
+                        code = error.code
+                        message = error.message
+                        type = error.type
+                        additionalProperties = error.additionalProperties.toMutableMap()
+                    }
+
+                    /** The error code. */
+                    fun code(code: String) = code(JsonField.of(code))
+
+                    /**
+                     * Sets [Builder.code] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.code] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun code(code: JsonField<String>) = apply { this.code = code }
+
+                    /** The error message. */
+                    fun message(message: String) = message(JsonField.of(message))
+
+                    /**
+                     * Sets [Builder.message] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.message] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun message(message: JsonField<String>) = apply { this.message = message }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("error")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Error].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .code()
+                     * .message()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Error =
+                        Error(
+                            checkRequired("code", code),
+                            checkRequired("message", message),
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Error = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    code()
+                    message()
+                    _type().let {
+                        if (it != JsonValue.from("error")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (code.asKnown().isPresent) 1 else 0) +
+                        (if (message.asKnown().isPresent) 1 else 0) +
+                        type.let { if (it == JsonValue.from("error")) 1 else 0 }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Error &&
+                        code == other.code &&
+                        message == other.message &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(code, message, type, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Error{code=$code, message=$message, type=$type, additionalProperties=$additionalProperties}"
+            }
+        }
+
+        /** Moderation for the generated output. */
+        @JsonDeserialize(using = Output.Deserializer::class)
+        @JsonSerialize(using = Output.Serializer::class)
+        class Output
+        private constructor(
+            private val moderationResults: ModerationResults? = null,
+            private val error: Error? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            /** Successful moderation results for the request input or generated output. */
+            fun moderationResults(): Optional<ModerationResults> =
+                Optional.ofNullable(moderationResults)
+
+            /** An error produced while attempting moderation. */
+            fun error(): Optional<Error> = Optional.ofNullable(error)
+
+            fun isModerationResults(): Boolean = moderationResults != null
+
+            fun isError(): Boolean = error != null
+
+            /** Successful moderation results for the request input or generated output. */
+            fun asModerationResults(): ModerationResults =
+                moderationResults.getOrThrow("moderationResults")
+
+            /** An error produced while attempting moderation. */
+            fun asError(): Error = error.getOrThrow("error")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            /**
+             * Maps this instance's current variant to a value of type [T] using the given
+             * [visitor].
+             *
+             * Note that this method is _not_ forwards compatible with new variants from the API,
+             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
+             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
+             * ```java
+             * import com.openai.core.JsonValue;
+             * import java.util.Optional;
+             *
+             * Optional<String> result = output.accept(new Output.Visitor<Optional<String>>() {
+             *     @Override
+             *     public Optional<String> visitModerationResults(ModerationResults moderationResults) {
+             *         return Optional.of(moderationResults.toString());
+             *     }
+             *
+             *     // ...
+             *
+             *     @Override
+             *     public Optional<String> unknown(JsonValue json) {
+             *         // Or inspect the `json`.
+             *         return Optional.empty();
+             *     }
+             * });
+             * ```
+             *
+             * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+             *   [visitor] and the current variant is unknown.
+             */
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    moderationResults != null -> visitor.visitModerationResults(moderationResults)
+                    error != null -> visitor.visitError(error)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Output = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitModerationResults(moderationResults: ModerationResults) {
+                            moderationResults.validate()
+                        }
+
+                        override fun visitError(error: Error) {
+                            error.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitModerationResults(moderationResults: ModerationResults) =
+                            moderationResults.validity()
+
+                        override fun visitError(error: Error) = error.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Output &&
+                    moderationResults == other.moderationResults &&
+                    error == other.error
+            }
+
+            override fun hashCode(): Int = Objects.hash(moderationResults, error)
+
+            override fun toString(): String =
+                when {
+                    moderationResults != null -> "Output{moderationResults=$moderationResults}"
+                    error != null -> "Output{error=$error}"
+                    _json != null -> "Output{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Output")
+                }
+
+            companion object {
+
+                /** Successful moderation results for the request input or generated output. */
+                @JvmStatic
+                fun ofModerationResults(moderationResults: ModerationResults) =
+                    Output(moderationResults = moderationResults)
+
+                /** An error produced while attempting moderation. */
+                @JvmStatic fun ofError(error: Error) = Output(error = error)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [Output] to a value of type [T].
+             */
+            interface Visitor<out T> {
+
+                /** Successful moderation results for the request input or generated output. */
+                fun visitModerationResults(moderationResults: ModerationResults): T
+
+                /** An error produced while attempting moderation. */
+                fun visitError(error: Error): T
+
+                /**
+                 * Maps an unknown variant of [Output] to a value of type [T].
+                 *
+                 * An instance of [Output] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown Output: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Output>(Output::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Output {
+                    val json = JsonValue.fromJsonNode(node)
+                    val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                    when (type) {
+                        "moderation_results" -> {
+                            return tryDeserialize(node, jacksonTypeRef<ModerationResults>())?.let {
+                                Output(moderationResults = it, _json = json)
+                            } ?: Output(_json = json)
+                        }
+                        "error" -> {
+                            return tryDeserialize(node, jacksonTypeRef<Error>())?.let {
+                                Output(error = it, _json = json)
+                            } ?: Output(_json = json)
+                        }
+                    }
+
+                    return Output(_json = json)
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Output>(Output::class) {
+
+                override fun serialize(
+                    value: Output,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.moderationResults != null ->
+                            generator.writeObject(value.moderationResults)
+                        value.error != null -> generator.writeObject(value.error)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Output")
+                    }
+                }
+            }
+
+            /** Successful moderation results for the request input or generated output. */
+            class ModerationResults
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val model: JsonField<String>,
+                private val results: JsonField<List<Result>>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("model")
+                    @ExcludeMissing
+                    model: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("results")
+                    @ExcludeMissing
+                    results: JsonField<List<Result>> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(model, results, type, mutableMapOf())
+
+                /**
+                 * The moderation model used to generate the results.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun model(): String = model.getRequired("model")
+
+                /**
+                 * A list of moderation results.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun results(): List<Result> = results.getRequired("results")
+
+                /**
+                 * The object type, which is always `moderation_results`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("moderation_results")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [model].
+                 *
+                 * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                /**
+                 * Returns the raw JSON value of [results].
+                 *
+                 * Unlike [results], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("results")
+                @ExcludeMissing
+                fun _results(): JsonField<List<Result>> = results
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [ModerationResults].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .model()
+                     * .results()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [ModerationResults]. */
+                class Builder internal constructor() {
+
+                    private var model: JsonField<String>? = null
+                    private var results: JsonField<MutableList<Result>>? = null
+                    private var type: JsonValue = JsonValue.from("moderation_results")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(moderationResults: ModerationResults) = apply {
+                        model = moderationResults.model
+                        results = moderationResults.results.map { it.toMutableList() }
+                        type = moderationResults.type
+                        additionalProperties = moderationResults.additionalProperties.toMutableMap()
+                    }
+
+                    /** The moderation model used to generate the results. */
+                    fun model(model: String) = model(JsonField.of(model))
+
+                    /**
+                     * Sets [Builder.model] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.model] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun model(model: JsonField<String>) = apply { this.model = model }
+
+                    /** A list of moderation results. */
+                    fun results(results: List<Result>) = results(JsonField.of(results))
+
+                    /**
+                     * Sets [Builder.results] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.results] with a well-typed `List<Result>`
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun results(results: JsonField<List<Result>>) = apply {
+                        this.results = results.map { it.toMutableList() }
+                    }
+
+                    /**
+                     * Adds a single [Result] to [results].
+                     *
+                     * @throws IllegalStateException if the field was previously set to a non-list.
+                     */
+                    fun addResult(result: Result) = apply {
+                        results =
+                            (results ?: JsonField.of(mutableListOf())).also {
+                                checkKnown("results", it).add(result)
+                            }
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("moderation_results")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [ModerationResults].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .model()
+                     * .results()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): ModerationResults =
+                        ModerationResults(
+                            checkRequired("model", model),
+                            checkRequired("results", results).map { it.toImmutable() },
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): ModerationResults = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    model()
+                    results().forEach { it.validate() }
+                    _type().let {
+                        if (it != JsonValue.from("moderation_results")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (model.asKnown().isPresent) 1 else 0) +
+                        (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                        type.let { if (it == JsonValue.from("moderation_results")) 1 else 0 }
+
+                /** A moderation result produced for the response input or output. */
+                class Result
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val categories: JsonField<Categories>,
+                    private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>,
+                    private val categoryScores: JsonField<CategoryScores>,
+                    private val flagged: JsonField<Boolean>,
+                    private val model: JsonField<String>,
+                    private val type: JsonValue,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("categories")
+                        @ExcludeMissing
+                        categories: JsonField<Categories> = JsonMissing.of(),
+                        @JsonProperty("category_applied_input_types")
+                        @ExcludeMissing
+                        categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes> =
+                            JsonMissing.of(),
+                        @JsonProperty("category_scores")
+                        @ExcludeMissing
+                        categoryScores: JsonField<CategoryScores> = JsonMissing.of(),
+                        @JsonProperty("flagged")
+                        @ExcludeMissing
+                        flagged: JsonField<Boolean> = JsonMissing.of(),
+                        @JsonProperty("model")
+                        @ExcludeMissing
+                        model: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    ) : this(
+                        categories,
+                        categoryAppliedInputTypes,
+                        categoryScores,
+                        flagged,
+                        model,
+                        type,
+                        mutableMapOf(),
+                    )
+
+                    /**
+                     * A dictionary of moderation categories to booleans, True if the input is
+                     * flagged under this category.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun categories(): Categories = categories.getRequired("categories")
+
+                    /**
+                     * Which modalities of input are reflected by the score for each category.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun categoryAppliedInputTypes(): CategoryAppliedInputTypes =
+                        categoryAppliedInputTypes.getRequired("category_applied_input_types")
+
+                    /**
+                     * A dictionary of moderation categories to scores.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun categoryScores(): CategoryScores =
+                        categoryScores.getRequired("category_scores")
+
+                    /**
+                     * A boolean indicating whether the content was flagged by any category.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun flagged(): Boolean = flagged.getRequired("flagged")
+
+                    /**
+                     * The moderation model that produced this result.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun model(): String = model.getRequired("model")
+
+                    /**
+                     * The object type, which was always `moderation_result` for successful
+                     * moderation results.
+                     *
+                     * Expected to always return the following:
+                     * ```java
+                     * JsonValue.from("moderation_result")
+                     * ```
+                     *
+                     * However, this method can be useful for debugging and logging (e.g. if the
+                     * server responded with an unexpected value).
+                     */
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                    /**
+                     * Returns the raw JSON value of [categories].
+                     *
+                     * Unlike [categories], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("categories")
+                    @ExcludeMissing
+                    fun _categories(): JsonField<Categories> = categories
+
+                    /**
+                     * Returns the raw JSON value of [categoryAppliedInputTypes].
+                     *
+                     * Unlike [categoryAppliedInputTypes], this method doesn't throw if the JSON
+                     * field has an unexpected type.
+                     */
+                    @JsonProperty("category_applied_input_types")
+                    @ExcludeMissing
+                    fun _categoryAppliedInputTypes(): JsonField<CategoryAppliedInputTypes> =
+                        categoryAppliedInputTypes
+
+                    /**
+                     * Returns the raw JSON value of [categoryScores].
+                     *
+                     * Unlike [categoryScores], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("category_scores")
+                    @ExcludeMissing
+                    fun _categoryScores(): JsonField<CategoryScores> = categoryScores
+
+                    /**
+                     * Returns the raw JSON value of [flagged].
+                     *
+                     * Unlike [flagged], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("flagged")
+                    @ExcludeMissing
+                    fun _flagged(): JsonField<Boolean> = flagged
+
+                    /**
+                     * Returns the raw JSON value of [model].
+                     *
+                     * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Result].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .categories()
+                         * .categoryAppliedInputTypes()
+                         * .categoryScores()
+                         * .flagged()
+                         * .model()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Result]. */
+                    class Builder internal constructor() {
+
+                        private var categories: JsonField<Categories>? = null
+                        private var categoryAppliedInputTypes:
+                            JsonField<CategoryAppliedInputTypes>? =
+                            null
+                        private var categoryScores: JsonField<CategoryScores>? = null
+                        private var flagged: JsonField<Boolean>? = null
+                        private var model: JsonField<String>? = null
+                        private var type: JsonValue = JsonValue.from("moderation_result")
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(result: Result) = apply {
+                            categories = result.categories
+                            categoryAppliedInputTypes = result.categoryAppliedInputTypes
+                            categoryScores = result.categoryScores
+                            flagged = result.flagged
+                            model = result.model
+                            type = result.type
+                            additionalProperties = result.additionalProperties.toMutableMap()
+                        }
+
+                        /**
+                         * A dictionary of moderation categories to booleans, True if the input is
+                         * flagged under this category.
+                         */
+                        fun categories(categories: Categories) =
+                            categories(JsonField.of(categories))
+
+                        /**
+                         * Sets [Builder.categories] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.categories] with a well-typed
+                         * [Categories] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
+                        fun categories(categories: JsonField<Categories>) = apply {
+                            this.categories = categories
+                        }
+
+                        /**
+                         * Which modalities of input are reflected by the score for each category.
+                         */
+                        fun categoryAppliedInputTypes(
+                            categoryAppliedInputTypes: CategoryAppliedInputTypes
+                        ) = categoryAppliedInputTypes(JsonField.of(categoryAppliedInputTypes))
+
+                        /**
+                         * Sets [Builder.categoryAppliedInputTypes] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.categoryAppliedInputTypes] with a
+                         * well-typed [CategoryAppliedInputTypes] value instead. This method is
+                         * primarily for setting the field to an undocumented or not yet supported
+                         * value.
+                         */
+                        fun categoryAppliedInputTypes(
+                            categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>
+                        ) = apply { this.categoryAppliedInputTypes = categoryAppliedInputTypes }
+
+                        /** A dictionary of moderation categories to scores. */
+                        fun categoryScores(categoryScores: CategoryScores) =
+                            categoryScores(JsonField.of(categoryScores))
+
+                        /**
+                         * Sets [Builder.categoryScores] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.categoryScores] with a well-typed
+                         * [CategoryScores] value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
+                        fun categoryScores(categoryScores: JsonField<CategoryScores>) = apply {
+                            this.categoryScores = categoryScores
+                        }
+
+                        /** A boolean indicating whether the content was flagged by any category. */
+                        fun flagged(flagged: Boolean) = flagged(JsonField.of(flagged))
+
+                        /**
+                         * Sets [Builder.flagged] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.flagged] with a well-typed [Boolean]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun flagged(flagged: JsonField<Boolean>) = apply { this.flagged = flagged }
+
+                        /** The moderation model that produced this result. */
+                        fun model(model: String) = model(JsonField.of(model))
+
+                        /**
+                         * Sets [Builder.model] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.model] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun model(model: JsonField<String>) = apply { this.model = model }
+
+                        /**
+                         * Sets the field to an arbitrary JSON value.
+                         *
+                         * It is usually unnecessary to call this method because the field defaults
+                         * to the following:
+                         * ```java
+                         * JsonValue.from("moderation_result")
+                         * ```
+                         *
+                         * This method is primarily for setting the field to an undocumented or not
+                         * yet supported value.
+                         */
+                        fun type(type: JsonValue) = apply { this.type = type }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Result].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .categories()
+                         * .categoryAppliedInputTypes()
+                         * .categoryScores()
+                         * .flagged()
+                         * .model()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): Result =
+                            Result(
+                                checkRequired("categories", categories),
+                                checkRequired(
+                                    "categoryAppliedInputTypes",
+                                    categoryAppliedInputTypes,
+                                ),
+                                checkRequired("categoryScores", categoryScores),
+                                checkRequired("flagged", flagged),
+                                checkRequired("model", model),
+                                type,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): Result = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        categories().validate()
+                        categoryAppliedInputTypes().validate()
+                        categoryScores().validate()
+                        flagged()
+                        model()
+                        _type().let {
+                            if (it != JsonValue.from("moderation_result")) {
+                                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                            }
+                        }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (categories.asKnown().getOrNull()?.validity() ?: 0) +
+                            (categoryAppliedInputTypes.asKnown().getOrNull()?.validity() ?: 0) +
+                            (categoryScores.asKnown().getOrNull()?.validity() ?: 0) +
+                            (if (flagged.asKnown().isPresent) 1 else 0) +
+                            (if (model.asKnown().isPresent) 1 else 0) +
+                            type.let { if (it == JsonValue.from("moderation_result")) 1 else 0 }
+
+                    /**
+                     * A dictionary of moderation categories to booleans, True if the input is
+                     * flagged under this category.
+                     */
+                    class Categories
+                    @JsonCreator
+                    private constructor(
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        private val additionalProperties: Map<String, JsonValue>
+                    ) {
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [Categories].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [Categories]. */
+                        class Builder internal constructor() {
+
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(categories: Categories) = apply {
+                                additionalProperties =
+                                    categories.additionalProperties.toMutableMap()
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [Categories].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): Categories = Categories(additionalProperties.toImmutable())
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): Categories = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            additionalProperties.count { (_, value) ->
+                                !value.isNull() && !value.isMissing()
+                            }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Categories &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "Categories{additionalProperties=$additionalProperties}"
+                    }
+
+                    /** Which modalities of input are reflected by the score for each category. */
+                    class CategoryAppliedInputTypes
+                    @JsonCreator
+                    private constructor(
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        private val additionalProperties: Map<String, JsonValue>
+                    ) {
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [CategoryAppliedInputTypes].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [CategoryAppliedInputTypes]. */
+                        class Builder internal constructor() {
+
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(
+                                categoryAppliedInputTypes: CategoryAppliedInputTypes
+                            ) = apply {
+                                additionalProperties =
+                                    categoryAppliedInputTypes.additionalProperties.toMutableMap()
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [CategoryAppliedInputTypes].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): CategoryAppliedInputTypes =
+                                CategoryAppliedInputTypes(additionalProperties.toImmutable())
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): CategoryAppliedInputTypes = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            additionalProperties.count { (_, value) ->
+                                !value.isNull() && !value.isMissing()
+                            }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is CategoryAppliedInputTypes &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "CategoryAppliedInputTypes{additionalProperties=$additionalProperties}"
+                    }
+
+                    /** A dictionary of moderation categories to scores. */
+                    class CategoryScores
+                    @JsonCreator
+                    private constructor(
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        private val additionalProperties: Map<String, JsonValue>
+                    ) {
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [CategoryScores].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [CategoryScores]. */
+                        class Builder internal constructor() {
+
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(categoryScores: CategoryScores) = apply {
+                                additionalProperties =
+                                    categoryScores.additionalProperties.toMutableMap()
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [CategoryScores].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): CategoryScores =
+                                CategoryScores(additionalProperties.toImmutable())
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): CategoryScores = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            additionalProperties.count { (_, value) ->
+                                !value.isNull() && !value.isMissing()
+                            }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is CategoryScores &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "CategoryScores{additionalProperties=$additionalProperties}"
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Result &&
+                            categories == other.categories &&
+                            categoryAppliedInputTypes == other.categoryAppliedInputTypes &&
+                            categoryScores == other.categoryScores &&
+                            flagged == other.flagged &&
+                            model == other.model &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(
+                            categories,
+                            categoryAppliedInputTypes,
+                            categoryScores,
+                            flagged,
+                            model,
+                            type,
+                            additionalProperties,
+                        )
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Result{categories=$categories, categoryAppliedInputTypes=$categoryAppliedInputTypes, categoryScores=$categoryScores, flagged=$flagged, model=$model, type=$type, additionalProperties=$additionalProperties}"
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is ModerationResults &&
+                        model == other.model &&
+                        results == other.results &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(model, results, type, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "ModerationResults{model=$model, results=$results, type=$type, additionalProperties=$additionalProperties}"
+            }
+
+            /** An error produced while attempting moderation. */
+            class Error
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val code: JsonField<String>,
+                private val message: JsonField<String>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("code")
+                    @ExcludeMissing
+                    code: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("message")
+                    @ExcludeMissing
+                    message: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(code, message, type, mutableMapOf())
+
+                /**
+                 * The error code.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun code(): String = code.getRequired("code")
+
+                /**
+                 * The error message.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun message(): String = message.getRequired("message")
+
+                /**
+                 * The object type, which is always `error`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("error")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [code].
+                 *
+                 * Unlike [code], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
+
+                /**
+                 * Returns the raw JSON value of [message].
+                 *
+                 * Unlike [message], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Error].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .code()
+                     * .message()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Error]. */
+                class Builder internal constructor() {
+
+                    private var code: JsonField<String>? = null
+                    private var message: JsonField<String>? = null
+                    private var type: JsonValue = JsonValue.from("error")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(error: Error) = apply {
+                        code = error.code
+                        message = error.message
+                        type = error.type
+                        additionalProperties = error.additionalProperties.toMutableMap()
+                    }
+
+                    /** The error code. */
+                    fun code(code: String) = code(JsonField.of(code))
+
+                    /**
+                     * Sets [Builder.code] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.code] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun code(code: JsonField<String>) = apply { this.code = code }
+
+                    /** The error message. */
+                    fun message(message: String) = message(JsonField.of(message))
+
+                    /**
+                     * Sets [Builder.message] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.message] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun message(message: JsonField<String>) = apply { this.message = message }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("error")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Error].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .code()
+                     * .message()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Error =
+                        Error(
+                            checkRequired("code", code),
+                            checkRequired("message", message),
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Error = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    code()
+                    message()
+                    _type().let {
+                        if (it != JsonValue.from("error")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (code.asKnown().isPresent) 1 else 0) +
+                        (if (message.asKnown().isPresent) 1 else 0) +
+                        type.let { if (it == JsonValue.from("error")) 1 else 0 }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Error &&
+                        code == other.code &&
+                        message == other.message &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(code, message, type, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Error{code=$code, message=$message, type=$type, additionalProperties=$additionalProperties}"
+            }
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Moderation &&
+                input == other.input &&
+                output == other.output &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(input, output, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Moderation{input=$input, output=$output, additionalProperties=$additionalProperties}"
+    }
+
+    /**
      * Specifies the processing type used for serving the request.
      * - If set to 'auto', then the request will be processed with the service tier configured in
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
@@ -2794,6 +6223,7 @@ private constructor(
             created == other.created &&
             model == other.model &&
             object_ == other.object_ &&
+            moderation == other.moderation &&
             serviceTier == other.serviceTier &&
             systemFingerprint == other.systemFingerprint &&
             usage == other.usage &&
@@ -2807,6 +6237,7 @@ private constructor(
             created,
             model,
             object_,
+            moderation,
             serviceTier,
             systemFingerprint,
             usage,
@@ -2817,5 +6248,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
+        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, moderation=$moderation, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
 }

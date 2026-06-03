@@ -62,6 +62,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("instructions", OPTIONAL),
                 DelegationReadTestCase("metadata", OPTIONAL),
                 DelegationReadTestCase("model", RESPONSES_MODEL),
+                DelegationReadTestCase("moderation", OPTIONAL),
                 DelegationReadTestCase("_object_", JSON_VALUE),
                 // `output()` is a special case and has its own test function.
                 DelegationReadTestCase("parallelToolCalls", BOOLEAN),
@@ -91,6 +92,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_instructions", JSON_FIELD),
                 DelegationReadTestCase("_metadata", JSON_FIELD),
                 DelegationReadTestCase("_model", JSON_FIELD),
+                DelegationReadTestCase("_moderation", JSON_FIELD),
                 // `_output()` is a special case and has its own test function.
                 DelegationReadTestCase("_parallelToolCalls", JSON_FIELD),
                 DelegationReadTestCase("_temperature", JSON_FIELD),

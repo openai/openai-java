@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+gradle_args=()
+
+if [ "${CI:-}" != "true" ] && [ "${OPENAI_JAVA_GRADLE_LOCAL:-true}" != "false" ]; then
+  gradle_args+=(
+    --daemon
+    -Pkotlin.daemon.enabled=true
+    -Pkotlin.compiler.execution.strategy=daemon
+    -Pkotlin.incremental=true
+  )
+fi
+
+./gradlew "${gradle_args[@]}" "$@"
