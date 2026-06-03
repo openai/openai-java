@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.39.0 (2026-06-03)
+
+Full Changelog: [v4.38.0...v4.39.0](https://github.com/openai/openai-java/compare/v4.38.0...v4.39.0)
+
+### Features
+
+* **api:** responses.moderation and chat_completions.moderation ([b8f8bdd](https://github.com/openai/openai-java/commit/b8f8bdd6834803fe49e17f00770fd3e56f25b9c0))
+
 ## 4.38.0 (2026-06-01)
 
 Full Changelog: [v4.37.0...v4.38.0](https://github.com/openai/openai-java/compare/v4.37.0...v4.38.0)
