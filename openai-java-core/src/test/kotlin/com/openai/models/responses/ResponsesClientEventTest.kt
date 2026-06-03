@@ -39,6 +39,7 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .model(ChatModel.GPT_5_1)
+                .moderation(ResponsesClientEvent.Moderation.builder().model("model").build())
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -119,6 +120,8 @@ internal class ResponsesClientEventTest {
                     .build()
             )
         assertThat(responsesClientEvent.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(responsesClientEvent.moderation())
+            .contains(ResponsesClientEvent.Moderation.builder().model("model").build())
         assertThat(responsesClientEvent.parallelToolCalls()).contains(true)
         assertThat(responsesClientEvent.previousResponseId()).contains("previous_response_id")
         assertThat(responsesClientEvent.prompt())
@@ -207,6 +210,7 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .model(ChatModel.GPT_5_1)
+                .moderation(ResponsesClientEvent.Moderation.builder().model("model").build())
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(

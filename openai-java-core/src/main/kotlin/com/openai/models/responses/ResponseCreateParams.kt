@@ -174,6 +174,14 @@ private constructor(
     fun model(): Optional<ResponsesModel> = body.model()
 
     /**
+     * Configuration for running moderation on the input and output of this response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun moderation(): Optional<Moderation> = body.moderation()
+
+    /**
      * Whether to allow the model to run tool calls in parallel.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -456,6 +464,13 @@ private constructor(
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<ResponsesModel> = body._model()
+
+    /**
+     * Returns the raw JSON value of [moderation].
+     *
+     * Unlike [moderation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _moderation(): JsonField<Moderation> = body._moderation()
 
     /**
      * Returns the raw JSON value of [parallelToolCalls].
@@ -913,6 +928,21 @@ private constructor(
 
         /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
         fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { body.model(only) }
+
+        /** Configuration for running moderation on the input and output of this response. */
+        fun moderation(moderation: Moderation?) = apply { body.moderation(moderation) }
+
+        /** Alias for calling [Builder.moderation] with `moderation.orElse(null)`. */
+        fun moderation(moderation: Optional<Moderation>) = moderation(moderation.getOrNull())
+
+        /**
+         * Sets [Builder.moderation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.moderation] with a well-typed [Moderation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun moderation(moderation: JsonField<Moderation>) = apply { body.moderation(moderation) }
 
         /** Whether to allow the model to run tool calls in parallel. */
         fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
@@ -1619,6 +1649,7 @@ private constructor(
         private val maxToolCalls: JsonField<Long>,
         private val metadata: JsonField<Metadata>,
         private val model: JsonField<ResponsesModel>,
+        private val moderation: JsonField<Moderation>,
         private val parallelToolCalls: JsonField<Boolean>,
         private val previousResponseId: JsonField<String>,
         private val prompt: JsonField<ResponsePrompt>,
@@ -1670,6 +1701,9 @@ private constructor(
             @JsonProperty("model")
             @ExcludeMissing
             model: JsonField<ResponsesModel> = JsonMissing.of(),
+            @JsonProperty("moderation")
+            @ExcludeMissing
+            moderation: JsonField<Moderation> = JsonMissing.of(),
             @JsonProperty("parallel_tool_calls")
             @ExcludeMissing
             parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
@@ -1727,6 +1761,7 @@ private constructor(
             maxToolCalls,
             metadata,
             model,
+            moderation,
             parallelToolCalls,
             previousResponseId,
             prompt,
@@ -1868,6 +1903,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun model(): Optional<ResponsesModel> = model.getOptional("model")
+
+        /**
+         * Configuration for running moderation on the input and output of this response.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
 
         /**
          * Whether to allow the model to run tool calls in parallel.
@@ -2176,6 +2219,15 @@ private constructor(
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ResponsesModel> = model
 
         /**
+         * Returns the raw JSON value of [moderation].
+         *
+         * Unlike [moderation], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("moderation")
+        @ExcludeMissing
+        fun _moderation(): JsonField<Moderation> = moderation
+
+        /**
          * Returns the raw JSON value of [parallelToolCalls].
          *
          * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
@@ -2365,6 +2417,7 @@ private constructor(
             private var maxToolCalls: JsonField<Long> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var model: JsonField<ResponsesModel> = JsonMissing.of()
+            private var moderation: JsonField<Moderation> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
@@ -2397,6 +2450,7 @@ private constructor(
                 maxToolCalls = body.maxToolCalls
                 metadata = body.metadata
                 model = body.model
+                moderation = body.moderation
                 parallelToolCalls = body.parallelToolCalls
                 previousResponseId = body.previousResponseId
                 prompt = body.prompt
@@ -2714,6 +2768,23 @@ private constructor(
 
             /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
             fun model(only: ResponsesModel.ResponsesOnlyModel) = model(ResponsesModel.ofOnly(only))
+
+            /** Configuration for running moderation on the input and output of this response. */
+            fun moderation(moderation: Moderation?) = moderation(JsonField.ofNullable(moderation))
+
+            /** Alias for calling [Builder.moderation] with `moderation.orElse(null)`. */
+            fun moderation(moderation: Optional<Moderation>) = moderation(moderation.getOrNull())
+
+            /**
+             * Sets [Builder.moderation] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.moderation] with a well-typed [Moderation] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun moderation(moderation: JsonField<Moderation>) = apply {
+                this.moderation = moderation
+            }
 
             /** Whether to allow the model to run tool calls in parallel. */
             fun parallelToolCalls(parallelToolCalls: Boolean?) =
@@ -3334,6 +3405,7 @@ private constructor(
                     maxToolCalls,
                     metadata,
                     model,
+                    moderation,
                     parallelToolCalls,
                     previousResponseId,
                     prompt,
@@ -3382,6 +3454,7 @@ private constructor(
             maxToolCalls()
             metadata().ifPresent { it.validate() }
             model().ifPresent { it.validate() }
+            moderation().ifPresent { it.validate() }
             parallelToolCalls()
             previousResponseId()
             prompt().ifPresent { it.validate() }
@@ -3429,6 +3502,7 @@ private constructor(
                 (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (model.asKnown().getOrNull()?.validity() ?: 0) +
+                (moderation.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (prompt.asKnown().getOrNull()?.validity() ?: 0) +
@@ -3464,6 +3538,7 @@ private constructor(
                 maxToolCalls == other.maxToolCalls &&
                 metadata == other.metadata &&
                 model == other.model &&
+                moderation == other.moderation &&
                 parallelToolCalls == other.parallelToolCalls &&
                 previousResponseId == other.previousResponseId &&
                 prompt == other.prompt &&
@@ -3497,6 +3572,7 @@ private constructor(
                 maxToolCalls,
                 metadata,
                 model,
+                moderation,
                 parallelToolCalls,
                 previousResponseId,
                 prompt,
@@ -3522,7 +3598,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     class ContextManagement
@@ -4338,6 +4414,174 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /** Configuration for running moderation on the input and output of this response. */
+    class Moderation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val model: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of()
+        ) : this(model, mutableMapOf())
+
+        /**
+         * The moderation model to use for moderated completions, e.g. 'omni-moderation-latest'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun model(): String = model.getRequired("model")
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Moderation].
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Moderation]. */
+        class Builder internal constructor() {
+
+            private var model: JsonField<String>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(moderation: Moderation) = apply {
+                model = moderation.model
+                additionalProperties = moderation.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The moderation model to use for moderated completions, e.g. 'omni-moderation-latest'.
+             */
+            fun model(model: String) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<String>) = apply { this.model = model }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Moderation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Moderation =
+                Moderation(checkRequired("model", model), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Moderation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            model()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (model.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Moderation &&
+                model == other.model &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(model, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Moderation{model=$model, additionalProperties=$additionalProperties}"
     }
 
     /**

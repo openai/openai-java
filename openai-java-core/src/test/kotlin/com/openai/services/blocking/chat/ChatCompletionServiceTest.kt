@@ -76,6 +76,9 @@ internal class ChatCompletionServiceTest {
                             .build()
                     )
                     .addModality(ChatCompletionCreateParams.Modality.TEXT)
+                    .moderation(
+                        ChatCompletionCreateParams.Moderation.builder().model("model").build()
+                    )
                     .n(1L)
                     .parallelToolCalls(true)
                     .prediction(ChatCompletionPredictionContent.builder().content("string").build())
@@ -193,6 +196,9 @@ internal class ChatCompletionServiceTest {
                             .build()
                     )
                     .addModality(ChatCompletionCreateParams.Modality.TEXT)
+                    .moderation(
+                        ChatCompletionCreateParams.Moderation.builder().model("model").build()
+                    )
                     .n(1L)
                     .parallelToolCalls(true)
                     .prediction(ChatCompletionPredictionContent.builder().content("string").build())

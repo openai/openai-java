@@ -36,6 +36,7 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
             .model(ChatModel.GPT_5_1)
+            .moderation(ResponseCreateParams.Moderation.builder().model("model").build())
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
             .prompt(
@@ -115,6 +116,7 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
                 .model(ChatModel.GPT_5_1)
+                .moderation(ResponseCreateParams.Moderation.builder().model("model").build())
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -194,6 +196,8 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
         assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(body.moderation())
+            .contains(ResponseCreateParams.Moderation.builder().model("model").build())
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")
         assertThat(body.prompt())
