@@ -94,6 +94,64 @@ internal class ResponseTest {
                 .conversation(Response.Conversation.builder().id("id").build())
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
+                .moderation(
+                    Response.Moderation.builder()
+                        .input(
+                            Response.Moderation.Input.ModerationResult.builder()
+                                .categories(
+                                    Response.Moderation.Input.ModerationResult.Categories.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(true))
+                                        .build()
+                                )
+                                .categoryAppliedInputTypes(
+                                    Response.Moderation.Input.ModerationResult
+                                        .CategoryAppliedInputTypes
+                                        .builder()
+                                        .putAdditionalProperty(
+                                            "foo",
+                                            JsonValue.from(listOf("text")),
+                                        )
+                                        .build()
+                                )
+                                .categoryScores(
+                                    Response.Moderation.Input.ModerationResult.CategoryScores
+                                        .builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
+                                .flagged(true)
+                                .model("model")
+                                .build()
+                        )
+                        .output(
+                            Response.Moderation.Output.ModerationResult.builder()
+                                .categories(
+                                    Response.Moderation.Output.ModerationResult.Categories.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(true))
+                                        .build()
+                                )
+                                .categoryAppliedInputTypes(
+                                    Response.Moderation.Output.ModerationResult
+                                        .CategoryAppliedInputTypes
+                                        .builder()
+                                        .putAdditionalProperty(
+                                            "foo",
+                                            JsonValue.from(listOf("text")),
+                                        )
+                                        .build()
+                                )
+                                .categoryScores(
+                                    Response.Moderation.Output.ModerationResult.CategoryScores
+                                        .builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
+                                .flagged(true)
+                                .model("model")
+                                .build()
+                        )
+                        .build()
+                )
                 .previousResponseId("previous_response_id")
                 .prompt(
                     ResponsePrompt.builder()
@@ -228,6 +286,56 @@ internal class ResponseTest {
             .contains(Response.Conversation.builder().id("id").build())
         assertThat(response.maxOutputTokens()).contains(0L)
         assertThat(response.maxToolCalls()).contains(0L)
+        assertThat(response.moderation())
+            .contains(
+                Response.Moderation.builder()
+                    .input(
+                        Response.Moderation.Input.ModerationResult.builder()
+                            .categories(
+                                Response.Moderation.Input.ModerationResult.Categories.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(true))
+                                    .build()
+                            )
+                            .categoryAppliedInputTypes(
+                                Response.Moderation.Input.ModerationResult.CategoryAppliedInputTypes
+                                    .builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(listOf("text")))
+                                    .build()
+                            )
+                            .categoryScores(
+                                Response.Moderation.Input.ModerationResult.CategoryScores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .flagged(true)
+                            .model("model")
+                            .build()
+                    )
+                    .output(
+                        Response.Moderation.Output.ModerationResult.builder()
+                            .categories(
+                                Response.Moderation.Output.ModerationResult.Categories.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(true))
+                                    .build()
+                            )
+                            .categoryAppliedInputTypes(
+                                Response.Moderation.Output.ModerationResult
+                                    .CategoryAppliedInputTypes
+                                    .builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(listOf("text")))
+                                    .build()
+                            )
+                            .categoryScores(
+                                Response.Moderation.Output.ModerationResult.CategoryScores.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
+                            )
+                            .flagged(true)
+                            .model("model")
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(response.previousResponseId()).contains("previous_response_id")
         assertThat(response.prompt())
             .contains(
@@ -361,6 +469,64 @@ internal class ResponseTest {
                 .conversation(Response.Conversation.builder().id("id").build())
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
+                .moderation(
+                    Response.Moderation.builder()
+                        .input(
+                            Response.Moderation.Input.ModerationResult.builder()
+                                .categories(
+                                    Response.Moderation.Input.ModerationResult.Categories.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(true))
+                                        .build()
+                                )
+                                .categoryAppliedInputTypes(
+                                    Response.Moderation.Input.ModerationResult
+                                        .CategoryAppliedInputTypes
+                                        .builder()
+                                        .putAdditionalProperty(
+                                            "foo",
+                                            JsonValue.from(listOf("text")),
+                                        )
+                                        .build()
+                                )
+                                .categoryScores(
+                                    Response.Moderation.Input.ModerationResult.CategoryScores
+                                        .builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
+                                .flagged(true)
+                                .model("model")
+                                .build()
+                        )
+                        .output(
+                            Response.Moderation.Output.ModerationResult.builder()
+                                .categories(
+                                    Response.Moderation.Output.ModerationResult.Categories.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(true))
+                                        .build()
+                                )
+                                .categoryAppliedInputTypes(
+                                    Response.Moderation.Output.ModerationResult
+                                        .CategoryAppliedInputTypes
+                                        .builder()
+                                        .putAdditionalProperty(
+                                            "foo",
+                                            JsonValue.from(listOf("text")),
+                                        )
+                                        .build()
+                                )
+                                .categoryScores(
+                                    Response.Moderation.Output.ModerationResult.CategoryScores
+                                        .builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
+                                .flagged(true)
+                                .model("model")
+                                .build()
+                        )
+                        .build()
+                )
                 .previousResponseId("previous_response_id")
                 .prompt(
                     ResponsePrompt.builder()

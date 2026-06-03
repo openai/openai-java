@@ -59,6 +59,7 @@ internal class StructuredResponseCreateParamsTest {
 
         private val INCLUDABLE = ResponseIncludable.of(STRING)
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
+        private val MODERATION = ResponseCreateParams.Moderation.builder().model(STRING).build()
         private val SERVICE_TIER = ResponseCreateParams.ServiceTier.AUTO
         private val REASONING = Reasoning.builder().build()
         private val PROMPT = ResponsePrompt.builder().id("test-prompt-id").build()
@@ -169,6 +170,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
+                DelegationWriteTestCase("moderation", MODERATION),
+                DelegationWriteTestCase("moderation", OPTIONAL),
+                DelegationWriteTestCase("moderation", JSON_FIELD),
                 DelegationWriteTestCase("parallelToolCalls", NULLABLE_BOOLEAN),
                 DelegationWriteTestCase("parallelToolCalls", BOOLEAN),
                 DelegationWriteTestCase("parallelToolCalls", OPTIONAL),

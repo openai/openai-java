@@ -241,6 +241,21 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.metadata(metadata)
         }
 
+        /** @see ResponseCreateParams.Builder.moderation */
+        fun moderation(moderation: ResponseCreateParams.Moderation?) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ResponseCreateParams.Builder.moderation */
+        fun moderation(moderation: Optional<ResponseCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ResponseCreateParams.Builder.moderation */
+        fun moderation(moderation: JsonField<ResponseCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
         /** @see ResponseCreateParams.Builder.parallelToolCalls */
         fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
             paramsBuilder.parallelToolCalls(parallelToolCalls)

@@ -56,6 +56,7 @@ internal class StructuredChatCompletionTest {
                 // `choices()` is a special case and has its own test function.
                 DelegationReadTestCase("created", LONG),
                 DelegationReadTestCase("model", STRING),
+                DelegationReadTestCase("moderation", OPTIONAL),
                 DelegationReadTestCase("_object_", JSON_VALUE),
                 DelegationReadTestCase("serviceTier", OPTIONAL),
                 DelegationReadTestCase("systemFingerprint", OPTIONAL),
@@ -64,6 +65,7 @@ internal class StructuredChatCompletionTest {
                 // `_choices()` is a special case and has its own test function.
                 DelegationReadTestCase("_created", JSON_FIELD),
                 DelegationReadTestCase("_model", JSON_FIELD),
+                DelegationReadTestCase("_moderation", JSON_FIELD),
                 DelegationReadTestCase("_serviceTier", JSON_FIELD),
                 DelegationReadTestCase("_systemFingerprint", JSON_FIELD),
                 DelegationReadTestCase("_usage", JSON_FIELD),
