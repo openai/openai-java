@@ -184,21 +184,55 @@ the changes aren't made through the automated pipeline, you may want to make rel
 
 ### Publish with a GitHub workflow
 
-You can release to package managers by using [the `Publish Sonatype` GitHub action](https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml). This requires setup organization or repository secrets to be configured.
+You can release to package managers by using [the `Publish Sonatype` GitHub action](https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml). This requires the GitHub `publish` environment to be configured.
+
+The `publish` environment must have these environment secrets:
+
+- `OPENAI_SONATYPE_USERNAME` - The username from a Central Portal user token
+- `OPENAI_SONATYPE_PASSWORD` - The password from a Central Portal user token
+- `OPENAI_SONATYPE_GPG_SIGNING_KEY` - The ASCII-armored GPG private key used for signing artifacts
+- `OPENAI_SONATYPE_GPG_SIGNING_PASSWORD` - The GPG key passphrase
+
+To rotate credentials, generate a new Central Portal user token and update `OPENAI_SONATYPE_USERNAME` and
+`OPENAI_SONATYPE_PASSWORD`. If rotating the signing key, generate a passphrase-protected GPG key and publish the public
+key:
+
+```sh
+$ gpg --quick-gen-key "OpenAI Maven Central <maintainer@openai.com>" rsa4096 sign 0
+$ gpg --list-secret-keys --keyid-format LONG
+$ gpg --armor --export-secret-keys KEY_ID > openai-sonatype-signing-key.asc
+$ gpg --keyserver keyserver.ubuntu.com --send-keys KEY_ID
+```
+
+The `0` makes the key non-expiring. `KEY_ID` is the value after the slash on the `sec` line from
+`gpg --list-secret-keys`, for example `42B825E73825CCEB` in `sec rsa4096/42B825E73825CCEB`. The GPG email does not need
+to match the Central Portal token account.
+
+```sh
+$ gh secret set OPENAI_SONATYPE_USERNAME --env publish --repo openai/openai-java
+$ gh secret set OPENAI_SONATYPE_PASSWORD --env publish --repo openai/openai-java
+$ gh secret set OPENAI_SONATYPE_GPG_SIGNING_KEY --env publish --repo openai/openai-java < openai-sonatype-signing-key.asc
+$ gh secret set OPENAI_SONATYPE_GPG_SIGNING_PASSWORD --env publish --repo openai/openai-java
+```
+
+After the rotated secrets work, revoke the old Central Portal token and remove any old repository-level copies of the
+`OPENAI_SONATYPE_*` secrets.
 
 ### Publish manually
 
 If you need to manually release a package, you can run:
 
 ```sh
-$ ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+$ ./gradlew publishAndReleaseToMavenCentral \
+    -PmavenCentralUsername="$SONATYPE_USERNAME" \
+    -PmavenCentralPassword="$SONATYPE_PASSWORD"
 ```
 
 This requires the following environment variables to be set:
 
-- `SONATYPE_USER` - Your Sonatype Central Portal username
-- `SONATYPE_PASSWORD` - Your Sonatype Central Portal password
-- `GPG_SIGNING_KEY` - Your GPG private key for signing artifacts
+- `SONATYPE_USERNAME` - The username from a Central Portal user token
+- `SONATYPE_PASSWORD` - The password from a Central Portal user token
+- `GPG_SIGNING_KEY` - Your ASCII-armored GPG private key for signing artifacts
 - `GPG_SIGNING_PASSWORD` - Your GPG key passphrase
 
 ## Development tools

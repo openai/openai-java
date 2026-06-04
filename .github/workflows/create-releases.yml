@@ -11,7 +11,8 @@ jobs:
     name: release
     if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
     runs-on: ubuntu-latest
-    environment: publish
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -22,8 +23,17 @@ jobs:
           repo: ${{ github.event.repository.full_name }}
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
+  publish:
+    name: publish
+    needs: release
+    if: ${{ needs.release.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    environment: publish
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
       - name: Set up Java
-        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           distribution: temurin
@@ -33,7 +43,6 @@ jobs:
           cache: gradle
 
       - name: Set up Gradle
-        if: ${{ steps.release.outputs.releases_created }}
         uses: gradle/gradle-build-action@fe583dc97e032f41ccc310ea5176f2d7306abbc4 # v2
 
       - name: Compile the openai-java-core project
@@ -68,14 +77,13 @@ jobs:
           fi
 
       - name: Publish to Sonatype
-        if: ${{ steps.release.outputs.releases_created }}
         run: |-
           export -- GPG_SIGNING_KEY_ID
           printenv -- GPG_SIGNING_KEY | gpg --batch --passphrase-fd 3 --import 3<<< "$GPG_SIGNING_PASSWORD"
           GPG_SIGNING_KEY_ID="$(gpg --with-colons --list-keys | awk -F : -- '/^pub:/ { getline; print "0x" substr($10, length($10) - 7) }')"
           ./gradlew publishAndReleaseToMavenCentral --stacktrace -PmavenCentralUsername="$SONATYPE_USERNAME" -PmavenCentralPassword="$SONATYPE_PASSWORD" --no-configuration-cache
         env:
-          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME || secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD || secrets.SONATYPE_PASSWORD }}
-          GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY || secrets.GPG_SIGNING_KEY }}
-          GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD || secrets.GPG_SIGNING_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
