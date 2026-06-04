@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.39.1 (2026-06-04)
+
+Full Changelog: [v4.39.0...v4.39.1](https://github.com/openai/openai-java/compare/v4.39.0...v4.39.1)
+
+### Chores
+
+* **ci:** allow local testing to use incremental compilation + daemons ([a1c71e4](https://github.com/openai/openai-java/commit/a1c71e41471abcf75ae36a5821d6877a17b59958))
+
 ## 4.39.0 (2026-06-03)
 
 Full Changelog: [v4.38.0...v4.39.0](https://github.com/openai/openai-java/compare/v4.38.0...v4.39.0)
