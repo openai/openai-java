@@ -11,6 +11,7 @@ jobs:
     name: release
     if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
     runs-on: ubuntu-latest
+    environment: publish
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
 
