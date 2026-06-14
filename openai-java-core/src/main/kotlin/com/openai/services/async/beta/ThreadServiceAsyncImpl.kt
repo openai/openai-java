@@ -25,6 +25,8 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.beta.assistants.AssistantStreamEvent
 import com.openai.models.beta.threads.Thread
 import com.openai.models.beta.threads.ThreadCreateAndRunParams
@@ -79,7 +81,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<Thread> =
         // post /threads
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun retrieve(
@@ -87,7 +91,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<Thread> =
         // get /threads/{thread_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun update(
@@ -95,7 +101,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<Thread> =
         // post /threads/{thread_id}
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun delete(
@@ -103,7 +111,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<ThreadDeleted> =
         // delete /threads/{thread_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun createAndRun(
@@ -111,7 +121,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<Run> =
         // post /threads/runs
-        withRawResponse().createAndRun(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().createAndRun(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
     override fun createAndRunStreaming(
@@ -121,7 +133,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         // post /threads/runs
         withRawResponse()
             .createAndRunStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -176,8 +188,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -214,8 +228,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -253,8 +269,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -293,8 +311,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
@@ -329,8 +349,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createAndRunHandler.handle(it) }
@@ -377,8 +399,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { createAndRunStreamingHandler.handle(it) }

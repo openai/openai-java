@@ -5,6 +5,7 @@ package com.openai.core.http
 import com.openai.core.LogLevel
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlePropagatingCancellation
 import com.openai.core.toImmutable
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -80,13 +81,13 @@ private constructor(
                 logFailure(e, Duration.between(before, OffsetDateTime.now(clock)))
                 throw e
             }
-        return future.handle { response, error ->
+        return future.handlePropagatingCancellation { response, error ->
             val took = Duration.between(before, OffsetDateTime.now(clock))
             if (error != null) {
                 logFailure(unwrapCompletionException(error), took)
                 throw error
             }
-            logResponse(response, took)
+            logResponse(response!!, took)
         }
     }
 

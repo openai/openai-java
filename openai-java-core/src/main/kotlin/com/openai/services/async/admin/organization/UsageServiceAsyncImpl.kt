@@ -15,6 +15,8 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.usage.UsageAudioSpeechesParams
 import com.openai.models.admin.organization.usage.UsageAudioSpeechesResponse
 import com.openai.models.admin.organization.usage.UsageAudioTranscriptionsParams
@@ -57,77 +59,99 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageAudioSpeechesResponse> =
         // get /organization/usage/audio_speeches
-        withRawResponse().audioSpeeches(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().audioSpeeches(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun audioTranscriptions(
         params: UsageAudioTranscriptionsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageAudioTranscriptionsResponse> =
         // get /organization/usage/audio_transcriptions
-        withRawResponse().audioTranscriptions(params, requestOptions).thenApply { it.parse() }
+        withRawResponse()
+            .audioTranscriptions(params, requestOptions)
+            .thenApplyPropagatingCancellation { it.parse() }
 
     override fun codeInterpreterSessions(
         params: UsageCodeInterpreterSessionsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageCodeInterpreterSessionsResponse> =
         // get /organization/usage/code_interpreter_sessions
-        withRawResponse().codeInterpreterSessions(params, requestOptions).thenApply { it.parse() }
+        withRawResponse()
+            .codeInterpreterSessions(params, requestOptions)
+            .thenApplyPropagatingCancellation { it.parse() }
 
     override fun completions(
         params: UsageCompletionsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageCompletionsResponse> =
         // get /organization/usage/completions
-        withRawResponse().completions(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().completions(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun costs(
         params: UsageCostsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageCostsResponse> =
         // get /organization/costs
-        withRawResponse().costs(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().costs(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun embeddings(
         params: UsageEmbeddingsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageEmbeddingsResponse> =
         // get /organization/usage/embeddings
-        withRawResponse().embeddings(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().embeddings(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun fileSearchCalls(
         params: UsageFileSearchCallsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageFileSearchCallsResponse> =
         // get /organization/usage/file_search_calls
-        withRawResponse().fileSearchCalls(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().fileSearchCalls(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun images(
         params: UsageImagesParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageImagesResponse> =
         // get /organization/usage/images
-        withRawResponse().images(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().images(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun moderations(
         params: UsageModerationsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageModerationsResponse> =
         // get /organization/usage/moderations
-        withRawResponse().moderations(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().moderations(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun vectorStores(
         params: UsageVectorStoresParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageVectorStoresResponse> =
         // get /organization/usage/vector_stores
-        withRawResponse().vectorStores(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().vectorStores(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun webSearchCalls(
         params: UsageWebSearchCallsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UsageWebSearchCallsResponse> =
         // get /organization/usage/web_search_calls
-        withRawResponse().webSearchCalls(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().webSearchCalls(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         UsageServiceAsync.WithRawResponse {
@@ -162,8 +186,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { audioSpeechesHandler.handle(it) }
@@ -196,8 +222,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { audioTranscriptionsHandler.handle(it) }
@@ -230,8 +258,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { codeInterpreterSessionsHandler.handle(it) }
@@ -264,8 +294,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { completionsHandler.handle(it) }
@@ -298,8 +330,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { costsHandler.handle(it) }
@@ -332,8 +366,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { embeddingsHandler.handle(it) }
@@ -366,8 +402,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { fileSearchCallsHandler.handle(it) }
@@ -400,8 +438,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { imagesHandler.handle(it) }
@@ -434,8 +474,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { moderationsHandler.handle(it) }
@@ -468,8 +510,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { vectorStoresHandler.handle(it) }
@@ -502,8 +546,10 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { webSearchCallsHandler.handle(it) }

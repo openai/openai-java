@@ -6,6 +6,8 @@ import com.openai.core.DefaultSleeper
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
 import com.openai.core.checkRequired
+import com.openai.core.handlePropagatingCancellation
+import com.openai.core.thenComposePropagatingCancellation
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import java.io.IOException
@@ -19,7 +21,6 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -98,35 +99,30 @@ private constructor(
             }
 
             return responseFuture
-                .handleAsync(
-                    fun(
-                        response: HttpResponse?,
-                        throwable: Throwable?,
-                    ): CompletableFuture<HttpResponse> {
-                        if (response != null) {
-                            if (++retries > maxRetries || !shouldRetry(response)) {
-                                return CompletableFuture.completedFuture(response)
-                            }
-                        } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
-                                val failedFuture = CompletableFuture<HttpResponse>()
-                                failedFuture.completeExceptionally(throwable)
-                                return failedFuture
-                            }
+                .handlePropagatingCancellation { response, throwable ->
+                    if (response != null) {
+                        if (++retries > maxRetries || !shouldRetry(response)) {
+                            return@handlePropagatingCancellation CompletableFuture.completedFuture(
+                                response
+                            )
                         }
-
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
-                        return sleeper.sleepAsync(backoffDuration).thenCompose {
-                            executeWithRetries(requestWithRetryCount, requestOptions)
+                    } else {
+                        if (++retries > maxRetries || !shouldRetry(throwable!!)) {
+                            val failedFuture = CompletableFuture<HttpResponse>()
+                            failedFuture.completeExceptionally(throwable)
+                            return@handlePropagatingCancellation failedFuture
                         }
                     }
-                ) {
-                    // Run in the same thread.
-                    it.run()
+
+                    val backoffDuration = getRetryBackoffDuration(retries, response)
+                    // All responses must be closed, so close the failed one before retrying.
+                    response?.close()
+                    sleeper.sleepAsync(backoffDuration).thenComposePropagatingCancellation {
+                        _: Void? ->
+                        executeWithRetries(requestWithRetryCount, requestOptions)
+                    }
                 }
-                .thenCompose(Function.identity())
+                .thenComposePropagatingCancellation { it }
         }
 
         return executeWithRetries(modifiedRequest, requestOptions)
