@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.users.OrganizationUser
 import com.openai.models.admin.organization.users.UserDeleteParams
 import com.openai.models.admin.organization.users.UserDeleteResponse
@@ -52,28 +54,36 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
     ): CompletableFuture<OrganizationUser> =
         // get /organization/users/{user_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: UserUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<OrganizationUser> =
         // post /organization/users/{user_id}
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: UserListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UserListPageAsync> =
         // get /organization/users
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: UserDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UserDeleteResponse> =
         // delete /organization/users/{user_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         UserServiceAsync.WithRawResponse {
@@ -117,8 +127,10 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -155,8 +167,10 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -189,8 +203,10 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -235,8 +251,10 @@ class UserServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }

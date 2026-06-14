@@ -18,6 +18,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.vectorstores.VectorStore
 import com.openai.models.vectorstores.VectorStoreCreateParams
 import com.openai.models.vectorstores.VectorStoreDeleteParams
@@ -70,42 +72,54 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // post /vector_stores
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieve(
         params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // get /vector_stores/{vector_store_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: VectorStoreUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // post /vector_stores/{vector_store_id}
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: VectorStoreListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreListPageAsync> =
         // get /vector_stores
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: VectorStoreDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreDeleted> =
         // delete /vector_stores/{vector_store_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun search(
         params: VectorStoreSearchParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreSearchPageAsync> =
         // post /vector_stores/{vector_store_id}/search
-        withRawResponse().search(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().search(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         VectorStoreServiceAsync.WithRawResponse {
@@ -154,8 +168,10 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -192,8 +208,10 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -231,8 +249,10 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -266,8 +286,10 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -313,8 +335,10 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
@@ -352,8 +376,10 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { searchHandler.handle(it) }
