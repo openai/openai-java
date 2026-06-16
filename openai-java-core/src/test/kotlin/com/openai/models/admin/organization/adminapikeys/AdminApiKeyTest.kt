@@ -15,6 +15,7 @@ internal class AdminApiKeyTest {
             AdminApiKey.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
+                .expiresAt(1714063533L)
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -32,6 +33,7 @@ internal class AdminApiKeyTest {
 
         assertThat(adminApiKey.id()).isEqualTo("key_abc")
         assertThat(adminApiKey.createdAt()).isEqualTo(1711471533L)
+        assertThat(adminApiKey.expiresAt()).contains(1714063533L)
         assertThat(adminApiKey.owner())
             .isEqualTo(
                 AdminApiKey.Owner.builder()
@@ -55,6 +57,7 @@ internal class AdminApiKeyTest {
             AdminApiKey.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
+                .expiresAt(1714063533L)
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")

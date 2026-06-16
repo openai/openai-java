@@ -17,6 +17,7 @@ internal class AdminApiKeyListPageResponseTest {
                     AdminApiKey.builder()
                         .id("key_abc")
                         .createdAt(1711471533L)
+                        .expiresAt(1714063533L)
                         .owner(
                             AdminApiKey.Owner.builder()
                                 .id("sa_456")
@@ -42,6 +43,7 @@ internal class AdminApiKeyListPageResponseTest {
                 AdminApiKey.builder()
                     .id("key_abc")
                     .createdAt(1711471533L)
+                    .expiresAt(1714063533L)
                     .owner(
                         AdminApiKey.Owner.builder()
                             .id("sa_456")
@@ -71,6 +73,7 @@ internal class AdminApiKeyListPageResponseTest {
                     AdminApiKey.builder()
                         .id("key_abc")
                         .createdAt(1711471533L)
+                        .expiresAt(1714063533L)
                         .owner(
                             AdminApiKey.Owner.builder()
                                 .id("sa_456")

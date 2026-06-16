@@ -27,6 +27,7 @@ internal class InputTokenCountParamsTest {
             .previousResponseId("resp_123")
             .reasoning(
                 Reasoning.builder()
+                    .context(Reasoning.Context.AUTO)
                     .effort(ReasoningEffort.NONE)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                     .summary(Reasoning.Summary.AUTO)
@@ -69,6 +70,7 @@ internal class InputTokenCountParamsTest {
                 .previousResponseId("resp_123")
                 .reasoning(
                     Reasoning.builder()
+                        .context(Reasoning.Context.AUTO)
                         .effort(ReasoningEffort.NONE)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
                         .summary(Reasoning.Summary.AUTO)
@@ -109,6 +111,7 @@ internal class InputTokenCountParamsTest {
         assertThat(body.reasoning())
             .contains(
                 Reasoning.builder()
+                    .context(Reasoning.Context.AUTO)
                     .effort(ReasoningEffort.NONE)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                     .summary(Reasoning.Summary.AUTO)

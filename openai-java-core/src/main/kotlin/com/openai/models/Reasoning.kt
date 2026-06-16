@@ -25,6 +25,7 @@ import kotlin.jvm.optionals.getOrNull
 class Reasoning
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val context: JsonField<Context>,
     private val effort: JsonField<ReasoningEffort>,
     private val generateSummary: JsonField<GenerateSummary>,
     private val summary: JsonField<Summary>,
@@ -33,6 +34,7 @@ private constructor(
 
     @JsonCreator
     private constructor(
+        @JsonProperty("context") @ExcludeMissing context: JsonField<Context> = JsonMissing.of(),
         @JsonProperty("effort")
         @ExcludeMissing
         effort: JsonField<ReasoningEffort> = JsonMissing.of(),
@@ -40,7 +42,16 @@ private constructor(
         @ExcludeMissing
         generateSummary: JsonField<GenerateSummary> = JsonMissing.of(),
         @JsonProperty("summary") @ExcludeMissing summary: JsonField<Summary> = JsonMissing.of(),
-    ) : this(effort, generateSummary, summary, mutableMapOf())
+    ) : this(context, effort, generateSummary, summary, mutableMapOf())
+
+    /**
+     * Controls which reasoning items are rendered back to the model on later turns. When returned
+     * on a response, this is the effective reasoning context mode used for the response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun context(): Optional<Context> = context.getOptional("context")
 
     /**
      * Constrains effort on reasoning for
@@ -84,6 +95,13 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun summary(): Optional<Summary> = summary.getOptional("summary")
+
+    /**
+     * Returns the raw JSON value of [context].
+     *
+     * Unlike [context], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("context") @ExcludeMissing fun _context(): JsonField<Context> = context
 
     /**
      * Returns the raw JSON value of [effort].
@@ -130,6 +148,7 @@ private constructor(
     /** A builder for [Reasoning]. */
     class Builder internal constructor() {
 
+        private var context: JsonField<Context> = JsonMissing.of()
         private var effort: JsonField<ReasoningEffort> = JsonMissing.of()
         private var generateSummary: JsonField<GenerateSummary> = JsonMissing.of()
         private var summary: JsonField<Summary> = JsonMissing.of()
@@ -137,11 +156,30 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(reasoning: Reasoning) = apply {
+            context = reasoning.context
             effort = reasoning.effort
             generateSummary = reasoning.generateSummary
             summary = reasoning.summary
             additionalProperties = reasoning.additionalProperties.toMutableMap()
         }
+
+        /**
+         * Controls which reasoning items are rendered back to the model on later turns. When
+         * returned on a response, this is the effective reasoning context mode used for the
+         * response.
+         */
+        fun context(context: Context?) = context(JsonField.ofNullable(context))
+
+        /** Alias for calling [Builder.context] with `context.orElse(null)`. */
+        fun context(context: Optional<Context>) = context(context.getOrNull())
+
+        /**
+         * Sets [Builder.context] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.context] with a well-typed [Context] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun context(context: JsonField<Context>) = apply { this.context = context }
 
         /**
          * Constrains effort on reasoning for
@@ -243,7 +281,13 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): Reasoning =
-            Reasoning(effort, generateSummary, summary, additionalProperties.toMutableMap())
+            Reasoning(
+                context,
+                effort,
+                generateSummary,
+                summary,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -261,6 +305,7 @@ private constructor(
             return@apply
         }
 
+        context().ifPresent { it.validate() }
         effort().ifPresent { it.validate() }
         generateSummary().ifPresent { it.validate() }
         summary().ifPresent { it.validate() }
@@ -282,9 +327,154 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (effort.asKnown().getOrNull()?.validity() ?: 0) +
+        (context.asKnown().getOrNull()?.validity() ?: 0) +
+            (effort.asKnown().getOrNull()?.validity() ?: 0) +
             (generateSummary.asKnown().getOrNull()?.validity() ?: 0) +
             (summary.asKnown().getOrNull()?.validity() ?: 0)
+
+    /**
+     * Controls which reasoning items are rendered back to the model on later turns. When returned
+     * on a response, this is the effective reasoning context mode used for the response.
+     */
+    class Context @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val AUTO = of("auto")
+
+            @JvmField val CURRENT_TURN = of("current_turn")
+
+            @JvmField val ALL_TURNS = of("all_turns")
+
+            @JvmStatic fun of(value: String) = Context(JsonField.of(value))
+        }
+
+        /** An enum containing [Context]'s known values. */
+        enum class Known {
+            AUTO,
+            CURRENT_TURN,
+            ALL_TURNS,
+        }
+
+        /**
+         * An enum containing [Context]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Context] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            AUTO,
+            CURRENT_TURN,
+            ALL_TURNS,
+            /** An enum member indicating that [Context] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                AUTO -> Value.AUTO
+                CURRENT_TURN -> Value.CURRENT_TURN
+                ALL_TURNS -> Value.ALL_TURNS
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                AUTO -> Known.AUTO
+                CURRENT_TURN -> Known.CURRENT_TURN
+                ALL_TURNS -> Known.ALL_TURNS
+                else -> throw OpenAIInvalidDataException("Unknown Context: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Context = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Context && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     /**
      * **Deprecated:** use `summary` instead.
@@ -590,6 +780,7 @@ private constructor(
         }
 
         return other is Reasoning &&
+            context == other.context &&
             effort == other.effort &&
             generateSummary == other.generateSummary &&
             summary == other.summary &&
@@ -597,11 +788,11 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(effort, generateSummary, summary, additionalProperties)
+        Objects.hash(context, effort, generateSummary, summary, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Reasoning{effort=$effort, generateSummary=$generateSummary, summary=$summary, additionalProperties=$additionalProperties}"
+        "Reasoning{context=$context, effort=$effort, generateSummary=$generateSummary, summary=$summary, additionalProperties=$additionalProperties}"
 }

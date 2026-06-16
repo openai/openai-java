@@ -23,7 +23,10 @@ internal class AdminApiKeyServiceAsyncTest {
 
         val adminApiKeyFuture =
             adminApiKeyServiceAsync.create(
-                AdminApiKeyCreateParams.builder().name("New Admin Key").build()
+                AdminApiKeyCreateParams.builder()
+                    .name("New Admin Key")
+                    .expiresInSeconds(2592000L)
+                    .build()
             )
 
         val adminApiKey = adminApiKeyFuture.get()

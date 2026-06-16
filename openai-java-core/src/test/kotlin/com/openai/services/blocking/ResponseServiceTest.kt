@@ -74,6 +74,7 @@ internal class ResponseServiceTest {
                     .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
                         Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
                             .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
@@ -169,6 +170,7 @@ internal class ResponseServiceTest {
                     .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
                         Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
                             .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
