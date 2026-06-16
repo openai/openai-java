@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.40.0 (2026-06-16)
+
+Full Changelog: [v4.39.1...v4.40.0](https://github.com/openai/openai-java/compare/v4.39.1...v4.40.0)
+
+### Features
+
+* **api:** admin spend_alerts ([512770c](https://github.com/openai/openai-java/commit/512770c119201347bfab9e68fec00e1cff5b2df8))
+* **api:** manual updates ([701ebe0](https://github.com/openai/openai-java/commit/701ebe011fa2ed05f80e51307bc7e9886bfb9d8b))
+* **api:** update OpenAPI spec or Stainless config ([94b7412](https://github.com/openai/openai-java/commit/94b7412a98fb60d6865d362c48526b4a6dd0896a))
+
+
+### Build System
+
+* Use CI environment for OpenAI API key workflow ([#756](https://github.com/openai/openai-java/issues/756)) ([27de5f5](https://github.com/openai/openai-java/commit/27de5f5b159394b7f29a31389854890460122c1a))
+* Use publish environment for release job ([#758](https://github.com/openai/openai-java/issues/758)) ([bbb66f8](https://github.com/openai/openai-java/commit/bbb66f870877a3e9e3f73c5c41eb4558f23a901a))
+
 ## 4.39.1 (2026-06-04)
 
 Full Changelog: [v4.39.0...v4.39.1](https://github.com/openai/openai-java/compare/v4.39.0...v4.39.1)
