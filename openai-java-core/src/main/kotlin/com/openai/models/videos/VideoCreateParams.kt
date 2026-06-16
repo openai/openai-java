@@ -764,10 +764,6 @@ private constructor(
         /** Optional reference asset upload or reference object that guides generation. */
         fun stream(): Optional<InputStream> = Optional.ofNullable(stream)
 
-        /**
-         * Optional reference asset upload or reference object that guides generation. Provide
-         * exactly one of `image_url` or `file_id` when using an object.
-         */
         fun imageInputReferenceParam(): Optional<ImageInputReferenceParam> =
             Optional.ofNullable(imageInputReferenceParam)
 
@@ -778,10 +774,6 @@ private constructor(
         /** Optional reference asset upload or reference object that guides generation. */
         fun asStream(): InputStream = stream.getOrThrow("stream")
 
-        /**
-         * Optional reference asset upload or reference object that guides generation. Provide
-         * exactly one of `image_url` or `file_id` when using an object.
-         */
         fun asImageInputReferenceParam(): ImageInputReferenceParam =
             imageInputReferenceParam.getOrThrow("imageInputReferenceParam")
 
@@ -888,10 +880,6 @@ private constructor(
             /** Optional reference asset upload or reference object that guides generation. */
             @JvmStatic fun ofStream(stream: InputStream) = InputReference(stream = stream)
 
-            /**
-             * Optional reference asset upload or reference object that guides generation. Provide
-             * exactly one of `image_url` or `file_id` when using an object.
-             */
             @JvmStatic
             fun ofImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam) =
                 InputReference(imageInputReferenceParam = imageInputReferenceParam)
@@ -906,10 +894,6 @@ private constructor(
             /** Optional reference asset upload or reference object that guides generation. */
             fun visitStream(stream: InputStream): T
 
-            /**
-             * Optional reference asset upload or reference object that guides generation. Provide
-             * exactly one of `image_url` or `file_id` when using an object.
-             */
             fun visitImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam): T
 
             /**
