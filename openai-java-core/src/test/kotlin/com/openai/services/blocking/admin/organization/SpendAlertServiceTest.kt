@@ -41,6 +41,21 @@ internal class SpendAlertServiceTest {
     }
 
     @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val spendAlertService = client.admin().organization().spendAlerts()
+
+        val organizationSpendAlert = spendAlertService.retrieve("alert_id")
+
+        organizationSpendAlert.validate()
+    }
+
+    @Test
     fun update() {
         val client =
             OpenAIOkHttpClient.builder()
