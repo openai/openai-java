@@ -12,6 +12,7 @@ import com.openai.models.admin.organization.projects.spendalerts.SpendAlertCreat
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertDeleteParams
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertListPage
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertListParams
+import com.openai.models.admin.organization.projects.spendalerts.SpendAlertRetrieveParams
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertUpdateParams
 import java.util.function.Consumer
 
@@ -47,6 +48,27 @@ interface SpendAlertService {
     /** @see create */
     fun create(
         params: SpendAlertCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectSpendAlert
+
+    /** Retrieves a project spend alert. */
+    fun retrieve(alertId: String, params: SpendAlertRetrieveParams): ProjectSpendAlert =
+        retrieve(alertId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        alertId: String,
+        params: SpendAlertRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectSpendAlert = retrieve(params.toBuilder().alertId(alertId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(params: SpendAlertRetrieveParams): ProjectSpendAlert =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: SpendAlertRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectSpendAlert
 
@@ -162,6 +184,38 @@ interface SpendAlertService {
         @MustBeClosed
         fun create(
             params: SpendAlertCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectSpendAlert>
+
+        /**
+         * Returns a raw HTTP response for `get
+         * /organization/projects/{project_id}/spend_alerts/{alert_id}`, but is otherwise the same
+         * as [SpendAlertService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(
+            alertId: String,
+            params: SpendAlertRetrieveParams,
+        ): HttpResponseFor<ProjectSpendAlert> = retrieve(alertId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            alertId: String,
+            params: SpendAlertRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectSpendAlert> =
+            retrieve(params.toBuilder().alertId(alertId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: SpendAlertRetrieveParams): HttpResponseFor<ProjectSpendAlert> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: SpendAlertRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectSpendAlert>
 

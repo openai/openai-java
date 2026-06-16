@@ -6,6 +6,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertCreateParams
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertDeleteParams
+import com.openai.models.admin.organization.projects.spendalerts.SpendAlertRetrieveParams
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -36,6 +37,27 @@ internal class SpendAlertServiceTest {
                             .build()
                     )
                     .thresholdAmount(0L)
+                    .build()
+            )
+
+        projectSpendAlert.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val spendAlertService = client.admin().organization().projects().spendAlerts()
+
+        val projectSpendAlert =
+            spendAlertService.retrieve(
+                SpendAlertRetrieveParams.builder()
+                    .projectId("project_id")
+                    .alertId("alert_id")
                     .build()
             )
 

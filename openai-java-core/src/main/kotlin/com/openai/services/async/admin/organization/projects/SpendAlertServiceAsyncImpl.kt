@@ -24,6 +24,7 @@ import com.openai.models.admin.organization.projects.spendalerts.SpendAlertDelet
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertListPageAsync
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertListPageResponse
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertListParams
+import com.openai.models.admin.organization.projects.spendalerts.SpendAlertRetrieveParams
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertUpdateParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -47,6 +48,13 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
     ): CompletableFuture<ProjectSpendAlert> =
         // post /organization/projects/{project_id}/spend_alerts
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+
+    override fun retrieve(
+        params: SpendAlertRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProjectSpendAlert> =
+        // get /organization/projects/{project_id}/spend_alerts/{alert_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
         params: SpendAlertUpdateParams,
@@ -116,6 +124,49 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val retrieveHandler: Handler<ProjectSpendAlert> =
+            jsonHandler<ProjectSpendAlert>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: SpendAlertRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProjectSpendAlert>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("alertId", params.alertId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "projects",
+                        params._pathParam(0),
+                        "spend_alerts",
+                        params._pathParam(1),
+                    )
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

@@ -11,6 +11,7 @@ import com.openai.models.admin.organization.spendalerts.SpendAlertCreateParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertDeleteParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertListPageAsync
 import com.openai.models.admin.organization.spendalerts.SpendAlertListParams
+import com.openai.models.admin.organization.spendalerts.SpendAlertRetrieveParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertUpdateParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -38,6 +39,41 @@ interface SpendAlertServiceAsync {
         params: SpendAlertCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<OrganizationSpendAlert>
+
+    /** Retrieves an organization spend alert. */
+    fun retrieve(alertId: String): CompletableFuture<OrganizationSpendAlert> =
+        retrieve(alertId, SpendAlertRetrieveParams.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        alertId: String,
+        params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<OrganizationSpendAlert> =
+        retrieve(params.toBuilder().alertId(alertId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(
+        alertId: String,
+        params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+    ): CompletableFuture<OrganizationSpendAlert> = retrieve(alertId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: SpendAlertRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<OrganizationSpendAlert>
+
+    /** @see retrieve */
+    fun retrieve(params: SpendAlertRetrieveParams): CompletableFuture<OrganizationSpendAlert> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        alertId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<OrganizationSpendAlert> =
+        retrieve(alertId, SpendAlertRetrieveParams.none(), requestOptions)
 
     /** Updates an organization spend alert. */
     fun update(
@@ -146,6 +182,47 @@ interface SpendAlertServiceAsync {
             params: SpendAlertCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/spend_alerts/{alert_id}`, but is
+         * otherwise the same as [SpendAlertServiceAsync.retrieve].
+         */
+        fun retrieve(alertId: String): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>> =
+            retrieve(alertId, SpendAlertRetrieveParams.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            alertId: String,
+            params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>> =
+            retrieve(params.toBuilder().alertId(alertId).build(), requestOptions)
+
+        /** @see retrieve */
+        fun retrieve(
+            alertId: String,
+            params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>> =
+            retrieve(alertId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            params: SpendAlertRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>>
+
+        /** @see retrieve */
+        fun retrieve(
+            params: SpendAlertRetrieveParams
+        ): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        fun retrieve(
+            alertId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<OrganizationSpendAlert>> =
+            retrieve(alertId, SpendAlertRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /organization/spend_alerts/{alert_id}`, but is

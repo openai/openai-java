@@ -24,6 +24,7 @@ import com.openai.models.admin.organization.spendalerts.SpendAlertDeleteParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertListPage
 import com.openai.models.admin.organization.spendalerts.SpendAlertListPageResponse
 import com.openai.models.admin.organization.spendalerts.SpendAlertListParams
+import com.openai.models.admin.organization.spendalerts.SpendAlertRetrieveParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertUpdateParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -46,6 +47,13 @@ class SpendAlertServiceImpl internal constructor(private val clientOptions: Clie
     ): OrganizationSpendAlert =
         // post /organization/spend_alerts
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun retrieve(
+        params: SpendAlertRetrieveParams,
+        requestOptions: RequestOptions,
+    ): OrganizationSpendAlert =
+        // get /organization/spend_alerts/{alert_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun update(
         params: SpendAlertUpdateParams,
@@ -105,6 +113,40 @@ class SpendAlertServiceImpl internal constructor(private val clientOptions: Clie
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<OrganizationSpendAlert> =
+            jsonHandler<OrganizationSpendAlert>(clientOptions.jsonMapper)
+
+        override fun retrieve(
+            params: SpendAlertRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<OrganizationSpendAlert> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("alertId", params.alertId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "spend_alerts", params._pathParam(0))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
