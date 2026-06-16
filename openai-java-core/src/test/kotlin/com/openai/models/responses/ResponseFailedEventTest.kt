@@ -6,8 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.ChatModel
-import com.openai.models.Reasoning
-import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -172,10 +170,11 @@ internal class ResponseFailedEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
-                            Reasoning.builder()
-                                .effort(ReasoningEffort.NONE)
-                                .generateSummary(Reasoning.GenerateSummary.AUTO)
-                                .summary(Reasoning.Summary.AUTO)
+                            Response.Reasoning.builder()
+                                .context(Response.Reasoning.Context.CURRENT_TURN)
+                                .effort(Response.Reasoning.Effort.NONE)
+                                .summary(Response.Reasoning.Summary.CONCISE)
+                                .generateSummary(Response.Reasoning.GenerateSummary.CONCISE)
                                 .build()
                         )
                         .safetyIdentifier("safety-identifier-1234")
@@ -365,10 +364,11 @@ internal class ResponseFailedEventTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
-                        Reasoning.builder()
-                            .effort(ReasoningEffort.NONE)
-                            .generateSummary(Reasoning.GenerateSummary.AUTO)
-                            .summary(Reasoning.Summary.AUTO)
+                        Response.Reasoning.builder()
+                            .context(Response.Reasoning.Context.CURRENT_TURN)
+                            .effort(Response.Reasoning.Effort.NONE)
+                            .summary(Response.Reasoning.Summary.CONCISE)
+                            .generateSummary(Response.Reasoning.GenerateSummary.CONCISE)
                             .build()
                     )
                     .safetyIdentifier("safety-identifier-1234")
@@ -562,10 +562,11 @@ internal class ResponseFailedEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
-                            Reasoning.builder()
-                                .effort(ReasoningEffort.NONE)
-                                .generateSummary(Reasoning.GenerateSummary.AUTO)
-                                .summary(Reasoning.Summary.AUTO)
+                            Response.Reasoning.builder()
+                                .context(Response.Reasoning.Context.CURRENT_TURN)
+                                .effort(Response.Reasoning.Effort.NONE)
+                                .summary(Response.Reasoning.Summary.CONCISE)
+                                .generateSummary(Response.Reasoning.GenerateSummary.CONCISE)
                                 .build()
                         )
                         .safetyIdentifier("safety-identifier-1234")

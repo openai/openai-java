@@ -39,6 +39,7 @@ internal class InputTokenServiceAsyncTest {
                     .previousResponseId("resp_123")
                     .reasoning(
                         Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
                             .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)

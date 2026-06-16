@@ -23,7 +23,10 @@ internal class AdminApiKeyServiceTest {
 
         val adminApiKey =
             adminApiKeyService.create(
-                AdminApiKeyCreateParams.builder().name("New Admin Key").build()
+                AdminApiKeyCreateParams.builder()
+                    .name("New Admin Key")
+                    .expiresInSeconds(2592000L)
+                    .build()
             )
 
         adminApiKey.validate()

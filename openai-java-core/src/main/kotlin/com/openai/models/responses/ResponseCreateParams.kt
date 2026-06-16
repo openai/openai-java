@@ -382,7 +382,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun truncation(): Optional<Truncation> = body.truncation()
+    @Deprecated("deprecated") fun truncation(): Optional<Truncation> = body.truncation()
 
     /**
      * This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use
@@ -595,7 +595,7 @@ private constructor(
      *
      * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _truncation(): JsonField<Truncation> = body._truncation()
+    @Deprecated("deprecated") fun _truncation(): JsonField<Truncation> = body._truncation()
 
     /**
      * Returns the raw JSON value of [user].
@@ -1527,9 +1527,11 @@ private constructor(
          * - `disabled` (default): If the input size will exceed the context window size for a
          *   model, the request will fail with a 400 error.
          */
+        @Deprecated("deprecated")
         fun truncation(truncation: Truncation?) = apply { body.truncation(truncation) }
 
         /** Alias for calling [Builder.truncation] with `truncation.orElse(null)`. */
+        @Deprecated("deprecated")
         fun truncation(truncation: Optional<Truncation>) = truncation(truncation.getOrNull())
 
         /**
@@ -1539,6 +1541,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun truncation(truncation: JsonField<Truncation>) = apply { body.truncation(truncation) }
 
         /**
@@ -2173,6 +2176,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun truncation(): Optional<Truncation> = truncation.getOptional("truncation")
 
         /**
@@ -2430,6 +2434,7 @@ private constructor(
          *
          * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("truncation")
         @ExcludeMissing
         fun _truncation(): JsonField<Truncation> = truncation
@@ -3393,9 +3398,11 @@ private constructor(
              * - `disabled` (default): If the input size will exceed the context window size for a
              *   model, the request will fail with a 400 error.
              */
+            @Deprecated("deprecated")
             fun truncation(truncation: Truncation?) = truncation(JsonField.ofNullable(truncation))
 
             /** Alias for calling [Builder.truncation] with `truncation.orElse(null)`. */
+            @Deprecated("deprecated")
             fun truncation(truncation: Optional<Truncation>) = truncation(truncation.getOrNull())
 
             /**
@@ -3405,6 +3412,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun truncation(truncation: JsonField<Truncation>) = apply {
                 this.truncation = truncation
             }
@@ -5595,6 +5603,7 @@ private constructor(
      * - `disabled` (default): If the input size will exceed the context window size for a model,
      *   the request will fail with a 400 error.
      */
+    @Deprecated("deprecated")
     class Truncation @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
