@@ -6,6 +6,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.ChatModel
+import com.openai.models.Reasoning
+import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.ResponsesModel
 import org.assertj.core.api.Assertions.assertThat
@@ -165,11 +167,11 @@ internal class ResponseTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                 .reasoning(
-                    Response.Reasoning.builder()
-                        .context(Response.Reasoning.Context.CURRENT_TURN)
-                        .effort(Response.Reasoning.Effort.NONE)
-                        .summary(Response.Reasoning.Summary.CONCISE)
-                        .generateSummary(Response.Reasoning.GenerateSummary.CONCISE)
+                    Reasoning.builder()
+                        .context(Reasoning.Context.AUTO)
+                        .effort(ReasoningEffort.NONE)
+                        .generateSummary(Reasoning.GenerateSummary.AUTO)
+                        .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
                 .safetyIdentifier("safety-identifier-1234")
@@ -353,11 +355,11 @@ internal class ResponseTest {
             .contains(Response.PromptCacheRetention.IN_MEMORY)
         assertThat(response.reasoning())
             .contains(
-                Response.Reasoning.builder()
-                    .context(Response.Reasoning.Context.CURRENT_TURN)
-                    .effort(Response.Reasoning.Effort.NONE)
-                    .summary(Response.Reasoning.Summary.CONCISE)
-                    .generateSummary(Response.Reasoning.GenerateSummary.CONCISE)
+                Reasoning.builder()
+                    .context(Reasoning.Context.AUTO)
+                    .effort(ReasoningEffort.NONE)
+                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                    .summary(Reasoning.Summary.AUTO)
                     .build()
             )
         assertThat(response.safetyIdentifier()).contains("safety-identifier-1234")
@@ -542,11 +544,11 @@ internal class ResponseTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                 .reasoning(
-                    Response.Reasoning.builder()
-                        .context(Response.Reasoning.Context.CURRENT_TURN)
-                        .effort(Response.Reasoning.Effort.NONE)
-                        .summary(Response.Reasoning.Summary.CONCISE)
-                        .generateSummary(Response.Reasoning.GenerateSummary.CONCISE)
+                    Reasoning.builder()
+                        .context(Reasoning.Context.AUTO)
+                        .effort(ReasoningEffort.NONE)
+                        .generateSummary(Reasoning.GenerateSummary.AUTO)
+                        .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
                 .safetyIdentifier("safety-identifier-1234")

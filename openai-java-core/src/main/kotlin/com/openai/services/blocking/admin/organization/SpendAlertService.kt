@@ -12,6 +12,7 @@ import com.openai.models.admin.organization.spendalerts.SpendAlertCreateParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertDeleteParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertListPage
 import com.openai.models.admin.organization.spendalerts.SpendAlertListParams
+import com.openai.models.admin.organization.spendalerts.SpendAlertRetrieveParams
 import com.openai.models.admin.organization.spendalerts.SpendAlertUpdateParams
 import java.util.function.Consumer
 
@@ -38,6 +39,38 @@ interface SpendAlertService {
         params: SpendAlertCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OrganizationSpendAlert
+
+    /** Retrieves an organization spend alert. */
+    fun retrieve(alertId: String): OrganizationSpendAlert =
+        retrieve(alertId, SpendAlertRetrieveParams.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        alertId: String,
+        params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): OrganizationSpendAlert =
+        retrieve(params.toBuilder().alertId(alertId).build(), requestOptions)
+
+    /** @see retrieve */
+    fun retrieve(
+        alertId: String,
+        params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+    ): OrganizationSpendAlert = retrieve(alertId, params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(
+        params: SpendAlertRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): OrganizationSpendAlert
+
+    /** @see retrieve */
+    fun retrieve(params: SpendAlertRetrieveParams): OrganizationSpendAlert =
+        retrieve(params, RequestOptions.none())
+
+    /** @see retrieve */
+    fun retrieve(alertId: String, requestOptions: RequestOptions): OrganizationSpendAlert =
+        retrieve(alertId, SpendAlertRetrieveParams.none(), requestOptions)
 
     /** Updates an organization spend alert. */
     fun update(alertId: String, params: SpendAlertUpdateParams): OrganizationSpendAlert =
@@ -135,6 +168,51 @@ interface SpendAlertService {
             params: SpendAlertCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<OrganizationSpendAlert>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/spend_alerts/{alert_id}`, but is
+         * otherwise the same as [SpendAlertService.retrieve].
+         */
+        @MustBeClosed
+        fun retrieve(alertId: String): HttpResponseFor<OrganizationSpendAlert> =
+            retrieve(alertId, SpendAlertRetrieveParams.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            alertId: String,
+            params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OrganizationSpendAlert> =
+            retrieve(params.toBuilder().alertId(alertId).build(), requestOptions)
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            alertId: String,
+            params: SpendAlertRetrieveParams = SpendAlertRetrieveParams.none(),
+        ): HttpResponseFor<OrganizationSpendAlert> =
+            retrieve(alertId, params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            params: SpendAlertRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OrganizationSpendAlert>
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(params: SpendAlertRetrieveParams): HttpResponseFor<OrganizationSpendAlert> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see retrieve */
+        @MustBeClosed
+        fun retrieve(
+            alertId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<OrganizationSpendAlert> =
+            retrieve(alertId, SpendAlertRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /organization/spend_alerts/{alert_id}`, but is
