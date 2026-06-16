@@ -23,6 +23,7 @@ class AdminApiKeyCreateResponse
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
+    private val expiresAt: JsonField<Long>,
     private val object_: JsonValue,
     private val owner: JsonField<AdminApiKey.Owner>,
     private val redactedValue: JsonField<String>,
@@ -36,6 +37,7 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("owner")
         @ExcludeMissing
@@ -48,12 +50,24 @@ private constructor(
         lastUsedAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("value") @ExcludeMissing value: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, object_, owner, redactedValue, lastUsedAt, name, value, mutableMapOf())
+    ) : this(
+        id,
+        createdAt,
+        expiresAt,
+        object_,
+        owner,
+        redactedValue,
+        lastUsedAt,
+        name,
+        value,
+        mutableMapOf(),
+    )
 
     fun toAdminApiKey(): AdminApiKey =
         AdminApiKey.builder()
             .id(id)
             .createdAt(createdAt)
+            .expiresAt(expiresAt)
             .object_(object_)
             .owner(owner)
             .redactedValue(redactedValue)
@@ -76,6 +90,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The Unix timestamp (in seconds) of when the API key expires
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * The object type, which is always `organization.admin_api_key`
@@ -143,6 +165,13 @@ private constructor(
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
+
+    /**
      * Returns the raw JSON value of [owner].
      *
      * Unlike [owner], this method doesn't throw if the JSON field has an unexpected type.
@@ -200,6 +229,7 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
+         * .expiresAt()
          * .owner()
          * .redactedValue()
          * .value()
@@ -213,6 +243,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
+        private var expiresAt: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("organization.admin_api_key")
         private var owner: JsonField<AdminApiKey.Owner>? = null
         private var redactedValue: JsonField<String>? = null
@@ -225,6 +256,7 @@ private constructor(
         internal fun from(adminApiKeyCreateResponse: AdminApiKeyCreateResponse) = apply {
             id = adminApiKeyCreateResponse.id
             createdAt = adminApiKeyCreateResponse.createdAt
+            expiresAt = adminApiKeyCreateResponse.expiresAt
             object_ = adminApiKeyCreateResponse.object_
             owner = adminApiKeyCreateResponse.owner
             redactedValue = adminApiKeyCreateResponse.redactedValue
@@ -255,6 +287,27 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
+        /** The Unix timestamp (in seconds) of when the API key expires */
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /**
+         * Alias for [Builder.expiresAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
+
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -369,6 +422,7 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
+         * .expiresAt()
          * .owner()
          * .redactedValue()
          * .value()
@@ -380,6 +434,7 @@ private constructor(
             AdminApiKeyCreateResponse(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
+                checkRequired("expiresAt", expiresAt),
                 object_,
                 checkRequired("owner", owner),
                 checkRequired("redactedValue", redactedValue),
@@ -407,6 +462,7 @@ private constructor(
 
         id()
         createdAt()
+        expiresAt()
         _object_().let {
             if (it != JsonValue.from("organization.admin_api_key")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -437,6 +493,7 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (if (expiresAt.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.admin_api_key")) 1 else 0 } +
             (owner.asKnown().getOrNull()?.validity() ?: 0) +
             (if (redactedValue.asKnown().isPresent) 1 else 0) +
@@ -452,6 +509,7 @@ private constructor(
         return other is AdminApiKeyCreateResponse &&
             id == other.id &&
             createdAt == other.createdAt &&
+            expiresAt == other.expiresAt &&
             object_ == other.object_ &&
             owner == other.owner &&
             redactedValue == other.redactedValue &&
@@ -465,6 +523,7 @@ private constructor(
         Objects.hash(
             id,
             createdAt,
+            expiresAt,
             object_,
             owner,
             redactedValue,
@@ -478,5 +537,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AdminApiKeyCreateResponse{id=$id, createdAt=$createdAt, object_=$object_, owner=$owner, redactedValue=$redactedValue, lastUsedAt=$lastUsedAt, name=$name, value=$value, additionalProperties=$additionalProperties}"
+        "AdminApiKeyCreateResponse{id=$id, createdAt=$createdAt, expiresAt=$expiresAt, object_=$object_, owner=$owner, redactedValue=$redactedValue, lastUsedAt=$lastUsedAt, name=$name, value=$value, additionalProperties=$additionalProperties}"
 }

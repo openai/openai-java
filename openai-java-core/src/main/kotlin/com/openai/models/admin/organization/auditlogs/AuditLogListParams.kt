@@ -26,6 +26,7 @@ private constructor(
     private val limit: Long?,
     private val projectIds: List<String>?,
     private val resourceIds: List<String>?,
+    private val tenantOnly: Boolean?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -72,8 +73,19 @@ private constructor(
     /** Return only events for these projects. */
     fun projectIds(): Optional<List<String>> = Optional.ofNullable(projectIds)
 
-    /** Return only events performed on these targets. For example, a project ID updated. */
+    /**
+     * Return only events performed on these targets. For example, a project ID updated. For ChatGPT
+     * connector role events, use the workspace connector resource ID shown in `details.id`, such as
+     * `<workspace_id>__<connector_id>`.
+     */
     fun resourceIds(): Optional<List<String>> = Optional.ofNullable(resourceIds)
+
+    /**
+     * Return only tenant-scoped events associated with this organization. Required for
+     * tenant-scoped events such as `role.bound_to_resource` and `role.unbound_from_resource`. When
+     * `true`, all supplied event types must be tenant-scoped.
+     */
+    fun tenantOnly(): Optional<Boolean> = Optional.ofNullable(tenantOnly)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -103,6 +115,7 @@ private constructor(
         private var limit: Long? = null
         private var projectIds: MutableList<String>? = null
         private var resourceIds: MutableList<String>? = null
+        private var tenantOnly: Boolean? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -117,6 +130,7 @@ private constructor(
             limit = auditLogListParams.limit
             projectIds = auditLogListParams.projectIds?.toMutableList()
             resourceIds = auditLogListParams.resourceIds?.toMutableList()
+            tenantOnly = auditLogListParams.tenantOnly
             additionalHeaders = auditLogListParams.additionalHeaders.toBuilder()
             additionalQueryParams = auditLogListParams.additionalQueryParams.toBuilder()
         }
@@ -238,7 +252,11 @@ private constructor(
             projectIds = (projectIds ?: mutableListOf()).apply { add(projectId) }
         }
 
-        /** Return only events performed on these targets. For example, a project ID updated. */
+        /**
+         * Return only events performed on these targets. For example, a project ID updated. For
+         * ChatGPT connector role events, use the workspace connector resource ID shown in
+         * `details.id`, such as `<workspace_id>__<connector_id>`.
+         */
         fun resourceIds(resourceIds: List<String>?) = apply {
             this.resourceIds = resourceIds?.toMutableList()
         }
@@ -254,6 +272,23 @@ private constructor(
         fun addResourceId(resourceId: String) = apply {
             resourceIds = (resourceIds ?: mutableListOf()).apply { add(resourceId) }
         }
+
+        /**
+         * Return only tenant-scoped events associated with this organization. Required for
+         * tenant-scoped events such as `role.bound_to_resource` and `role.unbound_from_resource`.
+         * When `true`, all supplied event types must be tenant-scoped.
+         */
+        fun tenantOnly(tenantOnly: Boolean?) = apply { this.tenantOnly = tenantOnly }
+
+        /**
+         * Alias for [Builder.tenantOnly].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun tenantOnly(tenantOnly: Boolean) = tenantOnly(tenantOnly as Boolean?)
+
+        /** Alias for calling [Builder.tenantOnly] with `tenantOnly.orElse(null)`. */
+        fun tenantOnly(tenantOnly: Optional<Boolean>) = tenantOnly(tenantOnly.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -369,6 +404,7 @@ private constructor(
                 limit,
                 projectIds?.toImmutable(),
                 resourceIds?.toImmutable(),
+                tenantOnly,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -398,6 +434,7 @@ private constructor(
                 limit?.let { put("limit", it.toString()) }
                 projectIds?.forEach { put("project_ids[]", it) }
                 resourceIds?.forEach { put("resource_ids[]", it) }
+                tenantOnly?.let { put("tenant_only", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()
@@ -719,6 +756,10 @@ private constructor(
 
             @JvmField val ROLE_ASSIGNMENT_DELETED = of("role.assignment.deleted")
 
+            @JvmField val ROLE_BOUND_TO_RESOURCE = of("role.bound_to_resource")
+
+            @JvmField val ROLE_UNBOUND_FROM_RESOURCE = of("role.unbound_from_resource")
+
             @JvmField val SCIM_ENABLED = of("scim.enabled")
 
             @JvmField val SCIM_DISABLED = of("scim.disabled")
@@ -789,6 +830,8 @@ private constructor(
             ROLE_DELETED,
             ROLE_ASSIGNMENT_CREATED,
             ROLE_ASSIGNMENT_DELETED,
+            ROLE_BOUND_TO_RESOURCE,
+            ROLE_UNBOUND_FROM_RESOURCE,
             SCIM_ENABLED,
             SCIM_DISABLED,
             SERVICE_ACCOUNT_CREATED,
@@ -858,6 +901,8 @@ private constructor(
             ROLE_DELETED,
             ROLE_ASSIGNMENT_CREATED,
             ROLE_ASSIGNMENT_DELETED,
+            ROLE_BOUND_TO_RESOURCE,
+            ROLE_UNBOUND_FROM_RESOURCE,
             SCIM_ENABLED,
             SCIM_DISABLED,
             SERVICE_ACCOUNT_CREATED,
@@ -933,6 +978,8 @@ private constructor(
                 ROLE_DELETED -> Value.ROLE_DELETED
                 ROLE_ASSIGNMENT_CREATED -> Value.ROLE_ASSIGNMENT_CREATED
                 ROLE_ASSIGNMENT_DELETED -> Value.ROLE_ASSIGNMENT_DELETED
+                ROLE_BOUND_TO_RESOURCE -> Value.ROLE_BOUND_TO_RESOURCE
+                ROLE_UNBOUND_FROM_RESOURCE -> Value.ROLE_UNBOUND_FROM_RESOURCE
                 SCIM_ENABLED -> Value.SCIM_ENABLED
                 SCIM_DISABLED -> Value.SCIM_DISABLED
                 SERVICE_ACCOUNT_CREATED -> Value.SERVICE_ACCOUNT_CREATED
@@ -1007,6 +1054,8 @@ private constructor(
                 ROLE_DELETED -> Known.ROLE_DELETED
                 ROLE_ASSIGNMENT_CREATED -> Known.ROLE_ASSIGNMENT_CREATED
                 ROLE_ASSIGNMENT_DELETED -> Known.ROLE_ASSIGNMENT_DELETED
+                ROLE_BOUND_TO_RESOURCE -> Known.ROLE_BOUND_TO_RESOURCE
+                ROLE_UNBOUND_FROM_RESOURCE -> Known.ROLE_UNBOUND_FROM_RESOURCE
                 SCIM_ENABLED -> Known.SCIM_ENABLED
                 SCIM_DISABLED -> Known.SCIM_DISABLED
                 SERVICE_ACCOUNT_CREATED -> Known.SERVICE_ACCOUNT_CREATED
@@ -1094,6 +1143,7 @@ private constructor(
             limit == other.limit &&
             projectIds == other.projectIds &&
             resourceIds == other.resourceIds &&
+            tenantOnly == other.tenantOnly &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
@@ -1109,10 +1159,11 @@ private constructor(
             limit,
             projectIds,
             resourceIds,
+            tenantOnly,
             additionalHeaders,
             additionalQueryParams,
         )
 
     override fun toString() =
-        "AuditLogListParams{actorEmails=$actorEmails, actorIds=$actorIds, after=$after, before=$before, effectiveAt=$effectiveAt, eventTypes=$eventTypes, limit=$limit, projectIds=$projectIds, resourceIds=$resourceIds, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "AuditLogListParams{actorEmails=$actorEmails, actorIds=$actorIds, after=$after, before=$before, effectiveAt=$effectiveAt, eventTypes=$eventTypes, limit=$limit, projectIds=$projectIds, resourceIds=$resourceIds, tenantOnly=$tenantOnly, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
