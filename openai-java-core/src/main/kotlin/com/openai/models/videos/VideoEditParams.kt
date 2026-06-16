@@ -522,7 +522,7 @@ private constructor(
         /** Reference to the completed video to edit. */
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
-        /** Reference to the completed video to edit. */
+        /** Reference to the completed video. */
         fun referenceInputParam(): Optional<VideoReferenceInputParam> =
             Optional.ofNullable(referenceInputParam)
 
@@ -533,7 +533,7 @@ private constructor(
         /** Reference to the completed video to edit. */
         fun asInputStream(): InputStream = inputStream.getOrThrow("inputStream")
 
-        /** Reference to the completed video to edit. */
+        /** Reference to the completed video. */
         fun asReferenceInputParam(): VideoReferenceInputParam =
             referenceInputParam.getOrThrow("referenceInputParam")
 
@@ -639,7 +639,7 @@ private constructor(
             @JvmStatic
             fun ofInputStream(inputStream: InputStream) = Video(inputStream = inputStream)
 
-            /** Reference to the completed video to edit. */
+            /** Reference to the completed video. */
             @JvmStatic
             fun ofReferenceInputParam(referenceInputParam: VideoReferenceInputParam) =
                 Video(referenceInputParam = referenceInputParam)
@@ -651,7 +651,7 @@ private constructor(
             /** Reference to the completed video to edit. */
             fun visitInputStream(inputStream: InputStream): T
 
-            /** Reference to the completed video to edit. */
+            /** Reference to the completed video. */
             fun visitReferenceInputParam(referenceInputParam: VideoReferenceInputParam): T
 
             /**
@@ -686,7 +686,7 @@ private constructor(
             }
         }
 
-        /** Reference to the completed video to edit. */
+        /** Reference to the completed video. */
         class VideoReferenceInputParam
         private constructor(
             private val id: MultipartField<String>,
