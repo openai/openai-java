@@ -4719,6 +4719,7 @@ private constructor(
             private val requireApproval: JsonField<RequireApproval>,
             private val serverDescription: JsonField<String>,
             private val serverUrl: JsonField<String>,
+            private val tunnelId: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -4752,6 +4753,9 @@ private constructor(
                 @JsonProperty("server_url")
                 @ExcludeMissing
                 serverUrl: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("tunnel_id")
+                @ExcludeMissing
+                tunnelId: JsonField<String> = JsonMissing.of(),
             ) : this(
                 serverLabel,
                 type,
@@ -4763,6 +4767,7 @@ private constructor(
                 requireApproval,
                 serverDescription,
                 serverUrl,
+                tunnelId,
                 mutableMapOf(),
             )
 
@@ -4808,7 +4813,8 @@ private constructor(
 
             /**
              * Identifier for service connectors, like those available in ChatGPT. One of
-             * `server_url` or `connector_id` must be provided. Learn more about service connectors
+             * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
+             * service connectors
              * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
              *
              * Currently supported `connector_id` values are:
@@ -4862,12 +4868,22 @@ private constructor(
                 serverDescription.getOptional("server_description")
 
             /**
-             * The URL for the MCP server. One of `server_url` or `connector_id` must be provided.
+             * The URL for the MCP server. One of `server_url`, `connector_id`, or `tunnel_id` must
+             * be provided.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
             fun serverUrl(): Optional<String> = serverUrl.getOptional("server_url")
+
+            /**
+             * The Secure MCP Tunnel ID to use instead of a direct server URL. One of `server_url`,
+             * `connector_id`, or `tunnel_id` must be provided.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun tunnelId(): Optional<String> = tunnelId.getOptional("tunnel_id")
 
             /**
              * Returns the raw JSON value of [serverLabel].
@@ -4956,6 +4972,14 @@ private constructor(
             @ExcludeMissing
             fun _serverUrl(): JsonField<String> = serverUrl
 
+            /**
+             * Returns the raw JSON value of [tunnelId].
+             *
+             * Unlike [tunnelId], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("tunnel_id") @ExcludeMissing fun _tunnelId(): JsonField<String> = tunnelId
+
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
                 additionalProperties.put(key, value)
@@ -4994,6 +5018,7 @@ private constructor(
                 private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
                 private var serverDescription: JsonField<String> = JsonMissing.of()
                 private var serverUrl: JsonField<String> = JsonMissing.of()
+                private var tunnelId: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -5008,6 +5033,7 @@ private constructor(
                     requireApproval = mcpTool.requireApproval
                     serverDescription = mcpTool.serverDescription
                     serverUrl = mcpTool.serverUrl
+                    tunnelId = mcpTool.tunnelId
                     additionalProperties = mcpTool.additionalProperties.toMutableMap()
                 }
 
@@ -5089,8 +5115,8 @@ private constructor(
 
                 /**
                  * Identifier for service connectors, like those available in ChatGPT. One of
-                 * `server_url` or `connector_id` must be provided. Learn more about service
-                 * connectors
+                 * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
+                 * service connectors
                  * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
                  *
                  * Currently supported `connector_id` values are:
@@ -5203,8 +5229,8 @@ private constructor(
                 }
 
                 /**
-                 * The URL for the MCP server. One of `server_url` or `connector_id` must be
-                 * provided.
+                 * The URL for the MCP server. One of `server_url`, `connector_id`, or `tunnel_id`
+                 * must be provided.
                  */
                 fun serverUrl(serverUrl: String) = serverUrl(JsonField.of(serverUrl))
 
@@ -5216,6 +5242,21 @@ private constructor(
                  * yet supported value.
                  */
                 fun serverUrl(serverUrl: JsonField<String>) = apply { this.serverUrl = serverUrl }
+
+                /**
+                 * The Secure MCP Tunnel ID to use instead of a direct server URL. One of
+                 * `server_url`, `connector_id`, or `tunnel_id` must be provided.
+                 */
+                fun tunnelId(tunnelId: String) = tunnelId(JsonField.of(tunnelId))
+
+                /**
+                 * Sets [Builder.tunnelId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.tunnelId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun tunnelId(tunnelId: JsonField<String>) = apply { this.tunnelId = tunnelId }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -5263,6 +5304,7 @@ private constructor(
                         requireApproval,
                         serverDescription,
                         serverUrl,
+                        tunnelId,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -5298,6 +5340,7 @@ private constructor(
                 requireApproval().ifPresent { it.validate() }
                 serverDescription()
                 serverUrl()
+                tunnelId()
                 validated = true
             }
 
@@ -5326,7 +5369,8 @@ private constructor(
                     (headers.asKnown().getOrNull()?.validity() ?: 0) +
                     (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (serverDescription.asKnown().isPresent) 1 else 0) +
-                    (if (serverUrl.asKnown().isPresent) 1 else 0)
+                    (if (serverUrl.asKnown().isPresent) 1 else 0) +
+                    (if (tunnelId.asKnown().isPresent) 1 else 0)
 
             /** List of allowed tool names or a filter object. */
             @JsonDeserialize(using = AllowedTools.Deserializer::class)
@@ -5795,7 +5839,8 @@ private constructor(
 
             /**
              * Identifier for service connectors, like those available in ChatGPT. One of
-             * `server_url` or `connector_id` must be provided. Learn more about service connectors
+             * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
+             * service connectors
              * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
              *
              * Currently supported `connector_id` values are:
@@ -7256,6 +7301,7 @@ private constructor(
                     requireApproval == other.requireApproval &&
                     serverDescription == other.serverDescription &&
                     serverUrl == other.serverUrl &&
+                    tunnelId == other.tunnelId &&
                     additionalProperties == other.additionalProperties
             }
 
@@ -7271,6 +7317,7 @@ private constructor(
                     requireApproval,
                     serverDescription,
                     serverUrl,
+                    tunnelId,
                     additionalProperties,
                 )
             }
@@ -7278,7 +7325,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "McpTool{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
+                "McpTool{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, tunnelId=$tunnelId, additionalProperties=$additionalProperties}"
         }
     }
 
