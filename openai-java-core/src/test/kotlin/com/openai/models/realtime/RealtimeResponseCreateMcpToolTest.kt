@@ -29,6 +29,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                 )
                 .serverDescription("server_description")
                 .serverUrl("https://example.com")
+                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
         assertThat(realtimeResponseCreateMcpTool.serverLabel()).isEqualTo("server_label")
@@ -52,6 +53,8 @@ internal class RealtimeResponseCreateMcpToolTest {
             )
         assertThat(realtimeResponseCreateMcpTool.serverDescription()).contains("server_description")
         assertThat(realtimeResponseCreateMcpTool.serverUrl()).contains("https://example.com")
+        assertThat(realtimeResponseCreateMcpTool.tunnelId())
+            .contains("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
     }
 
     @Test
@@ -74,6 +77,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                 )
                 .serverDescription("server_description")
                 .serverUrl("https://example.com")
+                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
         val roundtrippedRealtimeResponseCreateMcpTool =
