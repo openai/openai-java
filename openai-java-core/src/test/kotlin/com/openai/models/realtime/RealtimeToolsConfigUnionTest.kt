@@ -71,6 +71,7 @@ internal class RealtimeToolsConfigUnionTest {
                 )
                 .serverDescription("server_description")
                 .serverUrl("https://example.com")
+                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
         val realtimeToolsConfigUnion = RealtimeToolsConfigUnion.ofMcp(mcp)
@@ -100,6 +101,7 @@ internal class RealtimeToolsConfigUnionTest {
                     )
                     .serverDescription("server_description")
                     .serverUrl("https://example.com")
+                    .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                     .build()
             )
 

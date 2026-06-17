@@ -316,6 +316,7 @@ internal class ToolTest {
                 .requireApproval(Tool.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS)
                 .serverDescription("server_description")
                 .serverUrl("https://example.com")
+                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
         val tool = Tool.ofMcp(mcp)
@@ -356,6 +357,7 @@ internal class ToolTest {
                     .requireApproval(Tool.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS)
                     .serverDescription("server_description")
                     .serverUrl("https://example.com")
+                    .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                     .build()
             )
 
