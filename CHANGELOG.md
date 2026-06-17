@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.41.0 (2026-06-17)
+
+Full Changelog: [v4.40.0...v4.41.0](https://github.com/openai/openai-java/compare/v4.40.0...v4.41.0)
+
+### Features
+
+* **api:** update OpenAPI spec or Stainless config ([ce1d334](https://github.com/openai/openai-java/commit/ce1d334a2856395d95491db52a26c15472598896))
+
 ## 4.40.0 (2026-06-16)
 
 Full Changelog: [v4.39.1...v4.40.0](https://github.com/openai/openai-java/compare/v4.39.1...v4.40.0)
