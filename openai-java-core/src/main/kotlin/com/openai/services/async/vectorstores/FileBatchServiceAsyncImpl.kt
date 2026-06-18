@@ -18,6 +18,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.vectorstores.filebatches.FileBatchCancelParams
 import com.openai.models.vectorstores.filebatches.FileBatchCreateParams
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageAsync
@@ -51,28 +53,36 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // post /vector_stores/{vector_store_id}/file_batches
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieve(
         params: FileBatchRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // get /vector_stores/{vector_store_id}/file_batches/{batch_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun cancel(
         params: FileBatchCancelParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // post /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel
-        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().cancel(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun listFiles(
         params: FileBatchListFilesParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FileBatchListFilesPageAsync> =
         // get /vector_stores/{vector_store_id}/file_batches/{batch_id}/files
-        withRawResponse().listFiles(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().listFiles(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileBatchServiceAsync.WithRawResponse {
@@ -112,8 +122,10 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -155,8 +167,10 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -200,8 +214,10 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
@@ -244,8 +260,10 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listFilesHandler.handle(it) }
