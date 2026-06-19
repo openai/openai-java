@@ -44,50 +44,45 @@ internal fun errorHandler(
     errorBodyHandler: Handler<JsonField<ErrorObject>>
 ): Handler<HttpResponse> =
     object : Handler<HttpResponse> {
-        override fun handle(response: HttpResponse): HttpResponse =
-            when (val statusCode = response.statusCode()) {
-                in 200..299 -> response
-                400 ->
-                    throw BadRequestException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                401 ->
-                    throw UnauthorizedException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                403 ->
-                    throw PermissionDeniedException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                404 ->
-                    throw NotFoundException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                422 ->
-                    throw UnprocessableEntityException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                429 ->
-                    throw RateLimitException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                in 500..599 ->
-                    throw InternalServerException.builder()
-                        .statusCode(statusCode)
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
-                else ->
-                    throw UnexpectedStatusCodeException.builder()
-                        .statusCode(statusCode)
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+        override fun handle(response: HttpResponse): HttpResponse {
+            val statusCode = response.statusCode()
+            if (statusCode in 200..299) {
+                return response
             }
+
+            return response.use {
+                val headers = it.headers()
+                val error = errorBodyHandler.handle(it)
+
+                when (statusCode) {
+                    400 -> throw BadRequestException.builder().headers(headers).error(error).build()
+                    401 ->
+                        throw UnauthorizedException.builder().headers(headers).error(error).build()
+                    403 ->
+                        throw PermissionDeniedException.builder()
+                            .headers(headers)
+                            .error(error)
+                            .build()
+                    404 -> throw NotFoundException.builder().headers(headers).error(error).build()
+                    422 ->
+                        throw UnprocessableEntityException.builder()
+                            .headers(headers)
+                            .error(error)
+                            .build()
+                    429 -> throw RateLimitException.builder().headers(headers).error(error).build()
+                    in 500..599 ->
+                        throw InternalServerException.builder()
+                            .statusCode(statusCode)
+                            .headers(headers)
+                            .error(error)
+                            .build()
+                    else ->
+                        throw UnexpectedStatusCodeException.builder()
+                            .statusCode(statusCode)
+                            .headers(headers)
+                            .error(error)
+                            .build()
+                }
+            }
+        }
     }
