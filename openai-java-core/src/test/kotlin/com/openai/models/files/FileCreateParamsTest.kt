@@ -39,7 +39,11 @@ internal class FileCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("Example data".byteInputStream()),
+                        "file" to
+                            MultipartField.builder<InputStream>()
+                                .value("Example data".byteInputStream())
+                                .filename("file.bin")
+                                .build(),
                         "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
                         "expires_after" to
                             MultipartField.of(
@@ -72,12 +76,61 @@ internal class FileCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("Example data".byteInputStream()),
+                        "file" to
+                            MultipartField.builder<InputStream>()
+                                .value("Example data".byteInputStream())
+                                .filename("file.bin")
+                                .build(),
                         "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
                     )
                     .mapValues { (_, field) ->
                         field.map { (it as? ByteArray)?.inputStream() ?: it }
                     }
             )
+    }
+
+    @Test
+    fun fileWithInputStreamUsesDefaultFilename() {
+        val params =
+            FileCreateParams.builder()
+                .file("Example data".byteInputStream())
+                .purpose(FilePurpose.BATCH)
+                .build()
+
+        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithBytesUsesDefaultFilename() {
+        val params =
+            FileCreateParams.builder().file("Example data".toByteArray()).purpose(FilePurpose.BATCH).build()
+
+        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithInputStreamAndFilename() {
+        val params =
+            FileCreateParams.builder()
+                .file("Example data".byteInputStream(), "input.jsonl")
+                .purpose(FilePurpose.BATCH)
+                .build()
+
+        assertThat(params._file().filename()).contains("input.jsonl")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithBytesAndFilename() {
+        val params =
+            FileCreateParams.builder()
+                .file("Example data".toByteArray(), "input.jsonl")
+                .purpose(FilePurpose.BATCH)
+                .build()
+
+        assertThat(params._file().filename()).contains("input.jsonl")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
     }
 }

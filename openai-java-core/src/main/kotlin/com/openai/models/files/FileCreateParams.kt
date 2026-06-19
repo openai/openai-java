@@ -153,7 +153,10 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The File object (not file name) to be uploaded. */
-        fun file(file: InputStream) = apply { body.file(file) }
+        fun file(file: InputStream) = apply { body.file(file, "file.bin") }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: InputStream, filename: String) = apply { body.file(file, filename) }
 
         /**
          * Sets [Builder.file] to an arbitrary multipart value.
@@ -165,7 +168,10 @@ private constructor(
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
         /** The File object (not file name) to be uploaded. */
-        fun file(file: ByteArray) = apply { body.file(file) }
+        fun file(file: ByteArray) = apply { body.file(file, "file.bin") }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: ByteArray, filename: String) = apply { body.file(file, filename) }
 
         /** The File object (not file name) to be uploaded. */
         fun file(path: Path) = apply { body.file(path) }
@@ -459,7 +465,11 @@ private constructor(
             }
 
             /** The File object (not file name) to be uploaded. */
-            fun file(file: InputStream) = file(MultipartField.of(file))
+            fun file(file: InputStream) = file(file, "file.bin")
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: InputStream, filename: String) =
+                file(MultipartField.builder<InputStream>().value(file).filename(filename).build())
 
             /**
              * Sets [Builder.file] to an arbitrary multipart value.
@@ -471,7 +481,10 @@ private constructor(
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
             /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(file.inputStream())
+            fun file(file: ByteArray) = file(file, "file.bin")
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: ByteArray, filename: String) = file(file.inputStream(), filename)
 
             /** The File object (not file name) to be uploaded. */
             fun file(path: Path) =
