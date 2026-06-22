@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     implementation(project(":openai-java"))
+    implementation(project(":openai-java-bedrock"))
     implementation("com.azure:azure-identity:1.15.0")
 }
 

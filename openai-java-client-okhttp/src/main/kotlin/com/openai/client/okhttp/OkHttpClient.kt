@@ -111,6 +111,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     class Builder internal constructor() {
 
         private var timeout: Timeout = Timeout.default()
+        private var followRedirects: Boolean = true
         private var proxy: Proxy? = null
         private var proxyAuthenticator: ProxyAuthenticator? = null
         private var maxIdleConnections: Int? = null
@@ -123,6 +124,11 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
+
+        @JvmSynthetic
+        internal fun followRedirects(followRedirects: Boolean) = apply {
+            this.followRedirects = followRedirects
+        }
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
 
@@ -173,6 +179,8 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                 okhttp3.OkHttpClient.Builder()
                     // `RetryingHttpClient` handles retries if the user enabled them.
                     .retryOnConnectionFailure(false)
+                    .followRedirects(followRedirects)
+                    .followSslRedirects(followRedirects)
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())

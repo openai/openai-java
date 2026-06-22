@@ -62,6 +62,7 @@
   "release-type": "simple",
   "extra-files": [
     "README.md",
+    "bedrock.md",
     "build.gradle.kts"
   ]
 }
