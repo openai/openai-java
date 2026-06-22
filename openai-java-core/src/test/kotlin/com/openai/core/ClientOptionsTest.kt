@@ -8,6 +8,8 @@ import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
 import java.util.concurrent.CompletableFuture
@@ -131,6 +133,52 @@ internal class ClientOptionsTest {
             }
 
         assertThat(thrown.message).contains("At least one credential source")
+    }
+
+    @Test
+    fun build_withHttpRequestAuthenticator_satisfiesAuthenticationAndSurvivesCloning() {
+        val authenticator =
+            object : HttpRequestAuthenticator {
+                override fun authenticate(request: HttpRequest): HttpRequest = request
+            }
+
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .httpRequestAuthenticator(authenticator)
+                .build()
+                .toBuilder()
+                .build()
+
+        assertThat(
+                clientOptions.securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+            )
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+        assertThat(
+                clientOptions.securityHeaders(
+                    SecurityOptions.builder().adminApiKeyAuth(true).build()
+                )
+            )
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+    }
+
+    @Test
+    fun build_withHttpRequestAuthenticatorAndApiKey_throws() {
+        val authenticator =
+            object : HttpRequestAuthenticator {
+                override fun authenticate(request: HttpRequest): HttpRequest = request
+            }
+
+        val thrown =
+            assertThrows<IllegalStateException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .httpRequestAuthenticator(authenticator)
+                    .apiKey("test-api-key")
+                    .build()
+            }
+
+        assertThat(thrown.message).contains("Provider authentication cannot be combined")
     }
 
     @Test

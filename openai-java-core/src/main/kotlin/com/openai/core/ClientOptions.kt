@@ -10,8 +10,10 @@ import com.openai.azure.AzureUrlCategory
 import com.openai.azure.AzureUrlPathMode
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.AsyncStreamResponse
+import com.openai.core.http.AuthenticatingHttpClient
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.QueryParams
@@ -42,6 +44,7 @@ private constructor(
      * This class takes ownership of the client and closes it when closed.
      */
     @get:JvmName("httpClient") val httpClient: HttpClient,
+    private val httpRequestAuthenticator: HttpRequestAuthenticator?,
     /**
      * Whether to throw an exception if any of the Jackson versions detected at runtime are
      * incompatible with the SDK's minimum supported Jackson version (2.13.4).
@@ -191,6 +194,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
+        private var httpRequestAuthenticator: HttpRequestAuthenticator? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
@@ -216,6 +220,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
+            httpRequestAuthenticator = clientOptions.httpRequestAuthenticator
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
@@ -230,7 +235,10 @@ private constructor(
             logLevel = clientOptions.logLevel
             apiKey = clientOptions.apiKey
             adminApiKey = clientOptions.adminApiKey
-            credential = clientOptions.credential.takeUnless { it === AdminApiKeyOnlyCredential }
+            credential =
+                clientOptions.credential.takeUnless {
+                    it === AdminApiKeyOnlyCredential || it === HttpRequestAuthenticatorCredential
+                }
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
             organization = clientOptions.organization
@@ -247,6 +255,17 @@ private constructor(
          */
         fun httpClient(httpClient: HttpClient) = apply {
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+        }
+
+        /**
+         * Configures authentication that must inspect the complete HTTP request.
+         *
+         * This is reserved for OpenAI-owned provider integrations. The authenticator runs once per
+         * request attempt after request construction and immediately before transport logging.
+         */
+        @JvmSynthetic
+        fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator?) = apply {
+            this.httpRequestAuthenticator = httpRequestAuthenticator
         }
 
         /**
@@ -504,6 +523,16 @@ private constructor(
             httpClient: HttpClient,
             jsonMapper: JsonMapper,
         ): Credential {
+            if (httpRequestAuthenticator != null) {
+                if (
+                    credential != null || workloadIdentity != null || !adminApiKey.isNullOrEmpty()
+                ) {
+                    throw IllegalStateException(
+                        "Provider authentication cannot be combined with credential (apiKey), workloadIdentity, or adminApiKey"
+                    )
+                }
+                return HttpRequestAuthenticatorCredential
+            }
             if (
                 credential != null &&
                     credential !== AdminApiKeyOnlyCredential &&
@@ -669,21 +698,32 @@ private constructor(
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
 
-            val workloadIdentityHttpClient =
-                WorkloadIdentityHttpClient(
-                    delegate = httpClient,
-                    workloadIdentityAuth = effectiveWorkloadIdentityAuth,
-                )
+            val loggingDelegate =
+                if (httpRequestAuthenticator != null) httpClient
+                else
+                    WorkloadIdentityHttpClient(
+                        delegate = httpClient,
+                        workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                    )
+
+            val loggingHttpClient =
+                LoggingHttpClient.builder()
+                    .httpClient(loggingDelegate)
+                    .clock(clock)
+                    .level(logLevel)
+                    .build()
+
+            val perAttemptHttpClient =
+                httpRequestAuthenticator?.let { authenticator ->
+                    AuthenticatingHttpClient(
+                        delegate = loggingHttpClient,
+                        authenticator = authenticator,
+                    )
+                } ?: loggingHttpClient
 
             val wrappedHttpClient =
                 RetryingHttpClient.builder()
-                    .httpClient(
-                        LoggingHttpClient.builder()
-                            .httpClient(workloadIdentityHttpClient)
-                            .clock(clock)
-                            .level(logLevel)
-                            .build()
-                    )
+                    .httpClient(perAttemptHttpClient)
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
@@ -692,6 +732,7 @@ private constructor(
             return ClientOptions(
                 httpClient,
                 wrappedHttpClient,
+                httpRequestAuthenticator,
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor,
@@ -735,7 +776,9 @@ private constructor(
     @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {
         val headers = Headers.builder()
-        var isSatisfied = false
+        var isSatisfied =
+            credential === HttpRequestAuthenticatorCredential &&
+                (security.bearerAuth || security.adminApiKeyAuth)
 
         if (security.bearerAuth) {
             when {
@@ -751,6 +794,9 @@ private constructor(
                     isSatisfied = true
                 }
                 credential is WorkloadIdentityCredential -> {
+                    isSatisfied = true
+                }
+                credential === HttpRequestAuthenticatorCredential -> {
                     isSatisfied = true
                 }
             }
@@ -780,3 +826,5 @@ private constructor(
 }
 
 private object AdminApiKeyOnlyCredential : Credential
+
+private object HttpRequestAuthenticatorCredential : Credential
