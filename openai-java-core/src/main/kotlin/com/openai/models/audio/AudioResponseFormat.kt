@@ -166,6 +166,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
             SRT -> false
             VERBOSE_JSON -> true
             VTT -> false
+            DIARIZED_JSON -> true
             else -> false
         }
 
