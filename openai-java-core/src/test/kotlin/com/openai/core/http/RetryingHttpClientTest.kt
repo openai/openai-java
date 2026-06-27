@@ -19,6 +19,7 @@ import com.openai.client.okhttp.OkHttpClient
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
 import com.openai.errors.OpenAIRetryableException
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.time.Clock
 import java.time.Duration
@@ -28,6 +29,7 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -40,8 +42,13 @@ internal class RetryingHttpClientTest {
     private lateinit var baseUrl: String
     private lateinit var httpClient: HttpClient
 
-    private class RecordingSleeper : Sleeper {
+    private class RecordingSleeper(
+        private val sleepAsyncFutureFactory: () -> CompletableFuture<Void> = {
+            CompletableFuture.completedFuture(null)
+        }
+    ) : Sleeper {
         val durations = mutableListOf<Duration>()
+        val sleepFutures = mutableListOf<CompletableFuture<Void>>()
 
         override fun sleep(duration: Duration) {
             durations.add(duration)
@@ -49,10 +56,27 @@ internal class RetryingHttpClientTest {
 
         override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
             durations.add(duration)
-            return CompletableFuture.completedFuture(null)
+            return sleepAsyncFutureFactory().also(sleepFutures::add)
         }
 
         override fun close() {}
+    }
+
+    private class TestHttpResponse(
+        private val statusCode: Int,
+        private val headers: Headers = Headers.builder().build(),
+    ) : HttpResponse {
+        var isClosed = false
+
+        override fun statusCode(): Int = statusCode
+
+        override fun headers(): Headers = headers
+
+        override fun body(): InputStream = ByteArrayInputStream(byteArrayOf())
+
+        override fun close() {
+            isClosed = true
+        }
     }
 
     @BeforeEach
@@ -122,6 +146,90 @@ internal class RetryingHttpClientTest {
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
         assertThat(sleeper.durations).isEmpty()
         assertNoResponseLeaks()
+    }
+
+    @Test
+    fun executeAsync_whenFutureCancelled_cancelsUnderlyingRequest() {
+        val responseFuture = CompletableFuture<HttpResponse>()
+        val retryingClient =
+            RetryingHttpClient.builder()
+                .httpClient(
+                    object : HttpClient {
+                        override fun execute(
+                            request: HttpRequest,
+                            requestOptions: RequestOptions,
+                        ): HttpResponse = throw UnsupportedOperationException()
+
+                        override fun executeAsync(
+                            request: HttpRequest,
+                            requestOptions: RequestOptions,
+                        ): CompletableFuture<HttpResponse> = responseFuture
+
+                        override fun close() {}
+                    }
+                )
+                .sleeper(RecordingSleeper())
+                .build()
+
+        val retriedResponseFuture =
+            retryingClient.executeAsync(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build()
+            )
+
+        retriedResponseFuture.cancel(false)
+
+        assertThat(responseFuture).isCancelled()
+    }
+
+    @Test
+    fun executeAsync_whenFutureCancelledDuringBackoff_cancelsPendingSleepAndStopsRetrying() {
+        val attemptFutures = mutableListOf<CompletableFuture<HttpResponse>>()
+        val sleeper = RecordingSleeper { CompletableFuture<Void>() }
+        val retryingClient =
+            RetryingHttpClient.builder()
+                .httpClient(
+                    object : HttpClient {
+                        override fun execute(
+                            request: HttpRequest,
+                            requestOptions: RequestOptions,
+                        ): HttpResponse = throw UnsupportedOperationException()
+
+                        override fun executeAsync(
+                            request: HttpRequest,
+                            requestOptions: RequestOptions,
+                        ): CompletableFuture<HttpResponse> =
+                            CompletableFuture<HttpResponse>().also(attemptFutures::add)
+
+                        override fun close() {}
+                    }
+                )
+                .sleeper(sleeper)
+                .maxRetries(2)
+                .build()
+
+        val retriedResponseFuture =
+            retryingClient.executeAsync(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build()
+            )
+        val failedResponse = TestHttpResponse(503)
+
+        attemptFutures.single().complete(failedResponse)
+
+        val sleepFuture = sleeper.sleepFutures.single()
+        retriedResponseFuture.cancel(false)
+        sleepFuture.complete(null)
+
+        assertThat(failedResponse.isClosed).isTrue()
+        assertThat(sleepFuture).isCancelled()
+        assertThat(attemptFutures).hasSize(1)
     }
 
     @ParameterizedTest
