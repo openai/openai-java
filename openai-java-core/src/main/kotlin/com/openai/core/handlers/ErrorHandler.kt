@@ -48,46 +48,62 @@ internal fun errorHandler(
             when (val statusCode = response.statusCode()) {
                 in 200..299 -> response
                 400 ->
-                    throw BadRequestException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw BadRequestException.builder()
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 401 ->
-                    throw UnauthorizedException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw UnauthorizedException.builder()
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 403 ->
-                    throw PermissionDeniedException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw PermissionDeniedException.builder()
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 404 ->
-                    throw NotFoundException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw NotFoundException.builder()
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 422 ->
-                    throw UnprocessableEntityException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw UnprocessableEntityException.builder()
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 429 ->
-                    throw RateLimitException.builder()
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw RateLimitException.builder()
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 in 500..599 ->
-                    throw InternalServerException.builder()
-                        .statusCode(statusCode)
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw InternalServerException.builder()
+                            .statusCode(statusCode)
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
                 else ->
-                    throw UnexpectedStatusCodeException.builder()
-                        .statusCode(statusCode)
-                        .headers(response.headers())
-                        .error(errorBodyHandler.handle(response))
-                        .build()
+                    response.use {
+                        throw UnexpectedStatusCodeException.builder()
+                            .statusCode(statusCode)
+                            .headers(it.headers())
+                            .error(errorBodyHandler.handle(it))
+                            .build()
+                    }
             }
     }
