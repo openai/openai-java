@@ -6,11 +6,14 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.CustomToolInputFormat
 import java.util.Collections
@@ -27,6 +30,7 @@ class CustomTool
 private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
+    private val allowedCallers: JsonField<List<AllowedCaller>>,
     private val deferLoading: JsonField<Boolean>,
     private val description: JsonField<String>,
     private val format: JsonField<CustomToolInputFormat>,
@@ -37,6 +41,9 @@ private constructor(
     private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("allowed_callers")
+        @ExcludeMissing
+        allowedCallers: JsonField<List<AllowedCaller>> = JsonMissing.of(),
         @JsonProperty("defer_loading")
         @ExcludeMissing
         deferLoading: JsonField<Boolean> = JsonMissing.of(),
@@ -46,7 +53,7 @@ private constructor(
         @JsonProperty("format")
         @ExcludeMissing
         format: JsonField<CustomToolInputFormat> = JsonMissing.of(),
-    ) : this(name, type, deferLoading, description, format, mutableMapOf())
+    ) : this(name, type, allowedCallers, deferLoading, description, format, mutableMapOf())
 
     /**
      * The name of the custom tool, used to identify it in tool calls.
@@ -68,6 +75,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The tool invocation context(s).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun allowedCallers(): Optional<List<AllowedCaller>> =
+        allowedCallers.getOptional("allowed_callers")
 
     /**
      * Whether this tool should be deferred and discovered via tool search.
@@ -99,6 +115,15 @@ private constructor(
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /**
+     * Returns the raw JSON value of [allowedCallers].
+     *
+     * Unlike [allowedCallers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("allowed_callers")
+    @ExcludeMissing
+    fun _allowedCallers(): JsonField<List<AllowedCaller>> = allowedCallers
 
     /**
      * Returns the raw JSON value of [deferLoading].
@@ -153,6 +178,7 @@ private constructor(
 
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("custom")
+        private var allowedCallers: JsonField<MutableList<AllowedCaller>>? = null
         private var deferLoading: JsonField<Boolean> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
         private var format: JsonField<CustomToolInputFormat> = JsonMissing.of()
@@ -162,6 +188,7 @@ private constructor(
         internal fun from(customTool: CustomTool) = apply {
             name = customTool.name
             type = customTool.type
+            allowedCallers = customTool.allowedCallers.map { it.toMutableList() }
             deferLoading = customTool.deferLoading
             description = customTool.description
             format = customTool.format
@@ -192,6 +219,37 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /** The tool invocation context(s). */
+        fun allowedCallers(allowedCallers: List<AllowedCaller>?) =
+            allowedCallers(JsonField.ofNullable(allowedCallers))
+
+        /** Alias for calling [Builder.allowedCallers] with `allowedCallers.orElse(null)`. */
+        fun allowedCallers(allowedCallers: Optional<List<AllowedCaller>>) =
+            allowedCallers(allowedCallers.getOrNull())
+
+        /**
+         * Sets [Builder.allowedCallers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.allowedCallers] with a well-typed `List<AllowedCaller>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun allowedCallers(allowedCallers: JsonField<List<AllowedCaller>>) = apply {
+            this.allowedCallers = allowedCallers.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [AllowedCaller] to [allowedCallers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
+            allowedCallers =
+                (allowedCallers ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("allowedCallers", it).add(allowedCaller)
+                }
+        }
 
         /** Whether this tool should be deferred and discovered via tool search. */
         fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
@@ -273,6 +331,7 @@ private constructor(
             CustomTool(
                 checkRequired("name", name),
                 type,
+                (allowedCallers ?: JsonMissing.of()).map { it.toImmutable() },
                 deferLoading,
                 description,
                 format,
@@ -301,6 +360,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        allowedCallers().ifPresent { it.forEach { it.validate() } }
         deferLoading()
         description()
         format().ifPresent { it.validate() }
@@ -324,9 +384,148 @@ private constructor(
     internal fun validity(): Int =
         (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("custom")) 1 else 0 } +
+            (allowedCallers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (deferLoading.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0) +
             (format.asKnown().getOrNull()?.validity() ?: 0)
+
+    class AllowedCaller @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val DIRECT = of("direct")
+
+            @JvmField val PROGRAMMATIC = of("programmatic")
+
+            @JvmStatic fun of(value: String) = AllowedCaller(JsonField.of(value))
+        }
+
+        /** An enum containing [AllowedCaller]'s known values. */
+        enum class Known {
+            DIRECT,
+            PROGRAMMATIC,
+        }
+
+        /**
+         * An enum containing [AllowedCaller]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [AllowedCaller] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            DIRECT,
+            PROGRAMMATIC,
+            /**
+             * An enum member indicating that [AllowedCaller] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                DIRECT -> Value.DIRECT
+                PROGRAMMATIC -> Value.PROGRAMMATIC
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                DIRECT -> Known.DIRECT
+                PROGRAMMATIC -> Known.PROGRAMMATIC
+                else -> throw OpenAIInvalidDataException("Unknown AllowedCaller: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AllowedCaller = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AllowedCaller && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -336,6 +535,7 @@ private constructor(
         return other is CustomTool &&
             name == other.name &&
             type == other.type &&
+            allowedCallers == other.allowedCallers &&
             deferLoading == other.deferLoading &&
             description == other.description &&
             format == other.format &&
@@ -343,11 +543,19 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(name, type, deferLoading, description, format, additionalProperties)
+        Objects.hash(
+            name,
+            type,
+            allowedCallers,
+            deferLoading,
+            description,
+            format,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CustomTool{name=$name, type=$type, deferLoading=$deferLoading, description=$description, format=$format, additionalProperties=$additionalProperties}"
+        "CustomTool{name=$name, type=$type, allowedCallers=$allowedCallers, deferLoading=$deferLoading, description=$description, format=$format, additionalProperties=$additionalProperties}"
 }

@@ -5,6 +5,7 @@ package com.openai.models.realtime
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,6 +16,7 @@ internal class RealtimeResponseCreateMcpToolTest {
         val realtimeResponseCreateMcpTool =
             RealtimeResponseCreateMcpTool.builder()
                 .serverLabel("server_label")
+                .addAllowedCaller(RealtimeResponseCreateMcpTool.AllowedCaller.DIRECT)
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeResponseCreateMcpTool.ConnectorId.CONNECTOR_DROPBOX)
@@ -33,6 +35,8 @@ internal class RealtimeResponseCreateMcpToolTest {
                 .build()
 
         assertThat(realtimeResponseCreateMcpTool.serverLabel()).isEqualTo("server_label")
+        assertThat(realtimeResponseCreateMcpTool.allowedCallers().getOrNull())
+            .containsExactly(RealtimeResponseCreateMcpTool.AllowedCaller.DIRECT)
         assertThat(realtimeResponseCreateMcpTool.allowedTools())
             .contains(RealtimeResponseCreateMcpTool.AllowedTools.ofMcp(listOf("string")))
         assertThat(realtimeResponseCreateMcpTool.authorization()).contains("authorization")
@@ -63,6 +67,7 @@ internal class RealtimeResponseCreateMcpToolTest {
         val realtimeResponseCreateMcpTool =
             RealtimeResponseCreateMcpTool.builder()
                 .serverLabel("server_label")
+                .addAllowedCaller(RealtimeResponseCreateMcpTool.AllowedCaller.DIRECT)
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeResponseCreateMcpTool.ConnectorId.CONNECTOR_DROPBOX)

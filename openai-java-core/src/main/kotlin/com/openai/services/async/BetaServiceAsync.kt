@@ -23,10 +23,6 @@ interface BetaServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync
 
-    @Deprecated(
-        "Realtime has now launched and is generally available. The old beta API is now deprecated."
-    )
-    fun realtime(): RealtimeServiceAsync
 
     fun chatkit(): ChatKitServiceAsync
 
@@ -47,10 +43,6 @@ interface BetaServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync.WithRawResponse
 
-        @Deprecated(
-            "Realtime has now launched and is generally available. The old beta API is now deprecated."
-        )
-        fun realtime(): RealtimeServiceAsync.WithRawResponse
 
         fun chatkit(): ChatKitServiceAsync.WithRawResponse
 

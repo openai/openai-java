@@ -569,6 +569,14 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
         fun toolChoice(custom: ToolChoiceCustom) = apply { body.toolChoice(custom) }
 
+        /**
+         * Alias for calling [toolChoice] with
+         * `ToolChoice.ofSpecificProgrammaticToolCallingParam()`.
+         */
+        fun toolChoiceSpecificProgrammaticToolCallingParam() = apply {
+            body.toolChoiceSpecificProgrammaticToolCallingParam()
+        }
+
         /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
         fun toolChoice(applyPatch: ToolChoiceApplyPatch) = apply { body.toolChoice(applyPatch) }
 
@@ -670,6 +678,9 @@ private constructor(
         fun addCodeInterpreterTool(
             codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
         ) = apply { body.addCodeInterpreterTool(codeInterpreterToolAuto) }
+
+        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = apply { body.addToolProgrammaticToolCalling() }
 
         /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
         fun addTool(imageGeneration: Tool.ImageGeneration) = apply { body.addTool(imageGeneration) }
@@ -1462,6 +1473,13 @@ private constructor(
             /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
             fun toolChoice(custom: ToolChoiceCustom) = toolChoice(ToolChoice.ofCustom(custom))
 
+            /**
+             * Alias for calling [toolChoice] with
+             * `ToolChoice.ofSpecificProgrammaticToolCallingParam()`.
+             */
+            fun toolChoiceSpecificProgrammaticToolCallingParam() =
+                toolChoice(ToolChoice.ofSpecificProgrammaticToolCallingParam())
+
             /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
             fun toolChoice(applyPatch: ToolChoiceApplyPatch) =
                 toolChoice(ToolChoice.ofApplyPatch(applyPatch))
@@ -1576,6 +1594,9 @@ private constructor(
                         codeInterpreterToolAuto
                     )
                 )
+
+            /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+            fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
 
             /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
             fun addTool(imageGeneration: Tool.ImageGeneration) =
@@ -2805,6 +2826,7 @@ private constructor(
         private val function: ToolChoiceFunction? = null,
         private val mcp: ToolChoiceMcp? = null,
         private val custom: ToolChoiceCustom? = null,
+        private val specificProgrammaticToolCallingParam: JsonValue? = null,
         private val applyPatch: ToolChoiceApplyPatch? = null,
         private val shell: ToolChoiceShell? = null,
         private val _json: JsonValue? = null,
@@ -2840,6 +2862,9 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun custom(): Optional<ToolChoiceCustom> = Optional.ofNullable(custom)
 
+        fun specificProgrammaticToolCallingParam(): Optional<JsonValue> =
+            Optional.ofNullable(specificProgrammaticToolCallingParam)
+
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun applyPatch(): Optional<ToolChoiceApplyPatch> = Optional.ofNullable(applyPatch)
 
@@ -2857,6 +2882,9 @@ private constructor(
         fun isMcp(): Boolean = mcp != null
 
         fun isCustom(): Boolean = custom != null
+
+        fun isSpecificProgrammaticToolCallingParam(): Boolean =
+            specificProgrammaticToolCallingParam != null
 
         fun isApplyPatch(): Boolean = applyPatch != null
 
@@ -2891,6 +2919,9 @@ private constructor(
 
         /** Use this option to force the model to call a specific custom tool. */
         fun asCustom(): ToolChoiceCustom = custom.getOrThrow("custom")
+
+        fun asSpecificProgrammaticToolCallingParam(): JsonValue =
+            specificProgrammaticToolCallingParam.getOrThrow("specificProgrammaticToolCallingParam")
 
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun asApplyPatch(): ToolChoiceApplyPatch = applyPatch.getOrThrow("applyPatch")
@@ -2937,6 +2968,10 @@ private constructor(
                 function != null -> visitor.visitFunction(function)
                 mcp != null -> visitor.visitMcp(mcp)
                 custom != null -> visitor.visitCustom(custom)
+                specificProgrammaticToolCallingParam != null ->
+                    visitor.visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam
+                    )
                 applyPatch != null -> visitor.visitApplyPatch(applyPatch)
                 shell != null -> visitor.visitShell(shell)
                 else -> visitor.unknown(_json)
@@ -2984,6 +3019,20 @@ private constructor(
                         custom.validate()
                     }
 
+                    override fun visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam: JsonValue
+                    ) {
+                        specificProgrammaticToolCallingParam.let {
+                            if (
+                                it != JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+                            ) {
+                                throw OpenAIInvalidDataException(
+                                    "'specificProgrammaticToolCallingParam' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
                     override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) {
                         applyPatch.validate()
                     }
@@ -3026,6 +3075,15 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) = custom.validity()
 
+                    override fun visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam: JsonValue
+                    ) =
+                        specificProgrammaticToolCallingParam.let {
+                            if (it == JsonValue.from(mapOf("type" to "programmatic_tool_calling")))
+                                1
+                            else 0
+                        }
+
                     override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) =
                         applyPatch.validity()
 
@@ -3047,12 +3105,24 @@ private constructor(
                 function == other.function &&
                 mcp == other.mcp &&
                 custom == other.custom &&
+                specificProgrammaticToolCallingParam ==
+                    other.specificProgrammaticToolCallingParam &&
                 applyPatch == other.applyPatch &&
                 shell == other.shell
         }
 
         override fun hashCode(): Int =
-            Objects.hash(options, allowed, types, function, mcp, custom, applyPatch, shell)
+            Objects.hash(
+                options,
+                allowed,
+                types,
+                function,
+                mcp,
+                custom,
+                specificProgrammaticToolCallingParam,
+                applyPatch,
+                shell,
+            )
 
         override fun toString(): String =
             when {
@@ -3062,6 +3132,8 @@ private constructor(
                 function != null -> "ToolChoice{function=$function}"
                 mcp != null -> "ToolChoice{mcp=$mcp}"
                 custom != null -> "ToolChoice{custom=$custom}"
+                specificProgrammaticToolCallingParam != null ->
+                    "ToolChoice{specificProgrammaticToolCallingParam=$specificProgrammaticToolCallingParam}"
                 applyPatch != null -> "ToolChoice{applyPatch=$applyPatch}"
                 shell != null -> "ToolChoice{shell=$shell}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
@@ -3102,6 +3174,13 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             @JvmStatic fun ofCustom(custom: ToolChoiceCustom) = ToolChoice(custom = custom)
+
+            @JvmStatic
+            fun ofSpecificProgrammaticToolCallingParam() =
+                ToolChoice(
+                    specificProgrammaticToolCallingParam =
+                        JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+                )
 
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             @JvmStatic
@@ -3148,6 +3227,10 @@ private constructor(
             /** Use this option to force the model to call a specific custom tool. */
             fun visitCustom(custom: ToolChoiceCustom): T
 
+            fun visitSpecificProgrammaticToolCallingParam(
+                specificProgrammaticToolCallingParam: JsonValue
+            ): T
+
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
 
@@ -3176,6 +3259,14 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                ?.let {
+                                    ToolChoice(
+                                        specificProgrammaticToolCallingParam = it,
+                                        _json = json,
+                                    )
+                                }
+                                ?.takeIf { it.isValid() },
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceOptions>())?.let {
                                 ToolChoice(options = it, _json = json)
                             },
@@ -3231,6 +3322,8 @@ private constructor(
                     value.function != null -> generator.writeObject(value.function)
                     value.mcp != null -> generator.writeObject(value.mcp)
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.specificProgrammaticToolCallingParam != null ->
+                        generator.writeObject(value.specificProgrammaticToolCallingParam)
                     value.applyPatch != null -> generator.writeObject(value.applyPatch)
                     value.shell != null -> generator.writeObject(value.shell)
                     value._json != null -> generator.writeObject(value._json)

@@ -39,7 +39,29 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .model(ChatModel.GPT_5_1)
-                .moderation(ResponsesClientEvent.Moderation.builder().model("model").build())
+                .moderation(
+                    ResponsesClientEvent.Moderation.builder()
+                        .model("model")
+                        .policy(
+                            ResponsesClientEvent.Moderation.Policy.builder()
+                                .input(
+                                    ResponsesClientEvent.Moderation.Policy.Input.builder()
+                                        .mode(
+                                            ResponsesClientEvent.Moderation.Policy.Input.Mode.SCORE
+                                        )
+                                        .build()
+                                )
+                                .output(
+                                    ResponsesClientEvent.Moderation.Policy.Output.builder()
+                                        .mode(
+                                            ResponsesClientEvent.Moderation.Policy.Output.Mode.SCORE
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -54,12 +76,19 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .promptCacheKey("prompt-cache-key-1234")
+                .promptCacheOptions(
+                    ResponsesClientEvent.PromptCacheOptions.builder()
+                        .mode(ResponsesClientEvent.PromptCacheOptions.Mode.IMPLICIT)
+                        .ttl(ResponsesClientEvent.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .promptCacheRetention(ResponsesClientEvent.PromptCacheRetention.IN_MEMORY)
                 .reasoning(
                     Reasoning.builder()
                         .context(Reasoning.Context.AUTO)
                         .effort(ReasoningEffort.NONE)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
+                        .mode(Reasoning.Mode.STANDARD)
                         .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
@@ -87,8 +116,14 @@ internal class ResponsesClientEventTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .topLogprobs(0L)
@@ -122,7 +157,25 @@ internal class ResponsesClientEventTest {
             )
         assertThat(responsesClientEvent.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
         assertThat(responsesClientEvent.moderation())
-            .contains(ResponsesClientEvent.Moderation.builder().model("model").build())
+            .contains(
+                ResponsesClientEvent.Moderation.builder()
+                    .model("model")
+                    .policy(
+                        ResponsesClientEvent.Moderation.Policy.builder()
+                            .input(
+                                ResponsesClientEvent.Moderation.Policy.Input.builder()
+                                    .mode(ResponsesClientEvent.Moderation.Policy.Input.Mode.SCORE)
+                                    .build()
+                            )
+                            .output(
+                                ResponsesClientEvent.Moderation.Policy.Output.builder()
+                                    .mode(ResponsesClientEvent.Moderation.Policy.Output.Mode.SCORE)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(responsesClientEvent.parallelToolCalls()).contains(true)
         assertThat(responsesClientEvent.previousResponseId()).contains("previous_response_id")
         assertThat(responsesClientEvent.prompt())
@@ -138,6 +191,13 @@ internal class ResponsesClientEventTest {
                     .build()
             )
         assertThat(responsesClientEvent.promptCacheKey()).contains("prompt-cache-key-1234")
+        assertThat(responsesClientEvent.promptCacheOptions())
+            .contains(
+                ResponsesClientEvent.PromptCacheOptions.builder()
+                    .mode(ResponsesClientEvent.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(ResponsesClientEvent.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
         assertThat(responsesClientEvent.promptCacheRetention())
             .contains(ResponsesClientEvent.PromptCacheRetention.IN_MEMORY)
         assertThat(responsesClientEvent.reasoning())
@@ -146,6 +206,7 @@ internal class ResponsesClientEventTest {
                     .context(Reasoning.Context.AUTO)
                     .effort(ReasoningEffort.NONE)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                    .mode(Reasoning.Mode.STANDARD)
                     .summary(Reasoning.Summary.AUTO)
                     .build()
             )
@@ -177,8 +238,14 @@ internal class ResponsesClientEventTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
             )
@@ -212,7 +279,29 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .model(ChatModel.GPT_5_1)
-                .moderation(ResponsesClientEvent.Moderation.builder().model("model").build())
+                .moderation(
+                    ResponsesClientEvent.Moderation.builder()
+                        .model("model")
+                        .policy(
+                            ResponsesClientEvent.Moderation.Policy.builder()
+                                .input(
+                                    ResponsesClientEvent.Moderation.Policy.Input.builder()
+                                        .mode(
+                                            ResponsesClientEvent.Moderation.Policy.Input.Mode.SCORE
+                                        )
+                                        .build()
+                                )
+                                .output(
+                                    ResponsesClientEvent.Moderation.Policy.Output.builder()
+                                        .mode(
+                                            ResponsesClientEvent.Moderation.Policy.Output.Mode.SCORE
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -227,12 +316,19 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .promptCacheKey("prompt-cache-key-1234")
+                .promptCacheOptions(
+                    ResponsesClientEvent.PromptCacheOptions.builder()
+                        .mode(ResponsesClientEvent.PromptCacheOptions.Mode.IMPLICIT)
+                        .ttl(ResponsesClientEvent.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .promptCacheRetention(ResponsesClientEvent.PromptCacheRetention.IN_MEMORY)
                 .reasoning(
                     Reasoning.builder()
                         .context(Reasoning.Context.AUTO)
                         .effort(ReasoningEffort.NONE)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
+                        .mode(Reasoning.Mode.STANDARD)
                         .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
@@ -260,8 +356,14 @@ internal class ResponsesClientEventTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .topLogprobs(0L)

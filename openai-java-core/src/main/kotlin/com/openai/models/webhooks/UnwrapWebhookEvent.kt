@@ -38,6 +38,7 @@ private constructor(
     private val responseCompleted: ResponseCompletedWebhookEvent? = null,
     private val responseFailed: ResponseFailedWebhookEvent? = null,
     private val responseIncomplete: ResponseIncompleteWebhookEvent? = null,
+    private val safetyIdentifierBlocked: SafetyIdentifierBlockedWebhookEvent? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -95,6 +96,10 @@ private constructor(
     fun responseIncomplete(): Optional<ResponseIncompleteWebhookEvent> =
         Optional.ofNullable(responseIncomplete)
 
+    /** Sent when a request associated with a safety identifier has been blocked. */
+    fun safetyIdentifierBlocked(): Optional<SafetyIdentifierBlockedWebhookEvent> =
+        Optional.ofNullable(safetyIdentifierBlocked)
+
     fun isBatchCancelled(): Boolean = batchCancelled != null
 
     fun isBatchCompleted(): Boolean = batchCompleted != null
@@ -124,6 +129,8 @@ private constructor(
     fun isResponseFailed(): Boolean = responseFailed != null
 
     fun isResponseIncomplete(): Boolean = responseIncomplete != null
+
+    fun isSafetyIdentifierBlocked(): Boolean = safetyIdentifierBlocked != null
 
     /** Sent when a batch API request has been cancelled. */
     fun asBatchCancelled(): BatchCancelledWebhookEvent = batchCancelled.getOrThrow("batchCancelled")
@@ -179,6 +186,10 @@ private constructor(
     fun asResponseIncomplete(): ResponseIncompleteWebhookEvent =
         responseIncomplete.getOrThrow("responseIncomplete")
 
+    /** Sent when a request associated with a safety identifier has been blocked. */
+    fun asSafetyIdentifierBlocked(): SafetyIdentifierBlockedWebhookEvent =
+        safetyIdentifierBlocked.getOrThrow("safetyIdentifierBlocked")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     /**
@@ -229,6 +240,8 @@ private constructor(
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
             responseIncomplete != null -> visitor.visitResponseIncomplete(responseIncomplete)
+            safetyIdentifierBlocked != null ->
+                visitor.visitSafetyIdentifierBlocked(safetyIdentifierBlocked)
             else -> visitor.unknown(_json)
         }
 
@@ -322,6 +335,12 @@ private constructor(
                 ) {
                     responseIncomplete.validate()
                 }
+
+                override fun visitSafetyIdentifierBlocked(
+                    safetyIdentifierBlocked: SafetyIdentifierBlockedWebhookEvent
+                ) {
+                    safetyIdentifierBlocked.validate()
+                }
             }
         )
         validated = true
@@ -396,6 +415,10 @@ private constructor(
                     responseIncomplete: ResponseIncompleteWebhookEvent
                 ) = responseIncomplete.validity()
 
+                override fun visitSafetyIdentifierBlocked(
+                    safetyIdentifierBlocked: SafetyIdentifierBlockedWebhookEvent
+                ) = safetyIdentifierBlocked.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -420,7 +443,8 @@ private constructor(
             responseCancelled == other.responseCancelled &&
             responseCompleted == other.responseCompleted &&
             responseFailed == other.responseFailed &&
-            responseIncomplete == other.responseIncomplete
+            responseIncomplete == other.responseIncomplete &&
+            safetyIdentifierBlocked == other.safetyIdentifierBlocked
     }
 
     override fun hashCode(): Int =
@@ -440,6 +464,7 @@ private constructor(
             responseCompleted,
             responseFailed,
             responseIncomplete,
+            safetyIdentifierBlocked,
         )
 
     override fun toString(): String =
@@ -464,6 +489,8 @@ private constructor(
             responseFailed != null -> "UnwrapWebhookEvent{responseFailed=$responseFailed}"
             responseIncomplete != null ->
                 "UnwrapWebhookEvent{responseIncomplete=$responseIncomplete}"
+            safetyIdentifierBlocked != null ->
+                "UnwrapWebhookEvent{safetyIdentifierBlocked=$safetyIdentifierBlocked}"
             _json != null -> "UnwrapWebhookEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
         }
@@ -544,6 +571,12 @@ private constructor(
         @JvmStatic
         fun ofResponseIncomplete(responseIncomplete: ResponseIncompleteWebhookEvent) =
             UnwrapWebhookEvent(responseIncomplete = responseIncomplete)
+
+        /** Sent when a request associated with a safety identifier has been blocked. */
+        @JvmStatic
+        fun ofSafetyIdentifierBlocked(
+            safetyIdentifierBlocked: SafetyIdentifierBlockedWebhookEvent
+        ) = UnwrapWebhookEvent(safetyIdentifierBlocked = safetyIdentifierBlocked)
     }
 
     /**
@@ -600,6 +633,11 @@ private constructor(
 
         /** Sent when a background response has been interrupted. */
         fun visitResponseIncomplete(responseIncomplete: ResponseIncompleteWebhookEvent): T
+
+        /** Sent when a request associated with a safety identifier has been blocked. */
+        fun visitSafetyIdentifierBlocked(
+            safetyIdentifierBlocked: SafetyIdentifierBlockedWebhookEvent
+        ): T
 
         /**
          * Maps an unknown variant of [UnwrapWebhookEvent] to a value of type [T].
@@ -704,6 +742,14 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(responseIncomplete = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "safety_identifier.blocked" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<SafetyIdentifierBlockedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(safetyIdentifierBlocked = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
             }
 
             return UnwrapWebhookEvent(_json = json)
@@ -737,6 +783,8 @@ private constructor(
                 value.responseCompleted != null -> generator.writeObject(value.responseCompleted)
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)
                 value.responseIncomplete != null -> generator.writeObject(value.responseIncomplete)
+                value.safetyIdentifierBlocked != null ->
+                    generator.writeObject(value.safetyIdentifierBlocked)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
             }

@@ -57,6 +57,7 @@ internal class RealtimeToolsConfigUnionTest {
         val mcp =
             RealtimeToolsConfigUnion.Mcp.builder()
                 .serverLabel("server_label")
+                .addAllowedCaller(RealtimeToolsConfigUnion.Mcp.AllowedCaller.DIRECT)
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeToolsConfigUnion.Mcp.ConnectorId.CONNECTOR_DROPBOX)
@@ -87,6 +88,7 @@ internal class RealtimeToolsConfigUnionTest {
             RealtimeToolsConfigUnion.ofMcp(
                 RealtimeToolsConfigUnion.Mcp.builder()
                     .serverLabel("server_label")
+                    .addAllowedCaller(RealtimeToolsConfigUnion.Mcp.AllowedCaller.DIRECT)
                     .allowedToolsOfMcp(listOf("string"))
                     .authorization("authorization")
                     .connectorId(RealtimeToolsConfigUnion.Mcp.ConnectorId.CONNECTOR_DROPBOX)

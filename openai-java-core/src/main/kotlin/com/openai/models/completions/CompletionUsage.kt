@@ -672,6 +672,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val audioTokens: JsonField<Long>,
+        private val cacheWriteTokens: JsonField<Long>,
         private val cachedTokens: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -681,10 +682,13 @@ private constructor(
             @JsonProperty("audio_tokens")
             @ExcludeMissing
             audioTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("cache_write_tokens")
+            @ExcludeMissing
+            cacheWriteTokens: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("cached_tokens")
             @ExcludeMissing
             cachedTokens: JsonField<Long> = JsonMissing.of(),
-        ) : this(audioTokens, cachedTokens, mutableMapOf())
+        ) : this(audioTokens, cacheWriteTokens, cachedTokens, mutableMapOf())
 
         /**
          * Audio input tokens present in the prompt.
@@ -693,6 +697,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+
+        /**
+         * The unadjusted number of prompt tokens written to cache.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun cacheWriteTokens(): Optional<Long> = cacheWriteTokens.getOptional("cache_write_tokens")
 
         /**
          * Cached tokens present in the prompt.
@@ -710,6 +722,16 @@ private constructor(
         @JsonProperty("audio_tokens")
         @ExcludeMissing
         fun _audioTokens(): JsonField<Long> = audioTokens
+
+        /**
+         * Returns the raw JSON value of [cacheWriteTokens].
+         *
+         * Unlike [cacheWriteTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("cache_write_tokens")
+        @ExcludeMissing
+        fun _cacheWriteTokens(): JsonField<Long> = cacheWriteTokens
 
         /**
          * Returns the raw JSON value of [cachedTokens].
@@ -743,12 +765,14 @@ private constructor(
         class Builder internal constructor() {
 
             private var audioTokens: JsonField<Long> = JsonMissing.of()
+            private var cacheWriteTokens: JsonField<Long> = JsonMissing.of()
             private var cachedTokens: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptTokensDetails: PromptTokensDetails) = apply {
                 audioTokens = promptTokensDetails.audioTokens
+                cacheWriteTokens = promptTokensDetails.cacheWriteTokens
                 cachedTokens = promptTokensDetails.cachedTokens
                 additionalProperties = promptTokensDetails.additionalProperties.toMutableMap()
             }
@@ -764,6 +788,21 @@ private constructor(
              * supported value.
              */
             fun audioTokens(audioTokens: JsonField<Long>) = apply { this.audioTokens = audioTokens }
+
+            /** The unadjusted number of prompt tokens written to cache. */
+            fun cacheWriteTokens(cacheWriteTokens: Long) =
+                cacheWriteTokens(JsonField.of(cacheWriteTokens))
+
+            /**
+             * Sets [Builder.cacheWriteTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cacheWriteTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun cacheWriteTokens(cacheWriteTokens: JsonField<Long>) = apply {
+                this.cacheWriteTokens = cacheWriteTokens
+            }
 
             /** Cached tokens present in the prompt. */
             fun cachedTokens(cachedTokens: Long) = cachedTokens(JsonField.of(cachedTokens))
@@ -804,7 +843,12 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): PromptTokensDetails =
-                PromptTokensDetails(audioTokens, cachedTokens, additionalProperties.toMutableMap())
+                PromptTokensDetails(
+                    audioTokens,
+                    cacheWriteTokens,
+                    cachedTokens,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -824,6 +868,7 @@ private constructor(
             }
 
             audioTokens()
+            cacheWriteTokens()
             cachedTokens()
             validated = true
         }
@@ -845,6 +890,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (audioTokens.asKnown().isPresent) 1 else 0) +
+                (if (cacheWriteTokens.asKnown().isPresent) 1 else 0) +
                 (if (cachedTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -854,18 +900,19 @@ private constructor(
 
             return other is PromptTokensDetails &&
                 audioTokens == other.audioTokens &&
+                cacheWriteTokens == other.cacheWriteTokens &&
                 cachedTokens == other.cachedTokens &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(audioTokens, cachedTokens, additionalProperties)
+            Objects.hash(audioTokens, cacheWriteTokens, cachedTokens, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptTokensDetails{audioTokens=$audioTokens, cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
+            "PromptTokensDetails{audioTokens=$audioTokens, cacheWriteTokens=$cacheWriteTokens, cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

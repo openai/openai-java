@@ -23,10 +23,6 @@ interface BetaService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService
 
-    @Deprecated(
-        "Realtime has now launched and is generally available. The old beta API is now deprecated."
-    )
-    fun realtime(): RealtimeService
 
     fun chatkit(): ChatKitService
 
@@ -47,10 +43,6 @@ interface BetaService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
 
-        @Deprecated(
-            "Realtime has now launched and is generally available. The old beta API is now deprecated."
-        )
-        fun realtime(): RealtimeService.WithRawResponse
 
         fun chatkit(): ChatKitService.WithRawResponse
 

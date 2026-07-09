@@ -41,6 +41,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -92,6 +93,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -143,6 +145,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -194,6 +197,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -245,6 +249,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -296,6 +301,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -347,6 +353,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -398,6 +405,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -449,6 +457,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -500,6 +509,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -561,6 +571,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -622,6 +633,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -673,6 +685,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).contains(responseCompleted)
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -724,6 +737,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).contains(responseFailed)
         assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -775,6 +789,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
         assertThat(unwrapWebhookEvent.responseIncomplete()).contains(responseIncomplete)
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).isEmpty
     }
 
     @Test
@@ -787,6 +802,75 @@ internal class UnwrapWebhookEventTest {
                     .createdAt(0L)
                     .data(ResponseIncompleteWebhookEvent.Data.builder().id("id").build())
                     .object_(ResponseIncompleteWebhookEvent.Object.EVENT)
+                    .build()
+            )
+
+        val roundtrippedUnwrapWebhookEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(unwrapWebhookEvent),
+                jacksonTypeRef<UnwrapWebhookEvent>(),
+            )
+
+        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
+    }
+
+    @Test
+    fun ofSafetyIdentifierBlocked() {
+        val safetyIdentifierBlocked =
+            SafetyIdentifierBlockedWebhookEvent.builder()
+                .id("id")
+                .createdAt(0L)
+                .data(
+                    SafetyIdentifierBlockedWebhookEvent.Data.builder()
+                        .safetyCategory("safety_category")
+                        .safetyIdentifier("safety_identifier")
+                        .model("model")
+                        .projectId("project_id")
+                        .requestId("request_id")
+                        .build()
+                )
+                .object_(SafetyIdentifierBlockedWebhookEvent.Object.EVENT)
+                .build()
+
+        val unwrapWebhookEvent =
+            UnwrapWebhookEvent.ofSafetyIdentifierBlocked(safetyIdentifierBlocked)
+
+        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
+        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
+        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
+        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
+        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
+        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
+        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
+        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
+        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
+        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyIdentifierBlocked()).contains(safetyIdentifierBlocked)
+    }
+
+    @Test
+    fun ofSafetyIdentifierBlockedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val unwrapWebhookEvent =
+            UnwrapWebhookEvent.ofSafetyIdentifierBlocked(
+                SafetyIdentifierBlockedWebhookEvent.builder()
+                    .id("id")
+                    .createdAt(0L)
+                    .data(
+                        SafetyIdentifierBlockedWebhookEvent.Data.builder()
+                            .safetyCategory("safety_category")
+                            .safetyIdentifier("safety_identifier")
+                            .model("model")
+                            .projectId("project_id")
+                            .requestId("request_id")
+                            .build()
+                    )
+                    .object_(SafetyIdentifierBlockedWebhookEvent.Object.EVENT)
                     .build()
             )
 

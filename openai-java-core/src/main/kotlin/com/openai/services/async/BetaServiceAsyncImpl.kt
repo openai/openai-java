@@ -20,7 +20,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
         WithRawResponseImpl(clientOptions)
     }
 
-    private val realtime: RealtimeServiceAsync by lazy { RealtimeServiceAsyncImpl(clientOptions) }
 
     private val chatkit: ChatKitServiceAsync by lazy { ChatKitServiceAsyncImpl(clientOptions) }
 
@@ -35,10 +34,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync =
         BetaServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    @Deprecated(
-        "Realtime has now launched and is generally available. The old beta API is now deprecated."
-    )
-    override fun realtime(): RealtimeServiceAsync = realtime
 
     override fun chatkit(): ChatKitServiceAsync = chatkit
 
@@ -52,9 +47,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaServiceAsync.WithRawResponse {
 
-        private val realtime: RealtimeServiceAsync.WithRawResponse by lazy {
-            RealtimeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
 
         private val chatkit: ChatKitServiceAsync.WithRawResponse by lazy {
             ChatKitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -75,10 +67,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        @Deprecated(
-            "Realtime has now launched and is generally available. The old beta API is now deprecated."
-        )
-        override fun realtime(): RealtimeServiceAsync.WithRawResponse = realtime
 
         override fun chatkit(): ChatKitServiceAsync.WithRawResponse = chatkit
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -14,6 +15,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a reasoning summary part is completed. */
@@ -26,6 +28,7 @@ private constructor(
     private val sequenceNumber: JsonField<Long>,
     private val summaryIndex: JsonField<Long>,
     private val type: JsonValue,
+    private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -43,7 +46,8 @@ private constructor(
         @ExcludeMissing
         summaryIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(itemId, outputIndex, part, sequenceNumber, summaryIndex, type, mutableMapOf())
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+    ) : this(itemId, outputIndex, part, sequenceNumber, summaryIndex, type, status, mutableMapOf())
 
     /**
      * The ID of the item this summary part is associated with.
@@ -99,6 +103,15 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The completion status of the summary part. Omitted when the part completed normally and set
+     * to `incomplete` when generation was interrupted.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun status(): Optional<Status> = status.getOptional("status")
+
+    /**
      * Returns the raw JSON value of [itemId].
      *
      * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
@@ -136,6 +149,13 @@ private constructor(
     @JsonProperty("summary_index")
     @ExcludeMissing
     fun _summaryIndex(): JsonField<Long> = summaryIndex
+
+    /**
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -176,6 +196,7 @@ private constructor(
         private var sequenceNumber: JsonField<Long>? = null
         private var summaryIndex: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.reasoning_summary_part.done")
+        private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -188,6 +209,7 @@ private constructor(
             sequenceNumber = responseReasoningSummaryPartDoneEvent.sequenceNumber
             summaryIndex = responseReasoningSummaryPartDoneEvent.summaryIndex
             type = responseReasoningSummaryPartDoneEvent.type
+            status = responseReasoningSummaryPartDoneEvent.status
             additionalProperties =
                 responseReasoningSummaryPartDoneEvent.additionalProperties.toMutableMap()
         }
@@ -266,6 +288,20 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /**
+         * The completion status of the summary part. Omitted when the part completed normally and
+         * set to `incomplete` when generation was interrupted.
+         */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -309,6 +345,7 @@ private constructor(
                 checkRequired("sequenceNumber", sequenceNumber),
                 checkRequired("summaryIndex", summaryIndex),
                 type,
+                status,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -338,6 +375,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        status().ifPresent { it.validate() }
         validated = true
     }
 
@@ -361,7 +399,10 @@ private constructor(
             (part.asKnown().getOrNull()?.validity() ?: 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             (if (summaryIndex.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("response.reasoning_summary_part.done")) 1 else 0 }
+            type.let {
+                if (it == JsonValue.from("response.reasoning_summary_part.done")) 1 else 0
+            } +
+            (status.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The completed summary part. */
     class Part
@@ -569,6 +610,138 @@ private constructor(
             "Part{text=$text, type=$type, additionalProperties=$additionalProperties}"
     }
 
+    /**
+     * The completion status of the summary part. Omitted when the part completed normally and set
+     * to `incomplete` when generation was interrupted.
+     */
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val INCOMPLETE = of("incomplete")
+
+            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+        }
+
+        /** An enum containing [Status]'s known values. */
+        enum class Known {
+            INCOMPLETE
+        }
+
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            INCOMPLETE,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                INCOMPLETE -> Value.INCOMPLETE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                INCOMPLETE -> Known.INCOMPLETE
+                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Status && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -581,6 +754,7 @@ private constructor(
             sequenceNumber == other.sequenceNumber &&
             summaryIndex == other.summaryIndex &&
             type == other.type &&
+            status == other.status &&
             additionalProperties == other.additionalProperties
     }
 
@@ -592,6 +766,7 @@ private constructor(
             sequenceNumber,
             summaryIndex,
             type,
+            status,
             additionalProperties,
         )
     }
@@ -599,5 +774,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseReasoningSummaryPartDoneEvent{itemId=$itemId, outputIndex=$outputIndex, part=$part, sequenceNumber=$sequenceNumber, summaryIndex=$summaryIndex, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseReasoningSummaryPartDoneEvent{itemId=$itemId, outputIndex=$outputIndex, part=$part, sequenceNumber=$sequenceNumber, summaryIndex=$summaryIndex, type=$type, status=$status, additionalProperties=$additionalProperties}"
 }
