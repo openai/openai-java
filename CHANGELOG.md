@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.42.0](https://github.com/openai/openai-java/compare/v4.41.0...v4.42.0) (2026-07-09)
+
+
+### Features
+
+* **api:** gpt-5.6-sol updates ([2ca768a](https://github.com/openai/openai-java/commit/2ca768ad80da1643680ce99fee977080e19f2e2b))
+
+
+### Bug Fixes
+
+* **api:** preserve deprecated beta realtime accessors ([a1cd1f1](https://github.com/openai/openai-java/commit/a1cd1f1ad58f7009073819765792d62995650da7))
+* **api:** restore beta responses custom code ([73f67f2](https://github.com/openai/openai-java/commit/73f67f286ef5147fc252090f9d3b8e44a857a208))
+
+
+### Chores
+
+* retrigger release automation ([a3006ee](https://github.com/openai/openai-java/commit/a3006ee468a3e4d4167368cf5a2e66590e4a65a0))
+
 ## 4.41.0 (2026-06-17)
 
 Full Changelog: [v4.40.0...v4.41.0](https://github.com/openai/openai-java/compare/v4.40.0...v4.41.0)
