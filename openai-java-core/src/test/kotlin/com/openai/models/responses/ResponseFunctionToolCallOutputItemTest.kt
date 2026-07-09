@@ -17,6 +17,7 @@ internal class ResponseFunctionToolCallOutputItemTest {
                 .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -26,6 +27,8 @@ internal class ResponseFunctionToolCallOutputItemTest {
             .isEqualTo(ResponseFunctionToolCallOutputItem.Output.ofString("string"))
         assertThat(responseFunctionToolCallOutputItem.status())
             .isEqualTo(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+        assertThat(responseFunctionToolCallOutputItem.caller())
+            .contains(ResponseFunctionToolCallOutputItem.Caller.ofDirect())
         assertThat(responseFunctionToolCallOutputItem.createdBy()).contains("created_by")
     }
 
@@ -38,6 +41,7 @@ internal class ResponseFunctionToolCallOutputItemTest {
                 .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 

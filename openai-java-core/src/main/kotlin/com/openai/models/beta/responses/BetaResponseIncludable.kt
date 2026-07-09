@@ -1,0 +1,195 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.openai.models.beta.responses
+
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.openai.core.Enum
+import com.openai.core.JsonField
+import com.openai.errors.OpenAIInvalidDataException
+
+/**
+ * Specify additional output data to include in the model response. Currently supported values are:
+ * - `web_search_call.results`: Include the search results of the web search tool call.
+ * - `web_search_call.action.sources`: Include the sources of the web search tool call.
+ * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
+ *   interpreter tool call items.
+ * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
+ * - `file_search_call.results`: Include the search results of the file search tool call.
+ * - `message.input_image.image_url`: Include image urls from the input message.
+ * - `message.output_text.logprobs`: Include logprobs with assistant messages.
+ * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning
+ *   item outputs. This enables reasoning items to be used in multi-turn conversations when using
+ *   the Responses API statelessly (like when the `store` parameter is set to `false`, or when an
+ *   organization is enrolled in the zero data retention program).
+ */
+class BetaResponseIncludable
+@JsonCreator
+private constructor(private val value: JsonField<String>) : Enum {
+
+    /**
+     * Returns this class instance's raw value.
+     *
+     * This is usually only useful if this instance was deserialized from data that doesn't match
+     * any known member, and you want to know that value. For example, if the SDK is on an older
+     * version than the API, then the API may respond with new members that the SDK is unaware of.
+     */
+    @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+    companion object {
+
+        @JvmField val FILE_SEARCH_CALL_RESULTS = of("file_search_call.results")
+
+        @JvmField val WEB_SEARCH_CALL_RESULTS = of("web_search_call.results")
+
+        @JvmField val WEB_SEARCH_CALL_ACTION_SOURCES = of("web_search_call.action.sources")
+
+        @JvmField val MESSAGE_INPUT_IMAGE_IMAGE_URL = of("message.input_image.image_url")
+
+        @JvmField
+        val COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL = of("computer_call_output.output.image_url")
+
+        @JvmField val CODE_INTERPRETER_CALL_OUTPUTS = of("code_interpreter_call.outputs")
+
+        @JvmField val REASONING_ENCRYPTED_CONTENT = of("reasoning.encrypted_content")
+
+        @JvmField val MESSAGE_OUTPUT_TEXT_LOGPROBS = of("message.output_text.logprobs")
+
+        @JvmStatic fun of(value: String) = BetaResponseIncludable(JsonField.of(value))
+    }
+
+    /** An enum containing [BetaResponseIncludable]'s known values. */
+    enum class Known {
+        FILE_SEARCH_CALL_RESULTS,
+        WEB_SEARCH_CALL_RESULTS,
+        WEB_SEARCH_CALL_ACTION_SOURCES,
+        MESSAGE_INPUT_IMAGE_IMAGE_URL,
+        COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
+        CODE_INTERPRETER_CALL_OUTPUTS,
+        REASONING_ENCRYPTED_CONTENT,
+        MESSAGE_OUTPUT_TEXT_LOGPROBS,
+    }
+
+    /**
+     * An enum containing [BetaResponseIncludable]'s known values, as well as an [_UNKNOWN] member.
+     *
+     * An instance of [BetaResponseIncludable] can contain an unknown value in a couple of cases:
+     * - It was deserialized from data that doesn't match any known member. For example, if the SDK
+     *   is on an older version than the API, then the API may respond with new members that the SDK
+     *   is unaware of.
+     * - It was constructed with an arbitrary value using the [of] method.
+     */
+    enum class Value {
+        FILE_SEARCH_CALL_RESULTS,
+        WEB_SEARCH_CALL_RESULTS,
+        WEB_SEARCH_CALL_ACTION_SOURCES,
+        MESSAGE_INPUT_IMAGE_IMAGE_URL,
+        COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
+        CODE_INTERPRETER_CALL_OUTPUTS,
+        REASONING_ENCRYPTED_CONTENT,
+        MESSAGE_OUTPUT_TEXT_LOGPROBS,
+        /**
+         * An enum member indicating that [BetaResponseIncludable] was instantiated with an unknown
+         * value.
+         */
+        _UNKNOWN,
+    }
+
+    /**
+     * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN] if
+     * the class was instantiated with an unknown value.
+     *
+     * Use the [known] method instead if you're certain the value is always known or if you want to
+     * throw for the unknown case.
+     */
+    fun value(): Value =
+        when (this) {
+            FILE_SEARCH_CALL_RESULTS -> Value.FILE_SEARCH_CALL_RESULTS
+            WEB_SEARCH_CALL_RESULTS -> Value.WEB_SEARCH_CALL_RESULTS
+            WEB_SEARCH_CALL_ACTION_SOURCES -> Value.WEB_SEARCH_CALL_ACTION_SOURCES
+            MESSAGE_INPUT_IMAGE_IMAGE_URL -> Value.MESSAGE_INPUT_IMAGE_IMAGE_URL
+            COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Value.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
+            CODE_INTERPRETER_CALL_OUTPUTS -> Value.CODE_INTERPRETER_CALL_OUTPUTS
+            REASONING_ENCRYPTED_CONTENT -> Value.REASONING_ENCRYPTED_CONTENT
+            MESSAGE_OUTPUT_TEXT_LOGPROBS -> Value.MESSAGE_OUTPUT_TEXT_LOGPROBS
+            else -> Value._UNKNOWN
+        }
+
+    /**
+     * Returns an enum member corresponding to this class instance's value.
+     *
+     * Use the [value] method instead if you're uncertain the value is always known and don't want
+     * to throw for the unknown case.
+     *
+     * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
+     */
+    fun known(): Known =
+        when (this) {
+            FILE_SEARCH_CALL_RESULTS -> Known.FILE_SEARCH_CALL_RESULTS
+            WEB_SEARCH_CALL_RESULTS -> Known.WEB_SEARCH_CALL_RESULTS
+            WEB_SEARCH_CALL_ACTION_SOURCES -> Known.WEB_SEARCH_CALL_ACTION_SOURCES
+            MESSAGE_INPUT_IMAGE_IMAGE_URL -> Known.MESSAGE_INPUT_IMAGE_IMAGE_URL
+            COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Known.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
+            CODE_INTERPRETER_CALL_OUTPUTS -> Known.CODE_INTERPRETER_CALL_OUTPUTS
+            REASONING_ENCRYPTED_CONTENT -> Known.REASONING_ENCRYPTED_CONTENT
+            MESSAGE_OUTPUT_TEXT_LOGPROBS -> Known.MESSAGE_OUTPUT_TEXT_LOGPROBS
+            else -> throw OpenAIInvalidDataException("Unknown BetaResponseIncludable: $value")
+        }
+
+    /**
+     * Returns this class instance's primitive wire representation.
+     *
+     * This differs from the [toString] method because that method is primarily for debugging and
+     * generally doesn't throw.
+     *
+     * @throws OpenAIInvalidDataException if this class instance's value does not have the expected
+     *   primitive type.
+     */
+    fun asString(): String =
+        _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+    private var validated: Boolean = false
+
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
+    fun validate(): BetaResponseIncludable = apply {
+        if (validated) {
+            return@apply
+        }
+
+        known()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is BetaResponseIncludable && value == other.value
+    }
+
+    override fun hashCode() = value.hashCode()
+
+    override fun toString() = value.toString()
+}

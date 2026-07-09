@@ -12,16 +12,28 @@ internal class ChatCompletionContentPartTextTest {
     @Test
     fun create() {
         val chatCompletionContentPartText =
-            ChatCompletionContentPartText.builder().text("text").build()
+            ChatCompletionContentPartText.builder()
+                .text("text")
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                )
+                .build()
 
         assertThat(chatCompletionContentPartText.text()).isEqualTo("text")
+        assertThat(chatCompletionContentPartText.promptCacheBreakpoint())
+            .contains(ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val chatCompletionContentPartText =
-            ChatCompletionContentPartText.builder().text("text").build()
+            ChatCompletionContentPartText.builder()
+                .text("text")
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                )
+                .build()
 
         val roundtrippedChatCompletionContentPartText =
             jsonMapper.readValue(

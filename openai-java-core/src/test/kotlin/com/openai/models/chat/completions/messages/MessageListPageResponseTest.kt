@@ -61,7 +61,13 @@ internal class MessageListPageResponseTest {
                         )
                         .id("id")
                         .addContentPart(
-                            ChatCompletionContentPartText.builder().text("text").build()
+                            ChatCompletionContentPartText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                        .build()
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -113,7 +119,15 @@ internal class MessageListPageResponseTest {
                             .build()
                     )
                     .id("id")
-                    .addContentPart(ChatCompletionContentPartText.builder().text("text").build())
+                    .addContentPart(
+                        ChatCompletionContentPartText.builder()
+                            .text("text")
+                            .promptCacheBreakpoint(
+                                ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                    .build()
+                            )
+                            .build()
+                    )
                     .build()
             )
         assertThat(messageListPageResponse.firstId()).isEqualTo("first_id")
@@ -169,7 +183,13 @@ internal class MessageListPageResponseTest {
                         )
                         .id("id")
                         .addContentPart(
-                            ChatCompletionContentPartText.builder().text("text").build()
+                            ChatCompletionContentPartText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                        .build()
+                                )
+                                .build()
                         )
                         .build()
                 )

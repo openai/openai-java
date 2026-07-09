@@ -271,6 +271,16 @@ private constructor(
         fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [addOutput] with `ResponseOutputItem.ofProgram(program)`. */
+        fun addOutput(program: ResponseOutputItem.Program) =
+            addOutput(ResponseOutputItem.ofProgram(program))
+
+        /**
+         * Alias for calling [addOutput] with `ResponseOutputItem.ofProgramOutput(programOutput)`.
+         */
+        fun addOutput(programOutput: ResponseOutputItem.ProgramOutput) =
+            addOutput(ResponseOutputItem.ofProgramOutput(programOutput))
+
         /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
          */

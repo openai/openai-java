@@ -19,6 +19,9 @@ internal class ChatCompletionContentPartImageTest {
                         .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                         .build()
                 )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         assertThat(chatCompletionContentPartImage.imageUrl())
@@ -28,6 +31,8 @@ internal class ChatCompletionContentPartImageTest {
                     .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                     .build()
             )
+        assertThat(chatCompletionContentPartImage.promptCacheBreakpoint())
+            .contains(ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -40,6 +45,9 @@ internal class ChatCompletionContentPartImageTest {
                         .url("https://example.com")
                         .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                         .build()
+                )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
                 )
                 .build()
 

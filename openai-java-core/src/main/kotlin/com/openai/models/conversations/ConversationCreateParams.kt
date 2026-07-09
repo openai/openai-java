@@ -382,6 +382,14 @@ private constructor(
          */
         fun addItemReferenceItem(id: String) = apply { body.addItemReferenceItem(id) }
 
+        /** Alias for calling [addItem] with `ResponseInputItem.ofProgram(program)`. */
+        fun addItem(program: ResponseInputItem.Program) = apply { body.addItem(program) }
+
+        /** Alias for calling [addItem] with `ResponseInputItem.ofProgramOutput(programOutput)`. */
+        fun addItem(programOutput: ResponseInputItem.ProgramOutput) = apply {
+            body.addItem(programOutput)
+        }
+
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format, and querying for
@@ -908,6 +916,16 @@ private constructor(
                         .id(id)
                         .build()
                 )
+
+            /** Alias for calling [addItem] with `ResponseInputItem.ofProgram(program)`. */
+            fun addItem(program: ResponseInputItem.Program) =
+                addItem(ResponseInputItem.ofProgram(program))
+
+            /**
+             * Alias for calling [addItem] with `ResponseInputItem.ofProgramOutput(programOutput)`.
+             */
+            fun addItem(programOutput: ResponseInputItem.ProgramOutput) =
+                addItem(ResponseInputItem.ofProgramOutput(programOutput))
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for

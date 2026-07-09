@@ -54,12 +54,42 @@ internal class ChatCompletionCreateParamsTest {
                     .build()
             )
             .addModality(ChatCompletionCreateParams.Modality.TEXT)
-            .moderation(ChatCompletionCreateParams.Moderation.builder().model("model").build())
+            .moderation(
+                ChatCompletionCreateParams.Moderation.builder()
+                    .model("model")
+                    .policy(
+                        ChatCompletionCreateParams.Moderation.Policy.builder()
+                            .input(
+                                ChatCompletionCreateParams.Moderation.Policy.Input.builder()
+                                    .mode(
+                                        ChatCompletionCreateParams.Moderation.Policy.Input.Mode
+                                            .SCORE
+                                    )
+                                    .build()
+                            )
+                            .output(
+                                ChatCompletionCreateParams.Moderation.Policy.Output.builder()
+                                    .mode(
+                                        ChatCompletionCreateParams.Moderation.Policy.Output.Mode
+                                            .SCORE
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
             .n(1L)
             .parallelToolCalls(true)
             .prediction(ChatCompletionPredictionContent.builder().content("string").build())
             .presencePenalty(-2.0)
             .promptCacheKey("prompt-cache-key-1234")
+            .promptCacheOptions(
+                ChatCompletionCreateParams.PromptCacheOptions.builder()
+                    .mode(ChatCompletionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(ChatCompletionCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
             .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
             .reasoningEffort(ReasoningEffort.NONE)
             .responseFormat(ResponseFormatText.builder().build())
@@ -159,12 +189,42 @@ internal class ChatCompletionCreateParamsTest {
                         .build()
                 )
                 .addModality(ChatCompletionCreateParams.Modality.TEXT)
-                .moderation(ChatCompletionCreateParams.Moderation.builder().model("model").build())
+                .moderation(
+                    ChatCompletionCreateParams.Moderation.builder()
+                        .model("model")
+                        .policy(
+                            ChatCompletionCreateParams.Moderation.Policy.builder()
+                                .input(
+                                    ChatCompletionCreateParams.Moderation.Policy.Input.builder()
+                                        .mode(
+                                            ChatCompletionCreateParams.Moderation.Policy.Input.Mode
+                                                .SCORE
+                                        )
+                                        .build()
+                                )
+                                .output(
+                                    ChatCompletionCreateParams.Moderation.Policy.Output.builder()
+                                        .mode(
+                                            ChatCompletionCreateParams.Moderation.Policy.Output.Mode
+                                                .SCORE
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .n(1L)
                 .parallelToolCalls(true)
                 .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
                 .promptCacheKey("prompt-cache-key-1234")
+                .promptCacheOptions(
+                    ChatCompletionCreateParams.PromptCacheOptions.builder()
+                        .mode(ChatCompletionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                        .ttl(ChatCompletionCreateParams.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
                 .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormat(ResponseFormatText.builder().build())
@@ -276,13 +336,44 @@ internal class ChatCompletionCreateParamsTest {
         assertThat(body.modalities().getOrNull())
             .containsExactly(ChatCompletionCreateParams.Modality.TEXT)
         assertThat(body.moderation())
-            .contains(ChatCompletionCreateParams.Moderation.builder().model("model").build())
+            .contains(
+                ChatCompletionCreateParams.Moderation.builder()
+                    .model("model")
+                    .policy(
+                        ChatCompletionCreateParams.Moderation.Policy.builder()
+                            .input(
+                                ChatCompletionCreateParams.Moderation.Policy.Input.builder()
+                                    .mode(
+                                        ChatCompletionCreateParams.Moderation.Policy.Input.Mode
+                                            .SCORE
+                                    )
+                                    .build()
+                            )
+                            .output(
+                                ChatCompletionCreateParams.Moderation.Policy.Output.builder()
+                                    .mode(
+                                        ChatCompletionCreateParams.Moderation.Policy.Output.Mode
+                                            .SCORE
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(body.n()).contains(1L)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.prediction())
             .contains(ChatCompletionPredictionContent.builder().content("string").build())
         assertThat(body.presencePenalty()).contains(-2.0)
         assertThat(body.promptCacheKey()).contains("prompt-cache-key-1234")
+        assertThat(body.promptCacheOptions())
+            .contains(
+                ChatCompletionCreateParams.PromptCacheOptions.builder()
+                    .mode(ChatCompletionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(ChatCompletionCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
         assertThat(body.promptCacheRetention())
             .contains(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
         assertThat(body.reasoningEffort()).contains(ReasoningEffort.NONE)

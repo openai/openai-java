@@ -27,6 +27,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val id: JsonField<String>,
+    private val caller: JsonField<ResponseCustomToolCall.Caller>,
     private val namespace: JsonField<String>,
     private val status: JsonField<Status>,
     private val createdBy: JsonField<String>,
@@ -40,10 +41,13 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("caller")
+        @ExcludeMissing
+        caller: JsonField<ResponseCustomToolCall.Caller> = JsonMissing.of(),
         @JsonProperty("namespace") @ExcludeMissing namespace: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
-    ) : this(callId, input, name, type, id, namespace, status, createdBy, mutableMapOf())
+    ) : this(callId, input, name, type, id, caller, namespace, status, createdBy, mutableMapOf())
 
     fun toResponseCustomToolCall(): ResponseCustomToolCall =
         ResponseCustomToolCall.builder()
@@ -52,6 +56,7 @@ private constructor(
             .name(name)
             .type(type)
             .id(id)
+            .caller(caller)
             .namespace(namespace)
             .build()
 
@@ -99,6 +104,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun id(): Optional<String> = id.getOptional("id")
+
+    /**
+     * The execution context that produced this tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun caller(): Optional<ResponseCustomToolCall.Caller> = caller.getOptional("caller")
 
     /**
      * The namespace of the custom tool being called.
@@ -152,6 +165,15 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [caller].
+     *
+     * Unlike [caller], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("caller")
+    @ExcludeMissing
+    fun _caller(): JsonField<ResponseCustomToolCall.Caller> = caller
 
     /**
      * Returns the raw JSON value of [namespace].
@@ -210,6 +232,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("custom_tool_call")
         private var id: JsonField<String> = JsonMissing.of()
+        private var caller: JsonField<ResponseCustomToolCall.Caller> = JsonMissing.of()
         private var namespace: JsonField<String> = JsonMissing.of()
         private var status: JsonField<Status>? = null
         private var createdBy: JsonField<String> = JsonMissing.of()
@@ -222,6 +245,7 @@ private constructor(
             name = responseCustomToolCallItem.name
             type = responseCustomToolCallItem.type
             id = responseCustomToolCallItem.id
+            caller = responseCustomToolCallItem.caller
             namespace = responseCustomToolCallItem.namespace
             status = responseCustomToolCallItem.status
             createdBy = responseCustomToolCallItem.createdBy
@@ -285,6 +309,41 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** The execution context that produced this tool call. */
+        fun caller(caller: ResponseCustomToolCall.Caller?) = caller(JsonField.ofNullable(caller))
+
+        /** Alias for calling [Builder.caller] with `caller.orElse(null)`. */
+        fun caller(caller: Optional<ResponseCustomToolCall.Caller>) = caller(caller.getOrNull())
+
+        /**
+         * Sets [Builder.caller] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.caller] with a well-typed
+         * [ResponseCustomToolCall.Caller] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun caller(caller: JsonField<ResponseCustomToolCall.Caller>) = apply {
+            this.caller = caller
+        }
+
+        /** Alias for calling [caller] with `ResponseCustomToolCall.Caller.ofDirect()`. */
+        fun callerDirect() = caller(ResponseCustomToolCall.Caller.ofDirect())
+
+        /** Alias for calling [caller] with `ResponseCustomToolCall.Caller.ofProgram(program)`. */
+        fun caller(program: ResponseCustomToolCall.Caller.Program) =
+            caller(ResponseCustomToolCall.Caller.ofProgram(program))
+
+        /**
+         * Alias for calling [caller] with the following:
+         * ```java
+         * ResponseCustomToolCall.Caller.Program.builder()
+         *     .callerId(callerId)
+         *     .build()
+         * ```
+         */
+        fun programCaller(callerId: String) =
+            caller(ResponseCustomToolCall.Caller.Program.builder().callerId(callerId).build())
 
         /** The namespace of the custom tool being called. */
         fun namespace(namespace: String) = namespace(JsonField.of(namespace))
@@ -365,6 +424,7 @@ private constructor(
                 checkRequired("name", name),
                 type,
                 id,
+                caller,
                 namespace,
                 checkRequired("status", status),
                 createdBy,
@@ -396,6 +456,7 @@ private constructor(
             }
         }
         id()
+        caller().ifPresent { it.validate() }
         namespace()
         status().validate()
         createdBy()
@@ -422,6 +483,7 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("custom_tool_call")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
+            (caller.asKnown().getOrNull()?.validity() ?: 0) +
             (if (namespace.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (createdBy.asKnown().isPresent) 1 else 0)
@@ -581,6 +643,7 @@ private constructor(
             name == other.name &&
             type == other.type &&
             id == other.id &&
+            caller == other.caller &&
             namespace == other.namespace &&
             status == other.status &&
             createdBy == other.createdBy &&
@@ -594,6 +657,7 @@ private constructor(
             name,
             type,
             id,
+            caller,
             namespace,
             status,
             createdBy,
@@ -604,5 +668,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCustomToolCallItem{callId=$callId, input=$input, name=$name, type=$type, id=$id, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseCustomToolCallItem{callId=$callId, input=$input, name=$name, type=$type, id=$id, caller=$caller, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

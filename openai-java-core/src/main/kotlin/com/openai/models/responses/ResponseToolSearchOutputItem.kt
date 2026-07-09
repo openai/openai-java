@@ -348,6 +348,9 @@ private constructor(
                 Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)
             )
 
+        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
+
         /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
         fun addTool(imageGeneration: Tool.ImageGeneration) =
             addTool(Tool.ofImageGeneration(imageGeneration))

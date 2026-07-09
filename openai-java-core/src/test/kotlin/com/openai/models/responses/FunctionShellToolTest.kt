@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -13,6 +14,7 @@ internal class FunctionShellToolTest {
     fun create() {
         val functionShellTool =
             FunctionShellTool.builder()
+                .addAllowedCaller(FunctionShellTool.AllowedCaller.DIRECT)
                 .environment(
                     ContainerAuto.builder()
                         .addFileId("file-123")
@@ -23,6 +25,8 @@ internal class FunctionShellToolTest {
                 )
                 .build()
 
+        assertThat(functionShellTool.allowedCallers().getOrNull())
+            .containsExactly(FunctionShellTool.AllowedCaller.DIRECT)
         assertThat(functionShellTool.environment())
             .contains(
                 FunctionShellTool.Environment.ofContainerAuto(
@@ -41,6 +45,7 @@ internal class FunctionShellToolTest {
         val jsonMapper = jsonMapper()
         val functionShellTool =
             FunctionShellTool.builder()
+                .addAllowedCaller(FunctionShellTool.AllowedCaller.DIRECT)
                 .environment(
                     ContainerAuto.builder()
                         .addFileId("file-123")

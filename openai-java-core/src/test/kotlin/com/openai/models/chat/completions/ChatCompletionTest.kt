@@ -196,6 +196,7 @@ internal class ChatCompletionTest {
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
                                 .audioTokens(0L)
+                                .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
                                 .build()
                         )
@@ -382,6 +383,7 @@ internal class ChatCompletionTest {
                     .promptTokensDetails(
                         CompletionUsage.PromptTokensDetails.builder()
                             .audioTokens(0L)
+                            .cacheWriteTokens(0L)
                             .cachedTokens(0L)
                             .build()
                     )
@@ -575,6 +577,7 @@ internal class ChatCompletionTest {
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
                                 .audioTokens(0L)
+                                .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
                                 .build()
                         )

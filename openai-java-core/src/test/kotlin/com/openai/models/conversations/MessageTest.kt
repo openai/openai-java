@@ -15,7 +15,14 @@ internal class MessageTest {
         val message =
             Message.builder()
                 .id("id")
-                .addInputTextContent("text")
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
                 .role(Message.Role.UNKNOWN)
                 .status(Message.Status.IN_PROGRESS)
                 .phase(Message.Phase.COMMENTARY)
@@ -24,7 +31,14 @@ internal class MessageTest {
         assertThat(message.id()).isEqualTo("id")
         assertThat(message.content())
             .containsExactly(
-                Message.Content.ofInputText(ResponseInputText.builder().text("text").build())
+                Message.Content.ofInputText(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
             )
         assertThat(message.role()).isEqualTo(Message.Role.UNKNOWN)
         assertThat(message.status()).isEqualTo(Message.Status.IN_PROGRESS)
@@ -37,7 +51,14 @@ internal class MessageTest {
         val message =
             Message.builder()
                 .id("id")
-                .addInputTextContent("text")
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
                 .role(Message.Role.UNKNOWN)
                 .status(Message.Status.IN_PROGRESS)
                 .phase(Message.Phase.COMMENTARY)

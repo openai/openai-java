@@ -16,7 +16,13 @@ internal class ChatCompletionContentPartTest {
 
     @Test
     fun ofText() {
-        val text = ChatCompletionContentPartText.builder().text("text").build()
+        val text =
+            ChatCompletionContentPartText.builder()
+                .text("text")
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                )
+                .build()
 
         val chatCompletionContentPart = ChatCompletionContentPart.ofText(text)
 
@@ -31,7 +37,12 @@ internal class ChatCompletionContentPartTest {
         val jsonMapper = jsonMapper()
         val chatCompletionContentPart =
             ChatCompletionContentPart.ofText(
-                ChatCompletionContentPartText.builder().text("text").build()
+                ChatCompletionContentPartText.builder()
+                    .text("text")
+                    .promptCacheBreakpoint(
+                        ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                    )
+                    .build()
             )
 
         val roundtrippedChatCompletionContentPart =
@@ -52,6 +63,9 @@ internal class ChatCompletionContentPartTest {
                         .url("https://example.com")
                         .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                         .build()
+                )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
                 )
                 .build()
 
@@ -75,6 +89,9 @@ internal class ChatCompletionContentPartTest {
                             .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                             .build()
                     )
+                    .promptCacheBreakpoint(
+                        ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
+                    )
                     .build()
             )
 
@@ -97,6 +114,9 @@ internal class ChatCompletionContentPartTest {
                         .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                         .build()
                 )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val chatCompletionContentPart = ChatCompletionContentPart.ofInputAudio(inputAudio)
@@ -118,6 +138,9 @@ internal class ChatCompletionContentPartTest {
                             .data("data")
                             .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                             .build()
+                    )
+                    .promptCacheBreakpoint(
+                        ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
                     )
                     .build()
             )
@@ -142,6 +165,9 @@ internal class ChatCompletionContentPartTest {
                         .filename("filename")
                         .build()
                 )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPart.File.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val chatCompletionContentPart = ChatCompletionContentPart.ofFile(file)
@@ -164,6 +190,9 @@ internal class ChatCompletionContentPartTest {
                             .fileId("file_id")
                             .filename("filename")
                             .build()
+                    )
+                    .promptCacheBreakpoint(
+                        ChatCompletionContentPart.File.PromptCacheBreakpoint.builder().build()
                     )
                     .build()
             )

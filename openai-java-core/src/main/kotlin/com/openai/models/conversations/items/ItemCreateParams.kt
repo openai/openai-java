@@ -404,6 +404,14 @@ private constructor(
          */
         fun addItemReferenceItem(id: String) = apply { body.addItemReferenceItem(id) }
 
+        /** Alias for calling [addItem] with `ResponseInputItem.ofProgram(program)`. */
+        fun addItem(program: ResponseInputItem.Program) = apply { body.addItem(program) }
+
+        /** Alias for calling [addItem] with `ResponseInputItem.ofProgramOutput(programOutput)`. */
+        fun addItem(programOutput: ResponseInputItem.ProgramOutput) = apply {
+            body.addItem(programOutput)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -903,6 +911,16 @@ private constructor(
                         .id(id)
                         .build()
                 )
+
+            /** Alias for calling [addItem] with `ResponseInputItem.ofProgram(program)`. */
+            fun addItem(program: ResponseInputItem.Program) =
+                addItem(ResponseInputItem.ofProgram(program))
+
+            /**
+             * Alias for calling [addItem] with `ResponseInputItem.ofProgramOutput(programOutput)`.
+             */
+            fun addItem(programOutput: ResponseInputItem.ProgramOutput) =
+                addItem(ResponseInputItem.ofProgramOutput(programOutput))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

@@ -5,6 +5,7 @@ package com.openai.models.responses.inputitems
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.responses.ResponseInputMessageItem
+import com.openai.models.responses.ResponseInputText
 import com.openai.models.responses.ResponseItem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -18,7 +19,14 @@ internal class ResponseItemListTest {
                 .addData(
                     ResponseInputMessageItem.builder()
                         .id("id")
-                        .addInputTextContent("text")
+                        .addContent(
+                            ResponseInputText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                )
+                                .build()
+                        )
                         .role(ResponseInputMessageItem.Role.USER)
                         .status(ResponseInputMessageItem.Status.IN_PROGRESS)
                         .build()
@@ -33,7 +41,14 @@ internal class ResponseItemListTest {
                 ResponseItem.ofResponseInputMessageItem(
                     ResponseInputMessageItem.builder()
                         .id("id")
-                        .addInputTextContent("text")
+                        .addContent(
+                            ResponseInputText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                )
+                                .build()
+                        )
                         .role(ResponseInputMessageItem.Role.USER)
                         .status(ResponseInputMessageItem.Status.IN_PROGRESS)
                         .build()
@@ -52,7 +67,14 @@ internal class ResponseItemListTest {
                 .addData(
                     ResponseInputMessageItem.builder()
                         .id("id")
-                        .addInputTextContent("text")
+                        .addContent(
+                            ResponseInputText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                )
+                                .build()
+                        )
                         .role(ResponseInputMessageItem.Role.USER)
                         .status(ResponseInputMessageItem.Status.IN_PROGRESS)
                         .build()

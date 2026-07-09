@@ -27,6 +27,7 @@ private constructor(
     private val fileId: JsonField<String>,
     private val fileUrl: JsonField<String>,
     private val filename: JsonField<String>,
+    private val promptCacheBreakpoint: JsonField<PromptCacheBreakpoint>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -38,7 +39,19 @@ private constructor(
         @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("file_url") @ExcludeMissing fileUrl: JsonField<String> = JsonMissing.of(),
         @JsonProperty("filename") @ExcludeMissing filename: JsonField<String> = JsonMissing.of(),
-    ) : this(type, detail, fileData, fileId, fileUrl, filename, mutableMapOf())
+        @JsonProperty("prompt_cache_breakpoint")
+        @ExcludeMissing
+        promptCacheBreakpoint: JsonField<PromptCacheBreakpoint> = JsonMissing.of(),
+    ) : this(
+        type,
+        detail,
+        fileData,
+        fileId,
+        fileUrl,
+        filename,
+        promptCacheBreakpoint,
+        mutableMapOf(),
+    )
 
     /**
      * The type of the input item. Always `input_file`.
@@ -54,8 +67,10 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * The detail level of the file to be sent to the model. Use `low` for the default rendering
-     * behavior, or `high` to render the file at higher quality. Defaults to `low`.
+     * The detail level of the file to be sent to the model. Use `auto` to let the system select the
+     * detail level; for GPT-5.6 and later models, `auto` uses high-quality rendering, which may
+     * increase input token usage. Use `low` for lower-cost rendering, or `high` to render the file
+     * at higher quality. Defaults to `auto`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -95,6 +110,16 @@ private constructor(
     fun filename(): Optional<String> = filename.getOptional("filename")
 
     /**
+     * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
+     * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheBreakpoint(): Optional<PromptCacheBreakpoint> =
+        promptCacheBreakpoint.getOptional("prompt_cache_breakpoint")
+
+    /**
      * Returns the raw JSON value of [detail].
      *
      * Unlike [detail], this method doesn't throw if the JSON field has an unexpected type.
@@ -129,6 +154,16 @@ private constructor(
      */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
+    /**
+     * Returns the raw JSON value of [promptCacheBreakpoint].
+     *
+     * Unlike [promptCacheBreakpoint], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("prompt_cache_breakpoint")
+    @ExcludeMissing
+    fun _promptCacheBreakpoint(): JsonField<PromptCacheBreakpoint> = promptCacheBreakpoint
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -156,6 +191,7 @@ private constructor(
         private var fileId: JsonField<String> = JsonMissing.of()
         private var fileUrl: JsonField<String> = JsonMissing.of()
         private var filename: JsonField<String> = JsonMissing.of()
+        private var promptCacheBreakpoint: JsonField<PromptCacheBreakpoint> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -166,6 +202,7 @@ private constructor(
             fileId = responseInputFile.fileId
             fileUrl = responseInputFile.fileUrl
             filename = responseInputFile.filename
+            promptCacheBreakpoint = responseInputFile.promptCacheBreakpoint
             additionalProperties = responseInputFile.additionalProperties.toMutableMap()
         }
 
@@ -184,8 +221,10 @@ private constructor(
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
-         * The detail level of the file to be sent to the model. Use `low` for the default rendering
-         * behavior, or `high` to render the file at higher quality. Defaults to `low`.
+         * The detail level of the file to be sent to the model. Use `auto` to let the system select
+         * the detail level; for GPT-5.6 and later models, `auto` uses high-quality rendering, which
+         * may increase input token usage. Use `low` for lower-cost rendering, or `high` to render
+         * the file at higher quality. Defaults to `auto`.
          */
         fun detail(detail: Detail) = detail(JsonField.of(detail))
 
@@ -244,6 +283,24 @@ private constructor(
          */
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
+        /**
+         * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
+         * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+         */
+        fun promptCacheBreakpoint(promptCacheBreakpoint: PromptCacheBreakpoint) =
+            promptCacheBreakpoint(JsonField.of(promptCacheBreakpoint))
+
+        /**
+         * Sets [Builder.promptCacheBreakpoint] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheBreakpoint] with a well-typed
+         * [PromptCacheBreakpoint] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun promptCacheBreakpoint(promptCacheBreakpoint: JsonField<PromptCacheBreakpoint>) = apply {
+            this.promptCacheBreakpoint = promptCacheBreakpoint
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -276,6 +333,7 @@ private constructor(
                 fileId,
                 fileUrl,
                 filename,
+                promptCacheBreakpoint,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -305,6 +363,7 @@ private constructor(
         fileId()
         fileUrl()
         filename()
+        promptCacheBreakpoint().ifPresent { it.validate() }
         validated = true
     }
 
@@ -328,11 +387,14 @@ private constructor(
             (if (fileData.asKnown().isPresent) 1 else 0) +
             (if (fileId.asKnown().isPresent) 1 else 0) +
             (if (fileUrl.asKnown().isPresent) 1 else 0) +
-            (if (filename.asKnown().isPresent) 1 else 0)
+            (if (filename.asKnown().isPresent) 1 else 0) +
+            (promptCacheBreakpoint.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
-     * The detail level of the file to be sent to the model. Use `low` for the default rendering
-     * behavior, or `high` to render the file at higher quality. Defaults to `low`.
+     * The detail level of the file to be sent to the model. Use `auto` to let the system select the
+     * detail level; for GPT-5.6 and later models, `auto` uses high-quality rendering, which may
+     * increase input token usage. Use `low` for lower-cost rendering, or `high` to render the file
+     * at higher quality. Defaults to `auto`.
      */
     class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -348,6 +410,8 @@ private constructor(
 
         companion object {
 
+            @JvmField val AUTO = of("auto")
+
             @JvmField val LOW = of("low")
 
             @JvmField val HIGH = of("high")
@@ -357,6 +421,7 @@ private constructor(
 
         /** An enum containing [Detail]'s known values. */
         enum class Known {
+            AUTO,
             LOW,
             HIGH,
         }
@@ -371,6 +436,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            AUTO,
             LOW,
             HIGH,
             /** An enum member indicating that [Detail] was instantiated with an unknown value. */
@@ -386,6 +452,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                AUTO -> Value.AUTO
                 LOW -> Value.LOW
                 HIGH -> Value.HIGH
                 else -> Value._UNKNOWN
@@ -402,6 +469,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                AUTO -> Known.AUTO
                 LOW -> Known.LOW
                 HIGH -> Known.HIGH
                 else -> throw OpenAIInvalidDataException("Unknown Detail: $value")
@@ -468,6 +536,168 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
+     * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+     */
+    class PromptCacheBreakpoint
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val mode: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("mode") @ExcludeMissing mode: JsonValue = JsonMissing.of()
+        ) : this(mode, mutableMapOf())
+
+        /**
+         * The breakpoint mode. Always `explicit`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("explicit")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonValue = mode
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [PromptCacheBreakpoint].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheBreakpoint]. */
+        class Builder internal constructor() {
+
+            private var mode: JsonValue = JsonValue.from("explicit")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheBreakpoint: PromptCacheBreakpoint) = apply {
+                mode = promptCacheBreakpoint.mode
+                additionalProperties = promptCacheBreakpoint.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("explicit")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun mode(mode: JsonValue) = apply { this.mode = mode }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheBreakpoint].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PromptCacheBreakpoint =
+                PromptCacheBreakpoint(mode, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheBreakpoint = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _mode().let {
+                if (it != JsonValue.from("explicit")) {
+                    throw OpenAIInvalidDataException("'mode' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int = mode.let { if (it == JsonValue.from("explicit")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheBreakpoint &&
+                mode == other.mode &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(mode, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheBreakpoint{mode=$mode, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -480,15 +710,25 @@ private constructor(
             fileId == other.fileId &&
             fileUrl == other.fileUrl &&
             filename == other.filename &&
+            promptCacheBreakpoint == other.promptCacheBreakpoint &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, detail, fileData, fileId, fileUrl, filename, additionalProperties)
+        Objects.hash(
+            type,
+            detail,
+            fileData,
+            fileId,
+            fileUrl,
+            filename,
+            promptCacheBreakpoint,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseInputFile{type=$type, detail=$detail, fileData=$fileData, fileId=$fileId, fileUrl=$fileUrl, filename=$filename, additionalProperties=$additionalProperties}"
+        "ResponseInputFile{type=$type, detail=$detail, fileData=$fileData, fileId=$fileId, fileUrl=$fileUrl, filename=$filename, promptCacheBreakpoint=$promptCacheBreakpoint, additionalProperties=$additionalProperties}"
 }

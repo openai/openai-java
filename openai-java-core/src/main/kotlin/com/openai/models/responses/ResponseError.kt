@@ -222,6 +222,8 @@ private constructor(
 
             @JvmField val INVALID_PROMPT = of("invalid_prompt")
 
+            @JvmField val BIO_POLICY = of("bio_policy")
+
             @JvmField val VECTOR_STORE_TIMEOUT = of("vector_store_timeout")
 
             @JvmField val INVALID_IMAGE = of("invalid_image")
@@ -260,6 +262,7 @@ private constructor(
             SERVER_ERROR,
             RATE_LIMIT_EXCEEDED,
             INVALID_PROMPT,
+            BIO_POLICY,
             VECTOR_STORE_TIMEOUT,
             INVALID_IMAGE,
             INVALID_IMAGE_FORMAT,
@@ -290,6 +293,7 @@ private constructor(
             SERVER_ERROR,
             RATE_LIMIT_EXCEEDED,
             INVALID_PROMPT,
+            BIO_POLICY,
             VECTOR_STORE_TIMEOUT,
             INVALID_IMAGE,
             INVALID_IMAGE_FORMAT,
@@ -321,6 +325,7 @@ private constructor(
                 SERVER_ERROR -> Value.SERVER_ERROR
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
                 INVALID_PROMPT -> Value.INVALID_PROMPT
+                BIO_POLICY -> Value.BIO_POLICY
                 VECTOR_STORE_TIMEOUT -> Value.VECTOR_STORE_TIMEOUT
                 INVALID_IMAGE -> Value.INVALID_IMAGE
                 INVALID_IMAGE_FORMAT -> Value.INVALID_IMAGE_FORMAT
@@ -353,6 +358,7 @@ private constructor(
                 SERVER_ERROR -> Known.SERVER_ERROR
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
                 INVALID_PROMPT -> Known.INVALID_PROMPT
+                BIO_POLICY -> Known.BIO_POLICY
                 VECTOR_STORE_TIMEOUT -> Known.VECTOR_STORE_TIMEOUT
                 INVALID_IMAGE -> Known.INVALID_IMAGE
                 INVALID_IMAGE_FORMAT -> Known.INVALID_IMAGE_FORMAT

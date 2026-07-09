@@ -31,6 +31,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val id: JsonField<String>,
+    private val caller: JsonField<ResponseFunctionToolCall.Caller>,
     private val namespace: JsonField<String>,
     private val status: JsonField<ResponseFunctionToolCall.Status>,
     private val createdBy: JsonField<String>,
@@ -44,12 +45,26 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("caller")
+        @ExcludeMissing
+        caller: JsonField<ResponseFunctionToolCall.Caller> = JsonMissing.of(),
         @JsonProperty("namespace") @ExcludeMissing namespace: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status")
         @ExcludeMissing
         status: JsonField<ResponseFunctionToolCall.Status> = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
-    ) : this(arguments, callId, name, type, id, namespace, status, createdBy, mutableMapOf())
+    ) : this(
+        arguments,
+        callId,
+        name,
+        type,
+        id,
+        caller,
+        namespace,
+        status,
+        createdBy,
+        mutableMapOf(),
+    )
 
     fun toResponseFunctionToolCall(): ResponseFunctionToolCall =
         ResponseFunctionToolCall.builder()
@@ -58,6 +73,7 @@ private constructor(
             .name(name)
             .type(type)
             .id(id)
+            .caller(caller)
             .namespace(namespace)
             .status(status)
             .build()
@@ -106,6 +122,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun id(): Optional<String> = id.getOptional("id")
+
+    /**
+     * The execution context that produced this tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun caller(): Optional<ResponseFunctionToolCall.Caller> = caller.getOptional("caller")
 
     /**
      * The namespace of the function to run.
@@ -159,6 +183,15 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [caller].
+     *
+     * Unlike [caller], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("caller")
+    @ExcludeMissing
+    fun _caller(): JsonField<ResponseFunctionToolCall.Caller> = caller
 
     /**
      * Returns the raw JSON value of [namespace].
@@ -218,6 +251,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("function_call")
         private var id: JsonField<String> = JsonMissing.of()
+        private var caller: JsonField<ResponseFunctionToolCall.Caller> = JsonMissing.of()
         private var namespace: JsonField<String> = JsonMissing.of()
         private var status: JsonField<ResponseFunctionToolCall.Status> = JsonMissing.of()
         private var createdBy: JsonField<String> = JsonMissing.of()
@@ -230,6 +264,7 @@ private constructor(
             name = responseFunctionToolCallItem.name
             type = responseFunctionToolCallItem.type
             id = responseFunctionToolCallItem.id
+            caller = responseFunctionToolCallItem.caller
             namespace = responseFunctionToolCallItem.namespace
             status = responseFunctionToolCallItem.status
             createdBy = responseFunctionToolCallItem.createdBy
@@ -294,6 +329,41 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** The execution context that produced this tool call. */
+        fun caller(caller: ResponseFunctionToolCall.Caller?) = caller(JsonField.ofNullable(caller))
+
+        /** Alias for calling [Builder.caller] with `caller.orElse(null)`. */
+        fun caller(caller: Optional<ResponseFunctionToolCall.Caller>) = caller(caller.getOrNull())
+
+        /**
+         * Sets [Builder.caller] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.caller] with a well-typed
+         * [ResponseFunctionToolCall.Caller] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun caller(caller: JsonField<ResponseFunctionToolCall.Caller>) = apply {
+            this.caller = caller
+        }
+
+        /** Alias for calling [caller] with `ResponseFunctionToolCall.Caller.ofDirect()`. */
+        fun callerDirect() = caller(ResponseFunctionToolCall.Caller.ofDirect())
+
+        /** Alias for calling [caller] with `ResponseFunctionToolCall.Caller.ofProgram(program)`. */
+        fun caller(program: ResponseFunctionToolCall.Caller.Program) =
+            caller(ResponseFunctionToolCall.Caller.ofProgram(program))
+
+        /**
+         * Alias for calling [caller] with the following:
+         * ```java
+         * ResponseFunctionToolCall.Caller.Program.builder()
+         *     .callerId(callerId)
+         *     .build()
+         * ```
+         */
+        fun programCaller(callerId: String) =
+            caller(ResponseFunctionToolCall.Caller.Program.builder().callerId(callerId).build())
 
         /** The namespace of the function to run. */
         fun namespace(namespace: String) = namespace(JsonField.of(namespace))
@@ -376,6 +446,7 @@ private constructor(
                 checkRequired("name", name),
                 type,
                 id,
+                caller,
                 namespace,
                 status,
                 createdBy,
@@ -407,6 +478,7 @@ private constructor(
             }
         }
         id()
+        caller().ifPresent { it.validate() }
         namespace()
         status().ifPresent { it.validate() }
         createdBy()
@@ -433,6 +505,7 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("function_call")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
+            (caller.asKnown().getOrNull()?.validity() ?: 0) +
             (if (namespace.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (createdBy.asKnown().isPresent) 1 else 0)
@@ -592,6 +665,7 @@ private constructor(
             name == other.name &&
             type == other.type &&
             id == other.id &&
+            caller == other.caller &&
             namespace == other.namespace &&
             status == other.status &&
             createdBy == other.createdBy &&
@@ -605,6 +679,7 @@ private constructor(
             name,
             type,
             id,
+            caller,
             namespace,
             status,
             createdBy,
@@ -615,5 +690,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionToolCallItem{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseFunctionToolCallItem{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, caller=$caller, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

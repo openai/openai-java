@@ -19,7 +19,6 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
         WithRawResponseImpl(clientOptions)
     }
 
-    private val realtime: RealtimeService by lazy { RealtimeServiceImpl(clientOptions) }
 
     private val chatkit: ChatKitService by lazy { ChatKitServiceImpl(clientOptions) }
 
@@ -32,10 +31,6 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
         BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    @Deprecated(
-        "Realtime has now launched and is generally available. The old beta API is now deprecated."
-    )
-    override fun realtime(): RealtimeService = realtime
 
     override fun chatkit(): ChatKitService = chatkit
 
@@ -49,9 +44,6 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaService.WithRawResponse {
 
-        private val realtime: RealtimeService.WithRawResponse by lazy {
-            RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
-        }
 
         private val chatkit: ChatKitService.WithRawResponse by lazy {
             ChatKitServiceImpl.WithRawResponseImpl(clientOptions)
@@ -72,10 +64,6 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        @Deprecated(
-            "Realtime has now launched and is generally available. The old beta API is now deprecated."
-        )
-        override fun realtime(): RealtimeService.WithRawResponse = realtime
 
         override fun chatkit(): ChatKitService.WithRawResponse = chatkit
 

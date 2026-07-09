@@ -22,6 +22,7 @@ internal class ResponseApplyPatchToolCallTest {
                         .build()
                 )
                 .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -38,6 +39,8 @@ internal class ResponseApplyPatchToolCallTest {
             )
         assertThat(responseApplyPatchToolCall.status())
             .isEqualTo(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+        assertThat(responseApplyPatchToolCall.caller())
+            .contains(ResponseApplyPatchToolCall.Caller.ofDirect())
         assertThat(responseApplyPatchToolCall.createdBy()).contains("created_by")
     }
 
@@ -55,6 +58,7 @@ internal class ResponseApplyPatchToolCallTest {
                         .build()
                 )
                 .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
