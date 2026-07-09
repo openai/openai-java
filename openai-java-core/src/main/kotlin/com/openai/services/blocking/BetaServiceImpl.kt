@@ -7,6 +7,8 @@ import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.AssistantServiceImpl
 import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.ChatKitServiceImpl
+import com.openai.services.blocking.beta.RealtimeService
+import com.openai.services.blocking.beta.RealtimeServiceImpl
 import com.openai.services.blocking.beta.ResponseService
 import com.openai.services.blocking.beta.ResponseServiceImpl
 import com.openai.services.blocking.beta.ThreadService
@@ -18,6 +20,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     private val withRawResponse: BetaService.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
     }
+
+    private val realtime: RealtimeService by lazy { RealtimeServiceImpl(clientOptions) }
 
     private val responses: ResponseService by lazy { ResponseServiceImpl(clientOptions) }
 
@@ -32,6 +36,11 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
         BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    @Deprecated(
+        "Realtime has now launched and is generally available. The old beta API is now deprecated."
+    )
+    override fun realtime(): RealtimeService = realtime
+
     override fun responses(): ResponseService = responses
 
     override fun chatkit(): ChatKitService = chatkit
@@ -45,6 +54,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaService.WithRawResponse {
+
+        private val realtime: RealtimeService.WithRawResponse by lazy {
+            RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val responses: ResponseService.WithRawResponse by lazy {
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
@@ -68,6 +81,11 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
             BetaServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        @Deprecated(
+            "Realtime has now launched and is generally available. The old beta API is now deprecated."
+        )
+        override fun realtime(): RealtimeService.WithRawResponse = realtime
 
         override fun responses(): ResponseService.WithRawResponse = responses
 
