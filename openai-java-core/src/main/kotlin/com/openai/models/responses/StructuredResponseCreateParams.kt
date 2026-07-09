@@ -310,6 +310,17 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
 
+        /** @see ResponseCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(promptCacheOptions: ResponseCreateParams.PromptCacheOptions) =
+            apply {
+                paramsBuilder.promptCacheOptions(promptCacheOptions)
+            }
+
+        /** @see ResponseCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(
+            promptCacheOptions: JsonField<ResponseCreateParams.PromptCacheOptions>
+        ) = apply { paramsBuilder.promptCacheOptions(promptCacheOptions) }
+
         /** @see ResponseCreateParams.Builder.promptCacheRetention */
         fun promptCacheRetention(promptCacheRetention: ResponseCreateParams.PromptCacheRetention?) =
             apply {
@@ -454,6 +465,11 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.toolChoice */
         fun toolChoice(shell: ToolChoiceShell) = apply { paramsBuilder.toolChoice(shell) }
 
+        /** @see ResponseCreateParams.Builder.toolChoiceSpecificProgrammaticToolCallingParam */
+        fun toolChoiceSpecificProgrammaticToolCallingParam() = apply {
+            paramsBuilder.toolChoiceSpecificProgrammaticToolCallingParam()
+        }
+
         /** @see ResponseCreateParams.Builder.tools */
         fun tools(tools: List<Tool>) = apply { paramsBuilder.tools(tools) }
 
@@ -539,6 +555,11 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.addToolLocalShell */
         fun addToolLocalShell() = apply { paramsBuilder.addToolLocalShell() }
+
+        /** @see ResponseCreateParams.Builder.addToolProgrammaticToolCalling */
+        fun addToolProgrammaticToolCalling() = apply {
+            paramsBuilder.addToolProgrammaticToolCalling()
+        }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(shell: FunctionShellTool) = apply { paramsBuilder.addTool(shell) }

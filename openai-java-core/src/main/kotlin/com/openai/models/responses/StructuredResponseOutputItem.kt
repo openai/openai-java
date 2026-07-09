@@ -60,6 +60,12 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.reasoning */
     fun reasoning(): Optional<ResponseReasoningItem> = rawOutputItem.reasoning()
 
+    /** @see ResponseOutputItem.program */
+    fun program(): Optional<ResponseOutputItem.Program> = rawOutputItem.program()
+
+    /** @see ResponseOutputItem.programOutput */
+    fun programOutput(): Optional<ResponseOutputItem.ProgramOutput> = rawOutputItem.programOutput()
+
     /** @see ResponseOutputItem.compaction */
     fun compaction(): Optional<ResponseCompactionItem> = rawOutputItem.compaction()
 
@@ -147,6 +153,12 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isReasoning */
     fun isReasoning(): Boolean = rawOutputItem.isReasoning()
 
+    /** @see ResponseOutputItem.isProgram */
+    fun isProgram(): Boolean = rawOutputItem.isProgram()
+
+    /** @see ResponseOutputItem.isProgramOutput */
+    fun isProgramOutput(): Boolean = rawOutputItem.isProgramOutput()
+
     /** @see ResponseOutputItem.isCompaction */
     fun isCompaction(): Boolean = rawOutputItem.isCompaction()
 
@@ -231,6 +243,12 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asReasoning */
     fun asReasoning(): ResponseReasoningItem = rawOutputItem.asReasoning()
 
+    /** @see ResponseOutputItem.asProgram */
+    fun asProgram(): ResponseOutputItem.Program = rawOutputItem.asProgram()
+
+    /** @see ResponseOutputItem.asProgramOutput */
+    fun asProgramOutput(): ResponseOutputItem.ProgramOutput = rawOutputItem.asProgramOutput()
+
     /** @see ResponseOutputItem.asCompaction */
     fun asCompaction(): ResponseCompactionItem = rawOutputItem.asCompaction()
 
@@ -300,6 +318,8 @@ class StructuredResponseOutputItem<T : Any>(
             isComputerCall() -> visitor.visitComputerCall(asComputerCall())
             isComputerCallOutput() -> visitor.visitComputerCallOutput(asComputerCallOutput())
             isReasoning() -> visitor.visitReasoning(asReasoning())
+            isProgram() -> visitor.visitProgram(asProgram())
+            isProgramOutput() -> visitor.visitProgramOutput(asProgramOutput())
             isCompaction() -> visitor.visitCompaction(asCompaction())
             isCodeInterpreterCall() -> visitor.visitCodeInterpreterCall(asCodeInterpreterCall())
             isImageGenerationCall() -> visitor.visitImageGenerationCall(asImageGenerationCall())
@@ -376,6 +396,14 @@ class StructuredResponseOutputItem<T : Any>(
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
                     reasoning.validate()
+                }
+
+                override fun visitProgram(program: ResponseOutputItem.Program) {
+                    program.validate()
+                }
+
+                override fun visitProgramOutput(programOutput: ResponseOutputItem.ProgramOutput) {
+                    programOutput.validate()
                 }
 
                 override fun visitCompaction(compaction: ResponseCompactionItem) {
@@ -521,6 +549,12 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitReasoning */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
+
+        /** @see ResponseOutputItem.Visitor.visitProgram */
+        fun visitProgram(program: ResponseOutputItem.Program): T
+
+        /** @see ResponseOutputItem.Visitor.visitProgramOutput */
+        fun visitProgramOutput(programOutput: ResponseOutputItem.ProgramOutput): T
 
         /** @see ResponseOutputItem.Visitor.visitCompaction */
         fun visitCompaction(compaction: ResponseCompactionItem): T
