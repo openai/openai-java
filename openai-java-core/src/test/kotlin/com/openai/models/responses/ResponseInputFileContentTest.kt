@@ -13,18 +13,23 @@ internal class ResponseInputFileContentTest {
     fun create() {
         val responseInputFileContent =
             ResponseInputFileContent.builder()
-                .detail(ResponseInputFileContent.Detail.LOW)
+                .detail(ResponseInputFileContent.Detail.AUTO)
                 .fileData("file_data")
                 .fileId("file-123")
                 .fileUrl("https://example.com")
                 .filename("filename")
+                .promptCacheBreakpoint(
+                    ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
-        assertThat(responseInputFileContent.detail()).contains(ResponseInputFileContent.Detail.LOW)
+        assertThat(responseInputFileContent.detail()).contains(ResponseInputFileContent.Detail.AUTO)
         assertThat(responseInputFileContent.fileData()).contains("file_data")
         assertThat(responseInputFileContent.fileId()).contains("file-123")
         assertThat(responseInputFileContent.fileUrl()).contains("https://example.com")
         assertThat(responseInputFileContent.filename()).contains("filename")
+        assertThat(responseInputFileContent.promptCacheBreakpoint())
+            .contains(ResponseInputFileContent.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -32,11 +37,14 @@ internal class ResponseInputFileContentTest {
         val jsonMapper = jsonMapper()
         val responseInputFileContent =
             ResponseInputFileContent.builder()
-                .detail(ResponseInputFileContent.Detail.LOW)
+                .detail(ResponseInputFileContent.Detail.AUTO)
                 .fileData("file_data")
                 .fileId("file-123")
                 .fileUrl("https://example.com")
                 .filename("filename")
+                .promptCacheBreakpoint(
+                    ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val roundtrippedResponseInputFileContent =

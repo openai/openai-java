@@ -24,6 +24,7 @@ internal class ResponseFunctionShellToolCallTest {
                 .callId("call_id")
                 .environment(ResponseLocalEnvironment.builder().build())
                 .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -45,6 +46,8 @@ internal class ResponseFunctionShellToolCallTest {
             )
         assertThat(responseFunctionShellToolCall.status())
             .isEqualTo(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+        assertThat(responseFunctionShellToolCall.caller())
+            .contains(ResponseFunctionShellToolCall.Caller.ofDirect())
         assertThat(responseFunctionShellToolCall.createdBy()).contains("created_by")
     }
 
@@ -64,6 +67,7 @@ internal class ResponseFunctionShellToolCallTest {
                 .callId("call_id")
                 .environment(ResponseLocalEnvironment.builder().build())
                 .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 

@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -21,8 +22,14 @@ internal class FunctionToolTest {
                         .build()
                 )
                 .strict(true)
+                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                 .deferLoading(true)
                 .description("description")
+                .outputSchema(
+                    FunctionTool.OutputSchema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .build()
 
         assertThat(functionTool.name()).isEqualTo("name")
@@ -33,8 +40,16 @@ internal class FunctionToolTest {
                     .build()
             )
         assertThat(functionTool.strict()).contains(true)
+        assertThat(functionTool.allowedCallers().getOrNull())
+            .containsExactly(FunctionTool.AllowedCaller.DIRECT)
         assertThat(functionTool.deferLoading()).contains(true)
         assertThat(functionTool.description()).contains("description")
+        assertThat(functionTool.outputSchema())
+            .contains(
+                FunctionTool.OutputSchema.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .build()
+            )
     }
 
     @Test
@@ -49,8 +64,14 @@ internal class FunctionToolTest {
                         .build()
                 )
                 .strict(true)
+                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                 .deferLoading(true)
                 .description("description")
+                .outputSchema(
+                    FunctionTool.OutputSchema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .build()
 
         val roundtrippedFunctionTool =

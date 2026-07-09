@@ -266,6 +266,14 @@ private constructor(
         fun addData(reasoning: ResponseReasoningItem) =
             addData(ConversationItem.ofReasoning(reasoning))
 
+        /** Alias for calling [addData] with `ConversationItem.ofProgram(program)`. */
+        fun addData(program: ConversationItem.Program) =
+            addData(ConversationItem.ofProgram(program))
+
+        /** Alias for calling [addData] with `ConversationItem.ofProgramOutput(programOutput)`. */
+        fun addData(programOutput: ConversationItem.ProgramOutput) =
+            addData(ConversationItem.ofProgramOutput(programOutput))
+
         /** Alias for calling [addData] with `ConversationItem.ofCompaction(compaction)`. */
         fun addData(compaction: ResponseCompactionItem) =
             addData(ConversationItem.ofCompaction(compaction))

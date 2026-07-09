@@ -5,6 +5,7 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ChatKitService
+import com.openai.services.blocking.beta.ResponseService
 import com.openai.services.blocking.beta.ThreadService
 import java.util.function.Consumer
 
@@ -21,6 +22,8 @@ interface BetaService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService
+
+    fun responses(): ResponseService
 
     fun chatkit(): ChatKitService
 
@@ -40,6 +43,8 @@ interface BetaService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
+
+        fun responses(): ResponseService.WithRawResponse
 
         fun chatkit(): ChatKitService.WithRawResponse
 

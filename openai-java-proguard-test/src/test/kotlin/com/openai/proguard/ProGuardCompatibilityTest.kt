@@ -271,6 +271,7 @@ internal class ProGuardCompatibilityTest {
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
                                 .audioTokens(0L)
+                                .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
                                 .build()
                         )
@@ -292,7 +293,12 @@ internal class ProGuardCompatibilityTest {
         val jsonMapper = jsonMapper()
         val chatCompletionContentPart =
             ChatCompletionContentPart.ofText(
-                ChatCompletionContentPartText.builder().text("text").build()
+                ChatCompletionContentPartText.builder()
+                    .text("text")
+                    .promptCacheBreakpoint(
+                        ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                    )
+                    .build()
             )
 
         val roundtrippedChatCompletionContentPart =

@@ -115,6 +115,14 @@ private constructor(
                                 reasoning: ResponseReasoningItem
                             ): Optional<String> = reasoning._id().getOptional("id")
 
+                            override fun visitProgram(
+                                program: ResponseItem.Program
+                            ): Optional<String> = program._id().getOptional("id")
+
+                            override fun visitProgramOutput(
+                                programOutput: ResponseItem.ProgramOutput
+                            ): Optional<String> = programOutput._id().getOptional("id")
+
                             override fun visitCompaction(
                                 compaction: ResponseCompactionItem
                             ): Optional<String> = compaction._id().getOptional("id")

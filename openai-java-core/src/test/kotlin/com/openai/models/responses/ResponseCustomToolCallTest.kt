@@ -17,6 +17,7 @@ internal class ResponseCustomToolCallTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .callerDirect()
                 .namespace("namespace")
                 .build()
 
@@ -24,6 +25,8 @@ internal class ResponseCustomToolCallTest {
         assertThat(responseCustomToolCall.input()).isEqualTo("input")
         assertThat(responseCustomToolCall.name()).isEqualTo("name")
         assertThat(responseCustomToolCall.id()).contains("id")
+        assertThat(responseCustomToolCall.caller())
+            .contains(ResponseCustomToolCall.Caller.ofDirect())
         assertThat(responseCustomToolCall.namespace()).contains("namespace")
     }
 
@@ -36,6 +39,7 @@ internal class ResponseCustomToolCallTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .callerDirect()
                 .namespace("namespace")
                 .build()
 

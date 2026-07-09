@@ -1,0 +1,1906 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.openai.models.beta.responses
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
+import com.openai.core.Enum
+import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
+import com.openai.core.checkKnown
+import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
+import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/**
+ * The results of a web search tool call. See the
+ * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
+ * information.
+ */
+class BetaResponseFunctionWebSearch
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
+private constructor(
+    private val id: JsonField<String>,
+    private val action: JsonField<Action>,
+    private val status: JsonField<Status>,
+    private val type: JsonValue,
+    private val agent: JsonField<Agent>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
+) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
+    ) : this(id, action, status, type, agent, mutableMapOf())
+
+    /**
+     * The unique ID of the web search tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun id(): String = id.getRequired("id")
+
+    /**
+     * An object describing the specific action taken in this web search call. Includes details on
+     * how the model used the web (search, open_page, find_in_page).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun action(): Action = action.getRequired("action")
+
+    /**
+     * The status of the web search tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun status(): Status = status.getRequired("status")
+
+    /**
+     * The type of the web search tool call. Always `web_search_call`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("web_search_call")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The agent that produced this item.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun agent(): Optional<Agent> = agent.getOptional("agent")
+
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [action].
+     *
+     * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
+
+    /**
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [agent].
+     *
+     * Unlike [agent], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("agent") @ExcludeMissing fun _agent(): JsonField<Agent> = agent
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
+    @JsonAnyGetter
+    @ExcludeMissing
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [BetaResponseFunctionWebSearch].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .action()
+         * .status()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [BetaResponseFunctionWebSearch]. */
+    class Builder internal constructor() {
+
+        private var id: JsonField<String>? = null
+        private var action: JsonField<Action>? = null
+        private var status: JsonField<Status>? = null
+        private var type: JsonValue = JsonValue.from("web_search_call")
+        private var agent: JsonField<Agent> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        @JvmSynthetic
+        internal fun from(betaResponseFunctionWebSearch: BetaResponseFunctionWebSearch) = apply {
+            id = betaResponseFunctionWebSearch.id
+            action = betaResponseFunctionWebSearch.action
+            status = betaResponseFunctionWebSearch.status
+            type = betaResponseFunctionWebSearch.type
+            agent = betaResponseFunctionWebSearch.agent
+            additionalProperties = betaResponseFunctionWebSearch.additionalProperties.toMutableMap()
+        }
+
+        /** The unique ID of the web search tool call. */
+        fun id(id: String) = id(JsonField.of(id))
+
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /**
+         * An object describing the specific action taken in this web search call. Includes details
+         * on how the model used the web (search, open_page, find_in_page).
+         */
+        fun action(action: Action) = action(JsonField.of(action))
+
+        /**
+         * Sets [Builder.action] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.action] with a well-typed [Action] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun action(action: JsonField<Action>) = apply { this.action = action }
+
+        /** Alias for calling [action] with `Action.ofSearch(search)`. */
+        fun action(search: Action.Search) = action(Action.ofSearch(search))
+
+        /** Alias for calling [action] with `Action.ofOpenPage(openPage)`. */
+        fun action(openPage: Action.OpenPage) = action(Action.ofOpenPage(openPage))
+
+        /** Alias for calling [action] with `Action.ofFindInPage(findInPage)`. */
+        fun action(findInPage: Action.FindInPage) = action(Action.ofFindInPage(findInPage))
+
+        /** The status of the web search tool call. */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("web_search_call")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun type(type: JsonValue) = apply { this.type = type }
+
+        /** The agent that produced this item. */
+        fun agent(agent: Agent?) = agent(JsonField.ofNullable(agent))
+
+        /** Alias for calling [Builder.agent] with `agent.orElse(null)`. */
+        fun agent(agent: Optional<Agent>) = agent(agent.getOrNull())
+
+        /**
+         * Sets [Builder.agent] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.agent] with a well-typed [Agent] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun agent(agent: JsonField<Agent>) = apply { this.agent = agent }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [BetaResponseFunctionWebSearch].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .action()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): BetaResponseFunctionWebSearch =
+            BetaResponseFunctionWebSearch(
+                checkRequired("id", id),
+                checkRequired("action", action),
+                checkRequired("status", status),
+                type,
+                agent,
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
+    fun validate(): BetaResponseFunctionWebSearch = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        action().validate()
+        status().validate()
+        _type().let {
+            if (it != JsonValue.from("web_search_call")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        agent().ifPresent { it.validate() }
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (action.asKnown().getOrNull()?.validity() ?: 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("web_search_call")) 1 else 0 } +
+            (agent.asKnown().getOrNull()?.validity() ?: 0)
+
+    /**
+     * An object describing the specific action taken in this web search call. Includes details on
+     * how the model used the web (search, open_page, find_in_page).
+     */
+    @JsonDeserialize(using = Action.Deserializer::class)
+    @JsonSerialize(using = Action.Serializer::class)
+    class Action
+    private constructor(
+        private val search: Search? = null,
+        private val openPage: OpenPage? = null,
+        private val findInPage: FindInPage? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** Action type "search" - Performs a web search query. */
+        fun search(): Optional<Search> = Optional.ofNullable(search)
+
+        /** Action type "open_page" - Opens a specific URL from search results. */
+        fun openPage(): Optional<OpenPage> = Optional.ofNullable(openPage)
+
+        /** Action type "find_in_page": Searches for a pattern within a loaded page. */
+        fun findInPage(): Optional<FindInPage> = Optional.ofNullable(findInPage)
+
+        fun isSearch(): Boolean = search != null
+
+        fun isOpenPage(): Boolean = openPage != null
+
+        fun isFindInPage(): Boolean = findInPage != null
+
+        /** Action type "search" - Performs a web search query. */
+        fun asSearch(): Search = search.getOrThrow("search")
+
+        /** Action type "open_page" - Opens a specific URL from search results. */
+        fun asOpenPage(): OpenPage = openPage.getOrThrow("openPage")
+
+        /** Action type "find_in_page": Searches for a pattern within a loaded page. */
+        fun asFindInPage(): FindInPage = findInPage.getOrThrow("findInPage")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = action.accept(new Action.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitSearch(Search search) {
+         *         return Optional.of(search.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                search != null -> visitor.visitSearch(search)
+                openPage != null -> visitor.visitOpenPage(openPage)
+                findInPage != null -> visitor.visitFindInPage(findInPage)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Action = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitSearch(search: Search) {
+                        search.validate()
+                    }
+
+                    override fun visitOpenPage(openPage: OpenPage) {
+                        openPage.validate()
+                    }
+
+                    override fun visitFindInPage(findInPage: FindInPage) {
+                        findInPage.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitSearch(search: Search) = search.validity()
+
+                    override fun visitOpenPage(openPage: OpenPage) = openPage.validity()
+
+                    override fun visitFindInPage(findInPage: FindInPage) = findInPage.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Action &&
+                search == other.search &&
+                openPage == other.openPage &&
+                findInPage == other.findInPage
+        }
+
+        override fun hashCode(): Int = Objects.hash(search, openPage, findInPage)
+
+        override fun toString(): String =
+            when {
+                search != null -> "Action{search=$search}"
+                openPage != null -> "Action{openPage=$openPage}"
+                findInPage != null -> "Action{findInPage=$findInPage}"
+                _json != null -> "Action{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Action")
+            }
+
+        companion object {
+
+            /** Action type "search" - Performs a web search query. */
+            @JvmStatic fun ofSearch(search: Search) = Action(search = search)
+
+            /** Action type "open_page" - Opens a specific URL from search results. */
+            @JvmStatic fun ofOpenPage(openPage: OpenPage) = Action(openPage = openPage)
+
+            /** Action type "find_in_page": Searches for a pattern within a loaded page. */
+            @JvmStatic fun ofFindInPage(findInPage: FindInPage) = Action(findInPage = findInPage)
+        }
+
+        /** An interface that defines how to map each variant of [Action] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            /** Action type "search" - Performs a web search query. */
+            fun visitSearch(search: Search): T
+
+            /** Action type "open_page" - Opens a specific URL from search results. */
+            fun visitOpenPage(openPage: OpenPage): T
+
+            /** Action type "find_in_page": Searches for a pattern within a loaded page. */
+            fun visitFindInPage(findInPage: FindInPage): T
+
+            /**
+             * Maps an unknown variant of [Action] to a value of type [T].
+             *
+             * An instance of [Action] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Action: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Action>(Action::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Action {
+                val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                when (type) {
+                    "search" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Search>())?.let {
+                            Action(search = it, _json = json)
+                        } ?: Action(_json = json)
+                    }
+                    "open_page" -> {
+                        return tryDeserialize(node, jacksonTypeRef<OpenPage>())?.let {
+                            Action(openPage = it, _json = json)
+                        } ?: Action(_json = json)
+                    }
+                    "find_in_page" -> {
+                        return tryDeserialize(node, jacksonTypeRef<FindInPage>())?.let {
+                            Action(findInPage = it, _json = json)
+                        } ?: Action(_json = json)
+                    }
+                }
+
+                return Action(_json = json)
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Action>(Action::class) {
+
+            override fun serialize(
+                value: Action,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.search != null -> generator.writeObject(value.search)
+                    value.openPage != null -> generator.writeObject(value.openPage)
+                    value.findInPage != null -> generator.writeObject(value.findInPage)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Action")
+                }
+            }
+        }
+
+        /** Action type "search" - Performs a web search query. */
+        class Search
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val type: JsonValue,
+            private val queries: JsonField<List<String>>,
+            private val query: JsonField<String>,
+            private val sources: JsonField<List<Source>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("queries")
+                @ExcludeMissing
+                queries: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("query") @ExcludeMissing query: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("sources")
+                @ExcludeMissing
+                sources: JsonField<List<Source>> = JsonMissing.of(),
+            ) : this(type, queries, query, sources, mutableMapOf())
+
+            /**
+             * The action type.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("search")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * The search queries.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun queries(): Optional<List<String>> = queries.getOptional("queries")
+
+            /**
+             * The search query.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            @Deprecated("deprecated") fun query(): Optional<String> = query.getOptional("query")
+
+            /**
+             * The sources used in the search.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun sources(): Optional<List<Source>> = sources.getOptional("sources")
+
+            /**
+             * Returns the raw JSON value of [queries].
+             *
+             * Unlike [queries], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("queries")
+            @ExcludeMissing
+            fun _queries(): JsonField<List<String>> = queries
+
+            /**
+             * Returns the raw JSON value of [query].
+             *
+             * Unlike [query], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @Deprecated("deprecated")
+            @JsonProperty("query")
+            @ExcludeMissing
+            fun _query(): JsonField<String> = query
+
+            /**
+             * Returns the raw JSON value of [sources].
+             *
+             * Unlike [sources], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("sources")
+            @ExcludeMissing
+            fun _sources(): JsonField<List<Source>> = sources
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Search]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Search]. */
+            class Builder internal constructor() {
+
+                private var type: JsonValue = JsonValue.from("search")
+                private var queries: JsonField<MutableList<String>>? = null
+                private var query: JsonField<String> = JsonMissing.of()
+                private var sources: JsonField<MutableList<Source>>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(search: Search) = apply {
+                    type = search.type
+                    queries = search.queries.map { it.toMutableList() }
+                    query = search.query
+                    sources = search.sources.map { it.toMutableList() }
+                    additionalProperties = search.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("search")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The search queries. */
+                fun queries(queries: List<String>) = queries(JsonField.of(queries))
+
+                /**
+                 * Sets [Builder.queries] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.queries] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun queries(queries: JsonField<List<String>>) = apply {
+                    this.queries = queries.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [queries].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addQuery(query: String) = apply {
+                    queries =
+                        (queries ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("queries", it).add(query)
+                        }
+                }
+
+                /** The search query. */
+                @Deprecated("deprecated") fun query(query: String) = query(JsonField.of(query))
+
+                /**
+                 * Sets [Builder.query] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.query] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                @Deprecated("deprecated")
+                fun query(query: JsonField<String>) = apply { this.query = query }
+
+                /** The sources used in the search. */
+                fun sources(sources: List<Source>) = sources(JsonField.of(sources))
+
+                /**
+                 * Sets [Builder.sources] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sources] with a well-typed `List<Source>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun sources(sources: JsonField<List<Source>>) = apply {
+                    this.sources = sources.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [Source] to [sources].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addSource(source: Source) = apply {
+                    sources =
+                        (sources ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("sources", it).add(source)
+                        }
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Search].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Search =
+                    Search(
+                        type,
+                        (queries ?: JsonMissing.of()).map { it.toImmutable() },
+                        query,
+                        (sources ?: JsonMissing.of()).map { it.toImmutable() },
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Search = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                _type().let {
+                    if (it != JsonValue.from("search")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                queries()
+                query()
+                sources().ifPresent { it.forEach { it.validate() } }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                type.let { if (it == JsonValue.from("search")) 1 else 0 } +
+                    (queries.asKnown().getOrNull()?.size ?: 0) +
+                    (if (query.asKnown().isPresent) 1 else 0) +
+                    (sources.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+            /** A source used in the search. */
+            class Source
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val type: JsonValue,
+                private val url: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
+                ) : this(type, url, mutableMapOf())
+
+                /**
+                 * The type of source. Always `url`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("url")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * The URL of the source.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun url(): String = url.getRequired("url")
+
+                /**
+                 * Returns the raw JSON value of [url].
+                 *
+                 * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+                 */
+                @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Source].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .url()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Source]. */
+                class Builder internal constructor() {
+
+                    private var type: JsonValue = JsonValue.from("url")
+                    private var url: JsonField<String>? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(source: Source) = apply {
+                        type = source.type
+                        url = source.url
+                        additionalProperties = source.additionalProperties.toMutableMap()
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("url")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    /** The URL of the source. */
+                    fun url(url: String) = url(JsonField.of(url))
+
+                    /**
+                     * Sets [Builder.url] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.url] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun url(url: JsonField<String>) = apply { this.url = url }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Source].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .url()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Source =
+                        Source(type, checkRequired("url", url), additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Source = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    _type().let {
+                        if (it != JsonValue.from("url")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    url()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    type.let { if (it == JsonValue.from("url")) 1 else 0 } +
+                        (if (url.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Source &&
+                        type == other.type &&
+                        url == other.url &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(type, url, additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Source{type=$type, url=$url, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Search &&
+                    type == other.type &&
+                    queries == other.queries &&
+                    query == other.query &&
+                    sources == other.sources &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(type, queries, query, sources, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Search{type=$type, queries=$queries, query=$query, sources=$sources, additionalProperties=$additionalProperties}"
+        }
+
+        /** Action type "open_page" - Opens a specific URL from search results. */
+        class OpenPage
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val type: JsonValue,
+            private val url: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
+            ) : this(type, url, mutableMapOf())
+
+            /**
+             * The action type.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("open_page")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * The URL opened by the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun url(): Optional<String> = url.getOptional("url")
+
+            /**
+             * Returns the raw JSON value of [url].
+             *
+             * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [OpenPage]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [OpenPage]. */
+            class Builder internal constructor() {
+
+                private var type: JsonValue = JsonValue.from("open_page")
+                private var url: JsonField<String> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(openPage: OpenPage) = apply {
+                    type = openPage.type
+                    url = openPage.url
+                    additionalProperties = openPage.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("open_page")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The URL opened by the model. */
+                fun url(url: String?) = url(JsonField.ofNullable(url))
+
+                /** Alias for calling [Builder.url] with `url.orElse(null)`. */
+                fun url(url: Optional<String>) = url(url.getOrNull())
+
+                /**
+                 * Sets [Builder.url] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.url] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun url(url: JsonField<String>) = apply { this.url = url }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [OpenPage].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): OpenPage = OpenPage(type, url, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): OpenPage = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                _type().let {
+                    if (it != JsonValue.from("open_page")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                url()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                type.let { if (it == JsonValue.from("open_page")) 1 else 0 } +
+                    (if (url.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is OpenPage &&
+                    type == other.type &&
+                    url == other.url &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(type, url, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "OpenPage{type=$type, url=$url, additionalProperties=$additionalProperties}"
+        }
+
+        /** Action type "find_in_page": Searches for a pattern within a loaded page. */
+        class FindInPage
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val pattern: JsonField<String>,
+            private val type: JsonValue,
+            private val url: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("pattern")
+                @ExcludeMissing
+                pattern: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
+            ) : this(pattern, type, url, mutableMapOf())
+
+            /**
+             * The pattern or text to search for within the page.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun pattern(): String = pattern.getRequired("pattern")
+
+            /**
+             * The action type.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("find_in_page")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * The URL of the page searched for the pattern.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun url(): String = url.getRequired("url")
+
+            /**
+             * Returns the raw JSON value of [pattern].
+             *
+             * Unlike [pattern], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("pattern") @ExcludeMissing fun _pattern(): JsonField<String> = pattern
+
+            /**
+             * Returns the raw JSON value of [url].
+             *
+             * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [FindInPage].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .pattern()
+                 * .url()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [FindInPage]. */
+            class Builder internal constructor() {
+
+                private var pattern: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("find_in_page")
+                private var url: JsonField<String>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(findInPage: FindInPage) = apply {
+                    pattern = findInPage.pattern
+                    type = findInPage.type
+                    url = findInPage.url
+                    additionalProperties = findInPage.additionalProperties.toMutableMap()
+                }
+
+                /** The pattern or text to search for within the page. */
+                fun pattern(pattern: String) = pattern(JsonField.of(pattern))
+
+                /**
+                 * Sets [Builder.pattern] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.pattern] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun pattern(pattern: JsonField<String>) = apply { this.pattern = pattern }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("find_in_page")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The URL of the page searched for the pattern. */
+                fun url(url: String) = url(JsonField.of(url))
+
+                /**
+                 * Sets [Builder.url] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.url] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun url(url: JsonField<String>) = apply { this.url = url }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [FindInPage].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .pattern()
+                 * .url()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): FindInPage =
+                    FindInPage(
+                        checkRequired("pattern", pattern),
+                        type,
+                        checkRequired("url", url),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): FindInPage = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                pattern()
+                _type().let {
+                    if (it != JsonValue.from("find_in_page")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                url()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (pattern.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("find_in_page")) 1 else 0 } +
+                    (if (url.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is FindInPage &&
+                    pattern == other.pattern &&
+                    type == other.type &&
+                    url == other.url &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(pattern, type, url, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "FindInPage{pattern=$pattern, type=$type, url=$url, additionalProperties=$additionalProperties}"
+        }
+    }
+
+    /** The status of the web search tool call. */
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_PROGRESS = of("in_progress")
+
+            @JvmField val SEARCHING = of("searching")
+
+            @JvmField val COMPLETED = of("completed")
+
+            @JvmField val FAILED = of("failed")
+
+            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+        }
+
+        /** An enum containing [Status]'s known values. */
+        enum class Known {
+            IN_PROGRESS,
+            SEARCHING,
+            COMPLETED,
+            FAILED,
+        }
+
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            IN_PROGRESS,
+            SEARCHING,
+            COMPLETED,
+            FAILED,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                IN_PROGRESS -> Value.IN_PROGRESS
+                SEARCHING -> Value.SEARCHING
+                COMPLETED -> Value.COMPLETED
+                FAILED -> Value.FAILED
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                IN_PROGRESS -> Known.IN_PROGRESS
+                SEARCHING -> Known.SEARCHING
+                COMPLETED -> Known.COMPLETED
+                FAILED -> Known.FAILED
+                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Status && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** The agent that produced this item. */
+    class Agent
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val agentName: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("agent_name")
+            @ExcludeMissing
+            agentName: JsonField<String> = JsonMissing.of()
+        ) : this(agentName, mutableMapOf())
+
+        /**
+         * The canonical name of the agent that produced this item.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun agentName(): String = agentName.getRequired("agent_name")
+
+        /**
+         * Returns the raw JSON value of [agentName].
+         *
+         * Unlike [agentName], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("agent_name") @ExcludeMissing fun _agentName(): JsonField<String> = agentName
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Agent].
+             *
+             * The following fields are required:
+             * ```java
+             * .agentName()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Agent]. */
+        class Builder internal constructor() {
+
+            private var agentName: JsonField<String>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(agent: Agent) = apply {
+                agentName = agent.agentName
+                additionalProperties = agent.additionalProperties.toMutableMap()
+            }
+
+            /** The canonical name of the agent that produced this item. */
+            fun agentName(agentName: String) = agentName(JsonField.of(agentName))
+
+            /**
+             * Sets [Builder.agentName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.agentName] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun agentName(agentName: JsonField<String>) = apply { this.agentName = agentName }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Agent].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .agentName()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Agent =
+                Agent(checkRequired("agentName", agentName), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Agent = apply {
+            if (validated) {
+                return@apply
+            }
+
+            agentName()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (agentName.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Agent &&
+                agentName == other.agentName &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(agentName, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Agent{agentName=$agentName, additionalProperties=$additionalProperties}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is BetaResponseFunctionWebSearch &&
+            id == other.id &&
+            action == other.action &&
+            status == other.status &&
+            type == other.type &&
+            agent == other.agent &&
+            additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy {
+        Objects.hash(id, action, status, type, agent, additionalProperties)
+    }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() =
+        "BetaResponseFunctionWebSearch{id=$id, action=$action, status=$status, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
+}

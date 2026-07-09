@@ -45,7 +45,11 @@ internal class EvalContentItemTest {
 
     @Test
     fun ofResponseInputText() {
-        val responseInputText = ResponseInputText.builder().text("text").build()
+        val responseInputText =
+            ResponseInputText.builder()
+                .text("text")
+                .promptCacheBreakpoint(ResponseInputText.PromptCacheBreakpoint.builder().build())
+                .build()
 
         val evalContentItem = EvalContentItem.ofResponseInputText(responseInputText)
 
@@ -60,7 +64,14 @@ internal class EvalContentItemTest {
     fun ofResponseInputTextRoundtrip() {
         val jsonMapper = jsonMapper()
         val evalContentItem =
-            EvalContentItem.ofResponseInputText(ResponseInputText.builder().text("text").build())
+            EvalContentItem.ofResponseInputText(
+                ResponseInputText.builder()
+                    .text("text")
+                    .promptCacheBreakpoint(
+                        ResponseInputText.PromptCacheBreakpoint.builder().build()
+                    )
+                    .build()
+            )
 
         val roundtrippedEvalContentItem =
             jsonMapper.readValue(

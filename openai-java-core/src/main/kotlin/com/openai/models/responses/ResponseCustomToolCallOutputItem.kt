@@ -26,6 +26,7 @@ private constructor(
     private val output: JsonField<ResponseCustomToolCallOutput.Output>,
     private val type: JsonValue,
     private val id: JsonField<String>,
+    private val caller: JsonField<ResponseCustomToolCallOutput.Caller>,
     private val status: JsonField<Status>,
     private val createdBy: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -39,9 +40,12 @@ private constructor(
         output: JsonField<ResponseCustomToolCallOutput.Output> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("caller")
+        @ExcludeMissing
+        caller: JsonField<ResponseCustomToolCallOutput.Caller> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
-    ) : this(callId, output, type, id, status, createdBy, mutableMapOf())
+    ) : this(callId, output, type, id, caller, status, createdBy, mutableMapOf())
 
     fun toResponseCustomToolCallOutput(): ResponseCustomToolCallOutput =
         ResponseCustomToolCallOutput.builder()
@@ -49,6 +53,7 @@ private constructor(
             .output(output)
             .type(type)
             .id(id)
+            .caller(caller)
             .build()
 
     /**
@@ -90,6 +95,14 @@ private constructor(
     fun id(): Optional<String> = id.getOptional("id")
 
     /**
+     * The execution context that produced this tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun caller(): Optional<ResponseCustomToolCallOutput.Caller> = caller.getOptional("caller")
+
+    /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
      * items are returned via API.
      *
@@ -128,6 +141,15 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [caller].
+     *
+     * Unlike [caller], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("caller")
+    @ExcludeMissing
+    fun _caller(): JsonField<ResponseCustomToolCallOutput.Caller> = caller
 
     /**
      * Returns the raw JSON value of [status].
@@ -178,6 +200,7 @@ private constructor(
         private var output: JsonField<ResponseCustomToolCallOutput.Output>? = null
         private var type: JsonValue = JsonValue.from("custom_tool_call_output")
         private var id: JsonField<String> = JsonMissing.of()
+        private var caller: JsonField<ResponseCustomToolCallOutput.Caller> = JsonMissing.of()
         private var status: JsonField<Status>? = null
         private var createdBy: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -189,6 +212,7 @@ private constructor(
                 output = responseCustomToolCallOutputItem.output
                 type = responseCustomToolCallOutputItem.type
                 id = responseCustomToolCallOutputItem.id
+                caller = responseCustomToolCallOutputItem.caller
                 status = responseCustomToolCallOutputItem.status
                 createdBy = responseCustomToolCallOutputItem.createdBy
                 additionalProperties =
@@ -261,6 +285,45 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** The execution context that produced this tool call. */
+        fun caller(caller: ResponseCustomToolCallOutput.Caller?) =
+            caller(JsonField.ofNullable(caller))
+
+        /** Alias for calling [Builder.caller] with `caller.orElse(null)`. */
+        fun caller(caller: Optional<ResponseCustomToolCallOutput.Caller>) =
+            caller(caller.getOrNull())
+
+        /**
+         * Sets [Builder.caller] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.caller] with a well-typed
+         * [ResponseCustomToolCallOutput.Caller] value instead. This method is primarily for setting
+         * the field to an undocumented or not yet supported value.
+         */
+        fun caller(caller: JsonField<ResponseCustomToolCallOutput.Caller>) = apply {
+            this.caller = caller
+        }
+
+        /** Alias for calling [caller] with `ResponseCustomToolCallOutput.Caller.ofDirect()`. */
+        fun callerDirect() = caller(ResponseCustomToolCallOutput.Caller.ofDirect())
+
+        /**
+         * Alias for calling [caller] with `ResponseCustomToolCallOutput.Caller.ofProgram(program)`.
+         */
+        fun caller(program: ResponseCustomToolCallOutput.Caller.Program) =
+            caller(ResponseCustomToolCallOutput.Caller.ofProgram(program))
+
+        /**
+         * Alias for calling [caller] with the following:
+         * ```java
+         * ResponseCustomToolCallOutput.Caller.Program.builder()
+         *     .callerId(callerId)
+         *     .build()
+         * ```
+         */
+        fun programCaller(callerId: String) =
+            caller(ResponseCustomToolCallOutput.Caller.Program.builder().callerId(callerId).build())
+
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
          * when items are returned via API.
@@ -326,6 +389,7 @@ private constructor(
                 checkRequired("output", output),
                 type,
                 id,
+                caller,
                 checkRequired("status", status),
                 createdBy,
                 additionalProperties.toMutableMap(),
@@ -355,6 +419,7 @@ private constructor(
             }
         }
         id()
+        caller().ifPresent { it.validate() }
         status().validate()
         createdBy()
         validated = true
@@ -379,6 +444,7 @@ private constructor(
             (output.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("custom_tool_call_output")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
+            (caller.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (createdBy.asKnown().isPresent) 1 else 0)
 
@@ -536,17 +602,18 @@ private constructor(
             output == other.output &&
             type == other.type &&
             id == other.id &&
+            caller == other.caller &&
             status == other.status &&
             createdBy == other.createdBy &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(callId, output, type, id, status, createdBy, additionalProperties)
+        Objects.hash(callId, output, type, id, caller, status, createdBy, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCustomToolCallOutputItem{callId=$callId, output=$output, type=$type, id=$id, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseCustomToolCallOutputItem{callId=$callId, output=$output, type=$type, id=$id, caller=$caller, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

@@ -25,6 +25,7 @@ import com.openai.models.responses.ResponseFunctionToolCall
 import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
+import com.openai.models.responses.ResponseInputText
 import com.openai.models.responses.ResponseLocalEnvironment
 import com.openai.models.responses.ResponseReasoningItem
 import com.openai.models.responses.ResponseToolSearchCall
@@ -42,7 +43,14 @@ internal class ConversationItemTest {
         val message =
             Message.builder()
                 .id("id")
-                .addInputTextContent("text")
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
                 .role(Message.Role.UNKNOWN)
                 .status(Message.Status.IN_PROGRESS)
                 .phase(Message.Phase.COMMENTARY)
@@ -62,6 +70,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -85,7 +95,14 @@ internal class ConversationItemTest {
             ConversationItem.ofMessage(
                 Message.builder()
                     .id("id")
-                    .addInputTextContent("text")
+                    .addContent(
+                        ResponseInputText.builder()
+                            .text("text")
+                            .promptCacheBreakpoint(
+                                ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            )
+                            .build()
+                    )
                     .role(Message.Role.UNKNOWN)
                     .status(Message.Status.IN_PROGRESS)
                     .phase(Message.Phase.COMMENTARY)
@@ -109,6 +126,7 @@ internal class ConversationItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .callerDirect()
                 .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .createdBy("created_by")
@@ -128,6 +146,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -154,6 +174,7 @@ internal class ConversationItemTest {
                     .callId("call_id")
                     .name("name")
                     .id("id")
+                    .callerDirect()
                     .namespace("namespace")
                     .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                     .createdBy("created_by")
@@ -177,6 +198,7 @@ internal class ConversationItemTest {
                 .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -194,6 +216,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -220,6 +244,7 @@ internal class ConversationItemTest {
                     .callId("call_id")
                     .output("string")
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -269,6 +294,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -352,6 +379,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -422,6 +451,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -506,6 +537,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -604,6 +637,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -681,6 +716,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -738,8 +775,14 @@ internal class ConversationItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .createdBy("created_by")
@@ -759,6 +802,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).contains(toolSearchOutput)
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -794,8 +839,14 @@ internal class ConversationItemTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .createdBy("created_by")
@@ -826,8 +877,14 @@ internal class ConversationItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -846,6 +903,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).contains(additionalTools)
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -879,8 +938,14 @@ internal class ConversationItemTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .build()
@@ -920,6 +985,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).contains(reasoning)
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -960,6 +1027,134 @@ internal class ConversationItemTest {
     }
 
     @Test
+    fun ofProgram() {
+        val program =
+            ConversationItem.Program.builder()
+                .id("id")
+                .callId("call_id")
+                .code("code")
+                .fingerprint("fingerprint")
+                .build()
+
+        val conversationItem = ConversationItem.ofProgram(program)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).contains(program)
+        assertThat(conversationItem.programOutput()).isEmpty
+        assertThat(conversationItem.compaction()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofProgramRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofProgram(
+                ConversationItem.Program.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .code("code")
+                    .fingerprint("fingerprint")
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
+    fun ofProgramOutput() {
+        val programOutput =
+            ConversationItem.ProgramOutput.builder()
+                .id("id")
+                .callId("call_id")
+                .result("result")
+                .status(ConversationItem.ProgramOutput.Status.COMPLETED)
+                .build()
+
+        val conversationItem = ConversationItem.ofProgramOutput(programOutput)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.toolSearchCall()).isEmpty
+        assertThat(conversationItem.toolSearchOutput()).isEmpty
+        assertThat(conversationItem.additionalTools()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).contains(programOutput)
+        assertThat(conversationItem.compaction()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofProgramOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofProgramOutput(
+                ConversationItem.ProgramOutput.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .result("result")
+                    .status(ConversationItem.ProgramOutput.Status.COMPLETED)
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
     fun ofCompaction() {
         val compaction =
             ResponseCompactionItem.builder()
@@ -982,6 +1177,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).contains(compaction)
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1044,6 +1241,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).contains(codeInterpreterCall)
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1119,6 +1318,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).contains(localShellCall)
@@ -1192,6 +1393,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1244,6 +1447,7 @@ internal class ConversationItemTest {
                 .callId("call_id")
                 .environment(ResponseLocalEnvironment.builder().build())
                 .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -1261,6 +1465,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1294,6 +1500,7 @@ internal class ConversationItemTest {
                     .callId("call_id")
                     .environment(ResponseLocalEnvironment.builder().build())
                     .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -1323,6 +1530,7 @@ internal class ConversationItemTest {
                         .build()
                 )
                 .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -1340,6 +1548,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1374,6 +1584,7 @@ internal class ConversationItemTest {
                             .build()
                     )
                     .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -1400,6 +1611,7 @@ internal class ConversationItemTest {
                         .build()
                 )
                 .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -1417,6 +1629,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1448,6 +1662,7 @@ internal class ConversationItemTest {
                             .build()
                     )
                     .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -1468,6 +1683,7 @@ internal class ConversationItemTest {
                 .id("id")
                 .callId("call_id")
                 .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                .callerDirect()
                 .createdBy("created_by")
                 .output("output")
                 .build()
@@ -1486,6 +1702,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1511,6 +1729,7 @@ internal class ConversationItemTest {
                     .id("id")
                     .callId("call_id")
                     .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                    .callerDirect()
                     .createdBy("created_by")
                     .output("output")
                     .build()
@@ -1556,6 +1775,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1625,6 +1846,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1687,6 +1910,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1753,6 +1978,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1803,6 +2030,7 @@ internal class ConversationItemTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .callerDirect()
                 .namespace("namespace")
                 .build()
 
@@ -1820,6 +2048,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1846,6 +2076,7 @@ internal class ConversationItemTest {
                     .input("input")
                     .name("name")
                     .id("id")
+                    .callerDirect()
                     .namespace("namespace")
                     .build()
             )
@@ -1866,6 +2097,7 @@ internal class ConversationItemTest {
                 .callId("call_id")
                 .output("string")
                 .id("id")
+                .callerDirect()
                 .build()
 
         val conversationItem = ConversationItem.ofCustomToolCallOutput(customToolCallOutput)
@@ -1882,6 +2114,8 @@ internal class ConversationItemTest {
         assertThat(conversationItem.toolSearchOutput()).isEmpty
         assertThat(conversationItem.additionalTools()).isEmpty
         assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.program()).isEmpty
+        assertThat(conversationItem.programOutput()).isEmpty
         assertThat(conversationItem.compaction()).isEmpty
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
@@ -1907,6 +2141,7 @@ internal class ConversationItemTest {
                     .callId("call_id")
                     .output("string")
                     .id("id")
+                    .callerDirect()
                     .build()
             )
 
