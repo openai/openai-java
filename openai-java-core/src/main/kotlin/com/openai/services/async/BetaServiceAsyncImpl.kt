@@ -7,8 +7,8 @@ import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsyncImpl
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsyncImpl
-import com.openai.services.async.beta.RealtimeServiceAsync
-import com.openai.services.async.beta.RealtimeServiceAsyncImpl
+import com.openai.services.async.beta.ResponseServiceAsync
+import com.openai.services.async.beta.ResponseServiceAsyncImpl
 import com.openai.services.async.beta.ThreadServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsyncImpl
 import java.util.function.Consumer
@@ -20,6 +20,7 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
         WithRawResponseImpl(clientOptions)
     }
 
+    private val responses: ResponseServiceAsync by lazy { ResponseServiceAsyncImpl(clientOptions) }
 
     private val chatkit: ChatKitServiceAsync by lazy { ChatKitServiceAsyncImpl(clientOptions) }
 
@@ -34,6 +35,7 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync =
         BetaServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun responses(): ResponseServiceAsync = responses
 
     override fun chatkit(): ChatKitServiceAsync = chatkit
 
@@ -47,6 +49,9 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaServiceAsync.WithRawResponse {
 
+        private val responses: ResponseServiceAsync.WithRawResponse by lazy {
+            ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val chatkit: ChatKitServiceAsync.WithRawResponse by lazy {
             ChatKitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -67,6 +72,7 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 
         override fun chatkit(): ChatKitServiceAsync.WithRawResponse = chatkit
 

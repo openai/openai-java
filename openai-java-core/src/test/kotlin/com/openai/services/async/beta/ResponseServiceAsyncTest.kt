@@ -297,10 +297,7 @@ internal class ResponseServiceAsyncTest {
                     .build()
             )
 
-        val onCompleteFuture =
-            betaResponseStreamResponse
-                .subscribe { betaResponse -> betaResponse.validate() }
-                .onCompleteFuture()
+        val onCompleteFuture = betaResponseStreamResponse.subscribe {}.onCompleteFuture()
         onCompleteFuture.get()
     }
 

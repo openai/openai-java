@@ -413,6 +413,17 @@ internal constructor(
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(promptCacheOptions: ChatCompletionCreateParams.PromptCacheOptions) =
+            apply {
+                paramsBuilder.promptCacheOptions(promptCacheOptions)
+            }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(
+            promptCacheOptions: JsonField<ChatCompletionCreateParams.PromptCacheOptions>
+        ) = apply { paramsBuilder.promptCacheOptions(promptCacheOptions) }
+
         /** @see ChatCompletionCreateParams.Builder.promptCacheRetention */
         fun promptCacheRetention(
             promptCacheRetention: ChatCompletionCreateParams.PromptCacheRetention?
