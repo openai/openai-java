@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.43.0 (2026-07-13)
+
+Full Changelog: [v4.42.0...v4.43.0](https://github.com/openai/openai-java/compare/v4.42.0...v4.43.0)
+
+### Features
+
+* **api:** add owner_project_access to APIKeyListParams ([b5c0fbc](https://github.com/openai/openai-java/commit/b5c0fbcf410a351988f117640bb1c9809775c4d1))
+
 ## [4.42.0](https://github.com/openai/openai-java/compare/v4.41.0...v4.42.0) (2026-07-09)
 
 
