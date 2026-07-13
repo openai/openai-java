@@ -29,7 +29,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: gradle
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
@@ -43,7 +42,7 @@ jobs:
       - name: Build SDK
         env:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
-        run: ./scripts/build
+        run: ./scripts/build --no-build-cache
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4
