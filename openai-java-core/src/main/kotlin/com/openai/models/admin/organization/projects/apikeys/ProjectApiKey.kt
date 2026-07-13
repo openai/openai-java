@@ -28,6 +28,7 @@ private constructor(
     private val name: JsonField<String>,
     private val object_: JsonValue,
     private val owner: JsonField<Owner>,
+    private val ownerProjectAccess: JsonField<OwnerProjectAccess>,
     private val redactedValue: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -42,10 +43,23 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("owner") @ExcludeMissing owner: JsonField<Owner> = JsonMissing.of(),
+        @JsonProperty("owner_project_access")
+        @ExcludeMissing
+        ownerProjectAccess: JsonField<OwnerProjectAccess> = JsonMissing.of(),
         @JsonProperty("redacted_value")
         @ExcludeMissing
         redactedValue: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, lastUsedAt, name, object_, owner, redactedValue, mutableMapOf())
+    ) : this(
+        id,
+        createdAt,
+        lastUsedAt,
+        name,
+        object_,
+        owner,
+        ownerProjectAccess,
+        redactedValue,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints
@@ -99,6 +113,15 @@ private constructor(
     fun owner(): Owner = owner.getRequired("owner")
 
     /**
+     * Whether the API key's owner currently has effective access to the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun ownerProjectAccess(): OwnerProjectAccess =
+        ownerProjectAccess.getRequired("owner_project_access")
+
+    /**
      * The redacted value of the API key
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -142,6 +165,16 @@ private constructor(
     @JsonProperty("owner") @ExcludeMissing fun _owner(): JsonField<Owner> = owner
 
     /**
+     * Returns the raw JSON value of [ownerProjectAccess].
+     *
+     * Unlike [ownerProjectAccess], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("owner_project_access")
+    @ExcludeMissing
+    fun _ownerProjectAccess(): JsonField<OwnerProjectAccess> = ownerProjectAccess
+
+    /**
      * Returns the raw JSON value of [redactedValue].
      *
      * Unlike [redactedValue], this method doesn't throw if the JSON field has an unexpected type.
@@ -174,6 +207,7 @@ private constructor(
          * .lastUsedAt()
          * .name()
          * .owner()
+         * .ownerProjectAccess()
          * .redactedValue()
          * ```
          */
@@ -189,6 +223,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("organization.project.api_key")
         private var owner: JsonField<Owner>? = null
+        private var ownerProjectAccess: JsonField<OwnerProjectAccess>? = null
         private var redactedValue: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -200,6 +235,7 @@ private constructor(
             name = projectApiKey.name
             object_ = projectApiKey.object_
             owner = projectApiKey.owner
+            ownerProjectAccess = projectApiKey.ownerProjectAccess
             redactedValue = projectApiKey.redactedValue
             additionalProperties = projectApiKey.additionalProperties.toMutableMap()
         }
@@ -282,6 +318,21 @@ private constructor(
          */
         fun owner(owner: JsonField<Owner>) = apply { this.owner = owner }
 
+        /** Whether the API key's owner currently has effective access to the project. */
+        fun ownerProjectAccess(ownerProjectAccess: OwnerProjectAccess) =
+            ownerProjectAccess(JsonField.of(ownerProjectAccess))
+
+        /**
+         * Sets [Builder.ownerProjectAccess] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.ownerProjectAccess] with a well-typed
+         * [OwnerProjectAccess] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun ownerProjectAccess(ownerProjectAccess: JsonField<OwnerProjectAccess>) = apply {
+            this.ownerProjectAccess = ownerProjectAccess
+        }
+
         /** The redacted value of the API key */
         fun redactedValue(redactedValue: String) = redactedValue(JsonField.of(redactedValue))
 
@@ -327,6 +378,7 @@ private constructor(
          * .lastUsedAt()
          * .name()
          * .owner()
+         * .ownerProjectAccess()
          * .redactedValue()
          * ```
          *
@@ -340,6 +392,7 @@ private constructor(
                 checkRequired("name", name),
                 object_,
                 checkRequired("owner", owner),
+                checkRequired("ownerProjectAccess", ownerProjectAccess),
                 checkRequired("redactedValue", redactedValue),
                 additionalProperties.toMutableMap(),
             )
@@ -370,6 +423,7 @@ private constructor(
             }
         }
         owner().validate()
+        ownerProjectAccess().validate()
         redactedValue()
         validated = true
     }
@@ -395,6 +449,7 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.project.api_key")) 1 else 0 } +
             (owner.asKnown().getOrNull()?.validity() ?: 0) +
+            (ownerProjectAccess.asKnown().getOrNull()?.validity() ?: 0) +
             (if (redactedValue.asKnown().isPresent) 1 else 0)
 
     class Owner
@@ -1399,6 +1454,146 @@ private constructor(
             "Owner{serviceAccount=$serviceAccount, type=$type, user=$user, additionalProperties=$additionalProperties}"
     }
 
+    /** Whether the API key's owner currently has effective access to the project. */
+    class OwnerProjectAccess
+    @JsonCreator
+    private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val ACTIVE = of("active")
+
+            @JvmField val INACTIVE = of("inactive")
+
+            @JvmStatic fun of(value: String) = OwnerProjectAccess(JsonField.of(value))
+        }
+
+        /** An enum containing [OwnerProjectAccess]'s known values. */
+        enum class Known {
+            ACTIVE,
+            INACTIVE,
+        }
+
+        /**
+         * An enum containing [OwnerProjectAccess]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [OwnerProjectAccess] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            ACTIVE,
+            INACTIVE,
+            /**
+             * An enum member indicating that [OwnerProjectAccess] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                ACTIVE -> Value.ACTIVE
+                INACTIVE -> Value.INACTIVE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                ACTIVE -> Known.ACTIVE
+                INACTIVE -> Known.INACTIVE
+                else -> throw OpenAIInvalidDataException("Unknown OwnerProjectAccess: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): OwnerProjectAccess = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is OwnerProjectAccess && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1411,6 +1606,7 @@ private constructor(
             name == other.name &&
             object_ == other.object_ &&
             owner == other.owner &&
+            ownerProjectAccess == other.ownerProjectAccess &&
             redactedValue == other.redactedValue &&
             additionalProperties == other.additionalProperties
     }
@@ -1423,6 +1619,7 @@ private constructor(
             name,
             object_,
             owner,
+            ownerProjectAccess,
             redactedValue,
             additionalProperties,
         )
@@ -1431,5 +1628,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ProjectApiKey{id=$id, createdAt=$createdAt, lastUsedAt=$lastUsedAt, name=$name, object_=$object_, owner=$owner, redactedValue=$redactedValue, additionalProperties=$additionalProperties}"
+        "ProjectApiKey{id=$id, createdAt=$createdAt, lastUsedAt=$lastUsedAt, name=$name, object_=$object_, owner=$owner, ownerProjectAccess=$ownerProjectAccess, redactedValue=$redactedValue, additionalProperties=$additionalProperties}"
 }
