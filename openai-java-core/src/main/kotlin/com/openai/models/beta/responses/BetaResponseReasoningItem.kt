@@ -102,8 +102,8 @@ private constructor(
     fun content(): Optional<List<Content>> = content.getOptional("content")
 
     /**
-     * The encrypted content of the reasoning item - populated when a response is generated with
-     * `reasoning.encrypted_content` in the `include` parameter.
+     * The encrypted content of the reasoning item. This is populated by default for reasoning items
+     * returned by `POST /v1/responses` and WebSocket `response.create` requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -306,8 +306,8 @@ private constructor(
         }
 
         /**
-         * The encrypted content of the reasoning item - populated when a response is generated with
-         * `reasoning.encrypted_content` in the `include` parameter.
+         * The encrypted content of the reasoning item. This is populated by default for reasoning
+         * items returned by `POST /v1/responses` and WebSocket `response.create` requests.
          */
         fun encryptedContent(encryptedContent: String?) =
             encryptedContent(JsonField.ofNullable(encryptedContent))
