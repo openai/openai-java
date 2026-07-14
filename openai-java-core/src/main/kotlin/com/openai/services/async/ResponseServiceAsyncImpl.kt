@@ -37,6 +37,7 @@ import com.openai.services.async.responses.InputItemServiceAsync
 import com.openai.services.async.responses.InputItemServiceAsyncImpl
 import com.openai.services.async.responses.InputTokenServiceAsync
 import com.openai.services.async.responses.InputTokenServiceAsyncImpl
+import com.openai.services.validateForStream
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -218,7 +219,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                             .let { createStreamingHandler.handle(it) }
                             .let { streamResponse ->
                                 if (requestOptions.responseValidation!!) {
-                                    streamResponse.map { it.validate() }
+                                    streamResponse.map { it.validateForStream() }
                                 } else {
                                     streamResponse
                                 }
@@ -296,7 +297,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                             .let { retrieveStreamingHandler.handle(it) }
                             .let { streamResponse ->
                                 if (requestOptions.responseValidation!!) {
-                                    streamResponse.map { it.validate() }
+                                    streamResponse.map { it.validateForStream() }
                                 } else {
                                     streamResponse
                                 }
