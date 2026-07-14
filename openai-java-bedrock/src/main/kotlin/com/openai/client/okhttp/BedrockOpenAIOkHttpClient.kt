@@ -101,7 +101,10 @@ class BedrockOpenAIOkHttpClient private constructor() {
         /** Resolves AWS credentials from a named shared-config profile. */
         fun awsProfile(awsProfile: String?) = apply { this.awsProfile = awsProfile }
 
-        /** Uses a custom, refreshable AWS credentials provider. */
+        /**
+         * Uses a custom, refreshable AWS credentials provider. The caller retains ownership of the
+         * provider and is responsible for closing it when it is no longer needed.
+         */
         fun awsCredentialsProvider(awsCredentialsProvider: AwsCredentialsProvider) = apply {
             this.awsCredentialsProvider = awsCredentialsProvider
         }

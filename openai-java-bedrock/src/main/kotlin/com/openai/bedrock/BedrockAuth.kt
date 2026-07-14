@@ -101,11 +101,12 @@ internal fun BedrockAuthOptions.resolve(
     }
 
     val environmentBaseUrl = normalizeEnvironment(getenv(ENV_BASE_URL))
-    val resolvedRegion =
+    val resolvedRegion by lazy {
         normalizedRegion
             ?: normalizeEnvironment(getenv("AWS_REGION"))
             ?: normalizeEnvironment(getenv("AWS_DEFAULT_REGION"))
             ?: regionProvider()?.id()
+    }
     val resolvedBaseUrl =
         normalizedBaseUrl
             ?: environmentBaseUrl
@@ -148,12 +149,13 @@ internal fun BedrockAuthOptions.resolve(
             ?: throw OpenAIException(
                 "Bedrock requires an AWS region. Pass `awsRegion` to the builder, or set `AWS_REGION` or `AWS_DEFAULT_REGION`."
             )
-    val credentialsProvider =
+    val (credentialsProvider, ownsCredentialsProvider) =
         when {
-            staticCredentials != null -> AwsCredentialsProvider { staticCredentials }
-            normalizedProfile != null -> ProfileCredentialsProvider.create(normalizedProfile)
-            awsCredentialsProvider != null -> awsCredentialsProvider
-            else -> DefaultCredentialsProvider.builder().build()
+            staticCredentials != null -> AwsCredentialsProvider { staticCredentials } to false
+            normalizedProfile != null ->
+                ProfileCredentialsProvider.create(normalizedProfile) to true
+            awsCredentialsProvider != null -> awsCredentialsProvider to false
+            else -> DefaultCredentialsProvider.builder().build() to true
         }
 
     return BedrockConfiguration(
@@ -162,6 +164,7 @@ internal fun BedrockAuthOptions.resolve(
             baseUrl = normalizedResolvedBaseUrl,
             region = Region.of(region),
             credentialsProvider = credentialsProvider,
+            ownsCredentialsProvider = ownsCredentialsProvider,
             defaultChain = !explicitAws,
             clock = clock,
         ),
@@ -257,6 +260,7 @@ private class SigV4Authenticator(
     baseUrl: String,
     private val region: Region,
     private val credentialsProvider: AwsCredentialsProvider,
+    private val ownsCredentialsProvider: Boolean,
     private val defaultChain: Boolean,
     private val clock: Clock,
 ) : OriginBoundAuthenticator(baseUrl) {
@@ -322,7 +326,9 @@ private class SigV4Authenticator(
         CompletableFuture.supplyAsync { authenticate(request) }
 
     override fun close() {
-        (credentialsProvider as? AutoCloseable)?.close()
+        if (ownsCredentialsProvider) {
+            (credentialsProvider as? AutoCloseable)?.close()
+        }
     }
 
     private fun resolveCredentials(): AwsCredentials {

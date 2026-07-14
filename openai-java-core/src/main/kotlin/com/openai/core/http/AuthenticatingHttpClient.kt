@@ -20,7 +20,18 @@ internal class AuthenticatingHttpClient(
         }
 
     override fun close() {
-        authenticator.close()
+        try {
+            authenticator.close()
+        } catch (authenticatorFailure: Throwable) {
+            try {
+                delegate.close()
+            } catch (delegateFailure: Throwable) {
+                if (delegateFailure !== authenticatorFailure) {
+                    authenticatorFailure.addSuppressed(delegateFailure)
+                }
+            }
+            throw authenticatorFailure
+        }
         delegate.close()
     }
 }

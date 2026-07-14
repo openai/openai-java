@@ -256,6 +256,40 @@ internal class BedrockAuthTest {
     }
 
     @Test
+    fun explicitBaseUrlBearerModesDoNotResolveDefaultRegion() {
+        val configurations =
+            listOf(
+                options(baseUrl = "https://bedrock.example.com/openai/v1", apiKey = "token"),
+                options(
+                    baseUrl = "https://bedrock.example.com/openai/v1",
+                    tokenProvider = Supplier { "token" },
+                ),
+            )
+
+        configurations.forEach { options ->
+            val configuration =
+                options.resolve(
+                    getenv = { null },
+                    regionProvider = { error("default region provider must not be called") },
+                )
+
+            assertThat(configuration.baseUrl).isEqualTo("https://bedrock.example.com/openai/v1")
+        }
+    }
+
+    @Test
+    fun explicitBaseUrlSkipAuthDoesNotResolveDefaultRegion() {
+        val configuration =
+            options(baseUrl = "https://bedrock.example.com/openai/v1", skipAuth = true)
+                .resolve(
+                    getenv = { null },
+                    regionProvider = { error("default region provider must not be called") },
+                )
+
+        assertThat(configuration.baseUrl).isEqualTo("https://bedrock.example.com/openai/v1")
+    }
+
+    @Test
     fun skipAuthPassesThroughSameOriginAndRejectsDifferentOrigin() {
         val configuration =
             options(baseUrl = "https://bedrock.example.com/openai/v1", skipAuth = true)
@@ -439,7 +473,7 @@ internal class BedrockAuthTest {
     }
 
     @Test
-    fun credentialProviderFailuresAreActionableAndProviderIsClosed() {
+    fun credentialProviderFailuresAreActionableAndCallerOwnedProviderIsNotClosed() {
         val failingConfiguration =
             options(
                     awsRegion = "us-east-1",
@@ -475,7 +509,7 @@ internal class BedrockAuthTest {
         closeableConfiguration.authenticator.authenticate(request())
         closeableConfiguration.authenticator.close()
 
-        assertThat(closeableProvider.closed).isTrue()
+        assertThat(closeableProvider.closed).isFalse()
     }
 
     @Test
