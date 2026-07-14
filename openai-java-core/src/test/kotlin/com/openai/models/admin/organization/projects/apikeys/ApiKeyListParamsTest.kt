@@ -10,7 +10,12 @@ internal class ApiKeyListParamsTest {
 
     @Test
     fun create() {
-        ApiKeyListParams.builder().projectId("project_id").after("after").limit(0L).build()
+        ApiKeyListParams.builder()
+            .projectId("project_id")
+            .after("after")
+            .limit(0L)
+            .ownerProjectAccess(ApiKeyListParams.OwnerProjectAccess.ACTIVE)
+            .build()
     }
 
     @Test
@@ -25,12 +30,23 @@ internal class ApiKeyListParamsTest {
     @Test
     fun queryParams() {
         val params =
-            ApiKeyListParams.builder().projectId("project_id").after("after").limit(0L).build()
+            ApiKeyListParams.builder()
+                .projectId("project_id")
+                .after("after")
+                .limit(0L)
+                .ownerProjectAccess(ApiKeyListParams.OwnerProjectAccess.ACTIVE)
+                .build()
 
         val queryParams = params._queryParams()
 
         assertThat(queryParams)
-            .isEqualTo(QueryParams.builder().put("after", "after").put("limit", "0").build())
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("after", "after")
+                    .put("limit", "0")
+                    .put("owner_project_access", "active")
+                    .build()
+            )
     }
 
     @Test
