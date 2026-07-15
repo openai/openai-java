@@ -53,6 +53,9 @@ dependencies {
         testImplementation("com.jayway.jsonpath:json-path:2.10.0") {
             because("WireMock's transitive JSONPath version has a stack-overflow vulnerability")
         }
+        testImplementation("org.apache.commons:commons-lang3:3.18.0") {
+            because("WireMock's transitive 3.12.0 release is vulnerable to uncontrolled recursion")
+        }
     }
 
     api("com.fasterxml.jackson.core:jackson-core:$jacksonPublishedVersion")
