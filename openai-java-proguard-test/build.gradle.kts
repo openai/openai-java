@@ -11,6 +11,12 @@ buildscript {
     dependencies {
         classpath("com.guardsquare:proguard-gradle:7.4.2")
         classpath("com.android.tools:r8:8.3.37")
+
+        constraints {
+            classpath("org.codehaus.plexus:plexus-utils:4.0.3") {
+                because("4.0.3 fixes CVE-2025-67030 in Shadow's build-time dependency")
+            }
+        }
     }
 }
 
