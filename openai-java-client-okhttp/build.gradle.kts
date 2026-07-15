@@ -17,6 +17,9 @@ dependencies {
         testImplementation("commons-io:commons-io:2.22.0") {
             because("WireMock's transitive Commons IO version has a resource-exhaustion vulnerability")
         }
+        testImplementation("com.jayway.jsonpath:json-path:2.10.0") {
+            because("WireMock's transitive JSONPath version has a stack-overflow vulnerability")
+        }
     }
 
     api(project(":openai-java-core"))
