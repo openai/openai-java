@@ -47,6 +47,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
+    testImplementation(platform("org.eclipse.jetty:jetty-bom:9.4.58.v20250814"))
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.2")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
