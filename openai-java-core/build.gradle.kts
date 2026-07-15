@@ -32,6 +32,12 @@ configurations.matching { it.name != jacksonPublishedRuntime.name }.configureEac
 }
 
 dependencies {
+    constraints {
+        testImplementation("com.google.guava:guava:33.6.0-jre") {
+            because("WireMock's transitive Guava 31.1-jre has known temporary-file vulnerabilities")
+        }
+    }
+
     api("com.fasterxml.jackson.core:jackson-core:$jacksonPublishedVersion")
     api("com.fasterxml.jackson.core:jackson-databind:$jacksonPublishedVersion")
     api("com.google.errorprone:error_prone_annotations:2.33.0")

@@ -4,6 +4,12 @@ plugins {
 }
 
 dependencies {
+    constraints {
+        testImplementation("com.google.guava:guava:33.6.0-jre") {
+            because("WireMock's transitive Guava 31.1-jre has known temporary-file vulnerabilities")
+        }
+    }
+
     api(project(":openai-java-core"))
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
