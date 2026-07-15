@@ -27,6 +27,8 @@ import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAcco
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
+import com.openai.services.blocking.admin.organization.projects.serviceaccounts.ApiKeyService
+import com.openai.services.blocking.admin.organization.projects.serviceaccounts.ApiKeyServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -37,10 +39,14 @@ class ServiceAccountServiceImpl internal constructor(private val clientOptions: 
         WithRawResponseImpl(clientOptions)
     }
 
+    private val apiKeys: ApiKeyService by lazy { ApiKeyServiceImpl(clientOptions) }
+
     override fun withRawResponse(): ServiceAccountService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ServiceAccountService =
         ServiceAccountServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun apiKeys(): ApiKeyService = apiKeys
 
     override fun create(
         params: ServiceAccountCreateParams,
@@ -83,12 +89,18 @@ class ServiceAccountServiceImpl internal constructor(private val clientOptions: 
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val apiKeys: ApiKeyService.WithRawResponse by lazy {
+            ApiKeyServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountService.WithRawResponse =
             ServiceAccountServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun apiKeys(): ApiKeyService.WithRawResponse = apiKeys
 
         private val createHandler: Handler<ServiceAccountCreateResponse> =
             jsonHandler<ServiceAccountCreateResponse>(clientOptions.jsonMapper)

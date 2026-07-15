@@ -26,7 +26,11 @@ internal class ServiceAccountServiceTest {
 
         val serviceAccount =
             serviceAccountService.create(
-                ServiceAccountCreateParams.builder().projectId("project_id").name("name").build()
+                ServiceAccountCreateParams.builder()
+                    .projectId("project_id")
+                    .name("name")
+                    .createServiceAccountOnly(true)
+                    .build()
             )
 
         serviceAccount.validate()
