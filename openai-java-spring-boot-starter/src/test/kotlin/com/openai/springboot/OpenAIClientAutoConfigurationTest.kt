@@ -3,11 +3,14 @@
 package com.openai.springboot
 
 import com.openai.client.OpenAIClient
+import java.nio.charset.StandardCharsets
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.autoconfigure.AutoConfigurations
+import org.springframework.boot.env.YamlPropertySourceLoader
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
+import org.springframework.core.io.ByteArrayResource
 
 internal class OpenAIClientAutoConfigurationTest {
 
@@ -34,6 +37,36 @@ internal class OpenAIClientAutoConfigurationTest {
                 assertThat(properties.organization).isEqualTo("My Organization")
                 assertThat(properties.project).isEqualTo("My Project")
                 assertThat(properties.webhookSecret).isEqualTo("My Webhook Secret")
+            }
+    }
+
+    @Test
+    fun yamlProperties() {
+        val resource =
+            ByteArrayResource(
+                """
+                openai:
+                  base-url: https://api.openai.com/v1
+                  api-key: YAML API Key
+                  org-id: YAML Organization
+                """
+                    .trimIndent()
+                    .toByteArray(StandardCharsets.UTF_8)
+            )
+        val propertySources = YamlPropertySourceLoader().load("test", resource)
+
+        contextRunner
+            .withInitializer { context ->
+                propertySources.reversed().forEach {
+                    context.environment.propertySources.addFirst(it)
+                }
+            }
+            .run { context ->
+                val properties = context.getBean<OpenAIClientProperties>()
+                assertThat(properties.baseUrl).isEqualTo("https://api.openai.com/v1")
+                assertThat(properties.apiKey).isEqualTo("YAML API Key")
+                assertThat(properties.organization).isEqualTo("YAML Organization")
+                context.getBean<OpenAIClient>()
             }
     }
 
