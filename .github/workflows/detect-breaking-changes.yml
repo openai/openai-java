@@ -5,6 +5,9 @@ on:
       - main
       - next
 
+permissions:
+  contents: read
+
 jobs:
   detect_breaking_changes:
     runs-on: 'ubuntu-latest'
@@ -19,6 +22,7 @@ jobs:
         with:
           # Ensure we can check out the pull request base in the script below.
           fetch-depth: ${{ env.FETCH_DEPTH }}
+          persist-credentials: false
 
       - name: Set up Java
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
