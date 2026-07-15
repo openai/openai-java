@@ -27,6 +27,8 @@ import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAcco
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
+import com.openai.services.async.admin.organization.projects.serviceaccounts.ApiKeyServiceAsync
+import com.openai.services.async.admin.organization.projects.serviceaccounts.ApiKeyServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -38,12 +40,16 @@ internal constructor(private val clientOptions: ClientOptions) : ServiceAccountS
         WithRawResponseImpl(clientOptions)
     }
 
+    private val apiKeys: ApiKeyServiceAsync by lazy { ApiKeyServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): ServiceAccountServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(
         modifier: Consumer<ClientOptions.Builder>
     ): ServiceAccountServiceAsync =
         ServiceAccountServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun apiKeys(): ApiKeyServiceAsync = apiKeys
 
     override fun create(
         params: ServiceAccountCreateParams,
@@ -86,12 +92,18 @@ internal constructor(private val clientOptions: ClientOptions) : ServiceAccountS
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val apiKeys: ApiKeyServiceAsync.WithRawResponse by lazy {
+            ApiKeyServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountServiceAsync.WithRawResponse =
             ServiceAccountServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun apiKeys(): ApiKeyServiceAsync.WithRawResponse = apiKeys
 
         private val createHandler: Handler<ServiceAccountCreateResponse> =
             jsonHandler<ServiceAccountCreateResponse>(clientOptions.jsonMapper)

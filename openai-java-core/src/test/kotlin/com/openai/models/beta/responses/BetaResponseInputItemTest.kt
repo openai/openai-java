@@ -1081,16 +1081,14 @@ internal class BetaResponseInputItemTest {
                 .addOutput(
                     BetaResponseInputItem.MultiAgentCallOutput.Output.builder()
                         .text("text")
-                        .annotationsOfBetaFileCitationParams(
-                            listOf(
-                                BetaResponseInputItem.MultiAgentCallOutput.Output.Annotations
-                                    .BetaFileCitationParam
-                                    .builder()
-                                    .fileId("file-123")
-                                    .filename("filename")
-                                    .index(0L)
-                                    .build()
-                            )
+                        .addAnnotation(
+                            BetaResponseInputItem.MultiAgentCallOutput.Output.Annotation
+                                .FileCitation
+                                .builder()
+                                .fileId("file-123")
+                                .filename("filename")
+                                .index(0L)
+                                .build()
                         )
                         .build()
                 )
@@ -1153,16 +1151,14 @@ internal class BetaResponseInputItemTest {
                     .addOutput(
                         BetaResponseInputItem.MultiAgentCallOutput.Output.builder()
                             .text("text")
-                            .annotationsOfBetaFileCitationParams(
-                                listOf(
-                                    BetaResponseInputItem.MultiAgentCallOutput.Output.Annotations
-                                        .BetaFileCitationParam
-                                        .builder()
-                                        .fileId("file-123")
-                                        .filename("filename")
-                                        .index(0L)
-                                        .build()
-                                )
+                            .addAnnotation(
+                                BetaResponseInputItem.MultiAgentCallOutput.Output.Annotation
+                                    .FileCitation
+                                    .builder()
+                                    .fileId("file-123")
+                                    .filename("filename")
+                                    .index(0L)
+                                    .build()
                             )
                             .build()
                     )

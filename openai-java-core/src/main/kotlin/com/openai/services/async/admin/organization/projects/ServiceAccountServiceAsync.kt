@@ -14,6 +14,7 @@ import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAcco
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
+import com.openai.services.async.admin.organization.projects.serviceaccounts.ApiKeyServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -31,9 +32,11 @@ interface ServiceAccountServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ServiceAccountServiceAsync
 
+    fun apiKeys(): ApiKeyServiceAsync
+
     /**
-     * Creates a new service account in the project. This also returns an unredacted API key for the
-     * service account.
+     * Creates a new service account in the project. By default, this also returns an unredacted API
+     * key for the service account.
      */
     fun create(
         projectId: String,
@@ -191,6 +194,8 @@ interface ServiceAccountServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountServiceAsync.WithRawResponse
+
+        fun apiKeys(): ApiKeyServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post

@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.admin.organization.projects.serviceaccounts
+package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -11,44 +11,46 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Creates a new service account in the project. By default, this also returns an unredacted API key
- * for the service account.
- */
-class ServiceAccountCreateParams
+/** Creates an API key for a service account in the project. */
+class ApiKeyCreateParams
 private constructor(
-    private val projectId: String?,
+    private val projectId: String,
+    private val serviceAccountId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun projectId(): Optional<String> = Optional.ofNullable(projectId)
+    fun projectId(): String = projectId
+
+    fun serviceAccountId(): Optional<String> = Optional.ofNullable(serviceAccountId)
 
     /**
-     * The name of the service account being created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
-
-    /**
-     * Create the service account without default roles or an API key.
+     * API key name.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun createServiceAccountOnly(): Optional<Boolean> = body.createServiceAccountOnly()
+    fun name(): Optional<String> = body.name()
+
+    /**
+     * API key scopes.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun scopes(): Optional<List<String>> = body.scopes()
 
     /**
      * Returns the raw JSON value of [name].
@@ -58,12 +60,11 @@ private constructor(
     fun _name(): JsonField<String> = body._name()
 
     /**
-     * Returns the raw JSON value of [createServiceAccountOnly].
+     * Returns the raw JSON value of [scopes].
      *
-     * Unlike [createServiceAccountOnly], this method doesn't throw if the JSON field has an
-     * unexpected type.
+     * Unlike [scopes], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _createServiceAccountOnly(): JsonField<Boolean> = body._createServiceAccountOnly()
+    fun _scopes(): JsonField<List<String>> = body._scopes()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -78,36 +79,43 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [ServiceAccountCreateParams].
+         * Returns a mutable builder for constructing an instance of [ApiKeyCreateParams].
          *
          * The following fields are required:
          * ```java
-         * .name()
+         * .projectId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ServiceAccountCreateParams]. */
+    /** A builder for [ApiKeyCreateParams]. */
     class Builder internal constructor() {
 
         private var projectId: String? = null
+        private var serviceAccountId: String? = null
         private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(serviceAccountCreateParams: ServiceAccountCreateParams) = apply {
-            projectId = serviceAccountCreateParams.projectId
-            body = serviceAccountCreateParams.body.toBuilder()
-            additionalHeaders = serviceAccountCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = serviceAccountCreateParams.additionalQueryParams.toBuilder()
+        internal fun from(apiKeyCreateParams: ApiKeyCreateParams) = apply {
+            projectId = apiKeyCreateParams.projectId
+            serviceAccountId = apiKeyCreateParams.serviceAccountId
+            body = apiKeyCreateParams.body.toBuilder()
+            additionalHeaders = apiKeyCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = apiKeyCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun projectId(projectId: String?) = apply { this.projectId = projectId }
+        fun projectId(projectId: String) = apply { this.projectId = projectId }
 
-        /** Alias for calling [Builder.projectId] with `projectId.orElse(null)`. */
-        fun projectId(projectId: Optional<String>) = projectId(projectId.getOrNull())
+        fun serviceAccountId(serviceAccountId: String?) = apply {
+            this.serviceAccountId = serviceAccountId
+        }
+
+        /** Alias for calling [Builder.serviceAccountId] with `serviceAccountId.orElse(null)`. */
+        fun serviceAccountId(serviceAccountId: Optional<String>) =
+            serviceAccountId(serviceAccountId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -115,11 +123,11 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [name]
-         * - [createServiceAccountOnly]
+         * - [scopes]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The name of the service account being created. */
+        /** API key name. */
         fun name(name: String) = apply { body.name(name) }
 
         /**
@@ -130,36 +138,24 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        /** Create the service account without default roles or an API key. */
-        fun createServiceAccountOnly(createServiceAccountOnly: Boolean?) = apply {
-            body.createServiceAccountOnly(createServiceAccountOnly)
-        }
+        /** API key scopes. */
+        fun scopes(scopes: List<String>) = apply { body.scopes(scopes) }
 
         /**
-         * Alias for [Builder.createServiceAccountOnly].
+         * Sets [Builder.scopes] to an arbitrary JSON value.
          *
-         * This unboxed primitive overload exists for backwards compatibility.
+         * You should usually call [Builder.scopes] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun createServiceAccountOnly(createServiceAccountOnly: Boolean) =
-            createServiceAccountOnly(createServiceAccountOnly as Boolean?)
+        fun scopes(scopes: JsonField<List<String>>) = apply { body.scopes(scopes) }
 
         /**
-         * Alias for calling [Builder.createServiceAccountOnly] with
-         * `createServiceAccountOnly.orElse(null)`.
-         */
-        fun createServiceAccountOnly(createServiceAccountOnly: Optional<Boolean>) =
-            createServiceAccountOnly(createServiceAccountOnly.getOrNull())
-
-        /**
-         * Sets [Builder.createServiceAccountOnly] to an arbitrary JSON value.
+         * Adds a single [String] to [scopes].
          *
-         * You should usually call [Builder.createServiceAccountOnly] with a well-typed [Boolean]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun createServiceAccountOnly(createServiceAccountOnly: JsonField<Boolean>) = apply {
-            body.createServiceAccountOnly(createServiceAccountOnly)
-        }
+        fun addScope(scope: String) = apply { body.addScope(scope) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -279,20 +275,21 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ServiceAccountCreateParams].
+         * Returns an immutable instance of [ApiKeyCreateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
-         * .name()
+         * .projectId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ServiceAccountCreateParams =
-            ServiceAccountCreateParams(
-                projectId,
+        fun build(): ApiKeyCreateParams =
+            ApiKeyCreateParams(
+                checkRequired("projectId", projectId),
+                serviceAccountId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -303,7 +300,8 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> projectId ?: ""
+            0 -> projectId
+            1 -> serviceAccountId ?: ""
             else -> ""
         }
 
@@ -315,34 +313,33 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
-        private val createServiceAccountOnly: JsonField<Boolean>,
+        private val scopes: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("create_service_account_only")
+            @JsonProperty("scopes")
             @ExcludeMissing
-            createServiceAccountOnly: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(name, createServiceAccountOnly, mutableMapOf())
+            scopes: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(name, scopes, mutableMapOf())
 
         /**
-         * The name of the service account being created.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun name(): String = name.getRequired("name")
-
-        /**
-         * Create the service account without default roles or an API key.
+         * API key name.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun createServiceAccountOnly(): Optional<Boolean> =
-            createServiceAccountOnly.getOptional("create_service_account_only")
+        fun name(): Optional<String> = name.getOptional("name")
+
+        /**
+         * API key scopes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun scopes(): Optional<List<String>> = scopes.getOptional("scopes")
 
         /**
          * Returns the raw JSON value of [name].
@@ -352,14 +349,11 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
-         * Returns the raw JSON value of [createServiceAccountOnly].
+         * Returns the raw JSON value of [scopes].
          *
-         * Unlike [createServiceAccountOnly], this method doesn't throw if the JSON field has an
-         * unexpected type.
+         * Unlike [scopes], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("create_service_account_only")
-        @ExcludeMissing
-        fun _createServiceAccountOnly(): JsonField<Boolean> = createServiceAccountOnly
+        @JsonProperty("scopes") @ExcludeMissing fun _scopes(): JsonField<List<String>> = scopes
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -375,32 +369,25 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .name()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var name: JsonField<String>? = null
-            private var createServiceAccountOnly: JsonField<Boolean> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var scopes: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 name = body.name
-                createServiceAccountOnly = body.createServiceAccountOnly
+                scopes = body.scopes.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The name of the service account being created. */
+            /** API key name. */
             fun name(name: String) = name(JsonField.of(name))
 
             /**
@@ -412,34 +399,30 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
-            /** Create the service account without default roles or an API key. */
-            fun createServiceAccountOnly(createServiceAccountOnly: Boolean?) =
-                createServiceAccountOnly(JsonField.ofNullable(createServiceAccountOnly))
+            /** API key scopes. */
+            fun scopes(scopes: List<String>) = scopes(JsonField.of(scopes))
 
             /**
-             * Alias for [Builder.createServiceAccountOnly].
+             * Sets [Builder.scopes] to an arbitrary JSON value.
              *
-             * This unboxed primitive overload exists for backwards compatibility.
+             * You should usually call [Builder.scopes] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun createServiceAccountOnly(createServiceAccountOnly: Boolean) =
-                createServiceAccountOnly(createServiceAccountOnly as Boolean?)
+            fun scopes(scopes: JsonField<List<String>>) = apply {
+                this.scopes = scopes.map { it.toMutableList() }
+            }
 
             /**
-             * Alias for calling [Builder.createServiceAccountOnly] with
-             * `createServiceAccountOnly.orElse(null)`.
-             */
-            fun createServiceAccountOnly(createServiceAccountOnly: Optional<Boolean>) =
-                createServiceAccountOnly(createServiceAccountOnly.getOrNull())
-
-            /**
-             * Sets [Builder.createServiceAccountOnly] to an arbitrary JSON value.
+             * Adds a single [String] to [scopes].
              *
-             * You should usually call [Builder.createServiceAccountOnly] with a well-typed
-             * [Boolean] value instead. This method is primarily for setting the field to an
-             * undocumented or not yet supported value.
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun createServiceAccountOnly(createServiceAccountOnly: JsonField<Boolean>) = apply {
-                this.createServiceAccountOnly = createServiceAccountOnly
+            fun addScope(scope: String) = apply {
+                scopes =
+                    (scopes ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("scopes", it).add(scope)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -465,18 +448,11 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .name()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("name", name),
-                    createServiceAccountOnly,
+                    name,
+                    (scopes ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -498,7 +474,7 @@ private constructor(
             }
 
             name()
-            createServiceAccountOnly()
+            scopes()
             validated = true
         }
 
@@ -518,8 +494,7 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (name.asKnown().isPresent) 1 else 0) +
-                (if (createServiceAccountOnly.asKnown().isPresent) 1 else 0)
+            (if (name.asKnown().isPresent) 1 else 0) + (scopes.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -528,18 +503,16 @@ private constructor(
 
             return other is Body &&
                 name == other.name &&
-                createServiceAccountOnly == other.createServiceAccountOnly &&
+                scopes == other.scopes &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy {
-            Objects.hash(name, createServiceAccountOnly, additionalProperties)
-        }
+        private val hashCode: Int by lazy { Objects.hash(name, scopes, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, createServiceAccountOnly=$createServiceAccountOnly, additionalProperties=$additionalProperties}"
+            "Body{name=$name, scopes=$scopes, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -547,16 +520,17 @@ private constructor(
             return true
         }
 
-        return other is ServiceAccountCreateParams &&
+        return other is ApiKeyCreateParams &&
             projectId == other.projectId &&
+            serviceAccountId == other.serviceAccountId &&
             body == other.body &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
     override fun hashCode(): Int =
-        Objects.hash(projectId, body, additionalHeaders, additionalQueryParams)
+        Objects.hash(projectId, serviceAccountId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ServiceAccountCreateParams{projectId=$projectId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ApiKeyCreateParams{projectId=$projectId, serviceAccountId=$serviceAccountId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
