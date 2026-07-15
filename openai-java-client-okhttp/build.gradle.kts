@@ -11,6 +11,9 @@ dependencies {
         testImplementation("commons-fileupload:commons-fileupload:1.6.0") {
             because("WireMock's transitive 1.4 release has known denial-of-service vulnerabilities")
         }
+        testImplementation("org.xmlunit:xmlunit-core:2.11.0") {
+            because("2.10.0 fixes CVE-2024-31573 in this test-only dependency")
+        }
     }
 
     api(project(":openai-java-core"))
