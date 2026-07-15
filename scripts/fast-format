@@ -24,8 +24,8 @@ if [ ! -f "$FILE_LIST" ]; then
     exit 1
 fi
 
-if ! command -v ktfmt-fast-format &> /dev/null; then
-    echo "Error: ktfmt-fast-format not found"
+if ! command -v ktfmt &> /dev/null; then
+    echo "Error: ktfmt not found"
     exit 1
 fi
 
@@ -36,7 +36,7 @@ echo "==> Done looking for Kotlin files"
 
 if [[ -n "$kt_files" ]]; then
     echo "==> will format Kotlin files"
-    echo "$kt_files" | tr '\n' '\0' | xargs -0 ktfmt-fast-format --kotlinlang-style "$@"
+    echo "$kt_files" | tr '\n' '\0' | xargs -0 ktfmt --kotlinlang-style "$@"
 else
     echo "No Kotlin files to format -- expected outcome during incremental formatting"
 fi

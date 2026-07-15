@@ -89,6 +89,9 @@ private constructor(
      * score a low probability of turn end and wait longer for the user to continue speaking. This
      * can be useful for more natural conversations, but may have a higher latency.
      *
+     * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to `null`; VAD
+     * is not supported.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -253,6 +256,9 @@ private constructor(
          * model will score a low probability of turn end and wait longer for the user to continue
          * speaking. This can be useful for more natural conversations, but may have a higher
          * latency.
+         *
+         * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to `null`;
+         * VAD is not supported.
          */
         fun turnDetection(turnDetection: RealtimeTranscriptionSessionAudioInputTurnDetection?) =
             turnDetection(JsonField.ofNullable(turnDetection))
@@ -331,6 +337,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): RealtimeTranscriptionSessionAudioInput = apply {
         if (validated) {
             return@apply
@@ -475,6 +489,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): NoiseReduction = apply {
             if (validated) {
                 return@apply

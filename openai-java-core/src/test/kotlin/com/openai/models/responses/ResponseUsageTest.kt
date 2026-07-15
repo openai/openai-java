@@ -15,7 +15,10 @@ internal class ResponseUsageTest {
             ResponseUsage.builder()
                 .inputTokens(0L)
                 .inputTokensDetails(
-                    ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                    ResponseUsage.InputTokensDetails.builder()
+                        .cacheWriteTokens(0L)
+                        .cachedTokens(0L)
+                        .build()
                 )
                 .outputTokens(0L)
                 .outputTokensDetails(
@@ -26,7 +29,12 @@ internal class ResponseUsageTest {
 
         assertThat(responseUsage.inputTokens()).isEqualTo(0L)
         assertThat(responseUsage.inputTokensDetails())
-            .isEqualTo(ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build())
+            .isEqualTo(
+                ResponseUsage.InputTokensDetails.builder()
+                    .cacheWriteTokens(0L)
+                    .cachedTokens(0L)
+                    .build()
+            )
         assertThat(responseUsage.outputTokens()).isEqualTo(0L)
         assertThat(responseUsage.outputTokensDetails())
             .isEqualTo(ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
@@ -40,7 +48,10 @@ internal class ResponseUsageTest {
             ResponseUsage.builder()
                 .inputTokens(0L)
                 .inputTokensDetails(
-                    ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                    ResponseUsage.InputTokensDetails.builder()
+                        .cacheWriteTokens(0L)
+                        .cachedTokens(0L)
+                        .build()
                 )
                 .outputTokens(0L)
                 .outputTokensDetails(

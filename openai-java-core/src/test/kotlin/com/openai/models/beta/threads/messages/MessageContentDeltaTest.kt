@@ -167,7 +167,10 @@ internal class MessageContentDeltaTest {
             ImageUrlDeltaBlock.builder()
                 .index(0L)
                 .imageUrl(
-                    ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
+                    ImageUrlDelta.builder()
+                        .detail(ImageUrlDelta.Detail.AUTO)
+                        .url("https://example.com")
+                        .build()
                 )
                 .build()
 
@@ -187,7 +190,10 @@ internal class MessageContentDeltaTest {
                 ImageUrlDeltaBlock.builder()
                     .index(0L)
                     .imageUrl(
-                        ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
+                        ImageUrlDelta.builder()
+                            .detail(ImageUrlDelta.Detail.AUTO)
+                            .url("https://example.com")
+                            .build()
                     )
                     .build()
             )

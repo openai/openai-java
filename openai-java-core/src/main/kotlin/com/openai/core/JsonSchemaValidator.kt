@@ -153,7 +153,7 @@ internal class JsonSchemaValidator private constructor() {
         private const val MAX_ENUM_TOTAL_STRING_LENGTH = 7_500
 
         /** The maximum depth (number of levels) of nesting allowed in a schema. */
-        private const val MAX_NESTING_DEPTH = 5
+        private const val MAX_NESTING_DEPTH = 10
 
         /** The depth value that corresponds to the root level of the schema. */
         private const val ROOT_DEPTH = 0

@@ -12,7 +12,7 @@ internal class SpeechCreateParamsTest {
         SpeechCreateParams.builder()
             .input("input")
             .model(SpeechModel.TTS_1)
-            .voice("string")
+            .voice(SpeechCreateParams.Voice.UnionMember1.ALLOY)
             .instructions("instructions")
             .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
             .speed(0.25)
@@ -26,7 +26,7 @@ internal class SpeechCreateParamsTest {
             SpeechCreateParams.builder()
                 .input("input")
                 .model(SpeechModel.TTS_1)
-                .voice("string")
+                .voice(SpeechCreateParams.Voice.UnionMember1.ALLOY)
                 .instructions("instructions")
                 .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                 .speed(0.25)
@@ -37,7 +37,10 @@ internal class SpeechCreateParamsTest {
 
         assertThat(body.input()).isEqualTo("input")
         assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
-        assertThat(body.voice()).isEqualTo(SpeechCreateParams.Voice.ofString("string"))
+        assertThat(body.voice())
+            .isEqualTo(
+                SpeechCreateParams.Voice.ofUnionMember1(SpeechCreateParams.Voice.UnionMember1.ALLOY)
+            )
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.responseFormat()).contains(SpeechCreateParams.ResponseFormat.MP3)
         assertThat(body.speed()).contains(0.25)
@@ -50,13 +53,16 @@ internal class SpeechCreateParamsTest {
             SpeechCreateParams.builder()
                 .input("input")
                 .model(SpeechModel.TTS_1)
-                .voice("string")
+                .voice(SpeechCreateParams.Voice.UnionMember1.ALLOY)
                 .build()
 
         val body = params._body()
 
         assertThat(body.input()).isEqualTo("input")
         assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
-        assertThat(body.voice()).isEqualTo(SpeechCreateParams.Voice.ofString("string"))
+        assertThat(body.voice())
+            .isEqualTo(
+                SpeechCreateParams.Voice.ofUnionMember1(SpeechCreateParams.Voice.UnionMember1.ALLOY)
+            )
     }
 }

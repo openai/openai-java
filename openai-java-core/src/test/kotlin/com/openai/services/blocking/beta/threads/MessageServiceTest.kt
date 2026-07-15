@@ -22,6 +22,7 @@ internal class MessageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val messageService = client.beta().threads().messages()
 
@@ -54,6 +55,7 @@ internal class MessageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val messageService = client.beta().threads().messages()
 
@@ -74,6 +76,7 @@ internal class MessageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val messageService = client.beta().threads().messages()
 
@@ -99,6 +102,7 @@ internal class MessageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val messageService = client.beta().threads().messages()
 
@@ -113,6 +117,7 @@ internal class MessageServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val messageService = client.beta().threads().messages()
 

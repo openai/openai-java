@@ -19,9 +19,9 @@ internal class TranscriptionStreamEventTest {
         val transcriptTextSegment =
             TranscriptionTextSegmentEvent.builder()
                 .id("id")
-                .end(0.0f)
+                .end(0.0)
                 .speaker("speaker")
-                .start(0.0f)
+                .start(0.0)
                 .text("text")
                 .build()
 
@@ -40,9 +40,9 @@ internal class TranscriptionStreamEventTest {
             TranscriptionStreamEvent.ofTranscriptTextSegment(
                 TranscriptionTextSegmentEvent.builder()
                     .id("id")
-                    .end(0.0f)
+                    .end(0.0)
                     .speaker("speaker")
-                    .start(0.0f)
+                    .start(0.0)
                     .text("text")
                     .build()
             )

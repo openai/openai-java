@@ -32,6 +32,10 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.functionCall */
     fun functionCall(): Optional<ResponseFunctionToolCall> = rawOutputItem.functionCall()
 
+    /** @see ResponseOutputItem.functionCallOutput */
+    fun functionCallOutput(): Optional<ResponseFunctionToolCallOutputItem> =
+        rawOutputItem.functionCallOutput()
+
     /** @see ResponseOutputItem.toolSearchCall */
     fun toolSearchCall(): Optional<ResponseToolSearchCall> = rawOutputItem.toolSearchCall()
 
@@ -39,14 +43,28 @@ class StructuredResponseOutputItem<T : Any>(
     fun toolSearchOutput(): Optional<ResponseToolSearchOutputItem> =
         rawOutputItem.toolSearchOutput()
 
+    /** @see ResponseOutputItem.additionalTools */
+    fun additionalTools(): Optional<ResponseOutputItem.AdditionalTools> =
+        rawOutputItem.additionalTools()
+
     /** @see ResponseOutputItem.webSearchCall */
     fun webSearchCall(): Optional<ResponseFunctionWebSearch> = rawOutputItem.webSearchCall()
 
     /** @see ResponseOutputItem.computerCall */
     fun computerCall(): Optional<ResponseComputerToolCall> = rawOutputItem.computerCall()
 
+    /** @see ResponseOutputItem.computerCallOutput */
+    fun computerCallOutput(): Optional<ResponseComputerToolCallOutputItem> =
+        rawOutputItem.computerCallOutput()
+
     /** @see ResponseOutputItem.reasoning */
     fun reasoning(): Optional<ResponseReasoningItem> = rawOutputItem.reasoning()
+
+    /** @see ResponseOutputItem.program */
+    fun program(): Optional<ResponseOutputItem.Program> = rawOutputItem.program()
+
+    /** @see ResponseOutputItem.programOutput */
+    fun programOutput(): Optional<ResponseOutputItem.ProgramOutput> = rawOutputItem.programOutput()
 
     /** @see ResponseOutputItem.compaction */
     fun compaction(): Optional<ResponseCompactionItem> = rawOutputItem.compaction()
@@ -62,6 +80,10 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.localShellCall */
     fun localShellCall(): Optional<ResponseOutputItem.LocalShellCall> =
         rawOutputItem.localShellCall()
+
+    /** @see ResponseOutputItem.localShellCallOutput */
+    fun localShellCallOutput(): Optional<ResponseOutputItem.LocalShellCallOutput> =
+        rawOutputItem.localShellCallOutput()
 
     /** @see ResponseOutputItem.shellCall */
     fun shellCall(): Optional<ResponseFunctionShellToolCall> = rawOutputItem.shellCall()
@@ -81,6 +103,10 @@ class StructuredResponseOutputItem<T : Any>(
     fun mcpApprovalRequest(): Optional<ResponseOutputItem.McpApprovalRequest> =
         rawOutputItem.mcpApprovalRequest()
 
+    /** @see ResponseOutputItem.mcpApprovalResponse */
+    fun mcpApprovalResponse(): Optional<ResponseOutputItem.McpApprovalResponse> =
+        rawOutputItem.mcpApprovalResponse()
+
     /** @see ResponseOutputItem.mcpCall */
     fun mcpCall(): Optional<ResponseOutputItem.McpCall> = rawOutputItem.mcpCall()
 
@@ -89,6 +115,10 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.customToolCall */
     fun customToolCall(): Optional<ResponseCustomToolCall> = rawOutputItem.customToolCall()
+
+    /** @see ResponseOutputItem.customToolCallOutput */
+    fun customToolCallOutput(): Optional<ResponseCustomToolCallOutputItem> =
+        rawOutputItem.customToolCallOutput()
 
     /** @see ResponseOutputItem.isMessage */
     fun isMessage(): Boolean = message().isPresent
@@ -99,11 +129,17 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isFunctionCall */
     fun isFunctionCall(): Boolean = rawOutputItem.isFunctionCall()
 
+    /** @see ResponseOutputItem.isFunctionCallOutput */
+    fun isFunctionCallOutput(): Boolean = rawOutputItem.isFunctionCallOutput()
+
     /** @see ResponseOutputItem.isToolSearchCall */
     fun isToolSearchCall(): Boolean = rawOutputItem.isToolSearchCall()
 
     /** @see ResponseOutputItem.isToolSearchOutput */
     fun isToolSearchOutput(): Boolean = rawOutputItem.isToolSearchOutput()
+
+    /** @see ResponseOutputItem.isAdditionalTools */
+    fun isAdditionalTools(): Boolean = rawOutputItem.isAdditionalTools()
 
     /** @see ResponseOutputItem.isWebSearchCall */
     fun isWebSearchCall(): Boolean = rawOutputItem.isWebSearchCall()
@@ -111,8 +147,17 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isComputerCall */
     fun isComputerCall(): Boolean = rawOutputItem.isComputerCall()
 
+    /** @see ResponseOutputItem.isComputerCallOutput */
+    fun isComputerCallOutput(): Boolean = rawOutputItem.isComputerCallOutput()
+
     /** @see ResponseOutputItem.isReasoning */
     fun isReasoning(): Boolean = rawOutputItem.isReasoning()
+
+    /** @see ResponseOutputItem.isProgram */
+    fun isProgram(): Boolean = rawOutputItem.isProgram()
+
+    /** @see ResponseOutputItem.isProgramOutput */
+    fun isProgramOutput(): Boolean = rawOutputItem.isProgramOutput()
 
     /** @see ResponseOutputItem.isCompaction */
     fun isCompaction(): Boolean = rawOutputItem.isCompaction()
@@ -125,6 +170,9 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.isLocalShellCall */
     fun isLocalShellCall(): Boolean = rawOutputItem.isLocalShellCall()
+
+    /** @see ResponseOutputItem.isLocalShellCallOutput */
+    fun isLocalShellCallOutput(): Boolean = rawOutputItem.isLocalShellCallOutput()
 
     /** @see ResponseOutputItem.isShellCall */
     fun isShellCall(): Boolean = rawOutputItem.isShellCall()
@@ -141,6 +189,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.isMcpApprovalRequest */
     fun isMcpApprovalRequest(): Boolean = rawOutputItem.isMcpApprovalRequest()
 
+    /** @see ResponseOutputItem.isMcpApprovalResponse */
+    fun isMcpApprovalResponse(): Boolean = rawOutputItem.isMcpApprovalResponse()
+
     /** @see ResponseOutputItem.isMcpCall */
     fun isMcpCall(): Boolean = rawOutputItem.isMcpCall()
 
@@ -149,6 +200,9 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.isCustomToolCall */
     fun isCustomToolCall(): Boolean = rawOutputItem.isCustomToolCall()
+
+    /** @see ResponseOutputItem.isCustomToolCallOutput */
+    fun isCustomToolCallOutput(): Boolean = rawOutputItem.isCustomToolCallOutput()
 
     /** @see ResponseOutputItem.asMessage */
     fun asMessage(): StructuredResponseOutputMessage<T> =
@@ -163,11 +217,18 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asFunctionCall */
     fun asFunctionCall(): ResponseFunctionToolCall = rawOutputItem.asFunctionCall()
 
+    /** @see ResponseOutputItem.asFunctionCallOutput */
+    fun asFunctionCallOutput(): ResponseFunctionToolCallOutputItem =
+        rawOutputItem.asFunctionCallOutput()
+
     /** @see ResponseOutputItem.asToolSearchCall */
     fun asToolSearchCall(): ResponseToolSearchCall = rawOutputItem.asToolSearchCall()
 
     /** @see ResponseOutputItem.asToolSearchOutput */
     fun asToolSearchOutput(): ResponseToolSearchOutputItem = rawOutputItem.asToolSearchOutput()
+
+    /** @see ResponseOutputItem.asAdditionalTools */
+    fun asAdditionalTools(): ResponseOutputItem.AdditionalTools = rawOutputItem.asAdditionalTools()
 
     /** @see ResponseOutputItem.asWebSearchCall */
     fun asWebSearchCall(): ResponseFunctionWebSearch = rawOutputItem.asWebSearchCall()
@@ -175,8 +236,18 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asComputerCall */
     fun asComputerCall(): ResponseComputerToolCall = rawOutputItem.asComputerCall()
 
+    /** @see ResponseOutputItem.asComputerCallOutput */
+    fun asComputerCallOutput(): ResponseComputerToolCallOutputItem =
+        rawOutputItem.asComputerCallOutput()
+
     /** @see ResponseOutputItem.asReasoning */
     fun asReasoning(): ResponseReasoningItem = rawOutputItem.asReasoning()
+
+    /** @see ResponseOutputItem.asProgram */
+    fun asProgram(): ResponseOutputItem.Program = rawOutputItem.asProgram()
+
+    /** @see ResponseOutputItem.asProgramOutput */
+    fun asProgramOutput(): ResponseOutputItem.ProgramOutput = rawOutputItem.asProgramOutput()
 
     /** @see ResponseOutputItem.asCompaction */
     fun asCompaction(): ResponseCompactionItem = rawOutputItem.asCompaction()
@@ -191,6 +262,10 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.asLocalShellCall */
     fun asLocalShellCall(): ResponseOutputItem.LocalShellCall = rawOutputItem.asLocalShellCall()
+
+    /** @see ResponseOutputItem.asLocalShellCallOutput */
+    fun asLocalShellCallOutput(): ResponseOutputItem.LocalShellCallOutput =
+        rawOutputItem.asLocalShellCallOutput()
 
     /** @see ResponseOutputItem.asShellCall */
     fun asShellCall(): ResponseFunctionShellToolCall = rawOutputItem.asShellCall()
@@ -209,6 +284,10 @@ class StructuredResponseOutputItem<T : Any>(
     fun asMcpApprovalRequest(): ResponseOutputItem.McpApprovalRequest =
         rawOutputItem.asMcpApprovalRequest()
 
+    /** @see ResponseOutputItem.asMcpApprovalResponse */
+    fun asMcpApprovalResponse(): ResponseOutputItem.McpApprovalResponse =
+        rawOutputItem.asMcpApprovalResponse()
+
     /** @see ResponseOutputItem.asMcpCall */
     fun asMcpCall(): ResponseOutputItem.McpCall = rawOutputItem.asMcpCall()
 
@@ -217,6 +296,10 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.asCustomToolCall */
     fun asCustomToolCall(): ResponseCustomToolCall = rawOutputItem.asCustomToolCall()
+
+    /** @see ResponseOutputItem.asCustomToolCallOutput */
+    fun asCustomToolCallOutput(): ResponseCustomToolCallOutputItem =
+        rawOutputItem.asCustomToolCallOutput()
 
     /** @see ResponseOutputItem._json */
     fun _json(): Optional<JsonValue> = rawOutputItem._json()
@@ -227,22 +310,31 @@ class StructuredResponseOutputItem<T : Any>(
             isMessage() -> visitor.visitMessage(asMessage())
             isFileSearchCall() -> visitor.visitFileSearchCall(asFileSearchCall())
             isFunctionCall() -> visitor.visitFunctionCall(asFunctionCall())
+            isFunctionCallOutput() -> visitor.visitFunctionCallOutput(asFunctionCallOutput())
             isToolSearchCall() -> visitor.visitToolSearchCall(asToolSearchCall())
             isToolSearchOutput() -> visitor.visitToolSearchOutput(asToolSearchOutput())
+            isAdditionalTools() -> visitor.visitAdditionalTools(asAdditionalTools())
             isWebSearchCall() -> visitor.visitWebSearchCall(asWebSearchCall())
             isComputerCall() -> visitor.visitComputerCall(asComputerCall())
+            isComputerCallOutput() -> visitor.visitComputerCallOutput(asComputerCallOutput())
             isReasoning() -> visitor.visitReasoning(asReasoning())
+            isProgram() -> visitor.visitProgram(asProgram())
+            isProgramOutput() -> visitor.visitProgramOutput(asProgramOutput())
             isCompaction() -> visitor.visitCompaction(asCompaction())
             isCodeInterpreterCall() -> visitor.visitCodeInterpreterCall(asCodeInterpreterCall())
             isImageGenerationCall() -> visitor.visitImageGenerationCall(asImageGenerationCall())
             isLocalShellCall() -> visitor.visitLocalShellCall(asLocalShellCall())
+            isLocalShellCallOutput() -> visitor.visitLocalShellCallOutput(asLocalShellCallOutput())
             isShellCall() -> visitor.visitShellCall(asShellCall())
             isShellCallOutput() -> visitor.visitShellCallOutput(asShellCallOutput())
             isApplyPatchCall() -> visitor.visitApplyPatchCall(asApplyPatchCall())
             isApplyPatchCallOutput() -> visitor.visitApplyPatchCallOutput(asApplyPatchCallOutput())
             isMcpApprovalRequest() -> visitor.visitMcpApprovalRequest(asMcpApprovalRequest())
+            isMcpApprovalResponse() -> visitor.visitMcpApprovalResponse(asMcpApprovalResponse())
             isMcpCall() -> visitor.visitMcpCall(asMcpCall())
             isMcpListTools() -> visitor.visitMcpListTools(asMcpListTools())
+            isCustomToolCall() -> visitor.visitCustomToolCall(asCustomToolCall())
+            isCustomToolCallOutput() -> visitor.visitCustomToolCallOutput(asCustomToolCallOutput())
             else -> visitor.unknown(_json().getOrNull())
         }
 
@@ -268,12 +360,24 @@ class StructuredResponseOutputItem<T : Any>(
                     functionCall.validate()
                 }
 
+                override fun visitFunctionCallOutput(
+                    functionCallOutput: ResponseFunctionToolCallOutputItem
+                ) {
+                    functionCallOutput.validate()
+                }
+
                 override fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall) {
                     toolSearchCall.validate()
                 }
 
                 override fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem) {
                     toolSearchOutput.validate()
+                }
+
+                override fun visitAdditionalTools(
+                    additionalTools: ResponseOutputItem.AdditionalTools
+                ) {
+                    additionalTools.validate()
                 }
 
                 override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) {
@@ -284,8 +388,22 @@ class StructuredResponseOutputItem<T : Any>(
                     computerCall.validate()
                 }
 
+                override fun visitComputerCallOutput(
+                    computerCallOutput: ResponseComputerToolCallOutputItem
+                ) {
+                    computerCallOutput.validate()
+                }
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
                     reasoning.validate()
+                }
+
+                override fun visitProgram(program: ResponseOutputItem.Program) {
+                    program.validate()
+                }
+
+                override fun visitProgramOutput(programOutput: ResponseOutputItem.ProgramOutput) {
+                    programOutput.validate()
                 }
 
                 override fun visitCompaction(compaction: ResponseCompactionItem) {
@@ -308,6 +426,12 @@ class StructuredResponseOutputItem<T : Any>(
                     localShellCall: ResponseOutputItem.LocalShellCall
                 ) {
                     localShellCall.validate()
+                }
+
+                override fun visitLocalShellCallOutput(
+                    localShellCallOutput: ResponseOutputItem.LocalShellCallOutput
+                ) {
+                    localShellCallOutput.validate()
                 }
 
                 override fun visitShellCall(shellCall: ResponseFunctionShellToolCall) {
@@ -336,12 +460,28 @@ class StructuredResponseOutputItem<T : Any>(
                     mcpApprovalRequest.validate()
                 }
 
+                override fun visitMcpApprovalResponse(
+                    mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse
+                ) {
+                    mcpApprovalResponse.validate()
+                }
+
                 override fun visitMcpCall(mcpCall: ResponseOutputItem.McpCall) {
                     mcpCall.validate()
                 }
 
                 override fun visitMcpListTools(mcpListTools: ResponseOutputItem.McpListTools) {
                     mcpListTools.validate()
+                }
+
+                override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) {
+                    customToolCall.validate()
+                }
+
+                override fun visitCustomToolCallOutput(
+                    customToolCallOutput: ResponseCustomToolCallOutputItem
+                ) {
+                    customToolCallOutput.validate()
                 }
             }
         )
@@ -386,11 +526,17 @@ class StructuredResponseOutputItem<T : Any>(
         /** @see ResponseOutputItem.Visitor.visitFunctionCall */
         fun visitFunctionCall(functionCall: ResponseFunctionToolCall): T
 
+        /** @see ResponseOutputItem.Visitor.visitFunctionCallOutput */
+        fun visitFunctionCallOutput(functionCallOutput: ResponseFunctionToolCallOutputItem): T
+
         /** @see ResponseOutputItem.Visitor.visitToolSearchCall */
         fun visitToolSearchCall(toolSearchCall: ResponseToolSearchCall): T
 
         /** @see ResponseOutputItem.Visitor.visitToolSearchOutput */
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
+
+        /** @see ResponseOutputItem.Visitor.visitAdditionalTools */
+        fun visitAdditionalTools(additionalTools: ResponseOutputItem.AdditionalTools): T
 
         /** @see ResponseOutputItem.Visitor.visitWebSearchCall */
         fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch): T
@@ -398,8 +544,17 @@ class StructuredResponseOutputItem<T : Any>(
         /** @see ResponseOutputItem.Visitor.visitComputerCall */
         fun visitComputerCall(computerCall: ResponseComputerToolCall): T
 
+        /** @see ResponseOutputItem.Visitor.visitComputerCallOutput */
+        fun visitComputerCallOutput(computerCallOutput: ResponseComputerToolCallOutputItem): T
+
         /** @see ResponseOutputItem.Visitor.visitReasoning */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
+
+        /** @see ResponseOutputItem.Visitor.visitProgram */
+        fun visitProgram(program: ResponseOutputItem.Program): T
+
+        /** @see ResponseOutputItem.Visitor.visitProgramOutput */
+        fun visitProgramOutput(programOutput: ResponseOutputItem.ProgramOutput): T
 
         /** @see ResponseOutputItem.Visitor.visitCompaction */
         fun visitCompaction(compaction: ResponseCompactionItem): T
@@ -412,6 +567,11 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitLocalShellCall */
         fun visitLocalShellCall(localShellCall: ResponseOutputItem.LocalShellCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitLocalShellCallOutput */
+        fun visitLocalShellCallOutput(
+            localShellCallOutput: ResponseOutputItem.LocalShellCallOutput
+        ): T
 
         /** @see ResponseOutputItem.Visitor.visitShellCall */
         fun visitShellCall(shellCall: ResponseFunctionShellToolCall): T
@@ -428,11 +588,20 @@ class StructuredResponseOutputItem<T : Any>(
         /** @see ResponseOutputItem.Visitor.visitMcpApprovalRequest */
         fun visitMcpApprovalRequest(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest): T
 
+        /** @see ResponseOutputItem.Visitor.visitMcpApprovalResponse */
+        fun visitMcpApprovalResponse(mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse): T
+
         /** @see ResponseOutputItem.Visitor.visitMcpCall */
         fun visitMcpCall(mcpCall: ResponseOutputItem.McpCall): T
 
         /** @see ResponseOutputItem.Visitor.visitMcpListTools */
         fun visitMcpListTools(mcpListTools: ResponseOutputItem.McpListTools): T
+
+        /** @see ResponseOutputItem.Visitor.visitCustomToolCall */
+        fun visitCustomToolCall(customToolCall: ResponseCustomToolCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitCustomToolCallOutput */
+        fun visitCustomToolCallOutput(customToolCallOutput: ResponseCustomToolCallOutputItem): T
 
         /** @see ResponseOutputItem.Visitor.unknown */
         fun unknown(json: JsonValue?): T {

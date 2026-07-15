@@ -169,6 +169,13 @@ private constructor(
         fun item(functionCall: ResponseFunctionToolCall) =
             item(ResponseOutputItem.ofFunctionCall(functionCall))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofFunctionCallOutput(functionCallOutput)`.
+         */
+        fun item(functionCallOutput: ResponseFunctionToolCallOutputItem) =
+            item(ResponseOutputItem.ofFunctionCallOutput(functionCallOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofWebSearchCall(webSearchCall)`. */
         fun item(webSearchCall: ResponseFunctionWebSearch) =
             item(ResponseOutputItem.ofWebSearchCall(webSearchCall))
@@ -177,8 +184,22 @@ private constructor(
         fun item(computerCall: ResponseComputerToolCall) =
             item(ResponseOutputItem.ofComputerCall(computerCall))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofComputerCallOutput(computerCallOutput)`.
+         */
+        fun item(computerCallOutput: ResponseComputerToolCallOutputItem) =
+            item(ResponseOutputItem.ofComputerCallOutput(computerCallOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofProgram(program)`. */
+        fun item(program: ResponseOutputItem.Program) = item(ResponseOutputItem.ofProgram(program))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofProgramOutput(programOutput)`. */
+        fun item(programOutput: ResponseOutputItem.ProgramOutput) =
+            item(ResponseOutputItem.ofProgramOutput(programOutput))
 
         /** Alias for calling [item] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`. */
         fun item(toolSearchCall: ResponseToolSearchCall) =
@@ -189,6 +210,12 @@ private constructor(
          */
         fun item(toolSearchOutput: ResponseToolSearchOutputItem) =
             item(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+
+        /**
+         * Alias for calling [item] with `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun item(additionalTools: ResponseOutputItem.AdditionalTools) =
+            item(ResponseOutputItem.ofAdditionalTools(additionalTools))
 
         /** Alias for calling [item] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun item(compaction: ResponseCompactionItem) =
@@ -211,6 +238,13 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofLocalShellCall(localShellCall)`. */
         fun item(localShellCall: ResponseOutputItem.LocalShellCall) =
             item(ResponseOutputItem.ofLocalShellCall(localShellCall))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)`.
+         */
+        fun item(localShellCallOutput: ResponseOutputItem.LocalShellCallOutput) =
+            item(ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput))
 
         /** Alias for calling [item] with `ResponseOutputItem.ofShellCall(shellCall)`. */
         fun item(shellCall: ResponseFunctionShellToolCall) =
@@ -247,9 +281,23 @@ private constructor(
         fun item(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest) =
             item(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         */
+        fun item(mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse) =
+            item(ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofCustomToolCall(customToolCall)`. */
         fun item(customToolCall: ResponseCustomToolCall) =
             item(ResponseOutputItem.ofCustomToolCall(customToolCall))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         */
+        fun item(customToolCallOutput: ResponseCustomToolCallOutputItem) =
+            item(ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /** The index of the output item that was marked done. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
@@ -336,6 +384,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ResponseOutputItemDoneEvent = apply {
         if (validated) {
             return@apply

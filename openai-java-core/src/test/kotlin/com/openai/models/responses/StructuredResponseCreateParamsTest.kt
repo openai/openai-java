@@ -59,9 +59,11 @@ internal class StructuredResponseCreateParamsTest {
 
         private val INCLUDABLE = ResponseIncludable.of(STRING)
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
+        private val MODERATION = ResponseCreateParams.Moderation.builder().model(STRING).build()
         private val SERVICE_TIER = ResponseCreateParams.ServiceTier.AUTO
         private val REASONING = Reasoning.builder().build()
         private val PROMPT = ResponsePrompt.builder().id("test-prompt-id").build()
+        private val PROMPT_CACHE_OPTIONS = ResponseCreateParams.PromptCacheOptions.builder().build()
         private val RESPONSE_CONVERSATION_PARAM =
             ResponseConversationParam.builder().id(STRING).build()
         private val CONVERSATION = ResponseCreateParams.Conversation.ofId(STRING)
@@ -169,6 +171,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
+                DelegationWriteTestCase("moderation", MODERATION),
+                DelegationWriteTestCase("moderation", OPTIONAL),
+                DelegationWriteTestCase("moderation", JSON_FIELD),
                 DelegationWriteTestCase("parallelToolCalls", NULLABLE_BOOLEAN),
                 DelegationWriteTestCase("parallelToolCalls", BOOLEAN),
                 DelegationWriteTestCase("parallelToolCalls", OPTIONAL),
@@ -181,6 +186,8 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("prompt", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheKey", STRING),
                 DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheOptions", PROMPT_CACHE_OPTIONS),
+                DelegationWriteTestCase("promptCacheOptions", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_OPTIONAL),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_JSON_FIELD),
@@ -214,6 +221,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_CUSTOM),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_APPLY_PATCH),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_SHELL),
+                DelegationWriteTestCase("toolChoiceSpecificProgrammaticToolCallingParam"),
                 DelegationWriteTestCase("tools", LIST),
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
@@ -236,6 +244,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addCodeInterpreterTool", CODE_INTERPRETER_TOOL_AUTO),
                 DelegationWriteTestCase("addTool", IMAGE_GENERATION_TOOL),
                 DelegationWriteTestCase("addToolLocalShell"),
+                DelegationWriteTestCase("addToolProgrammaticToolCalling"),
                 DelegationWriteTestCase("addTool", FUNCTION_SHELL_TOOL),
                 DelegationWriteTestCase("addTool", CUSTOM_TOOL),
                 DelegationWriteTestCase("addCustomTool", STRING),

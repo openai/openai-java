@@ -18,6 +18,7 @@ import com.openai.models.conversations.Message
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
+import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
 import com.openai.models.responses.ResponseCustomToolCall
@@ -255,9 +256,27 @@ private constructor(
         fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
             addData(ConversationItem.ofToolSearchOutput(toolSearchOutput))
 
+        /**
+         * Alias for calling [addData] with `ConversationItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addData(additionalTools: ConversationItem.AdditionalTools) =
+            addData(ConversationItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [addData] with `ConversationItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) =
             addData(ConversationItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addData] with `ConversationItem.ofProgram(program)`. */
+        fun addData(program: ConversationItem.Program) =
+            addData(ConversationItem.ofProgram(program))
+
+        /** Alias for calling [addData] with `ConversationItem.ofProgramOutput(programOutput)`. */
+        fun addData(programOutput: ConversationItem.ProgramOutput) =
+            addData(ConversationItem.ofProgramOutput(programOutput))
+
+        /** Alias for calling [addData] with `ConversationItem.ofCompaction(compaction)`. */
+        fun addData(compaction: ResponseCompactionItem) =
+            addData(ConversationItem.ofCompaction(compaction))
 
         /**
          * Alias for calling [addData] with
@@ -425,6 +444,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ConversationItemList = apply {
         if (validated) {
             return@apply

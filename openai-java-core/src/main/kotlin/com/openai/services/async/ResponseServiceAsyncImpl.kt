@@ -5,6 +5,7 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
 import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorBodyHandler
@@ -36,6 +37,7 @@ import com.openai.services.async.responses.InputItemServiceAsync
 import com.openai.services.async.responses.InputItemServiceAsyncImpl
 import com.openai.services.async.responses.InputTokenServiceAsync
 import com.openai.services.async.responses.InputTokenServiceAsyncImpl
+import com.openai.services.validateForStream
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -158,7 +160,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .addPathSegments("responses")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -199,7 +205,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                         )
                     )
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -209,7 +219,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                             .let { createStreamingHandler.handle(it) }
                             .let { streamResponse ->
                                 if (requestOptions.responseValidation!!) {
-                                    streamResponse.map { it.validate() }
+                                    streamResponse.map { it.validateForStream() }
                                 } else {
                                     streamResponse
                                 }
@@ -234,7 +244,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -269,7 +283,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .putQueryParam("stream", "true")
                     .putHeader("Accept", "text/event-stream")
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -279,7 +297,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                             .let { retrieveStreamingHandler.handle(it) }
                             .let { streamResponse ->
                                 if (requestOptions.responseValidation!!) {
-                                    streamResponse.map { it.validate() }
+                                    streamResponse.map { it.validateForStream() }
                                 } else {
                                     streamResponse
                                 }
@@ -304,7 +322,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .addPathSegments("responses", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -332,7 +354,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .addPathSegments("responses", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -363,7 +389,11 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .addPathSegments("responses", "compact")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

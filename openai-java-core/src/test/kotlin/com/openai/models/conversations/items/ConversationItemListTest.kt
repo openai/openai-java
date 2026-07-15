@@ -5,6 +5,7 @@ package com.openai.models.conversations.items
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.conversations.Message
+import com.openai.models.responses.ResponseInputText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -17,9 +18,17 @@ internal class ConversationItemListTest {
                 .addData(
                     Message.builder()
                         .id("id")
-                        .addInputTextContent("text")
+                        .addContent(
+                            ResponseInputText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                )
+                                .build()
+                        )
                         .role(Message.Role.UNKNOWN)
                         .status(Message.Status.IN_PROGRESS)
+                        .phase(Message.Phase.COMMENTARY)
                         .build()
                 )
                 .firstId("first_id")
@@ -32,9 +41,17 @@ internal class ConversationItemListTest {
                 ConversationItem.ofMessage(
                     Message.builder()
                         .id("id")
-                        .addInputTextContent("text")
+                        .addContent(
+                            ResponseInputText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                )
+                                .build()
+                        )
                         .role(Message.Role.UNKNOWN)
                         .status(Message.Status.IN_PROGRESS)
+                        .phase(Message.Phase.COMMENTARY)
                         .build()
                 )
             )
@@ -51,9 +68,17 @@ internal class ConversationItemListTest {
                 .addData(
                     Message.builder()
                         .id("id")
-                        .addInputTextContent("text")
+                        .addContent(
+                            ResponseInputText.builder()
+                                .text("text")
+                                .promptCacheBreakpoint(
+                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                )
+                                .build()
+                        )
                         .role(Message.Role.UNKNOWN)
                         .status(Message.Status.IN_PROGRESS)
+                        .phase(Message.Phase.COMMENTARY)
                         .build()
                 )
                 .firstId("first_id")

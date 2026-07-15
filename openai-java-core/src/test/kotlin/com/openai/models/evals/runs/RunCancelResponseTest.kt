@@ -60,7 +60,7 @@ internal class RunCancelResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunCancelResponse.ResultCounts.builder()
                         .errored(0L)
@@ -130,7 +130,7 @@ internal class RunCancelResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runCancelResponse.reportUrl()).isEqualTo("report_url")
+        assertThat(runCancelResponse.reportUrl()).isEqualTo("https://example.com")
         assertThat(runCancelResponse.resultCounts())
             .isEqualTo(
                 RunCancelResponse.ResultCounts.builder()
@@ -194,7 +194,7 @@ internal class RunCancelResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunCancelResponse.ResultCounts.builder()
                         .errored(0L)

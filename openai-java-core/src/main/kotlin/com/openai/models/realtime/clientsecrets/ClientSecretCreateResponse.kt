@@ -161,12 +161,12 @@ private constructor(
          * Alias for calling [session] with the following:
          * ```java
          * RealtimeSessionCreateResponse.builder()
-         *     .clientSecret(clientSecret)
+         *     .id(id)
          *     .build()
          * ```
          */
-        fun realtimeSession(clientSecret: RealtimeSessionClientSecret) =
-            session(RealtimeSessionCreateResponse.builder().clientSecret(clientSecret).build())
+        fun realtimeSession(id: String) =
+            session(RealtimeSessionCreateResponse.builder().id(id).build())
 
         /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
         fun session(transcription: RealtimeTranscriptionSessionCreateResponse) =
@@ -227,6 +227,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ClientSecretCreateResponse = apply {
         if (validated) {
             return@apply
@@ -267,10 +275,7 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        /**
-         * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one
-         * minute.
-         */
+        /** A Realtime session configuration object. */
         fun realtime(): Optional<RealtimeSessionCreateResponse> = Optional.ofNullable(realtime)
 
         /** A Realtime transcription session configuration object. */
@@ -281,10 +286,7 @@ private constructor(
 
         fun isTranscription(): Boolean = transcription != null
 
-        /**
-         * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one
-         * minute.
-         */
+        /** A Realtime session configuration object. */
         fun asRealtime(): RealtimeSessionCreateResponse = realtime.getOrThrow("realtime")
 
         /** A Realtime transcription session configuration object. */
@@ -293,6 +295,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = session.accept(new Session.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitRealtime(RealtimeSessionCreateResponse realtime) {
+         *         return Optional.of(realtime.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 realtime != null -> visitor.visitRealtime(realtime)
@@ -302,6 +333,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Session = apply {
             if (validated) {
                 return@apply
@@ -374,10 +414,7 @@ private constructor(
 
         companion object {
 
-            /**
-             * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is
-             * one minute.
-             */
+            /** A Realtime session configuration object. */
             @JvmStatic
             fun ofRealtime(realtime: RealtimeSessionCreateResponse) = Session(realtime = realtime)
 
@@ -392,10 +429,7 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            /**
-             * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is
-             * one minute.
-             */
+            /** A Realtime session configuration object. */
             fun visitRealtime(realtime: RealtimeSessionCreateResponse): T
 
             /** A Realtime transcription session configuration object. */

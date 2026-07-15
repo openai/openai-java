@@ -9,6 +9,7 @@ import com.openai.errors.OpenAIInvalidDataException
 
 /**
  * Specify additional output data to include in the model response. Currently supported values are:
+ * - `web_search_call.results`: Include the search results of the web search tool call.
  * - `web_search_call.action.sources`: Include the sources of the web search tool call.
  * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
  *   interpreter tool call items.
@@ -147,6 +148,14 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ResponseIncludable = apply {
         if (validated) {
             return@apply

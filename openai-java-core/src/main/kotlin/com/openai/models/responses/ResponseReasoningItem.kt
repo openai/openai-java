@@ -92,8 +92,8 @@ private constructor(
     fun content(): Optional<List<Content>> = content.getOptional("content")
 
     /**
-     * The encrypted content of the reasoning item - populated when a response is generated with
-     * `reasoning.encrypted_content` in the `include` parameter.
+     * The encrypted content of the reasoning item. This is populated by default for reasoning items
+     * returned by `POST /v1/responses` and WebSocket `response.create` requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -273,8 +273,8 @@ private constructor(
         }
 
         /**
-         * The encrypted content of the reasoning item - populated when a response is generated with
-         * `reasoning.encrypted_content` in the `include` parameter.
+         * The encrypted content of the reasoning item. This is populated by default for reasoning
+         * items returned by `POST /v1/responses` and WebSocket `response.create` requests.
          */
         fun encryptedContent(encryptedContent: String?) =
             encryptedContent(JsonField.ofNullable(encryptedContent))
@@ -354,6 +354,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ResponseReasoningItem = apply {
         if (validated) {
             return@apply
@@ -539,6 +547,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Summary = apply {
             if (validated) {
                 return@apply
@@ -736,6 +753,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Content = apply {
             if (validated) {
                 return@apply
@@ -885,6 +911,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Status = apply {
             if (validated) {
                 return@apply

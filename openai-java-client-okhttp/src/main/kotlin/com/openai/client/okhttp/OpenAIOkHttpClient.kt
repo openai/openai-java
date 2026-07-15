@@ -3,16 +3,19 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.auth.WorkloadIdentity
 import com.openai.azure.AzureOpenAIServiceVersion
 import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClient
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
+import com.openai.core.LogLevel
 import com.openai.core.Sleeper
 import com.openai.core.Timeout
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.ProxyAuthenticator
 import com.openai.core.http.QueryParams
 import com.openai.credential.Credential
 import java.net.Proxy
@@ -51,6 +54,7 @@ class OpenAIOkHttpClient private constructor() {
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var dispatcherExecutorService: ExecutorService? = null
         private var proxy: Proxy? = null
+        private var proxyAuthenticator: ProxyAuthenticator? = null
         private var maxIdleConnections: Int? = null
         private var keepAliveDuration: Duration? = null
         private var sslSocketFactory: SSLSocketFactory? = null
@@ -80,6 +84,20 @@ class OpenAIOkHttpClient private constructor() {
 
         /** Alias for calling [Builder.proxy] with `proxy.orElse(null)`. */
         fun proxy(proxy: Optional<Proxy>) = proxy(proxy.getOrNull())
+
+        /**
+         * Provides credentials when an HTTP proxy responds with `407 Proxy Authentication
+         * Required`.
+         */
+        fun proxyAuthenticator(proxyAuthenticator: ProxyAuthenticator?) = apply {
+            this.proxyAuthenticator = proxyAuthenticator
+        }
+
+        /**
+         * Alias for calling [Builder.proxyAuthenticator] with `proxyAuthenticator.orElse(null)`.
+         */
+        fun proxyAuthenticator(proxyAuthenticator: Optional<ProxyAuthenticator>) =
+            proxyAuthenticator(proxyAuthenticator.getOrNull())
 
         /**
          * The maximum number of idle connections kept by the underlying OkHttp connection pool.
@@ -232,6 +250,9 @@ class OpenAIOkHttpClient private constructor() {
         /**
          * Whether to call `validate` on every response before returning it.
          *
+         * Setting this to `true` is _not_ forwards compatible with new types from the API for
+         * existing fields.
+         *
          * Defaults to false, which means the shape of the response will not be validated upfront.
          * Instead, validation will only occur for the parts of the response that are accessed.
          */
@@ -273,9 +294,34 @@ class OpenAIOkHttpClient private constructor() {
          */
         fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
 
-        fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { clientOptions.logLevel(logLevel) }
+
+        fun apiKey(apiKey: String?) = apply { clientOptions.apiKey(apiKey) }
+
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
+
+        fun adminApiKey(adminApiKey: String?) = apply { clientOptions.adminApiKey(adminApiKey) }
+
+        /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
+        fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
 
         fun credential(credential: Credential) = apply { clientOptions.credential(credential) }
+
+        fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
+            clientOptions.workloadIdentity(workloadIdentity)
+        }
+
+        /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
+        fun workloadIdentity(workloadIdentity: Optional<WorkloadIdentity>) =
+            workloadIdentity(workloadIdentity.getOrNull())
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             clientOptions.azureServiceVersion(azureServiceVersion)
@@ -402,6 +448,7 @@ class OpenAIOkHttpClient private constructor() {
                         OkHttpClient.builder()
                             .timeout(clientOptions.timeout())
                             .proxy(proxy)
+                            .proxyAuthenticator(proxyAuthenticator)
                             .maxIdleConnections(maxIdleConnections)
                             .keepAliveDuration(keepAliveDuration)
                             .dispatcherExecutorService(dispatcherExecutorService)

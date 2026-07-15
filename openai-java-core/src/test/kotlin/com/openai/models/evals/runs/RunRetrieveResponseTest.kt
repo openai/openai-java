@@ -60,7 +60,7 @@ internal class RunRetrieveResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunRetrieveResponse.ResultCounts.builder()
                         .errored(0L)
@@ -130,7 +130,7 @@ internal class RunRetrieveResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runRetrieveResponse.reportUrl()).isEqualTo("report_url")
+        assertThat(runRetrieveResponse.reportUrl()).isEqualTo("https://example.com")
         assertThat(runRetrieveResponse.resultCounts())
             .isEqualTo(
                 RunRetrieveResponse.ResultCounts.builder()
@@ -194,7 +194,7 @@ internal class RunRetrieveResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunRetrieveResponse.ResultCounts.builder()
                         .errored(0L)

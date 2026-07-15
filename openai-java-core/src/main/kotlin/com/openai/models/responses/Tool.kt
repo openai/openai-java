@@ -43,6 +43,7 @@ private constructor(
     private val webSearch: WebSearchTool? = null,
     private val mcp: Mcp? = null,
     private val codeInterpreter: CodeInterpreter? = null,
+    private val programmaticToolCalling: JsonValue? = null,
     private val imageGeneration: ImageGeneration? = null,
     private val localShell: JsonValue? = null,
     private val shell: FunctionShellTool? = null,
@@ -94,6 +95,9 @@ private constructor(
     /** A tool that runs Python code to help generate a response to a prompt. */
     fun codeInterpreter(): Optional<CodeInterpreter> = Optional.ofNullable(codeInterpreter)
 
+    fun programmaticToolCalling(): Optional<JsonValue> =
+        Optional.ofNullable(programmaticToolCalling)
+
     /** A tool that generates images using the GPT image models. */
     fun imageGeneration(): Optional<ImageGeneration> = Optional.ofNullable(imageGeneration)
 
@@ -137,6 +141,8 @@ private constructor(
     fun isMcp(): Boolean = mcp != null
 
     fun isCodeInterpreter(): Boolean = codeInterpreter != null
+
+    fun isProgrammaticToolCalling(): Boolean = programmaticToolCalling != null
 
     fun isImageGeneration(): Boolean = imageGeneration != null
 
@@ -194,6 +200,9 @@ private constructor(
     /** A tool that runs Python code to help generate a response to a prompt. */
     fun asCodeInterpreter(): CodeInterpreter = codeInterpreter.getOrThrow("codeInterpreter")
 
+    fun asProgrammaticToolCalling(): JsonValue =
+        programmaticToolCalling.getOrThrow("programmaticToolCalling")
+
     /** A tool that generates images using the GPT image models. */
     fun asImageGeneration(): ImageGeneration = imageGeneration.getOrThrow("imageGeneration")
 
@@ -226,6 +235,35 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+    /**
+     * Maps this instance's current variant to a value of type [T] using the given [visitor].
+     *
+     * Note that this method is _not_ forwards compatible with new variants from the API, unless
+     * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of the
+     * SDK gracefully, consider overriding [Visitor.unknown]:
+     * ```java
+     * import com.openai.core.JsonValue;
+     * import java.util.Optional;
+     *
+     * Optional<String> result = tool.accept(new Tool.Visitor<Optional<String>>() {
+     *     @Override
+     *     public Optional<String> visitFunction(FunctionTool function) {
+     *         return Optional.of(function.toString());
+     *     }
+     *
+     *     // ...
+     *
+     *     @Override
+     *     public Optional<String> unknown(JsonValue json) {
+     *         // Or inspect the `json`.
+     *         return Optional.empty();
+     *     }
+     * });
+     * ```
+     *
+     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
+     *   the current variant is unknown.
+     */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             function != null -> visitor.visitFunction(function)
@@ -235,6 +273,8 @@ private constructor(
             webSearch != null -> visitor.visitWebSearch(webSearch)
             mcp != null -> visitor.visitMcp(mcp)
             codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
+            programmaticToolCalling != null ->
+                visitor.visitProgrammaticToolCalling(programmaticToolCalling)
             imageGeneration != null -> visitor.visitImageGeneration(imageGeneration)
             localShell != null -> visitor.visitLocalShell(localShell)
             shell != null -> visitor.visitShell(shell)
@@ -248,6 +288,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): Tool = apply {
         if (validated) {
             return@apply
@@ -281,6 +329,16 @@ private constructor(
 
                 override fun visitCodeInterpreter(codeInterpreter: CodeInterpreter) {
                     codeInterpreter.validate()
+                }
+
+                override fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue) {
+                    programmaticToolCalling.let {
+                        if (it != JsonValue.from(mapOf("type" to "programmatic_tool_calling"))) {
+                            throw OpenAIInvalidDataException(
+                                "'programmaticToolCalling' is invalid, received $it"
+                            )
+                        }
+                    }
                 }
 
                 override fun visitImageGeneration(imageGeneration: ImageGeneration) {
@@ -358,6 +416,12 @@ private constructor(
                 override fun visitCodeInterpreter(codeInterpreter: CodeInterpreter) =
                     codeInterpreter.validity()
 
+                override fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue) =
+                    programmaticToolCalling.let {
+                        if (it == JsonValue.from(mapOf("type" to "programmatic_tool_calling"))) 1
+                        else 0
+                    }
+
                 override fun visitImageGeneration(imageGeneration: ImageGeneration) =
                     imageGeneration.validity()
 
@@ -396,6 +460,7 @@ private constructor(
             webSearch == other.webSearch &&
             mcp == other.mcp &&
             codeInterpreter == other.codeInterpreter &&
+            programmaticToolCalling == other.programmaticToolCalling &&
             imageGeneration == other.imageGeneration &&
             localShell == other.localShell &&
             shell == other.shell &&
@@ -415,6 +480,7 @@ private constructor(
             webSearch,
             mcp,
             codeInterpreter,
+            programmaticToolCalling,
             imageGeneration,
             localShell,
             shell,
@@ -434,6 +500,8 @@ private constructor(
             webSearch != null -> "Tool{webSearch=$webSearch}"
             mcp != null -> "Tool{mcp=$mcp}"
             codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
+            programmaticToolCalling != null ->
+                "Tool{programmaticToolCalling=$programmaticToolCalling}"
             imageGeneration != null -> "Tool{imageGeneration=$imageGeneration}"
             localShell != null -> "Tool{localShell=$localShell}"
             shell != null -> "Tool{shell=$shell}"
@@ -491,6 +559,13 @@ private constructor(
         @JvmStatic
         fun ofCodeInterpreter(codeInterpreter: CodeInterpreter) =
             Tool(codeInterpreter = codeInterpreter)
+
+        @JvmStatic
+        fun ofProgrammaticToolCalling() =
+            Tool(
+                programmaticToolCalling =
+                    JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+            )
 
         /** A tool that generates images using the GPT image models. */
         @JvmStatic
@@ -570,6 +645,8 @@ private constructor(
 
         /** A tool that runs Python code to help generate a response to a prompt. */
         fun visitCodeInterpreter(codeInterpreter: CodeInterpreter): T
+
+        fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue): T
 
         /** A tool that generates images using the GPT image models. */
         fun visitImageGeneration(imageGeneration: ImageGeneration): T
@@ -652,6 +729,11 @@ private constructor(
                         Tool(codeInterpreter = it, _json = json)
                     } ?: Tool(_json = json)
                 }
+                "programmatic_tool_calling" -> {
+                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                        ?.let { Tool(programmaticToolCalling = it, _json = json) }
+                        ?.takeIf { it.isValid() } ?: Tool(_json = json)
+                }
                 "image_generation" -> {
                     return tryDeserialize(node, jacksonTypeRef<ImageGeneration>())?.let {
                         Tool(imageGeneration = it, _json = json)
@@ -728,6 +810,8 @@ private constructor(
                 value.webSearch != null -> generator.writeObject(value.webSearch)
                 value.mcp != null -> generator.writeObject(value.mcp)
                 value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
+                value.programmaticToolCalling != null ->
+                    generator.writeObject(value.programmaticToolCalling)
                 value.imageGeneration != null -> generator.writeObject(value.imageGeneration)
                 value.localShell != null -> generator.writeObject(value.localShell)
                 value.shell != null -> generator.writeObject(value.shell)
@@ -751,6 +835,7 @@ private constructor(
     private constructor(
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
+        private val allowedCallers: JsonField<List<AllowedCaller>>,
         private val allowedTools: JsonField<AllowedTools>,
         private val authorization: JsonField<String>,
         private val connectorId: JsonField<ConnectorId>,
@@ -759,6 +844,7 @@ private constructor(
         private val requireApproval: JsonField<RequireApproval>,
         private val serverDescription: JsonField<String>,
         private val serverUrl: JsonField<String>,
+        private val tunnelId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -768,6 +854,9 @@ private constructor(
             @ExcludeMissing
             serverLabel: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("allowed_callers")
+            @ExcludeMissing
+            allowedCallers: JsonField<List<AllowedCaller>> = JsonMissing.of(),
             @JsonProperty("allowed_tools")
             @ExcludeMissing
             allowedTools: JsonField<AllowedTools> = JsonMissing.of(),
@@ -790,9 +879,13 @@ private constructor(
             @JsonProperty("server_url")
             @ExcludeMissing
             serverUrl: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("tunnel_id")
+            @ExcludeMissing
+            tunnelId: JsonField<String> = JsonMissing.of(),
         ) : this(
             serverLabel,
             type,
+            allowedCallers,
             allowedTools,
             authorization,
             connectorId,
@@ -801,6 +894,7 @@ private constructor(
             requireApproval,
             serverDescription,
             serverUrl,
+            tunnelId,
             mutableMapOf(),
         )
 
@@ -826,6 +920,15 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * The tool invocation context(s).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun allowedCallers(): Optional<List<AllowedCaller>> =
+            allowedCallers.getOptional("allowed_callers")
+
+        /**
          * List of allowed tool names or a filter object.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -844,8 +947,8 @@ private constructor(
         fun authorization(): Optional<String> = authorization.getOptional("authorization")
 
         /**
-         * Identifier for service connectors, like those available in ChatGPT. One of `server_url`
-         * or `connector_id` must be provided. Learn more about service connectors
+         * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
+         * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
          * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
          *
          * Currently supported `connector_id` values are:
@@ -899,12 +1002,22 @@ private constructor(
             serverDescription.getOptional("server_description")
 
         /**
-         * The URL for the MCP server. One of `server_url` or `connector_id` must be provided.
+         * The URL for the MCP server. One of `server_url`, `connector_id`, or `tunnel_id` must be
+         * provided.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun serverUrl(): Optional<String> = serverUrl.getOptional("server_url")
+
+        /**
+         * The Secure MCP Tunnel ID to use instead of a direct server URL. One of `server_url`,
+         * `connector_id`, or `tunnel_id` must be provided.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun tunnelId(): Optional<String> = tunnelId.getOptional("tunnel_id")
 
         /**
          * Returns the raw JSON value of [serverLabel].
@@ -914,6 +1027,16 @@ private constructor(
         @JsonProperty("server_label")
         @ExcludeMissing
         fun _serverLabel(): JsonField<String> = serverLabel
+
+        /**
+         * Returns the raw JSON value of [allowedCallers].
+         *
+         * Unlike [allowedCallers], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("allowed_callers")
+        @ExcludeMissing
+        fun _allowedCallers(): JsonField<List<AllowedCaller>> = allowedCallers
 
         /**
          * Returns the raw JSON value of [allowedTools].
@@ -988,6 +1111,13 @@ private constructor(
          */
         @JsonProperty("server_url") @ExcludeMissing fun _serverUrl(): JsonField<String> = serverUrl
 
+        /**
+         * Returns the raw JSON value of [tunnelId].
+         *
+         * Unlike [tunnelId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tunnel_id") @ExcludeMissing fun _tunnelId(): JsonField<String> = tunnelId
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -1018,6 +1148,7 @@ private constructor(
 
             private var serverLabel: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp")
+            private var allowedCallers: JsonField<MutableList<AllowedCaller>>? = null
             private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
             private var authorization: JsonField<String> = JsonMissing.of()
             private var connectorId: JsonField<ConnectorId> = JsonMissing.of()
@@ -1026,12 +1157,14 @@ private constructor(
             private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
             private var serverDescription: JsonField<String> = JsonMissing.of()
             private var serverUrl: JsonField<String> = JsonMissing.of()
+            private var tunnelId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(mcp: Mcp) = apply {
                 serverLabel = mcp.serverLabel
                 type = mcp.type
+                allowedCallers = mcp.allowedCallers.map { it.toMutableList() }
                 allowedTools = mcp.allowedTools
                 authorization = mcp.authorization
                 connectorId = mcp.connectorId
@@ -1040,6 +1173,7 @@ private constructor(
                 requireApproval = mcp.requireApproval
                 serverDescription = mcp.serverDescription
                 serverUrl = mcp.serverUrl
+                tunnelId = mcp.tunnelId
                 additionalProperties = mcp.additionalProperties.toMutableMap()
             }
 
@@ -1070,6 +1204,37 @@ private constructor(
              * supported value.
              */
             fun type(type: JsonValue) = apply { this.type = type }
+
+            /** The tool invocation context(s). */
+            fun allowedCallers(allowedCallers: List<AllowedCaller>?) =
+                allowedCallers(JsonField.ofNullable(allowedCallers))
+
+            /** Alias for calling [Builder.allowedCallers] with `allowedCallers.orElse(null)`. */
+            fun allowedCallers(allowedCallers: Optional<List<AllowedCaller>>) =
+                allowedCallers(allowedCallers.getOrNull())
+
+            /**
+             * Sets [Builder.allowedCallers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.allowedCallers] with a well-typed
+             * `List<AllowedCaller>` value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun allowedCallers(allowedCallers: JsonField<List<AllowedCaller>>) = apply {
+                this.allowedCallers = allowedCallers.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [AllowedCaller] to [allowedCallers].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
+                allowedCallers =
+                    (allowedCallers ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("allowedCallers", it).add(allowedCaller)
+                    }
+            }
 
             /** List of allowed tool names or a filter object. */
             fun allowedTools(allowedTools: AllowedTools?) =
@@ -1119,7 +1284,8 @@ private constructor(
 
             /**
              * Identifier for service connectors, like those available in ChatGPT. One of
-             * `server_url` or `connector_id` must be provided. Learn more about service connectors
+             * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
+             * service connectors
              * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
              *
              * Currently supported `connector_id` values are:
@@ -1226,7 +1392,8 @@ private constructor(
             }
 
             /**
-             * The URL for the MCP server. One of `server_url` or `connector_id` must be provided.
+             * The URL for the MCP server. One of `server_url`, `connector_id`, or `tunnel_id` must
+             * be provided.
              */
             fun serverUrl(serverUrl: String) = serverUrl(JsonField.of(serverUrl))
 
@@ -1238,6 +1405,21 @@ private constructor(
              * supported value.
              */
             fun serverUrl(serverUrl: JsonField<String>) = apply { this.serverUrl = serverUrl }
+
+            /**
+             * The Secure MCP Tunnel ID to use instead of a direct server URL. One of `server_url`,
+             * `connector_id`, or `tunnel_id` must be provided.
+             */
+            fun tunnelId(tunnelId: String) = tunnelId(JsonField.of(tunnelId))
+
+            /**
+             * Sets [Builder.tunnelId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tunnelId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun tunnelId(tunnelId: JsonField<String>) = apply { this.tunnelId = tunnelId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1274,6 +1456,7 @@ private constructor(
                 Mcp(
                     checkRequired("serverLabel", serverLabel),
                     type,
+                    (allowedCallers ?: JsonMissing.of()).map { it.toImmutable() },
                     allowedTools,
                     authorization,
                     connectorId,
@@ -1282,12 +1465,22 @@ private constructor(
                     requireApproval,
                     serverDescription,
                     serverUrl,
+                    tunnelId,
                     additionalProperties.toMutableMap(),
                 )
         }
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Mcp = apply {
             if (validated) {
                 return@apply
@@ -1299,6 +1492,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            allowedCallers().ifPresent { it.forEach { it.validate() } }
             allowedTools().ifPresent { it.validate() }
             authorization()
             connectorId().ifPresent { it.validate() }
@@ -1307,6 +1501,7 @@ private constructor(
             requireApproval().ifPresent { it.validate() }
             serverDescription()
             serverUrl()
+            tunnelId()
             validated = true
         }
 
@@ -1328,6 +1523,7 @@ private constructor(
         internal fun validity(): Int =
             (if (serverLabel.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
+                (allowedCallers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (authorization.asKnown().isPresent) 1 else 0) +
                 (connectorId.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1335,7 +1531,149 @@ private constructor(
                 (headers.asKnown().getOrNull()?.validity() ?: 0) +
                 (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (serverDescription.asKnown().isPresent) 1 else 0) +
-                (if (serverUrl.asKnown().isPresent) 1 else 0)
+                (if (serverUrl.asKnown().isPresent) 1 else 0) +
+                (if (tunnelId.asKnown().isPresent) 1 else 0)
+
+        class AllowedCaller @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val DIRECT = of("direct")
+
+                @JvmField val PROGRAMMATIC = of("programmatic")
+
+                @JvmStatic fun of(value: String) = AllowedCaller(JsonField.of(value))
+            }
+
+            /** An enum containing [AllowedCaller]'s known values. */
+            enum class Known {
+                DIRECT,
+                PROGRAMMATIC,
+            }
+
+            /**
+             * An enum containing [AllowedCaller]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [AllowedCaller] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                DIRECT,
+                PROGRAMMATIC,
+                /**
+                 * An enum member indicating that [AllowedCaller] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    DIRECT -> Value.DIRECT
+                    PROGRAMMATIC -> Value.PROGRAMMATIC
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    DIRECT -> Known.DIRECT
+                    PROGRAMMATIC -> Known.PROGRAMMATIC
+                    else -> throw OpenAIInvalidDataException("Unknown AllowedCaller: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): AllowedCaller = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is AllowedCaller && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         /** List of allowed tool names or a filter object. */
         @JsonDeserialize(using = AllowedTools.Deserializer::class)
@@ -1365,6 +1703,36 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+            /**
+             * Maps this instance's current variant to a value of type [T] using the given
+             * [visitor].
+             *
+             * Note that this method is _not_ forwards compatible with new variants from the API,
+             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
+             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
+             * ```java
+             * import com.openai.core.JsonValue;
+             * import java.util.Optional;
+             *
+             * Optional<String> result = allowedTools.accept(new AllowedTools.Visitor<Optional<String>>() {
+             *     @Override
+             *     public Optional<String> visitMcp(List<String> mcp) {
+             *         return Optional.of(mcp.toString());
+             *     }
+             *
+             *     // ...
+             *
+             *     @Override
+             *     public Optional<String> unknown(JsonValue json) {
+             *         // Or inspect the `json`.
+             *         return Optional.empty();
+             *     }
+             * });
+             * ```
+             *
+             * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+             *   [visitor] and the current variant is unknown.
+             */
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
                     mcp != null -> visitor.visitMcp(mcp)
@@ -1374,6 +1742,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): AllowedTools = apply {
                 if (validated) {
                     return@apply
@@ -1694,6 +2072,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): McpToolFilter = apply {
                     if (validated) {
                         return@apply
@@ -1746,8 +2134,8 @@ private constructor(
         }
 
         /**
-         * Identifier for service connectors, like those available in ChatGPT. One of `server_url`
-         * or `connector_id` must be provided. Learn more about service connectors
+         * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
+         * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
          * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
          *
          * Currently supported `connector_id` values are:
@@ -1889,6 +2277,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): ConnectorId = apply {
                 if (validated) {
                     return@apply
@@ -1992,6 +2390,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Headers = apply {
                 if (validated) {
                     return@apply
@@ -2079,6 +2487,36 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+            /**
+             * Maps this instance's current variant to a value of type [T] using the given
+             * [visitor].
+             *
+             * Note that this method is _not_ forwards compatible with new variants from the API,
+             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
+             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
+             * ```java
+             * import com.openai.core.JsonValue;
+             * import java.util.Optional;
+             *
+             * Optional<String> result = requireApproval.accept(new RequireApproval.Visitor<Optional<String>>() {
+             *     @Override
+             *     public Optional<String> visitMcpToolApprovalFilter(McpToolApprovalFilter mcpToolApprovalFilter) {
+             *         return Optional.of(mcpToolApprovalFilter.toString());
+             *     }
+             *
+             *     // ...
+             *
+             *     @Override
+             *     public Optional<String> unknown(JsonValue json) {
+             *         // Or inspect the `json`.
+             *         return Optional.empty();
+             *     }
+             * });
+             * ```
+             *
+             * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+             *   [visitor] and the current variant is unknown.
+             */
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
                     mcpToolApprovalFilter != null ->
@@ -2090,6 +2528,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): RequireApproval = apply {
                 if (validated) {
                     return@apply
@@ -2417,6 +2865,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): McpToolApprovalFilter = apply {
                     if (validated) {
                         return@apply
@@ -2620,6 +3078,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): Always = apply {
                         if (validated) {
                             return@apply
@@ -2844,6 +3312,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): Never = apply {
                         if (validated) {
                             return@apply
@@ -3019,6 +3497,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): McpToolApprovalSetting = apply {
                     if (validated) {
                         return@apply
@@ -3066,6 +3554,7 @@ private constructor(
             return other is Mcp &&
                 serverLabel == other.serverLabel &&
                 type == other.type &&
+                allowedCallers == other.allowedCallers &&
                 allowedTools == other.allowedTools &&
                 authorization == other.authorization &&
                 connectorId == other.connectorId &&
@@ -3074,6 +3563,7 @@ private constructor(
                 requireApproval == other.requireApproval &&
                 serverDescription == other.serverDescription &&
                 serverUrl == other.serverUrl &&
+                tunnelId == other.tunnelId &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -3081,6 +3571,7 @@ private constructor(
             Objects.hash(
                 serverLabel,
                 type,
+                allowedCallers,
                 allowedTools,
                 authorization,
                 connectorId,
@@ -3089,6 +3580,7 @@ private constructor(
                 requireApproval,
                 serverDescription,
                 serverUrl,
+                tunnelId,
                 additionalProperties,
             )
         }
@@ -3096,7 +3588,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mcp{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
+            "Mcp{serverLabel=$serverLabel, type=$type, allowedCallers=$allowedCallers, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, tunnelId=$tunnelId, additionalProperties=$additionalProperties}"
     }
 
     /** A tool that runs Python code to help generate a response to a prompt. */
@@ -3105,6 +3597,7 @@ private constructor(
     private constructor(
         private val container: JsonField<Container>,
         private val type: JsonValue,
+        private val allowedCallers: JsonField<List<AllowedCaller>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -3114,7 +3607,10 @@ private constructor(
             @ExcludeMissing
             container: JsonField<Container> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(container, type, mutableMapOf())
+            @JsonProperty("allowed_callers")
+            @ExcludeMissing
+            allowedCallers: JsonField<List<AllowedCaller>> = JsonMissing.of(),
+        ) : this(container, type, allowedCallers, mutableMapOf())
 
         /**
          * The code interpreter container. Can be a container ID or an object that specifies
@@ -3140,6 +3636,15 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * The tool invocation context(s).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun allowedCallers(): Optional<List<AllowedCaller>> =
+            allowedCallers.getOptional("allowed_callers")
+
+        /**
          * Returns the raw JSON value of [container].
          *
          * Unlike [container], this method doesn't throw if the JSON field has an unexpected type.
@@ -3147,6 +3652,16 @@ private constructor(
         @JsonProperty("container")
         @ExcludeMissing
         fun _container(): JsonField<Container> = container
+
+        /**
+         * Returns the raw JSON value of [allowedCallers].
+         *
+         * Unlike [allowedCallers], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("allowed_callers")
+        @ExcludeMissing
+        fun _allowedCallers(): JsonField<List<AllowedCaller>> = allowedCallers
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3178,12 +3693,14 @@ private constructor(
 
             private var container: JsonField<Container>? = null
             private var type: JsonValue = JsonValue.from("code_interpreter")
+            private var allowedCallers: JsonField<MutableList<AllowedCaller>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(codeInterpreter: CodeInterpreter) = apply {
                 container = codeInterpreter.container
                 type = codeInterpreter.type
+                allowedCallers = codeInterpreter.allowedCallers.map { it.toMutableList() }
                 additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
             }
 
@@ -3227,6 +3744,37 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /** The tool invocation context(s). */
+            fun allowedCallers(allowedCallers: List<AllowedCaller>?) =
+                allowedCallers(JsonField.ofNullable(allowedCallers))
+
+            /** Alias for calling [Builder.allowedCallers] with `allowedCallers.orElse(null)`. */
+            fun allowedCallers(allowedCallers: Optional<List<AllowedCaller>>) =
+                allowedCallers(allowedCallers.getOrNull())
+
+            /**
+             * Sets [Builder.allowedCallers] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.allowedCallers] with a well-typed
+             * `List<AllowedCaller>` value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun allowedCallers(allowedCallers: JsonField<List<AllowedCaller>>) = apply {
+                this.allowedCallers = allowedCallers.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [AllowedCaller] to [allowedCallers].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
+                allowedCallers =
+                    (allowedCallers ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("allowedCallers", it).add(allowedCaller)
+                    }
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -3262,12 +3810,22 @@ private constructor(
                 CodeInterpreter(
                     checkRequired("container", container),
                     type,
+                    (allowedCallers ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): CodeInterpreter = apply {
             if (validated) {
                 return@apply
@@ -3279,6 +3837,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            allowedCallers().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
 
@@ -3299,7 +3858,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (container.asKnown().getOrNull()?.validity() ?: 0) +
-                type.let { if (it == JsonValue.from("code_interpreter")) 1 else 0 }
+                type.let { if (it == JsonValue.from("code_interpreter")) 1 else 0 } +
+                (allowedCallers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         /**
          * The code interpreter container. Can be a container ID or an object that specifies
@@ -3341,6 +3901,36 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+            /**
+             * Maps this instance's current variant to a value of type [T] using the given
+             * [visitor].
+             *
+             * Note that this method is _not_ forwards compatible with new variants from the API,
+             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
+             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
+             * ```java
+             * import com.openai.core.JsonValue;
+             * import java.util.Optional;
+             *
+             * Optional<String> result = container.accept(new Container.Visitor<Optional<String>>() {
+             *     @Override
+             *     public Optional<String> visitString(String string) {
+             *         return Optional.of(string.toString());
+             *     }
+             *
+             *     // ...
+             *
+             *     @Override
+             *     public Optional<String> unknown(JsonValue json) {
+             *         // Or inspect the `json`.
+             *         return Optional.empty();
+             *     }
+             * });
+             * ```
+             *
+             * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+             *   [visitor] and the current variant is unknown.
+             */
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
                     string != null -> visitor.visitString(string)
@@ -3351,6 +3941,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Container = apply {
                 if (validated) {
                     return@apply
@@ -3788,6 +4388,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): CodeInterpreterToolAuto = apply {
                     if (validated) {
                         return@apply
@@ -3935,6 +4545,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): MemoryLimit = apply {
                         if (validated) {
                             return@apply
@@ -4002,6 +4622,37 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+                    /**
+                     * Maps this instance's current variant to a value of type [T] using the given
+                     * [visitor].
+                     *
+                     * Note that this method is _not_ forwards compatible with new variants from the
+                     * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not
+                     * known to this version of the SDK gracefully, consider overriding
+                     * [Visitor.unknown]:
+                     * ```java
+                     * import com.openai.core.JsonValue;
+                     * import java.util.Optional;
+                     *
+                     * Optional<String> result = networkPolicy.accept(new NetworkPolicy.Visitor<Optional<String>>() {
+                     *     @Override
+                     *     public Optional<String> visitDisabled(ContainerNetworkPolicyDisabled disabled) {
+                     *         return Optional.of(disabled.toString());
+                     *     }
+                     *
+                     *     // ...
+                     *
+                     *     @Override
+                     *     public Optional<String> unknown(JsonValue json) {
+                     *         // Or inspect the `json`.
+                     *         return Optional.empty();
+                     *     }
+                     * });
+                     * ```
+                     *
+                     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                     *   [visitor] and the current variant is unknown.
+                     */
                     fun <T> accept(visitor: Visitor<T>): T =
                         when {
                             disabled != null -> visitor.visitDisabled(disabled)
@@ -4011,6 +4662,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): NetworkPolicy = apply {
                         if (validated) {
                             return@apply
@@ -4193,6 +4854,147 @@ private constructor(
             }
         }
 
+        class AllowedCaller @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val DIRECT = of("direct")
+
+                @JvmField val PROGRAMMATIC = of("programmatic")
+
+                @JvmStatic fun of(value: String) = AllowedCaller(JsonField.of(value))
+            }
+
+            /** An enum containing [AllowedCaller]'s known values. */
+            enum class Known {
+                DIRECT,
+                PROGRAMMATIC,
+            }
+
+            /**
+             * An enum containing [AllowedCaller]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [AllowedCaller] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                DIRECT,
+                PROGRAMMATIC,
+                /**
+                 * An enum member indicating that [AllowedCaller] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    DIRECT -> Value.DIRECT
+                    PROGRAMMATIC -> Value.PROGRAMMATIC
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    DIRECT -> Known.DIRECT
+                    PROGRAMMATIC -> Known.PROGRAMMATIC
+                    else -> throw OpenAIInvalidDataException("Unknown AllowedCaller: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): AllowedCaller = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is AllowedCaller && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -4201,15 +5003,18 @@ private constructor(
             return other is CodeInterpreter &&
                 container == other.container &&
                 type == other.type &&
+                allowedCallers == other.allowedCallers &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(container, type, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(container, type, allowedCallers, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "CodeInterpreter{container=$container, type=$type, additionalProperties=$additionalProperties}"
+            "CodeInterpreter{container=$container, type=$type, allowedCallers=$allowedCallers, additionalProperties=$additionalProperties}"
     }
 
     /** A tool that generates images using the GPT image models. */
@@ -4297,8 +5102,17 @@ private constructor(
         fun action(): Optional<Action> = action.getOptional("action")
 
         /**
-         * Background type for the generated image. One of `transparent`, `opaque`, or `auto`.
-         * Default: `auto`.
+         * Allows to set transparency for the background of the generated image(s). This parameter
+         * is only supported for GPT image models that support transparent backgrounds. Must be one
+         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+         * will automatically determine the best background for the image.
+         *
+         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
+         * Requests with `background` set to `transparent` will return an error for these models;
+         * use `opaque` or `auto` instead.
+         *
+         * If `transparent`, the output format needs to support transparency, so it should be set to
+         * either `png` (default value) or `webp`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -4378,8 +5192,15 @@ private constructor(
         fun quality(): Optional<Quality> = quality.getOptional("quality")
 
         /**
-         * The size of the generated image. One of `1024x1024`, `1024x1536`, `1536x1024`, or `auto`.
-         * Default: `auto`.
+         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
+         * Width and height must both be divisible by 16 and the requested aspect ratio must be
+         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
+         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
+         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
+         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
+         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
+         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -4561,8 +5382,18 @@ private constructor(
             fun action(action: JsonField<Action>) = apply { this.action = action }
 
             /**
-             * Background type for the generated image. One of `transparent`, `opaque`, or `auto`.
-             * Default: `auto`.
+             * Allows to set transparency for the background of the generated image(s). This
+             * parameter is only supported for GPT image models that support transparent
+             * backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value). When
+             * `auto` is used, the model will automatically determine the best background for the
+             * image.
+             *
+             * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
+             * Requests with `background` set to `transparent` will return an error for these
+             * models; use `opaque` or `auto` instead.
+             *
+             * If `transparent`, the output format needs to support transparency, so it should be
+             * set to either `png` (default value) or `webp`.
              */
             fun background(background: Background) = background(JsonField.of(background))
 
@@ -4718,8 +5549,16 @@ private constructor(
             fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
             /**
-             * The size of the generated image. One of `1024x1024`, `1024x1536`, `1536x1024`, or
-             * `auto`. Default: `auto`.
+             * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+             * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example
+             * `1536x864`. Width and height must both be divisible by 16 and the requested aspect
+             * ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental,
+             * and the maximum supported resolution is `3840x2160`. The requested size must also
+             * satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
+             * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is
+             * supported for models that allow automatic sizing. For `dall-e-2`, use one of
+             * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
+             * `1792x1024`, or `1024x1792`.
              */
             fun size(size: Size) = size(JsonField.of(size))
 
@@ -4731,6 +5570,14 @@ private constructor(
              * value.
              */
             fun size(size: JsonField<Size>) = apply { this.size = size }
+
+            /**
+             * Sets [size] to an arbitrary [String].
+             *
+             * You should usually call [size] with a well-typed [Size] constant instead. This method
+             * is primarily for setting the field to an undocumented or not yet supported value.
+             */
+            fun size(value: String) = size(Size.of(value))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -4776,6 +5623,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ImageGeneration = apply {
             if (validated) {
                 return@apply
@@ -4796,7 +5652,7 @@ private constructor(
             outputFormat().ifPresent { it.validate() }
             partialImages()
             quality().ifPresent { it.validate() }
-            size().ifPresent { it.validate() }
+            size()
             validated = true
         }
 
@@ -4827,7 +5683,7 @@ private constructor(
                 (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (partialImages.asKnown().isPresent) 1 else 0) +
                 (quality.asKnown().getOrNull()?.validity() ?: 0) +
-                (size.asKnown().getOrNull()?.validity() ?: 0)
+                (if (size.asKnown().isPresent) 1 else 0)
 
         /** Whether to generate a new image or edit an existing image. Default: `auto`. */
         class Action @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -4927,6 +5783,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Action = apply {
                 if (validated) {
                     return@apply
@@ -4966,8 +5832,17 @@ private constructor(
         }
 
         /**
-         * Background type for the generated image. One of `transparent`, `opaque`, or `auto`.
-         * Default: `auto`.
+         * Allows to set transparency for the background of the generated image(s). This parameter
+         * is only supported for GPT image models that support transparent backgrounds. Must be one
+         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+         * will automatically determine the best background for the image.
+         *
+         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
+         * Requests with `background` set to `transparent` will return an error for these models;
+         * use `opaque` or `auto` instead.
+         *
+         * If `transparent`, the output format needs to support transparency, so it should be set to
+         * either `png` (default value) or `webp`.
          */
         class Background @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -5068,6 +5943,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Background = apply {
                 if (validated) {
                     return@apply
@@ -5205,6 +6090,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): InputFidelity = apply {
                 if (validated) {
                     return@apply
@@ -5385,6 +6280,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): InputImageMask = apply {
                 if (validated) {
                     return@apply
@@ -5454,7 +6359,13 @@ private constructor(
 
                 @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
 
+                @JvmField val GPT_IMAGE_2 = of("gpt-image-2")
+
+                @JvmField val GPT_IMAGE_2_2026_04_21 = of("gpt-image-2-2026-04-21")
+
                 @JvmField val GPT_IMAGE_1_5 = of("gpt-image-1.5")
+
+                @JvmField val CHATGPT_IMAGE_LATEST = of("chatgpt-image-latest")
 
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
@@ -5463,7 +6374,10 @@ private constructor(
             enum class Known {
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
+                GPT_IMAGE_2,
+                GPT_IMAGE_2_2026_04_21,
                 GPT_IMAGE_1_5,
+                CHATGPT_IMAGE_LATEST,
             }
 
             /**
@@ -5478,7 +6392,10 @@ private constructor(
             enum class Value {
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
+                GPT_IMAGE_2,
+                GPT_IMAGE_2_2026_04_21,
                 GPT_IMAGE_1_5,
+                CHATGPT_IMAGE_LATEST,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -5496,7 +6413,10 @@ private constructor(
                 when (this) {
                     GPT_IMAGE_1 -> Value.GPT_IMAGE_1
                     GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
+                    GPT_IMAGE_2 -> Value.GPT_IMAGE_2
+                    GPT_IMAGE_2_2026_04_21 -> Value.GPT_IMAGE_2_2026_04_21
                     GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
+                    CHATGPT_IMAGE_LATEST -> Value.CHATGPT_IMAGE_LATEST
                     else -> Value._UNKNOWN
                 }
 
@@ -5513,7 +6433,10 @@ private constructor(
                 when (this) {
                     GPT_IMAGE_1 -> Known.GPT_IMAGE_1
                     GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
+                    GPT_IMAGE_2 -> Known.GPT_IMAGE_2
+                    GPT_IMAGE_2_2026_04_21 -> Known.GPT_IMAGE_2_2026_04_21
                     GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
+                    CHATGPT_IMAGE_LATEST -> Known.CHATGPT_IMAGE_LATEST
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 
@@ -5533,6 +6456,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Model = apply {
                 if (validated) {
                     return@apply
@@ -5665,6 +6598,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Moderation = apply {
                 if (validated) {
                     return@apply
@@ -5806,6 +6749,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): OutputFormat = apply {
                 if (validated) {
                     return@apply
@@ -5952,6 +6905,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Quality = apply {
                 if (validated) {
                     return@apply
@@ -5991,8 +6954,15 @@ private constructor(
         }
 
         /**
-         * The size of the generated image. One of `1024x1024`, `1024x1536`, `1536x1024`, or `auto`.
-         * Default: `auto`.
+         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
+         * Width and height must both be divisible by 16 and the requested aspect ratio must be
+         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
+         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
+         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
+         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
+         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
+         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
          */
         class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -6095,6 +7065,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Size = apply {
                 if (validated) {
                     return@apply

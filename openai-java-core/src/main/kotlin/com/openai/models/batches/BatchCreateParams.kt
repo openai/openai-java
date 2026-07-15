@@ -41,9 +41,9 @@ private constructor(
     /**
      * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
      * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
-     * `/v1/images/generations`, and `/v1/images/edits` are supported. Note that `/v1/embeddings`
-     * batches are also restricted to a maximum of 50,000 embedding inputs across all requests in
-     * the batch.
+     * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that
+     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
+     * all requests in the batch.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -199,7 +199,7 @@ private constructor(
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
          * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
-         * `/v1/images/generations`, and `/v1/images/edits` are supported. Note that
+         * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that
          * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
          * across all requests in the batch.
          */
@@ -470,7 +470,7 @@ private constructor(
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
          * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
-         * `/v1/images/generations`, and `/v1/images/edits` are supported. Note that
+         * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that
          * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
          * across all requests in the batch.
          *
@@ -628,9 +628,9 @@ private constructor(
             /**
              * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
              * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
-             * `/v1/images/generations`, and `/v1/images/edits` are supported. Note that
-             * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
-             * across all requests in the batch.
+             * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note
+             * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
+             * inputs across all requests in the batch.
              */
             fun endpoint(endpoint: Endpoint) = endpoint(JsonField.of(endpoint))
 
@@ -753,6 +753,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -907,6 +916,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): CompletionWindow = apply {
             if (validated) {
                 return@apply
@@ -948,9 +966,9 @@ private constructor(
     /**
      * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
      * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
-     * `/v1/images/generations`, and `/v1/images/edits` are supported. Note that `/v1/embeddings`
-     * batches are also restricted to a maximum of 50,000 embedding inputs across all requests in
-     * the batch.
+     * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that
+     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
+     * all requests in the batch.
      */
     class Endpoint @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -980,6 +998,8 @@ private constructor(
 
             @JvmField val V1_IMAGES_EDITS = of("/v1/images/edits")
 
+            @JvmField val V1_VIDEOS = of("/v1/videos")
+
             @JvmStatic fun of(value: String) = Endpoint(JsonField.of(value))
         }
 
@@ -992,6 +1012,7 @@ private constructor(
             V1_MODERATIONS,
             V1_IMAGES_GENERATIONS,
             V1_IMAGES_EDITS,
+            V1_VIDEOS,
         }
 
         /**
@@ -1011,6 +1032,7 @@ private constructor(
             V1_MODERATIONS,
             V1_IMAGES_GENERATIONS,
             V1_IMAGES_EDITS,
+            V1_VIDEOS,
             /** An enum member indicating that [Endpoint] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1031,6 +1053,7 @@ private constructor(
                 V1_MODERATIONS -> Value.V1_MODERATIONS
                 V1_IMAGES_GENERATIONS -> Value.V1_IMAGES_GENERATIONS
                 V1_IMAGES_EDITS -> Value.V1_IMAGES_EDITS
+                V1_VIDEOS -> Value.V1_VIDEOS
                 else -> Value._UNKNOWN
             }
 
@@ -1052,6 +1075,7 @@ private constructor(
                 V1_MODERATIONS -> Known.V1_MODERATIONS
                 V1_IMAGES_GENERATIONS -> Known.V1_IMAGES_GENERATIONS
                 V1_IMAGES_EDITS -> Known.V1_IMAGES_EDITS
+                V1_VIDEOS -> Known.V1_VIDEOS
                 else -> throw OpenAIInvalidDataException("Unknown Endpoint: $value")
             }
 
@@ -1069,6 +1093,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Endpoint = apply {
             if (validated) {
                 return@apply
@@ -1173,6 +1206,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Metadata = apply {
             if (validated) {
                 return@apply
@@ -1369,6 +1411,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): OutputExpiresAfter = apply {
             if (validated) {
                 return@apply

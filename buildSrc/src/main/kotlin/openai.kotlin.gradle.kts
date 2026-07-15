@@ -40,7 +40,7 @@ tasks.withType<Test>().configureEach {
 
 val ktfmt by configurations.creating
 dependencies {
-    ktfmt("com.facebook:ktfmt:0.56")
+    ktfmt("com.facebook:ktfmt:0.61")
 }
 
 fun registerKtfmt(

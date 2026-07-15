@@ -16,11 +16,11 @@ internal class ResponseFunctionWebSearchTest {
                 .id("id")
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
@@ -33,11 +33,11 @@ internal class ResponseFunctionWebSearchTest {
             .isEqualTo(
                 ResponseFunctionWebSearch.Action.ofSearch(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()
@@ -55,11 +55,11 @@ internal class ResponseFunctionWebSearchTest {
                 .id("id")
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("url")
+                                .url("https://example.com")
                                 .build()
                         )
                         .build()

@@ -1962,7 +1962,7 @@ internal class RealtimeServerEventTest {
                                 .build()
                         )
                         .conversationId("conversation_id")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponse.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2111,7 +2111,7 @@ internal class RealtimeServerEventTest {
                                     .build()
                             )
                             .conversationId("conversation_id")
-                            .maxOutputTokens(0L)
+                            .maxOutputTokensInf()
                             .metadata(
                                 RealtimeResponse.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2218,7 +2218,7 @@ internal class RealtimeServerEventTest {
                                 .build()
                         )
                         .conversationId("conversation_id")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponse.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2367,7 +2367,7 @@ internal class RealtimeServerEventTest {
                                     .build()
                             )
                             .conversationId("conversation_id")
-                            .maxOutputTokens(0L)
+                            .maxOutputTokensInf()
                             .metadata(
                                 RealtimeResponse.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -3050,6 +3050,7 @@ internal class RealtimeServerEventTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
                                                 .language("language")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
@@ -3076,7 +3077,7 @@ internal class RealtimeServerEventTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice("string")
+                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -3086,9 +3087,10 @@ internal class RealtimeServerEventTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -3098,6 +3100,11 @@ internal class RealtimeServerEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -3193,6 +3200,7 @@ internal class RealtimeServerEventTest {
                                             )
                                             .transcription(
                                                 AudioTranscription.builder()
+                                                    .delay(AudioTranscription.Delay.MINIMAL)
                                                     .language("language")
                                                     .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
@@ -3221,7 +3229,9 @@ internal class RealtimeServerEventTest {
                                                     .build()
                                             )
                                             .speed(0.25)
-                                            .voice("string")
+                                            .voice(
+                                                RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY
+                                            )
                                             .build()
                                     )
                                     .build()
@@ -3231,9 +3241,10 @@ internal class RealtimeServerEventTest {
                                     .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                             )
                             .instructions("instructions")
-                            .maxOutputTokens(0L)
+                            .maxOutputTokensInf()
                             .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                            .parallelToolCalls(true)
                             .prompt(
                                 ResponsePrompt.builder()
                                     .id("id")
@@ -3243,6 +3254,11 @@ internal class RealtimeServerEventTest {
                                             .build()
                                     )
                                     .version("version")
+                                    .build()
+                            )
+                            .reasoning(
+                                RealtimeReasoning.builder()
+                                    .effort(RealtimeReasoningEffort.MINIMAL)
                                     .build()
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
@@ -3294,6 +3310,7 @@ internal class RealtimeServerEventTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
                                                 .language("language")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
@@ -3320,7 +3337,7 @@ internal class RealtimeServerEventTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice("string")
+                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -3330,9 +3347,10 @@ internal class RealtimeServerEventTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -3342,6 +3360,11 @@ internal class RealtimeServerEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -3437,6 +3460,7 @@ internal class RealtimeServerEventTest {
                                             )
                                             .transcription(
                                                 AudioTranscription.builder()
+                                                    .delay(AudioTranscription.Delay.MINIMAL)
                                                     .language("language")
                                                     .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
@@ -3465,7 +3489,9 @@ internal class RealtimeServerEventTest {
                                                     .build()
                                             )
                                             .speed(0.25)
-                                            .voice("string")
+                                            .voice(
+                                                RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY
+                                            )
                                             .build()
                                     )
                                     .build()
@@ -3475,9 +3501,10 @@ internal class RealtimeServerEventTest {
                                     .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                             )
                             .instructions("instructions")
-                            .maxOutputTokens(0L)
+                            .maxOutputTokensInf()
                             .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                            .parallelToolCalls(true)
                             .prompt(
                                 ResponsePrompt.builder()
                                     .id("id")
@@ -3487,6 +3514,11 @@ internal class RealtimeServerEventTest {
                                             .build()
                                     )
                                     .version("version")
+                                    .build()
+                            )
+                            .reasoning(
+                                RealtimeReasoning.builder()
+                                    .effort(RealtimeReasoningEffort.MINIMAL)
                                     .build()
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
@@ -4058,11 +4090,11 @@ internal class RealtimeServerEventTest {
             ConversationItemInputAudioTranscriptionSegment.builder()
                 .id("id")
                 .contentIndex(0L)
-                .end(0.0f)
+                .end(0.0)
                 .eventId("event_id")
                 .itemId("item_id")
                 .speaker("speaker")
-                .start(0.0f)
+                .start(0.0)
                 .text("text")
                 .build()
 
@@ -4128,11 +4160,11 @@ internal class RealtimeServerEventTest {
                 ConversationItemInputAudioTranscriptionSegment.builder()
                     .id("id")
                     .contentIndex(0L)
-                    .end(0.0f)
+                    .end(0.0)
                     .eventId("event_id")
                     .itemId("item_id")
                     .speaker("speaker")
-                    .start(0.0f)
+                    .start(0.0)
                     .text("text")
                     .build()
             )

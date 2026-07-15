@@ -323,6 +323,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): RealtimeTranscriptionSessionCreateResponse = apply {
         if (validated) {
             return@apply
@@ -459,6 +467,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Audio = apply {
             if (validated) {
                 return@apply
@@ -529,8 +546,6 @@ private constructor(
                 noiseReduction.getOptional("noise_reduction")
 
             /**
-             * Configuration of the transcription model.
-             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -540,7 +555,8 @@ private constructor(
             /**
              * Configuration for turn detection. Can be set to `null` to turn off. Server VAD means
              * that the model will detect the start and end of speech based on audio volume and
-             * respond at the end of user speech.
+             * respond at the end of user speech. For `gpt-realtime-whisper`, this must be `null`;
+             * VAD is not supported.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -668,7 +684,6 @@ private constructor(
                     this.noiseReduction = noiseReduction
                 }
 
-                /** Configuration of the transcription model. */
                 fun transcription(transcription: AudioTranscription) =
                     transcription(JsonField.of(transcription))
 
@@ -686,10 +701,16 @@ private constructor(
                 /**
                  * Configuration for turn detection. Can be set to `null` to turn off. Server VAD
                  * means that the model will detect the start and end of speech based on audio
-                 * volume and respond at the end of user speech.
+                 * volume and respond at the end of user speech. For `gpt-realtime-whisper`, this
+                 * must be `null`; VAD is not supported.
                  */
-                fun turnDetection(turnDetection: RealtimeTranscriptionSessionTurnDetection) =
-                    turnDetection(JsonField.of(turnDetection))
+                fun turnDetection(turnDetection: RealtimeTranscriptionSessionTurnDetection?) =
+                    turnDetection(JsonField.ofNullable(turnDetection))
+
+                /** Alias for calling [Builder.turnDetection] with `turnDetection.orElse(null)`. */
+                fun turnDetection(
+                    turnDetection: Optional<RealtimeTranscriptionSessionTurnDetection>
+                ) = turnDetection(turnDetection.getOrNull())
 
                 /**
                  * Sets [Builder.turnDetection] to an arbitrary JSON value.
@@ -741,6 +762,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Input = apply {
                 if (validated) {
                     return@apply
@@ -890,6 +921,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): NoiseReduction = apply {
                     if (validated) {
                         return@apply
@@ -1065,6 +1106,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Include = apply {
             if (validated) {
                 return@apply

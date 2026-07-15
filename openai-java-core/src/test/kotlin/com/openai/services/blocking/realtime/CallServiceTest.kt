@@ -13,6 +13,8 @@ import com.openai.models.realtime.RealtimeAudioConfigOutput
 import com.openai.models.realtime.RealtimeAudioFormats
 import com.openai.models.realtime.RealtimeAudioInputTurnDetection
 import com.openai.models.realtime.RealtimeFunctionTool
+import com.openai.models.realtime.RealtimeReasoning
+import com.openai.models.realtime.RealtimeReasoningEffort
 import com.openai.models.realtime.RealtimeSessionCreateRequest
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.realtime.calls.CallAcceptParams
@@ -32,6 +34,7 @@ internal class CallServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val callService = client.realtime().calls()
 
@@ -57,6 +60,7 @@ internal class CallServiceTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
                                                 .language("language")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
@@ -83,7 +87,7 @@ internal class CallServiceTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice("string")
+                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -93,9 +97,10 @@ internal class CallServiceTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -105,6 +110,11 @@ internal class CallServiceTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -130,6 +140,7 @@ internal class CallServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val callService = client.realtime().calls()
 
@@ -142,6 +153,7 @@ internal class CallServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val callService = client.realtime().calls()
 
@@ -156,6 +168,7 @@ internal class CallServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val callService = client.realtime().calls()
 

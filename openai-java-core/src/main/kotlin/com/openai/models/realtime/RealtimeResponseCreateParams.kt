@@ -45,7 +45,9 @@ private constructor(
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
     private val metadata: JsonField<Metadata>,
     private val outputModalities: JsonField<List<OutputModality>>,
+    private val parallelToolCalls: JsonField<Boolean>,
     private val prompt: JsonField<ResponsePrompt>,
+    private val reasoning: JsonField<RealtimeReasoning>,
     private val toolChoice: JsonField<ToolChoice>,
     private val tools: JsonField<List<Tool>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -72,9 +74,15 @@ private constructor(
         @JsonProperty("output_modalities")
         @ExcludeMissing
         outputModalities: JsonField<List<OutputModality>> = JsonMissing.of(),
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
+        @JsonProperty("reasoning")
+        @ExcludeMissing
+        reasoning: JsonField<RealtimeReasoning> = JsonMissing.of(),
         @JsonProperty("tool_choice")
         @ExcludeMissing
         toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
@@ -87,7 +95,9 @@ private constructor(
         maxOutputTokens,
         metadata,
         outputModalities,
+        parallelToolCalls,
         prompt,
+        reasoning,
         toolChoice,
         tools,
         mutableMapOf(),
@@ -174,6 +184,16 @@ private constructor(
         outputModalities.getOptional("output_modalities")
 
     /**
+     * Whether the model may call multiple tools in parallel. Only supported by reasoning Realtime
+     * models such as `gpt-realtime-2`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun parallelToolCalls(): Optional<Boolean> =
+        parallelToolCalls.getOptional("parallel_tool_calls")
+
+    /**
      * Reference to a prompt template and its variables.
      * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
      *
@@ -181,6 +201,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
+
+    /**
+     * Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun reasoning(): Optional<RealtimeReasoning> = reasoning.getOptional("reasoning")
 
     /**
      * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
@@ -260,11 +288,30 @@ private constructor(
     fun _outputModalities(): JsonField<List<OutputModality>> = outputModalities
 
     /**
+     * Returns the raw JSON value of [parallelToolCalls].
+     *
+     * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("parallel_tool_calls")
+    @ExcludeMissing
+    fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
+
+    /**
      * Returns the raw JSON value of [prompt].
      *
      * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
+
+    /**
+     * Returns the raw JSON value of [reasoning].
+     *
+     * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("reasoning")
+    @ExcludeMissing
+    fun _reasoning(): JsonField<RealtimeReasoning> = reasoning
 
     /**
      * Returns the raw JSON value of [toolChoice].
@@ -312,7 +359,9 @@ private constructor(
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
         private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var outputModalities: JsonField<MutableList<OutputModality>>? = null
+        private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
+        private var reasoning: JsonField<RealtimeReasoning> = JsonMissing.of()
         private var toolChoice: JsonField<ToolChoice> = JsonMissing.of()
         private var tools: JsonField<MutableList<Tool>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -327,7 +376,9 @@ private constructor(
             metadata = realtimeResponseCreateParams.metadata
             outputModalities =
                 realtimeResponseCreateParams.outputModalities.map { it.toMutableList() }
+            parallelToolCalls = realtimeResponseCreateParams.parallelToolCalls
             prompt = realtimeResponseCreateParams.prompt
+            reasoning = realtimeResponseCreateParams.reasoning
             toolChoice = realtimeResponseCreateParams.toolChoice
             tools = realtimeResponseCreateParams.tools.map { it.toMutableList() }
             additionalProperties = realtimeResponseCreateParams.additionalProperties.toMutableMap()
@@ -612,6 +663,24 @@ private constructor(
         }
 
         /**
+         * Whether the model may call multiple tools in parallel. Only supported by reasoning
+         * Realtime models such as `gpt-realtime-2`.
+         */
+        fun parallelToolCalls(parallelToolCalls: Boolean) =
+            parallelToolCalls(JsonField.of(parallelToolCalls))
+
+        /**
+         * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+            this.parallelToolCalls = parallelToolCalls
+        }
+
+        /**
          * Reference to a prompt template and its variables.
          * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
          */
@@ -628,6 +697,20 @@ private constructor(
          * supported value.
          */
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
+
+        /** Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`. */
+        fun reasoning(reasoning: RealtimeReasoning) = reasoning(JsonField.of(reasoning))
+
+        /**
+         * Sets [Builder.reasoning] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.reasoning] with a well-typed [RealtimeReasoning] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun reasoning(reasoning: JsonField<RealtimeReasoning>) = apply {
+            this.reasoning = reasoning
+        }
 
         /**
          * How the model chooses tools. Provide one of the string modes or force a specific
@@ -721,7 +804,9 @@ private constructor(
                 maxOutputTokens,
                 metadata,
                 (outputModalities ?: JsonMissing.of()).map { it.toImmutable() },
+                parallelToolCalls,
                 prompt,
+                reasoning,
                 toolChoice,
                 (tools ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
@@ -730,6 +815,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): RealtimeResponseCreateParams = apply {
         if (validated) {
             return@apply
@@ -742,7 +835,9 @@ private constructor(
         maxOutputTokens().ifPresent { it.validate() }
         metadata().ifPresent { it.validate() }
         outputModalities().ifPresent { it.forEach { it.validate() } }
+        parallelToolCalls()
         prompt().ifPresent { it.validate() }
+        reasoning().ifPresent { it.validate() }
         toolChoice().ifPresent { it.validate() }
         tools().ifPresent { it.forEach { it.validate() } }
         validated = true
@@ -770,7 +865,9 @@ private constructor(
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
             (metadata.asKnown().getOrNull()?.validity() ?: 0) +
             (outputModalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
@@ -870,6 +967,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Conversation = apply {
             if (validated) {
                 return@apply
@@ -936,6 +1042,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = maxOutputTokens.accept(new MaxOutputTokens.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitInteger(Long integer) {
+         *         return Optional.of(integer.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 integer != null -> visitor.visitInteger(integer)
@@ -945,6 +1080,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): MaxOutputTokens = apply {
             if (validated) {
                 return@apply
@@ -1156,6 +1300,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Metadata = apply {
             if (validated) {
                 return@apply
@@ -1288,6 +1441,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): OutputModality = apply {
             if (validated) {
                 return@apply
@@ -1384,6 +1546,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = toolChoice.accept(new ToolChoice.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitOptions(ToolChoiceOptions options) {
+         *         return Optional.of(options.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 options != null -> visitor.visitOptions(options)
@@ -1394,6 +1585,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ToolChoice = apply {
             if (validated) {
                 return@apply
@@ -1623,6 +1823,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = tool.accept(new Tool.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitRealtimeFunction(RealtimeFunctionTool realtimeFunction) {
+         *         return Optional.of(realtimeFunction.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 realtimeFunction != null -> visitor.visitRealtimeFunction(realtimeFunction)
@@ -1633,6 +1862,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Tool = apply {
             if (validated) {
                 return@apply
@@ -1809,7 +2047,9 @@ private constructor(
             maxOutputTokens == other.maxOutputTokens &&
             metadata == other.metadata &&
             outputModalities == other.outputModalities &&
+            parallelToolCalls == other.parallelToolCalls &&
             prompt == other.prompt &&
+            reasoning == other.reasoning &&
             toolChoice == other.toolChoice &&
             tools == other.tools &&
             additionalProperties == other.additionalProperties
@@ -1824,7 +2064,9 @@ private constructor(
             maxOutputTokens,
             metadata,
             outputModalities,
+            parallelToolCalls,
             prompt,
+            reasoning,
             toolChoice,
             tools,
             additionalProperties,
@@ -1834,5 +2076,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeResponseCreateParams{audio=$audio, conversation=$conversation, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, additionalProperties=$additionalProperties}"
+        "RealtimeResponseCreateParams{audio=$audio, conversation=$conversation, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, outputModalities=$outputModalities, parallelToolCalls=$parallelToolCalls, prompt=$prompt, reasoning=$reasoning, toolChoice=$toolChoice, tools=$tools, additionalProperties=$additionalProperties}"
 }

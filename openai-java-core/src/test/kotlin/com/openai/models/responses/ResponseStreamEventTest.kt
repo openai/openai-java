@@ -855,8 +855,14 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .strict(true)
+                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                 .deferLoading(true)
                                 .description("description")
+                                .outputSchema(
+                                    FunctionTool.OutputSchema.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                         .topP(1.0)
@@ -865,6 +871,68 @@ internal class ResponseStreamEventTest {
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
+                        .moderation(
+                            Response.Moderation.builder()
+                                .input(
+                                    Response.Moderation.Input.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Input.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .output(
+                                    Response.Moderation.Output.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Output.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -878,11 +946,19 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .promptCacheKey("prompt-cache-key-1234")
+                        .promptCacheOptions(
+                            Response.PromptCacheOptions.builder()
+                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
                             Reasoning.builder()
+                                .context(Reasoning.Context.AUTO)
                                 .effort(ReasoningEffort.NONE)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .mode(Reasoning.Mode.STANDARD)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
@@ -902,6 +978,7 @@ internal class ResponseStreamEventTest {
                                 .inputTokens(0L)
                                 .inputTokensDetails(
                                     ResponseUsage.InputTokensDetails.builder()
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -1051,8 +1128,14 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .strict(true)
+                                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                     .deferLoading(true)
                                     .description("description")
+                                    .outputSchema(
+                                        FunctionTool.OutputSchema.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topP(1.0)
@@ -1061,6 +1144,76 @@ internal class ResponseStreamEventTest {
                             .conversation(Response.Conversation.builder().id("id").build())
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
+                            .moderation(
+                                Response.Moderation.builder()
+                                    .input(
+                                        Response.Moderation.Input.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .output(
+                                        Response.Moderation.Output.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .previousResponseId("previous_response_id")
                             .prompt(
                                 ResponsePrompt.builder()
@@ -1074,11 +1227,19 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .promptCacheKey("prompt-cache-key-1234")
+                            .promptCacheOptions(
+                                Response.PromptCacheOptions.builder()
+                                    .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                    .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                             .reasoning(
                                 Reasoning.builder()
+                                    .context(Reasoning.Context.AUTO)
                                     .effort(ReasoningEffort.NONE)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .mode(Reasoning.Mode.STANDARD)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
@@ -1098,6 +1259,7 @@ internal class ResponseStreamEventTest {
                                     .inputTokens(0L)
                                     .inputTokensDetails(
                                         ResponseUsage.InputTokensDetails.builder()
+                                            .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
                                             .build()
                                     )
@@ -1479,8 +1641,14 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .strict(true)
+                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                 .deferLoading(true)
                                 .description("description")
+                                .outputSchema(
+                                    FunctionTool.OutputSchema.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                         .topP(1.0)
@@ -1489,6 +1657,68 @@ internal class ResponseStreamEventTest {
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
+                        .moderation(
+                            Response.Moderation.builder()
+                                .input(
+                                    Response.Moderation.Input.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Input.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .output(
+                                    Response.Moderation.Output.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Output.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -1502,11 +1732,19 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .promptCacheKey("prompt-cache-key-1234")
+                        .promptCacheOptions(
+                            Response.PromptCacheOptions.builder()
+                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
                             Reasoning.builder()
+                                .context(Reasoning.Context.AUTO)
                                 .effort(ReasoningEffort.NONE)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .mode(Reasoning.Mode.STANDARD)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
@@ -1526,6 +1764,7 @@ internal class ResponseStreamEventTest {
                                 .inputTokens(0L)
                                 .inputTokensDetails(
                                     ResponseUsage.InputTokensDetails.builder()
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -1675,8 +1914,14 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .strict(true)
+                                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                     .deferLoading(true)
                                     .description("description")
+                                    .outputSchema(
+                                        FunctionTool.OutputSchema.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topP(1.0)
@@ -1685,6 +1930,76 @@ internal class ResponseStreamEventTest {
                             .conversation(Response.Conversation.builder().id("id").build())
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
+                            .moderation(
+                                Response.Moderation.builder()
+                                    .input(
+                                        Response.Moderation.Input.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .output(
+                                        Response.Moderation.Output.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .previousResponseId("previous_response_id")
                             .prompt(
                                 ResponsePrompt.builder()
@@ -1698,11 +2013,19 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .promptCacheKey("prompt-cache-key-1234")
+                            .promptCacheOptions(
+                                Response.PromptCacheOptions.builder()
+                                    .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                    .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                             .reasoning(
                                 Reasoning.builder()
+                                    .context(Reasoning.Context.AUTO)
                                     .effort(ReasoningEffort.NONE)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .mode(Reasoning.Mode.STANDARD)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
@@ -1722,6 +2045,7 @@ internal class ResponseStreamEventTest {
                                     .inputTokens(0L)
                                     .inputTokensDetails(
                                         ResponseUsage.InputTokensDetails.builder()
+                                            .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
                                             .build()
                                     )
@@ -2359,8 +2683,14 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .strict(true)
+                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                 .deferLoading(true)
                                 .description("description")
+                                .outputSchema(
+                                    FunctionTool.OutputSchema.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                         .topP(1.0)
@@ -2369,6 +2699,68 @@ internal class ResponseStreamEventTest {
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
+                        .moderation(
+                            Response.Moderation.builder()
+                                .input(
+                                    Response.Moderation.Input.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Input.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .output(
+                                    Response.Moderation.Output.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Output.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -2382,11 +2774,19 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .promptCacheKey("prompt-cache-key-1234")
+                        .promptCacheOptions(
+                            Response.PromptCacheOptions.builder()
+                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
                             Reasoning.builder()
+                                .context(Reasoning.Context.AUTO)
                                 .effort(ReasoningEffort.NONE)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .mode(Reasoning.Mode.STANDARD)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
@@ -2406,6 +2806,7 @@ internal class ResponseStreamEventTest {
                                 .inputTokens(0L)
                                 .inputTokensDetails(
                                     ResponseUsage.InputTokensDetails.builder()
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -2555,8 +2956,14 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .strict(true)
+                                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                     .deferLoading(true)
                                     .description("description")
+                                    .outputSchema(
+                                        FunctionTool.OutputSchema.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topP(1.0)
@@ -2565,6 +2972,76 @@ internal class ResponseStreamEventTest {
                             .conversation(Response.Conversation.builder().id("id").build())
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
+                            .moderation(
+                                Response.Moderation.builder()
+                                    .input(
+                                        Response.Moderation.Input.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .output(
+                                        Response.Moderation.Output.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .previousResponseId("previous_response_id")
                             .prompt(
                                 ResponsePrompt.builder()
@@ -2578,11 +3055,19 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .promptCacheKey("prompt-cache-key-1234")
+                            .promptCacheOptions(
+                                Response.PromptCacheOptions.builder()
+                                    .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                    .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                             .reasoning(
                                 Reasoning.builder()
+                                    .context(Reasoning.Context.AUTO)
                                     .effort(ReasoningEffort.NONE)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .mode(Reasoning.Mode.STANDARD)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
@@ -2602,6 +3087,7 @@ internal class ResponseStreamEventTest {
                                     .inputTokens(0L)
                                     .inputTokensDetails(
                                         ResponseUsage.InputTokensDetails.builder()
+                                            .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
                                             .build()
                                     )
@@ -2701,8 +3187,14 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .strict(true)
+                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                 .deferLoading(true)
                                 .description("description")
+                                .outputSchema(
+                                    FunctionTool.OutputSchema.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                         .topP(1.0)
@@ -2711,6 +3203,68 @@ internal class ResponseStreamEventTest {
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
+                        .moderation(
+                            Response.Moderation.builder()
+                                .input(
+                                    Response.Moderation.Input.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Input.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .output(
+                                    Response.Moderation.Output.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Output.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -2724,11 +3278,19 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .promptCacheKey("prompt-cache-key-1234")
+                        .promptCacheOptions(
+                            Response.PromptCacheOptions.builder()
+                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
                             Reasoning.builder()
+                                .context(Reasoning.Context.AUTO)
                                 .effort(ReasoningEffort.NONE)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .mode(Reasoning.Mode.STANDARD)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
@@ -2748,6 +3310,7 @@ internal class ResponseStreamEventTest {
                                 .inputTokens(0L)
                                 .inputTokensDetails(
                                     ResponseUsage.InputTokensDetails.builder()
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -2897,8 +3460,14 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .strict(true)
+                                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                     .deferLoading(true)
                                     .description("description")
+                                    .outputSchema(
+                                        FunctionTool.OutputSchema.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topP(1.0)
@@ -2907,6 +3476,76 @@ internal class ResponseStreamEventTest {
                             .conversation(Response.Conversation.builder().id("id").build())
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
+                            .moderation(
+                                Response.Moderation.builder()
+                                    .input(
+                                        Response.Moderation.Input.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .output(
+                                        Response.Moderation.Output.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .previousResponseId("previous_response_id")
                             .prompt(
                                 ResponsePrompt.builder()
@@ -2920,11 +3559,19 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .promptCacheKey("prompt-cache-key-1234")
+                            .promptCacheOptions(
+                                Response.PromptCacheOptions.builder()
+                                    .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                    .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                             .reasoning(
                                 Reasoning.builder()
+                                    .context(Reasoning.Context.AUTO)
                                     .effort(ReasoningEffort.NONE)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .mode(Reasoning.Mode.STANDARD)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
@@ -2944,6 +3591,7 @@ internal class ResponseStreamEventTest {
                                     .inputTokens(0L)
                                     .inputTokensDetails(
                                         ResponseUsage.InputTokensDetails.builder()
+                                            .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
                                             .build()
                                     )
@@ -3043,8 +3691,14 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .strict(true)
+                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                 .deferLoading(true)
                                 .description("description")
+                                .outputSchema(
+                                    FunctionTool.OutputSchema.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                         .topP(1.0)
@@ -3053,6 +3707,68 @@ internal class ResponseStreamEventTest {
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
+                        .moderation(
+                            Response.Moderation.builder()
+                                .input(
+                                    Response.Moderation.Input.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Input.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .output(
+                                    Response.Moderation.Output.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Output.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -3066,11 +3782,19 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .promptCacheKey("prompt-cache-key-1234")
+                        .promptCacheOptions(
+                            Response.PromptCacheOptions.builder()
+                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
                             Reasoning.builder()
+                                .context(Reasoning.Context.AUTO)
                                 .effort(ReasoningEffort.NONE)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .mode(Reasoning.Mode.STANDARD)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
@@ -3090,6 +3814,7 @@ internal class ResponseStreamEventTest {
                                 .inputTokens(0L)
                                 .inputTokensDetails(
                                     ResponseUsage.InputTokensDetails.builder()
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -3239,8 +3964,14 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .strict(true)
+                                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                     .deferLoading(true)
                                     .description("description")
+                                    .outputSchema(
+                                        FunctionTool.OutputSchema.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topP(1.0)
@@ -3249,6 +3980,76 @@ internal class ResponseStreamEventTest {
                             .conversation(Response.Conversation.builder().id("id").build())
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
+                            .moderation(
+                                Response.Moderation.builder()
+                                    .input(
+                                        Response.Moderation.Input.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .output(
+                                        Response.Moderation.Output.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .previousResponseId("previous_response_id")
                             .prompt(
                                 ResponsePrompt.builder()
@@ -3262,11 +4063,19 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .promptCacheKey("prompt-cache-key-1234")
+                            .promptCacheOptions(
+                                Response.PromptCacheOptions.builder()
+                                    .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                    .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                             .reasoning(
                                 Reasoning.builder()
+                                    .context(Reasoning.Context.AUTO)
                                     .effort(ReasoningEffort.NONE)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .mode(Reasoning.Mode.STANDARD)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
@@ -3286,6 +4095,7 @@ internal class ResponseStreamEventTest {
                                     .inputTokens(0L)
                                     .inputTokensDetails(
                                         ResponseUsage.InputTokensDetails.builder()
+                                            .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
                                             .build()
                                     )
@@ -3720,6 +4530,7 @@ internal class ResponseStreamEventTest {
                 .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
+                .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .build()
 
         val responseStreamEvent =
@@ -3792,6 +4603,7 @@ internal class ResponseStreamEventTest {
                     .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
                     .sequenceNumber(0L)
                     .summaryIndex(0L)
+                    .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                     .build()
             )
 
@@ -6075,8 +6887,14 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .strict(true)
+                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                 .deferLoading(true)
                                 .description("description")
+                                .outputSchema(
+                                    FunctionTool.OutputSchema.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                         .topP(1.0)
@@ -6085,6 +6903,68 @@ internal class ResponseStreamEventTest {
                         .conversation(Response.Conversation.builder().id("id").build())
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
+                        .moderation(
+                            Response.Moderation.builder()
+                                .input(
+                                    Response.Moderation.Input.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Input.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Input.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .output(
+                                    Response.Moderation.Output.ModerationResult.builder()
+                                        .categories(
+                                            Response.Moderation.Output.ModerationResult.Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            Response.Moderation.Output.ModerationResult
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -6098,11 +6978,19 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .promptCacheKey("prompt-cache-key-1234")
+                        .promptCacheOptions(
+                            Response.PromptCacheOptions.builder()
+                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                         .reasoning(
                             Reasoning.builder()
+                                .context(Reasoning.Context.AUTO)
                                 .effort(ReasoningEffort.NONE)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .mode(Reasoning.Mode.STANDARD)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
@@ -6122,6 +7010,7 @@ internal class ResponseStreamEventTest {
                                 .inputTokens(0L)
                                 .inputTokensDetails(
                                     ResponseUsage.InputTokensDetails.builder()
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -6271,8 +7160,14 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .strict(true)
+                                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                                     .deferLoading(true)
                                     .description("description")
+                                    .outputSchema(
+                                        FunctionTool.OutputSchema.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topP(1.0)
@@ -6281,6 +7176,76 @@ internal class ResponseStreamEventTest {
                             .conversation(Response.Conversation.builder().id("id").build())
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
+                            .moderation(
+                                Response.Moderation.builder()
+                                    .input(
+                                        Response.Moderation.Input.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Input.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .output(
+                                        Response.Moderation.Output.ModerationResult.builder()
+                                            .categories(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                Response.Moderation.Output.ModerationResult
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .previousResponseId("previous_response_id")
                             .prompt(
                                 ResponsePrompt.builder()
@@ -6294,11 +7259,19 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .promptCacheKey("prompt-cache-key-1234")
+                            .promptCacheOptions(
+                                Response.PromptCacheOptions.builder()
+                                    .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
+                                    .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
                             .reasoning(
                                 Reasoning.builder()
+                                    .context(Reasoning.Context.AUTO)
                                     .effort(ReasoningEffort.NONE)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .mode(Reasoning.Mode.STANDARD)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
@@ -6318,6 +7291,7 @@ internal class ResponseStreamEventTest {
                                     .inputTokens(0L)
                                     .inputTokensDetails(
                                         ResponseUsage.InputTokensDetails.builder()
+                                            .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
                                             .build()
                                     )

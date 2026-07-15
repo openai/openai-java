@@ -27,7 +27,10 @@ internal class RealtimeResponseCreateParamsTest {
                                         .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                         .build()
                                 )
-                                .voice("string")
+                                .voice(
+                                    RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1
+                                        .ALLOY
+                                )
                                 .build()
                         )
                         .build()
@@ -47,13 +50,14 @@ internal class RealtimeResponseCreateParamsTest {
                         .build()
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .metadata(
                     RealtimeResponseCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                .parallelToolCalls(true)
                 .prompt(
                     ResponsePrompt.builder()
                         .id("id")
@@ -64,6 +68,9 @@ internal class RealtimeResponseCreateParamsTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
@@ -87,7 +94,9 @@ internal class RealtimeResponseCreateParamsTest {
                                     .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                     .build()
                             )
-                            .voice("string")
+                            .voice(
+                                RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1.ALLOY
+                            )
                             .build()
                     )
                     .build()
@@ -112,7 +121,7 @@ internal class RealtimeResponseCreateParamsTest {
             )
         assertThat(realtimeResponseCreateParams.instructions()).contains("instructions")
         assertThat(realtimeResponseCreateParams.maxOutputTokens())
-            .contains(RealtimeResponseCreateParams.MaxOutputTokens.ofInteger(0L))
+            .contains(RealtimeResponseCreateParams.MaxOutputTokens.ofInf())
         assertThat(realtimeResponseCreateParams.metadata())
             .contains(
                 RealtimeResponseCreateParams.Metadata.builder()
@@ -121,6 +130,7 @@ internal class RealtimeResponseCreateParamsTest {
             )
         assertThat(realtimeResponseCreateParams.outputModalities().getOrNull())
             .containsExactly(RealtimeResponseCreateParams.OutputModality.TEXT)
+        assertThat(realtimeResponseCreateParams.parallelToolCalls()).contains(true)
         assertThat(realtimeResponseCreateParams.prompt())
             .contains(
                 ResponsePrompt.builder()
@@ -133,6 +143,8 @@ internal class RealtimeResponseCreateParamsTest {
                     .version("version")
                     .build()
             )
+        assertThat(realtimeResponseCreateParams.reasoning())
+            .contains(RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build())
         assertThat(realtimeResponseCreateParams.toolChoice())
             .contains(RealtimeResponseCreateParams.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
         assertThat(realtimeResponseCreateParams.tools().getOrNull())
@@ -163,7 +175,10 @@ internal class RealtimeResponseCreateParamsTest {
                                         .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                         .build()
                                 )
-                                .voice("string")
+                                .voice(
+                                    RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1
+                                        .ALLOY
+                                )
                                 .build()
                         )
                         .build()
@@ -183,13 +198,14 @@ internal class RealtimeResponseCreateParamsTest {
                         .build()
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .metadata(
                     RealtimeResponseCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                .parallelToolCalls(true)
                 .prompt(
                     ResponsePrompt.builder()
                         .id("id")
@@ -200,6 +216,9 @@ internal class RealtimeResponseCreateParamsTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(

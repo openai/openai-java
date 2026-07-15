@@ -15,12 +15,15 @@ internal class ResponseInputImageTest {
             ResponseInputImage.builder()
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
+                .promptCacheBreakpoint(ResponseInputImage.PromptCacheBreakpoint.builder().build())
                 .build()
 
         assertThat(responseInputImage.detail()).isEqualTo(ResponseInputImage.Detail.LOW)
         assertThat(responseInputImage.fileId()).contains("file_id")
-        assertThat(responseInputImage.imageUrl()).contains("image_url")
+        assertThat(responseInputImage.imageUrl()).contains("https://example.com")
+        assertThat(responseInputImage.promptCacheBreakpoint())
+            .contains(ResponseInputImage.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -30,7 +33,8 @@ internal class ResponseInputImageTest {
             ResponseInputImage.builder()
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
+                .promptCacheBreakpoint(ResponseInputImage.PromptCacheBreakpoint.builder().build())
                 .build()
 
         val roundtrippedResponseInputImage =

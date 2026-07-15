@@ -14,12 +14,16 @@ internal class ChatCompletionAudioParamTest {
         val chatCompletionAudioParam =
             ChatCompletionAudioParam.builder()
                 .format(ChatCompletionAudioParam.Format.WAV)
-                .voice("string")
+                .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                 .build()
 
         assertThat(chatCompletionAudioParam.format()).isEqualTo(ChatCompletionAudioParam.Format.WAV)
         assertThat(chatCompletionAudioParam.voice())
-            .isEqualTo(ChatCompletionAudioParam.Voice.ofString("string"))
+            .isEqualTo(
+                ChatCompletionAudioParam.Voice.ofUnionMember1(
+                    ChatCompletionAudioParam.Voice.UnionMember1.ALLOY
+                )
+            )
     }
 
     @Test
@@ -28,7 +32,7 @@ internal class ChatCompletionAudioParamTest {
         val chatCompletionAudioParam =
             ChatCompletionAudioParam.builder()
                 .format(ChatCompletionAudioParam.Format.WAV)
-                .voice("string")
+                .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                 .build()
 
         val roundtrippedChatCompletionAudioParam =

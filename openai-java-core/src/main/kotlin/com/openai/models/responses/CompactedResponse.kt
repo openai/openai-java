@@ -244,6 +244,13 @@ private constructor(
             addOutput(ResponseOutputItem.ofFunctionCall(functionCall))
 
         /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofFunctionCallOutput(functionCallOutput)`.
+         */
+        fun addOutput(functionCallOutput: ResponseFunctionToolCallOutputItem) =
+            addOutput(ResponseOutputItem.ofFunctionCallOutput(functionCallOutput))
+
+        /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofWebSearchCall(webSearchCall)`.
          */
         fun addOutput(webSearchCall: ResponseFunctionWebSearch) =
@@ -253,9 +260,26 @@ private constructor(
         fun addOutput(computerCall: ResponseComputerToolCall) =
             addOutput(ResponseOutputItem.ofComputerCall(computerCall))
 
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofComputerCallOutput(computerCallOutput)`.
+         */
+        fun addOutput(computerCallOutput: ResponseComputerToolCallOutputItem) =
+            addOutput(ResponseOutputItem.ofComputerCallOutput(computerCallOutput))
+
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addOutput] with `ResponseOutputItem.ofProgram(program)`. */
+        fun addOutput(program: ResponseOutputItem.Program) =
+            addOutput(ResponseOutputItem.ofProgram(program))
+
+        /**
+         * Alias for calling [addOutput] with `ResponseOutputItem.ofProgramOutput(programOutput)`.
+         */
+        fun addOutput(programOutput: ResponseOutputItem.ProgramOutput) =
+            addOutput(ResponseOutputItem.ofProgramOutput(programOutput))
 
         /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
@@ -269,6 +293,13 @@ private constructor(
          */
         fun addOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
             addOutput(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addOutput(additionalTools: ResponseOutputItem.AdditionalTools) =
+            addOutput(ResponseOutputItem.ofAdditionalTools(additionalTools))
 
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: ResponseCompactionItem) =
@@ -293,6 +324,13 @@ private constructor(
          */
         fun addOutput(localShellCall: ResponseOutputItem.LocalShellCall) =
             addOutput(ResponseOutputItem.ofLocalShellCall(localShellCall))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)`.
+         */
+        fun addOutput(localShellCallOutput: ResponseOutputItem.LocalShellCallOutput) =
+            addOutput(ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput))
 
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofShellCall(shellCall)`. */
         fun addOutput(shellCall: ResponseFunctionShellToolCall) =
@@ -334,10 +372,24 @@ private constructor(
             addOutput(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
         /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         */
+        fun addOutput(mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse) =
+            addOutput(ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse))
+
+        /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofCustomToolCall(customToolCall)`.
          */
         fun addOutput(customToolCall: ResponseCustomToolCall) =
             addOutput(ResponseOutputItem.ofCustomToolCall(customToolCall))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         */
+        fun addOutput(customToolCallOutput: ResponseCustomToolCallOutputItem) =
+            addOutput(ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /**
          * Token accounting for the compaction pass, including cached, reasoning, and total tokens.
@@ -400,6 +452,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): CompactedResponse = apply {
         if (validated) {
             return@apply

@@ -30,6 +30,7 @@ internal class ChatCompletionServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionService = client.chat().completions()
 
@@ -46,7 +47,7 @@ internal class ChatCompletionServiceTest {
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
-                            .voice("string")
+                            .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                             .build()
                     )
                     .frequencyPenalty(-2.0)
@@ -76,11 +77,45 @@ internal class ChatCompletionServiceTest {
                             .build()
                     )
                     .addModality(ChatCompletionCreateParams.Modality.TEXT)
+                    .moderation(
+                        ChatCompletionCreateParams.Moderation.builder()
+                            .model("model")
+                            .policy(
+                                ChatCompletionCreateParams.Moderation.Policy.builder()
+                                    .input(
+                                        ChatCompletionCreateParams.Moderation.Policy.Input.builder()
+                                            .mode(
+                                                ChatCompletionCreateParams.Moderation.Policy.Input
+                                                    .Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .output(
+                                        ChatCompletionCreateParams.Moderation.Policy.Output
+                                            .builder()
+                                            .mode(
+                                                ChatCompletionCreateParams.Moderation.Policy.Output
+                                                    .Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .n(1L)
                     .parallelToolCalls(true)
                     .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                     .presencePenalty(-2.0)
                     .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheOptions(
+                        ChatCompletionCreateParams.PromptCacheOptions.builder()
+                            .mode(ChatCompletionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .ttl(ChatCompletionCreateParams.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormat(ResponseFormatText.builder().build())
@@ -147,6 +182,7 @@ internal class ChatCompletionServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionService = client.chat().completions()
 
@@ -163,7 +199,7 @@ internal class ChatCompletionServiceTest {
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
-                            .voice("string")
+                            .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                             .build()
                     )
                     .frequencyPenalty(-2.0)
@@ -193,11 +229,45 @@ internal class ChatCompletionServiceTest {
                             .build()
                     )
                     .addModality(ChatCompletionCreateParams.Modality.TEXT)
+                    .moderation(
+                        ChatCompletionCreateParams.Moderation.builder()
+                            .model("model")
+                            .policy(
+                                ChatCompletionCreateParams.Moderation.Policy.builder()
+                                    .input(
+                                        ChatCompletionCreateParams.Moderation.Policy.Input.builder()
+                                            .mode(
+                                                ChatCompletionCreateParams.Moderation.Policy.Input
+                                                    .Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .output(
+                                        ChatCompletionCreateParams.Moderation.Policy.Output
+                                            .builder()
+                                            .mode(
+                                                ChatCompletionCreateParams.Moderation.Policy.Output
+                                                    .Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .n(1L)
                     .parallelToolCalls(true)
                     .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                     .presencePenalty(-2.0)
                     .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheOptions(
+                        ChatCompletionCreateParams.PromptCacheOptions.builder()
+                            .mode(ChatCompletionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .ttl(ChatCompletionCreateParams.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormat(ResponseFormatText.builder().build())
@@ -267,6 +337,7 @@ internal class ChatCompletionServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionService = client.chat().completions()
 
@@ -281,6 +352,7 @@ internal class ChatCompletionServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionService = client.chat().completions()
 
@@ -305,6 +377,7 @@ internal class ChatCompletionServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionService = client.chat().completions()
 
@@ -319,6 +392,7 @@ internal class ChatCompletionServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val chatCompletionService = client.chat().completions()
 

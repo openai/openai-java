@@ -8,16 +8,11 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /**
- * Constrains effort on reasoning for
- * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values
- * are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing reasoning effort can result
- * in faster responses and fewer tokens used on reasoning in a response.
- * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values
- *   for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all
- *   reasoning values in gpt-5.1.
- * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.
- * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
- * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+ * Constrains effort on reasoning for reasoning models. Currently supported values are `none`,
+ * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result in
+ * faster responses and fewer tokens used on reasoning in a response. Not all reasoning models
+ * support every value. See the [reasoning guide](https://platform.openai.com/docs/guides/reasoning)
+ * for model-specific support.
  */
 class ReasoningEffort @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {
@@ -45,6 +40,8 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
 
         @JvmField val XHIGH = of("xhigh")
 
+        @JvmField val MAX = of("max")
+
         @JvmStatic fun of(value: String) = ReasoningEffort(JsonField.of(value))
     }
 
@@ -56,6 +53,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
         MEDIUM,
         HIGH,
         XHIGH,
+        MAX,
     }
 
     /**
@@ -74,6 +72,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
         MEDIUM,
         HIGH,
         XHIGH,
+        MAX,
         /**
          * An enum member indicating that [ReasoningEffort] was instantiated with an unknown value.
          */
@@ -95,6 +94,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
             MEDIUM -> Value.MEDIUM
             HIGH -> Value.HIGH
             XHIGH -> Value.XHIGH
+            MAX -> Value.MAX
             else -> Value._UNKNOWN
         }
 
@@ -114,6 +114,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
             MEDIUM -> Known.MEDIUM
             HIGH -> Known.HIGH
             XHIGH -> Known.XHIGH
+            MAX -> Known.MAX
             else -> throw OpenAIInvalidDataException("Unknown ReasoningEffort: $value")
         }
 
@@ -131,6 +132,14 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ReasoningEffort = apply {
         if (validated) {
             return@apply

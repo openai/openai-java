@@ -13,16 +13,21 @@ internal class ResponseInputFileTest {
     fun create() {
         val responseInputFile =
             ResponseInputFile.builder()
+                .detail(ResponseInputFile.Detail.AUTO)
                 .fileData("file_data")
                 .fileId("file_id")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
+                .promptCacheBreakpoint(ResponseInputFile.PromptCacheBreakpoint.builder().build())
                 .build()
 
+        assertThat(responseInputFile.detail()).contains(ResponseInputFile.Detail.AUTO)
         assertThat(responseInputFile.fileData()).contains("file_data")
         assertThat(responseInputFile.fileId()).contains("file_id")
-        assertThat(responseInputFile.fileUrl()).contains("file_url")
+        assertThat(responseInputFile.fileUrl()).contains("https://example.com")
         assertThat(responseInputFile.filename()).contains("filename")
+        assertThat(responseInputFile.promptCacheBreakpoint())
+            .contains(ResponseInputFile.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -30,10 +35,12 @@ internal class ResponseInputFileTest {
         val jsonMapper = jsonMapper()
         val responseInputFile =
             ResponseInputFile.builder()
+                .detail(ResponseInputFile.Detail.AUTO)
                 .fileData("file_data")
                 .fileId("file_id")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
+                .promptCacheBreakpoint(ResponseInputFile.PromptCacheBreakpoint.builder().build())
                 .build()
 
         val roundtrippedResponseInputFile =

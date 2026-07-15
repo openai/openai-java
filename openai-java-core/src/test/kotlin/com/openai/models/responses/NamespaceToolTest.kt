@@ -19,7 +19,14 @@ internal class NamespaceToolTest {
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            NamespaceTool.Tool.Function.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
                         .build()
@@ -33,7 +40,14 @@ internal class NamespaceToolTest {
                 NamespaceTool.Tool.ofFunction(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            NamespaceTool.Tool.Function.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
                         .build()
@@ -51,7 +65,14 @@ internal class NamespaceToolTest {
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            NamespaceTool.Tool.Function.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
                         .build()

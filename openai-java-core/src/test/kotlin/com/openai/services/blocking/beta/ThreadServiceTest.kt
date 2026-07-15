@@ -24,6 +24,7 @@ internal class ThreadServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadService = client.beta().threads()
 
@@ -96,6 +97,7 @@ internal class ThreadServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadService = client.beta().threads()
 
@@ -110,6 +112,7 @@ internal class ThreadServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadService = client.beta().threads()
 
@@ -148,6 +151,7 @@ internal class ThreadServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadService = client.beta().threads()
 
@@ -162,6 +166,7 @@ internal class ThreadServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadService = client.beta().threads()
 
@@ -177,7 +182,7 @@ internal class ThreadServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .parallelToolCalls(true)
                     .responseFormatAuto()
                     .temperature(1.0)
@@ -282,6 +287,7 @@ internal class ThreadServiceTest {
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val threadService = client.beta().threads()
 
@@ -297,7 +303,7 @@ internal class ThreadServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .parallelToolCalls(true)
                     .responseFormatAuto()
                     .temperature(1.0)

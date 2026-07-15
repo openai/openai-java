@@ -34,6 +34,7 @@ internal class RealtimeSessionCreateRequestTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
                                         .language("language")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
@@ -60,7 +61,7 @@ internal class RealtimeSessionCreateRequestTest {
                                         .build()
                                 )
                                 .speed(0.25)
-                                .voice("string")
+                                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                 .build()
                         )
                         .build()
@@ -69,9 +70,10 @@ internal class RealtimeSessionCreateRequestTest {
                     RealtimeSessionCreateRequest.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                .parallelToolCalls(true)
                 .prompt(
                     ResponsePrompt.builder()
                         .id("id")
@@ -82,6 +84,9 @@ internal class RealtimeSessionCreateRequestTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
@@ -114,6 +119,7 @@ internal class RealtimeSessionCreateRequestTest {
                             )
                             .transcription(
                                 AudioTranscription.builder()
+                                    .delay(AudioTranscription.Delay.MINIMAL)
                                     .language("language")
                                     .model(AudioTranscription.Model.WHISPER_1)
                                     .prompt("prompt")
@@ -140,7 +146,7 @@ internal class RealtimeSessionCreateRequestTest {
                                     .build()
                             )
                             .speed(0.25)
-                            .voice("string")
+                            .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                             .build()
                     )
                     .build()
@@ -151,11 +157,12 @@ internal class RealtimeSessionCreateRequestTest {
             )
         assertThat(realtimeSessionCreateRequest.instructions()).contains("instructions")
         assertThat(realtimeSessionCreateRequest.maxOutputTokens())
-            .contains(RealtimeSessionCreateRequest.MaxOutputTokens.ofInteger(0L))
+            .contains(RealtimeSessionCreateRequest.MaxOutputTokens.ofInf())
         assertThat(realtimeSessionCreateRequest.model())
             .contains(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateRequest.outputModalities().getOrNull())
             .containsExactly(RealtimeSessionCreateRequest.OutputModality.TEXT)
+        assertThat(realtimeSessionCreateRequest.parallelToolCalls()).contains(true)
         assertThat(realtimeSessionCreateRequest.prompt())
             .contains(
                 ResponsePrompt.builder()
@@ -168,6 +175,8 @@ internal class RealtimeSessionCreateRequestTest {
                     .version("version")
                     .build()
             )
+        assertThat(realtimeSessionCreateRequest.reasoning())
+            .contains(RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build())
         assertThat(realtimeSessionCreateRequest.toolChoice())
             .contains(RealtimeToolChoiceConfig.ofToolChoiceOptions(ToolChoiceOptions.NONE))
         assertThat(realtimeSessionCreateRequest.tools().getOrNull())
@@ -210,6 +219,7 @@ internal class RealtimeSessionCreateRequestTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
                                         .language("language")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
@@ -236,7 +246,7 @@ internal class RealtimeSessionCreateRequestTest {
                                         .build()
                                 )
                                 .speed(0.25)
-                                .voice("string")
+                                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                 .build()
                         )
                         .build()
@@ -245,9 +255,10 @@ internal class RealtimeSessionCreateRequestTest {
                     RealtimeSessionCreateRequest.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                .parallelToolCalls(true)
                 .prompt(
                     ResponsePrompt.builder()
                         .id("id")
@@ -258,6 +269,9 @@ internal class RealtimeSessionCreateRequestTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(

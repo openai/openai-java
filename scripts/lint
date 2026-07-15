@@ -11,7 +11,7 @@ if command -v ktfmt &> /dev/null; then
     ./scripts/kotlin-format --dry-run --set-exit-if-changed
 else
     echo "==> Running gradlew lintKotlin"
-    ./gradlew lintKotlin
+    ./scripts/gradle lintKotlin
 fi
 
 if command -v palantir-java-format &> /dev/null; then
@@ -19,5 +19,5 @@ if command -v palantir-java-format &> /dev/null; then
     ./scripts/java-format --dry-run --set-exit-if-changed
 else
     echo "==> Running gradlew lintJava"
-    ./gradlew lintJava
+    ./scripts/gradle lintJava
 fi

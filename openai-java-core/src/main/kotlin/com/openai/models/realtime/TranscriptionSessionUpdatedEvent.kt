@@ -217,6 +217,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): TranscriptionSessionUpdatedEvent = apply {
         if (validated) {
             return@apply
@@ -314,8 +322,6 @@ private constructor(
             inputAudioFormat.getOptional("input_audio_format")
 
         /**
-         * Configuration of the transcription model.
-         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -466,7 +472,6 @@ private constructor(
                 this.inputAudioFormat = inputAudioFormat
             }
 
-            /** Configuration of the transcription model. */
             fun inputAudioTranscription(inputAudioTranscription: AudioTranscription) =
                 inputAudioTranscription(JsonField.of(inputAudioTranscription))
 
@@ -574,6 +579,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Session = apply {
             if (validated) {
                 return@apply
@@ -782,6 +796,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): ClientSecret = apply {
                 if (validated) {
                     return@apply
@@ -924,6 +948,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Modality = apply {
                 if (validated) {
                     return@apply
@@ -1206,6 +1240,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): TurnDetection = apply {
                 if (validated) {
                     return@apply

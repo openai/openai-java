@@ -62,6 +62,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("instructions", OPTIONAL),
                 DelegationReadTestCase("metadata", OPTIONAL),
                 DelegationReadTestCase("model", RESPONSES_MODEL),
+                DelegationReadTestCase("moderation", OPTIONAL),
                 DelegationReadTestCase("_object_", JSON_VALUE),
                 // `output()` is a special case and has its own test function.
                 DelegationReadTestCase("parallelToolCalls", BOOLEAN),
@@ -75,6 +76,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("previousResponseId", OPTIONAL),
                 DelegationReadTestCase("prompt", OPTIONAL),
                 DelegationReadTestCase("promptCacheKey", OPTIONAL),
+                DelegationReadTestCase("promptCacheOptions", OPTIONAL),
                 DelegationReadTestCase("promptCacheRetention", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
                 DelegationReadTestCase("safetyIdentifier", OPTIONAL),
@@ -91,6 +93,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_instructions", JSON_FIELD),
                 DelegationReadTestCase("_metadata", JSON_FIELD),
                 DelegationReadTestCase("_model", JSON_FIELD),
+                DelegationReadTestCase("_moderation", JSON_FIELD),
                 // `_output()` is a special case and has its own test function.
                 DelegationReadTestCase("_parallelToolCalls", JSON_FIELD),
                 DelegationReadTestCase("_temperature", JSON_FIELD),
@@ -103,6 +106,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_previousResponseId", JSON_FIELD),
                 DelegationReadTestCase("_prompt", JSON_FIELD),
                 DelegationReadTestCase("_promptCacheKey", JSON_FIELD),
+                DelegationReadTestCase("_promptCacheOptions", JSON_FIELD),
                 DelegationReadTestCase("_promptCacheRetention", JSON_FIELD),
                 DelegationReadTestCase("_reasoning", JSON_FIELD),
                 DelegationReadTestCase("_safetyIdentifier", JSON_FIELD),

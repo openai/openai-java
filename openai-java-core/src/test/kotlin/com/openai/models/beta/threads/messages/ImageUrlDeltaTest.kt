@@ -12,17 +12,23 @@ internal class ImageUrlDeltaTest {
     @Test
     fun create() {
         val imageUrlDelta =
-            ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
+            ImageUrlDelta.builder()
+                .detail(ImageUrlDelta.Detail.AUTO)
+                .url("https://example.com")
+                .build()
 
         assertThat(imageUrlDelta.detail()).contains(ImageUrlDelta.Detail.AUTO)
-        assertThat(imageUrlDelta.url()).contains("url")
+        assertThat(imageUrlDelta.url()).contains("https://example.com")
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val imageUrlDelta =
-            ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
+            ImageUrlDelta.builder()
+                .detail(ImageUrlDelta.Detail.AUTO)
+                .url("https://example.com")
+                .build()
 
         val roundtrippedImageUrlDelta =
             jsonMapper.readValue(

@@ -60,7 +60,7 @@ internal class RunCreateResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunCreateResponse.ResultCounts.builder()
                         .errored(0L)
@@ -130,7 +130,7 @@ internal class RunCreateResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runCreateResponse.reportUrl()).isEqualTo("report_url")
+        assertThat(runCreateResponse.reportUrl()).isEqualTo("https://example.com")
         assertThat(runCreateResponse.resultCounts())
             .isEqualTo(
                 RunCreateResponse.ResultCounts.builder()
@@ -194,7 +194,7 @@ internal class RunCreateResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunCreateResponse.ResultCounts.builder()
                         .errored(0L)

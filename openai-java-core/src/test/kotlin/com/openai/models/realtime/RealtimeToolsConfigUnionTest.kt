@@ -57,6 +57,7 @@ internal class RealtimeToolsConfigUnionTest {
         val mcp =
             RealtimeToolsConfigUnion.Mcp.builder()
                 .serverLabel("server_label")
+                .addAllowedCaller(RealtimeToolsConfigUnion.Mcp.AllowedCaller.DIRECT)
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(RealtimeToolsConfigUnion.Mcp.ConnectorId.CONNECTOR_DROPBOX)
@@ -67,26 +68,11 @@ internal class RealtimeToolsConfigUnionTest {
                         .build()
                 )
                 .requireApproval(
-                    RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter.builder()
-                        .always(
-                            RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter
-                                .Always
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .never(
-                            RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter.Never
-                                .builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .build()
+                    RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS
                 )
                 .serverDescription("server_description")
-                .serverUrl("server_url")
+                .serverUrl("https://example.com")
+                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
         val realtimeToolsConfigUnion = RealtimeToolsConfigUnion.ofMcp(mcp)
@@ -102,6 +88,7 @@ internal class RealtimeToolsConfigUnionTest {
             RealtimeToolsConfigUnion.ofMcp(
                 RealtimeToolsConfigUnion.Mcp.builder()
                     .serverLabel("server_label")
+                    .addAllowedCaller(RealtimeToolsConfigUnion.Mcp.AllowedCaller.DIRECT)
                     .allowedToolsOfMcp(listOf("string"))
                     .authorization("authorization")
                     .connectorId(RealtimeToolsConfigUnion.Mcp.ConnectorId.CONNECTOR_DROPBOX)
@@ -112,27 +99,11 @@ internal class RealtimeToolsConfigUnionTest {
                             .build()
                     )
                     .requireApproval(
-                        RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter.builder()
-                            .always(
-                                RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter
-                                    .Always
-                                    .builder()
-                                    .readOnly(true)
-                                    .addToolName("string")
-                                    .build()
-                            )
-                            .never(
-                                RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalFilter
-                                    .Never
-                                    .builder()
-                                    .readOnly(true)
-                                    .addToolName("string")
-                                    .build()
-                            )
-                            .build()
+                        RealtimeToolsConfigUnion.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS
                     )
                     .serverDescription("server_description")
-                    .serverUrl("server_url")
+                    .serverUrl("https://example.com")
+                    .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                     .build()
             )
 

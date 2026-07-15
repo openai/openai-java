@@ -97,17 +97,12 @@ private constructor(
     fun name(): Optional<String> = body.name()
 
     /**
-     * Constrains effort on reasoning for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing reasoning effort
-     * can result in faster responses and fewer tokens used on reasoning in a response.
-     * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-     *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for
-     *   all reasoning values in gpt-5.1.
-     * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-     *   `none`.
-     * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-     * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+     * Constrains effort on reasoning for reasoning models. Currently supported values are `none`,
+     * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
+     * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
+     * models support every value. See the
+     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -403,18 +398,12 @@ private constructor(
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /**
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing
-         * reasoning effort can result in faster responses and fewer tokens used on reasoning in a
-         * response.
-         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
-         *   for all reasoning values in gpt-5.1.
-         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-         *   `none`.
-         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+         * Constrains effort on reasoning for reasoning models. Currently supported values are
+         * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response. Not all
+         * reasoning models support every value. See the
+         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+         * support.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -873,18 +862,12 @@ private constructor(
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing
-         * reasoning effort can result in faster responses and fewer tokens used on reasoning in a
-         * response.
-         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
-         *   for all reasoning values in gpt-5.1.
-         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-         *   `none`.
-         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+         * Constrains effort on reasoning for reasoning models. Currently supported values are
+         * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response. Not all
+         * reasoning models support every value. See the
+         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+         * support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1212,18 +1195,12 @@ private constructor(
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
-             * Constrains effort on reasoning for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`.
-             * Reducing reasoning effort can result in faster responses and fewer tokens used on
-             * reasoning in a response.
-             * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported
-             *   reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls
-             *   are supported for all reasoning values in gpt-5.1.
-             * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
-             *   support `none`.
-             * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-             * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+             * Constrains effort on reasoning for reasoning models. Currently supported values are
+             * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
+             * effort can result in faster responses and fewer tokens used on reasoning in a
+             * response. Not all reasoning models support every value. See the
+             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -1498,6 +1475,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -1654,6 +1640,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Metadata = apply {
             if (validated) {
                 return@apply
@@ -1839,6 +1834,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ToolResources = apply {
             if (validated) {
                 return@apply
@@ -1997,6 +2001,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): CodeInterpreter = apply {
                 if (validated) {
                     return@apply
@@ -2235,6 +2249,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): FileSearch = apply {
                 if (validated) {
                     return@apply
@@ -2514,6 +2538,16 @@ private constructor(
 
                 private var validated: Boolean = false
 
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
                 fun validate(): VectorStore = apply {
                     if (validated) {
                         return@apply
@@ -2580,6 +2614,37 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+                    /**
+                     * Maps this instance's current variant to a value of type [T] using the given
+                     * [visitor].
+                     *
+                     * Note that this method is _not_ forwards compatible with new variants from the
+                     * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not
+                     * known to this version of the SDK gracefully, consider overriding
+                     * [Visitor.unknown]:
+                     * ```java
+                     * import com.openai.core.JsonValue;
+                     * import java.util.Optional;
+                     *
+                     * Optional<String> result = chunkingStrategy.accept(new ChunkingStrategy.Visitor<Optional<String>>() {
+                     *     @Override
+                     *     public Optional<String> visitAuto(JsonValue auto) {
+                     *         return Optional.of(auto.toString());
+                     *     }
+                     *
+                     *     // ...
+                     *
+                     *     @Override
+                     *     public Optional<String> unknown(JsonValue json) {
+                     *         // Or inspect the `json`.
+                     *         return Optional.empty();
+                     *     }
+                     * });
+                     * ```
+                     *
+                     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                     *   [visitor] and the current variant is unknown.
+                     */
                     fun <T> accept(visitor: Visitor<T>): T =
                         when {
                             auto != null -> visitor.visitAuto(auto)
@@ -2589,6 +2654,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): ChunkingStrategy = apply {
                         if (validated) {
                             return@apply
@@ -2906,6 +2981,16 @@ private constructor(
 
                         private var validated: Boolean = false
 
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
                         fun validate(): Static = apply {
                             if (validated) {
                                 return@apply
@@ -3136,6 +3221,16 @@ private constructor(
 
                             private var validated: Boolean = false
 
+                            /**
+                             * Validates that the types of all values in this object match their
+                             * expected types recursively.
+                             *
+                             * This method is _not_ forwards compatible with new types from the API
+                             * for existing fields.
+                             *
+                             * @throws OpenAIInvalidDataException if any value type in this object
+                             *   doesn't match its expected type.
+                             */
                             fun validate(): InnerStatic = apply {
                                 if (validated) {
                                     return@apply
@@ -3282,6 +3377,16 @@ private constructor(
 
                     private var validated: Boolean = false
 
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
                     fun validate(): Metadata = apply {
                         if (validated) {
                             return@apply

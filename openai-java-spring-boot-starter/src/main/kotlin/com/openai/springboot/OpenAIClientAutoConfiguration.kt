@@ -26,6 +26,7 @@ class OpenAIClientAutoConfiguration {
             .apply {
                 properties.baseUrl?.let { baseUrl(it) }
                 properties.apiKey?.let { apiKey(it) }
+                properties.adminApiKey?.let { adminApiKey(it) }
                 properties.organization?.let { organization(it) }
                 properties.project?.let { project(it) }
                 properties.webhookSecret?.let { webhookSecret(it) }

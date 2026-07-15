@@ -15,13 +15,18 @@ internal class ComputerScreenshotContentTest {
             ComputerScreenshotContent.builder()
                 .detail(ComputerScreenshotContent.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
+                .promptCacheBreakpoint(
+                    ComputerScreenshotContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         assertThat(computerScreenshotContent.detail())
             .isEqualTo(ComputerScreenshotContent.Detail.LOW)
         assertThat(computerScreenshotContent.fileId()).contains("file_id")
-        assertThat(computerScreenshotContent.imageUrl()).contains("image_url")
+        assertThat(computerScreenshotContent.imageUrl()).contains("https://example.com")
+        assertThat(computerScreenshotContent.promptCacheBreakpoint())
+            .contains(ComputerScreenshotContent.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -31,7 +36,10 @@ internal class ComputerScreenshotContentTest {
             ComputerScreenshotContent.builder()
                 .detail(ComputerScreenshotContent.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
+                .promptCacheBreakpoint(
+                    ComputerScreenshotContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val roundtrippedComputerScreenshotContent =

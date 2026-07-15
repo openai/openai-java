@@ -28,6 +28,7 @@ internal class RealtimeAudioConfigTest {
                         )
                         .transcription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
                                 .language("language")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
@@ -54,7 +55,7 @@ internal class RealtimeAudioConfigTest {
                                 .build()
                         )
                         .speed(0.25)
-                        .voice("string")
+                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                         .build()
                 )
                 .build()
@@ -75,6 +76,7 @@ internal class RealtimeAudioConfigTest {
                     )
                     .transcription(
                         AudioTranscription.builder()
+                            .delay(AudioTranscription.Delay.MINIMAL)
                             .language("language")
                             .model(AudioTranscription.Model.WHISPER_1)
                             .prompt("prompt")
@@ -102,7 +104,7 @@ internal class RealtimeAudioConfigTest {
                             .build()
                     )
                     .speed(0.25)
-                    .voice("string")
+                    .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                     .build()
             )
     }
@@ -127,6 +129,7 @@ internal class RealtimeAudioConfigTest {
                         )
                         .transcription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
                                 .language("language")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
@@ -153,7 +156,7 @@ internal class RealtimeAudioConfigTest {
                                 .build()
                         )
                         .speed(0.25)
-                        .voice("string")
+                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                         .build()
                 )
                 .build()

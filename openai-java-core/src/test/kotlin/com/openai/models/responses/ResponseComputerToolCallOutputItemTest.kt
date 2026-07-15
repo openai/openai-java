@@ -19,9 +19,10 @@ internal class ResponseComputerToolCallOutputItemTest {
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
-                        .imageUrl("image_url")
+                        .imageUrl("https://example.com")
                         .build()
                 )
+                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
                 .addAcknowledgedSafetyCheck(
                     ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
                         .id("id")
@@ -29,7 +30,7 @@ internal class ResponseComputerToolCallOutputItemTest {
                         .message("message")
                         .build()
                 )
-                .status(ResponseComputerToolCallOutputItem.Status.IN_PROGRESS)
+                .createdBy("created_by")
                 .build()
 
         assertThat(responseComputerToolCallOutputItem.id()).isEqualTo("id")
@@ -38,9 +39,11 @@ internal class ResponseComputerToolCallOutputItemTest {
             .isEqualTo(
                 ResponseComputerToolCallOutputScreenshot.builder()
                     .fileId("file_id")
-                    .imageUrl("image_url")
+                    .imageUrl("https://example.com")
                     .build()
             )
+        assertThat(responseComputerToolCallOutputItem.status())
+            .isEqualTo(ResponseComputerToolCallOutputItem.Status.COMPLETED)
         assertThat(responseComputerToolCallOutputItem.acknowledgedSafetyChecks().getOrNull())
             .containsExactly(
                 ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
@@ -49,8 +52,7 @@ internal class ResponseComputerToolCallOutputItemTest {
                     .message("message")
                     .build()
             )
-        assertThat(responseComputerToolCallOutputItem.status())
-            .contains(ResponseComputerToolCallOutputItem.Status.IN_PROGRESS)
+        assertThat(responseComputerToolCallOutputItem.createdBy()).contains("created_by")
     }
 
     @Test
@@ -63,9 +65,10 @@ internal class ResponseComputerToolCallOutputItemTest {
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
-                        .imageUrl("image_url")
+                        .imageUrl("https://example.com")
                         .build()
                 )
+                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
                 .addAcknowledgedSafetyCheck(
                     ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
                         .id("id")
@@ -73,7 +76,7 @@ internal class ResponseComputerToolCallOutputItemTest {
                         .message("message")
                         .build()
                 )
-                .status(ResponseComputerToolCallOutputItem.Status.IN_PROGRESS)
+                .createdBy("created_by")
                 .build()
 
         val roundtrippedResponseComputerToolCallOutputItem =

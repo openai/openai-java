@@ -17,8 +17,11 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
+import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseCustomToolCallItem
+import com.openai.models.responses.ResponseCustomToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
 import com.openai.models.responses.ResponseFunctionShellToolCall
 import com.openai.models.responses.ResponseFunctionShellToolCallOutput
@@ -28,6 +31,7 @@ import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseItem
 import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseReasoningItem
 import com.openai.models.responses.ResponseToolSearchCall
 import com.openai.models.responses.ResponseToolSearchOutputItem
 import java.util.Collections
@@ -254,6 +258,24 @@ private constructor(
         fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
             addData(ResponseItem.ofToolSearchOutput(toolSearchOutput))
 
+        /** Alias for calling [addData] with `ResponseItem.ofAdditionalTools(additionalTools)`. */
+        fun addData(additionalTools: ResponseItem.AdditionalTools) =
+            addData(ResponseItem.ofAdditionalTools(additionalTools))
+
+        /** Alias for calling [addData] with `ResponseItem.ofReasoning(reasoning)`. */
+        fun addData(reasoning: ResponseReasoningItem) = addData(ResponseItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addData] with `ResponseItem.ofProgram(program)`. */
+        fun addData(program: ResponseItem.Program) = addData(ResponseItem.ofProgram(program))
+
+        /** Alias for calling [addData] with `ResponseItem.ofProgramOutput(programOutput)`. */
+        fun addData(programOutput: ResponseItem.ProgramOutput) =
+            addData(ResponseItem.ofProgramOutput(programOutput))
+
+        /** Alias for calling [addData] with `ResponseItem.ofCompaction(compaction)`. */
+        fun addData(compaction: ResponseCompactionItem) =
+            addData(ResponseItem.ofCompaction(compaction))
+
         /**
          * Alias for calling [addData] with
          * `ResponseItem.ofImageGenerationCall(imageGenerationCall)`.
@@ -317,6 +339,17 @@ private constructor(
 
         /** Alias for calling [addData] with `ResponseItem.ofMcpCall(mcpCall)`. */
         fun addData(mcpCall: ResponseItem.McpCall) = addData(ResponseItem.ofMcpCall(mcpCall))
+
+        /** Alias for calling [addData] with `ResponseItem.ofCustomToolCall(customToolCall)`. */
+        fun addData(customToolCall: ResponseCustomToolCallItem) =
+            addData(ResponseItem.ofCustomToolCall(customToolCall))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         */
+        fun addData(customToolCallOutput: ResponseCustomToolCallOutputItem) =
+            addData(ResponseItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /** The ID of the first item in the list. */
         fun firstId(firstId: String) = firstId(JsonField.of(firstId))
@@ -412,6 +445,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): ResponseItemList = apply {
         if (validated) {
             return@apply

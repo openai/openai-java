@@ -235,6 +235,23 @@ private constructor(
             body.addToolSearchOutputItem(tools)
         }
 
+        /**
+         * Alias for calling [addItem] with `ResponseInputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addItem(additionalTools: ResponseInputItem.AdditionalTools) = apply {
+            body.addItem(additionalTools)
+        }
+
+        /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseInputItem.AdditionalTools.builder()
+         *     .tools(tools)
+         *     .build()
+         * ```
+         */
+        fun addAdditionalToolsItem(tools: List<Tool>) = apply { body.addAdditionalToolsItem(tools) }
+
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
         fun addItem(reasoning: ResponseReasoningItem) = apply { body.addItem(reasoning) }
 
@@ -346,6 +363,9 @@ private constructor(
          */
         fun addItem(customToolCall: ResponseCustomToolCall) = apply { body.addItem(customToolCall) }
 
+        /** Alias for calling [addItem] with `ResponseInputItem.ofCompactionTrigger()`. */
+        fun addItemCompactionTrigger() = apply { body.addItemCompactionTrigger() }
+
         /** Alias for calling [addItem] with `ResponseInputItem.ofItemReference(itemReference)`. */
         fun addItem(itemReference: ResponseInputItem.ItemReference) = apply {
             body.addItem(itemReference)
@@ -361,6 +381,14 @@ private constructor(
          * ```
          */
         fun addItemReferenceItem(id: String) = apply { body.addItemReferenceItem(id) }
+
+        /** Alias for calling [addItem] with `ResponseInputItem.ofProgram(program)`. */
+        fun addItem(program: ResponseInputItem.Program) = apply { body.addItem(program) }
+
+        /** Alias for calling [addItem] with `ResponseInputItem.ofProgramOutput(programOutput)`. */
+        fun addItem(programOutput: ResponseInputItem.ProgramOutput) = apply {
+            body.addItem(programOutput)
+        }
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -733,6 +761,24 @@ private constructor(
             fun addToolSearchOutputItem(tools: List<Tool>) =
                 addItem(ResponseToolSearchOutputItemParam.builder().tools(tools).build())
 
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofAdditionalTools(additionalTools)`.
+             */
+            fun addItem(additionalTools: ResponseInputItem.AdditionalTools) =
+                addItem(ResponseInputItem.ofAdditionalTools(additionalTools))
+
+            /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseInputItem.AdditionalTools.builder()
+             *     .tools(tools)
+             *     .build()
+             * ```
+             */
+            fun addAdditionalToolsItem(tools: List<Tool>) =
+                addItem(ResponseInputItem.AdditionalTools.builder().tools(tools).build())
+
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =
                 addItem(ResponseInputItem.ofReasoning(reasoning))
@@ -845,6 +891,9 @@ private constructor(
             fun addItem(customToolCall: ResponseCustomToolCall) =
                 addItem(ResponseInputItem.ofCustomToolCall(customToolCall))
 
+            /** Alias for calling [addItem] with `ResponseInputItem.ofCompactionTrigger()`. */
+            fun addItemCompactionTrigger() = addItem(ResponseInputItem.ofCompactionTrigger())
+
             /**
              * Alias for calling [addItem] with `ResponseInputItem.ofItemReference(itemReference)`.
              */
@@ -867,6 +916,16 @@ private constructor(
                         .id(id)
                         .build()
                 )
+
+            /** Alias for calling [addItem] with `ResponseInputItem.ofProgram(program)`. */
+            fun addItem(program: ResponseInputItem.Program) =
+                addItem(ResponseInputItem.ofProgram(program))
+
+            /**
+             * Alias for calling [addItem] with `ResponseInputItem.ofProgramOutput(programOutput)`.
+             */
+            fun addItem(programOutput: ResponseInputItem.ProgramOutput) =
+                addItem(ResponseInputItem.ofProgramOutput(programOutput))
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -924,6 +983,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -1038,6 +1106,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Metadata = apply {
             if (validated) {
                 return@apply

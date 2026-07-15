@@ -83,6 +83,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val PROMPT_CACHE_RETENTION =
             ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY
+        private val PROMPT_CACHE_OPTIONS =
+            ChatCompletionCreateParams.PromptCacheOptions.builder().build()
         private val PROMPT_CACHE_RETENTION_OPTIONAL = Optional.of(PROMPT_CACHE_RETENTION)
         private val PROMPT_CACHE_RETENTION_JSON_FIELD = JsonField.of(PROMPT_CACHE_RETENTION)
 
@@ -103,6 +105,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val FUNCTION = ChatCompletionCreateParams.Function.builder().name(STRING).build()
         private val METADATA = ChatCompletionCreateParams.Metadata.builder().build()
+        private val MODERATION =
+            ChatCompletionCreateParams.Moderation.builder().model(STRING).build()
         private val MODALITY = ChatCompletionCreateParams.Modality.TEXT
         private val FUNCTION_DEFINITION = FunctionDefinition.builder().name(STRING).build()
         private val TOOL =
@@ -212,6 +216,9 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
+                DelegationWriteTestCase("moderation", MODERATION),
+                DelegationWriteTestCase("moderation", OPTIONAL),
+                DelegationWriteTestCase("moderation", JSON_FIELD),
                 DelegationWriteTestCase("modalities", LIST),
                 DelegationWriteTestCase("modalities", OPTIONAL),
                 DelegationWriteTestCase("modalities", JSON_FIELD),
@@ -227,6 +234,8 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("prediction", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheKey", STRING),
                 DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheOptions", PROMPT_CACHE_OPTIONS),
+                DelegationWriteTestCase("promptCacheOptions", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_OPTIONAL),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_JSON_FIELD),

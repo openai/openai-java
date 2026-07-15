@@ -29,7 +29,11 @@ internal class ResponseCreateEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice("string")
+                                        .voice(
+                                            RealtimeResponseCreateAudioOutput.Output.Voice
+                                                .UnionMember1
+                                                .ALLOY
+                                        )
                                         .build()
                                 )
                                 .build()
@@ -52,13 +56,14 @@ internal class ResponseCreateEventTest {
                                 .build()
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponseCreateParams.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -68,6 +73,11 @@ internal class ResponseCreateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -97,7 +107,10 @@ internal class ResponseCreateEventTest {
                                             .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                             .build()
                                     )
-                                    .voice("string")
+                                    .voice(
+                                        RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1
+                                            .ALLOY
+                                    )
                                     .build()
                             )
                             .build()
@@ -120,13 +133,14 @@ internal class ResponseCreateEventTest {
                             .build()
                     )
                     .instructions("instructions")
-                    .maxOutputTokens(0L)
+                    .maxOutputTokensInf()
                     .metadata(
                         RealtimeResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                    .parallelToolCalls(true)
                     .prompt(
                         ResponsePrompt.builder()
                             .id("id")
@@ -137,6 +151,9 @@ internal class ResponseCreateEventTest {
                             )
                             .version("version")
                             .build()
+                    )
+                    .reasoning(
+                        RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
@@ -169,7 +186,11 @@ internal class ResponseCreateEventTest {
                                                 .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
                                                 .build()
                                         )
-                                        .voice("string")
+                                        .voice(
+                                            RealtimeResponseCreateAudioOutput.Output.Voice
+                                                .UnionMember1
+                                                .ALLOY
+                                        )
                                         .build()
                                 )
                                 .build()
@@ -192,13 +213,14 @@ internal class ResponseCreateEventTest {
                                 .build()
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponseCreateParams.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -208,6 +230,11 @@ internal class ResponseCreateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)

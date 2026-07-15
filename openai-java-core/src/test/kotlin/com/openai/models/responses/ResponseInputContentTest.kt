@@ -16,7 +16,11 @@ internal class ResponseInputContentTest {
 
     @Test
     fun ofInputText() {
-        val inputText = ResponseInputText.builder().text("text").build()
+        val inputText =
+            ResponseInputText.builder()
+                .text("text")
+                .promptCacheBreakpoint(ResponseInputText.PromptCacheBreakpoint.builder().build())
+                .build()
 
         val responseInputContent = ResponseInputContent.ofInputText(inputText)
 
@@ -29,7 +33,14 @@ internal class ResponseInputContentTest {
     fun ofInputTextRoundtrip() {
         val jsonMapper = jsonMapper()
         val responseInputContent =
-            ResponseInputContent.ofInputText(ResponseInputText.builder().text("text").build())
+            ResponseInputContent.ofInputText(
+                ResponseInputText.builder()
+                    .text("text")
+                    .promptCacheBreakpoint(
+                        ResponseInputText.PromptCacheBreakpoint.builder().build()
+                    )
+                    .build()
+            )
 
         val roundtrippedResponseInputContent =
             jsonMapper.readValue(
@@ -46,7 +57,8 @@ internal class ResponseInputContentTest {
             ResponseInputImage.builder()
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
+                .promptCacheBreakpoint(ResponseInputImage.PromptCacheBreakpoint.builder().build())
                 .build()
 
         val responseInputContent = ResponseInputContent.ofInputImage(inputImage)
@@ -64,7 +76,10 @@ internal class ResponseInputContentTest {
                 ResponseInputImage.builder()
                     .detail(ResponseInputImage.Detail.LOW)
                     .fileId("file_id")
-                    .imageUrl("image_url")
+                    .imageUrl("https://example.com")
+                    .promptCacheBreakpoint(
+                        ResponseInputImage.PromptCacheBreakpoint.builder().build()
+                    )
                     .build()
             )
 
@@ -81,10 +96,12 @@ internal class ResponseInputContentTest {
     fun ofInputFile() {
         val inputFile =
             ResponseInputFile.builder()
+                .detail(ResponseInputFile.Detail.AUTO)
                 .fileData("file_data")
                 .fileId("file_id")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
+                .promptCacheBreakpoint(ResponseInputFile.PromptCacheBreakpoint.builder().build())
                 .build()
 
         val responseInputContent = ResponseInputContent.ofInputFile(inputFile)
@@ -100,10 +117,14 @@ internal class ResponseInputContentTest {
         val responseInputContent =
             ResponseInputContent.ofInputFile(
                 ResponseInputFile.builder()
+                    .detail(ResponseInputFile.Detail.AUTO)
                     .fileData("file_data")
                     .fileId("file_id")
-                    .fileUrl("file_url")
+                    .fileUrl("https://example.com")
                     .filename("filename")
+                    .promptCacheBreakpoint(
+                        ResponseInputFile.PromptCacheBreakpoint.builder().build()
+                    )
                     .build()
             )
 

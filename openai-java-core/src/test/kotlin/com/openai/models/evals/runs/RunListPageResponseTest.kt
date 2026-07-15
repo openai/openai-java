@@ -63,7 +63,7 @@ internal class RunListPageResponseTest {
                                 .testingCriteria("testing_criteria")
                                 .build()
                         )
-                        .reportUrl("report_url")
+                        .reportUrl("https://example.com")
                         .resultCounts(
                             RunListResponse.ResultCounts.builder()
                                 .errored(0L)
@@ -129,7 +129,7 @@ internal class RunListPageResponseTest {
                             .testingCriteria("testing_criteria")
                             .build()
                     )
-                    .reportUrl("report_url")
+                    .reportUrl("https://example.com")
                     .resultCounts(
                         RunListResponse.ResultCounts.builder()
                             .errored(0L)
@@ -200,7 +200,7 @@ internal class RunListPageResponseTest {
                                 .testingCriteria("testing_criteria")
                                 .build()
                         )
-                        .reportUrl("report_url")
+                        .reportUrl("https://example.com")
                         .resultCounts(
                             RunListResponse.ResultCounts.builder()
                                 .errored(0L)

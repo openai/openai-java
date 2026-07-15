@@ -16,7 +16,13 @@ internal class ResponseFunctionCallOutputItemTest {
 
     @Test
     fun ofInputText() {
-        val inputText = ResponseInputTextContent.builder().text("text").build()
+        val inputText =
+            ResponseInputTextContent.builder()
+                .text("text")
+                .promptCacheBreakpoint(
+                    ResponseInputTextContent.PromptCacheBreakpoint.builder().build()
+                )
+                .build()
 
         val responseFunctionCallOutputItem = ResponseFunctionCallOutputItem.ofInputText(inputText)
 
@@ -30,7 +36,12 @@ internal class ResponseFunctionCallOutputItemTest {
         val jsonMapper = jsonMapper()
         val responseFunctionCallOutputItem =
             ResponseFunctionCallOutputItem.ofInputText(
-                ResponseInputTextContent.builder().text("text").build()
+                ResponseInputTextContent.builder()
+                    .text("text")
+                    .promptCacheBreakpoint(
+                        ResponseInputTextContent.PromptCacheBreakpoint.builder().build()
+                    )
+                    .build()
             )
 
         val roundtrippedResponseFunctionCallOutputItem =
@@ -49,7 +60,10 @@ internal class ResponseFunctionCallOutputItemTest {
             ResponseInputImageContent.builder()
                 .detail(ResponseInputImageContent.Detail.LOW)
                 .fileId("file-123")
-                .imageUrl("image_url")
+                .imageUrl("https://example.com")
+                .promptCacheBreakpoint(
+                    ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val responseFunctionCallOutputItem = ResponseFunctionCallOutputItem.ofInputImage(inputImage)
@@ -67,7 +81,10 @@ internal class ResponseFunctionCallOutputItemTest {
                 ResponseInputImageContent.builder()
                     .detail(ResponseInputImageContent.Detail.LOW)
                     .fileId("file-123")
-                    .imageUrl("image_url")
+                    .imageUrl("https://example.com")
+                    .promptCacheBreakpoint(
+                        ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                    )
                     .build()
             )
 
@@ -85,10 +102,14 @@ internal class ResponseFunctionCallOutputItemTest {
     fun ofInputFile() {
         val inputFile =
             ResponseInputFileContent.builder()
+                .detail(ResponseInputFileContent.Detail.AUTO)
                 .fileData("file_data")
                 .fileId("file-123")
-                .fileUrl("file_url")
+                .fileUrl("https://example.com")
                 .filename("filename")
+                .promptCacheBreakpoint(
+                    ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val responseFunctionCallOutputItem = ResponseFunctionCallOutputItem.ofInputFile(inputFile)
@@ -104,10 +125,14 @@ internal class ResponseFunctionCallOutputItemTest {
         val responseFunctionCallOutputItem =
             ResponseFunctionCallOutputItem.ofInputFile(
                 ResponseInputFileContent.builder()
+                    .detail(ResponseInputFileContent.Detail.AUTO)
                     .fileData("file_data")
                     .fileId("file-123")
-                    .fileUrl("file_url")
+                    .fileUrl("https://example.com")
                     .filename("filename")
+                    .promptCacheBreakpoint(
+                        ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                    )
                     .build()
             )
 

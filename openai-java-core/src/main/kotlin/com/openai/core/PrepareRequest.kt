@@ -10,7 +10,11 @@ import java.util.concurrent.CompletableFuture
 import kotlin.reflect.full.declaredFunctions
 
 @JvmSynthetic
-internal fun HttpRequest.prepare(clientOptions: ClientOptions, params: Params): HttpRequest =
+internal fun HttpRequest.prepare(
+    clientOptions: ClientOptions,
+    params: Params,
+    security: SecurityOptions = SecurityOptions.all(),
+): HttpRequest =
     toBuilder()
         // Clear the path segments and add them back below after the Azure path segments.
         .pathSegments(listOf())
@@ -18,6 +22,7 @@ internal fun HttpRequest.prepare(clientOptions: ClientOptions, params: Params): 
         .addPathSegments(*pathSegments.toTypedArray())
         .putAllQueryParams(clientOptions.queryParams)
         .replaceAllQueryParams(params._queryParams())
+        .putAllHeaders(clientOptions.securityHeaders(security))
         .putAllHeaders(clientOptions.headers)
         .replaceBearerTokenForAzure(clientOptions)
         .replaceAllHeaders(params._headers())
@@ -27,10 +32,11 @@ internal fun HttpRequest.prepare(clientOptions: ClientOptions, params: Params): 
 internal fun HttpRequest.prepareAsync(
     clientOptions: ClientOptions,
     params: Params,
+    security: SecurityOptions = SecurityOptions.all(),
 ): CompletableFuture<HttpRequest> =
     // This async version exists to make it easier to add async specific preparation logic in the
     // future.
-    CompletableFuture.completedFuture(prepare(clientOptions, params))
+    CompletableFuture.completedFuture(prepare(clientOptions, params, security))
 
 @JvmSynthetic
 internal fun Params.modelNameOrNull(): String? {

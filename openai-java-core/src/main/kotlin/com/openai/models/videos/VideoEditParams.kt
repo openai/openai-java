@@ -464,6 +464,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -513,7 +522,7 @@ private constructor(
         /** Reference to the completed video to edit. */
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to edit. */
         fun referenceInputParam(): Optional<VideoReferenceInputParam> =
             Optional.ofNullable(referenceInputParam)
 
@@ -524,12 +533,41 @@ private constructor(
         /** Reference to the completed video to edit. */
         fun asInputStream(): InputStream = inputStream.getOrThrow("inputStream")
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to edit. */
         fun asReferenceInputParam(): VideoReferenceInputParam =
             referenceInputParam.getOrThrow("referenceInputParam")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = video.accept(new Video.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitInputStream(InputStream inputStream) {
+         *         return Optional.of(inputStream.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 inputStream != null -> visitor.visitInputStream(inputStream)
@@ -539,6 +577,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Video = apply {
             if (validated) {
                 return@apply
@@ -592,7 +639,7 @@ private constructor(
             @JvmStatic
             fun ofInputStream(inputStream: InputStream) = Video(inputStream = inputStream)
 
-            /** Reference to the completed video. */
+            /** Reference to the completed video to edit. */
             @JvmStatic
             fun ofReferenceInputParam(referenceInputParam: VideoReferenceInputParam) =
                 Video(referenceInputParam = referenceInputParam)
@@ -604,7 +651,7 @@ private constructor(
             /** Reference to the completed video to edit. */
             fun visitInputStream(inputStream: InputStream): T
 
-            /** Reference to the completed video. */
+            /** Reference to the completed video to edit. */
             fun visitReferenceInputParam(referenceInputParam: VideoReferenceInputParam): T
 
             /**
@@ -639,7 +686,7 @@ private constructor(
             }
         }
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to edit. */
         class VideoReferenceInputParam
         private constructor(
             private val id: MultipartField<String>,
@@ -756,6 +803,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): VideoReferenceInputParam = apply {
                 if (validated) {
                     return@apply

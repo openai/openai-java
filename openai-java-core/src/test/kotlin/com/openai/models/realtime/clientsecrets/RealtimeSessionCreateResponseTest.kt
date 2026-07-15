@@ -9,6 +9,8 @@ import com.openai.models.realtime.AudioTranscription
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioFormats
 import com.openai.models.realtime.RealtimeFunctionTool
+import com.openai.models.realtime.RealtimeReasoning
+import com.openai.models.realtime.RealtimeReasoningEffort
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
@@ -22,9 +24,7 @@ internal class RealtimeSessionCreateResponseTest {
     fun create() {
         val realtimeSessionCreateResponse =
             RealtimeSessionCreateResponse.builder()
-                .clientSecret(
-                    RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build()
-                )
+                .id("id")
                 .audio(
                     RealtimeSessionCreateResponse.Audio.builder()
                         .input(
@@ -43,6 +43,7 @@ internal class RealtimeSessionCreateResponseTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
                                         .language("language")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
@@ -76,11 +77,12 @@ internal class RealtimeSessionCreateResponseTest {
                         )
                         .build()
                 )
+                .expiresAt(0L)
                 .addInclude(
                     RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(
@@ -93,6 +95,9 @@ internal class RealtimeSessionCreateResponseTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
@@ -107,8 +112,7 @@ internal class RealtimeSessionCreateResponseTest {
                 .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
                 .build()
 
-        assertThat(realtimeSessionCreateResponse.clientSecret())
-            .isEqualTo(RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build())
+        assertThat(realtimeSessionCreateResponse.id()).isEqualTo("id")
         assertThat(realtimeSessionCreateResponse.audio())
             .contains(
                 RealtimeSessionCreateResponse.Audio.builder()
@@ -127,6 +131,7 @@ internal class RealtimeSessionCreateResponseTest {
                             )
                             .transcription(
                                 AudioTranscription.builder()
+                                    .delay(AudioTranscription.Delay.MINIMAL)
                                     .language("language")
                                     .model(AudioTranscription.Model.WHISPER_1)
                                     .prompt("prompt")
@@ -159,13 +164,14 @@ internal class RealtimeSessionCreateResponseTest {
                     )
                     .build()
             )
+        assertThat(realtimeSessionCreateResponse.expiresAt()).contains(0L)
         assertThat(realtimeSessionCreateResponse.include().getOrNull())
             .containsExactly(
                 RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
             )
         assertThat(realtimeSessionCreateResponse.instructions()).contains("instructions")
         assertThat(realtimeSessionCreateResponse.maxOutputTokens())
-            .contains(RealtimeSessionCreateResponse.MaxOutputTokens.ofInteger(0L))
+            .contains(RealtimeSessionCreateResponse.MaxOutputTokens.ofInf())
         assertThat(realtimeSessionCreateResponse.model())
             .contains(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateResponse.outputModalities().getOrNull())
@@ -182,6 +188,8 @@ internal class RealtimeSessionCreateResponseTest {
                     .version("version")
                     .build()
             )
+        assertThat(realtimeSessionCreateResponse.reasoning())
+            .contains(RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build())
         assertThat(realtimeSessionCreateResponse.toolChoice())
             .contains(RealtimeSessionCreateResponse.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
         assertThat(realtimeSessionCreateResponse.tools().getOrNull())
@@ -208,9 +216,7 @@ internal class RealtimeSessionCreateResponseTest {
         val jsonMapper = jsonMapper()
         val realtimeSessionCreateResponse =
             RealtimeSessionCreateResponse.builder()
-                .clientSecret(
-                    RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build()
-                )
+                .id("id")
                 .audio(
                     RealtimeSessionCreateResponse.Audio.builder()
                         .input(
@@ -229,6 +235,7 @@ internal class RealtimeSessionCreateResponseTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
                                         .language("language")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
@@ -262,11 +269,12 @@ internal class RealtimeSessionCreateResponseTest {
                         )
                         .build()
                 )
+                .expiresAt(0L)
                 .addInclude(
                     RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
                 .instructions("instructions")
-                .maxOutputTokens(0L)
+                .maxOutputTokensInf()
                 .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(
@@ -279,6 +287,9 @@ internal class RealtimeSessionCreateResponseTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(

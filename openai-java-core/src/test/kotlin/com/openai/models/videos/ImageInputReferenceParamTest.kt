@@ -12,17 +12,23 @@ internal class ImageInputReferenceParamTest {
     @Test
     fun create() {
         val imageInputReferenceParam =
-            ImageInputReferenceParam.builder().fileId("file-123").imageUrl("image_url").build()
+            ImageInputReferenceParam.builder()
+                .fileId("file-123")
+                .imageUrl("https://example.com")
+                .build()
 
         assertThat(imageInputReferenceParam.fileId()).contains("file-123")
-        assertThat(imageInputReferenceParam.imageUrl()).contains("image_url")
+        assertThat(imageInputReferenceParam.imageUrl()).contains("https://example.com")
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val imageInputReferenceParam =
-            ImageInputReferenceParam.builder().fileId("file-123").imageUrl("image_url").build()
+            ImageInputReferenceParam.builder()
+                .fileId("file-123")
+                .imageUrl("https://example.com")
+                .build()
 
         val roundtrippedImageInputReferenceParam =
             jsonMapper.readValue(

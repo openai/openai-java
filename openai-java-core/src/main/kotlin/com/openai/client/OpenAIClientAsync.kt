@@ -3,6 +3,7 @@
 package com.openai.client
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.AdminServiceAsync
 import com.openai.services.async.AudioServiceAsync
 import com.openai.services.async.BatchServiceAsync
 import com.openai.services.async.BetaServiceAsync
@@ -110,6 +111,8 @@ interface OpenAIClientAsync {
     /** Use Uploads to upload large files in multiple parts. */
     fun uploads(): UploadServiceAsync
 
+    fun admin(): AdminServiceAsync
+
     fun responses(): ResponseServiceAsync
 
     fun realtime(): RealtimeServiceAsync
@@ -197,6 +200,8 @@ interface OpenAIClientAsync {
 
         /** Use Uploads to upload large files in multiple parts. */
         fun uploads(): UploadServiceAsync.WithRawResponse
+
+        fun admin(): AdminServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
 

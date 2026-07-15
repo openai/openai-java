@@ -16,14 +16,14 @@ internal class ChatKitAttachmentTest {
                 .id("id")
                 .mimeType("mime_type")
                 .name("name")
-                .previewUrl("preview_url")
+                .previewUrl("https://example.com")
                 .type(ChatKitAttachment.Type.IMAGE)
                 .build()
 
         assertThat(chatkitAttachment.id()).isEqualTo("id")
         assertThat(chatkitAttachment.mimeType()).isEqualTo("mime_type")
         assertThat(chatkitAttachment.name()).isEqualTo("name")
-        assertThat(chatkitAttachment.previewUrl()).contains("preview_url")
+        assertThat(chatkitAttachment.previewUrl()).contains("https://example.com")
         assertThat(chatkitAttachment.type()).isEqualTo(ChatKitAttachment.Type.IMAGE)
     }
 
@@ -35,7 +35,7 @@ internal class ChatKitAttachmentTest {
                 .id("id")
                 .mimeType("mime_type")
                 .name("name")
-                .previewUrl("preview_url")
+                .previewUrl("https://example.com")
                 .type(ChatKitAttachment.Type.IMAGE)
                 .build()
 

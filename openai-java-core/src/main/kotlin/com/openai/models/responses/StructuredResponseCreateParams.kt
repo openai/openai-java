@@ -241,6 +241,21 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.metadata(metadata)
         }
 
+        /** @see ResponseCreateParams.Builder.moderation */
+        fun moderation(moderation: ResponseCreateParams.Moderation?) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ResponseCreateParams.Builder.moderation */
+        fun moderation(moderation: Optional<ResponseCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ResponseCreateParams.Builder.moderation */
+        fun moderation(moderation: JsonField<ResponseCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
         /** @see ResponseCreateParams.Builder.parallelToolCalls */
         fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
             paramsBuilder.parallelToolCalls(parallelToolCalls)
@@ -294,6 +309,17 @@ class StructuredResponseCreateParams<T : Any>(
         fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
+
+        /** @see ResponseCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(promptCacheOptions: ResponseCreateParams.PromptCacheOptions) =
+            apply {
+                paramsBuilder.promptCacheOptions(promptCacheOptions)
+            }
+
+        /** @see ResponseCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(
+            promptCacheOptions: JsonField<ResponseCreateParams.PromptCacheOptions>
+        ) = apply { paramsBuilder.promptCacheOptions(promptCacheOptions) }
 
         /** @see ResponseCreateParams.Builder.promptCacheRetention */
         fun promptCacheRetention(promptCacheRetention: ResponseCreateParams.PromptCacheRetention?) =
@@ -439,6 +465,11 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.toolChoice */
         fun toolChoice(shell: ToolChoiceShell) = apply { paramsBuilder.toolChoice(shell) }
 
+        /** @see ResponseCreateParams.Builder.toolChoiceSpecificProgrammaticToolCallingParam */
+        fun toolChoiceSpecificProgrammaticToolCallingParam() = apply {
+            paramsBuilder.toolChoiceSpecificProgrammaticToolCallingParam()
+        }
+
         /** @see ResponseCreateParams.Builder.tools */
         fun tools(tools: List<Tool>) = apply { paramsBuilder.tools(tools) }
 
@@ -524,6 +555,11 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.addToolLocalShell */
         fun addToolLocalShell() = apply { paramsBuilder.addToolLocalShell() }
+
+        /** @see ResponseCreateParams.Builder.addToolProgrammaticToolCalling */
+        fun addToolProgrammaticToolCalling() = apply {
+            paramsBuilder.addToolProgrammaticToolCalling()
+        }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(shell: FunctionShellTool) = apply { paramsBuilder.addTool(shell) }

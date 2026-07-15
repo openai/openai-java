@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.28.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.28.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.28.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.43.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.43.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.43.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.28.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.43.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.28.0")
+implementation("com.openai:openai-java:4.43.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:4.28.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.28.0</version>
+  <version>4.43.0</version>
 </dependency>
 ```
 
@@ -76,8 +76,8 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -95,8 +95,8 @@ Configure the client using system properties or environment variables:
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 ```
 
@@ -108,6 +108,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
     .apiKey("My API Key")
+    .adminApiKey("My Admin API Key")
     .build();
 ```
 
@@ -118,8 +119,8 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
-    // Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-    // Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+    // Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+    // Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -129,7 +130,8 @@ See this table for the available options:
 
 | Setter          | System property        | Environment variable    | Required | Default value                 |
 | --------------- | ---------------------- | ----------------------- | -------- | ----------------------------- |
-| `apiKey`        | `openai.apiKey`        | `OPENAI_API_KEY`        | true     | -                             |
+| `apiKey`        | `openai.apiKey`        | `OPENAI_API_KEY`        | false    | -                             |
+| `adminApiKey`   | `openai.adminKey`      | `OPENAI_ADMIN_KEY`      | false    | -                             |
 | `organization`  | `openai.orgId`         | `OPENAI_ORG_ID`         | false    | -                             |
 | `project`       | `openai.projectId`     | `OPENAI_PROJECT_ID`     | false    | -                             |
 | `webhookSecret` | `openai.webhookSecret` | `OPENAI_WEBHOOK_SECRET` | false    | -                             |
@@ -155,6 +157,82 @@ OpenAIClient clientWithOptions = client.withOptions(optionsBuilder -> {
 ```
 
 The `withOptions()` method does not affect the original client or service.
+
+### Workload identity authentication
+
+Workload identity authentication allows applications running in cloud environments (Kubernetes, Azure, GCP) to authenticate using short-lived tokens issued by the cloud provider, instead of long-lived API keys.
+
+#### Basic setup
+
+```java
+import com.openai.auth.*;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+
+SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder().build();
+
+WorkloadIdentity workloadIdentity = WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .provider(provider)
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .workloadIdentity(workloadIdentity)
+    .build();
+```
+
+#### Kubernetes service account token provider
+
+```java
+// Use default token path (/var/run/secrets/kubernetes.io/serviceaccount/token)
+SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder().build();
+```
+
+```java
+// Or specify a custom token path
+SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder()
+    .tokenPath("/custom/path/to/token")
+    .build();
+```
+
+#### Azure Managed Identity provider
+
+```java
+import com.openai.auth.*;
+
+// Use defaults (resource: https://management.azure.com/, api-version: 2018-02-01)
+SubjectTokenProvider provider = AzureManagedIdentityTokenProvider.builder()
+    .build();
+```
+
+```java
+import com.openai.auth.*;
+
+// Or customize
+SubjectTokenProvider provider = AzureManagedIdentityTokenProvider.builder()
+    .resource("https://management.azure.com/")
+    .apiVersion("2018-02-01")
+    .build();
+```
+
+#### GCP ID token provider
+
+```java
+import com.openai.auth.*;
+
+SubjectTokenProvider provider = GcpIdTokenProvider.builder()
+    .build();
+```
+
+```java
+import com.openai.auth.*;
+
+// Or customize the audience
+SubjectTokenProvider provider = GcpIdTokenProvider.builder()
+    .audience("https://api.openai.com/v1")
+    .build();
+```
 
 ## Requests and responses
 
@@ -182,8 +260,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -203,8 +281,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.adminKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -270,7 +348,7 @@ client.async().chat().completions().createStreaming(params)
     .subscribe(chunk -> {
         System.out.println(chunk);
     })
-    .onCompleteFuture();
+    .onCompleteFuture()
     .whenComplete((unused, error) -> {
         if (error != null) {
             System.out.println("Something went wrong!");
@@ -632,6 +710,8 @@ properties can be derived. This may occur if, for example:
 - All fields and getter methods are non-`public`, but none are annotated with `@JsonProperty`.
 - A field or getter method is declared with a `Map` type. A `Map` is treated like a separate class
   with no named properties, so it will result in an empty `"properties"` field in the JSON schema.
+  If you need arbitrary key/value data, model it as a list of entry objects with named fields so the
+  generated schema still has concrete property names.
 
 ### Annotating classes and JSON schemas
 
@@ -795,7 +875,7 @@ static class GetSdkScore {
 ```
 
 When your functions are defined, add them to the input parameters using `addTool(Class<T>)` and then
-call them if requested to do so in the AI model's response. `Function.argments(Class<T>)` can be
+call them if requested to do so in the AI model's response. `Function.arguments(Class<T>)` can be
 used to parse a function's parameters in JSON form to an instance of your function-defining class.
 The fields of that instance will be set to the values of the parameters to the function call.
 
@@ -1305,8 +1385,6 @@ while (true) {
 
 ## Logging
 
-The SDK uses the standard [OkHttp logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor).
-
 Enable logging by setting the `OPENAI_LOG` environment variable to `info`:
 
 ```sh
@@ -1317,6 +1395,19 @@ Or to `debug` for more verbose logging:
 
 ```sh
 export OPENAI_LOG=debug
+```
+
+Or configure the client manually using the `logLevel` method:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.LogLevel;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .logLevel(LogLevel.INFO)
+    .build();
 ```
 
 ## ProGuard and R8
@@ -1342,7 +1433,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:4.28.0")
+implementation("com.openai:openai-java-spring-boot-starter:4.43.0")
 ```
 
 #### Maven
@@ -1351,7 +1442,7 @@ implementation("com.openai:openai-java-spring-boot-starter:4.28.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>4.28.0</version>
+  <version>4.43.0</version>
 </dependency>
 ```
 
@@ -1366,6 +1457,7 @@ The [client's environment variable options](#client-configuration) can be config
 ```properties
 openai.base-url=https://api.openai.com/v1
 openai.api-key=My API Key
+openai.admin-key=My Admin API Key
 openai.org-id=My Organization
 openai.project-id=My Project
 openai.webhook-secret=My Webhook Secret
@@ -1377,6 +1469,7 @@ openai.webhook-secret=My Webhook Secret
 openai:
   base-url: https://api.openai.com/v1
   api-key: My API Key
+  admin-key: My Admin API Key
   org-id: My Organization
   project-id: My Project
   webhook-secret: My Webhook Secret
@@ -1406,7 +1499,7 @@ public class OpenAIConfig {
 
 ## Jackson
 
-The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.2 by default.
+The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.9 by default.
 
 The SDK throws an exception if it detects an incompatible Jackson version at runtime (e.g. if the default version was overridden in your Maven or Gradle config).
 
@@ -1513,6 +1606,21 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
         "https://example.com", 8080
       )
     ))
+    .build();
+```
+
+If the proxy responds with `407 Proxy Authentication Required`, supply credentials by also configuring `proxyAuthenticator`:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.http.ProxyAuthenticator;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .proxy(...)
+    // Or a custom implementation of `ProxyAuthenticator`.
+    .proxyAuthenticator(ProxyAuthenticator.basic("username", "password"))
     .build();
 ```
 
@@ -1756,7 +1864,9 @@ In rare cases, the API may return a response that doesn't match the expected typ
 
 By default, the SDK will not throw an exception in this case. It will throw [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt) only if you directly access the property.
 
-If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
+Validating the response is _not_ forwards compatible with new types from the API for existing fields.
+
+If you would still prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
 ```java
 import com.openai.models.chat.completions.ChatCompletion;

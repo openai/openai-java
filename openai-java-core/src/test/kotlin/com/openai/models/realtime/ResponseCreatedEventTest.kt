@@ -34,7 +34,7 @@ internal class ResponseCreatedEventTest {
                                 .build()
                         )
                         .conversationId("conversation_id")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponse.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -126,7 +126,7 @@ internal class ResponseCreatedEventTest {
                             .build()
                     )
                     .conversationId("conversation_id")
-                    .maxOutputTokens(0L)
+                    .maxOutputTokensInf()
                     .metadata(
                         RealtimeResponse.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -221,7 +221,7 @@ internal class ResponseCreatedEventTest {
                                 .build()
                         )
                         .conversationId("conversation_id")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .metadata(
                             RealtimeResponse.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))

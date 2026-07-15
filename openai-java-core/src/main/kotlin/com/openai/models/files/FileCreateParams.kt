@@ -25,7 +25,8 @@ import kotlin.io.path.name
 /**
  * Upload a file that can be used across various endpoints. Individual files can be up to 512 MB,
  * and each project can store up to 2.5 TB of files in total. There is no organization-wide storage
- * limit.
+ * limit. Uploads to this endpoint are rate-limited to 1,000 requests per minute per authenticated
+ * user.
  * - The Assistants API supports files up to 2 million tokens and of specific file types. See the
  *   [Assistants Tools guide](https://platform.openai.com/docs/assistants/tools) for details.
  * - The Fine-tuning API only supports `.jsonl` files. The input also has certain required formats
@@ -34,6 +35,11 @@ import kotlin.io.path.name
  *   models.
  * - The Batch API only supports `.jsonl` files up to 200 MB in size. The input also has a specific
  *   required [format](https://platform.openai.com/docs/api-reference/batch/request-input).
+ * - For Retrieval or `file_search` ingestion, upload files here first. If you need to attach
+ *   multiple uploaded files to the same vector store, use
+ *   [`/vector_stores/{vector_store_id}/file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+ *   instead of attaching them one by one. Vector store attachment has separate limits from file
+ *   upload, including 2,000 attached files per minute per organization.
  *
  * Please [contact us](https://help.openai.com/) if you need to increase these storage limits.
  */
@@ -557,6 +563,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -749,6 +764,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ExpiresAfter = apply {
             if (validated) {
                 return@apply

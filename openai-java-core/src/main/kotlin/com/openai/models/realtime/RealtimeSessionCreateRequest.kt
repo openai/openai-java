@@ -45,7 +45,9 @@ private constructor(
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
     private val model: JsonField<Model>,
     private val outputModalities: JsonField<List<OutputModality>>,
+    private val parallelToolCalls: JsonField<Boolean>,
     private val prompt: JsonField<ResponsePrompt>,
+    private val reasoning: JsonField<RealtimeReasoning>,
     private val toolChoice: JsonField<RealtimeToolChoiceConfig>,
     private val tools: JsonField<List<RealtimeToolsConfigUnion>>,
     private val tracing: JsonField<RealtimeTracingConfig>,
@@ -72,9 +74,15 @@ private constructor(
         @JsonProperty("output_modalities")
         @ExcludeMissing
         outputModalities: JsonField<List<OutputModality>> = JsonMissing.of(),
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
+        @JsonProperty("reasoning")
+        @ExcludeMissing
+        reasoning: JsonField<RealtimeReasoning> = JsonMissing.of(),
         @JsonProperty("tool_choice")
         @ExcludeMissing
         toolChoice: JsonField<RealtimeToolChoiceConfig> = JsonMissing.of(),
@@ -95,7 +103,9 @@ private constructor(
         maxOutputTokens,
         model,
         outputModalities,
+        parallelToolCalls,
         prompt,
+        reasoning,
         toolChoice,
         tools,
         tracing,
@@ -182,6 +192,16 @@ private constructor(
         outputModalities.getOptional("output_modalities")
 
     /**
+     * Whether the model may call multiple tools in parallel. Only supported by reasoning Realtime
+     * models such as `gpt-realtime-2`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun parallelToolCalls(): Optional<Boolean> =
+        parallelToolCalls.getOptional("parallel_tool_calls")
+
+    /**
      * Reference to a prompt template and its variables.
      * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
      *
@@ -189,6 +209,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
+
+    /**
+     * Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun reasoning(): Optional<RealtimeReasoning> = reasoning.getOptional("reasoning")
 
     /**
      * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
@@ -208,9 +236,9 @@ private constructor(
     fun tools(): Optional<List<RealtimeToolsConfigUnion>> = tools.getOptional("tools")
 
     /**
-     * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
-     * null to disable tracing. Once tracing is enabled for a session, the configuration cannot be
-     * modified.
+     * Realtime API can write session traces to the
+     * [Traces Dashboard](https://platform.openai.com/logs?api=traces). Set to null to disable
+     * tracing. Once tracing is enabled for a session, the configuration cannot be modified.
      *
      * `auto` will create a trace for the session with default values for the workflow name, group
      * id, and metadata.
@@ -292,11 +320,30 @@ private constructor(
     fun _outputModalities(): JsonField<List<OutputModality>> = outputModalities
 
     /**
+     * Returns the raw JSON value of [parallelToolCalls].
+     *
+     * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("parallel_tool_calls")
+    @ExcludeMissing
+    fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
+
+    /**
      * Returns the raw JSON value of [prompt].
      *
      * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
+
+    /**
+     * Returns the raw JSON value of [reasoning].
+     *
+     * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("reasoning")
+    @ExcludeMissing
+    fun _reasoning(): JsonField<RealtimeReasoning> = reasoning
 
     /**
      * Returns the raw JSON value of [toolChoice].
@@ -364,7 +411,9 @@ private constructor(
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
         private var model: JsonField<Model> = JsonMissing.of()
         private var outputModalities: JsonField<MutableList<OutputModality>>? = null
+        private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
+        private var reasoning: JsonField<RealtimeReasoning> = JsonMissing.of()
         private var toolChoice: JsonField<RealtimeToolChoiceConfig> = JsonMissing.of()
         private var tools: JsonField<MutableList<RealtimeToolsConfigUnion>>? = null
         private var tracing: JsonField<RealtimeTracingConfig> = JsonMissing.of()
@@ -381,7 +430,9 @@ private constructor(
             model = realtimeSessionCreateRequest.model
             outputModalities =
                 realtimeSessionCreateRequest.outputModalities.map { it.toMutableList() }
+            parallelToolCalls = realtimeSessionCreateRequest.parallelToolCalls
             prompt = realtimeSessionCreateRequest.prompt
+            reasoning = realtimeSessionCreateRequest.reasoning
             toolChoice = realtimeSessionCreateRequest.toolChoice
             tools = realtimeSessionCreateRequest.tools.map { it.toMutableList() }
             tracing = realtimeSessionCreateRequest.tracing
@@ -548,6 +599,24 @@ private constructor(
         }
 
         /**
+         * Whether the model may call multiple tools in parallel. Only supported by reasoning
+         * Realtime models such as `gpt-realtime-2`.
+         */
+        fun parallelToolCalls(parallelToolCalls: Boolean) =
+            parallelToolCalls(JsonField.of(parallelToolCalls))
+
+        /**
+         * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+            this.parallelToolCalls = parallelToolCalls
+        }
+
+        /**
          * Reference to a prompt template and its variables.
          * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
          */
@@ -564,6 +633,20 @@ private constructor(
          * supported value.
          */
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
+
+        /** Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`. */
+        fun reasoning(reasoning: RealtimeReasoning) = reasoning(JsonField.of(reasoning))
+
+        /**
+         * Sets [Builder.reasoning] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.reasoning] with a well-typed [RealtimeReasoning] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun reasoning(reasoning: JsonField<RealtimeReasoning>) = apply {
+            this.reasoning = reasoning
+        }
 
         /**
          * How the model chooses tools. Provide one of the string modes or force a specific
@@ -647,9 +730,9 @@ private constructor(
             addTool(RealtimeToolsConfigUnion.Mcp.builder().serverLabel(serverLabel).build())
 
         /**
-         * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
-         * null to disable tracing. Once tracing is enabled for a session, the configuration cannot
-         * be modified.
+         * Realtime API can write session traces to the
+         * [Traces Dashboard](https://platform.openai.com/logs?api=traces). Set to null to disable
+         * tracing. Once tracing is enabled for a session, the configuration cannot be modified.
          *
          * `auto` will create a trace for the session with default values for the workflow name,
          * group id, and metadata.
@@ -752,7 +835,9 @@ private constructor(
                 maxOutputTokens,
                 model,
                 (outputModalities ?: JsonMissing.of()).map { it.toImmutable() },
+                parallelToolCalls,
                 prompt,
+                reasoning,
                 toolChoice,
                 (tools ?: JsonMissing.of()).map { it.toImmutable() },
                 tracing,
@@ -763,6 +848,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): RealtimeSessionCreateRequest = apply {
         if (validated) {
             return@apply
@@ -779,7 +872,9 @@ private constructor(
         maxOutputTokens().ifPresent { it.validate() }
         model()
         outputModalities().ifPresent { it.forEach { it.validate() } }
+        parallelToolCalls()
         prompt().ifPresent { it.validate() }
+        reasoning().ifPresent { it.validate() }
         toolChoice().ifPresent { it.validate() }
         tools().ifPresent { it.forEach { it.validate() } }
         tracing().ifPresent { it.validate() }
@@ -809,7 +904,9 @@ private constructor(
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (outputModalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (tracing.asKnown().getOrNull()?.validity() ?: 0) +
@@ -900,6 +997,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Include = apply {
             if (validated) {
                 return@apply
@@ -966,6 +1072,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = maxOutputTokens.accept(new MaxOutputTokens.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitInteger(Long integer) {
+         *         return Optional.of(integer.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 integer != null -> visitor.visitInteger(integer)
@@ -975,6 +1110,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): MaxOutputTokens = apply {
             if (validated) {
                 return@apply
@@ -1139,6 +1283,12 @@ private constructor(
 
             @JvmField val GPT_REALTIME_1_5 = of("gpt-realtime-1.5")
 
+            @JvmField val GPT_REALTIME_2 = of("gpt-realtime-2")
+
+            @JvmField val GPT_REALTIME_2_1 = of("gpt-realtime-2.1")
+
+            @JvmField val GPT_REALTIME_2_1_MINI = of("gpt-realtime-2.1-mini")
+
             @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
 
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
@@ -1179,6 +1329,9 @@ private constructor(
         enum class Known {
             GPT_REALTIME,
             GPT_REALTIME_1_5,
+            GPT_REALTIME_2,
+            GPT_REALTIME_2_1,
+            GPT_REALTIME_2_1_MINI,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -1207,6 +1360,9 @@ private constructor(
         enum class Value {
             GPT_REALTIME,
             GPT_REALTIME_1_5,
+            GPT_REALTIME_2,
+            GPT_REALTIME_2_1,
+            GPT_REALTIME_2_1_MINI,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -1236,6 +1392,9 @@ private constructor(
             when (this) {
                 GPT_REALTIME -> Value.GPT_REALTIME
                 GPT_REALTIME_1_5 -> Value.GPT_REALTIME_1_5
+                GPT_REALTIME_2 -> Value.GPT_REALTIME_2
+                GPT_REALTIME_2_1 -> Value.GPT_REALTIME_2_1
+                GPT_REALTIME_2_1_MINI -> Value.GPT_REALTIME_2_1_MINI
                 GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -1267,6 +1426,9 @@ private constructor(
             when (this) {
                 GPT_REALTIME -> Known.GPT_REALTIME
                 GPT_REALTIME_1_5 -> Known.GPT_REALTIME_1_5
+                GPT_REALTIME_2 -> Known.GPT_REALTIME_2
+                GPT_REALTIME_2_1 -> Known.GPT_REALTIME_2_1
+                GPT_REALTIME_2_1_MINI -> Known.GPT_REALTIME_2_1_MINI
                 GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -1299,6 +1461,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Model = apply {
             if (validated) {
                 return@apply
@@ -1428,6 +1599,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): OutputModality = apply {
             if (validated) {
                 return@apply
@@ -1479,7 +1659,9 @@ private constructor(
             maxOutputTokens == other.maxOutputTokens &&
             model == other.model &&
             outputModalities == other.outputModalities &&
+            parallelToolCalls == other.parallelToolCalls &&
             prompt == other.prompt &&
+            reasoning == other.reasoning &&
             toolChoice == other.toolChoice &&
             tools == other.tools &&
             tracing == other.tracing &&
@@ -1496,7 +1678,9 @@ private constructor(
             maxOutputTokens,
             model,
             outputModalities,
+            parallelToolCalls,
             prompt,
+            reasoning,
             toolChoice,
             tools,
             tracing,
@@ -1508,5 +1692,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeSessionCreateRequest{type=$type, audio=$audio, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
+        "RealtimeSessionCreateRequest{type=$type, audio=$audio, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, parallelToolCalls=$parallelToolCalls, prompt=$prompt, reasoning=$reasoning, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
 }

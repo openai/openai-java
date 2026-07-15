@@ -22,6 +22,7 @@ internal class SessionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val sessionServiceAsync = client.beta().chatkit().sessions()
 
@@ -83,6 +84,7 @@ internal class SessionServiceAsyncTest {
             OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val sessionServiceAsync = client.beta().chatkit().sessions()
 

@@ -3,6 +3,8 @@
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.auth.WorkloadIdentity
+import com.openai.auth.WorkloadIdentityAuth
 import com.openai.azure.AzureOpenAIServiceVersion
 import com.openai.azure.AzureUrlCategory
 import com.openai.azure.AzureUrlPathMode
@@ -10,11 +12,14 @@ import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
+import com.openai.core.http.WorkloadIdentityHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
+import com.openai.credential.WorkloadIdentityCredential
 import java.time.Clock
 import java.time.Duration
 import java.util.Optional
@@ -86,6 +91,9 @@ private constructor(
     /**
      * Whether to call `validate` on every response before returning it.
      *
+     * Setting this to `true` is _not_ forwards compatible with new types from the API for existing
+     * fields.
+     *
      * Defaults to false, which means the shape of the response will not be validated upfront.
      * Instead, validation will only occur for the parts of the response that are accessed.
      */
@@ -113,6 +121,16 @@ private constructor(
      * Defaults to 2.
      */
     @get:JvmName("maxRetries") val maxRetries: Int,
+    /**
+     * The level at which to log request and response information.
+     *
+     * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+     *
+     * Defaults to [LogLevel.fromEnv].
+     */
+    @get:JvmName("logLevel") val logLevel: LogLevel,
+    private val apiKey: String?,
+    private val adminApiKey: String?,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     @get:JvmName("azureUrlPathMode") val azureUrlPathMode: AzureUrlPathMode,
@@ -134,6 +152,10 @@ private constructor(
      */
     fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
 
+    fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
+
+    fun adminApiKey(): Optional<String> = Optional.ofNullable(adminApiKey)
+
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
     fun project(): Optional<String> = Optional.ofNullable(project)
@@ -152,7 +174,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey()
+         *
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -180,12 +202,16 @@ private constructor(
         private var responseValidation: Boolean = false
         private var timeout: Timeout = Timeout.default()
         private var maxRetries: Int = 2
+        private var logLevel: LogLevel = LogLevel.fromEnv()
+        private var apiKey: String? = null
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
         private var azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.AUTO
+        private var adminApiKey: String? = null
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
+        private var workloadIdentity: WorkloadIdentity? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -201,7 +227,10 @@ private constructor(
             responseValidation = clientOptions.responseValidation
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
-            credential = clientOptions.credential
+            logLevel = clientOptions.logLevel
+            apiKey = clientOptions.apiKey
+            adminApiKey = clientOptions.adminApiKey
+            credential = clientOptions.credential.takeUnless { it === AdminApiKeyOnlyCredential }
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
             organization = clientOptions.organization
@@ -286,6 +315,9 @@ private constructor(
         /**
          * Whether to call `validate` on every response before returning it.
          *
+         * Setting this to `true` is _not_ forwards compatible with new types from the API for
+         * existing fields.
+         *
          * Defaults to false, which means the shape of the response will not be validated upfront.
          * Instead, validation will only occur for the parts of the response that are accessed.
          */
@@ -327,11 +359,32 @@ private constructor(
          */
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
-        fun apiKey(apiKey: String) = apply {
-            this.credential = BearerTokenCredential.create(apiKey)
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { this.logLevel = logLevel }
+
+        fun apiKey(apiKey: String?) = apply {
+            this.apiKey = apiKey
+            this.credential = apiKey?.let { BearerTokenCredential.create(it) }
         }
 
-        fun credential(credential: Credential) = apply { this.credential = credential }
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
+
+        fun adminApiKey(adminApiKey: String?) = apply { this.adminApiKey = adminApiKey }
+
+        /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
+        fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
+
+        fun credential(credential: Credential) = apply {
+            this.apiKey = null
+            this.credential = credential
+        }
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             this.azureServiceVersion = azureServiceVersion
@@ -356,6 +409,14 @@ private constructor(
         /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
         fun webhookSecret(webhookSecret: Optional<String>) =
             webhookSecret(webhookSecret.getOrNull())
+
+        fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
+            this.workloadIdentity = workloadIdentity
+        }
+
+        /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
+        fun workloadIdentity(workloadIdentity: Optional<WorkloadIdentity>) =
+            workloadIdentity(workloadIdentity.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -439,6 +500,38 @@ private constructor(
 
         fun timeout(): Timeout = timeout
 
+        private fun effectiveCredential(
+            httpClient: HttpClient,
+            jsonMapper: JsonMapper,
+        ): Credential {
+            if (
+                credential != null &&
+                    credential !== AdminApiKeyOnlyCredential &&
+                    credential !is WorkloadIdentityCredential &&
+                    workloadIdentity != null
+            ) {
+                throw IllegalStateException(
+                    "Cannot specify both credential (apiKey) and workloadIdentity. Please specify only one."
+                )
+            }
+            return when {
+                workloadIdentity != null ->
+                    WorkloadIdentityCredential(
+                        WorkloadIdentityAuth(
+                            config = workloadIdentity!!,
+                            httpClient = httpClient,
+                            jsonMapper = jsonMapper,
+                        )
+                    )
+                credential != null && credential !== AdminApiKeyOnlyCredential -> credential!!
+                !adminApiKey.isNullOrEmpty() -> AdminApiKeyOnlyCredential
+                else ->
+                    throw IllegalStateException(
+                        "At least one credential source must be specified: credential (apiKey), workloadIdentity, or adminApiKey"
+                    )
+            }
+        }
+
         /**
          * Updates configuration using system properties and environment variables.
          *
@@ -446,7 +539,8 @@ private constructor(
          *
          * |Setter         |System property       |Environment variable   |Required|Default value                |
          * |---------------|----------------------|-----------------------|--------|-----------------------------|
-         * |`apiKey`       |`openai.apiKey`       |`OPENAI_API_KEY`       |true    |-                            |
+         * |`apiKey`       |`openai.apiKey`       |`OPENAI_API_KEY`       |false   |-                            |
+         * |`adminApiKey`  |`openai.adminKey`     |`OPENAI_ADMIN_KEY`     |false   |-                            |
          * |`organization` |`openai.orgId`        |`OPENAI_ORG_ID`        |false   |-                            |
          * |`project`      |`openai.projectId`    |`OPENAI_PROJECT_ID`    |false   |-                            |
          * |`webhookSecret`|`openai.webhookSecret`|`OPENAI_WEBHOOK_SECRET`|false   |-                            |
@@ -455,6 +549,7 @@ private constructor(
          * System properties take precedence over environment variables.
          */
         fun fromEnv() = apply {
+            logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
                 baseUrl(it)
             }
@@ -469,6 +564,9 @@ private constructor(
             if (!openAIWebhookSecret.isNullOrEmpty()) {
                 webhookSecret(openAIWebhookSecret)
             }
+            (System.getProperty("openai.adminKey") ?: System.getenv("OPENAI_ADMIN_KEY"))?.let {
+                adminApiKey(it)
+            }
 
             when {
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
@@ -477,12 +575,21 @@ private constructor(
                     )
                 }
                 !openAIKey.isNullOrEmpty() -> {
-                    credential(BearerTokenCredential.create(openAIKey))
+                    apiKey(openAIKey)
                     organization(openAIOrgId)
                     project(openAIProjectId)
                 }
                 !azureOpenAIKey.isNullOrEmpty() -> {
                     credential(AzureApiKeyCredential.create(azureOpenAIKey))
+                }
+            }
+
+            System.getenv("OPENAI_CUSTOM_HEADERS")?.let { customHeadersEnv ->
+                for (line in customHeadersEnv.split("\n")) {
+                    val colon = line.indexOf(':')
+                    if (colon >= 0) {
+                        putHeader(line.substring(0, colon).trim(), line.substring(colon + 1).trim())
+                    }
                 }
             }
         }
@@ -495,7 +602,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .httpClient()
-         * .apiKey()
+         *
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -521,7 +628,6 @@ private constructor(
                         )
                     )
             val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
-            val credential = checkRequired("credential", credential)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -533,21 +639,8 @@ private constructor(
             headers.put("X-Stainless-Runtime", "JRE")
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
             headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
-            organization?.let { headers.put("OpenAI-Organization", it) }
-            project?.let { headers.put("OpenAI-Project", it) }
-
+            // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
-            when (credential) {
-                is AzureApiKeyCredential -> {
-                    headers.replace("api-key", credential.apiKey())
-                }
-                is BearerTokenCredential -> {
-                    headers.replace("Authorization", "Bearer ${credential.token()}")
-                }
-                else -> {
-                    throw IllegalArgumentException("Invalid credential type")
-                }
-            }
 
             baseUrl?.let {
                 when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
@@ -568,15 +661,37 @@ private constructor(
             }
 
             queryParams.replaceAll(this.queryParams.build())
+            organization?.let { headers.replace("OpenAI-Organization", it) }
+            project?.let { headers.replace("OpenAI-Project", it) }
 
-            return ClientOptions(
-                httpClient,
+            val credential = effectiveCredential(httpClient, jsonMapper)
+
+            val effectiveWorkloadIdentityAuth =
+                (credential as? WorkloadIdentityCredential)?.getAuth()
+
+            val workloadIdentityHttpClient =
+                WorkloadIdentityHttpClient(
+                    delegate = httpClient,
+                    workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                )
+
+            val wrappedHttpClient =
                 RetryingHttpClient.builder()
-                    .httpClient(httpClient)
+                    .httpClient(
+                        LoggingHttpClient.builder()
+                            .httpClient(workloadIdentityHttpClient)
+                            .clock(clock)
+                            .level(logLevel)
+                            .build()
+                    )
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
-                    .build(),
+                    .build()
+
+            return ClientOptions(
+                httpClient,
+                wrappedHttpClient,
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor,
@@ -588,6 +703,9 @@ private constructor(
                 responseValidation,
                 timeout,
                 maxRetries,
+                logLevel,
+                apiKey,
+                adminApiKey,
                 credential,
                 azureServiceVersion,
                 azureUrlPathMode,
@@ -613,4 +731,52 @@ private constructor(
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
         sleeper.close()
     }
+
+    @JvmSynthetic
+    internal fun securityHeaders(security: SecurityOptions): Headers {
+        val headers = Headers.builder()
+        var isSatisfied = false
+
+        if (security.bearerAuth) {
+            when {
+                credential is BearerTokenCredential -> {
+                    val token = credential.token()
+                    if (!token.isEmpty()) {
+                        headers.replace("Authorization", "Bearer $token")
+                        isSatisfied = true
+                    }
+                }
+                credential is AzureApiKeyCredential -> {
+                    headers.replace("api-key", credential.apiKey())
+                    isSatisfied = true
+                }
+                credential is WorkloadIdentityCredential -> {
+                    isSatisfied = true
+                }
+            }
+        }
+        if (security.adminApiKeyAuth) {
+            adminApiKey?.let {
+                if (!it.isEmpty()) {
+                    headers.replace("Authorization", "Bearer $it")
+                    isSatisfied = true
+                }
+            }
+        }
+
+        if (!isSatisfied && (security.bearerAuth || security.adminApiKeyAuth)) {
+            throw IllegalStateException(
+                when {
+                    security.bearerAuth && security.adminApiKeyAuth ->
+                        "This request requires apiKey, workloadIdentity, or adminApiKey"
+                    security.bearerAuth -> "This request requires apiKey or workloadIdentity"
+                    else -> "This request requires adminApiKey"
+                }
+            )
+        }
+
+        return headers.build()
+    }
 }
+
+private object AdminApiKeyOnlyCredential : Credential

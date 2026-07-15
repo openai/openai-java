@@ -35,6 +35,7 @@ internal class SessionUpdateEventTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
                                                 .language("language")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
@@ -61,7 +62,7 @@ internal class SessionUpdateEventTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice("string")
+                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -71,9 +72,10 @@ internal class SessionUpdateEventTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -83,6 +85,11 @@ internal class SessionUpdateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -122,6 +129,7 @@ internal class SessionUpdateEventTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
                                                 .language("language")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
@@ -148,7 +156,7 @@ internal class SessionUpdateEventTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice("string")
+                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -158,9 +166,10 @@ internal class SessionUpdateEventTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -170,6 +179,11 @@ internal class SessionUpdateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -213,6 +227,7 @@ internal class SessionUpdateEventTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
                                                 .language("language")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
@@ -239,7 +254,7 @@ internal class SessionUpdateEventTest {
                                                 .build()
                                         )
                                         .speed(0.25)
-                                        .voice("string")
+                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -249,9 +264,10 @@ internal class SessionUpdateEventTest {
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
-                        .maxOutputTokens(0L)
+                        .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -261,6 +277,11 @@ internal class SessionUpdateEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)

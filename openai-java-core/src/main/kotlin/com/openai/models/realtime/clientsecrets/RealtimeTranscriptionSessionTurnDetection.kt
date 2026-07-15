@@ -18,7 +18,7 @@ import java.util.Optional
 /**
  * Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the
  * model will detect the start and end of speech based on audio volume and respond at the end of
- * user speech.
+ * user speech. For `gpt-realtime-whisper`, this must be `null`; VAD is not supported.
  */
 class RealtimeTranscriptionSessionTurnDetection
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -252,6 +252,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): RealtimeTranscriptionSessionTurnDetection = apply {
         if (validated) {
             return@apply

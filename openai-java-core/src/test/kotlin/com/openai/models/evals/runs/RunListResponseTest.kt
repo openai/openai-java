@@ -60,7 +60,7 @@ internal class RunListResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunListResponse.ResultCounts.builder()
                         .errored(0L)
@@ -130,7 +130,7 @@ internal class RunListResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runListResponse.reportUrl()).isEqualTo("report_url")
+        assertThat(runListResponse.reportUrl()).isEqualTo("https://example.com")
         assertThat(runListResponse.resultCounts())
             .isEqualTo(
                 RunListResponse.ResultCounts.builder()
@@ -194,7 +194,7 @@ internal class RunListResponseTest {
                         .testingCriteria("testing_criteria")
                         .build()
                 )
-                .reportUrl("report_url")
+                .reportUrl("https://example.com")
                 .resultCounts(
                     RunListResponse.ResultCounts.builder()
                         .errored(0L)

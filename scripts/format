@@ -9,7 +9,7 @@ if command -v ktfmt &> /dev/null; then
     ./scripts/kotlin-format
 else
     echo "==> Running gradlew formatKotlin"
-    ./gradlew formatKotlin
+    ./scripts/gradle formatKotlin
 fi
 
 if command -v palantir-java-format &> /dev/null; then
@@ -17,5 +17,5 @@ if command -v palantir-java-format &> /dev/null; then
     ./scripts/java-format
 else
     echo "==> Running gradlew formatJava"
-    ./gradlew formatJava
+    ./scripts/gradle formatJava
 fi

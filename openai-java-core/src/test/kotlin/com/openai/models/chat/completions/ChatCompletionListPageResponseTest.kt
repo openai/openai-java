@@ -3,6 +3,7 @@
 package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.completions.CompletionUsage
 import org.assertj.core.api.Assertions.assertThat
@@ -65,7 +66,7 @@ internal class ChatCompletionListPageResponseTest {
                                                         .endIndex(0L)
                                                         .startIndex(0L)
                                                         .title("title")
-                                                        .url("url")
+                                                        .url("https://example.com")
                                                         .build()
                                                 )
                                                 .build()
@@ -102,6 +103,107 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
+                        .moderation(
+                            ChatCompletion.Moderation.builder()
+                                .input(
+                                    ChatCompletion.Moderation.Input.ModerationResults.builder()
+                                        .model("model")
+                                        .addResult(
+                                            ChatCompletion.Moderation.Input.ModerationResults.Result
+                                                .builder()
+                                                .categories(
+                                                    ChatCompletion.Moderation.Input
+                                                        .ModerationResults
+                                                        .Result
+                                                        .Categories
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(true),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryAppliedInputTypes(
+                                                    ChatCompletion.Moderation.Input
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryAppliedInputTypes
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(listOf("text")),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryScores(
+                                                    ChatCompletion.Moderation.Input
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryScores
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(0),
+                                                        )
+                                                        .build()
+                                                )
+                                                .flagged(true)
+                                                .model("model")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .output(
+                                    ChatCompletion.Moderation.Output.ModerationResults.builder()
+                                        .model("model")
+                                        .addResult(
+                                            ChatCompletion.Moderation.Output.ModerationResults
+                                                .Result
+                                                .builder()
+                                                .categories(
+                                                    ChatCompletion.Moderation.Output
+                                                        .ModerationResults
+                                                        .Result
+                                                        .Categories
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(true),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryAppliedInputTypes(
+                                                    ChatCompletion.Moderation.Output
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryAppliedInputTypes
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(listOf("text")),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryScores(
+                                                    ChatCompletion.Moderation.Output
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryScores
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(0),
+                                                        )
+                                                        .build()
+                                                )
+                                                .flagged(true)
+                                                .model("model")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
                         .serviceTier(ChatCompletion.ServiceTier.AUTO)
                         .systemFingerprint("system_fingerprint")
                         .usage(
@@ -120,6 +222,7 @@ internal class ChatCompletionListPageResponseTest {
                                 .promptTokensDetails(
                                     CompletionUsage.PromptTokensDetails.builder()
                                         .audioTokens(0L)
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )
@@ -184,7 +287,7 @@ internal class ChatCompletionListPageResponseTest {
                                                     .endIndex(0L)
                                                     .startIndex(0L)
                                                     .title("title")
-                                                    .url("url")
+                                                    .url("https://example.com")
                                                     .build()
                                             )
                                             .build()
@@ -221,6 +324,94 @@ internal class ChatCompletionListPageResponseTest {
                     )
                     .created(0L)
                     .model("model")
+                    .moderation(
+                        ChatCompletion.Moderation.builder()
+                            .input(
+                                ChatCompletion.Moderation.Input.ModerationResults.builder()
+                                    .model("model")
+                                    .addResult(
+                                        ChatCompletion.Moderation.Input.ModerationResults.Result
+                                            .builder()
+                                            .categories(
+                                                ChatCompletion.Moderation.Input.ModerationResults
+                                                    .Result
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                ChatCompletion.Moderation.Input.ModerationResults
+                                                    .Result
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                ChatCompletion.Moderation.Input.ModerationResults
+                                                    .Result
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .output(
+                                ChatCompletion.Moderation.Output.ModerationResults.builder()
+                                    .model("model")
+                                    .addResult(
+                                        ChatCompletion.Moderation.Output.ModerationResults.Result
+                                            .builder()
+                                            .categories(
+                                                ChatCompletion.Moderation.Output.ModerationResults
+                                                    .Result
+                                                    .Categories
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(true),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryAppliedInputTypes(
+                                                ChatCompletion.Moderation.Output.ModerationResults
+                                                    .Result
+                                                    .CategoryAppliedInputTypes
+                                                    .builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from(listOf("text")),
+                                                    )
+                                                    .build()
+                                            )
+                                            .categoryScores(
+                                                ChatCompletion.Moderation.Output.ModerationResults
+                                                    .Result
+                                                    .CategoryScores
+                                                    .builder()
+                                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                                    .build()
+                                            )
+                                            .flagged(true)
+                                            .model("model")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .serviceTier(ChatCompletion.ServiceTier.AUTO)
                     .systemFingerprint("system_fingerprint")
                     .usage(
@@ -239,6 +430,7 @@ internal class ChatCompletionListPageResponseTest {
                             .promptTokensDetails(
                                 CompletionUsage.PromptTokensDetails.builder()
                                     .audioTokens(0L)
+                                    .cacheWriteTokens(0L)
                                     .cachedTokens(0L)
                                     .build()
                             )
@@ -307,7 +499,7 @@ internal class ChatCompletionListPageResponseTest {
                                                         .endIndex(0L)
                                                         .startIndex(0L)
                                                         .title("title")
-                                                        .url("url")
+                                                        .url("https://example.com")
                                                         .build()
                                                 )
                                                 .build()
@@ -344,6 +536,107 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
+                        .moderation(
+                            ChatCompletion.Moderation.builder()
+                                .input(
+                                    ChatCompletion.Moderation.Input.ModerationResults.builder()
+                                        .model("model")
+                                        .addResult(
+                                            ChatCompletion.Moderation.Input.ModerationResults.Result
+                                                .builder()
+                                                .categories(
+                                                    ChatCompletion.Moderation.Input
+                                                        .ModerationResults
+                                                        .Result
+                                                        .Categories
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(true),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryAppliedInputTypes(
+                                                    ChatCompletion.Moderation.Input
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryAppliedInputTypes
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(listOf("text")),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryScores(
+                                                    ChatCompletion.Moderation.Input
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryScores
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(0),
+                                                        )
+                                                        .build()
+                                                )
+                                                .flagged(true)
+                                                .model("model")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .output(
+                                    ChatCompletion.Moderation.Output.ModerationResults.builder()
+                                        .model("model")
+                                        .addResult(
+                                            ChatCompletion.Moderation.Output.ModerationResults
+                                                .Result
+                                                .builder()
+                                                .categories(
+                                                    ChatCompletion.Moderation.Output
+                                                        .ModerationResults
+                                                        .Result
+                                                        .Categories
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(true),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryAppliedInputTypes(
+                                                    ChatCompletion.Moderation.Output
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryAppliedInputTypes
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(listOf("text")),
+                                                        )
+                                                        .build()
+                                                )
+                                                .categoryScores(
+                                                    ChatCompletion.Moderation.Output
+                                                        .ModerationResults
+                                                        .Result
+                                                        .CategoryScores
+                                                        .builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from(0),
+                                                        )
+                                                        .build()
+                                                )
+                                                .flagged(true)
+                                                .model("model")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
                         .serviceTier(ChatCompletion.ServiceTier.AUTO)
                         .systemFingerprint("system_fingerprint")
                         .usage(
@@ -362,6 +655,7 @@ internal class ChatCompletionListPageResponseTest {
                                 .promptTokensDetails(
                                     CompletionUsage.PromptTokensDetails.builder()
                                         .audioTokens(0L)
+                                        .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
                                         .build()
                                 )

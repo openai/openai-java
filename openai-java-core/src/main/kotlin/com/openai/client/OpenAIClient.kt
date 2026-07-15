@@ -3,6 +3,7 @@
 package com.openai.client
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.AdminService
 import com.openai.services.blocking.AudioService
 import com.openai.services.blocking.BatchService
 import com.openai.services.blocking.BetaService
@@ -110,6 +111,8 @@ interface OpenAIClient {
     /** Use Uploads to upload large files in multiple parts. */
     fun uploads(): UploadService
 
+    fun admin(): AdminService
+
     fun responses(): ResponseService
 
     fun realtime(): RealtimeService
@@ -195,6 +198,8 @@ interface OpenAIClient {
 
         /** Use Uploads to upload large files in multiple parts. */
         fun uploads(): UploadService.WithRawResponse
+
+        fun admin(): AdminService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
 

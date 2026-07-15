@@ -20,7 +20,7 @@ internal class RealtimeAudioConfigOutputTest {
                         .build()
                 )
                 .speed(0.25)
-                .voice("string")
+                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                 .build()
 
         assertThat(realtimeAudioConfigOutput.format())
@@ -34,7 +34,11 @@ internal class RealtimeAudioConfigOutputTest {
             )
         assertThat(realtimeAudioConfigOutput.speed()).contains(0.25)
         assertThat(realtimeAudioConfigOutput.voice())
-            .contains(RealtimeAudioConfigOutput.Voice.ofString("string"))
+            .contains(
+                RealtimeAudioConfigOutput.Voice.ofUnionMember1(
+                    RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY
+                )
+            )
     }
 
     @Test
@@ -49,7 +53,7 @@ internal class RealtimeAudioConfigOutputTest {
                         .build()
                 )
                 .speed(0.25)
-                .voice("string")
+                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                 .build()
 
         val roundtrippedRealtimeAudioConfigOutput =

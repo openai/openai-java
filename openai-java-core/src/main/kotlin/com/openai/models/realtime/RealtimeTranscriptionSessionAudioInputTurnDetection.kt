@@ -39,6 +39,9 @@ import kotlin.jvm.optionals.getOrNull
  * based on this probability. For example, if user audio trails off with "uhhm", the model will
  * score a low probability of turn end and wait longer for the user to continue speaking. This can
  * be useful for more natural conversations, but may have a higher latency.
+ *
+ * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to `null`; VAD is
+ * not supported.
  */
 @JsonDeserialize(using = RealtimeTranscriptionSessionAudioInputTurnDetection.Deserializer::class)
 @JsonSerialize(using = RealtimeTranscriptionSessionAudioInputTurnDetection.Serializer::class)
@@ -79,6 +82,35 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+    /**
+     * Maps this instance's current variant to a value of type [T] using the given [visitor].
+     *
+     * Note that this method is _not_ forwards compatible with new variants from the API, unless
+     * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of the
+     * SDK gracefully, consider overriding [Visitor.unknown]:
+     * ```java
+     * import com.openai.core.JsonValue;
+     * import java.util.Optional;
+     *
+     * Optional<String> result = realtimeTranscriptionSessionAudioInputTurnDetection.accept(new RealtimeTranscriptionSessionAudioInputTurnDetection.Visitor<Optional<String>>() {
+     *     @Override
+     *     public Optional<String> visitServerVad(ServerVad serverVad) {
+     *         return Optional.of(serverVad.toString());
+     *     }
+     *
+     *     // ...
+     *
+     *     @Override
+     *     public Optional<String> unknown(JsonValue json) {
+     *         // Or inspect the `json`.
+     *         return Optional.empty();
+     *     }
+     * });
+     * ```
+     *
+     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
+     *   the current variant is unknown.
+     */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             serverVad != null -> visitor.visitServerVad(serverVad)
@@ -88,6 +120,14 @@ private constructor(
 
     private var validated: Boolean = false
 
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
     fun validate(): RealtimeTranscriptionSessionAudioInputTurnDetection = apply {
         if (validated) {
             return@apply
@@ -693,6 +733,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ServerVad = apply {
             if (validated) {
                 return@apply
@@ -1006,6 +1055,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): SemanticVad = apply {
             if (validated) {
                 return@apply
@@ -1154,6 +1212,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Eagerness = apply {
                 if (validated) {
                     return@apply

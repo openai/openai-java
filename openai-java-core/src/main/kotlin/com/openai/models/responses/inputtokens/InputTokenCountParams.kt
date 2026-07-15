@@ -121,6 +121,15 @@ private constructor(
     fun parallelToolCalls(): Optional<Boolean> = body.parallelToolCalls()
 
     /**
+     * A model-owned style preset to apply to this request. Omit this parameter to use the model's
+     * default style. Supported values may expand over time. Values must be at most 64 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun personality(): Optional<Personality> = body.personality()
+
+    /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
      * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
@@ -178,7 +187,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun truncation(): Optional<Truncation> = body.truncation()
+    @Deprecated("deprecated") fun truncation(): Optional<Truncation> = body.truncation()
 
     /**
      * Returns the raw JSON value of [conversation].
@@ -215,6 +224,13 @@ private constructor(
      * type.
      */
     fun _parallelToolCalls(): JsonField<Boolean> = body._parallelToolCalls()
+
+    /**
+     * Returns the raw JSON value of [personality].
+     *
+     * Unlike [personality], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _personality(): JsonField<Personality> = body._personality()
 
     /**
      * Returns the raw JSON value of [previousResponseId].
@@ -257,7 +273,7 @@ private constructor(
      *
      * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _truncation(): JsonField<Truncation> = body._truncation()
+    @Deprecated("deprecated") fun _truncation(): JsonField<Truncation> = body._truncation()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -430,6 +446,33 @@ private constructor(
         }
 
         /**
+         * A model-owned style preset to apply to this request. Omit this parameter to use the
+         * model's default style. Supported values may expand over time. Values must be at most 64
+         * characters.
+         */
+        fun personality(personality: Personality) = apply { body.personality(personality) }
+
+        /**
+         * Sets [Builder.personality] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.personality] with a well-typed [Personality] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun personality(personality: JsonField<Personality>) = apply {
+            body.personality(personality)
+        }
+
+        /**
+         * Sets [personality] to an arbitrary [String].
+         *
+         * You should usually call [personality] with a well-typed [Personality] constant instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun personality(value: String) = apply { body.personality(value) }
+
+        /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
@@ -525,6 +568,14 @@ private constructor(
 
         /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
         fun toolChoice(custom: ToolChoiceCustom) = apply { body.toolChoice(custom) }
+
+        /**
+         * Alias for calling [toolChoice] with
+         * `ToolChoice.ofSpecificProgrammaticToolCallingParam()`.
+         */
+        fun toolChoiceSpecificProgrammaticToolCallingParam() = apply {
+            body.toolChoiceSpecificProgrammaticToolCallingParam()
+        }
 
         /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
         fun toolChoice(applyPatch: ToolChoiceApplyPatch) = apply { body.toolChoice(applyPatch) }
@@ -628,6 +679,9 @@ private constructor(
             codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
         ) = apply { body.addCodeInterpreterTool(codeInterpreterToolAuto) }
 
+        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = apply { body.addToolProgrammaticToolCalling() }
+
         /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
         fun addTool(imageGeneration: Tool.ImageGeneration) = apply { body.addTool(imageGeneration) }
 
@@ -671,6 +725,7 @@ private constructor(
          * `disabled` (default): If the input size will exceed the context window size for a model,
          * the request will fail with a 400 error.
          */
+        @Deprecated("deprecated")
         fun truncation(truncation: Truncation) = apply { body.truncation(truncation) }
 
         /**
@@ -680,6 +735,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun truncation(truncation: JsonField<Truncation>) = apply { body.truncation(truncation) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -826,6 +882,7 @@ private constructor(
         private val instructions: JsonField<String>,
         private val model: JsonField<String>,
         private val parallelToolCalls: JsonField<Boolean>,
+        private val personality: JsonField<Personality>,
         private val previousResponseId: JsonField<String>,
         private val reasoning: JsonField<Reasoning>,
         private val text: JsonField<Text>,
@@ -848,6 +905,9 @@ private constructor(
             @JsonProperty("parallel_tool_calls")
             @ExcludeMissing
             parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("personality")
+            @ExcludeMissing
+            personality: JsonField<Personality> = JsonMissing.of(),
             @JsonProperty("previous_response_id")
             @ExcludeMissing
             previousResponseId: JsonField<String> = JsonMissing.of(),
@@ -868,6 +928,7 @@ private constructor(
             instructions,
             model,
             parallelToolCalls,
+            personality,
             previousResponseId,
             reasoning,
             text,
@@ -925,6 +986,16 @@ private constructor(
          */
         fun parallelToolCalls(): Optional<Boolean> =
             parallelToolCalls.getOptional("parallel_tool_calls")
+
+        /**
+         * A model-owned style preset to apply to this request. Omit this parameter to use the
+         * model's default style. Supported values may expand over time. Values must be at most 64
+         * characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun personality(): Optional<Personality> = personality.getOptional("personality")
 
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -985,6 +1056,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun truncation(): Optional<Truncation> = truncation.getOptional("truncation")
 
         /**
@@ -1030,6 +1102,15 @@ private constructor(
         @JsonProperty("parallel_tool_calls")
         @ExcludeMissing
         fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
+
+        /**
+         * Returns the raw JSON value of [personality].
+         *
+         * Unlike [personality], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("personality")
+        @ExcludeMissing
+        fun _personality(): JsonField<Personality> = personality
 
         /**
          * Returns the raw JSON value of [previousResponseId].
@@ -1078,6 +1159,7 @@ private constructor(
          *
          * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("truncation")
         @ExcludeMissing
         fun _truncation(): JsonField<Truncation> = truncation
@@ -1108,6 +1190,7 @@ private constructor(
             private var instructions: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+            private var personality: JsonField<Personality> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var reasoning: JsonField<Reasoning> = JsonMissing.of()
             private var text: JsonField<Text> = JsonMissing.of()
@@ -1123,6 +1206,7 @@ private constructor(
                 instructions = body.instructions
                 model = body.model
                 parallelToolCalls = body.parallelToolCalls
+                personality = body.personality
                 previousResponseId = body.previousResponseId
                 reasoning = body.reasoning
                 text = body.text
@@ -1262,6 +1346,33 @@ private constructor(
             }
 
             /**
+             * A model-owned style preset to apply to this request. Omit this parameter to use the
+             * model's default style. Supported values may expand over time. Values must be at most
+             * 64 characters.
+             */
+            fun personality(personality: Personality) = personality(JsonField.of(personality))
+
+            /**
+             * Sets [Builder.personality] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.personality] with a well-typed [Personality] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun personality(personality: JsonField<Personality>) = apply {
+                this.personality = personality
+            }
+
+            /**
+             * Sets [personality] to an arbitrary [String].
+             *
+             * You should usually call [personality] with a well-typed [Personality] constant
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun personality(value: String) = personality(Personality.of(value))
+
+            /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
              * conversations. Learn more about
              * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
@@ -1361,6 +1472,13 @@ private constructor(
 
             /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
             fun toolChoice(custom: ToolChoiceCustom) = toolChoice(ToolChoice.ofCustom(custom))
+
+            /**
+             * Alias for calling [toolChoice] with
+             * `ToolChoice.ofSpecificProgrammaticToolCallingParam()`.
+             */
+            fun toolChoiceSpecificProgrammaticToolCallingParam() =
+                toolChoice(ToolChoice.ofSpecificProgrammaticToolCallingParam())
 
             /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
             fun toolChoice(applyPatch: ToolChoiceApplyPatch) =
@@ -1477,6 +1595,9 @@ private constructor(
                     )
                 )
 
+            /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+            fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
+
             /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
             fun addTool(imageGeneration: Tool.ImageGeneration) =
                 addTool(Tool.ofImageGeneration(imageGeneration))
@@ -1520,6 +1641,7 @@ private constructor(
              * conversation. - `disabled` (default): If the input size will exceed the context
              * window size for a model, the request will fail with a 400 error.
              */
+            @Deprecated("deprecated")
             fun truncation(truncation: Truncation) = truncation(JsonField.of(truncation))
 
             /**
@@ -1529,6 +1651,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun truncation(truncation: JsonField<Truncation>) = apply {
                 this.truncation = truncation
             }
@@ -1564,6 +1687,7 @@ private constructor(
                     instructions,
                     model,
                     parallelToolCalls,
+                    personality,
                     previousResponseId,
                     reasoning,
                     text,
@@ -1576,6 +1700,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Body = apply {
             if (validated) {
                 return@apply
@@ -1586,6 +1719,7 @@ private constructor(
             instructions()
             model()
             parallelToolCalls()
+            personality()
             previousResponseId()
             reasoning().ifPresent { it.validate() }
             text().ifPresent { it.validate() }
@@ -1616,6 +1750,7 @@ private constructor(
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
+                (if (personality.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1634,6 +1769,7 @@ private constructor(
                 instructions == other.instructions &&
                 model == other.model &&
                 parallelToolCalls == other.parallelToolCalls &&
+                personality == other.personality &&
                 previousResponseId == other.previousResponseId &&
                 reasoning == other.reasoning &&
                 text == other.text &&
@@ -1650,6 +1786,7 @@ private constructor(
                 instructions,
                 model,
                 parallelToolCalls,
+                personality,
                 previousResponseId,
                 reasoning,
                 text,
@@ -1663,7 +1800,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{conversation=$conversation, input=$input, instructions=$instructions, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, text=$text, toolChoice=$toolChoice, tools=$tools, truncation=$truncation, additionalProperties=$additionalProperties}"
+            "Body{conversation=$conversation, input=$input, instructions=$instructions, model=$model, parallelToolCalls=$parallelToolCalls, personality=$personality, previousResponseId=$previousResponseId, reasoning=$reasoning, text=$text, toolChoice=$toolChoice, tools=$tools, truncation=$truncation, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1700,6 +1837,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = conversation.accept(new Conversation.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitId(String id) {
+         *         return Optional.of(id.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 id != null -> visitor.visitId(id)
@@ -1710,6 +1876,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Conversation = apply {
             if (validated) {
                 return@apply
@@ -1896,6 +2071,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = input.accept(new Input.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitString(String string) {
+         *         return Optional.of(string.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 string != null -> visitor.visitString(string)
@@ -1905,6 +2109,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Input = apply {
             if (validated) {
                 return@apply
@@ -2057,6 +2270,147 @@ private constructor(
                 }
             }
         }
+    }
+
+    /**
+     * A model-owned style preset to apply to this request. Omit this parameter to use the model's
+     * default style. Supported values may expand over time. Values must be at most 64 characters.
+     */
+    class Personality @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val FRIENDLY = of("friendly")
+
+            @JvmField val PRAGMATIC = of("pragmatic")
+
+            @JvmStatic fun of(value: String) = Personality(JsonField.of(value))
+        }
+
+        /** An enum containing [Personality]'s known values. */
+        enum class Known {
+            FRIENDLY,
+            PRAGMATIC,
+        }
+
+        /**
+         * An enum containing [Personality]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Personality] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            FRIENDLY,
+            PRAGMATIC,
+            /**
+             * An enum member indicating that [Personality] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                FRIENDLY -> Value.FRIENDLY
+                PRAGMATIC -> Value.PRAGMATIC
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                FRIENDLY -> Known.FRIENDLY
+                PRAGMATIC -> Known.PRAGMATIC
+                else -> throw OpenAIInvalidDataException("Unknown Personality: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Personality = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Personality && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**
@@ -2252,6 +2606,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Text = apply {
             if (validated) {
                 return@apply
@@ -2385,6 +2748,16 @@ private constructor(
 
             private var validated: Boolean = false
 
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
             fun validate(): Verbosity = apply {
                 if (validated) {
                     return@apply
@@ -2453,6 +2826,7 @@ private constructor(
         private val function: ToolChoiceFunction? = null,
         private val mcp: ToolChoiceMcp? = null,
         private val custom: ToolChoiceCustom? = null,
+        private val specificProgrammaticToolCallingParam: JsonValue? = null,
         private val applyPatch: ToolChoiceApplyPatch? = null,
         private val shell: ToolChoiceShell? = null,
         private val _json: JsonValue? = null,
@@ -2488,6 +2862,9 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun custom(): Optional<ToolChoiceCustom> = Optional.ofNullable(custom)
 
+        fun specificProgrammaticToolCallingParam(): Optional<JsonValue> =
+            Optional.ofNullable(specificProgrammaticToolCallingParam)
+
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun applyPatch(): Optional<ToolChoiceApplyPatch> = Optional.ofNullable(applyPatch)
 
@@ -2505,6 +2882,9 @@ private constructor(
         fun isMcp(): Boolean = mcp != null
 
         fun isCustom(): Boolean = custom != null
+
+        fun isSpecificProgrammaticToolCallingParam(): Boolean =
+            specificProgrammaticToolCallingParam != null
 
         fun isApplyPatch(): Boolean = applyPatch != null
 
@@ -2540,6 +2920,9 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun asCustom(): ToolChoiceCustom = custom.getOrThrow("custom")
 
+        fun asSpecificProgrammaticToolCallingParam(): JsonValue =
+            specificProgrammaticToolCallingParam.getOrThrow("specificProgrammaticToolCallingParam")
+
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun asApplyPatch(): ToolChoiceApplyPatch = applyPatch.getOrThrow("applyPatch")
 
@@ -2548,6 +2931,35 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = toolChoice.accept(new ToolChoice.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitOptions(ToolChoiceOptions options) {
+         *         return Optional.of(options.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 options != null -> visitor.visitOptions(options)
@@ -2556,6 +2968,10 @@ private constructor(
                 function != null -> visitor.visitFunction(function)
                 mcp != null -> visitor.visitMcp(mcp)
                 custom != null -> visitor.visitCustom(custom)
+                specificProgrammaticToolCallingParam != null ->
+                    visitor.visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam
+                    )
                 applyPatch != null -> visitor.visitApplyPatch(applyPatch)
                 shell != null -> visitor.visitShell(shell)
                 else -> visitor.unknown(_json)
@@ -2563,6 +2979,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): ToolChoice = apply {
             if (validated) {
                 return@apply
@@ -2592,6 +3017,20 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) {
                         custom.validate()
+                    }
+
+                    override fun visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam: JsonValue
+                    ) {
+                        specificProgrammaticToolCallingParam.let {
+                            if (
+                                it != JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+                            ) {
+                                throw OpenAIInvalidDataException(
+                                    "'specificProgrammaticToolCallingParam' is invalid, received $it"
+                                )
+                            }
+                        }
                     }
 
                     override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) {
@@ -2636,6 +3075,15 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) = custom.validity()
 
+                    override fun visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam: JsonValue
+                    ) =
+                        specificProgrammaticToolCallingParam.let {
+                            if (it == JsonValue.from(mapOf("type" to "programmatic_tool_calling")))
+                                1
+                            else 0
+                        }
+
                     override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) =
                         applyPatch.validity()
 
@@ -2657,12 +3105,24 @@ private constructor(
                 function == other.function &&
                 mcp == other.mcp &&
                 custom == other.custom &&
+                specificProgrammaticToolCallingParam ==
+                    other.specificProgrammaticToolCallingParam &&
                 applyPatch == other.applyPatch &&
                 shell == other.shell
         }
 
         override fun hashCode(): Int =
-            Objects.hash(options, allowed, types, function, mcp, custom, applyPatch, shell)
+            Objects.hash(
+                options,
+                allowed,
+                types,
+                function,
+                mcp,
+                custom,
+                specificProgrammaticToolCallingParam,
+                applyPatch,
+                shell,
+            )
 
         override fun toString(): String =
             when {
@@ -2672,6 +3132,8 @@ private constructor(
                 function != null -> "ToolChoice{function=$function}"
                 mcp != null -> "ToolChoice{mcp=$mcp}"
                 custom != null -> "ToolChoice{custom=$custom}"
+                specificProgrammaticToolCallingParam != null ->
+                    "ToolChoice{specificProgrammaticToolCallingParam=$specificProgrammaticToolCallingParam}"
                 applyPatch != null -> "ToolChoice{applyPatch=$applyPatch}"
                 shell != null -> "ToolChoice{shell=$shell}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
@@ -2712,6 +3174,13 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             @JvmStatic fun ofCustom(custom: ToolChoiceCustom) = ToolChoice(custom = custom)
+
+            @JvmStatic
+            fun ofSpecificProgrammaticToolCallingParam() =
+                ToolChoice(
+                    specificProgrammaticToolCallingParam =
+                        JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+                )
 
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             @JvmStatic
@@ -2758,6 +3227,10 @@ private constructor(
             /** Use this option to force the model to call a specific custom tool. */
             fun visitCustom(custom: ToolChoiceCustom): T
 
+            fun visitSpecificProgrammaticToolCallingParam(
+                specificProgrammaticToolCallingParam: JsonValue
+            ): T
+
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
 
@@ -2786,6 +3259,14 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                ?.let {
+                                    ToolChoice(
+                                        specificProgrammaticToolCallingParam = it,
+                                        _json = json,
+                                    )
+                                }
+                                ?.takeIf { it.isValid() },
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceOptions>())?.let {
                                 ToolChoice(options = it, _json = json)
                             },
@@ -2841,6 +3322,8 @@ private constructor(
                     value.function != null -> generator.writeObject(value.function)
                     value.mcp != null -> generator.writeObject(value.mcp)
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.specificProgrammaticToolCallingParam != null ->
+                        generator.writeObject(value.specificProgrammaticToolCallingParam)
                     value.applyPatch != null -> generator.writeObject(value.applyPatch)
                     value.shell != null -> generator.writeObject(value.shell)
                     value._json != null -> generator.writeObject(value._json)
@@ -2857,6 +3340,7 @@ private constructor(
      * (default): If the input size will exceed the context window size for a model, the request
      * will fail with a 400 error.
      */
+    @Deprecated("deprecated")
     class Truncation @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -2946,6 +3430,15 @@ private constructor(
 
         private var validated: Boolean = false
 
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
         fun validate(): Truncation = apply {
             if (validated) {
                 return@apply

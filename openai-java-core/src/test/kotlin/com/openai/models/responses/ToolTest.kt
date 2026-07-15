@@ -26,8 +26,14 @@ internal class ToolTest {
                         .build()
                 )
                 .strict(true)
+                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                 .deferLoading(true)
                 .description("description")
+                .outputSchema(
+                    FunctionTool.OutputSchema.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
                 .build()
 
         val tool = Tool.ofFunction(function)
@@ -39,6 +45,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -62,8 +69,14 @@ internal class ToolTest {
                             .build()
                     )
                     .strict(true)
+                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                     .deferLoading(true)
                     .description("description")
+                    .outputSchema(
+                        FunctionTool.OutputSchema.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .build()
             )
 
@@ -109,6 +122,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -168,6 +182,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -207,6 +222,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -262,6 +278,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).contains(webSearch)
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -304,6 +321,7 @@ internal class ToolTest {
         val mcp =
             Tool.Mcp.builder()
                 .serverLabel("server_label")
+                .addAllowedCaller(Tool.Mcp.AllowedCaller.DIRECT)
                 .allowedToolsOfMcp(listOf("string"))
                 .authorization("authorization")
                 .connectorId(Tool.Mcp.ConnectorId.CONNECTOR_DROPBOX)
@@ -313,24 +331,10 @@ internal class ToolTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .requireApproval(
-                    Tool.Mcp.RequireApproval.McpToolApprovalFilter.builder()
-                        .always(
-                            Tool.Mcp.RequireApproval.McpToolApprovalFilter.Always.builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .never(
-                            Tool.Mcp.RequireApproval.McpToolApprovalFilter.Never.builder()
-                                .readOnly(true)
-                                .addToolName("string")
-                                .build()
-                        )
-                        .build()
-                )
+                .requireApproval(Tool.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS)
                 .serverDescription("server_description")
-                .serverUrl("server_url")
+                .serverUrl("https://example.com")
+                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
         val tool = Tool.ofMcp(mcp)
@@ -342,6 +346,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).contains(mcp)
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -359,6 +364,7 @@ internal class ToolTest {
             Tool.ofMcp(
                 Tool.Mcp.builder()
                     .serverLabel("server_label")
+                    .addAllowedCaller(Tool.Mcp.AllowedCaller.DIRECT)
                     .allowedToolsOfMcp(listOf("string"))
                     .authorization("authorization")
                     .connectorId(Tool.Mcp.ConnectorId.CONNECTOR_DROPBOX)
@@ -368,24 +374,10 @@ internal class ToolTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .requireApproval(
-                        Tool.Mcp.RequireApproval.McpToolApprovalFilter.builder()
-                            .always(
-                                Tool.Mcp.RequireApproval.McpToolApprovalFilter.Always.builder()
-                                    .readOnly(true)
-                                    .addToolName("string")
-                                    .build()
-                            )
-                            .never(
-                                Tool.Mcp.RequireApproval.McpToolApprovalFilter.Never.builder()
-                                    .readOnly(true)
-                                    .addToolName("string")
-                                    .build()
-                            )
-                            .build()
-                    )
+                    .requireApproval(Tool.Mcp.RequireApproval.McpToolApprovalSetting.ALWAYS)
                     .serverDescription("server_description")
-                    .serverUrl("server_url")
+                    .serverUrl("https://example.com")
+                    .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                     .build()
             )
 
@@ -397,7 +389,11 @@ internal class ToolTest {
 
     @Test
     fun ofCodeInterpreter() {
-        val codeInterpreter = Tool.CodeInterpreter.builder().container("string").build()
+        val codeInterpreter =
+            Tool.CodeInterpreter.builder()
+                .container("string")
+                .addAllowedCaller(Tool.CodeInterpreter.AllowedCaller.DIRECT)
+                .build()
 
         val tool = Tool.ofCodeInterpreter(codeInterpreter)
 
@@ -408,6 +404,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).contains(codeInterpreter)
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -422,7 +419,46 @@ internal class ToolTest {
     fun ofCodeInterpreterRoundtrip() {
         val jsonMapper = jsonMapper()
         val tool =
-            Tool.ofCodeInterpreter(Tool.CodeInterpreter.builder().container("string").build())
+            Tool.ofCodeInterpreter(
+                Tool.CodeInterpreter.builder()
+                    .container("string")
+                    .addAllowedCaller(Tool.CodeInterpreter.AllowedCaller.DIRECT)
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofProgrammaticToolCalling() {
+        val tool = Tool.ofProgrammaticToolCalling()
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computer()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling())
+            .contains(JsonValue.from(mapOf("type" to "programmatic_tool_calling")))
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
+        assertThat(tool.custom()).isEmpty
+        assertThat(tool.namespace()).isEmpty
+        assertThat(tool.search()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
+    }
+
+    @Test
+    fun ofProgrammaticToolCallingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool = Tool.ofProgrammaticToolCalling()
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
@@ -461,6 +497,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).contains(imageGeneration)
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -513,6 +550,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).contains(JsonValue.from(mapOf("type" to "local_shell")))
         assertThat(tool.shell()).isEmpty
@@ -538,6 +576,7 @@ internal class ToolTest {
     fun ofShell() {
         val shell =
             FunctionShellTool.builder()
+                .addAllowedCaller(FunctionShellTool.AllowedCaller.DIRECT)
                 .environment(
                     ContainerAuto.builder()
                         .addFileId("file-123")
@@ -557,6 +596,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).contains(shell)
@@ -573,6 +613,7 @@ internal class ToolTest {
         val tool =
             Tool.ofShell(
                 FunctionShellTool.builder()
+                    .addAllowedCaller(FunctionShellTool.AllowedCaller.DIRECT)
                     .environment(
                         ContainerAuto.builder()
                             .addFileId("file-123")
@@ -597,6 +638,7 @@ internal class ToolTest {
         val custom =
             CustomTool.builder()
                 .name("name")
+                .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -611,6 +653,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -628,6 +671,7 @@ internal class ToolTest {
             Tool.ofCustom(
                 CustomTool.builder()
                     .name("name")
+                    .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
                     .deferLoading(true)
                     .description("description")
                     .formatText()
@@ -649,7 +693,14 @@ internal class ToolTest {
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
+                        .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            NamespaceTool.Tool.Function.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .parameters(JsonValue.from(mapOf<String, Any>()))
                         .strict(true)
                         .build()
@@ -665,6 +716,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -686,7 +738,14 @@ internal class ToolTest {
                     .addTool(
                         NamespaceTool.Tool.Function.builder()
                             .name("name")
+                            .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                            .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                NamespaceTool.Tool.Function.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .parameters(JsonValue.from(mapOf<String, Any>()))
                             .strict(true)
                             .build()
@@ -718,6 +777,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -772,6 +832,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -810,7 +871,8 @@ internal class ToolTest {
 
     @Test
     fun ofApplyPatch() {
-        val applyPatch = ApplyPatchTool.builder().build()
+        val applyPatch =
+            ApplyPatchTool.builder().addAllowedCaller(ApplyPatchTool.AllowedCaller.DIRECT).build()
 
         val tool = Tool.ofApplyPatch(applyPatch)
 
@@ -821,6 +883,7 @@ internal class ToolTest {
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.programmaticToolCalling()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.shell()).isEmpty
@@ -834,7 +897,12 @@ internal class ToolTest {
     @Test
     fun ofApplyPatchRoundtrip() {
         val jsonMapper = jsonMapper()
-        val tool = Tool.ofApplyPatch(ApplyPatchTool.builder().build())
+        val tool =
+            Tool.ofApplyPatch(
+                ApplyPatchTool.builder()
+                    .addAllowedCaller(ApplyPatchTool.AllowedCaller.DIRECT)
+                    .build()
+            )
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
