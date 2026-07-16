@@ -4,6 +4,7 @@ package com.openai.services.blocking.admin.organization.projects
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateApiKeyParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountDeleteParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
@@ -114,5 +115,28 @@ internal class ServiceAccountServiceTest {
             )
 
         serviceAccount.validate()
+    }
+
+    @Test
+    fun createApiKey() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val serviceAccountService = client.admin().organization().projects().serviceAccounts()
+
+        val response =
+            serviceAccountService.createApiKey(
+                ServiceAccountCreateApiKeyParams.builder()
+                    .projectId("project_id")
+                    .serviceAccountId("service_account_id")
+                    .name("name")
+                    .addScope("string")
+                    .build()
+            )
+
+        response.validate()
     }
 }

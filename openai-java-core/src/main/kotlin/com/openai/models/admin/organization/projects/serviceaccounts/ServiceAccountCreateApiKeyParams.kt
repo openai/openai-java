@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
+package com.openai.models.admin.organization.projects.serviceaccounts
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -23,7 +23,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Creates an API key for a service account in the project. */
-class ApiKeyCreateParams
+class ServiceAccountCreateApiKeyParams
 private constructor(
     private val projectId: String,
     private val serviceAccountId: String?,
@@ -32,8 +32,10 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
+    /** The ID of the project. */
     fun projectId(): String = projectId
 
+    /** The ID of the service account. */
     fun serviceAccountId(): Optional<String> = Optional.ofNullable(serviceAccountId)
 
     /**
@@ -79,7 +81,8 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [ApiKeyCreateParams].
+         * Returns a mutable builder for constructing an instance of
+         * [ServiceAccountCreateApiKeyParams].
          *
          * The following fields are required:
          * ```java
@@ -89,7 +92,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ApiKeyCreateParams]. */
+    /** A builder for [ServiceAccountCreateApiKeyParams]. */
     class Builder internal constructor() {
 
         private var projectId: String? = null
@@ -99,16 +102,20 @@ private constructor(
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
-        internal fun from(apiKeyCreateParams: ApiKeyCreateParams) = apply {
-            projectId = apiKeyCreateParams.projectId
-            serviceAccountId = apiKeyCreateParams.serviceAccountId
-            body = apiKeyCreateParams.body.toBuilder()
-            additionalHeaders = apiKeyCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = apiKeyCreateParams.additionalQueryParams.toBuilder()
-        }
+        internal fun from(serviceAccountCreateApiKeyParams: ServiceAccountCreateApiKeyParams) =
+            apply {
+                projectId = serviceAccountCreateApiKeyParams.projectId
+                serviceAccountId = serviceAccountCreateApiKeyParams.serviceAccountId
+                body = serviceAccountCreateApiKeyParams.body.toBuilder()
+                additionalHeaders = serviceAccountCreateApiKeyParams.additionalHeaders.toBuilder()
+                additionalQueryParams =
+                    serviceAccountCreateApiKeyParams.additionalQueryParams.toBuilder()
+            }
 
+        /** The ID of the project. */
         fun projectId(projectId: String) = apply { this.projectId = projectId }
 
+        /** The ID of the service account. */
         fun serviceAccountId(serviceAccountId: String?) = apply {
             this.serviceAccountId = serviceAccountId
         }
@@ -275,7 +282,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ApiKeyCreateParams].
+         * Returns an immutable instance of [ServiceAccountCreateApiKeyParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -286,8 +293,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ApiKeyCreateParams =
-            ApiKeyCreateParams(
+        fun build(): ServiceAccountCreateApiKeyParams =
+            ServiceAccountCreateApiKeyParams(
                 checkRequired("projectId", projectId),
                 serviceAccountId,
                 body.build(),
@@ -309,6 +316,7 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
+    /** The service account API key create request payload. */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -520,7 +528,7 @@ private constructor(
             return true
         }
 
-        return other is ApiKeyCreateParams &&
+        return other is ServiceAccountCreateApiKeyParams &&
             projectId == other.projectId &&
             serviceAccountId == other.serviceAccountId &&
             body == other.body &&
@@ -532,5 +540,5 @@ private constructor(
         Objects.hash(projectId, serviceAccountId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "ApiKeyCreateParams{projectId=$projectId, serviceAccountId=$serviceAccountId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ServiceAccountCreateApiKeyParams{projectId=$projectId, serviceAccountId=$serviceAccountId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
