@@ -16,7 +16,10 @@ val jacksonPublishedRuntime by configurations.creating {
     isCanBeResolved = true
 }
 
-configurations.matching { it.name != jacksonPublishedRuntime.name }.configureEach {
+// Palantir is an isolated build tool with its own aligned Jackson BOM.
+configurations.matching {
+    it.name != jacksonPublishedRuntime.name && it.name != "palantir"
+}.configureEach {
     resolutionStrategy {
         // Compile and test against a lower Jackson version to ensure we're compatible with it. Note that
         // we generally support 2.13.4, but test against 2.14.0 because 2.13.4 has some annoying (but
