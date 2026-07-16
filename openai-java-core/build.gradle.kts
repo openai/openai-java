@@ -55,6 +55,13 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+
+    constraints {
+        // Keep handlebars-helpers at 4.3.1: WireMock 2 links helper classes moved in 4.5.x.
+        testImplementation("com.github.jknack:handlebars:4.5.3") {
+            because("WireMock's transitive 4.3.1 dependency is affected by CVE-2026-55760")
+        }
+    }
 }
 
 // Re-run the compiled tests against the Jackson version consumers receive by default. Service tests
