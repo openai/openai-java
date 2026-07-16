@@ -49,6 +49,9 @@ tasks.withType<Test>().configureEach {
 
 val palantir by configurations.creating
 dependencies {
+    // Palantir is an isolated build tool and must use the internally aligned Jackson line it was
+    // built against. This does not affect any published or runtime dependency configuration.
+    palantir(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
     palantir("com.palantir.javaformat:palantir-java-format:2.96.0")
 }
 
