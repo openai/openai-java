@@ -8,6 +8,12 @@ repositories {
 }
 
 dependencies {
+    constraints {
+        testImplementation("org.xmlunit:xmlunit-core:2.11.0") {
+            because("2.10.0 fixes CVE-2024-31573 in this test-only dependency")
+        }
+    }
+
     api(project(":openai-java"))
     implementation("org.springframework.boot:spring-boot-autoconfigure:2.7.18")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:2.7.18")
