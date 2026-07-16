@@ -16,9 +16,11 @@ val jacksonPublishedRuntime by configurations.creating {
     isCanBeResolved = true
 }
 
-// Palantir is an isolated build tool with its own aligned Jackson BOM.
+// Palantir and Dokka are isolated build tools with independently aligned Jackson classpaths.
 configurations.matching {
-    it.name != jacksonPublishedRuntime.name && it.name != "palantir"
+    it.name != jacksonPublishedRuntime.name &&
+        it.name != "palantir" &&
+        !it.name.startsWith("dokka")
 }.configureEach {
     resolutionStrategy {
         // Compile and test against a lower Jackson version to ensure we're compatible with it. Note that
