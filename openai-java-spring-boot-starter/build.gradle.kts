@@ -14,4 +14,10 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.18")
     testImplementation("org.assertj:assertj-core:3.27.7")
+
+    constraints {
+        testImplementation("org.yaml:snakeyaml:2.6") {
+            because("avoid known vulnerabilities in Spring Boot's test dependency")
+        }
+    }
 }
