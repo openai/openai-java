@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.4.2")
+        classpath("com.guardsquare:proguard-gradle:7.9.1")
         classpath("com.android.tools:r8:8.3.37")
 
         constraints {
