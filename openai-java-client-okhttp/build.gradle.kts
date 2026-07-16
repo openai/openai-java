@@ -8,6 +8,9 @@ dependencies {
         testImplementation("com.google.guava:guava:33.6.0-jre") {
             because("WireMock's transitive Guava 31.1-jre has known temporary-file vulnerabilities")
         }
+        testImplementation("commons-fileupload:commons-fileupload:1.6.0") {
+            because("WireMock's transitive 1.4 release has known denial-of-service vulnerabilities")
+        }
     }
 
     api(project(":openai-java-core"))
