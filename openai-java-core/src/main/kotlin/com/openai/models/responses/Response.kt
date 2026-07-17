@@ -60,6 +60,7 @@ private constructor(
     private val previousResponseId: JsonField<String>,
     private val prompt: JsonField<ResponsePrompt>,
     private val promptCacheKey: JsonField<String>,
+    private val promptCacheOptions: JsonField<PromptCacheOptions>,
     private val promptCacheRetention: JsonField<PromptCacheRetention>,
     private val reasoning: JsonField<Reasoning>,
     private val safetyIdentifier: JsonField<String>,
@@ -128,6 +129,9 @@ private constructor(
         @JsonProperty("prompt_cache_key")
         @ExcludeMissing
         promptCacheKey: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("prompt_cache_options")
+        @ExcludeMissing
+        promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of(),
         @JsonProperty("prompt_cache_retention")
         @ExcludeMissing
         promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
@@ -178,6 +182,7 @@ private constructor(
         previousResponseId,
         prompt,
         promptCacheKey,
+        promptCacheOptions,
         promptCacheRetention,
         reasoning,
         safetyIdentifier,
@@ -434,10 +439,24 @@ private constructor(
     fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
     /**
+     * The prompt-caching options that were applied to the response. Supported for `gpt-5.6` and
+     * later models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheOptions(): Optional<PromptCacheOptions> =
+        promptCacheOptions.getOptional("prompt_cache_options")
+
+    /**
+     * Deprecated. Use `prompt_cache_options.ttl` instead.
+     *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
      * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
-     * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+     * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
+     * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
+     * `gpt-5.5-pro`, and future models, only `24h` is supported.
      *
      * For older models that support both `in_memory` and `24h`, the default depends on your
      * organization's data retention policy:
@@ -448,6 +467,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    @Deprecated("deprecated")
     fun promptCacheRetention(): Optional<PromptCacheRetention> =
         promptCacheRetention.getOptional("prompt_cache_retention")
 
@@ -740,11 +760,22 @@ private constructor(
     fun _promptCacheKey(): JsonField<String> = promptCacheKey
 
     /**
+     * Returns the raw JSON value of [promptCacheOptions].
+     *
+     * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("prompt_cache_options")
+    @ExcludeMissing
+    fun _promptCacheOptions(): JsonField<PromptCacheOptions> = promptCacheOptions
+
+    /**
      * Returns the raw JSON value of [promptCacheRetention].
      *
      * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
+    @Deprecated("deprecated")
     @JsonProperty("prompt_cache_retention")
     @ExcludeMissing
     fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
@@ -885,6 +916,7 @@ private constructor(
         private var previousResponseId: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
         private var promptCacheKey: JsonField<String> = JsonMissing.of()
+        private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
         private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
         private var reasoning: JsonField<Reasoning> = JsonMissing.of()
         private var safetyIdentifier: JsonField<String> = JsonMissing.of()
@@ -922,6 +954,7 @@ private constructor(
             previousResponseId = response.previousResponseId
             prompt = response.prompt
             promptCacheKey = response.promptCacheKey
+            promptCacheOptions = response.promptCacheOptions
             promptCacheRetention = response.promptCacheRetention
             reasoning = response.reasoning
             safetyIdentifier = response.safetyIdentifier
@@ -1161,6 +1194,16 @@ private constructor(
         fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [addOutput] with `ResponseOutputItem.ofProgram(program)`. */
+        fun addOutput(program: ResponseOutputItem.Program) =
+            addOutput(ResponseOutputItem.ofProgram(program))
+
+        /**
+         * Alias for calling [addOutput] with `ResponseOutputItem.ofProgramOutput(programOutput)`.
+         */
+        fun addOutput(programOutput: ResponseOutputItem.ProgramOutput) =
+            addOutput(ResponseOutputItem.ofProgramOutput(programOutput))
+
         /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
          */
@@ -1345,6 +1388,13 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
         fun toolChoice(custom: ToolChoiceCustom) = toolChoice(ToolChoice.ofCustom(custom))
 
+        /**
+         * Alias for calling [toolChoice] with
+         * `ToolChoice.ofSpecificProgrammaticToolCallingParam()`.
+         */
+        fun toolChoiceSpecificProgrammaticToolCallingParam() =
+            toolChoice(ToolChoice.ofSpecificProgrammaticToolCallingParam())
+
         /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
         fun toolChoice(applyPatch: ToolChoiceApplyPatch) =
             toolChoice(ToolChoice.ofApplyPatch(applyPatch))
@@ -1466,6 +1516,9 @@ private constructor(
             addCodeInterpreterTool(
                 Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)
             )
+
+        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
 
         /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
         fun addTool(imageGeneration: Tool.ImageGeneration) =
@@ -1739,9 +1792,31 @@ private constructor(
         }
 
         /**
+         * The prompt-caching options that were applied to the response. Supported for `gpt-5.6` and
+         * later models.
+         */
+        fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) =
+            promptCacheOptions(JsonField.of(promptCacheOptions))
+
+        /**
+         * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheOptions] with a well-typed
+         * [PromptCacheOptions] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+            this.promptCacheOptions = promptCacheOptions
+        }
+
+        /**
+         * Deprecated. Use `prompt_cache_options.ttl` instead.
+         *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
+         * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
          *
          * For older models that support both `in_memory` and `24h`, the default depends on your
@@ -1750,6 +1825,7 @@ private constructor(
          * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is
          *   not specified.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
             promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
 
@@ -1757,6 +1833,7 @@ private constructor(
          * Alias for calling [Builder.promptCacheRetention] with
          * `promptCacheRetention.orElse(null)`.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
             promptCacheRetention(promptCacheRetention.getOrNull())
 
@@ -1767,6 +1844,7 @@ private constructor(
          * [PromptCacheRetention] value instead. This method is primarily for setting the field to
          * an undocumented or not yet supported value.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
             this.promptCacheRetention = promptCacheRetention
         }
@@ -2023,6 +2101,7 @@ private constructor(
                 previousResponseId,
                 prompt,
                 promptCacheKey,
+                promptCacheOptions,
                 promptCacheRetention,
                 reasoning,
                 safetyIdentifier,
@@ -2079,6 +2158,7 @@ private constructor(
         previousResponseId()
         prompt().ifPresent { it.validate() }
         promptCacheKey()
+        promptCacheOptions().ifPresent { it.validate() }
         promptCacheRetention().ifPresent { it.validate() }
         reasoning().ifPresent { it.validate() }
         safetyIdentifier()
@@ -2130,6 +2210,7 @@ private constructor(
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
             (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
+            (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
             (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
             (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
@@ -2797,6 +2878,7 @@ private constructor(
         private val function: ToolChoiceFunction? = null,
         private val mcp: ToolChoiceMcp? = null,
         private val custom: ToolChoiceCustom? = null,
+        private val specificProgrammaticToolCallingParam: JsonValue? = null,
         private val applyPatch: ToolChoiceApplyPatch? = null,
         private val shell: ToolChoiceShell? = null,
         private val _json: JsonValue? = null,
@@ -2832,6 +2914,9 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun custom(): Optional<ToolChoiceCustom> = Optional.ofNullable(custom)
 
+        fun specificProgrammaticToolCallingParam(): Optional<JsonValue> =
+            Optional.ofNullable(specificProgrammaticToolCallingParam)
+
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun applyPatch(): Optional<ToolChoiceApplyPatch> = Optional.ofNullable(applyPatch)
 
@@ -2849,6 +2934,9 @@ private constructor(
         fun isMcp(): Boolean = mcp != null
 
         fun isCustom(): Boolean = custom != null
+
+        fun isSpecificProgrammaticToolCallingParam(): Boolean =
+            specificProgrammaticToolCallingParam != null
 
         fun isApplyPatch(): Boolean = applyPatch != null
 
@@ -2883,6 +2971,9 @@ private constructor(
 
         /** Use this option to force the model to call a specific custom tool. */
         fun asCustom(): ToolChoiceCustom = custom.getOrThrow("custom")
+
+        fun asSpecificProgrammaticToolCallingParam(): JsonValue =
+            specificProgrammaticToolCallingParam.getOrThrow("specificProgrammaticToolCallingParam")
 
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun asApplyPatch(): ToolChoiceApplyPatch = applyPatch.getOrThrow("applyPatch")
@@ -2929,6 +3020,10 @@ private constructor(
                 function != null -> visitor.visitFunction(function)
                 mcp != null -> visitor.visitMcp(mcp)
                 custom != null -> visitor.visitCustom(custom)
+                specificProgrammaticToolCallingParam != null ->
+                    visitor.visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam
+                    )
                 applyPatch != null -> visitor.visitApplyPatch(applyPatch)
                 shell != null -> visitor.visitShell(shell)
                 else -> visitor.unknown(_json)
@@ -2976,6 +3071,20 @@ private constructor(
                         custom.validate()
                     }
 
+                    override fun visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam: JsonValue
+                    ) {
+                        specificProgrammaticToolCallingParam.let {
+                            if (
+                                it != JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+                            ) {
+                                throw OpenAIInvalidDataException(
+                                    "'specificProgrammaticToolCallingParam' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
                     override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) {
                         applyPatch.validate()
                     }
@@ -3018,6 +3127,15 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) = custom.validity()
 
+                    override fun visitSpecificProgrammaticToolCallingParam(
+                        specificProgrammaticToolCallingParam: JsonValue
+                    ) =
+                        specificProgrammaticToolCallingParam.let {
+                            if (it == JsonValue.from(mapOf("type" to "programmatic_tool_calling")))
+                                1
+                            else 0
+                        }
+
                     override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) =
                         applyPatch.validity()
 
@@ -3039,12 +3157,24 @@ private constructor(
                 function == other.function &&
                 mcp == other.mcp &&
                 custom == other.custom &&
+                specificProgrammaticToolCallingParam ==
+                    other.specificProgrammaticToolCallingParam &&
                 applyPatch == other.applyPatch &&
                 shell == other.shell
         }
 
         override fun hashCode(): Int =
-            Objects.hash(options, allowed, types, function, mcp, custom, applyPatch, shell)
+            Objects.hash(
+                options,
+                allowed,
+                types,
+                function,
+                mcp,
+                custom,
+                specificProgrammaticToolCallingParam,
+                applyPatch,
+                shell,
+            )
 
         override fun toString(): String =
             when {
@@ -3054,6 +3184,8 @@ private constructor(
                 function != null -> "ToolChoice{function=$function}"
                 mcp != null -> "ToolChoice{mcp=$mcp}"
                 custom != null -> "ToolChoice{custom=$custom}"
+                specificProgrammaticToolCallingParam != null ->
+                    "ToolChoice{specificProgrammaticToolCallingParam=$specificProgrammaticToolCallingParam}"
                 applyPatch != null -> "ToolChoice{applyPatch=$applyPatch}"
                 shell != null -> "ToolChoice{shell=$shell}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
@@ -3094,6 +3226,13 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             @JvmStatic fun ofCustom(custom: ToolChoiceCustom) = ToolChoice(custom = custom)
+
+            @JvmStatic
+            fun ofSpecificProgrammaticToolCallingParam() =
+                ToolChoice(
+                    specificProgrammaticToolCallingParam =
+                        JsonValue.from(mapOf("type" to "programmatic_tool_calling"))
+                )
 
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             @JvmStatic
@@ -3140,6 +3279,10 @@ private constructor(
             /** Use this option to force the model to call a specific custom tool. */
             fun visitCustom(custom: ToolChoiceCustom): T
 
+            fun visitSpecificProgrammaticToolCallingParam(
+                specificProgrammaticToolCallingParam: JsonValue
+            ): T
+
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
 
@@ -3168,6 +3311,14 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                ?.let {
+                                    ToolChoice(
+                                        specificProgrammaticToolCallingParam = it,
+                                        _json = json,
+                                    )
+                                }
+                                ?.takeIf { it.isValid() },
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceOptions>())?.let {
                                 ToolChoice(options = it, _json = json)
                             },
@@ -3223,6 +3374,8 @@ private constructor(
                     value.function != null -> generator.writeObject(value.function)
                     value.mcp != null -> generator.writeObject(value.mcp)
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.specificProgrammaticToolCallingParam != null ->
+                        generator.writeObject(value.specificProgrammaticToolCallingParam)
                     value.applyPatch != null -> generator.writeObject(value.applyPatch)
                     value.shell != null -> generator.writeObject(value.shell)
                     value._json != null -> generator.writeObject(value._json)
@@ -6194,10 +6347,495 @@ private constructor(
     }
 
     /**
+     * The prompt-caching options that were applied to the response. Supported for `gpt-5.6` and
+     * later models.
+     */
+    class PromptCacheOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val mode: JsonField<Mode>,
+        private val ttl: JsonField<Ttl>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
+        ) : this(mode, ttl, mutableMapOf())
+
+        /**
+         * Whether implicit prompt-cache breakpoints were enabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun mode(): Mode = mode.getRequired("mode")
+
+        /**
+         * The minimum lifetime applied to each cache breakpoint.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun ttl(): Ttl = ttl.getRequired("ttl")
+
+        /**
+         * Returns the raw JSON value of [mode].
+         *
+         * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [PromptCacheOptions].
+             *
+             * The following fields are required:
+             * ```java
+             * .mode()
+             * .ttl()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheOptions]. */
+        class Builder internal constructor() {
+
+            private var mode: JsonField<Mode>? = null
+            private var ttl: JsonField<Ttl>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                mode = promptCacheOptions.mode
+                ttl = promptCacheOptions.ttl
+                additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /** Whether implicit prompt-cache breakpoints were enabled. */
+            fun mode(mode: Mode) = mode(JsonField.of(mode))
+
+            /**
+             * Sets [Builder.mode] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.mode] with a well-typed [Mode] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+            /** The minimum lifetime applied to each cache breakpoint. */
+            fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [Ttl] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .mode()
+             * .ttl()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): PromptCacheOptions =
+                PromptCacheOptions(
+                    checkRequired("mode", mode),
+                    checkRequired("ttl", ttl),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            mode().validate()
+            ttl().validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (ttl.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Whether implicit prompt-cache breakpoints were enabled. */
+        class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IMPLICIT = of("implicit")
+
+                @JvmField val EXPLICIT = of("explicit")
+
+                @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+            }
+
+            /** An enum containing [Mode]'s known values. */
+            enum class Known {
+                IMPLICIT,
+                EXPLICIT,
+            }
+
+            /**
+             * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Mode] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IMPLICIT,
+                EXPLICIT,
+                /** An enum member indicating that [Mode] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IMPLICIT -> Value.IMPLICIT
+                    EXPLICIT -> Value.EXPLICIT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IMPLICIT -> Known.IMPLICIT
+                    EXPLICIT -> Known.EXPLICIT
+                    else -> throw OpenAIInvalidDataException("Unknown Mode: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Mode = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Mode && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The minimum lifetime applied to each cache breakpoint. */
+        class Ttl @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _30M = of("30m")
+
+                @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
+            }
+
+            /** An enum containing [Ttl]'s known values. */
+            enum class Known {
+                _30M
+            }
+
+            /**
+             * An enum containing [Ttl]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Ttl] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _30M,
+                /** An enum member indicating that [Ttl] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _30M -> Value._30M
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _30M -> Known._30M
+                    else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Ttl = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Ttl && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheOptions &&
+                mode == other.mode &&
+                ttl == other.ttl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Deprecated. Use `prompt_cache_options.ttl` instead.
+     *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
      * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
-     * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+     * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
+     * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
+     * `gpt-5.5-pro`, and future models, only `24h` is supported.
      *
      * For older models that support both `in_memory` and `24h`, the default depends on your
      * organization's data retention policy:
@@ -6205,6 +6843,7 @@ private constructor(
      * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not
      *   specified.
      */
+    @Deprecated("deprecated")
     class PromptCacheRetention
     @JsonCreator
     private constructor(private val value: JsonField<String>) : Enum {
@@ -6688,6 +7327,7 @@ private constructor(
             previousResponseId == other.previousResponseId &&
             prompt == other.prompt &&
             promptCacheKey == other.promptCacheKey &&
+            promptCacheOptions == other.promptCacheOptions &&
             promptCacheRetention == other.promptCacheRetention &&
             reasoning == other.reasoning &&
             safetyIdentifier == other.safetyIdentifier &&
@@ -6726,6 +7366,7 @@ private constructor(
             previousResponseId,
             prompt,
             promptCacheKey,
+            promptCacheOptions,
             promptCacheRetention,
             reasoning,
             safetyIdentifier,
@@ -6743,5 +7384,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

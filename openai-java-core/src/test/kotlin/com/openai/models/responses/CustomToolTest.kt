@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.CustomToolInputFormat
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,12 +16,15 @@ internal class CustomToolTest {
         val customTool =
             CustomTool.builder()
                 .name("name")
+                .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
                 .build()
 
         assertThat(customTool.name()).isEqualTo("name")
+        assertThat(customTool.allowedCallers().getOrNull())
+            .containsExactly(CustomTool.AllowedCaller.DIRECT)
         assertThat(customTool.deferLoading()).contains(true)
         assertThat(customTool.description()).contains("description")
         assertThat(customTool.format()).contains(CustomToolInputFormat.ofText())
@@ -32,6 +36,7 @@ internal class CustomToolTest {
         val customTool =
             CustomTool.builder()
                 .name("name")
+                .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
                 .deferLoading(true)
                 .description("description")
                 .formatText()

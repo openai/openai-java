@@ -1285,6 +1285,10 @@ private constructor(
 
             @JvmField val GPT_REALTIME_2 = of("gpt-realtime-2")
 
+            @JvmField val GPT_REALTIME_2_1 = of("gpt-realtime-2.1")
+
+            @JvmField val GPT_REALTIME_2_1_MINI = of("gpt-realtime-2.1-mini")
+
             @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
 
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
@@ -1326,6 +1330,8 @@ private constructor(
             GPT_REALTIME,
             GPT_REALTIME_1_5,
             GPT_REALTIME_2,
+            GPT_REALTIME_2_1,
+            GPT_REALTIME_2_1_MINI,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -1355,6 +1361,8 @@ private constructor(
             GPT_REALTIME,
             GPT_REALTIME_1_5,
             GPT_REALTIME_2,
+            GPT_REALTIME_2_1,
+            GPT_REALTIME_2_1_MINI,
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -1385,6 +1393,8 @@ private constructor(
                 GPT_REALTIME -> Value.GPT_REALTIME
                 GPT_REALTIME_1_5 -> Value.GPT_REALTIME_1_5
                 GPT_REALTIME_2 -> Value.GPT_REALTIME_2
+                GPT_REALTIME_2_1 -> Value.GPT_REALTIME_2_1
+                GPT_REALTIME_2_1_MINI -> Value.GPT_REALTIME_2_1_MINI
                 GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
@@ -1417,6 +1427,8 @@ private constructor(
                 GPT_REALTIME -> Known.GPT_REALTIME
                 GPT_REALTIME_1_5 -> Known.GPT_REALTIME_1_5
                 GPT_REALTIME_2 -> Known.GPT_REALTIME_2
+                GPT_REALTIME_2_1 -> Known.GPT_REALTIME_2_1
+                GPT_REALTIME_2_1_MINI -> Known.GPT_REALTIME_2_1_MINI
                 GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01

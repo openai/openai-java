@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":openai-java"))
     implementation(project(":openai-java-bedrock"))
-    implementation("com.azure:azure-identity:1.15.0")
+    implementation("com.azure:azure-identity:1.18.4")
 }
 
 tasks.withType<JavaCompile>().configureEach {

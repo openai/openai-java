@@ -776,6 +776,229 @@ private constructor(
 
             @JvmField val USER_DELETED = of("user.deleted")
 
+            @JvmField val TENANT_METADATA_UPDATED = of("tenant.metadata.updated")
+
+            @JvmField
+            val TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED =
+                of("tenant.microsoft_entra_mapping.upserted")
+
+            @JvmField
+            val TENANT_MICROSOFT_ENTRA_MAPPING_DELETED =
+                of("tenant.microsoft_entra_mapping.deleted")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED =
+                of("tenant.workload_identity.provider.created")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED =
+                of("tenant.workload_identity.provider.updated")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED =
+                of("tenant.workload_identity.provider.archived")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED =
+                of("tenant.workload_identity.mapping.created")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED =
+                of("tenant.workload_identity.mapping.updated")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED =
+                of("tenant.workload_identity.mapping.archived")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_BINDING_CREATED =
+                of("tenant.workload_identity.binding.created")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED =
+                of("tenant.workload_identity.principal.provisioned")
+
+            @JvmField val TENANT_ADMIN_API_KEY_CREATED = of("tenant.admin_api_key.created")
+
+            @JvmField val TENANT_ADMIN_API_KEY_UPDATED = of("tenant.admin_api_key.updated")
+
+            @JvmField val TENANT_ADMIN_API_KEY_DELETED = of("tenant.admin_api_key.deleted")
+
+            @JvmField val TENANT_PROJECT_API_KEY_CREATED = of("tenant.project_api_key.created")
+
+            @JvmField
+            val TENANT_CHATGPT_ACCESS_TOKEN_REVOKED = of("tenant.chatgpt_access_token.revoked")
+
+            @JvmField val TENANT_MIGRATION_COMPLETED = of("tenant.migration.completed")
+
+            @JvmField val TENANT_SSO_MIGRATED = of("tenant.sso.migrated")
+
+            @JvmField val TENANT_DOMAINS_MIGRATED = of("tenant.domains.migrated")
+
+            @JvmField val TENANT_SSO_CONNECTION_CREATED = of("tenant.sso_connection.created")
+
+            @JvmField val TENANT_SSO_CONNECTION_UPDATED = of("tenant.sso_connection.updated")
+
+            @JvmField val TENANT_SSO_CONNECTION_DELETED = of("tenant.sso_connection.deleted")
+
+            @JvmField
+            val TENANT_SSO_CONNECTION_SETUP_STARTED = of("tenant.sso_connection.setup.started")
+
+            @JvmField val TENANT_POLICY_CREATED = of("tenant.policy.created")
+
+            @JvmField val TENANT_POLICY_UPDATED = of("tenant.policy.updated")
+
+            @JvmField val TENANT_POLICY_DELETED = of("tenant.policy.deleted")
+
+            @JvmField val TENANT_POLICY_ATTACHED = of("tenant.policy.attached")
+
+            @JvmField val TENANT_POLICY_DETACHED = of("tenant.policy.detached")
+
+            @JvmField
+            val TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED =
+                of("tenant.principal_authentication_policy.resolved")
+
+            @JvmField val TENANT_SCIM_SETUP_STARTED = of("tenant.scim.setup.started")
+
+            @JvmField val TENANT_SCIM_DELETION_REQUESTED = of("tenant.scim.deletion.requested")
+
+            @JvmField val TENANT_SCIM_DIRECTORY_CREATED = of("tenant.scim.directory.created")
+
+            @JvmField
+            val TENANT_PRODUCT_ACCESS_POLICY_UPDATED = of("tenant.product_access_policy.updated")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_CREATED = of("tenant.resource_share_grant.created")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_UPDATED = of("tenant.resource_share_grant.updated")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_ACCEPTED = of("tenant.resource_share_grant.accepted")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_DECLINED = of("tenant.resource_share_grant.declined")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_REVOKED = of("tenant.resource_share_grant.revoked")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_DELETED = of("tenant.resource_share_grant.deleted")
+
+            @JvmField val TENANT_SERVICE_ACCOUNT_UPDATED = of("tenant.service_account.updated")
+
+            @JvmField val TENANT_SERVICE_ACCOUNT_DELETED = of("tenant.service_account.deleted")
+
+            @JvmField
+            val TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED = of("tenant.service_account.token.revoked")
+
+            @JvmField
+            val TENANT_BILLING_OVERAGE_LIMIT_UPDATED = of("tenant.billing.overage_limit.updated")
+
+            @JvmField val TENANT_BILLING_ALERTS_UPDATED = of("tenant.billing.alerts.updated")
+
+            @JvmField val TENANT_BILLING_INFO_UPDATED = of("tenant.billing.info.updated")
+
+            @JvmField
+            val TENANT_USAGE_LIMIT_WORKSPACE_UPDATED = of("tenant.usage_limit.workspace.updated")
+
+            @JvmField val TENANT_USAGE_LIMIT_GROUP_UPDATED = of("tenant.usage_limit.group.updated")
+
+            @JvmField val TENANT_USAGE_LIMIT_USER_UPDATED = of("tenant.usage_limit.user.updated")
+
+            @JvmField
+            val TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED =
+                of("tenant.usage_limit.increase_request.updated")
+
+            @JvmField
+            val TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED =
+                of("tenant.usage_limit.increase_request.resolved")
+
+            @JvmField val TENANT_GROUP_CREATED = of("tenant.group.created")
+
+            @JvmField val TENANT_GROUP_UPDATED = of("tenant.group.updated")
+
+            @JvmField val TENANT_GROUP_DELETED = of("tenant.group.deleted")
+
+            @JvmField val TENANT_GROUP_MEMBER_ADDED = of("tenant.group.member.added")
+
+            @JvmField val TENANT_GROUP_MEMBER_REMOVED = of("tenant.group.member.removed")
+
+            @JvmField
+            val TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED =
+                of("tenant.migration_rollout.status.updated")
+
+            @JvmField
+            val TENANT_MIGRATION_ROLLOUT_TIER_UPDATED = of("tenant.migration_rollout.tier.updated")
+
+            @JvmField val TENANT_ROLE_METADATA_UPDATED = of("tenant.role.metadata.updated")
+
+            @JvmField val TENANT_CUSTOM_ROLE_CREATED = of("tenant.custom_role.created")
+
+            @JvmField val TENANT_CUSTOM_ROLE_UPDATED = of("tenant.custom_role.updated")
+
+            @JvmField val TENANT_CUSTOM_ROLE_DELETED = of("tenant.custom_role.deleted")
+
+            @JvmField val TENANT_ROLE_ASSIGNMENT_CREATED = of("tenant.role_assignment.created")
+
+            @JvmField val TENANT_ROLE_ASSIGNMENT_DELETED = of("tenant.role_assignment.deleted")
+
+            @JvmField
+            val TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED =
+                of("tenant.resource_role_assignment.created")
+
+            @JvmField
+            val TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED =
+                of("tenant.resource_role_assignment.deleted")
+
+            @JvmField val TENANT_RESOURCE_ACCESS_UPDATED = of("tenant.resource_access.updated")
+
+            @JvmField val TENANT_RESOURCE_ACCESS_DELETED = of("tenant.resource_access.deleted")
+
+            @JvmField val TENANT_SESSION_POLICY_CREATED = of("tenant.session_policy.created")
+
+            @JvmField val TENANT_SESSION_POLICY_UPDATED = of("tenant.session_policy.updated")
+
+            @JvmField val TENANT_SESSION_POLICY_DELETED = of("tenant.session_policy.deleted")
+
+            @JvmField
+            val TENANT_SESSION_REVOCATION_STARTED = of("tenant.session_revocation.started")
+
+            @JvmField
+            val TENANT_THIRD_PARTY_APP_POLICY_UPDATED = of("tenant.third_party_app_policy.updated")
+
+            @JvmField val TENANT_USER_ADDED = of("tenant.user.added")
+
+            @JvmField val TENANT_USER_UPDATED = of("tenant.user.updated")
+
+            @JvmField val TENANT_USER_REMOVED = of("tenant.user.removed")
+
+            @JvmField val TENANT_USER_LOOKED_UP = of("tenant.user.looked_up")
+
+            @JvmField val TENANT_USER_INVITED = of("tenant.user.invited")
+
+            @JvmField val TENANT_MEMBERSHIP_REVOKED = of("tenant.membership.revoked")
+
+            @JvmField
+            val TENANT_API_ORGANIZATION_INVITE_UPSERTED =
+                of("tenant.api_organization_invite.upserted")
+
+            @JvmField
+            val TENANT_API_ORGANIZATION_INVITE_DELETED =
+                of("tenant.api_organization_invite.deleted")
+
+            @JvmField
+            val TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED =
+                of("tenant.chatgpt_workspace_invite.upserted")
+
+            @JvmField val TENANT_MEMBERSHIP_ACCEPTED = of("tenant.membership.accepted")
+
+            @JvmField val TENANT_MEMBERSHIP_DECLINED = of("tenant.membership.declined")
+
+            @JvmField
+            val TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED =
+                of("tenant.workspace_invite_email_settings.updated")
+
             @JvmStatic fun of(value: String) = EventType(JsonField.of(value))
         }
 
@@ -840,6 +1063,90 @@ private constructor(
             USER_ADDED,
             USER_UPDATED,
             USER_DELETED,
+            TENANT_METADATA_UPDATED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_DELETED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_BINDING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED,
+            TENANT_ADMIN_API_KEY_CREATED,
+            TENANT_ADMIN_API_KEY_UPDATED,
+            TENANT_ADMIN_API_KEY_DELETED,
+            TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
+            TENANT_MIGRATION_COMPLETED,
+            TENANT_SSO_MIGRATED,
+            TENANT_DOMAINS_MIGRATED,
+            TENANT_SSO_CONNECTION_CREATED,
+            TENANT_SSO_CONNECTION_UPDATED,
+            TENANT_SSO_CONNECTION_DELETED,
+            TENANT_SSO_CONNECTION_SETUP_STARTED,
+            TENANT_POLICY_CREATED,
+            TENANT_POLICY_UPDATED,
+            TENANT_POLICY_DELETED,
+            TENANT_POLICY_ATTACHED,
+            TENANT_POLICY_DETACHED,
+            TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED,
+            TENANT_SCIM_SETUP_STARTED,
+            TENANT_SCIM_DELETION_REQUESTED,
+            TENANT_SCIM_DIRECTORY_CREATED,
+            TENANT_PRODUCT_ACCESS_POLICY_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_CREATED,
+            TENANT_RESOURCE_SHARE_GRANT_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_ACCEPTED,
+            TENANT_RESOURCE_SHARE_GRANT_DECLINED,
+            TENANT_RESOURCE_SHARE_GRANT_REVOKED,
+            TENANT_RESOURCE_SHARE_GRANT_DELETED,
+            TENANT_SERVICE_ACCOUNT_UPDATED,
+            TENANT_SERVICE_ACCOUNT_DELETED,
+            TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED,
+            TENANT_BILLING_OVERAGE_LIMIT_UPDATED,
+            TENANT_BILLING_ALERTS_UPDATED,
+            TENANT_BILLING_INFO_UPDATED,
+            TENANT_USAGE_LIMIT_WORKSPACE_UPDATED,
+            TENANT_USAGE_LIMIT_GROUP_UPDATED,
+            TENANT_USAGE_LIMIT_USER_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED,
+            TENANT_GROUP_CREATED,
+            TENANT_GROUP_UPDATED,
+            TENANT_GROUP_DELETED,
+            TENANT_GROUP_MEMBER_ADDED,
+            TENANT_GROUP_MEMBER_REMOVED,
+            TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED,
+            TENANT_MIGRATION_ROLLOUT_TIER_UPDATED,
+            TENANT_ROLE_METADATA_UPDATED,
+            TENANT_CUSTOM_ROLE_CREATED,
+            TENANT_CUSTOM_ROLE_UPDATED,
+            TENANT_CUSTOM_ROLE_DELETED,
+            TENANT_ROLE_ASSIGNMENT_CREATED,
+            TENANT_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ACCESS_UPDATED,
+            TENANT_RESOURCE_ACCESS_DELETED,
+            TENANT_SESSION_POLICY_CREATED,
+            TENANT_SESSION_POLICY_UPDATED,
+            TENANT_SESSION_POLICY_DELETED,
+            TENANT_SESSION_REVOCATION_STARTED,
+            TENANT_THIRD_PARTY_APP_POLICY_UPDATED,
+            TENANT_USER_ADDED,
+            TENANT_USER_UPDATED,
+            TENANT_USER_REMOVED,
+            TENANT_USER_LOOKED_UP,
+            TENANT_USER_INVITED,
+            TENANT_MEMBERSHIP_REVOKED,
+            TENANT_API_ORGANIZATION_INVITE_UPSERTED,
+            TENANT_API_ORGANIZATION_INVITE_DELETED,
+            TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED,
+            TENANT_MEMBERSHIP_ACCEPTED,
+            TENANT_MEMBERSHIP_DECLINED,
+            TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED,
         }
 
         /**
@@ -911,6 +1218,90 @@ private constructor(
             USER_ADDED,
             USER_UPDATED,
             USER_DELETED,
+            TENANT_METADATA_UPDATED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_DELETED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_BINDING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED,
+            TENANT_ADMIN_API_KEY_CREATED,
+            TENANT_ADMIN_API_KEY_UPDATED,
+            TENANT_ADMIN_API_KEY_DELETED,
+            TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
+            TENANT_MIGRATION_COMPLETED,
+            TENANT_SSO_MIGRATED,
+            TENANT_DOMAINS_MIGRATED,
+            TENANT_SSO_CONNECTION_CREATED,
+            TENANT_SSO_CONNECTION_UPDATED,
+            TENANT_SSO_CONNECTION_DELETED,
+            TENANT_SSO_CONNECTION_SETUP_STARTED,
+            TENANT_POLICY_CREATED,
+            TENANT_POLICY_UPDATED,
+            TENANT_POLICY_DELETED,
+            TENANT_POLICY_ATTACHED,
+            TENANT_POLICY_DETACHED,
+            TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED,
+            TENANT_SCIM_SETUP_STARTED,
+            TENANT_SCIM_DELETION_REQUESTED,
+            TENANT_SCIM_DIRECTORY_CREATED,
+            TENANT_PRODUCT_ACCESS_POLICY_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_CREATED,
+            TENANT_RESOURCE_SHARE_GRANT_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_ACCEPTED,
+            TENANT_RESOURCE_SHARE_GRANT_DECLINED,
+            TENANT_RESOURCE_SHARE_GRANT_REVOKED,
+            TENANT_RESOURCE_SHARE_GRANT_DELETED,
+            TENANT_SERVICE_ACCOUNT_UPDATED,
+            TENANT_SERVICE_ACCOUNT_DELETED,
+            TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED,
+            TENANT_BILLING_OVERAGE_LIMIT_UPDATED,
+            TENANT_BILLING_ALERTS_UPDATED,
+            TENANT_BILLING_INFO_UPDATED,
+            TENANT_USAGE_LIMIT_WORKSPACE_UPDATED,
+            TENANT_USAGE_LIMIT_GROUP_UPDATED,
+            TENANT_USAGE_LIMIT_USER_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED,
+            TENANT_GROUP_CREATED,
+            TENANT_GROUP_UPDATED,
+            TENANT_GROUP_DELETED,
+            TENANT_GROUP_MEMBER_ADDED,
+            TENANT_GROUP_MEMBER_REMOVED,
+            TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED,
+            TENANT_MIGRATION_ROLLOUT_TIER_UPDATED,
+            TENANT_ROLE_METADATA_UPDATED,
+            TENANT_CUSTOM_ROLE_CREATED,
+            TENANT_CUSTOM_ROLE_UPDATED,
+            TENANT_CUSTOM_ROLE_DELETED,
+            TENANT_ROLE_ASSIGNMENT_CREATED,
+            TENANT_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ACCESS_UPDATED,
+            TENANT_RESOURCE_ACCESS_DELETED,
+            TENANT_SESSION_POLICY_CREATED,
+            TENANT_SESSION_POLICY_UPDATED,
+            TENANT_SESSION_POLICY_DELETED,
+            TENANT_SESSION_REVOCATION_STARTED,
+            TENANT_THIRD_PARTY_APP_POLICY_UPDATED,
+            TENANT_USER_ADDED,
+            TENANT_USER_UPDATED,
+            TENANT_USER_REMOVED,
+            TENANT_USER_LOOKED_UP,
+            TENANT_USER_INVITED,
+            TENANT_MEMBERSHIP_REVOKED,
+            TENANT_API_ORGANIZATION_INVITE_UPSERTED,
+            TENANT_API_ORGANIZATION_INVITE_DELETED,
+            TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED,
+            TENANT_MEMBERSHIP_ACCEPTED,
+            TENANT_MEMBERSHIP_DECLINED,
+            TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED,
             /**
              * An enum member indicating that [EventType] was instantiated with an unknown value.
              */
@@ -988,6 +1379,110 @@ private constructor(
                 USER_ADDED -> Value.USER_ADDED
                 USER_UPDATED -> Value.USER_UPDATED
                 USER_DELETED -> Value.USER_DELETED
+                TENANT_METADATA_UPDATED -> Value.TENANT_METADATA_UPDATED
+                TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED ->
+                    Value.TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED
+                TENANT_MICROSOFT_ENTRA_MAPPING_DELETED ->
+                    Value.TENANT_MICROSOFT_ENTRA_MAPPING_DELETED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_BINDING_CREATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_BINDING_CREATED
+                TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED
+                TENANT_ADMIN_API_KEY_CREATED -> Value.TENANT_ADMIN_API_KEY_CREATED
+                TENANT_ADMIN_API_KEY_UPDATED -> Value.TENANT_ADMIN_API_KEY_UPDATED
+                TENANT_ADMIN_API_KEY_DELETED -> Value.TENANT_ADMIN_API_KEY_DELETED
+                TENANT_PROJECT_API_KEY_CREATED -> Value.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Value.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
+                TENANT_MIGRATION_COMPLETED -> Value.TENANT_MIGRATION_COMPLETED
+                TENANT_SSO_MIGRATED -> Value.TENANT_SSO_MIGRATED
+                TENANT_DOMAINS_MIGRATED -> Value.TENANT_DOMAINS_MIGRATED
+                TENANT_SSO_CONNECTION_CREATED -> Value.TENANT_SSO_CONNECTION_CREATED
+                TENANT_SSO_CONNECTION_UPDATED -> Value.TENANT_SSO_CONNECTION_UPDATED
+                TENANT_SSO_CONNECTION_DELETED -> Value.TENANT_SSO_CONNECTION_DELETED
+                TENANT_SSO_CONNECTION_SETUP_STARTED -> Value.TENANT_SSO_CONNECTION_SETUP_STARTED
+                TENANT_POLICY_CREATED -> Value.TENANT_POLICY_CREATED
+                TENANT_POLICY_UPDATED -> Value.TENANT_POLICY_UPDATED
+                TENANT_POLICY_DELETED -> Value.TENANT_POLICY_DELETED
+                TENANT_POLICY_ATTACHED -> Value.TENANT_POLICY_ATTACHED
+                TENANT_POLICY_DETACHED -> Value.TENANT_POLICY_DETACHED
+                TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED ->
+                    Value.TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED
+                TENANT_SCIM_SETUP_STARTED -> Value.TENANT_SCIM_SETUP_STARTED
+                TENANT_SCIM_DELETION_REQUESTED -> Value.TENANT_SCIM_DELETION_REQUESTED
+                TENANT_SCIM_DIRECTORY_CREATED -> Value.TENANT_SCIM_DIRECTORY_CREATED
+                TENANT_PRODUCT_ACCESS_POLICY_UPDATED -> Value.TENANT_PRODUCT_ACCESS_POLICY_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_CREATED -> Value.TENANT_RESOURCE_SHARE_GRANT_CREATED
+                TENANT_RESOURCE_SHARE_GRANT_UPDATED -> Value.TENANT_RESOURCE_SHARE_GRANT_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_ACCEPTED -> Value.TENANT_RESOURCE_SHARE_GRANT_ACCEPTED
+                TENANT_RESOURCE_SHARE_GRANT_DECLINED -> Value.TENANT_RESOURCE_SHARE_GRANT_DECLINED
+                TENANT_RESOURCE_SHARE_GRANT_REVOKED -> Value.TENANT_RESOURCE_SHARE_GRANT_REVOKED
+                TENANT_RESOURCE_SHARE_GRANT_DELETED -> Value.TENANT_RESOURCE_SHARE_GRANT_DELETED
+                TENANT_SERVICE_ACCOUNT_UPDATED -> Value.TENANT_SERVICE_ACCOUNT_UPDATED
+                TENANT_SERVICE_ACCOUNT_DELETED -> Value.TENANT_SERVICE_ACCOUNT_DELETED
+                TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED -> Value.TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED
+                TENANT_BILLING_OVERAGE_LIMIT_UPDATED -> Value.TENANT_BILLING_OVERAGE_LIMIT_UPDATED
+                TENANT_BILLING_ALERTS_UPDATED -> Value.TENANT_BILLING_ALERTS_UPDATED
+                TENANT_BILLING_INFO_UPDATED -> Value.TENANT_BILLING_INFO_UPDATED
+                TENANT_USAGE_LIMIT_WORKSPACE_UPDATED -> Value.TENANT_USAGE_LIMIT_WORKSPACE_UPDATED
+                TENANT_USAGE_LIMIT_GROUP_UPDATED -> Value.TENANT_USAGE_LIMIT_GROUP_UPDATED
+                TENANT_USAGE_LIMIT_USER_UPDATED -> Value.TENANT_USAGE_LIMIT_USER_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED ->
+                    Value.TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED ->
+                    Value.TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED
+                TENANT_GROUP_CREATED -> Value.TENANT_GROUP_CREATED
+                TENANT_GROUP_UPDATED -> Value.TENANT_GROUP_UPDATED
+                TENANT_GROUP_DELETED -> Value.TENANT_GROUP_DELETED
+                TENANT_GROUP_MEMBER_ADDED -> Value.TENANT_GROUP_MEMBER_ADDED
+                TENANT_GROUP_MEMBER_REMOVED -> Value.TENANT_GROUP_MEMBER_REMOVED
+                TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED ->
+                    Value.TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED
+                TENANT_MIGRATION_ROLLOUT_TIER_UPDATED -> Value.TENANT_MIGRATION_ROLLOUT_TIER_UPDATED
+                TENANT_ROLE_METADATA_UPDATED -> Value.TENANT_ROLE_METADATA_UPDATED
+                TENANT_CUSTOM_ROLE_CREATED -> Value.TENANT_CUSTOM_ROLE_CREATED
+                TENANT_CUSTOM_ROLE_UPDATED -> Value.TENANT_CUSTOM_ROLE_UPDATED
+                TENANT_CUSTOM_ROLE_DELETED -> Value.TENANT_CUSTOM_ROLE_DELETED
+                TENANT_ROLE_ASSIGNMENT_CREATED -> Value.TENANT_ROLE_ASSIGNMENT_CREATED
+                TENANT_ROLE_ASSIGNMENT_DELETED -> Value.TENANT_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED ->
+                    Value.TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED ->
+                    Value.TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ACCESS_UPDATED -> Value.TENANT_RESOURCE_ACCESS_UPDATED
+                TENANT_RESOURCE_ACCESS_DELETED -> Value.TENANT_RESOURCE_ACCESS_DELETED
+                TENANT_SESSION_POLICY_CREATED -> Value.TENANT_SESSION_POLICY_CREATED
+                TENANT_SESSION_POLICY_UPDATED -> Value.TENANT_SESSION_POLICY_UPDATED
+                TENANT_SESSION_POLICY_DELETED -> Value.TENANT_SESSION_POLICY_DELETED
+                TENANT_SESSION_REVOCATION_STARTED -> Value.TENANT_SESSION_REVOCATION_STARTED
+                TENANT_THIRD_PARTY_APP_POLICY_UPDATED -> Value.TENANT_THIRD_PARTY_APP_POLICY_UPDATED
+                TENANT_USER_ADDED -> Value.TENANT_USER_ADDED
+                TENANT_USER_UPDATED -> Value.TENANT_USER_UPDATED
+                TENANT_USER_REMOVED -> Value.TENANT_USER_REMOVED
+                TENANT_USER_LOOKED_UP -> Value.TENANT_USER_LOOKED_UP
+                TENANT_USER_INVITED -> Value.TENANT_USER_INVITED
+                TENANT_MEMBERSHIP_REVOKED -> Value.TENANT_MEMBERSHIP_REVOKED
+                TENANT_API_ORGANIZATION_INVITE_UPSERTED ->
+                    Value.TENANT_API_ORGANIZATION_INVITE_UPSERTED
+                TENANT_API_ORGANIZATION_INVITE_DELETED ->
+                    Value.TENANT_API_ORGANIZATION_INVITE_DELETED
+                TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED ->
+                    Value.TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED
+                TENANT_MEMBERSHIP_ACCEPTED -> Value.TENANT_MEMBERSHIP_ACCEPTED
+                TENANT_MEMBERSHIP_DECLINED -> Value.TENANT_MEMBERSHIP_DECLINED
+                TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED ->
+                    Value.TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED
                 else -> Value._UNKNOWN
             }
 
@@ -1064,6 +1559,110 @@ private constructor(
                 USER_ADDED -> Known.USER_ADDED
                 USER_UPDATED -> Known.USER_UPDATED
                 USER_DELETED -> Known.USER_DELETED
+                TENANT_METADATA_UPDATED -> Known.TENANT_METADATA_UPDATED
+                TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED ->
+                    Known.TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED
+                TENANT_MICROSOFT_ENTRA_MAPPING_DELETED ->
+                    Known.TENANT_MICROSOFT_ENTRA_MAPPING_DELETED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_BINDING_CREATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_BINDING_CREATED
+                TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED
+                TENANT_ADMIN_API_KEY_CREATED -> Known.TENANT_ADMIN_API_KEY_CREATED
+                TENANT_ADMIN_API_KEY_UPDATED -> Known.TENANT_ADMIN_API_KEY_UPDATED
+                TENANT_ADMIN_API_KEY_DELETED -> Known.TENANT_ADMIN_API_KEY_DELETED
+                TENANT_PROJECT_API_KEY_CREATED -> Known.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Known.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
+                TENANT_MIGRATION_COMPLETED -> Known.TENANT_MIGRATION_COMPLETED
+                TENANT_SSO_MIGRATED -> Known.TENANT_SSO_MIGRATED
+                TENANT_DOMAINS_MIGRATED -> Known.TENANT_DOMAINS_MIGRATED
+                TENANT_SSO_CONNECTION_CREATED -> Known.TENANT_SSO_CONNECTION_CREATED
+                TENANT_SSO_CONNECTION_UPDATED -> Known.TENANT_SSO_CONNECTION_UPDATED
+                TENANT_SSO_CONNECTION_DELETED -> Known.TENANT_SSO_CONNECTION_DELETED
+                TENANT_SSO_CONNECTION_SETUP_STARTED -> Known.TENANT_SSO_CONNECTION_SETUP_STARTED
+                TENANT_POLICY_CREATED -> Known.TENANT_POLICY_CREATED
+                TENANT_POLICY_UPDATED -> Known.TENANT_POLICY_UPDATED
+                TENANT_POLICY_DELETED -> Known.TENANT_POLICY_DELETED
+                TENANT_POLICY_ATTACHED -> Known.TENANT_POLICY_ATTACHED
+                TENANT_POLICY_DETACHED -> Known.TENANT_POLICY_DETACHED
+                TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED ->
+                    Known.TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED
+                TENANT_SCIM_SETUP_STARTED -> Known.TENANT_SCIM_SETUP_STARTED
+                TENANT_SCIM_DELETION_REQUESTED -> Known.TENANT_SCIM_DELETION_REQUESTED
+                TENANT_SCIM_DIRECTORY_CREATED -> Known.TENANT_SCIM_DIRECTORY_CREATED
+                TENANT_PRODUCT_ACCESS_POLICY_UPDATED -> Known.TENANT_PRODUCT_ACCESS_POLICY_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_CREATED -> Known.TENANT_RESOURCE_SHARE_GRANT_CREATED
+                TENANT_RESOURCE_SHARE_GRANT_UPDATED -> Known.TENANT_RESOURCE_SHARE_GRANT_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_ACCEPTED -> Known.TENANT_RESOURCE_SHARE_GRANT_ACCEPTED
+                TENANT_RESOURCE_SHARE_GRANT_DECLINED -> Known.TENANT_RESOURCE_SHARE_GRANT_DECLINED
+                TENANT_RESOURCE_SHARE_GRANT_REVOKED -> Known.TENANT_RESOURCE_SHARE_GRANT_REVOKED
+                TENANT_RESOURCE_SHARE_GRANT_DELETED -> Known.TENANT_RESOURCE_SHARE_GRANT_DELETED
+                TENANT_SERVICE_ACCOUNT_UPDATED -> Known.TENANT_SERVICE_ACCOUNT_UPDATED
+                TENANT_SERVICE_ACCOUNT_DELETED -> Known.TENANT_SERVICE_ACCOUNT_DELETED
+                TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED -> Known.TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED
+                TENANT_BILLING_OVERAGE_LIMIT_UPDATED -> Known.TENANT_BILLING_OVERAGE_LIMIT_UPDATED
+                TENANT_BILLING_ALERTS_UPDATED -> Known.TENANT_BILLING_ALERTS_UPDATED
+                TENANT_BILLING_INFO_UPDATED -> Known.TENANT_BILLING_INFO_UPDATED
+                TENANT_USAGE_LIMIT_WORKSPACE_UPDATED -> Known.TENANT_USAGE_LIMIT_WORKSPACE_UPDATED
+                TENANT_USAGE_LIMIT_GROUP_UPDATED -> Known.TENANT_USAGE_LIMIT_GROUP_UPDATED
+                TENANT_USAGE_LIMIT_USER_UPDATED -> Known.TENANT_USAGE_LIMIT_USER_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED ->
+                    Known.TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED ->
+                    Known.TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED
+                TENANT_GROUP_CREATED -> Known.TENANT_GROUP_CREATED
+                TENANT_GROUP_UPDATED -> Known.TENANT_GROUP_UPDATED
+                TENANT_GROUP_DELETED -> Known.TENANT_GROUP_DELETED
+                TENANT_GROUP_MEMBER_ADDED -> Known.TENANT_GROUP_MEMBER_ADDED
+                TENANT_GROUP_MEMBER_REMOVED -> Known.TENANT_GROUP_MEMBER_REMOVED
+                TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED ->
+                    Known.TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED
+                TENANT_MIGRATION_ROLLOUT_TIER_UPDATED -> Known.TENANT_MIGRATION_ROLLOUT_TIER_UPDATED
+                TENANT_ROLE_METADATA_UPDATED -> Known.TENANT_ROLE_METADATA_UPDATED
+                TENANT_CUSTOM_ROLE_CREATED -> Known.TENANT_CUSTOM_ROLE_CREATED
+                TENANT_CUSTOM_ROLE_UPDATED -> Known.TENANT_CUSTOM_ROLE_UPDATED
+                TENANT_CUSTOM_ROLE_DELETED -> Known.TENANT_CUSTOM_ROLE_DELETED
+                TENANT_ROLE_ASSIGNMENT_CREATED -> Known.TENANT_ROLE_ASSIGNMENT_CREATED
+                TENANT_ROLE_ASSIGNMENT_DELETED -> Known.TENANT_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED ->
+                    Known.TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED ->
+                    Known.TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ACCESS_UPDATED -> Known.TENANT_RESOURCE_ACCESS_UPDATED
+                TENANT_RESOURCE_ACCESS_DELETED -> Known.TENANT_RESOURCE_ACCESS_DELETED
+                TENANT_SESSION_POLICY_CREATED -> Known.TENANT_SESSION_POLICY_CREATED
+                TENANT_SESSION_POLICY_UPDATED -> Known.TENANT_SESSION_POLICY_UPDATED
+                TENANT_SESSION_POLICY_DELETED -> Known.TENANT_SESSION_POLICY_DELETED
+                TENANT_SESSION_REVOCATION_STARTED -> Known.TENANT_SESSION_REVOCATION_STARTED
+                TENANT_THIRD_PARTY_APP_POLICY_UPDATED -> Known.TENANT_THIRD_PARTY_APP_POLICY_UPDATED
+                TENANT_USER_ADDED -> Known.TENANT_USER_ADDED
+                TENANT_USER_UPDATED -> Known.TENANT_USER_UPDATED
+                TENANT_USER_REMOVED -> Known.TENANT_USER_REMOVED
+                TENANT_USER_LOOKED_UP -> Known.TENANT_USER_LOOKED_UP
+                TENANT_USER_INVITED -> Known.TENANT_USER_INVITED
+                TENANT_MEMBERSHIP_REVOKED -> Known.TENANT_MEMBERSHIP_REVOKED
+                TENANT_API_ORGANIZATION_INVITE_UPSERTED ->
+                    Known.TENANT_API_ORGANIZATION_INVITE_UPSERTED
+                TENANT_API_ORGANIZATION_INVITE_DELETED ->
+                    Known.TENANT_API_ORGANIZATION_INVITE_DELETED
+                TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED ->
+                    Known.TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED
+                TENANT_MEMBERSHIP_ACCEPTED -> Known.TENANT_MEMBERSHIP_ACCEPTED
+                TENANT_MEMBERSHIP_DECLINED -> Known.TENANT_MEMBERSHIP_DECLINED
+                TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED ->
+                    Known.TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED
                 else -> throw OpenAIInvalidDataException("Unknown EventType: $value")
             }
 

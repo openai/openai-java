@@ -194,6 +194,13 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [item] with `ResponseOutputItem.ofProgram(program)`. */
+        fun item(program: ResponseOutputItem.Program) = item(ResponseOutputItem.ofProgram(program))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofProgramOutput(programOutput)`. */
+        fun item(programOutput: ResponseOutputItem.ProgramOutput) =
+            item(ResponseOutputItem.ofProgramOutput(programOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`. */
         fun item(toolSearchCall: ResponseToolSearchCall) =
             item(ResponseOutputItem.ofToolSearchCall(toolSearchCall))

@@ -1442,9 +1442,18 @@ private constructor(
                 private val apiKeyId: JsonField<String>,
                 private val batch: JsonField<Boolean>,
                 private val inputAudioTokens: JsonField<Long>,
+                private val inputCacheWriteTokens: JsonField<Long>,
+                private val inputCachedAudioTokens: JsonField<Long>,
+                private val inputCachedImageTokens: JsonField<Long>,
+                private val inputCachedTextTokens: JsonField<Long>,
                 private val inputCachedTokens: JsonField<Long>,
+                private val inputImageTokens: JsonField<Long>,
+                private val inputTextTokens: JsonField<Long>,
+                private val inputUncachedTokens: JsonField<Long>,
                 private val model: JsonField<String>,
                 private val outputAudioTokens: JsonField<Long>,
+                private val outputImageTokens: JsonField<Long>,
+                private val outputTextTokens: JsonField<Long>,
                 private val projectId: JsonField<String>,
                 private val serviceTier: JsonField<String>,
                 private val userId: JsonField<String>,
@@ -1472,15 +1481,42 @@ private constructor(
                     @JsonProperty("input_audio_tokens")
                     @ExcludeMissing
                     inputAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cache_write_tokens")
+                    @ExcludeMissing
+                    inputCacheWriteTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cached_audio_tokens")
+                    @ExcludeMissing
+                    inputCachedAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cached_image_tokens")
+                    @ExcludeMissing
+                    inputCachedImageTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cached_text_tokens")
+                    @ExcludeMissing
+                    inputCachedTextTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("input_cached_tokens")
                     @ExcludeMissing
                     inputCachedTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_image_tokens")
+                    @ExcludeMissing
+                    inputImageTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_text_tokens")
+                    @ExcludeMissing
+                    inputTextTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_uncached_tokens")
+                    @ExcludeMissing
+                    inputUncachedTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("model")
                     @ExcludeMissing
                     model: JsonField<String> = JsonMissing.of(),
                     @JsonProperty("output_audio_tokens")
                     @ExcludeMissing
                     outputAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("output_image_tokens")
+                    @ExcludeMissing
+                    outputImageTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("output_text_tokens")
+                    @ExcludeMissing
+                    outputTextTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("project_id")
                     @ExcludeMissing
                     projectId: JsonField<String> = JsonMissing.of(),
@@ -1498,9 +1534,18 @@ private constructor(
                     apiKeyId,
                     batch,
                     inputAudioTokens,
+                    inputCacheWriteTokens,
+                    inputCachedAudioTokens,
+                    inputCachedImageTokens,
+                    inputCachedTextTokens,
                     inputCachedTokens,
+                    inputImageTokens,
+                    inputTextTokens,
+                    inputUncachedTokens,
                     model,
                     outputAudioTokens,
+                    outputImageTokens,
+                    outputTextTokens,
                     projectId,
                     serviceTier,
                     userId,
@@ -1508,8 +1553,9 @@ private constructor(
                 )
 
                 /**
-                 * The aggregated number of text input tokens used, including cached tokens. For
-                 * customers subscribe to scale tier, this includes scale tier tokens.
+                 * The aggregated number of input tokens used, including cached and cache-write
+                 * tokens. This includes text, audio, and image tokens. For customers subscribed to
+                 * Scale Tier, this includes Scale Tier tokens.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
                  *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -1538,8 +1584,8 @@ private constructor(
                 @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
                 /**
-                 * The aggregated number of text output tokens used. For customers subscribe to
-                 * scale tier, this includes scale tier tokens.
+                 * The aggregated number of output tokens used across text, audio, and image
+                 * outputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
                  *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -1566,7 +1612,7 @@ private constructor(
                 fun batch(): Optional<Boolean> = batch.getOptional("batch")
 
                 /**
-                 * The aggregated number of audio input tokens used, including cached tokens.
+                 * The aggregated number of uncached audio input tokens used.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1575,14 +1621,79 @@ private constructor(
                     inputAudioTokens.getOptional("input_audio_tokens")
 
                 /**
-                 * The aggregated number of text input tokens that has been cached from previous
-                 * requests. For customers subscribe to scale tier, this includes scale tier tokens.
+                 * The aggregated number of input tokens written to the cache.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCacheWriteTokens(): Optional<Long> =
+                    inputCacheWriteTokens.getOptional("input_cache_write_tokens")
+
+                /**
+                 * The aggregated number of cached audio input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCachedAudioTokens(): Optional<Long> =
+                    inputCachedAudioTokens.getOptional("input_cached_audio_tokens")
+
+                /**
+                 * The aggregated number of cached image input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCachedImageTokens(): Optional<Long> =
+                    inputCachedImageTokens.getOptional("input_cached_image_tokens")
+
+                /**
+                 * The aggregated number of cached text input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCachedTextTokens(): Optional<Long> =
+                    inputCachedTextTokens.getOptional("input_cached_text_tokens")
+
+                /**
+                 * The aggregated number of cached input tokens used across text, audio, and image
+                 * inputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
                 fun inputCachedTokens(): Optional<Long> =
                     inputCachedTokens.getOptional("input_cached_tokens")
+
+                /**
+                 * The aggregated number of uncached image input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputImageTokens(): Optional<Long> =
+                    inputImageTokens.getOptional("input_image_tokens")
+
+                /**
+                 * The aggregated number of uncached text input tokens used, excluding cache-write
+                 * tokens.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputTextTokens(): Optional<Long> =
+                    inputTextTokens.getOptional("input_text_tokens")
+
+                /**
+                 * The aggregated number of uncached input tokens used across text, audio, and image
+                 * inputs, excluding cache-write tokens.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputUncachedTokens(): Optional<Long> =
+                    inputUncachedTokens.getOptional("input_uncached_tokens")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
@@ -1601,6 +1712,24 @@ private constructor(
                  */
                 fun outputAudioTokens(): Optional<Long> =
                     outputAudioTokens.getOptional("output_audio_tokens")
+
+                /**
+                 * The aggregated number of image output tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun outputImageTokens(): Optional<Long> =
+                    outputImageTokens.getOptional("output_image_tokens")
+
+                /**
+                 * The aggregated number of text output tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun outputTextTokens(): Optional<Long> =
+                    outputTextTokens.getOptional("output_text_tokens")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
@@ -1688,6 +1817,46 @@ private constructor(
                 fun _inputAudioTokens(): JsonField<Long> = inputAudioTokens
 
                 /**
+                 * Returns the raw JSON value of [inputCacheWriteTokens].
+                 *
+                 * Unlike [inputCacheWriteTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cache_write_tokens")
+                @ExcludeMissing
+                fun _inputCacheWriteTokens(): JsonField<Long> = inputCacheWriteTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCachedAudioTokens].
+                 *
+                 * Unlike [inputCachedAudioTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cached_audio_tokens")
+                @ExcludeMissing
+                fun _inputCachedAudioTokens(): JsonField<Long> = inputCachedAudioTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCachedImageTokens].
+                 *
+                 * Unlike [inputCachedImageTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cached_image_tokens")
+                @ExcludeMissing
+                fun _inputCachedImageTokens(): JsonField<Long> = inputCachedImageTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCachedTextTokens].
+                 *
+                 * Unlike [inputCachedTextTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cached_text_tokens")
+                @ExcludeMissing
+                fun _inputCachedTextTokens(): JsonField<Long> = inputCachedTextTokens
+
+                /**
                  * Returns the raw JSON value of [inputCachedTokens].
                  *
                  * Unlike [inputCachedTokens], this method doesn't throw if the JSON field has an
@@ -1696,6 +1865,36 @@ private constructor(
                 @JsonProperty("input_cached_tokens")
                 @ExcludeMissing
                 fun _inputCachedTokens(): JsonField<Long> = inputCachedTokens
+
+                /**
+                 * Returns the raw JSON value of [inputImageTokens].
+                 *
+                 * Unlike [inputImageTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("input_image_tokens")
+                @ExcludeMissing
+                fun _inputImageTokens(): JsonField<Long> = inputImageTokens
+
+                /**
+                 * Returns the raw JSON value of [inputTextTokens].
+                 *
+                 * Unlike [inputTextTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("input_text_tokens")
+                @ExcludeMissing
+                fun _inputTextTokens(): JsonField<Long> = inputTextTokens
+
+                /**
+                 * Returns the raw JSON value of [inputUncachedTokens].
+                 *
+                 * Unlike [inputUncachedTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("input_uncached_tokens")
+                @ExcludeMissing
+                fun _inputUncachedTokens(): JsonField<Long> = inputUncachedTokens
 
                 /**
                  * Returns the raw JSON value of [model].
@@ -1714,6 +1913,26 @@ private constructor(
                 @JsonProperty("output_audio_tokens")
                 @ExcludeMissing
                 fun _outputAudioTokens(): JsonField<Long> = outputAudioTokens
+
+                /**
+                 * Returns the raw JSON value of [outputImageTokens].
+                 *
+                 * Unlike [outputImageTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("output_image_tokens")
+                @ExcludeMissing
+                fun _outputImageTokens(): JsonField<Long> = outputImageTokens
+
+                /**
+                 * Returns the raw JSON value of [outputTextTokens].
+                 *
+                 * Unlike [outputTextTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("output_text_tokens")
+                @ExcludeMissing
+                fun _outputTextTokens(): JsonField<Long> = outputTextTokens
 
                 /**
                  * Returns the raw JSON value of [projectId].
@@ -1782,9 +2001,18 @@ private constructor(
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
                     private var batch: JsonField<Boolean> = JsonMissing.of()
                     private var inputAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCacheWriteTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCachedAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCachedImageTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCachedTextTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCachedTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputImageTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputTextTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputUncachedTokens: JsonField<Long> = JsonMissing.of()
                     private var model: JsonField<String> = JsonMissing.of()
                     private var outputAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var outputImageTokens: JsonField<Long> = JsonMissing.of()
+                    private var outputTextTokens: JsonField<Long> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var serviceTier: JsonField<String> = JsonMissing.of()
                     private var userId: JsonField<String> = JsonMissing.of()
@@ -1801,9 +2029,22 @@ private constructor(
                         apiKeyId = organizationUsageCompletionsResult.apiKeyId
                         batch = organizationUsageCompletionsResult.batch
                         inputAudioTokens = organizationUsageCompletionsResult.inputAudioTokens
+                        inputCacheWriteTokens =
+                            organizationUsageCompletionsResult.inputCacheWriteTokens
+                        inputCachedAudioTokens =
+                            organizationUsageCompletionsResult.inputCachedAudioTokens
+                        inputCachedImageTokens =
+                            organizationUsageCompletionsResult.inputCachedImageTokens
+                        inputCachedTextTokens =
+                            organizationUsageCompletionsResult.inputCachedTextTokens
                         inputCachedTokens = organizationUsageCompletionsResult.inputCachedTokens
+                        inputImageTokens = organizationUsageCompletionsResult.inputImageTokens
+                        inputTextTokens = organizationUsageCompletionsResult.inputTextTokens
+                        inputUncachedTokens = organizationUsageCompletionsResult.inputUncachedTokens
                         model = organizationUsageCompletionsResult.model
                         outputAudioTokens = organizationUsageCompletionsResult.outputAudioTokens
+                        outputImageTokens = organizationUsageCompletionsResult.outputImageTokens
+                        outputTextTokens = organizationUsageCompletionsResult.outputTextTokens
                         projectId = organizationUsageCompletionsResult.projectId
                         serviceTier = organizationUsageCompletionsResult.serviceTier
                         userId = organizationUsageCompletionsResult.userId
@@ -1812,8 +2053,9 @@ private constructor(
                     }
 
                     /**
-                     * The aggregated number of text input tokens used, including cached tokens. For
-                     * customers subscribe to scale tier, this includes scale tier tokens.
+                     * The aggregated number of input tokens used, including cached and cache-write
+                     * tokens. This includes text, audio, and image tokens. For customers subscribed
+                     * to Scale Tier, this includes Scale Tier tokens.
                      */
                     fun inputTokens(inputTokens: Long) = inputTokens(JsonField.of(inputTokens))
 
@@ -1858,8 +2100,9 @@ private constructor(
                     fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
                     /**
-                     * The aggregated number of text output tokens used. For customers subscribe to
-                     * scale tier, this includes scale tier tokens.
+                     * The aggregated number of output tokens used across text, audio, and image
+                     * outputs. For customers subscribed to Scale Tier, this includes Scale Tier
+                     * tokens.
                      */
                     fun outputTokens(outputTokens: Long) = outputTokens(JsonField.of(outputTokens))
 
@@ -1917,9 +2160,7 @@ private constructor(
                      */
                     fun batch(batch: JsonField<Boolean>) = apply { this.batch = batch }
 
-                    /**
-                     * The aggregated number of audio input tokens used, including cached tokens.
-                     */
+                    /** The aggregated number of uncached audio input tokens used. */
                     fun inputAudioTokens(inputAudioTokens: Long) =
                         inputAudioTokens(JsonField.of(inputAudioTokens))
 
@@ -1934,10 +2175,70 @@ private constructor(
                         this.inputAudioTokens = inputAudioTokens
                     }
 
+                    /** The aggregated number of input tokens written to the cache. */
+                    fun inputCacheWriteTokens(inputCacheWriteTokens: Long) =
+                        inputCacheWriteTokens(JsonField.of(inputCacheWriteTokens))
+
                     /**
-                     * The aggregated number of text input tokens that has been cached from previous
-                     * requests. For customers subscribe to scale tier, this includes scale tier
-                     * tokens.
+                     * Sets [Builder.inputCacheWriteTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCacheWriteTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCacheWriteTokens(inputCacheWriteTokens: JsonField<Long>) = apply {
+                        this.inputCacheWriteTokens = inputCacheWriteTokens
+                    }
+
+                    /** The aggregated number of cached audio input tokens used. */
+                    fun inputCachedAudioTokens(inputCachedAudioTokens: Long) =
+                        inputCachedAudioTokens(JsonField.of(inputCachedAudioTokens))
+
+                    /**
+                     * Sets [Builder.inputCachedAudioTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCachedAudioTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCachedAudioTokens(inputCachedAudioTokens: JsonField<Long>) = apply {
+                        this.inputCachedAudioTokens = inputCachedAudioTokens
+                    }
+
+                    /** The aggregated number of cached image input tokens used. */
+                    fun inputCachedImageTokens(inputCachedImageTokens: Long) =
+                        inputCachedImageTokens(JsonField.of(inputCachedImageTokens))
+
+                    /**
+                     * Sets [Builder.inputCachedImageTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCachedImageTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCachedImageTokens(inputCachedImageTokens: JsonField<Long>) = apply {
+                        this.inputCachedImageTokens = inputCachedImageTokens
+                    }
+
+                    /** The aggregated number of cached text input tokens used. */
+                    fun inputCachedTextTokens(inputCachedTextTokens: Long) =
+                        inputCachedTextTokens(JsonField.of(inputCachedTextTokens))
+
+                    /**
+                     * Sets [Builder.inputCachedTextTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCachedTextTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCachedTextTokens(inputCachedTextTokens: JsonField<Long>) = apply {
+                        this.inputCachedTextTokens = inputCachedTextTokens
+                    }
+
+                    /**
+                     * The aggregated number of cached input tokens used across text, audio, and
+                     * image inputs. For customers subscribed to Scale Tier, this includes Scale
+                     * Tier tokens.
                      */
                     fun inputCachedTokens(inputCachedTokens: Long) =
                         inputCachedTokens(JsonField.of(inputCachedTokens))
@@ -1951,6 +2252,57 @@ private constructor(
                      */
                     fun inputCachedTokens(inputCachedTokens: JsonField<Long>) = apply {
                         this.inputCachedTokens = inputCachedTokens
+                    }
+
+                    /** The aggregated number of uncached image input tokens used. */
+                    fun inputImageTokens(inputImageTokens: Long) =
+                        inputImageTokens(JsonField.of(inputImageTokens))
+
+                    /**
+                     * Sets [Builder.inputImageTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputImageTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputImageTokens(inputImageTokens: JsonField<Long>) = apply {
+                        this.inputImageTokens = inputImageTokens
+                    }
+
+                    /**
+                     * The aggregated number of uncached text input tokens used, excluding
+                     * cache-write tokens.
+                     */
+                    fun inputTextTokens(inputTextTokens: Long) =
+                        inputTextTokens(JsonField.of(inputTextTokens))
+
+                    /**
+                     * Sets [Builder.inputTextTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputTextTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputTextTokens(inputTextTokens: JsonField<Long>) = apply {
+                        this.inputTextTokens = inputTextTokens
+                    }
+
+                    /**
+                     * The aggregated number of uncached input tokens used across text, audio, and
+                     * image inputs, excluding cache-write tokens.
+                     */
+                    fun inputUncachedTokens(inputUncachedTokens: Long) =
+                        inputUncachedTokens(JsonField.of(inputUncachedTokens))
+
+                    /**
+                     * Sets [Builder.inputUncachedTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputUncachedTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputUncachedTokens(inputUncachedTokens: JsonField<Long>) = apply {
+                        this.inputUncachedTokens = inputUncachedTokens
                     }
 
                     /**
@@ -1984,6 +2336,36 @@ private constructor(
                      */
                     fun outputAudioTokens(outputAudioTokens: JsonField<Long>) = apply {
                         this.outputAudioTokens = outputAudioTokens
+                    }
+
+                    /** The aggregated number of image output tokens used. */
+                    fun outputImageTokens(outputImageTokens: Long) =
+                        outputImageTokens(JsonField.of(outputImageTokens))
+
+                    /**
+                     * Sets [Builder.outputImageTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.outputImageTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun outputImageTokens(outputImageTokens: JsonField<Long>) = apply {
+                        this.outputImageTokens = outputImageTokens
+                    }
+
+                    /** The aggregated number of text output tokens used. */
+                    fun outputTextTokens(outputTextTokens: Long) =
+                        outputTextTokens(JsonField.of(outputTextTokens))
+
+                    /**
+                     * Sets [Builder.outputTextTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.outputTextTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun outputTextTokens(outputTextTokens: JsonField<Long>) = apply {
+                        this.outputTextTokens = outputTextTokens
                     }
 
                     /**
@@ -2091,9 +2473,18 @@ private constructor(
                             apiKeyId,
                             batch,
                             inputAudioTokens,
+                            inputCacheWriteTokens,
+                            inputCachedAudioTokens,
+                            inputCachedImageTokens,
+                            inputCachedTextTokens,
                             inputCachedTokens,
+                            inputImageTokens,
+                            inputTextTokens,
+                            inputUncachedTokens,
                             model,
                             outputAudioTokens,
+                            outputImageTokens,
+                            outputTextTokens,
                             projectId,
                             serviceTier,
                             userId,
@@ -2129,9 +2520,18 @@ private constructor(
                     apiKeyId()
                     batch()
                     inputAudioTokens()
+                    inputCacheWriteTokens()
+                    inputCachedAudioTokens()
+                    inputCachedImageTokens()
+                    inputCachedTextTokens()
                     inputCachedTokens()
+                    inputImageTokens()
+                    inputTextTokens()
+                    inputUncachedTokens()
                     model()
                     outputAudioTokens()
+                    outputImageTokens()
+                    outputTextTokens()
                     projectId()
                     serviceTier()
                     userId()
@@ -2164,9 +2564,18 @@ private constructor(
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (batch.asKnown().isPresent) 1 else 0) +
                         (if (inputAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCacheWriteTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCachedAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCachedImageTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCachedTextTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCachedTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputImageTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputTextTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputUncachedTokens.asKnown().isPresent) 1 else 0) +
                         (if (model.asKnown().isPresent) 1 else 0) +
                         (if (outputAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (outputImageTokens.asKnown().isPresent) 1 else 0) +
+                        (if (outputTextTokens.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
                         (if (serviceTier.asKnown().isPresent) 1 else 0) +
                         (if (userId.asKnown().isPresent) 1 else 0)
@@ -2184,9 +2593,18 @@ private constructor(
                         apiKeyId == other.apiKeyId &&
                         batch == other.batch &&
                         inputAudioTokens == other.inputAudioTokens &&
+                        inputCacheWriteTokens == other.inputCacheWriteTokens &&
+                        inputCachedAudioTokens == other.inputCachedAudioTokens &&
+                        inputCachedImageTokens == other.inputCachedImageTokens &&
+                        inputCachedTextTokens == other.inputCachedTextTokens &&
                         inputCachedTokens == other.inputCachedTokens &&
+                        inputImageTokens == other.inputImageTokens &&
+                        inputTextTokens == other.inputTextTokens &&
+                        inputUncachedTokens == other.inputUncachedTokens &&
                         model == other.model &&
                         outputAudioTokens == other.outputAudioTokens &&
+                        outputImageTokens == other.outputImageTokens &&
+                        outputTextTokens == other.outputTextTokens &&
                         projectId == other.projectId &&
                         serviceTier == other.serviceTier &&
                         userId == other.userId &&
@@ -2202,9 +2620,18 @@ private constructor(
                         apiKeyId,
                         batch,
                         inputAudioTokens,
+                        inputCacheWriteTokens,
+                        inputCachedAudioTokens,
+                        inputCachedImageTokens,
+                        inputCachedTextTokens,
                         inputCachedTokens,
+                        inputImageTokens,
+                        inputTextTokens,
+                        inputUncachedTokens,
                         model,
                         outputAudioTokens,
+                        outputImageTokens,
+                        outputTextTokens,
                         projectId,
                         serviceTier,
                         userId,
@@ -2215,7 +2642,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCachedTokens=$inputCachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated embeddings usage details of the specific time bucket. */

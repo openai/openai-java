@@ -1,5 +1,69 @@
 # Changelog
 
+## 4.44.0 (2026-07-17)
+
+Full Changelog: [v4.43.0...v4.44.0](https://github.com/openai/openai-java/compare/v4.43.0...v4.44.0)
+
+### Features
+
+* **api:** /organization/projects/{project_id}/service_accounts/{service_account_id}/api_keys" endpoint ([2e1c539](https://github.com/openai/openai-java/commit/2e1c53912220bab9b4f5275dae37a55c0af1bc8e))
+* **api:** manual updates ([5c78d3e](https://github.com/openai/openai-java/commit/5c78d3e4d993261f5b48f6612ebf17d30bd7ce94))
+* **api:** manual updates ([ef9016c](https://github.com/openai/openai-java/commit/ef9016c3463e52f3be22c2bd435c4ebf53fd6e67))
+
+
+### Bug Fixes
+
+* **client:** handle response stream keepalive events ([#776](https://github.com/openai/openai-java/issues/776)) ([6eef965](https://github.com/openai/openai-java/commit/6eef9653f95a9be63436c11ced9c1f8f6c192f3b))
+* **deps:** update Azure Identity to 1.18.4 ([#779](https://github.com/openai/openai-java/issues/779)) ([d2b695c](https://github.com/openai/openai-java/commit/d2b695cbdff8d7ca6c1fe10ea3b0e7a64ec24edf))
+* **deps:** update Jackson to 2.18.9 ([#777](https://github.com/openai/openai-java/issues/777)) ([2935d47](https://github.com/openai/openai-java/commit/2935d47e753fcbef81a6a0d720eedb3ac559ac73))
+* **deps:** update plexus-utils to 4.0.3 ([#780](https://github.com/openai/openai-java/issues/780)) ([6e4e2a7](https://github.com/openai/openai-java/commit/6e4e2a78b2b021288d141ddbedd9fa3e5d592073))
+* **deps:** update test Handlebars to 4.5.3 ([#783](https://github.com/openai/openai-java/issues/783)) ([ae10648](https://github.com/openai/openai-java/commit/ae10648c9c50824bae1ba3c7ba0853b06b6bbb88))
+
+
+### Chores
+
+* **deps:** secure build-time Log4j ([#781](https://github.com/openai/openai-java/issues/781)) ([8735bf7](https://github.com/openai/openai-java/commit/8735bf71d18041f35087b6ec2c3fe8f3edcc903b))
+
+
+### Build System
+
+* **deps:** align Palantir Jackson to 2.21.5 ([#794](https://github.com/openai/openai-java/issues/794)) ([cc9af3d](https://github.com/openai/openai-java/commit/cc9af3dc63e40150b692243a691a441d37e5beae))
+* **deps:** secure Dokka Jackson classpath ([#795](https://github.com/openai/openai-java/issues/795)) ([8b72d57](https://github.com/openai/openai-java/commit/8b72d57c87cc80966f55c1b5f894532b462a1bf1))
+* **deps:** update Dokka to 2.1.0 ([#791](https://github.com/openai/openai-java/issues/791)) ([420f91d](https://github.com/openai/openai-java/commit/420f91da5b9bdd3c43130d4720f650d84f89d7d2))
+* **deps:** update palantir-java-format to 2.96.0 ([#784](https://github.com/openai/openai-java/issues/784)) ([243d996](https://github.com/openai/openai-java/commit/243d996e9d6efb292b4f1986882cca50b5a6b8b2))
+* **deps:** update ProGuard to 7.9.1 ([#782](https://github.com/openai/openai-java/issues/782)) ([845b2bc](https://github.com/openai/openai-java/commit/845b2bc87fb077f2ff1a0f81893cd4f4384214b4))
+* **deps:** update test commons-fileupload to 1.6.0 ([#787](https://github.com/openai/openai-java/issues/787)) ([5e5fabe](https://github.com/openai/openai-java/commit/5e5fabe7061dee5031e519b867cb874eebb8a69a))
+* **deps:** update test Guava to 33.6.0 ([#786](https://github.com/openai/openai-java/issues/786)) ([e2b4cf1](https://github.com/openai/openai-java/commit/e2b4cf15f75a9733f870b4a67aae8c6045ee83be))
+* **deps:** update test Jetty to 9.4.58 ([#785](https://github.com/openai/openai-java/issues/785)) ([fab7e44](https://github.com/openai/openai-java/commit/fab7e44a8dbdd2d4c819e940cb119ccc0a24342b))
+* **deps:** update test SnakeYAML to 2.6 ([#793](https://github.com/openai/openai-java/issues/793)) ([7cf5b73](https://github.com/openai/openai-java/commit/7cf5b737e442662b4ee9570caf14f322631d6e2f))
+* **deps:** update test XMLUnit to 2.11.0 ([#792](https://github.com/openai/openai-java/issues/792)) ([a30161d](https://github.com/openai/openai-java/commit/a30161d495ac25e6d865d0ddc8c7f02c05ac31fd))
+
+## 4.43.0 (2026-07-13)
+
+Full Changelog: [v4.42.0...v4.43.0](https://github.com/openai/openai-java/compare/v4.42.0...v4.43.0)
+
+### Features
+
+* **api:** add owner_project_access to APIKeyListParams ([b5c0fbc](https://github.com/openai/openai-java/commit/b5c0fbcf410a351988f117640bb1c9809775c4d1))
+
+## [4.42.0](https://github.com/openai/openai-java/compare/v4.41.0...v4.42.0) (2026-07-09)
+
+
+### Features
+
+* **api:** gpt-5.6-sol updates ([2ca768a](https://github.com/openai/openai-java/commit/2ca768ad80da1643680ce99fee977080e19f2e2b))
+
+
+### Bug Fixes
+
+* **api:** preserve deprecated beta realtime accessors ([a1cd1f1](https://github.com/openai/openai-java/commit/a1cd1f1ad58f7009073819765792d62995650da7))
+* **api:** restore beta responses custom code ([73f67f2](https://github.com/openai/openai-java/commit/73f67f286ef5147fc252090f9d3b8e44a857a208))
+
+
+### Chores
+
+* retrigger release automation ([a3006ee](https://github.com/openai/openai-java/commit/a3006ee468a3e4d4167368cf5a2e66590e4a65a0))
+
 ## 4.41.0 (2026-06-17)
 
 Full Changelog: [v4.40.0...v4.41.0](https://github.com/openai/openai-java/compare/v4.40.0...v4.41.0)

@@ -19,7 +19,14 @@ internal class ResponseItemTest {
         val responseInputMessageItem =
             ResponseInputMessageItem.builder()
                 .id("id")
-                .addInputTextContent("text")
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
                 .role(ResponseInputMessageItem.Role.USER)
                 .status(ResponseInputMessageItem.Status.IN_PROGRESS)
                 .build()
@@ -38,6 +45,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -62,7 +71,14 @@ internal class ResponseItemTest {
             ResponseItem.ofResponseInputMessageItem(
                 ResponseInputMessageItem.builder()
                     .id("id")
-                    .addInputTextContent("text")
+                    .addContent(
+                        ResponseInputText.builder()
+                            .text("text")
+                            .promptCacheBreakpoint(
+                                ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            )
+                            .build()
+                    )
                     .role(ResponseInputMessageItem.Role.USER)
                     .status(ResponseInputMessageItem.Status.IN_PROGRESS)
                     .build()
@@ -126,6 +142,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -226,6 +244,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -324,6 +344,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -423,6 +445,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -508,6 +532,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -564,6 +590,7 @@ internal class ResponseItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .callerDirect()
                 .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .createdBy("created_by")
@@ -583,6 +610,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -610,6 +639,7 @@ internal class ResponseItemTest {
                     .callId("call_id")
                     .name("name")
                     .id("id")
+                    .callerDirect()
                     .namespace("namespace")
                     .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                     .createdBy("created_by")
@@ -633,6 +663,7 @@ internal class ResponseItemTest {
                 .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -650,6 +681,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -677,6 +710,7 @@ internal class ResponseItemTest {
                     .callId("call_id")
                     .output("string")
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -716,6 +750,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -774,8 +810,14 @@ internal class ResponseItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .createdBy("created_by")
@@ -795,6 +837,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).contains(toolSearchOutput)
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -831,8 +875,14 @@ internal class ResponseItemTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .createdBy("created_by")
@@ -863,8 +913,14 @@ internal class ResponseItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -883,6 +939,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).contains(additionalTools)
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -917,8 +975,14 @@ internal class ResponseItemTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .build()
@@ -958,6 +1022,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).contains(reasoning)
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -999,6 +1065,136 @@ internal class ResponseItemTest {
     }
 
     @Test
+    fun ofProgram() {
+        val program =
+            ResponseItem.Program.builder()
+                .id("id")
+                .callId("call_id")
+                .code("code")
+                .fingerprint("fingerprint")
+                .build()
+
+        val responseItem = ResponseItem.ofProgram(program)
+
+        assertThat(responseItem.responseInputMessageItem()).isEmpty
+        assertThat(responseItem.responseOutputMessage()).isEmpty
+        assertThat(responseItem.fileSearchCall()).isEmpty
+        assertThat(responseItem.computerCall()).isEmpty
+        assertThat(responseItem.computerCallOutput()).isEmpty
+        assertThat(responseItem.webSearchCall()).isEmpty
+        assertThat(responseItem.functionCall()).isEmpty
+        assertThat(responseItem.functionCallOutput()).isEmpty
+        assertThat(responseItem.toolSearchCall()).isEmpty
+        assertThat(responseItem.toolSearchOutput()).isEmpty
+        assertThat(responseItem.additionalTools()).isEmpty
+        assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).contains(program)
+        assertThat(responseItem.programOutput()).isEmpty
+        assertThat(responseItem.compaction()).isEmpty
+        assertThat(responseItem.imageGenerationCall()).isEmpty
+        assertThat(responseItem.codeInterpreterCall()).isEmpty
+        assertThat(responseItem.localShellCall()).isEmpty
+        assertThat(responseItem.localShellCallOutput()).isEmpty
+        assertThat(responseItem.shellCall()).isEmpty
+        assertThat(responseItem.shellCallOutput()).isEmpty
+        assertThat(responseItem.applyPatchCall()).isEmpty
+        assertThat(responseItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseItem.mcpListTools()).isEmpty
+        assertThat(responseItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseItem.mcpCall()).isEmpty
+        assertThat(responseItem.customToolCall()).isEmpty
+        assertThat(responseItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofProgramRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseItem =
+            ResponseItem.ofProgram(
+                ResponseItem.Program.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .code("code")
+                    .fingerprint("fingerprint")
+                    .build()
+            )
+
+        val roundtrippedResponseItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseItem),
+                jacksonTypeRef<ResponseItem>(),
+            )
+
+        assertThat(roundtrippedResponseItem).isEqualTo(responseItem)
+    }
+
+    @Test
+    fun ofProgramOutput() {
+        val programOutput =
+            ResponseItem.ProgramOutput.builder()
+                .id("id")
+                .callId("call_id")
+                .result("result")
+                .status(ResponseItem.ProgramOutput.Status.COMPLETED)
+                .build()
+
+        val responseItem = ResponseItem.ofProgramOutput(programOutput)
+
+        assertThat(responseItem.responseInputMessageItem()).isEmpty
+        assertThat(responseItem.responseOutputMessage()).isEmpty
+        assertThat(responseItem.fileSearchCall()).isEmpty
+        assertThat(responseItem.computerCall()).isEmpty
+        assertThat(responseItem.computerCallOutput()).isEmpty
+        assertThat(responseItem.webSearchCall()).isEmpty
+        assertThat(responseItem.functionCall()).isEmpty
+        assertThat(responseItem.functionCallOutput()).isEmpty
+        assertThat(responseItem.toolSearchCall()).isEmpty
+        assertThat(responseItem.toolSearchOutput()).isEmpty
+        assertThat(responseItem.additionalTools()).isEmpty
+        assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).contains(programOutput)
+        assertThat(responseItem.compaction()).isEmpty
+        assertThat(responseItem.imageGenerationCall()).isEmpty
+        assertThat(responseItem.codeInterpreterCall()).isEmpty
+        assertThat(responseItem.localShellCall()).isEmpty
+        assertThat(responseItem.localShellCallOutput()).isEmpty
+        assertThat(responseItem.shellCall()).isEmpty
+        assertThat(responseItem.shellCallOutput()).isEmpty
+        assertThat(responseItem.applyPatchCall()).isEmpty
+        assertThat(responseItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseItem.mcpListTools()).isEmpty
+        assertThat(responseItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseItem.mcpCall()).isEmpty
+        assertThat(responseItem.customToolCall()).isEmpty
+        assertThat(responseItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofProgramOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseItem =
+            ResponseItem.ofProgramOutput(
+                ResponseItem.ProgramOutput.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .result("result")
+                    .status(ResponseItem.ProgramOutput.Status.COMPLETED)
+                    .build()
+            )
+
+        val roundtrippedResponseItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseItem),
+                jacksonTypeRef<ResponseItem>(),
+            )
+
+        assertThat(roundtrippedResponseItem).isEqualTo(responseItem)
+    }
+
+    @Test
     fun ofCompaction() {
         val compaction =
             ResponseCompactionItem.builder()
@@ -1021,6 +1217,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).contains(compaction)
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1082,6 +1280,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).contains(imageGenerationCall)
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1145,6 +1345,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).contains(codeInterpreterCall)
@@ -1221,6 +1423,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1295,6 +1499,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1348,6 +1554,7 @@ internal class ResponseItemTest {
                 .callId("call_id")
                 .environment(ResponseLocalEnvironment.builder().build())
                 .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -1365,6 +1572,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1399,6 +1608,7 @@ internal class ResponseItemTest {
                     .callId("call_id")
                     .environment(ResponseLocalEnvironment.builder().build())
                     .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -1428,6 +1638,7 @@ internal class ResponseItemTest {
                         .build()
                 )
                 .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -1445,6 +1656,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1480,6 +1693,7 @@ internal class ResponseItemTest {
                             .build()
                     )
                     .status(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -1506,6 +1720,7 @@ internal class ResponseItemTest {
                         .build()
                 )
                 .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .callerDirect()
                 .createdBy("created_by")
                 .build()
 
@@ -1523,6 +1738,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1555,6 +1772,7 @@ internal class ResponseItemTest {
                             .build()
                     )
                     .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                    .callerDirect()
                     .createdBy("created_by")
                     .build()
             )
@@ -1575,6 +1793,7 @@ internal class ResponseItemTest {
                 .id("id")
                 .callId("call_id")
                 .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                .callerDirect()
                 .createdBy("created_by")
                 .output("output")
                 .build()
@@ -1593,6 +1812,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1619,6 +1840,7 @@ internal class ResponseItemTest {
                     .id("id")
                     .callId("call_id")
                     .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                    .callerDirect()
                     .createdBy("created_by")
                     .output("output")
                     .build()
@@ -1664,6 +1886,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1734,6 +1958,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1797,6 +2023,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1864,6 +2092,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1915,6 +2145,7 @@ internal class ResponseItemTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .callerDirect()
                 .namespace("namespace")
                 .status(ResponseCustomToolCallItem.Status.IN_PROGRESS)
                 .createdBy("created_by")
@@ -1934,6 +2165,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -1961,6 +2194,7 @@ internal class ResponseItemTest {
                     .input("input")
                     .name("name")
                     .id("id")
+                    .callerDirect()
                     .namespace("namespace")
                     .status(ResponseCustomToolCallItem.Status.IN_PROGRESS)
                     .createdBy("created_by")
@@ -1983,6 +2217,7 @@ internal class ResponseItemTest {
                 .callId("call_id")
                 .output("string")
                 .id("id")
+                .callerDirect()
                 .status(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
                 .createdBy("created_by")
                 .build()
@@ -2001,6 +2236,8 @@ internal class ResponseItemTest {
         assertThat(responseItem.toolSearchOutput()).isEmpty
         assertThat(responseItem.additionalTools()).isEmpty
         assertThat(responseItem.reasoning()).isEmpty
+        assertThat(responseItem.program()).isEmpty
+        assertThat(responseItem.programOutput()).isEmpty
         assertThat(responseItem.compaction()).isEmpty
         assertThat(responseItem.imageGenerationCall()).isEmpty
         assertThat(responseItem.codeInterpreterCall()).isEmpty
@@ -2027,6 +2264,7 @@ internal class ResponseItemTest {
                     .callId("call_id")
                     .output("string")
                     .id("id")
+                    .callerDirect()
                     .status(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
                     .createdBy("created_by")
                     .build()

@@ -351,16 +351,28 @@ private constructor(
     class InputTokensDetails
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val cacheWriteTokens: JsonField<Long>,
         private val cachedTokens: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
+            @JsonProperty("cache_write_tokens")
+            @ExcludeMissing
+            cacheWriteTokens: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("cached_tokens")
             @ExcludeMissing
-            cachedTokens: JsonField<Long> = JsonMissing.of()
-        ) : this(cachedTokens, mutableMapOf())
+            cachedTokens: JsonField<Long> = JsonMissing.of(),
+        ) : this(cacheWriteTokens, cachedTokens, mutableMapOf())
+
+        /**
+         * The number of input tokens that were written to the cache.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun cacheWriteTokens(): Long = cacheWriteTokens.getRequired("cache_write_tokens")
 
         /**
          * The number of tokens that were retrieved from the cache.
@@ -370,6 +382,16 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun cachedTokens(): Long = cachedTokens.getRequired("cached_tokens")
+
+        /**
+         * Returns the raw JSON value of [cacheWriteTokens].
+         *
+         * Unlike [cacheWriteTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("cache_write_tokens")
+        @ExcludeMissing
+        fun _cacheWriteTokens(): JsonField<Long> = cacheWriteTokens
 
         /**
          * Returns the raw JSON value of [cachedTokens].
@@ -400,6 +422,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
+             * .cacheWriteTokens()
              * .cachedTokens()
              * ```
              */
@@ -409,13 +432,30 @@ private constructor(
         /** A builder for [InputTokensDetails]. */
         class Builder internal constructor() {
 
+            private var cacheWriteTokens: JsonField<Long>? = null
             private var cachedTokens: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(inputTokensDetails: InputTokensDetails) = apply {
+                cacheWriteTokens = inputTokensDetails.cacheWriteTokens
                 cachedTokens = inputTokensDetails.cachedTokens
                 additionalProperties = inputTokensDetails.additionalProperties.toMutableMap()
+            }
+
+            /** The number of input tokens that were written to the cache. */
+            fun cacheWriteTokens(cacheWriteTokens: Long) =
+                cacheWriteTokens(JsonField.of(cacheWriteTokens))
+
+            /**
+             * Sets [Builder.cacheWriteTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cacheWriteTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun cacheWriteTokens(cacheWriteTokens: JsonField<Long>) = apply {
+                this.cacheWriteTokens = cacheWriteTokens
             }
 
             /**
@@ -461,6 +501,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
+             * .cacheWriteTokens()
              * .cachedTokens()
              * ```
              *
@@ -468,6 +509,7 @@ private constructor(
              */
             fun build(): InputTokensDetails =
                 InputTokensDetails(
+                    checkRequired("cacheWriteTokens", cacheWriteTokens),
                     checkRequired("cachedTokens", cachedTokens),
                     additionalProperties.toMutableMap(),
                 )
@@ -489,6 +531,7 @@ private constructor(
                 return@apply
             }
 
+            cacheWriteTokens()
             cachedTokens()
             validated = true
         }
@@ -508,7 +551,9 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int = (if (cachedTokens.asKnown().isPresent) 1 else 0)
+        internal fun validity(): Int =
+            (if (cacheWriteTokens.asKnown().isPresent) 1 else 0) +
+                (if (cachedTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -516,16 +561,19 @@ private constructor(
             }
 
             return other is InputTokensDetails &&
+                cacheWriteTokens == other.cacheWriteTokens &&
                 cachedTokens == other.cachedTokens &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(cachedTokens, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(cacheWriteTokens, cachedTokens, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "InputTokensDetails{cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
+            "InputTokensDetails{cacheWriteTokens=$cacheWriteTokens, cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
     }
 
     /** A detailed breakdown of the output tokens. */

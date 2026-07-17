@@ -76,7 +76,7 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * `owner` or `member`
+     * `owner`, `member`, or `none`
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -206,7 +206,7 @@ private constructor(
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /** `owner` or `member` */
+        /** `owner`, `member`, or `none` */
         fun role(role: Role) = role(JsonField.of(role))
 
         /**
@@ -312,7 +312,7 @@ private constructor(
             } +
             (role.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** `owner` or `member` */
+    /** `owner`, `member`, or `none` */
     class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -331,6 +331,8 @@ private constructor(
 
             @JvmField val MEMBER = of("member")
 
+            @JvmField val NONE = of("none")
+
             @JvmStatic fun of(value: String) = Role(JsonField.of(value))
         }
 
@@ -338,6 +340,7 @@ private constructor(
         enum class Known {
             OWNER,
             MEMBER,
+            NONE,
         }
 
         /**
@@ -352,6 +355,7 @@ private constructor(
         enum class Value {
             OWNER,
             MEMBER,
+            NONE,
             /** An enum member indicating that [Role] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -367,6 +371,7 @@ private constructor(
             when (this) {
                 OWNER -> Value.OWNER
                 MEMBER -> Value.MEMBER
+                NONE -> Value.NONE
                 else -> Value._UNKNOWN
             }
 
@@ -383,6 +388,7 @@ private constructor(
             when (this) {
                 OWNER -> Known.OWNER
                 MEMBER -> Known.MEMBER
+                NONE -> Known.NONE
                 else -> throw OpenAIInvalidDataException("Unknown Role: $value")
             }
 

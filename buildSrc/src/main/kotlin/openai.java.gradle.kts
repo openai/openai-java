@@ -34,6 +34,10 @@ tasks.named<Jar>("jar") {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 
+    // Mockito/Byte Buddy can attach a test-time Java agent. Keep JVM warnings about that out of
+    // stderr so output-sensitive tests can assert application logs exactly.
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
+
     // Run tests in parallel to some degree.
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
     forkEvery = 100
@@ -45,7 +49,10 @@ tasks.withType<Test>().configureEach {
 
 val palantir by configurations.creating
 dependencies {
-    palantir("com.palantir.javaformat:palantir-java-format:2.89.0")
+    // Palantir is an isolated build tool and must use the internally aligned Jackson line it was
+    // built against. This does not affect any published or runtime dependency configuration.
+    palantir(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    palantir("com.palantir.javaformat:palantir-java-format:2.96.0")
 }
 
 fun registerPalantir(

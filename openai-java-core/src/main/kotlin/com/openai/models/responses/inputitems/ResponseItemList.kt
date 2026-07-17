@@ -265,6 +265,13 @@ private constructor(
         /** Alias for calling [addData] with `ResponseItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) = addData(ResponseItem.ofReasoning(reasoning))
 
+        /** Alias for calling [addData] with `ResponseItem.ofProgram(program)`. */
+        fun addData(program: ResponseItem.Program) = addData(ResponseItem.ofProgram(program))
+
+        /** Alias for calling [addData] with `ResponseItem.ofProgramOutput(programOutput)`. */
+        fun addData(programOutput: ResponseItem.ProgramOutput) =
+            addData(ResponseItem.ofProgramOutput(programOutput))
+
         /** Alias for calling [addData] with `ResponseItem.ofCompaction(compaction)`. */
         fun addData(compaction: ResponseCompactionItem) =
             addData(ResponseItem.ofCompaction(compaction))

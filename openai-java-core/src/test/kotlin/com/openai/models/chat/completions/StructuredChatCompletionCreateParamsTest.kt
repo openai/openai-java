@@ -83,6 +83,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val PROMPT_CACHE_RETENTION =
             ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY
+        private val PROMPT_CACHE_OPTIONS =
+            ChatCompletionCreateParams.PromptCacheOptions.builder().build()
         private val PROMPT_CACHE_RETENTION_OPTIONAL = Optional.of(PROMPT_CACHE_RETENTION)
         private val PROMPT_CACHE_RETENTION_JSON_FIELD = JsonField.of(PROMPT_CACHE_RETENTION)
 
@@ -232,6 +234,8 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("prediction", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheKey", STRING),
                 DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheOptions", PROMPT_CACHE_OPTIONS),
+                DelegationWriteTestCase("promptCacheOptions", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_OPTIONAL),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_JSON_FIELD),

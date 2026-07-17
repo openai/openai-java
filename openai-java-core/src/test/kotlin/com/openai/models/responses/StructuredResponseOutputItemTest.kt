@@ -118,6 +118,20 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val REASONING_ITEM =
             ResponseReasoningItem.builder().id(STRING).summary(listOf()).build()
+        private val PROGRAM =
+            ResponseOutputItem.Program.builder()
+                .id(STRING)
+                .callId(STRING)
+                .code(STRING)
+                .fingerprint(STRING)
+                .build()
+        private val PROGRAM_OUTPUT =
+            ResponseOutputItem.ProgramOutput.builder()
+                .id(STRING)
+                .callId(STRING)
+                .result(STRING)
+                .status(ResponseOutputItem.ProgramOutput.Status.COMPLETED)
+                .build()
         private val COMPACTION_ITEM =
             ResponseCompactionItem.builder().id(STRING).encryptedContent(STRING).build()
         private val CODE_INTERPRETER_CALL =
@@ -262,6 +276,8 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("computerCall", OPTIONAL),
                 DelegationReadTestCase("computerCallOutput", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
+                DelegationReadTestCase("program", OPTIONAL),
+                DelegationReadTestCase("programOutput", OPTIONAL),
                 DelegationReadTestCase("compaction", OPTIONAL),
                 DelegationReadTestCase("localShellCall", OPTIONAL),
                 DelegationReadTestCase("localShellCallOutput", OPTIONAL),
@@ -298,6 +314,10 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isComputerCallOutput", false),
                 DelegationReadTestCase("isReasoning", true),
                 DelegationReadTestCase("isReasoning", false),
+                DelegationReadTestCase("isProgram", true),
+                DelegationReadTestCase("isProgram", false),
+                DelegationReadTestCase("isProgramOutput", true),
+                DelegationReadTestCase("isProgramOutput", false),
                 DelegationReadTestCase("isCompaction", true),
                 DelegationReadTestCase("isCompaction", false),
                 DelegationReadTestCase("isLocalShellCall", true),
@@ -335,6 +355,8 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
                 DelegationReadTestCase("asComputerCallOutput", COMPUTER_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asReasoning", REASONING_ITEM),
+                DelegationReadTestCase("asProgram", PROGRAM),
+                DelegationReadTestCase("asProgramOutput", PROGRAM_OUTPUT),
                 DelegationReadTestCase("asCompaction", COMPACTION_ITEM),
                 DelegationReadTestCase("asCodeInterpreterCall", CODE_INTERPRETER_CALL),
                 DelegationReadTestCase("asImageGenerationCall", IMAGE_GENERATION_CALL),
@@ -420,6 +442,8 @@ internal class StructuredResponseOutputItemTest {
                     "visitCodeInterpreterCall",
                     "visitImageGenerationCall",
                     "visitCompaction",
+                    "visitProgram",
+                    "visitProgramOutput",
                     "visitFunctionCallOutput",
                     "visitComputerCallOutput",
                     "visitMcpApprovalRequest",

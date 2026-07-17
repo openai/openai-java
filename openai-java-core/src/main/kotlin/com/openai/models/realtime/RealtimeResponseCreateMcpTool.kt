@@ -40,6 +40,7 @@ class RealtimeResponseCreateMcpTool
 private constructor(
     private val serverLabel: JsonField<String>,
     private val type: JsonValue,
+    private val allowedCallers: JsonField<List<AllowedCaller>>,
     private val allowedTools: JsonField<AllowedTools>,
     private val authorization: JsonField<String>,
     private val connectorId: JsonField<ConnectorId>,
@@ -58,6 +59,9 @@ private constructor(
         @ExcludeMissing
         serverLabel: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("allowed_callers")
+        @ExcludeMissing
+        allowedCallers: JsonField<List<AllowedCaller>> = JsonMissing.of(),
         @JsonProperty("allowed_tools")
         @ExcludeMissing
         allowedTools: JsonField<AllowedTools> = JsonMissing.of(),
@@ -82,6 +86,7 @@ private constructor(
     ) : this(
         serverLabel,
         type,
+        allowedCallers,
         allowedTools,
         authorization,
         connectorId,
@@ -114,6 +119,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The tool invocation context(s).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun allowedCallers(): Optional<List<AllowedCaller>> =
+        allowedCallers.getOptional("allowed_callers")
 
     /**
      * List of allowed tool names or a filter object.
@@ -212,6 +226,15 @@ private constructor(
     @JsonProperty("server_label")
     @ExcludeMissing
     fun _serverLabel(): JsonField<String> = serverLabel
+
+    /**
+     * Returns the raw JSON value of [allowedCallers].
+     *
+     * Unlike [allowedCallers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("allowed_callers")
+    @ExcludeMissing
+    fun _allowedCallers(): JsonField<List<AllowedCaller>> = allowedCallers
 
     /**
      * Returns the raw JSON value of [allowedTools].
@@ -320,6 +343,7 @@ private constructor(
 
         private var serverLabel: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("mcp")
+        private var allowedCallers: JsonField<MutableList<AllowedCaller>>? = null
         private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
         private var authorization: JsonField<String> = JsonMissing.of()
         private var connectorId: JsonField<ConnectorId> = JsonMissing.of()
@@ -335,6 +359,7 @@ private constructor(
         internal fun from(realtimeResponseCreateMcpTool: RealtimeResponseCreateMcpTool) = apply {
             serverLabel = realtimeResponseCreateMcpTool.serverLabel
             type = realtimeResponseCreateMcpTool.type
+            allowedCallers = realtimeResponseCreateMcpTool.allowedCallers.map { it.toMutableList() }
             allowedTools = realtimeResponseCreateMcpTool.allowedTools
             authorization = realtimeResponseCreateMcpTool.authorization
             connectorId = realtimeResponseCreateMcpTool.connectorId
@@ -372,6 +397,37 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /** The tool invocation context(s). */
+        fun allowedCallers(allowedCallers: List<AllowedCaller>?) =
+            allowedCallers(JsonField.ofNullable(allowedCallers))
+
+        /** Alias for calling [Builder.allowedCallers] with `allowedCallers.orElse(null)`. */
+        fun allowedCallers(allowedCallers: Optional<List<AllowedCaller>>) =
+            allowedCallers(allowedCallers.getOrNull())
+
+        /**
+         * Sets [Builder.allowedCallers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.allowedCallers] with a well-typed `List<AllowedCaller>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun allowedCallers(allowedCallers: JsonField<List<AllowedCaller>>) = apply {
+            this.allowedCallers = allowedCallers.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [AllowedCaller] to [allowedCallers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
+            allowedCallers =
+                (allowedCallers ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("allowedCallers", it).add(allowedCaller)
+                }
+        }
 
         /** List of allowed tool names or a filter object. */
         fun allowedTools(allowedTools: AllowedTools?) =
@@ -588,6 +644,7 @@ private constructor(
             RealtimeResponseCreateMcpTool(
                 checkRequired("serverLabel", serverLabel),
                 type,
+                (allowedCallers ?: JsonMissing.of()).map { it.toImmutable() },
                 allowedTools,
                 authorization,
                 connectorId,
@@ -622,6 +679,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        allowedCallers().ifPresent { it.forEach { it.validate() } }
         allowedTools().ifPresent { it.validate() }
         authorization()
         connectorId().ifPresent { it.validate() }
@@ -651,6 +709,7 @@ private constructor(
     internal fun validity(): Int =
         (if (serverLabel.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
+            (allowedCallers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
             (if (authorization.asKnown().isPresent) 1 else 0) +
             (connectorId.asKnown().getOrNull()?.validity() ?: 0) +
@@ -660,6 +719,144 @@ private constructor(
             (if (serverDescription.asKnown().isPresent) 1 else 0) +
             (if (serverUrl.asKnown().isPresent) 1 else 0) +
             (if (tunnelId.asKnown().isPresent) 1 else 0)
+
+    class AllowedCaller @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val DIRECT = of("direct")
+
+            @JvmField val PROGRAMMATIC = of("programmatic")
+
+            @JvmStatic fun of(value: String) = AllowedCaller(JsonField.of(value))
+        }
+
+        /** An enum containing [AllowedCaller]'s known values. */
+        enum class Known {
+            DIRECT,
+            PROGRAMMATIC,
+        }
+
+        /**
+         * An enum containing [AllowedCaller]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [AllowedCaller] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            DIRECT,
+            PROGRAMMATIC,
+            /**
+             * An enum member indicating that [AllowedCaller] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                DIRECT -> Value.DIRECT
+                PROGRAMMATIC -> Value.PROGRAMMATIC
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                DIRECT -> Known.DIRECT
+                PROGRAMMATIC -> Known.PROGRAMMATIC
+                else -> throw OpenAIInvalidDataException("Unknown AllowedCaller: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AllowedCaller = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AllowedCaller && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     /** List of allowed tool names or a filter object. */
     @JsonDeserialize(using = AllowedTools.Deserializer::class)
@@ -2502,6 +2699,7 @@ private constructor(
         return other is RealtimeResponseCreateMcpTool &&
             serverLabel == other.serverLabel &&
             type == other.type &&
+            allowedCallers == other.allowedCallers &&
             allowedTools == other.allowedTools &&
             authorization == other.authorization &&
             connectorId == other.connectorId &&
@@ -2518,6 +2716,7 @@ private constructor(
         Objects.hash(
             serverLabel,
             type,
+            allowedCallers,
             allowedTools,
             authorization,
             connectorId,
@@ -2534,5 +2733,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeResponseCreateMcpTool{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, tunnelId=$tunnelId, additionalProperties=$additionalProperties}"
+        "RealtimeResponseCreateMcpTool{serverLabel=$serverLabel, type=$type, allowedCallers=$allowedCallers, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, deferLoading=$deferLoading, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, tunnelId=$tunnelId, additionalProperties=$additionalProperties}"
 }
