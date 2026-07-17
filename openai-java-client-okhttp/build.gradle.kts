@@ -3,6 +3,27 @@ plugins {
     id("openai.publish")
 }
 
+listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath).forEach {
+    it.configure {
+        attributes.attribute(
+            org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE,
+            17,
+        )
+    }
+}
+
+configurations.testRuntimeClasspath.configure {
+    resolutionStrategy.eachDependency {
+        if (
+            requested.group == "com.fasterxml.jackson" ||
+                requested.group.startsWith("com.fasterxml.jackson.")
+        ) {
+            useVersion("2.18.9")
+            because("tests must exercise the SDK's secure published Jackson release")
+        }
+    }
+}
+
 dependencies {
     constraints {
         testImplementation("com.google.guava:guava:33.6.0-jre") {
@@ -31,11 +52,11 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation(platform("org.eclipse.jetty:jetty-bom:9.4.58.v20250814"))
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.2")
+    testImplementation(platform("org.eclipse.jetty:jetty-bom:12.0.33"))
+    testImplementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.33"))
+    testImplementation("org.wiremock:wiremock-jetty12:3.13.2")
 
     constraints {
-        // Keep handlebars-helpers at 4.3.1: WireMock 2 links helper classes moved in 4.5.x.
         testImplementation("com.github.jknack:handlebars:4.5.3") {
             because("WireMock's transitive 4.3.1 dependency is affected by CVE-2026-55760")
         }
