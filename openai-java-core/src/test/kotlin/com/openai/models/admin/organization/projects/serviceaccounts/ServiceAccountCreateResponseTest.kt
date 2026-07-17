@@ -24,6 +24,7 @@ internal class ServiceAccountCreateResponseTest {
                 )
                 .createdAt(0L)
                 .name("name")
+                .role(ServiceAccountCreateResponse.Role.MEMBER)
                 .build()
 
         assertThat(serviceAccountCreateResponse.id()).isEqualTo("id")
@@ -38,6 +39,8 @@ internal class ServiceAccountCreateResponseTest {
             )
         assertThat(serviceAccountCreateResponse.createdAt()).isEqualTo(0L)
         assertThat(serviceAccountCreateResponse.name()).isEqualTo("name")
+        assertThat(serviceAccountCreateResponse.role())
+            .isEqualTo(ServiceAccountCreateResponse.Role.MEMBER)
     }
 
     @Test
@@ -56,6 +59,7 @@ internal class ServiceAccountCreateResponseTest {
                 )
                 .createdAt(0L)
                 .name("name")
+                .role(ServiceAccountCreateResponse.Role.MEMBER)
                 .build()
 
         val roundtrippedServiceAccountCreateResponse =

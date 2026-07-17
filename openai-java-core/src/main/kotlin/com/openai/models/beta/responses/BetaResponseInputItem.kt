@@ -7403,7 +7403,7 @@ private constructor(
         private constructor(
             private val text: JsonField<String>,
             private val type: JsonValue,
-            private val annotations: JsonField<Annotations>,
+            private val annotations: JsonField<List<Annotation>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -7413,7 +7413,7 @@ private constructor(
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("annotations")
                 @ExcludeMissing
-                annotations: JsonField<Annotations> = JsonMissing.of(),
+                annotations: JsonField<List<Annotation>> = JsonMissing.of(),
             ) : this(text, type, annotations, mutableMapOf())
 
             /**
@@ -7444,7 +7444,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun annotations(): Optional<Annotations> = annotations.getOptional("annotations")
+            fun annotations(): Optional<List<Annotation>> = annotations.getOptional("annotations")
 
             /**
              * Returns the raw JSON value of [text].
@@ -7461,7 +7461,7 @@ private constructor(
              */
             @JsonProperty("annotations")
             @ExcludeMissing
-            fun _annotations(): JsonField<Annotations> = annotations
+            fun _annotations(): JsonField<List<Annotation>> = annotations
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -7493,14 +7493,14 @@ private constructor(
 
                 private var text: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("output_text")
-                private var annotations: JsonField<Annotations> = JsonMissing.of()
+                private var annotations: JsonField<MutableList<Annotation>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(output: Output) = apply {
                     text = output.text
                     type = output.type
-                    annotations = output.annotations
+                    annotations = output.annotations.map { it.toMutableList() }
                     additionalProperties = output.additionalProperties.toMutableMap()
                 }
 
@@ -7531,48 +7531,50 @@ private constructor(
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** Citations associated with the text content. */
-                fun annotations(annotations: Annotations) = annotations(JsonField.of(annotations))
+                fun annotations(annotations: List<Annotation>) =
+                    annotations(JsonField.of(annotations))
 
                 /**
                  * Sets [Builder.annotations] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.annotations] with a well-typed [Annotations]
-                 * value instead. This method is primarily for setting the field to an undocumented
-                 * or not yet supported value.
+                 * You should usually call [Builder.annotations] with a well-typed
+                 * `List<Annotation>` value instead. This method is primarily for setting the field
+                 * to an undocumented or not yet supported value.
                  */
-                fun annotations(annotations: JsonField<Annotations>) = apply {
-                    this.annotations = annotations
+                fun annotations(annotations: JsonField<List<Annotation>>) = apply {
+                    this.annotations = annotations.map { it.toMutableList() }
                 }
 
                 /**
-                 * Alias for calling [annotations] with
-                 * `Annotations.ofBetaFileCitationParams(betaFileCitationParams)`.
+                 * Adds a single [Annotation] to [annotations].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
-                fun annotationsOfBetaFileCitationParams(
-                    betaFileCitationParams: List<Annotations.BetaFileCitationParam>
-                ) = annotations(Annotations.ofBetaFileCitationParams(betaFileCitationParams))
+                fun addAnnotation(annotation: Annotation) = apply {
+                    annotations =
+                        (annotations ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("annotations", it).add(annotation)
+                        }
+                }
 
                 /**
-                 * Alias for calling [annotations] with
-                 * `Annotations.ofBetaUrlCitationParams(betaUrlCitationParams)`.
+                 * Alias for calling [addAnnotation] with `Annotation.ofFileCitation(fileCitation)`.
                  */
-                fun annotationsOfBetaUrlCitationParams(
-                    betaUrlCitationParams: List<Annotations.BetaUrlCitationParam>
-                ) = annotations(Annotations.ofBetaUrlCitationParams(betaUrlCitationParams))
+                fun addAnnotation(fileCitation: Annotation.FileCitation) =
+                    addAnnotation(Annotation.ofFileCitation(fileCitation))
 
                 /**
-                 * Alias for calling [annotations] with
-                 * `Annotations.ofBetaContainerFileCitationParams(betaContainerFileCitationParams)`.
+                 * Alias for calling [addAnnotation] with `Annotation.ofUrlCitation(urlCitation)`.
                  */
-                fun annotationsOfBetaContainerFileCitationParams(
-                    betaContainerFileCitationParams:
-                        List<Annotations.BetaContainerFileCitationParam>
-                ) =
-                    annotations(
-                        Annotations.ofBetaContainerFileCitationParams(
-                            betaContainerFileCitationParams
-                        )
-                    )
+                fun addAnnotation(urlCitation: Annotation.UrlCitation) =
+                    addAnnotation(Annotation.ofUrlCitation(urlCitation))
+
+                /**
+                 * Alias for calling [addAnnotation] with
+                 * `Annotation.ofContainerFileCitation(containerFileCitation)`.
+                 */
+                fun addAnnotation(containerFileCitation: Annotation.ContainerFileCitation) =
+                    addAnnotation(Annotation.ofContainerFileCitation(containerFileCitation))
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -7612,7 +7614,7 @@ private constructor(
                     Output(
                         checkRequired("text", text),
                         type,
-                        annotations,
+                        (annotations ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -7640,7 +7642,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
-                annotations().ifPresent { it.validate() }
+                annotations().ifPresent { it.forEach { it.validate() } }
                 validated = true
             }
 
@@ -7662,45 +7664,37 @@ private constructor(
             internal fun validity(): Int =
                 (if (text.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("output_text")) 1 else 0 } +
-                    (annotations.asKnown().getOrNull()?.validity() ?: 0)
+                    (annotations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
-            /** Citations associated with the text content. */
-            @JsonDeserialize(using = Annotations.Deserializer::class)
-            @JsonSerialize(using = Annotations.Serializer::class)
-            class Annotations
+            @JsonDeserialize(using = Annotation.Deserializer::class)
+            @JsonSerialize(using = Annotation.Serializer::class)
+            class Annotation
             private constructor(
-                private val betaFileCitationParams: List<BetaFileCitationParam>? = null,
-                private val betaUrlCitationParams: List<BetaUrlCitationParam>? = null,
-                private val betaContainerFileCitationParams: List<BetaContainerFileCitationParam>? =
-                    null,
+                private val fileCitation: FileCitation? = null,
+                private val urlCitation: UrlCitation? = null,
+                private val containerFileCitation: ContainerFileCitation? = null,
                 private val _json: JsonValue? = null,
             ) {
 
-                fun betaFileCitationParams(): Optional<List<BetaFileCitationParam>> =
-                    Optional.ofNullable(betaFileCitationParams)
+                fun fileCitation(): Optional<FileCitation> = Optional.ofNullable(fileCitation)
 
-                fun betaUrlCitationParams(): Optional<List<BetaUrlCitationParam>> =
-                    Optional.ofNullable(betaUrlCitationParams)
+                fun urlCitation(): Optional<UrlCitation> = Optional.ofNullable(urlCitation)
 
-                fun betaContainerFileCitationParams():
-                    Optional<List<BetaContainerFileCitationParam>> =
-                    Optional.ofNullable(betaContainerFileCitationParams)
+                fun containerFileCitation(): Optional<ContainerFileCitation> =
+                    Optional.ofNullable(containerFileCitation)
 
-                fun isBetaFileCitationParams(): Boolean = betaFileCitationParams != null
+                fun isFileCitation(): Boolean = fileCitation != null
 
-                fun isBetaUrlCitationParams(): Boolean = betaUrlCitationParams != null
+                fun isUrlCitation(): Boolean = urlCitation != null
 
-                fun isBetaContainerFileCitationParams(): Boolean =
-                    betaContainerFileCitationParams != null
+                fun isContainerFileCitation(): Boolean = containerFileCitation != null
 
-                fun asBetaFileCitationParams(): List<BetaFileCitationParam> =
-                    betaFileCitationParams.getOrThrow("betaFileCitationParams")
+                fun asFileCitation(): FileCitation = fileCitation.getOrThrow("fileCitation")
 
-                fun asBetaUrlCitationParams(): List<BetaUrlCitationParam> =
-                    betaUrlCitationParams.getOrThrow("betaUrlCitationParams")
+                fun asUrlCitation(): UrlCitation = urlCitation.getOrThrow("urlCitation")
 
-                fun asBetaContainerFileCitationParams(): List<BetaContainerFileCitationParam> =
-                    betaContainerFileCitationParams.getOrThrow("betaContainerFileCitationParams")
+                fun asContainerFileCitation(): ContainerFileCitation =
+                    containerFileCitation.getOrThrow("containerFileCitation")
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -7715,10 +7709,10 @@ private constructor(
                  * import com.openai.core.JsonValue;
                  * import java.util.Optional;
                  *
-                 * Optional<String> result = annotations.accept(new Annotations.Visitor<Optional<String>>() {
+                 * Optional<String> result = annotation.accept(new Annotation.Visitor<Optional<String>>() {
                  *     @Override
-                 *     public Optional<String> visitBetaFileCitationParams(List<BetaFileCitationParam> betaFileCitationParams) {
-                 *         return Optional.of(betaFileCitationParams.toString());
+                 *     public Optional<String> visitFileCitation(FileCitation fileCitation) {
+                 *         return Optional.of(fileCitation.toString());
                  *     }
                  *
                  *     // ...
@@ -7736,14 +7730,10 @@ private constructor(
                  */
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
-                        betaFileCitationParams != null ->
-                            visitor.visitBetaFileCitationParams(betaFileCitationParams)
-                        betaUrlCitationParams != null ->
-                            visitor.visitBetaUrlCitationParams(betaUrlCitationParams)
-                        betaContainerFileCitationParams != null ->
-                            visitor.visitBetaContainerFileCitationParams(
-                                betaContainerFileCitationParams
-                            )
+                        fileCitation != null -> visitor.visitFileCitation(fileCitation)
+                        urlCitation != null -> visitor.visitUrlCitation(urlCitation)
+                        containerFileCitation != null ->
+                            visitor.visitContainerFileCitation(containerFileCitation)
                         else -> visitor.unknown(_json)
                     }
 
@@ -7759,30 +7749,25 @@ private constructor(
                  * @throws OpenAIInvalidDataException if any value type in this object doesn't match
                  *   its expected type.
                  */
-                fun validate(): Annotations = apply {
+                fun validate(): Annotation = apply {
                     if (validated) {
                         return@apply
                     }
 
                     accept(
                         object : Visitor<Unit> {
-                            override fun visitBetaFileCitationParams(
-                                betaFileCitationParams: List<BetaFileCitationParam>
-                            ) {
-                                betaFileCitationParams.forEach { it.validate() }
+                            override fun visitFileCitation(fileCitation: FileCitation) {
+                                fileCitation.validate()
                             }
 
-                            override fun visitBetaUrlCitationParams(
-                                betaUrlCitationParams: List<BetaUrlCitationParam>
-                            ) {
-                                betaUrlCitationParams.forEach { it.validate() }
+                            override fun visitUrlCitation(urlCitation: UrlCitation) {
+                                urlCitation.validate()
                             }
 
-                            override fun visitBetaContainerFileCitationParams(
-                                betaContainerFileCitationParams:
-                                    List<BetaContainerFileCitationParam>
+                            override fun visitContainerFileCitation(
+                                containerFileCitation: ContainerFileCitation
                             ) {
-                                betaContainerFileCitationParams.forEach { it.validate() }
+                                containerFileCitation.validate()
                             }
                         }
                     )
@@ -7807,18 +7792,15 @@ private constructor(
                 internal fun validity(): Int =
                     accept(
                         object : Visitor<Int> {
-                            override fun visitBetaFileCitationParams(
-                                betaFileCitationParams: List<BetaFileCitationParam>
-                            ) = betaFileCitationParams.sumOf { it.validity().toInt() }
+                            override fun visitFileCitation(fileCitation: FileCitation) =
+                                fileCitation.validity()
 
-                            override fun visitBetaUrlCitationParams(
-                                betaUrlCitationParams: List<BetaUrlCitationParam>
-                            ) = betaUrlCitationParams.sumOf { it.validity().toInt() }
+                            override fun visitUrlCitation(urlCitation: UrlCitation) =
+                                urlCitation.validity()
 
-                            override fun visitBetaContainerFileCitationParams(
-                                betaContainerFileCitationParams:
-                                    List<BetaContainerFileCitationParam>
-                            ) = betaContainerFileCitationParams.sumOf { it.validity().toInt() }
+                            override fun visitContainerFileCitation(
+                                containerFileCitation: ContainerFileCitation
+                            ) = containerFileCitation.validity()
 
                             override fun unknown(json: JsonValue?) = 0
                         }
@@ -7829,74 +7811,56 @@ private constructor(
                         return true
                     }
 
-                    return other is Annotations &&
-                        betaFileCitationParams == other.betaFileCitationParams &&
-                        betaUrlCitationParams == other.betaUrlCitationParams &&
-                        betaContainerFileCitationParams == other.betaContainerFileCitationParams
+                    return other is Annotation &&
+                        fileCitation == other.fileCitation &&
+                        urlCitation == other.urlCitation &&
+                        containerFileCitation == other.containerFileCitation
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(
-                        betaFileCitationParams,
-                        betaUrlCitationParams,
-                        betaContainerFileCitationParams,
-                    )
+                    Objects.hash(fileCitation, urlCitation, containerFileCitation)
 
                 override fun toString(): String =
                     when {
-                        betaFileCitationParams != null ->
-                            "Annotations{betaFileCitationParams=$betaFileCitationParams}"
-                        betaUrlCitationParams != null ->
-                            "Annotations{betaUrlCitationParams=$betaUrlCitationParams}"
-                        betaContainerFileCitationParams != null ->
-                            "Annotations{betaContainerFileCitationParams=$betaContainerFileCitationParams}"
-                        _json != null -> "Annotations{_unknown=$_json}"
-                        else -> throw IllegalStateException("Invalid Annotations")
+                        fileCitation != null -> "Annotation{fileCitation=$fileCitation}"
+                        urlCitation != null -> "Annotation{urlCitation=$urlCitation}"
+                        containerFileCitation != null ->
+                            "Annotation{containerFileCitation=$containerFileCitation}"
+                        _json != null -> "Annotation{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Annotation")
                     }
 
                 companion object {
 
                     @JvmStatic
-                    fun ofBetaFileCitationParams(
-                        betaFileCitationParams: List<BetaFileCitationParam>
-                    ) = Annotations(betaFileCitationParams = betaFileCitationParams.toImmutable())
+                    fun ofFileCitation(fileCitation: FileCitation) =
+                        Annotation(fileCitation = fileCitation)
 
                     @JvmStatic
-                    fun ofBetaUrlCitationParams(betaUrlCitationParams: List<BetaUrlCitationParam>) =
-                        Annotations(betaUrlCitationParams = betaUrlCitationParams.toImmutable())
+                    fun ofUrlCitation(urlCitation: UrlCitation) =
+                        Annotation(urlCitation = urlCitation)
 
                     @JvmStatic
-                    fun ofBetaContainerFileCitationParams(
-                        betaContainerFileCitationParams: List<BetaContainerFileCitationParam>
-                    ) =
-                        Annotations(
-                            betaContainerFileCitationParams =
-                                betaContainerFileCitationParams.toImmutable()
-                        )
+                    fun ofContainerFileCitation(containerFileCitation: ContainerFileCitation) =
+                        Annotation(containerFileCitation = containerFileCitation)
                 }
 
                 /**
-                 * An interface that defines how to map each variant of [Annotations] to a value of
+                 * An interface that defines how to map each variant of [Annotation] to a value of
                  * type [T].
                  */
                 interface Visitor<out T> {
 
-                    fun visitBetaFileCitationParams(
-                        betaFileCitationParams: List<BetaFileCitationParam>
-                    ): T
+                    fun visitFileCitation(fileCitation: FileCitation): T
 
-                    fun visitBetaUrlCitationParams(
-                        betaUrlCitationParams: List<BetaUrlCitationParam>
-                    ): T
+                    fun visitUrlCitation(urlCitation: UrlCitation): T
 
-                    fun visitBetaContainerFileCitationParams(
-                        betaContainerFileCitationParams: List<BetaContainerFileCitationParam>
-                    ): T
+                    fun visitContainerFileCitation(containerFileCitation: ContainerFileCitation): T
 
                     /**
-                     * Maps an unknown variant of [Annotations] to a value of type [T].
+                     * Maps an unknown variant of [Annotation] to a value of type [T].
                      *
-                     * An instance of [Annotations] can contain an unknown variant if it was
+                     * An instance of [Annotation] can contain an unknown variant if it was
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
@@ -7904,80 +7868,57 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Annotations: $json")
+                        throw OpenAIInvalidDataException("Unknown Annotation: $json")
                     }
                 }
 
-                internal class Deserializer : BaseDeserializer<Annotations>(Annotations::class) {
+                internal class Deserializer : BaseDeserializer<Annotation>(Annotation::class) {
 
-                    override fun ObjectCodec.deserialize(node: JsonNode): Annotations {
+                    override fun ObjectCodec.deserialize(node: JsonNode): Annotation {
                         val json = JsonValue.fromJsonNode(node)
+                        val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
-                        val bestMatches =
-                            sequenceOf(
-                                    tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<List<BetaFileCitationParam>>(),
-                                        )
-                                        ?.let {
-                                            Annotations(betaFileCitationParams = it, _json = json)
-                                        },
-                                    tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<List<BetaUrlCitationParam>>(),
-                                        )
-                                        ?.let {
-                                            Annotations(betaUrlCitationParams = it, _json = json)
-                                        },
-                                    tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<List<BetaContainerFileCitationParam>>(),
-                                        )
-                                        ?.let {
-                                            Annotations(
-                                                betaContainerFileCitationParams = it,
-                                                _json = json,
-                                            )
-                                        },
-                                )
-                                .filterNotNull()
-                                .allMaxBy { it.validity() }
-                                .toList()
-                        return when (bestMatches.size) {
-                            // This can happen if what we're deserializing is completely
-                            // incompatible with all the possible variants (e.g. deserializing from
-                            // boolean).
-                            0 -> Annotations(_json = json)
-                            1 -> bestMatches.single()
-                            // If there's more than one match with the highest validity, then use
-                            // the first completely valid match, or simply the first match if none
-                            // are completely valid.
-                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        when (type) {
+                            "file_citation" -> {
+                                return tryDeserialize(node, jacksonTypeRef<FileCitation>())?.let {
+                                    Annotation(fileCitation = it, _json = json)
+                                } ?: Annotation(_json = json)
+                            }
+                            "url_citation" -> {
+                                return tryDeserialize(node, jacksonTypeRef<UrlCitation>())?.let {
+                                    Annotation(urlCitation = it, _json = json)
+                                } ?: Annotation(_json = json)
+                            }
+                            "container_file_citation" -> {
+                                return tryDeserialize(node, jacksonTypeRef<ContainerFileCitation>())
+                                    ?.let { Annotation(containerFileCitation = it, _json = json) }
+                                    ?: Annotation(_json = json)
+                            }
                         }
+
+                        return Annotation(_json = json)
                     }
                 }
 
-                internal class Serializer : BaseSerializer<Annotations>(Annotations::class) {
+                internal class Serializer : BaseSerializer<Annotation>(Annotation::class) {
 
                     override fun serialize(
-                        value: Annotations,
+                        value: Annotation,
                         generator: JsonGenerator,
                         provider: SerializerProvider,
                     ) {
                         when {
-                            value.betaFileCitationParams != null ->
-                                generator.writeObject(value.betaFileCitationParams)
-                            value.betaUrlCitationParams != null ->
-                                generator.writeObject(value.betaUrlCitationParams)
-                            value.betaContainerFileCitationParams != null ->
-                                generator.writeObject(value.betaContainerFileCitationParams)
+                            value.fileCitation != null -> generator.writeObject(value.fileCitation)
+                            value.urlCitation != null -> generator.writeObject(value.urlCitation)
+                            value.containerFileCitation != null ->
+                                generator.writeObject(value.containerFileCitation)
                             value._json != null -> generator.writeObject(value._json)
-                            else -> throw IllegalStateException("Invalid Annotations")
+                            else -> throw IllegalStateException("Invalid Annotation")
                         }
                     }
                 }
 
-                class BetaFileCitationParam
+                class FileCitation
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val fileId: JsonField<String>,
@@ -8084,8 +8025,7 @@ private constructor(
                     companion object {
 
                         /**
-                         * Returns a mutable builder for constructing an instance of
-                         * [BetaFileCitationParam].
+                         * Returns a mutable builder for constructing an instance of [FileCitation].
                          *
                          * The following fields are required:
                          * ```java
@@ -8097,7 +8037,7 @@ private constructor(
                         @JvmStatic fun builder() = Builder()
                     }
 
-                    /** A builder for [BetaFileCitationParam]. */
+                    /** A builder for [FileCitation]. */
                     class Builder internal constructor() {
 
                         private var fileId: JsonField<String>? = null
@@ -8108,13 +8048,12 @@ private constructor(
                             mutableMapOf()
 
                         @JvmSynthetic
-                        internal fun from(betaFileCitationParam: BetaFileCitationParam) = apply {
-                            fileId = betaFileCitationParam.fileId
-                            filename = betaFileCitationParam.filename
-                            index = betaFileCitationParam.index
-                            type = betaFileCitationParam.type
-                            additionalProperties =
-                                betaFileCitationParam.additionalProperties.toMutableMap()
+                        internal fun from(fileCitation: FileCitation) = apply {
+                            fileId = fileCitation.fileId
+                            filename = fileCitation.filename
+                            index = fileCitation.index
+                            type = fileCitation.type
+                            additionalProperties = fileCitation.additionalProperties.toMutableMap()
                         }
 
                         /** The ID of the file. */
@@ -8192,7 +8131,7 @@ private constructor(
                         }
 
                         /**
-                         * Returns an immutable instance of [BetaFileCitationParam].
+                         * Returns an immutable instance of [FileCitation].
                          *
                          * Further updates to this [Builder] will not mutate the returned instance.
                          *
@@ -8205,8 +8144,8 @@ private constructor(
                          *
                          * @throws IllegalStateException if any required field is unset.
                          */
-                        fun build(): BetaFileCitationParam =
-                            BetaFileCitationParam(
+                        fun build(): FileCitation =
+                            FileCitation(
                                 checkRequired("fileId", fileId),
                                 checkRequired("filename", filename),
                                 checkRequired("index", index),
@@ -8227,7 +8166,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if any value type in this object doesn't
                      *   match its expected type.
                      */
-                    fun validate(): BetaFileCitationParam = apply {
+                    fun validate(): FileCitation = apply {
                         if (validated) {
                             return@apply
                         }
@@ -8269,7 +8208,7 @@ private constructor(
                             return true
                         }
 
-                        return other is BetaFileCitationParam &&
+                        return other is FileCitation &&
                             fileId == other.fileId &&
                             filename == other.filename &&
                             index == other.index &&
@@ -8284,10 +8223,10 @@ private constructor(
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "BetaFileCitationParam{fileId=$fileId, filename=$filename, index=$index, type=$type, additionalProperties=$additionalProperties}"
+                        "FileCitation{fileId=$fileId, filename=$filename, index=$index, type=$type, additionalProperties=$additionalProperties}"
                 }
 
-                class BetaUrlCitationParam
+                class UrlCitation
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val endIndex: JsonField<Long>,
@@ -8415,8 +8354,7 @@ private constructor(
                     companion object {
 
                         /**
-                         * Returns a mutable builder for constructing an instance of
-                         * [BetaUrlCitationParam].
+                         * Returns a mutable builder for constructing an instance of [UrlCitation].
                          *
                          * The following fields are required:
                          * ```java
@@ -8429,7 +8367,7 @@ private constructor(
                         @JvmStatic fun builder() = Builder()
                     }
 
-                    /** A builder for [BetaUrlCitationParam]. */
+                    /** A builder for [UrlCitation]. */
                     class Builder internal constructor() {
 
                         private var endIndex: JsonField<Long>? = null
@@ -8441,14 +8379,13 @@ private constructor(
                             mutableMapOf()
 
                         @JvmSynthetic
-                        internal fun from(betaUrlCitationParam: BetaUrlCitationParam) = apply {
-                            endIndex = betaUrlCitationParam.endIndex
-                            startIndex = betaUrlCitationParam.startIndex
-                            title = betaUrlCitationParam.title
-                            type = betaUrlCitationParam.type
-                            url = betaUrlCitationParam.url
-                            additionalProperties =
-                                betaUrlCitationParam.additionalProperties.toMutableMap()
+                        internal fun from(urlCitation: UrlCitation) = apply {
+                            endIndex = urlCitation.endIndex
+                            startIndex = urlCitation.startIndex
+                            title = urlCitation.title
+                            type = urlCitation.type
+                            url = urlCitation.url
+                            additionalProperties = urlCitation.additionalProperties.toMutableMap()
                         }
 
                         /** The index of the last character of the citation in the message. */
@@ -8538,7 +8475,7 @@ private constructor(
                         }
 
                         /**
-                         * Returns an immutable instance of [BetaUrlCitationParam].
+                         * Returns an immutable instance of [UrlCitation].
                          *
                          * Further updates to this [Builder] will not mutate the returned instance.
                          *
@@ -8552,8 +8489,8 @@ private constructor(
                          *
                          * @throws IllegalStateException if any required field is unset.
                          */
-                        fun build(): BetaUrlCitationParam =
-                            BetaUrlCitationParam(
+                        fun build(): UrlCitation =
+                            UrlCitation(
                                 checkRequired("endIndex", endIndex),
                                 checkRequired("startIndex", startIndex),
                                 checkRequired("title", title),
@@ -8575,7 +8512,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if any value type in this object doesn't
                      *   match its expected type.
                      */
-                    fun validate(): BetaUrlCitationParam = apply {
+                    fun validate(): UrlCitation = apply {
                         if (validated) {
                             return@apply
                         }
@@ -8619,7 +8556,7 @@ private constructor(
                             return true
                         }
 
-                        return other is BetaUrlCitationParam &&
+                        return other is UrlCitation &&
                             endIndex == other.endIndex &&
                             startIndex == other.startIndex &&
                             title == other.title &&
@@ -8635,10 +8572,10 @@ private constructor(
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "BetaUrlCitationParam{endIndex=$endIndex, startIndex=$startIndex, title=$title, type=$type, url=$url, additionalProperties=$additionalProperties}"
+                        "UrlCitation{endIndex=$endIndex, startIndex=$startIndex, title=$title, type=$type, url=$url, additionalProperties=$additionalProperties}"
                 }
 
-                class BetaContainerFileCitationParam
+                class ContainerFileCitation
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val containerId: JsonField<String>,
@@ -8802,7 +8739,7 @@ private constructor(
 
                         /**
                          * Returns a mutable builder for constructing an instance of
-                         * [BetaContainerFileCitationParam].
+                         * [ContainerFileCitation].
                          *
                          * The following fields are required:
                          * ```java
@@ -8816,7 +8753,7 @@ private constructor(
                         @JvmStatic fun builder() = Builder()
                     }
 
-                    /** A builder for [BetaContainerFileCitationParam]. */
+                    /** A builder for [ContainerFileCitation]. */
                     class Builder internal constructor() {
 
                         private var containerId: JsonField<String>? = null
@@ -8829,17 +8766,15 @@ private constructor(
                             mutableMapOf()
 
                         @JvmSynthetic
-                        internal fun from(
-                            betaContainerFileCitationParam: BetaContainerFileCitationParam
-                        ) = apply {
-                            containerId = betaContainerFileCitationParam.containerId
-                            endIndex = betaContainerFileCitationParam.endIndex
-                            fileId = betaContainerFileCitationParam.fileId
-                            filename = betaContainerFileCitationParam.filename
-                            startIndex = betaContainerFileCitationParam.startIndex
-                            type = betaContainerFileCitationParam.type
+                        internal fun from(containerFileCitation: ContainerFileCitation) = apply {
+                            containerId = containerFileCitation.containerId
+                            endIndex = containerFileCitation.endIndex
+                            fileId = containerFileCitation.fileId
+                            filename = containerFileCitation.filename
+                            startIndex = containerFileCitation.startIndex
+                            type = containerFileCitation.type
                             additionalProperties =
-                                betaContainerFileCitationParam.additionalProperties.toMutableMap()
+                                containerFileCitation.additionalProperties.toMutableMap()
                         }
 
                         /** The ID of the container. */
@@ -8946,7 +8881,7 @@ private constructor(
                         }
 
                         /**
-                         * Returns an immutable instance of [BetaContainerFileCitationParam].
+                         * Returns an immutable instance of [ContainerFileCitation].
                          *
                          * Further updates to this [Builder] will not mutate the returned instance.
                          *
@@ -8961,8 +8896,8 @@ private constructor(
                          *
                          * @throws IllegalStateException if any required field is unset.
                          */
-                        fun build(): BetaContainerFileCitationParam =
-                            BetaContainerFileCitationParam(
+                        fun build(): ContainerFileCitation =
+                            ContainerFileCitation(
                                 checkRequired("containerId", containerId),
                                 checkRequired("endIndex", endIndex),
                                 checkRequired("fileId", fileId),
@@ -8985,7 +8920,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if any value type in this object doesn't
                      *   match its expected type.
                      */
-                    fun validate(): BetaContainerFileCitationParam = apply {
+                    fun validate(): ContainerFileCitation = apply {
                         if (validated) {
                             return@apply
                         }
@@ -9033,7 +8968,7 @@ private constructor(
                             return true
                         }
 
-                        return other is BetaContainerFileCitationParam &&
+                        return other is ContainerFileCitation &&
                             containerId == other.containerId &&
                             endIndex == other.endIndex &&
                             fileId == other.fileId &&
@@ -9058,7 +8993,7 @@ private constructor(
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "BetaContainerFileCitationParam{containerId=$containerId, endIndex=$endIndex, fileId=$fileId, filename=$filename, startIndex=$startIndex, type=$type, additionalProperties=$additionalProperties}"
+                        "ContainerFileCitation{containerId=$containerId, endIndex=$endIndex, fileId=$fileId, filename=$filename, startIndex=$startIndex, type=$type, additionalProperties=$additionalProperties}"
                 }
             }
 
