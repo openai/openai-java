@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.admin.organization.projects.serviceaccounts
+package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -15,7 +15,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
-class ServiceAccountCreateApiKeyResponse
+class ApiKeyCreateResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
@@ -123,8 +123,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of
-         * [ServiceAccountCreateApiKeyResponse].
+         * Returns a mutable builder for constructing an instance of [ApiKeyCreateResponse].
          *
          * The following fields are required:
          * ```java
@@ -137,7 +136,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ServiceAccountCreateApiKeyResponse]. */
+    /** A builder for [ApiKeyCreateResponse]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
@@ -149,16 +148,14 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(serviceAccountCreateApiKeyResponse: ServiceAccountCreateApiKeyResponse) =
-            apply {
-                id = serviceAccountCreateApiKeyResponse.id
-                createdAt = serviceAccountCreateApiKeyResponse.createdAt
-                name = serviceAccountCreateApiKeyResponse.name
-                object_ = serviceAccountCreateApiKeyResponse.object_
-                value = serviceAccountCreateApiKeyResponse.value
-                additionalProperties =
-                    serviceAccountCreateApiKeyResponse.additionalProperties.toMutableMap()
-            }
+        internal fun from(apiKeyCreateResponse: ApiKeyCreateResponse) = apply {
+            id = apiKeyCreateResponse.id
+            createdAt = apiKeyCreateResponse.createdAt
+            name = apiKeyCreateResponse.name
+            object_ = apiKeyCreateResponse.object_
+            value = apiKeyCreateResponse.value
+            additionalProperties = apiKeyCreateResponse.additionalProperties.toMutableMap()
+        }
 
         /** The identifier of the API key. */
         fun id(id: String) = id(JsonField.of(id))
@@ -238,7 +235,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ServiceAccountCreateApiKeyResponse].
+         * Returns an immutable instance of [ApiKeyCreateResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -252,8 +249,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ServiceAccountCreateApiKeyResponse =
-            ServiceAccountCreateApiKeyResponse(
+        fun build(): ApiKeyCreateResponse =
+            ApiKeyCreateResponse(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("name", name),
@@ -273,7 +270,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
      *   expected type.
      */
-    fun validate(): ServiceAccountCreateApiKeyResponse = apply {
+    fun validate(): ApiKeyCreateResponse = apply {
         if (validated) {
             return@apply
         }
@@ -318,7 +315,7 @@ private constructor(
             return true
         }
 
-        return other is ServiceAccountCreateApiKeyResponse &&
+        return other is ApiKeyCreateResponse &&
             id == other.id &&
             createdAt == other.createdAt &&
             name == other.name &&
@@ -334,5 +331,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ServiceAccountCreateApiKeyResponse{id=$id, createdAt=$createdAt, name=$name, object_=$object_, value=$value, additionalProperties=$additionalProperties}"
+        "ApiKeyCreateResponse{id=$id, createdAt=$createdAt, name=$name, object_=$object_, value=$value, additionalProperties=$additionalProperties}"
 }

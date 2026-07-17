@@ -1,16 +1,16 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.admin.organization.projects.serviceaccounts
+package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
 
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class ServiceAccountCreateApiKeyParamsTest {
+internal class ApiKeyCreateParamsTest {
 
     @Test
     fun create() {
-        ServiceAccountCreateApiKeyParams.builder()
+        ApiKeyCreateParams.builder()
             .projectId("project_id")
             .serviceAccountId("service_account_id")
             .name("name")
@@ -21,7 +21,7 @@ internal class ServiceAccountCreateApiKeyParamsTest {
     @Test
     fun pathParams() {
         val params =
-            ServiceAccountCreateApiKeyParams.builder()
+            ApiKeyCreateParams.builder()
                 .projectId("project_id")
                 .serviceAccountId("service_account_id")
                 .build()
@@ -35,7 +35,7 @@ internal class ServiceAccountCreateApiKeyParamsTest {
     @Test
     fun body() {
         val params =
-            ServiceAccountCreateApiKeyParams.builder()
+            ApiKeyCreateParams.builder()
                 .projectId("project_id")
                 .serviceAccountId("service_account_id")
                 .name("name")
@@ -51,7 +51,7 @@ internal class ServiceAccountCreateApiKeyParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params =
-            ServiceAccountCreateApiKeyParams.builder()
+            ApiKeyCreateParams.builder()
                 .projectId("project_id")
                 .serviceAccountId("service_account_id")
                 .build()
