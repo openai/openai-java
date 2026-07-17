@@ -14,6 +14,9 @@ dependencies {
         testImplementation("org.xmlunit:xmlunit-core:2.11.0") {
             because("2.10.0 fixes CVE-2024-31573 in this test-only dependency")
         }
+        testImplementation("commons-io:commons-io:2.22.0") {
+            because("WireMock's transitive Commons IO version has a resource-exhaustion vulnerability")
+        }
     }
 
     api(project(":openai-java-core"))
