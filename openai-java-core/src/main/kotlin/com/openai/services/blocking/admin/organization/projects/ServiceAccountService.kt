@@ -7,8 +7,6 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.admin.organization.projects.serviceaccounts.ProjectServiceAccount
-import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateApiKeyParams
-import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateApiKeyResponse
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateResponse
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountDeleteParams
@@ -17,6 +15,7 @@ import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAcco
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
+import com.openai.services.blocking.admin.organization.projects.serviceaccounts.ApiKeyService
 import java.util.function.Consumer
 
 interface ServiceAccountService {
@@ -32,6 +31,8 @@ interface ServiceAccountService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ServiceAccountService
+
+    fun apiKeys(): ApiKeyService
 
     /**
      * Creates a new service account in the project. By default, this also returns an unredacted API
@@ -169,31 +170,6 @@ interface ServiceAccountService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ServiceAccountDeleteResponse
 
-    /** Creates an API key for a service account in the project. */
-    fun createApiKey(
-        serviceAccountId: String,
-        params: ServiceAccountCreateApiKeyParams,
-    ): ServiceAccountCreateApiKeyResponse =
-        createApiKey(serviceAccountId, params, RequestOptions.none())
-
-    /** @see createApiKey */
-    fun createApiKey(
-        serviceAccountId: String,
-        params: ServiceAccountCreateApiKeyParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): ServiceAccountCreateApiKeyResponse =
-        createApiKey(params.toBuilder().serviceAccountId(serviceAccountId).build(), requestOptions)
-
-    /** @see createApiKey */
-    fun createApiKey(params: ServiceAccountCreateApiKeyParams): ServiceAccountCreateApiKeyResponse =
-        createApiKey(params, RequestOptions.none())
-
-    /** @see createApiKey */
-    fun createApiKey(
-        params: ServiceAccountCreateApiKeyParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): ServiceAccountCreateApiKeyResponse
-
     /**
      * A view of [ServiceAccountService] that provides access to raw HTTP responses for each method.
      */
@@ -207,6 +183,8 @@ interface ServiceAccountService {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountService.WithRawResponse
+
+        fun apiKeys(): ApiKeyService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post
@@ -386,43 +364,5 @@ interface ServiceAccountService {
             params: ServiceAccountDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ServiceAccountDeleteResponse>
-
-        /**
-         * Returns a raw HTTP response for `post
-         * /organization/projects/{project_id}/service_accounts/{service_account_id}/api_keys`, but
-         * is otherwise the same as [ServiceAccountService.createApiKey].
-         */
-        @MustBeClosed
-        fun createApiKey(
-            serviceAccountId: String,
-            params: ServiceAccountCreateApiKeyParams,
-        ): HttpResponseFor<ServiceAccountCreateApiKeyResponse> =
-            createApiKey(serviceAccountId, params, RequestOptions.none())
-
-        /** @see createApiKey */
-        @MustBeClosed
-        fun createApiKey(
-            serviceAccountId: String,
-            params: ServiceAccountCreateApiKeyParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ServiceAccountCreateApiKeyResponse> =
-            createApiKey(
-                params.toBuilder().serviceAccountId(serviceAccountId).build(),
-                requestOptions,
-            )
-
-        /** @see createApiKey */
-        @MustBeClosed
-        fun createApiKey(
-            params: ServiceAccountCreateApiKeyParams
-        ): HttpResponseFor<ServiceAccountCreateApiKeyResponse> =
-            createApiKey(params, RequestOptions.none())
-
-        /** @see createApiKey */
-        @MustBeClosed
-        fun createApiKey(
-            params: ServiceAccountCreateApiKeyParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ServiceAccountCreateApiKeyResponse>
     }
 }

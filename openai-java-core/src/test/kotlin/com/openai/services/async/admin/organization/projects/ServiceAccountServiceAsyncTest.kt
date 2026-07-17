@@ -4,7 +4,6 @@ package com.openai.services.async.admin.organization.projects
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateApiKeyParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountCreateParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountDeleteParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
@@ -120,29 +119,5 @@ internal class ServiceAccountServiceAsyncTest {
 
         val serviceAccount = serviceAccountFuture.get()
         serviceAccount.validate()
-    }
-
-    @Test
-    fun createApiKey() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val serviceAccountServiceAsync = client.admin().organization().projects().serviceAccounts()
-
-        val responseFuture =
-            serviceAccountServiceAsync.createApiKey(
-                ServiceAccountCreateApiKeyParams.builder()
-                    .projectId("project_id")
-                    .serviceAccountId("service_account_id")
-                    .name("name")
-                    .addScope("string")
-                    .build()
-            )
-
-        val response = responseFuture.get()
-        response.validate()
     }
 }
