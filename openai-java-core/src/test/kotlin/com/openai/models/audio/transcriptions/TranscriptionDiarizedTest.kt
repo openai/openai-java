@@ -13,7 +13,6 @@ internal class TranscriptionDiarizedTest {
     fun create() {
         val transcriptionDiarized =
             TranscriptionDiarized.builder()
-                .duration(0.0)
                 .addSegment(
                     TranscriptionDiarizedSegment.builder()
                         .id("id")
@@ -39,7 +38,7 @@ internal class TranscriptionDiarizedTest {
                 )
                 .build()
 
-        assertThat(transcriptionDiarized.duration()).isEqualTo(0.0)
+        assertThat(transcriptionDiarized.duration()).isEmpty
         assertThat(transcriptionDiarized.segments())
             .containsExactly(
                 TranscriptionDiarizedSegment.builder()
@@ -67,6 +66,32 @@ internal class TranscriptionDiarizedTest {
                         .build()
                 )
             )
+    }
+
+    @Test
+    fun deserializeWithoutDuration() {
+        val transcriptionDiarized =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "text": "text",
+                      "segments": [
+                        {
+                          "id": "id",
+                          "end": 1.0,
+                          "speaker": "speaker",
+                          "start": 0.0,
+                          "text": "text"
+                        }
+                      ]
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionDiarized>(),
+                )
+
+        assertThat(transcriptionDiarized.duration()).isEmpty
     }
 
     @Test
@@ -107,5 +132,6 @@ internal class TranscriptionDiarizedTest {
             )
 
         assertThat(roundtrippedTranscriptionDiarized).isEqualTo(transcriptionDiarized)
+        assertThat(roundtrippedTranscriptionDiarized.duration()).contains(0.0)
     }
 }
