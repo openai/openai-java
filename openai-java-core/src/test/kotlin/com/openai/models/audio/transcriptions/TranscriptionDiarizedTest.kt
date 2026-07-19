@@ -98,6 +98,34 @@ internal class TranscriptionDiarizedTest {
     }
 
     @Test
+    fun rejectsInvalidDuration() {
+        val transcriptionDiarized =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "duration": "invalid",
+                      "text": "text",
+                      "segments": [
+                        {
+                          "type": "transcript.text.segment",
+                          "id": "id",
+                          "end": 1.0,
+                          "speaker": "speaker",
+                          "start": 0.0,
+                          "text": "text"
+                        }
+                      ]
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionDiarized>(),
+                )
+
+        assertThat(transcriptionDiarized.isValid()).isFalse()
+    }
+
+    @Test
     fun rejectsUnexpectedTask() {
         val transcriptionDiarized =
             TranscriptionDiarized.builder()

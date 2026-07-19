@@ -335,6 +335,7 @@ private constructor(
             return@apply
         }
 
+        duration()
         segments().forEach { it.validate() }
         _task().let {
             if (it != JsonMissing.of() && it != JsonValue.from("transcribe")) {
@@ -362,6 +363,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (duration.asKnown().isPresent) 1 else 0) +
+            (if (segments.asKnown().isPresent) 1 else 0) +
             (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             task.let { if (it == JsonValue.from("transcribe")) 1 else 0 } +
             (if (text.asKnown().isPresent) 1 else 0) +

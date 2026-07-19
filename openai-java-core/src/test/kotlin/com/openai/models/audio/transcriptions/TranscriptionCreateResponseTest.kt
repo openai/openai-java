@@ -163,6 +163,24 @@ internal class TranscriptionCreateResponseTest {
     }
 
     @Test
+    fun deserializeDiarizedWithEmptySegments() {
+        val transcriptionCreateResponse =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "text": "",
+                      "segments": []
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionCreateResponse>(),
+                )
+
+        assertThat(transcriptionCreateResponse.isDiarized()).isTrue()
+    }
+
+    @Test
     fun ofVerbose() {
         val verbose =
             TranscriptionVerbose.builder()
