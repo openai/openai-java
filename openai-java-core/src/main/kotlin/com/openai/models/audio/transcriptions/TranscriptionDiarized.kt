@@ -337,7 +337,7 @@ private constructor(
 
         segments().forEach { it.validate() }
         _task().let {
-            if (it != JsonValue.from("transcribe")) {
+            if (it != JsonMissing.of() && it != JsonValue.from("transcribe")) {
                 throw OpenAIInvalidDataException("'task' is invalid, received $it")
             }
         }

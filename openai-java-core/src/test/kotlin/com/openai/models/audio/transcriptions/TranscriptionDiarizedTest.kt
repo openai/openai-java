@@ -3,6 +3,7 @@
 package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -69,7 +70,7 @@ internal class TranscriptionDiarizedTest {
     }
 
     @Test
-    fun deserializeWithoutDuration() {
+    fun deserializeWithoutOptionalFields() {
         val transcriptionDiarized =
             jsonMapper()
                 .readValue(
@@ -78,6 +79,7 @@ internal class TranscriptionDiarizedTest {
                       "text": "text",
                       "segments": [
                         {
+                          "type": "transcript.text.segment",
                           "id": "id",
                           "end": 1.0,
                           "speaker": "speaker",
@@ -92,6 +94,27 @@ internal class TranscriptionDiarizedTest {
                 )
 
         assertThat(transcriptionDiarized.duration()).isEmpty
+        assertThat(transcriptionDiarized.isValid()).isTrue()
+    }
+
+    @Test
+    fun rejectsUnexpectedTask() {
+        val transcriptionDiarized =
+            TranscriptionDiarized.builder()
+                .addSegment(
+                    TranscriptionDiarizedSegment.builder()
+                        .id("id")
+                        .end(1.0)
+                        .speaker("speaker")
+                        .start(0.0)
+                        .text("text")
+                        .build()
+                )
+                .task(JsonValue.from("translate"))
+                .text("text")
+                .build()
+
+        assertThat(transcriptionDiarized.isValid()).isFalse()
     }
 
     @Test
