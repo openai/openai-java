@@ -370,6 +370,7 @@ private constructor(
         (if (duration.asKnown().isPresent) 1 else 0) +
             (if (language.asKnown().isPresent) 1 else 0) +
             (if (text.asKnown().isPresent) 1 else 0) +
+            (if (segments.asKnown().isPresent) 1 else 0) +
             (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (words.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
