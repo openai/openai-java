@@ -9,6 +9,9 @@ repositories {
 
 dependencies {
     constraints {
+        implementation("org.springframework:spring-expression:5.3.39") {
+            because("5.3.39 fixes CVE-2024-38808 in Spring Boot's transitive runtime")
+        }
         testImplementation("org.xmlunit:xmlunit-core:2.11.0") {
             because("2.10.0 fixes CVE-2024-31573 in this test-only dependency")
         }
@@ -18,6 +21,12 @@ dependencies {
         testImplementation("org.slf4j:slf4j-api") {
             version { strictly("1.7.36") }
             because("Spring Boot 2.7 and Logback 1.2 require SLF4J 1.7 at test runtime")
+        }
+        testImplementation("ch.qos.logback:logback-classic:1.2.13") {
+            because("1.2.13 fixes vulnerabilities in Spring Boot's test logging stack")
+        }
+        testImplementation("ch.qos.logback:logback-core:1.2.13") {
+            because("1.2.13 fixes vulnerabilities in Spring Boot's test logging stack")
         }
     }
 
