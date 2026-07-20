@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import java.net.HttpURLConnection
 import java.net.URL
 import org.assertj.core.api.Assertions.assertThat
@@ -15,10 +14,7 @@ internal class WireMockHandlebarsCompatibilityTest {
 
     @Test
     fun rendersResponseTemplate() {
-        val server =
-            WireMockServer(
-                wireMockConfig().dynamicPort().extensions(ResponseTemplateTransformer(false))
-            )
+        val server = WireMockServer(wireMockConfig().dynamicPort())
         server.start()
 
         try {
