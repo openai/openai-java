@@ -39,7 +39,7 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
 
             val jsonNode =
                 try {
-                    message.json<JsonNode>()
+                    message.json<JsonNode?>() ?: jsonMapper.createObjectNode()
                 } catch (e: Exception) {
                     jsonMapper.createObjectNode()
                 }
@@ -110,18 +110,20 @@ private class SseState(
     }
 
     private fun flush(): SseMessage? {
-        if (isEmpty()) {
-            return null
-        }
-
+        // Per the SSE spec, metadata-only blocks do not dispatch an event. Check the collection
+        // rather than the joined data because an explicitly empty `data:` field is still an event.
         val message =
-            SseMessage.builder()
-                .jsonMapper(jsonMapper)
-                .event(event)
-                .data(data.joinToString("\n"))
-                .id(lastId)
-                .retry(retry)
-                .build()
+            if (data.isEmpty()) {
+                null
+            } else {
+                SseMessage.builder()
+                    .jsonMapper(jsonMapper)
+                    .event(event)
+                    .data(data.joinToString("\n"))
+                    .id(lastId)
+                    .retry(retry)
+                    .build()
+            }
 
         // NOTE: Per the SSE spec, do not reset lastId.
         event = null
@@ -130,9 +132,6 @@ private class SseState(
 
         return message
     }
-
-    private fun isEmpty(): Boolean =
-        event.isNullOrEmpty() && data.isEmpty() && lastId.isNullOrEmpty() && retry == null
 }
 
 @JvmSynthetic
