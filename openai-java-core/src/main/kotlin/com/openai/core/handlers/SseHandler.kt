@@ -112,18 +112,20 @@ private class SseState(
     private fun flush(): SseMessage? {
         // Per the SSE spec, metadata-only blocks do not dispatch an event. Check the collection
         // rather than the joined data because an explicitly empty `data:` field is still an event.
+        if (data.isEmpty()) {
+            // The event type buffer is reset only after a data-bearing event is dispatched.
+            retry = null
+            return null
+        }
+
         val message =
-            if (data.isEmpty()) {
-                null
-            } else {
-                SseMessage.builder()
-                    .jsonMapper(jsonMapper)
-                    .event(event)
-                    .data(data.joinToString("\n"))
-                    .id(lastId)
-                    .retry(retry)
-                    .build()
-            }
+            SseMessage.builder()
+                .jsonMapper(jsonMapper)
+                .event(event)
+                .data(data.joinToString("\n"))
+                .id(lastId)
+                .retry(retry)
+                .build()
 
         // NOTE: Per the SSE spec, do not reset lastId.
         event = null

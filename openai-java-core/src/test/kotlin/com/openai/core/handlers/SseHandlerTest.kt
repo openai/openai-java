@@ -53,12 +53,17 @@ internal class SseHandlerTest {
         ),
         EVENT_MISSING_DATA(
             buildString {
-                append("event: ignored\n")
+                append("event: retained\n")
                 append("\n")
                 append("data: {\"foo\":true}\n")
                 append("\n")
+                append("data: {\"bar\":false}\n")
+                append("\n")
             },
-            listOf(sseMessageBuilder().data("{\"foo\":true}").build()),
+            listOf(
+                sseMessageBuilder().event("retained").data("{\"foo\":true}").build(),
+                sseMessageBuilder().data("{\"bar\":false}").build(),
+            ),
         ),
         ID_MISSING_DATA(
             buildString {
