@@ -99,6 +99,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
+    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
     testImplementation(platform("org.eclipse.jetty:jetty-bom:12.0.33"))
     testImplementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.33"))
     testImplementation("org.wiremock:wiremock-jetty12:3.13.2")
