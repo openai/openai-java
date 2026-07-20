@@ -9,9 +9,6 @@ repositories {
 
 dependencies {
     constraints {
-        implementation("org.springframework:spring-expression:5.3.39") {
-            because("5.3.39 fixes CVE-2024-38808 in Spring Boot's transitive runtime")
-        }
         testImplementation("org.xmlunit:xmlunit-core:2.11.0") {
             because("2.10.0 fixes CVE-2024-31573 in this test-only dependency")
         }
