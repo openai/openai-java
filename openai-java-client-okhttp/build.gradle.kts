@@ -9,17 +9,14 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
             org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE,
             17,
         )
-    }
-}
-
-configurations.testRuntimeClasspath.configure {
-    resolutionStrategy.eachDependency {
-        if (
-            requested.group == "com.fasterxml.jackson" ||
-                requested.group.startsWith("com.fasterxml.jackson.")
-        ) {
-            useVersion("2.18.9")
-            because("tests must exercise the SDK's secure published Jackson release")
+        resolutionStrategy.eachDependency {
+            if (
+                requested.group == "com.fasterxml.jackson" ||
+                    requested.group.startsWith("com.fasterxml.jackson.")
+            ) {
+                useVersion("2.18.9")
+                because("test classpaths must use the SDK's secure published Jackson release")
+            }
         }
     }
 }
