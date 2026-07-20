@@ -19,6 +19,12 @@ dependencies {
             version { strictly("1.7.36") }
             because("Spring Boot 2.7 and Logback 1.2 require SLF4J 1.7 at test runtime")
         }
+        testImplementation("ch.qos.logback:logback-classic:1.2.13") {
+            because("1.2.13 fixes vulnerabilities in Spring Boot's test logging stack")
+        }
+        testImplementation("ch.qos.logback:logback-core:1.2.13") {
+            because("1.2.13 fixes vulnerabilities in Spring Boot's test logging stack")
+        }
     }
 
     api(project(":openai-java"))
