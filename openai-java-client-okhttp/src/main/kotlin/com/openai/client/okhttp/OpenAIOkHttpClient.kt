@@ -15,6 +15,7 @@ import com.openai.core.Timeout
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.ProxyAuthenticator
 import com.openai.core.http.QueryParams
 import com.openai.credential.Credential
@@ -53,6 +54,7 @@ class OpenAIOkHttpClient private constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var dispatcherExecutorService: ExecutorService? = null
+        private var followRedirects: Boolean = true
         private var proxy: Proxy? = null
         private var proxyAuthenticator: ProxyAuthenticator? = null
         private var maxIdleConnections: Int? = null
@@ -71,6 +73,12 @@ class OpenAIOkHttpClient private constructor() {
          */
         fun dispatcherExecutorService(dispatcherExecutorService: ExecutorService?) = apply {
             this.dispatcherExecutorService = dispatcherExecutorService
+        }
+
+        /** Configures whether the underlying transport follows redirects automatically. */
+        @JvmSynthetic
+        fun followRedirects(followRedirects: Boolean) = apply {
+            this.followRedirects = followRedirects
         }
 
         /**
@@ -315,6 +323,12 @@ class OpenAIOkHttpClient private constructor() {
 
         fun credential(credential: Credential) = apply { clientOptions.credential(credential) }
 
+        /** Configures full-request authentication for an OpenAI-owned provider integration. */
+        @JvmSynthetic
+        fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator) = apply {
+            clientOptions.httpRequestAuthenticator(httpRequestAuthenticator)
+        }
+
         fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
             clientOptions.workloadIdentity(workloadIdentity)
         }
@@ -447,6 +461,7 @@ class OpenAIOkHttpClient private constructor() {
                     .httpClient(
                         OkHttpClient.builder()
                             .timeout(clientOptions.timeout())
+                            .followRedirects(followRedirects)
                             .proxy(proxy)
                             .proxyAuthenticator(proxyAuthenticator)
                             .maxIdleConnections(maxIdleConnections)

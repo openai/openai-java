@@ -87,6 +87,35 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
 
+## Amazon Bedrock
+
+Use the optional `openai-java-bedrock` artifact to call OpenAI-compatible APIs on Amazon Bedrock
+with normal AWS credentials:
+
+<!-- x-release-please-start-version -->
+
+```kotlin
+implementation("com.openai:openai-java-bedrock:4.41.0")
+```
+
+<!-- x-release-please-end -->
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
+
+// Uses the standard AWS credential chain, including environment credentials,
+// ~/.aws/credentials, AWS_PROFILE, workload roles, and instance metadata.
+OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
+        .awsRegion("us-east-1")
+        .build();
+```
+
+Requests are signed with fresh AWS credentials on every attempt. Existing
+`AWS_BEARER_TOKEN_BEDROCK` bearer credentials remain supported as a compatibility fallback. See
+the [Amazon Bedrock guide](bedrock.md) for named profiles, temporary credentials, custom credential
+providers, async streaming, precedence rules, and security guidance.
+
 ## Client configuration
 
 Configure the client using system properties or environment variables:
