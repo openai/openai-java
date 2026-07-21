@@ -113,7 +113,8 @@ private class SseState(
         // Per the SSE spec, metadata-only blocks do not dispatch an event. Check the collection
         // rather than the joined data because an explicitly empty `data:` field is still an event.
         if (data.isEmpty()) {
-            // The event type buffer is reset only after a data-bearing event is dispatched.
+            // The dispatch algorithm clears the event type buffer even when no event is emitted.
+            event = null
             retry = null
             return null
         }
