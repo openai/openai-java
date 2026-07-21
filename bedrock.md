@@ -56,7 +56,17 @@ Base URL resolution follows this order:
 2. `AWS_BEDROCK_BASE_URL`
 3. `https://bedrock-mantle.{region}.api.aws/openai/v1`
 
-The `/openai/v1` route and the `bedrock-mantle` SigV4 service name are intentional.
+The `bedrock-mantle` SigV4 service name is intentional. Bedrock's OpenAI-compatible route is
+model-dependent: models such as `openai.gpt-5.5` use `/openai/v1`, while
+`openai.gpt-oss-120b` uses `/v1`. The builder defaults to `/openai/v1`; configure the
+model's documented route explicitly when it differs:
+
+```java
+OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
+        .awsRegion("us-east-1")
+        .baseUrl("https://bedrock-mantle.us-east-1.api.aws/v1")
+        .build();
+```
 
 ## Named profile
 
@@ -117,7 +127,9 @@ OpenAIClientAsync client = BedrockOpenAIOkHttpClient.builder()
 ```
 
 Response streaming is supported. SigV4 request bodies must be replayable so the SDK can hash them
-and safely retry; one-shot streaming request bodies are rejected before network I/O.
+and safely retry; one-shot streaming request bodies are rejected before network I/O. Asynchronous
+bearer-token and SigV4 authentication work runs on a dedicated client-owned executor by default;
+pass `authenticationExecutor(...)` to use a caller-owned executor instead.
 
 ## Security
 

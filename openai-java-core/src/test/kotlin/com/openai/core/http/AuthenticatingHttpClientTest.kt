@@ -40,4 +40,15 @@ internal class AuthenticatingHttpClientTest {
         verify(authenticator).close()
         verify(delegate).close()
     }
+
+    @Test
+    fun phantomReachableAuthenticatorWrapperClosesAuthenticator() {
+        val authenticator = mock<HttpRequestAuthenticator>()
+
+        PhantomReachableClosingHttpRequestAuthenticator(authenticator)
+        System.gc()
+        Thread.sleep(100)
+
+        verify(authenticator).close()
+    }
 }

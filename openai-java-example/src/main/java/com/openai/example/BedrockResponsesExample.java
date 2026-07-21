@@ -14,7 +14,7 @@ public final class BedrockResponsesExample {
 
         ResponseCreateParams params = ResponseCreateParams.builder()
                 .input("Say hello from OpenAI on Bedrock")
-                .model("openai.gpt-oss-120b")
+                .model("openai.gpt-5.5")
                 .build();
 
         client.responses().create(params).output().stream()

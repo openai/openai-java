@@ -16,6 +16,7 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
+import com.openai.core.http.PhantomReachableClosingHttpRequestAuthenticator
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
 import com.openai.core.http.WorkloadIdentityHttpClient
@@ -265,7 +266,9 @@ private constructor(
          */
         @JvmSynthetic
         fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator?) = apply {
-            this.httpRequestAuthenticator = httpRequestAuthenticator
+            this.httpRequestAuthenticator =
+                if (httpRequestAuthenticator == null) null
+                else PhantomReachableClosingHttpRequestAuthenticator(httpRequestAuthenticator)
         }
 
         /**

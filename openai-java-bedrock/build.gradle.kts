@@ -15,7 +15,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Optional provider-chain branches loaded by the AWS SDK at runtime for web identity,
-    // assume-role, and IAM Identity Center profiles.
+    // assume-role, console login, and IAM Identity Center profiles.
     runtimeOnly("software.amazon.awssdk:sts") {
         exclude(group = "software.amazon.awssdk", module = "apache5-client")
         exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
@@ -25,6 +25,10 @@ dependencies {
         exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
     }
     runtimeOnly("software.amazon.awssdk:ssooidc") {
+        exclude(group = "software.amazon.awssdk", module = "apache5-client")
+        exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
+    }
+    runtimeOnly("software.amazon.awssdk:signin") {
         exclude(group = "software.amazon.awssdk", module = "apache5-client")
         exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
     }

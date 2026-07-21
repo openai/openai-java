@@ -8,6 +8,11 @@ import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.time.Clock
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Supplier
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -48,6 +53,7 @@ internal data class BedrockAuthOptions(
     val awsCredentialsProvider: AwsCredentialsProvider?,
     val skipAuth: Boolean,
     val clock: Clock,
+    val authenticationExecutor: Executor?,
 )
 
 internal fun BedrockAuthOptions.resolve(
@@ -115,6 +121,10 @@ internal fun BedrockAuthOptions.resolve(
                 "Bedrock requires an AWS region. Pass `awsRegion` to the builder, or set `AWS_REGION` or `AWS_DEFAULT_REGION`."
             )
     val normalizedResolvedBaseUrl = normalizeBaseUrl(resolvedBaseUrl)
+    val resolvedAuthenticationExecutor by lazy {
+        authenticationExecutor ?: newAuthenticationExecutor()
+    }
+    val ownsAuthenticationExecutor = authenticationExecutor == null
 
     if (skipAuth) {
         return BedrockConfiguration(
@@ -140,7 +150,12 @@ internal fun BedrockAuthOptions.resolve(
     if (bearerSupplier != null) {
         return BedrockConfiguration(
             normalizedResolvedBaseUrl,
-            BearerAuthenticator(normalizedResolvedBaseUrl, bearerSupplier),
+            BearerAuthenticator(
+                normalizedResolvedBaseUrl,
+                bearerSupplier,
+                resolvedAuthenticationExecutor,
+                ownsAuthenticationExecutor,
+            ),
         )
     }
 
@@ -167,9 +182,24 @@ internal fun BedrockAuthOptions.resolve(
             ownsCredentialsProvider = ownsCredentialsProvider,
             defaultChain = !explicitAws,
             clock = clock,
+            authenticationExecutor = resolvedAuthenticationExecutor,
+            ownsAuthenticationExecutor = ownsAuthenticationExecutor,
         ),
     )
 }
+
+private fun newAuthenticationExecutor(): ExecutorService =
+    Executors.newCachedThreadPool(
+        object : ThreadFactory {
+            private val threadFactory = Executors.defaultThreadFactory()
+            private val count = AtomicLong(0)
+
+            override fun newThread(runnable: Runnable): Thread =
+                threadFactory.newThread(runnable).also {
+                    it.name = "openai-bedrock-authentication-thread-${count.getAndIncrement()}"
+                }
+        }
+    )
 
 private fun BedrockAuthOptions.resolveStaticCredentials(): AwsCredentials? {
     val hasAccessKey = awsAccessKeyId != null
@@ -236,15 +266,34 @@ private class NoAuthAuthenticator(baseUrl: String) : OriginBoundAuthenticator(ba
     }
 }
 
-private class BearerAuthenticator(baseUrl: String, private val tokenProvider: Supplier<String>) :
-    OriginBoundAuthenticator(baseUrl) {
+private abstract class AsyncOriginBoundAuthenticator(
+    baseUrl: String,
+    private val authenticationExecutor: Executor,
+    private val ownsAuthenticationExecutor: Boolean,
+) : OriginBoundAuthenticator(baseUrl) {
+    override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
+        CompletableFuture.supplyAsync({ authenticate(request) }, authenticationExecutor)
+
+    protected fun closeAuthenticationExecutor() {
+        if (ownsAuthenticationExecutor) {
+            (authenticationExecutor as? ExecutorService)?.shutdown()
+        }
+    }
+}
+
+private class BearerAuthenticator(
+    baseUrl: String,
+    private val tokenProvider: Supplier<String>,
+    authenticationExecutor: Executor,
+    ownsAuthenticationExecutor: Boolean,
+) : AsyncOriginBoundAuthenticator(baseUrl, authenticationExecutor, ownsAuthenticationExecutor) {
     override fun authenticate(request: HttpRequest): HttpRequest {
         resolvedUrl(request)
         assertNoAuthorization(request.headers)
         val token =
             try {
                 tokenProvider.get()
-            } catch (cause: Throwable) {
+            } catch (cause: RuntimeException) {
                 throw OpenAIException("Failed to resolve a bearer credential for Bedrock.", cause)
             }
         if (token.isNullOrBlank()) {
@@ -254,6 +303,8 @@ private class BearerAuthenticator(baseUrl: String, private val tokenProvider: Su
         }
         return request.toBuilder().replaceHeaders("Authorization", "Bearer $token").build()
     }
+
+    override fun close() = closeAuthenticationExecutor()
 }
 
 private class SigV4Authenticator(
@@ -263,7 +314,9 @@ private class SigV4Authenticator(
     private val ownsCredentialsProvider: Boolean,
     private val defaultChain: Boolean,
     private val clock: Clock,
-) : OriginBoundAuthenticator(baseUrl) {
+    authenticationExecutor: Executor,
+    ownsAuthenticationExecutor: Boolean,
+) : AsyncOriginBoundAuthenticator(baseUrl, authenticationExecutor, ownsAuthenticationExecutor) {
     private val signer = AwsV4HttpSigner.create()
 
     override fun authenticate(request: HttpRequest): HttpRequest {
@@ -322,20 +375,33 @@ private class SigV4Authenticator(
         return preparedRequest.toBuilder().headers(signed.request().headers()).build()
     }
 
-    override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
-        CompletableFuture.supplyAsync { authenticate(request) }
-
     override fun close() {
+        var failure: Throwable? = null
         if (ownsCredentialsProvider) {
-            (credentialsProvider as? AutoCloseable)?.close()
+            try {
+                (credentialsProvider as? AutoCloseable)?.close()
+            } catch (cause: Throwable) {
+                failure = cause
+            }
         }
+        try {
+            closeAuthenticationExecutor()
+        } catch (cause: Throwable) {
+            val previousFailure = failure
+            if (previousFailure == null) {
+                failure = cause
+            } else if (cause !== previousFailure) {
+                previousFailure.addSuppressed(cause)
+            }
+        }
+        failure?.let { throw it }
     }
 
     private fun resolveCredentials(): AwsCredentials {
         val credentials =
             try {
                 credentialsProvider.resolveCredentials()
-            } catch (cause: Throwable) {
+            } catch (cause: RuntimeException) {
                 val message =
                     if (defaultChain)
                         "Could not find credentials for Bedrock. Pass AWS credentials to the builder or configure the default AWS credential chain."

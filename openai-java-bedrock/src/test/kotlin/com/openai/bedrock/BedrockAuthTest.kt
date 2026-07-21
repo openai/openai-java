@@ -11,7 +11,10 @@ import java.nio.file.Path
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Supplier
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -105,6 +108,51 @@ internal class BedrockAuthTest {
     }
 
     @Test
+    @ResourceLock("aws-system-properties")
+    fun namedLoginSessionProfileLoadsSigninProvider(@TempDir directory: Path) {
+        val configFile = directory.resolve("config")
+        Files.write(
+            configFile,
+            """
+            [profile fixture]
+            login_session = arn:aws:iam::012345678901:user/fixture
+            region = us-east-1
+            """
+                .trimIndent()
+                .toByteArray(),
+        )
+        val previous = System.getProperty("aws.configFile")
+        System.setProperty("aws.configFile", configFile.toString())
+
+        try {
+            assertThat(
+                    Class.forName(
+                        "software.amazon.awssdk.services.signin.auth.LoginProfileCredentialsProviderFactory"
+                    )
+                )
+                .isNotNull()
+
+            val configuration =
+                options(awsRegion = "us-east-1", awsProfile = "fixture")
+                    .resolve(getenv = { null }, regionProvider = { null })
+            try {
+                val failure =
+                    runCatching { configuration.authenticator.authenticate(request()) }
+                        .exceptionOrNull()
+
+                assertThat(failure).isInstanceOf(OpenAIException::class.java)
+                assertThat(failure!!.stackTraceToString())
+                    .contains("LoginProfileCredentialsProviderFactory")
+            } finally {
+                configuration.authenticator.close()
+            }
+        } finally {
+            if (previous == null) System.clearProperty("aws.configFile")
+            else System.setProperty("aws.configFile", previous)
+        }
+    }
+
+    @Test
     fun explicitAwsCredentialsTakePrecedenceOverEnvironmentBearer() {
         val configuration =
             options(
@@ -177,6 +225,51 @@ internal class BedrockAuthTest {
             .isInstanceOf(OpenAIException::class.java)
             .hasMessageContaining("Failed to resolve a bearer credential")
             .hasCauseInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun asyncAuthenticationUsesInjectedExecutorForBearerAndSigV4() {
+        val executor =
+            Executors.newSingleThreadExecutor { runnable ->
+                Thread(runnable, "bedrock-auth-test-thread")
+            }
+        val bearerThread = AtomicReference<String>()
+        val credentialsThread = AtomicReference<String>()
+        val bearerConfiguration =
+            options(
+                    awsRegion = "us-east-1",
+                    tokenProvider =
+                        Supplier {
+                            bearerThread.set(Thread.currentThread().name)
+                            "token"
+                        },
+                    authenticationExecutor = executor,
+                )
+                .resolve(getenv = { null }, regionProvider = { null })
+        val sigV4Configuration =
+            options(
+                    awsRegion = "us-east-1",
+                    awsCredentialsProvider =
+                        AwsCredentialsProvider {
+                            credentialsThread.set(Thread.currentThread().name)
+                            AwsBasicCredentials.create("ACCESSKEY", "secret")
+                        },
+                    authenticationExecutor = executor,
+                )
+                .resolve(getenv = { null }, regionProvider = { null })
+
+        try {
+            bearerConfiguration.authenticator.authenticateAsync(request()).join()
+            sigV4Configuration.authenticator.authenticateAsync(request()).join()
+            bearerConfiguration.authenticator.close()
+            sigV4Configuration.authenticator.close()
+
+            assertThat(bearerThread).hasValue("bedrock-auth-test-thread")
+            assertThat(credentialsThread).hasValue("bedrock-auth-test-thread")
+            assertThat(executor.isShutdown).isFalse()
+        } finally {
+            executor.shutdownNow()
+        }
     }
 
     @Test
@@ -513,6 +606,33 @@ internal class BedrockAuthTest {
     }
 
     @Test
+    fun fatalCredentialResolutionFailuresAreNotWrapped() {
+        val bearerConfiguration =
+            options(
+                    awsRegion = "us-east-1",
+                    tokenProvider = Supplier<String> { throw LinkageError("token linkage") },
+                )
+                .resolve(getenv = { null }, regionProvider = { null })
+        val sigV4Configuration =
+            options(
+                    awsRegion = "us-east-1",
+                    awsCredentialsProvider =
+                        AwsCredentialsProvider { throw LinkageError("credentials linkage") },
+                )
+                .resolve(getenv = { null }, regionProvider = { null })
+
+        try {
+            assertThatThrownBy { bearerConfiguration.authenticator.authenticate(request()) }
+                .isInstanceOf(LinkageError::class.java)
+            assertThatThrownBy { sigV4Configuration.authenticator.authenticate(request()) }
+                .isInstanceOf(LinkageError::class.java)
+        } finally {
+            bearerConfiguration.authenticator.close()
+            sigV4Configuration.authenticator.close()
+        }
+    }
+
+    @Test
     fun rejectsNonReplayableRequestBodyBeforeCredentialResolution() {
         val configuration =
             options(
@@ -549,6 +669,7 @@ internal class BedrockAuthTest {
         awsCredentialsProvider: AwsCredentialsProvider? = null,
         skipAuth: Boolean = false,
         clock: Clock = Clock.systemUTC(),
+        authenticationExecutor: Executor? = null,
     ) =
         BedrockAuthOptions(
             awsRegion = awsRegion,
@@ -562,6 +683,7 @@ internal class BedrockAuthTest {
             awsCredentialsProvider = awsCredentialsProvider,
             skipAuth = skipAuth,
             clock = clock,
+            authenticationExecutor = authenticationExecutor,
         )
 
     private class CloseableCredentialsProvider : AwsCredentialsProvider, AutoCloseable {

@@ -55,6 +55,7 @@ class BedrockOpenAIOkHttpClient private constructor() {
         private var awsCredentialsProvider: AwsCredentialsProvider? = null
         private var skipAuth: Boolean = false
         private var clock: Clock = Clock.systemUTC()
+        private var authenticationExecutor: Executor? = null
 
         /** Sets the AWS region used for endpoint resolution and SigV4 signing. */
         fun awsRegion(awsRegion: String?) = apply { this.awsRegion = awsRegion }
@@ -155,6 +156,16 @@ class BedrockOpenAIOkHttpClient private constructor() {
             delegate.streamHandlerExecutor(streamHandlerExecutor)
         }
 
+        /**
+         * Uses a caller-owned executor for blocking asynchronous Bedrock authentication work.
+         *
+         * By default, the client owns a dedicated cached thread pool and shuts it down when the
+         * client closes.
+         */
+        fun authenticationExecutor(authenticationExecutor: Executor) = apply {
+            this.authenticationExecutor = authenticationExecutor
+        }
+
         fun sleeper(sleeper: Sleeper) = apply { delegate.sleeper(sleeper) }
 
         fun clock(clock: Clock) = apply {
@@ -221,6 +232,7 @@ class BedrockOpenAIOkHttpClient private constructor() {
                         awsCredentialsProvider = awsCredentialsProvider,
                         skipAuth = skipAuth,
                         clock = clock,
+                        authenticationExecutor = authenticationExecutor,
                     )
                     .resolve(::getEnv)
 

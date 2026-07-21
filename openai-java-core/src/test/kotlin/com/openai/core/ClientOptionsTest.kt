@@ -231,6 +231,25 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseAuthenticator() {
+        val authenticator = mock<HttpRequestAuthenticator>()
+        var clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .httpRequestAuthenticator(authenticator)
+                .build()
+        verify(authenticator, never()).close()
+
+        clientOptions = clientOptions.toBuilder().build()
+        System.gc()
+        Thread.sleep(100)
+
+        verify(authenticator, never()).close()
+        // This exists so that `clientOptions` is still reachable.
+        assertThat(clientOptions).isEqualTo(clientOptions)
+    }
+
+    @Test
     fun build_withWorkloadIdentity_success() {
         val provider =
             object : SubjectTokenProvider {

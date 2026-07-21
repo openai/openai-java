@@ -15,7 +15,7 @@ public final class BedrockResponsesStreamingAsyncExample {
 
         ResponseCreateParams params = ResponseCreateParams.builder()
                 .input("Count to five")
-                .model("openai.gpt-oss-120b")
+                .model("openai.gpt-5.5")
                 .build();
 
         client.responses()
