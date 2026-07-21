@@ -13,7 +13,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder
 internal class SpringBootLoggingCompatibilityTest {
 
     @Test
-    fun springApplicationStartsWithBootLogging() {
+    fun springApplicationStartsWithoutLogback() {
+        assertThat(javaClass.classLoader.getResource("ch/qos/logback/core/Context.class")).isNull()
+
         SpringApplicationBuilder(TestApplication::class.java)
             .web(WebApplicationType.NONE)
             .properties("openai.api-key=test")
