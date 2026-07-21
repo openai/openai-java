@@ -14,7 +14,9 @@ internal class SpringBootLoggingCompatibilityTest {
 
     @Test
     fun springApplicationStartsWithoutLogback() {
-        assertThat(javaClass.classLoader.getResource("ch/qos/logback/core/Context.class")).isNull()
+        val classLoader = Thread.currentThread().contextClassLoader ?: javaClass.classLoader
+        assertThat(classLoader.getResource("ch/qos/logback/core/Context.class")).isNull()
+        assertThat(classLoader.getResource("ch/qos/logback/classic/Logger.class")).isNull()
 
         SpringApplicationBuilder(TestApplication::class.java)
             .web(WebApplicationType.NONE)
