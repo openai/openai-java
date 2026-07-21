@@ -23,9 +23,6 @@ dependencies {
 
     api(project(":openai-java"))
     implementation("org.springframework.boot:spring-boot-autoconfigure:2.7.18")
-    implementation("org.springframework:spring-expression:5.3.39") {
-        because("5.3.39 fixes CVE-2024-38808 while preserving Spring Framework 5.3 compatibility")
-    }
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:2.7.18")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.18") {
