@@ -2460,7 +2460,7 @@ private constructor(
         /**
          * Constrains the verbosity of the model's response. Lower values will result in more
          * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
+         * supported values are `low`, `medium`, and `high`. The default is `medium`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2561,7 +2561,7 @@ private constructor(
             /**
              * Constrains the verbosity of the model's response. Lower values will result in more
              * concise responses, while higher values will result in more verbose responses.
-             * Currently supported values are `low`, `medium`, and `high`.
+             * Currently supported values are `low`, `medium`, and `high`. The default is `medium`.
              */
             fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
 
@@ -2647,7 +2647,7 @@ private constructor(
         /**
          * Constrains the verbosity of the model's response. Lower values will result in more
          * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
+         * supported values are `low`, `medium`, and `high`. The default is `medium`.
          */
         class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {

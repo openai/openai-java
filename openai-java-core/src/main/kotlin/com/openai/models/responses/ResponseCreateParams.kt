@@ -1051,7 +1051,11 @@ private constructor(
          * Replaces the `user` field.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
          */
-        fun promptCacheKey(promptCacheKey: String) = apply { body.promptCacheKey(promptCacheKey) }
+        fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
 
         /**
          * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -1158,9 +1162,13 @@ private constructor(
          * address, in order to avoid sending us any identifying information.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
          */
-        fun safetyIdentifier(safetyIdentifier: String) = apply {
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
             body.safetyIdentifier(safetyIdentifier)
         }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
 
         /**
          * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -2983,8 +2991,12 @@ private constructor(
              * rates. Replaces the `user` field.
              * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
              */
-            fun promptCacheKey(promptCacheKey: String) =
-                promptCacheKey(JsonField.of(promptCacheKey))
+            fun promptCacheKey(promptCacheKey: String?) =
+                promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+            /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+            fun promptCacheKey(promptCacheKey: Optional<String>) =
+                promptCacheKey(promptCacheKey.getOrNull())
 
             /**
              * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -3091,8 +3103,14 @@ private constructor(
              * information.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
              */
-            fun safetyIdentifier(safetyIdentifier: String) =
-                safetyIdentifier(JsonField.of(safetyIdentifier))
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
 
             /**
              * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
