@@ -1,0 +1,90 @@
+name: Publish Sonatype (reusable)
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sonatype-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish / Sonatype
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment: publish
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+
+      - name: Compile the openai-java-core project
+        run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
+
+      - name: Run the mock server
+        run: ./scripts/mock --daemon
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@03e8abf916fd0e281b2efe7b2da3378bb0a1d085 # v1
+        with:
+          java-version: 21
+          distribution: graalvm-community
+
+      - name: Run GraalVM native-image agent tests
+        run: >-
+          ./gradlew :openai-java-core:test
+          -x compileJava
+          -x compileTestJava
+          -x compileKotlin
+          -x compileTestKotlin
+          -PgraalvmAgent
+
+      - name: Check generated GraalVM files
+        run: |
+          set -euo pipefail
+
+          directory="openai-java-core/src/main/resources/META-INF/native-image"
+          if [[ ! -d "$directory" || -z "$(ls -A "$directory")" ]]; then
+            echo "No files found in $directory"
+            exit 1
+          fi
+
+          echo "Files found in $directory:"
+          ls -l "$directory"
+
+      - name: Publish to Sonatype
+        env:
+          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
+        run: |-
+          set -euo pipefail
+
+          export -- GPG_SIGNING_KEY_ID
+          printf '%s' "$GPG_SIGNING_KEY" |
+            gpg --batch --passphrase-fd 3 --import 3<<< "$GPG_SIGNING_PASSWORD"
+          GPG_SIGNING_KEY_ID="$(
+            gpg --with-colons --list-keys |
+              awk -F : -- '/^pub:/ { getline; print "0x" substr($10, length($10) - 7) }'
+          )"
+          ./gradlew publishAndReleaseToMavenCentral \
+            --stacktrace \
+            -PmavenCentralUsername="$SONATYPE_USERNAME" \
+            -PmavenCentralPassword="$SONATYPE_PASSWORD" \
+            --no-configuration-cache

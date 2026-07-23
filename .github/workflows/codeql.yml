@@ -1,4 +1,4 @@
-name: CodeQL
+name: Security / CodeQL
 
 on:
   push:
@@ -9,14 +9,21 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: security-codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   analyze:
-    name: Analyze Java and Kotlin
-    runs-on: ubuntu-latest
+    name: Security / CodeQL
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
-      security-events: write
+      security-events: write # Upload the SARIF results produced by this analysis.
 
     steps:
       - name: Check out repository
@@ -31,7 +38,7 @@ jobs:
           java-version: 21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4

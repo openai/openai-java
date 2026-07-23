@@ -1,28 +1,27 @@
 name: CI
+
 on:
   push:
     branches:
-      - '**'
-      - '!integrated/**'
-      - '!stl-preview-head/**'
-      - '!stl-preview-base/**'
-      - '!generated'
-      - '!codegen/**'
-      - 'codegen/stl/**'
+      - main
+      - next
   pull_request:
-    branches-ignore:
-      - 'stl-preview-head/**'
-      - 'stl-preview-base/**'
+    branches:
+      - main
+      - next
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
+    name: CI / lint
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
-    name: lint
-    runs-on: ${{ startsWith(github.repository, 'stainless-sdks/') && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -36,24 +35,17 @@ jobs:
           java-version: |
             8
             21
-          cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
 
       - name: Run lints
         run: ./scripts/lint
 
   build:
+    name: CI / build + Jackson compatibility
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
-    name: build
-    runs-on: ${{ startsWith(github.repository, 'stainless-sdks/') && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: |-
-      (github.event_name == 'push' || github.event.pull_request.head.repo.fork) &&
-      (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata') &&
-      !(github.repository == 'stainless-sdks/openai-java' &&
-        github.event_name == 'push' &&
-        !startsWith(github.ref, 'refs/heads/stl/'))
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -67,100 +59,20 @@ jobs:
           java-version: |
             8
             21
-          cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
 
-      - name: Build SDK
-        # disable gradle daemon in CI because it is flakey
+      - name: Build SDK and run compatibility tests
         env:
-          GRADLE_OPTS: "-Dkotlin.compiler.execution.strategy=in-process"
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: ./scripts/build
 
-  upload-maven-artifacts:
-    timeout-minutes: 30
-    name: build-and-upload-maven-artifacts
-    permissions:
-      contents: read
-      id-token: write
-    runs-on: depot-ubuntu-24.04
-    if: |-
-      github.repository == 'stainless-sdks/openai-java' &&
-      github.event_name == 'push' &&
-      github.event.head_commit.message != 'codegen metadata' &&
-      !startsWith(github.ref, 'refs/heads/stl/')
-
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          persist-credentials: false
-
-      - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          distribution: temurin
-          java-version: |
-            8
-            21
-          cache: gradle
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
-
-      - name: Build SDK
-        # disable gradle daemon in CI because it is flakey
-        env:
-          GRADLE_OPTS: "-Dkotlin.compiler.execution.strategy=in-process"
-        run: ./scripts/build
-
-      - name: Upload Maven artifacts
-        env:
-          URL: https://pkg.stainless.com/s
-          SHA: ${{ github.sha }}
-          PROJECT: openai-java
-        run: |
-          set -euo pipefail
-
-          max_retries=5
-          attempt=1
-
-          while true; do
-            echo "Maven artifact upload attempt ${attempt}/${max_retries}"
-
-            oidc_response="$(curl -sSf \
-              -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-              "${ACTIONS_ID_TOKEN_REQUEST_URL}")"
-            github_token="$(printf '%s' "$oidc_response" | jq -er '.value')"
-
-            upload_log="$(mktemp)"
-            set +e
-            AUTH="$github_token" ./scripts/upload-artifacts 2>&1 | tee "$upload_log"
-            upload_status=${PIPESTATUS[0]}
-            set -e
-
-            if [ "$upload_status" -eq 0 ]; then
-              break
-            fi
-
-            if [ "$attempt" -lt "$max_retries" ] && \
-              grep -q "Failed to get valid signed URL" "$upload_log" && \
-              grep -q "GitHub JWT is missing or invalid\\." "$upload_log"; then
-              sleep_seconds=$((3 * (1 << (attempt - 1))))
-              echo "Retrying after fresh OIDC token due to transient GitHub JWT validation failure"
-              echo "Sleeping ${sleep_seconds}s before retry"
-              sleep "$sleep_seconds"
-              attempt=$((attempt + 1))
-              continue
-            fi
-
-            exit "$upload_status"
-          done
   test:
+    name: CI / tests
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
-    name: test
-    runs-on: ${{ startsWith(github.repository, 'stainless-sdks/') && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -173,23 +85,23 @@ jobs:
           java-version: |
             8
             21
-          cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@fe583dc97e032f41ccc310ea5176f2d7306abbc4 # v2
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
 
       - name: Run tests
         run: ./scripts/test
-  examples:
+
+  api_compatibility:
+    name: CI / API compatibility
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
-    name: examples
-    environment: CI
-    runs-on: ${{ startsWith(github.repository, 'stainless-sdks/') && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.repository == 'openai/openai-java' && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.message != 'codegen metadata'
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Java
@@ -199,11 +111,50 @@ jobs:
           java-version: |
             8
             21
-          cache: gradle
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@fe583dc97e032f41ccc310ea5176f2d7306abbc4 # v2
 
-      - env: 
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+
+      - name: Compile previous tests against the proposed SDK
+        env:
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
+        run: ./scripts/detect-breaking-changes "$BASE_COMMIT"
+
+  required:
+    name: CI / required
+    if: always()
+    needs:
+      - lint
+      - build
+      - test
+      - api_compatibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Verify required jobs succeeded
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          API_COMPATIBILITY_RESULT: ${{ needs.api_compatibility.result }}
         run: |
-            ./gradlew :openai-java-example:run
+          set -euo pipefail
+
+          failed_jobs=()
+          [[ "$LINT_RESULT" == "success" ]] || failed_jobs+=("lint: $LINT_RESULT")
+          [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
+          [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
+
+          if [[ "$EVENT_NAME" == "pull_request" && "$API_COMPATIBILITY_RESULT" != "success" ]]; then
+            failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
+          fi
+
+          if (( ${#failed_jobs[@]} > 0 )); then
+            printf 'Required CI job did not succeed: %s\n' "${failed_jobs[@]}"
+            exit 1
+          fi
+
+          echo "All required CI jobs succeeded."

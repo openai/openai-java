@@ -6,17 +6,23 @@ cd "$(dirname "$0")/.."
 
 echo "==> Detecting breaking changes"
 
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <base-commit>" >&2
+    exit 2
+fi
+
+BASE_COMMIT="$1"
+
+git cat-file -e "${BASE_COMMIT}^{commit}"
+
 TEST_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/models
 	openai-java-core/src/test/kotlin/com/openai/services
 )
 
 for PATHSPEC in "${TEST_PATHS[@]}"; do
-    # Try to check out previous versions of the test files
-    # with the current SDK.
-    git checkout "$1" -- "${PATHSPEC}" 2>/dev/null || true
+    # Compile the previous tests against the proposed SDK so removed or incompatible APIs fail.
+    git checkout "${BASE_COMMIT}" -- "${PATHSPEC}"
 done
 
-# Instead of running the tests, use the linter to check if an
-# older test is no longer compatible with the latest SDK.
-./scripts/lint
+./scripts/gradle :openai-java-core:testClasses --no-build-cache
