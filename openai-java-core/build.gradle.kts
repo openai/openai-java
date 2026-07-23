@@ -1,3 +1,14 @@
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.Classpath
+import org.gradle.process.CommandLineArgumentProvider
+
+abstract class JavaAgentArgumentProvider : CommandLineArgumentProvider {
+    @get:Classpath abstract val classpath: ConfigurableFileCollection
+
+    override fun asArguments(): Iterable<String> =
+        listOf("-javaagent:${classpath.singleFile.absolutePath}")
+}
+
 plugins {
     id("java")
     id("openai.kotlin")
@@ -8,7 +19,10 @@ plugins {
 val jacksonCompatibilityVersion = "2.14.0"
 val jacksonPublishedVersion = "2.18.9"
 val mockitoVersion = "5.14.2"
-val mockitoAgent by configurations.creating
+val mockitoAgent by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
 
 // Runtime classpath for `testJacksonCompatibility`: the same dependencies as
 // `testRuntimeClasspath`, but forced to the older Jackson version that the SDK supports.
@@ -101,7 +115,11 @@ val testJacksonCompatibility by tasks.registering(Test::class) {
 }
 
 tasks.withType<Test>().configureEach {
-    jvmArgs("-javaagent:${mockitoAgent.asPath}")
+    jvmArgumentProviders.add(
+        objects.newInstance<JavaAgentArgumentProvider>().apply {
+            classpath.from(mockitoAgent)
+        }
+    )
 }
 
 tasks.test {
