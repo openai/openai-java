@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.43.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.43.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.43.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.44.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.44.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.44.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.43.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.44.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.43.0")
+implementation("com.openai:openai-java:4.44.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:4.43.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.43.0</version>
+  <version>4.44.0</version>
 </dependency>
 ```
 
@@ -86,6 +86,35 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
+
+## Amazon Bedrock
+
+Use the optional `openai-java-bedrock` artifact to call OpenAI-compatible APIs on Amazon Bedrock
+with normal AWS credentials:
+
+<!-- x-release-please-start-version -->
+
+```kotlin
+implementation("com.openai:openai-java-bedrock:4.41.0")
+```
+
+<!-- x-release-please-end -->
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
+
+// Uses the standard AWS credential chain, including environment credentials,
+// ~/.aws/credentials, AWS_PROFILE, workload roles, and instance metadata.
+OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
+        .awsRegion("us-east-1")
+        .build();
+```
+
+Requests are signed with fresh AWS credentials on every attempt. Existing
+`AWS_BEARER_TOKEN_BEDROCK` bearer credentials remain supported as a compatibility fallback. See
+the [Amazon Bedrock guide](bedrock.md) for named profiles, temporary credentials, custom credential
+providers, async streaming, precedence rules, and security guidance.
 
 ## Client configuration
 
@@ -1433,7 +1462,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:4.43.0")
+implementation("com.openai:openai-java-spring-boot-starter:4.44.0")
 ```
 
 #### Maven
@@ -1442,7 +1471,7 @@ implementation("com.openai:openai-java-spring-boot-starter:4.43.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>4.43.0</version>
+  <version>4.44.0</version>
 </dependency>
 ```
 

@@ -26,7 +26,11 @@ internal class ServiceAccountServiceAsyncTest {
 
         val serviceAccountFuture =
             serviceAccountServiceAsync.create(
-                ServiceAccountCreateParams.builder().projectId("project_id").name("name").build()
+                ServiceAccountCreateParams.builder()
+                    .projectId("project_id")
+                    .name("name")
+                    .createServiceAccountOnly(true)
+                    .build()
             )
 
         val serviceAccount = serviceAccountFuture.get()

@@ -8,6 +8,8 @@ import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
 import java.util.concurrent.CompletableFuture
@@ -134,6 +136,52 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun build_withHttpRequestAuthenticator_satisfiesAuthenticationAndSurvivesCloning() {
+        val authenticator =
+            object : HttpRequestAuthenticator {
+                override fun authenticate(request: HttpRequest): HttpRequest = request
+            }
+
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .httpRequestAuthenticator(authenticator)
+                .build()
+                .toBuilder()
+                .build()
+
+        assertThat(
+                clientOptions.securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+            )
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+        assertThat(
+                clientOptions.securityHeaders(
+                    SecurityOptions.builder().adminApiKeyAuth(true).build()
+                )
+            )
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+    }
+
+    @Test
+    fun build_withHttpRequestAuthenticatorAndApiKey_throws() {
+        val authenticator =
+            object : HttpRequestAuthenticator {
+                override fun authenticate(request: HttpRequest): HttpRequest = request
+            }
+
+        val thrown =
+            assertThrows<IllegalStateException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .httpRequestAuthenticator(authenticator)
+                    .apiKey("test-api-key")
+                    .build()
+            }
+
+        assertThat(thrown.message).contains("Provider authentication cannot be combined")
+    }
+
+    @Test
     fun putHeader_canOverwriteDefaultHeader() {
         val clientOptions =
             ClientOptions.builder()
@@ -178,6 +226,25 @@ internal class ClientOptionsTest {
         Thread.sleep(100)
 
         verify(httpClient, never()).close()
+        // This exists so that `clientOptions` is still reachable.
+        assertThat(clientOptions).isEqualTo(clientOptions)
+    }
+
+    @Test
+    fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseAuthenticator() {
+        val authenticator = mock<HttpRequestAuthenticator>()
+        var clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .httpRequestAuthenticator(authenticator)
+                .build()
+        verify(authenticator, never()).close()
+
+        clientOptions = clientOptions.toBuilder().build()
+        System.gc()
+        Thread.sleep(100)
+
+        verify(authenticator, never()).close()
         // This exists so that `clientOptions` is still reachable.
         assertThat(clientOptions).isEqualTo(clientOptions)
     }

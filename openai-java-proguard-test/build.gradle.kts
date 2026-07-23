@@ -9,8 +9,20 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.4.2")
+        classpath("com.guardsquare:proguard-gradle:7.9.1")
         classpath("com.android.tools:r8:8.3.37")
+
+        constraints {
+            classpath("org.codehaus.plexus:plexus-utils:4.0.3") {
+                because("4.0.3 fixes CVE-2025-67030 in Shadow's build-time dependency")
+            }
+            classpath("org.apache.logging.log4j:log4j-api:2.25.5") {
+                because("avoid vulnerable Log4j versions on the build classpath")
+            }
+            classpath("org.apache.logging.log4j:log4j-core:2.25.5") {
+                because("avoid vulnerable Log4j versions on the build classpath")
+            }
+        }
     }
 }
 

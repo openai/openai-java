@@ -21,8 +21,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates a new service account in the project. This also returns an unredacted API key for the
- * service account.
+ * Creates a new service account in the project. By default, this also returns an unredacted API key
+ * for the service account.
  */
 class ServiceAccountCreateParams
 private constructor(
@@ -43,11 +43,27 @@ private constructor(
     fun name(): String = body.name()
 
     /**
+     * Create the service account without default roles or an API key.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun createServiceAccountOnly(): Optional<Boolean> = body.createServiceAccountOnly()
+
+    /**
      * Returns the raw JSON value of [name].
      *
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [createServiceAccountOnly].
+     *
+     * Unlike [createServiceAccountOnly], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    fun _createServiceAccountOnly(): JsonField<Boolean> = body._createServiceAccountOnly()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -99,6 +115,7 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [name]
+         * - [createServiceAccountOnly]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -112,6 +129,37 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        /** Create the service account without default roles or an API key. */
+        fun createServiceAccountOnly(createServiceAccountOnly: Boolean?) = apply {
+            body.createServiceAccountOnly(createServiceAccountOnly)
+        }
+
+        /**
+         * Alias for [Builder.createServiceAccountOnly].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun createServiceAccountOnly(createServiceAccountOnly: Boolean) =
+            createServiceAccountOnly(createServiceAccountOnly as Boolean?)
+
+        /**
+         * Alias for calling [Builder.createServiceAccountOnly] with
+         * `createServiceAccountOnly.orElse(null)`.
+         */
+        fun createServiceAccountOnly(createServiceAccountOnly: Optional<Boolean>) =
+            createServiceAccountOnly(createServiceAccountOnly.getOrNull())
+
+        /**
+         * Sets [Builder.createServiceAccountOnly] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createServiceAccountOnly] with a well-typed [Boolean]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun createServiceAccountOnly(createServiceAccountOnly: JsonField<Boolean>) = apply {
+            body.createServiceAccountOnly(createServiceAccountOnly)
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -267,13 +315,17 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
+        private val createServiceAccountOnly: JsonField<Boolean>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of()
-        ) : this(name, mutableMapOf())
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("create_service_account_only")
+            @ExcludeMissing
+            createServiceAccountOnly: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(name, createServiceAccountOnly, mutableMapOf())
 
         /**
          * The name of the service account being created.
@@ -284,11 +336,30 @@ private constructor(
         fun name(): String = name.getRequired("name")
 
         /**
+         * Create the service account without default roles or an API key.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun createServiceAccountOnly(): Optional<Boolean> =
+            createServiceAccountOnly.getOptional("create_service_account_only")
+
+        /**
          * Returns the raw JSON value of [name].
          *
          * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [createServiceAccountOnly].
+         *
+         * Unlike [createServiceAccountOnly], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("create_service_account_only")
+        @ExcludeMissing
+        fun _createServiceAccountOnly(): JsonField<Boolean> = createServiceAccountOnly
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -319,11 +390,13 @@ private constructor(
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
+            private var createServiceAccountOnly: JsonField<Boolean> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 name = body.name
+                createServiceAccountOnly = body.createServiceAccountOnly
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -338,6 +411,36 @@ private constructor(
              * value.
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
+
+            /** Create the service account without default roles or an API key. */
+            fun createServiceAccountOnly(createServiceAccountOnly: Boolean?) =
+                createServiceAccountOnly(JsonField.ofNullable(createServiceAccountOnly))
+
+            /**
+             * Alias for [Builder.createServiceAccountOnly].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun createServiceAccountOnly(createServiceAccountOnly: Boolean) =
+                createServiceAccountOnly(createServiceAccountOnly as Boolean?)
+
+            /**
+             * Alias for calling [Builder.createServiceAccountOnly] with
+             * `createServiceAccountOnly.orElse(null)`.
+             */
+            fun createServiceAccountOnly(createServiceAccountOnly: Optional<Boolean>) =
+                createServiceAccountOnly(createServiceAccountOnly.getOrNull())
+
+            /**
+             * Sets [Builder.createServiceAccountOnly] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.createServiceAccountOnly] with a well-typed
+             * [Boolean] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun createServiceAccountOnly(createServiceAccountOnly: JsonField<Boolean>) = apply {
+                this.createServiceAccountOnly = createServiceAccountOnly
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -371,7 +474,11 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
-                Body(checkRequired("name", name), additionalProperties.toMutableMap())
+                Body(
+                    checkRequired("name", name),
+                    createServiceAccountOnly,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -391,6 +498,7 @@ private constructor(
             }
 
             name()
+            createServiceAccountOnly()
             validated = true
         }
 
@@ -408,7 +516,10 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = (if (name.asKnown().isPresent) 1 else 0)
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (name.asKnown().isPresent) 1 else 0) +
+                (if (createServiceAccountOnly.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -417,14 +528,18 @@ private constructor(
 
             return other is Body &&
                 name == other.name &&
+                createServiceAccountOnly == other.createServiceAccountOnly &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(name, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(name, createServiceAccountOnly, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{name=$name, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Body{name=$name, createServiceAccountOnly=$createServiceAccountOnly, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

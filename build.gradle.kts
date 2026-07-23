@@ -1,6 +1,8 @@
 plugins {
-    id("org.jetbrains.dokka") version "2.0.0"
+    id("org.jetbrains.dokka") version "2.1.0"
 }
+
+val dokkaJacksonVersion = "2.18.9"
 
 repositories {
     mavenCentral()
@@ -8,7 +10,22 @@ repositories {
 
 allprojects {
     group = "com.openai"
-    version = "4.43.0" // x-release-please-version
+    version = "4.44.0" // x-release-please-version
+
+    // Dokka 2.1.0 depends on Jackson 2.15.3. Keep its isolated build-tool classpaths on a
+    // secure, internally aligned Jackson release without changing the SDK's published or
+    // compatibility-test dependency versions.
+    configurations.matching { it.name.startsWith("dokka") }.configureEach {
+        resolutionStrategy.eachDependency {
+            if (
+                requested.group == "com.fasterxml.jackson" ||
+                    requested.group.startsWith("com.fasterxml.jackson.")
+            ) {
+                useVersion(dokkaJacksonVersion)
+                because("Dokka's build-only Jackson classpath must use a secure aligned release")
+            }
+        }
+    }
 }
 
 subprojects {

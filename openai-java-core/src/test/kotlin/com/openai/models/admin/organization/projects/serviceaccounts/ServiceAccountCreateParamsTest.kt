@@ -9,7 +9,11 @@ internal class ServiceAccountCreateParamsTest {
 
     @Test
     fun create() {
-        ServiceAccountCreateParams.builder().projectId("project_id").name("name").build()
+        ServiceAccountCreateParams.builder()
+            .projectId("project_id")
+            .name("name")
+            .createServiceAccountOnly(true)
+            .build()
     }
 
     @Test
@@ -24,6 +28,21 @@ internal class ServiceAccountCreateParamsTest {
 
     @Test
     fun body() {
+        val params =
+            ServiceAccountCreateParams.builder()
+                .projectId("project_id")
+                .name("name")
+                .createServiceAccountOnly(true)
+                .build()
+
+        val body = params._body()
+
+        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.createServiceAccountOnly()).contains(true)
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
         val params =
             ServiceAccountCreateParams.builder().projectId("project_id").name("name").build()
 
