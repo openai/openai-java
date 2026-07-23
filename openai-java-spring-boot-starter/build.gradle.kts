@@ -10,7 +10,7 @@ repositories {
 dependencies {
     constraints {
         testImplementation("org.xmlunit:xmlunit-core:2.11.0") {
-            because("2.10.0 fixes CVE-2024-31573 in this test-only dependency")
+            because("2.11.0 includes the fix for CVE-2024-31573 in this test-only dependency")
         }
         testImplementation("com.jayway.jsonpath:json-path:2.10.0") {
             because("Spring Boot's transitive JSONPath version has a stack-overflow vulnerability")
