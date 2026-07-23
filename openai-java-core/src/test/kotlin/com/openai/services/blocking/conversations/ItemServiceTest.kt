@@ -11,8 +11,10 @@ import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseIncludable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
+@ResourceLock("conversation-item-response-deserialization")
 internal class ItemServiceTest {
 
     @Test
