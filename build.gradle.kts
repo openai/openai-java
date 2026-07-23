@@ -1,3 +1,15 @@
+buildscript {
+    dependencies {
+        constraints {
+            classpath("com.fasterxml.jackson.core:jackson-annotations:2.18.9")
+            classpath("com.fasterxml.jackson.core:jackson-core:2.18.9")
+            classpath("com.fasterxml.jackson.core:jackson-databind:2.18.9")
+            classpath("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.9")
+            classpath("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.9")
+        }
+    }
+}
+
 plugins {
     id("org.jetbrains.dokka") version "2.1.0"
 }
