@@ -409,6 +409,11 @@ internal constructor(
         }
 
         /** @see ChatCompletionCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: Optional<String>) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheKey */
         fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
@@ -476,6 +481,11 @@ internal constructor(
 
         /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
         fun safetyIdentifier(safetyIdentifier: String) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) = apply {
             paramsBuilder.safetyIdentifier(safetyIdentifier)
         }
 
