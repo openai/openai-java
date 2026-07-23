@@ -20,9 +20,21 @@ TEST_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/services
 )
 
+RESTORED_PATHS=0
 for PATHSPEC in "${TEST_PATHS[@]}"; do
+    if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
+        echo "Skipping test path absent from base commit: ${PATHSPEC}"
+        continue
+    fi
+
     # Compile the previous tests against the proposed SDK so removed or incompatible APIs fail.
     git checkout "${BASE_COMMIT}" -- "${PATHSPEC}"
+    RESTORED_PATHS=$((RESTORED_PATHS + 1))
 done
+
+if [ "${RESTORED_PATHS}" -eq 0 ]; then
+    echo "No baseline test paths were found in ${BASE_COMMIT}" >&2
+    exit 1
+fi
 
 ./scripts/gradle :openai-java-core:testClasses --no-build-cache
