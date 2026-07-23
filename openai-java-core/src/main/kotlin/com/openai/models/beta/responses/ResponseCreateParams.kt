@@ -1095,7 +1095,11 @@ private constructor(
          * Replaces the `user` field.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
          */
-        fun promptCacheKey(promptCacheKey: String) = apply { body.promptCacheKey(promptCacheKey) }
+        fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
 
         /**
          * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -1202,9 +1206,13 @@ private constructor(
          * address, in order to avoid sending us any identifying information.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
          */
-        fun safetyIdentifier(safetyIdentifier: String) = apply {
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
             body.safetyIdentifier(safetyIdentifier)
         }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
 
         /**
          * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -3124,8 +3132,12 @@ private constructor(
              * rates. Replaces the `user` field.
              * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
              */
-            fun promptCacheKey(promptCacheKey: String) =
-                promptCacheKey(JsonField.of(promptCacheKey))
+            fun promptCacheKey(promptCacheKey: String?) =
+                promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+            /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+            fun promptCacheKey(promptCacheKey: Optional<String>) =
+                promptCacheKey(promptCacheKey.getOrNull())
 
             /**
              * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -3232,8 +3244,14 @@ private constructor(
              * information.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
              */
-            fun safetyIdentifier(safetyIdentifier: String) =
-                safetyIdentifier(JsonField.of(safetyIdentifier))
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
 
             /**
              * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -7407,8 +7425,11 @@ private constructor(
         ) : this(context, effort, generateSummary, mode, summary, mutableMapOf())
 
         /**
-         * Controls which reasoning items are rendered back to the model on later turns. When
-         * returned on a response, this is the effective reasoning context mode used for the
+         * Controls which reasoning items are rendered back to the model on later turns. If omitted
+         * or set to `auto`, the model determines the context mode. The `gpt-5.6` model family
+         * defaults to `all_turns`; earlier models default to `current_turn`.
+         *
+         * When returned on a response, this is the effective reasoning context mode used for the
          * response.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -7542,9 +7563,12 @@ private constructor(
             }
 
             /**
-             * Controls which reasoning items are rendered back to the model on later turns. When
-             * returned on a response, this is the effective reasoning context mode used for the
-             * response.
+             * Controls which reasoning items are rendered back to the model on later turns. If
+             * omitted or set to `auto`, the model determines the context mode. The `gpt-5.6` model
+             * family defaults to `all_turns`; earlier models default to `current_turn`.
+             *
+             * When returned on a response, this is the effective reasoning context mode used for
+             * the response.
              */
             fun context(context: Context?) = context(JsonField.ofNullable(context))
 
@@ -7738,8 +7762,11 @@ private constructor(
                 (summary.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
-         * Controls which reasoning items are rendered back to the model on later turns. When
-         * returned on a response, this is the effective reasoning context mode used for the
+         * Controls which reasoning items are rendered back to the model on later turns. If omitted
+         * or set to `auto`, the model determines the context mode. The `gpt-5.6` model family
+         * defaults to `all_turns`; earlier models default to `current_turn`.
+         *
+         * When returned on a response, this is the effective reasoning context mode used for the
          * response.
          */
         class Context @JsonCreator private constructor(private val value: JsonField<String>) :

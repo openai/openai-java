@@ -45,6 +45,8 @@ import com.openai.services.blocking.admin.organization.projects.ServiceAccountSe
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountServiceImpl
 import com.openai.services.blocking.admin.organization.projects.SpendAlertService
 import com.openai.services.blocking.admin.organization.projects.SpendAlertServiceImpl
+import com.openai.services.blocking.admin.organization.projects.SpendLimitService
+import com.openai.services.blocking.admin.organization.projects.SpendLimitServiceImpl
 import com.openai.services.blocking.admin.organization.projects.UserService
 import com.openai.services.blocking.admin.organization.projects.UserServiceImpl
 import java.util.function.Consumer
@@ -83,6 +85,8 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         DataRetentionServiceImpl(clientOptions)
     }
 
+    private val spendLimit: SpendLimitService by lazy { SpendLimitServiceImpl(clientOptions) }
+
     private val spendAlerts: SpendAlertService by lazy { SpendAlertServiceImpl(clientOptions) }
 
     private val certificates: CertificateService by lazy { CertificateServiceImpl(clientOptions) }
@@ -109,6 +113,8 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
     override fun roles(): RoleService = roles
 
     override fun dataRetention(): DataRetentionService = dataRetention
+
+    override fun spendLimit(): SpendLimitService = spendLimit
 
     override fun spendAlerts(): SpendAlertService = spendAlerts
 
@@ -176,6 +182,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
             DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val spendLimit: SpendLimitService.WithRawResponse by lazy {
+            SpendLimitServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendAlerts: SpendAlertService.WithRawResponse by lazy {
             SpendAlertServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -209,6 +219,8 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         override fun roles(): RoleService.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
+
+        override fun spendLimit(): SpendLimitService.WithRawResponse = spendLimit
 
         override fun spendAlerts(): SpendAlertService.WithRawResponse = spendAlerts
 

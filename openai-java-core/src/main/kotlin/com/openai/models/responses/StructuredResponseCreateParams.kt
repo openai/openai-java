@@ -306,6 +306,11 @@ class StructuredResponseCreateParams<T : Any>(
         }
 
         /** @see ResponseCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: Optional<String>) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
+        /** @see ResponseCreateParams.Builder.promptCacheKey */
         fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
@@ -350,6 +355,11 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.safetyIdentifier */
         fun safetyIdentifier(safetyIdentifier: String) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** @see ResponseCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) = apply {
             paramsBuilder.safetyIdentifier(safetyIdentifier)
         }
 
