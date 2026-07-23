@@ -1,5 +1,33 @@
 # Changelog
 
+## 4.45.0 (2026-07-23)
+
+Full Changelog: [v4.44.0...v4.45.0](https://github.com/openai/openai-java/compare/v4.44.0...v4.45.0)
+
+### Features
+
+* **api:** accept `None` for prompt_cache_key/safety_identifier ([e9c054c](https://github.com/openai/openai-java/commit/e9c054c0537444218ba6dec14b788a12f063835b))
+* **api:** add support for `spend_limit` admin apis ([d2ddc33](https://github.com/openai/openai-java/commit/d2ddc33d2c83f693800be05c014593d73e1a9933))
+* **bedrock:** support AWS credentials files ([#761](https://github.com/openai/openai-java/issues/761)) ([a3fc7f6](https://github.com/openai/openai-java/commit/a3fc7f66c671f7cc1932d35203a86af022a77477))
+* **stlc:** configurable CI runner and private-production-repo support in workflow templates ([b435090](https://github.com/openai/openai-java/commit/b435090953e903bcf126cc3b8078fb85b62498d3))
+
+
+### Bug Fixes
+
+* **api:** align structured output builder optional fields ([8e03393](https://github.com/openai/openai-java/commit/8e03393b5391b4a68b4f898601e5f00a9cca24c6))
+* **core:** ignore metadata-only SSE blocks ([#805](https://github.com/openai/openai-java/issues/805)) ([c33e020](https://github.com/openai/openai-java/commit/c33e02091ee62f2b2f29cc87c1d148186d162243))
+
+
+### Build System
+
+* **deps:** migrate test WireMock to Jetty 12 ([#798](https://github.com/openai/openai-java/issues/798)) ([0522672](https://github.com/openai/openai-java/commit/0522672d4994092f6e9cd68fe78eb8bcd8bf3349))
+* **deps:** patch test Jackson dependencies ([#807](https://github.com/openai/openai-java/issues/807)) ([271d102](https://github.com/openai/openai-java/commit/271d102dabefdf86432ac8a958d6f33f37c9c074))
+* **deps:** patch test-only Logback dependencies ([#806](https://github.com/openai/openai-java/issues/806)) ([de56d63](https://github.com/openai/openai-java/commit/de56d63c2e1e159783b742f574f131ec22729b4c))
+* **deps:** remove vulnerable Logback from starter tests ([#808](https://github.com/openai/openai-java/issues/808)) ([1fe659e](https://github.com/openai/openai-java/commit/1fe659e3bab81d8974faeacf283b1dfbb812122d))
+* **deps:** update test Commons IO to 2.22.0 ([#788](https://github.com/openai/openai-java/issues/788)) ([f50d19b](https://github.com/openai/openai-java/commit/f50d19be803f055eb63d755844ac1d6e331964dc))
+* **deps:** update test commons-lang3 to 3.18.0 ([c3be8f9](https://github.com/openai/openai-java/commit/c3be8f9d60b242d55b0a9f1db57bb1e4e30df0a7))
+* **deps:** update test JSONPath to 2.10.0 ([#790](https://github.com/openai/openai-java/issues/790)) ([b2cf0ff](https://github.com/openai/openai-java/commit/b2cf0ff66e42cc8755e7e98948a41cdaab3aef1a))
+
 ## 4.44.0 (2026-07-17)
 
 Full Changelog: [v4.43.0...v4.44.0](https://github.com/openai/openai-java/compare/v4.43.0...v4.44.0)
