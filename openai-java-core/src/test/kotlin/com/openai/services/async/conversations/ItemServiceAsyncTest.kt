@@ -2,6 +2,7 @@
 
 package com.openai.services.async.conversations
 
+import com.openai.ConversationItemTestLockExtension
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.conversations.items.ItemCreateParams
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.parallel.ResourceLock
 
-@ExtendWith(TestServerExtension::class)
+@ExtendWith(TestServerExtension::class, ConversationItemTestLockExtension::class)
 @ResourceLock("conversation-item-response-deserialization")
 internal class ItemServiceAsyncTest {
 
