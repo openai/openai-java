@@ -22,6 +22,7 @@ val mockitoVersion = "5.14.2"
 val mockitoAgent by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
+    isVisible = false
 }
 
 // Runtime classpath for `testJacksonCompatibility`: the same dependencies as
