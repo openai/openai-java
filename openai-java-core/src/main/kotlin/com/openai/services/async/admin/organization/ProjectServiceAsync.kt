@@ -22,6 +22,7 @@ import com.openai.services.async.admin.organization.projects.RateLimitServiceAsy
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.UserServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -57,6 +58,8 @@ interface ProjectServiceAsync {
     fun roles(): RoleServiceAsync
 
     fun dataRetention(): DataRetentionServiceAsync
+
+    fun spendLimit(): SpendLimitServiceAsync
 
     fun spendAlerts(): SpendAlertServiceAsync
 
@@ -220,6 +223,8 @@ interface ProjectServiceAsync {
         fun roles(): RoleServiceAsync.WithRawResponse
 
         fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
 
         fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 

@@ -12,6 +12,7 @@ import com.openai.services.blocking.admin.organization.InviteService
 import com.openai.services.blocking.admin.organization.ProjectService
 import com.openai.services.blocking.admin.organization.RoleService
 import com.openai.services.blocking.admin.organization.SpendAlertService
+import com.openai.services.blocking.admin.organization.SpendLimitService
 import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UserService
 import java.util.function.Consumer
@@ -46,6 +47,8 @@ interface OrganizationService {
     fun roles(): RoleService
 
     fun dataRetention(): DataRetentionService
+
+    fun spendLimit(): SpendLimitService
 
     fun spendAlerts(): SpendAlertService
 
@@ -83,6 +86,8 @@ interface OrganizationService {
         fun roles(): RoleService.WithRawResponse
 
         fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun spendLimit(): SpendLimitService.WithRawResponse
 
         fun spendAlerts(): SpendAlertService.WithRawResponse
 

@@ -21,6 +21,8 @@ import com.openai.services.blocking.admin.organization.RoleService
 import com.openai.services.blocking.admin.organization.RoleServiceImpl
 import com.openai.services.blocking.admin.organization.SpendAlertService
 import com.openai.services.blocking.admin.organization.SpendAlertServiceImpl
+import com.openai.services.blocking.admin.organization.SpendLimitService
+import com.openai.services.blocking.admin.organization.SpendLimitServiceImpl
 import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UsageServiceImpl
 import com.openai.services.blocking.admin.organization.UserService
@@ -52,6 +54,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         DataRetentionServiceImpl(clientOptions)
     }
 
+    private val spendLimit: SpendLimitService by lazy { SpendLimitServiceImpl(clientOptions) }
+
     private val spendAlerts: SpendAlertService by lazy { SpendAlertServiceImpl(clientOptions) }
 
     private val certificates: CertificateService by lazy { CertificateServiceImpl(clientOptions) }
@@ -79,6 +83,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
     override fun roles(): RoleService = roles
 
     override fun dataRetention(): DataRetentionService = dataRetention
+
+    override fun spendLimit(): SpendLimitService = spendLimit
 
     override fun spendAlerts(): SpendAlertService = spendAlerts
 
@@ -121,6 +127,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
             DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val spendLimit: SpendLimitService.WithRawResponse by lazy {
+            SpendLimitServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendAlerts: SpendAlertService.WithRawResponse by lazy {
             SpendAlertServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -156,6 +166,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         override fun roles(): RoleService.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
+
+        override fun spendLimit(): SpendLimitService.WithRawResponse = spendLimit
 
         override fun spendAlerts(): SpendAlertService.WithRawResponse = spendAlerts
 
