@@ -45,6 +45,8 @@ import com.openai.services.async.admin.organization.projects.ServiceAccountServi
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.UserServiceAsync
 import com.openai.services.async.admin.organization.projects.UserServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -86,6 +88,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         DataRetentionServiceAsyncImpl(clientOptions)
     }
 
+    private val spendLimit: SpendLimitServiceAsync by lazy {
+        SpendLimitServiceAsyncImpl(clientOptions)
+    }
+
     private val spendAlerts: SpendAlertServiceAsync by lazy {
         SpendAlertServiceAsyncImpl(clientOptions)
     }
@@ -116,6 +122,8 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun roles(): RoleServiceAsync = roles
 
     override fun dataRetention(): DataRetentionServiceAsync = dataRetention
+
+    override fun spendLimit(): SpendLimitServiceAsync = spendLimit
 
     override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
 
@@ -199,6 +207,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             DataRetentionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val spendLimit: SpendLimitServiceAsync.WithRawResponse by lazy {
+            SpendLimitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendAlerts: SpendAlertServiceAsync.WithRawResponse by lazy {
             SpendAlertServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -233,6 +245,8 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun roles(): RoleServiceAsync.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionServiceAsync.WithRawResponse = dataRetention
+
+        override fun spendLimit(): SpendLimitServiceAsync.WithRawResponse = spendLimit
 
         override fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse = spendAlerts
 

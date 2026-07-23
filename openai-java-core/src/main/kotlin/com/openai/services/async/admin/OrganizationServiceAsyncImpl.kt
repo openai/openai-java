@@ -21,6 +21,8 @@ import com.openai.services.async.admin.organization.RoleServiceAsync
 import com.openai.services.async.admin.organization.RoleServiceAsyncImpl
 import com.openai.services.async.admin.organization.SpendAlertServiceAsync
 import com.openai.services.async.admin.organization.SpendAlertServiceAsyncImpl
+import com.openai.services.async.admin.organization.SpendLimitServiceAsync
+import com.openai.services.async.admin.organization.SpendLimitServiceAsyncImpl
 import com.openai.services.async.admin.organization.UsageServiceAsync
 import com.openai.services.async.admin.organization.UsageServiceAsyncImpl
 import com.openai.services.async.admin.organization.UserServiceAsync
@@ -54,6 +56,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         DataRetentionServiceAsyncImpl(clientOptions)
     }
 
+    private val spendLimit: SpendLimitServiceAsync by lazy {
+        SpendLimitServiceAsyncImpl(clientOptions)
+    }
+
     private val spendAlerts: SpendAlertServiceAsync by lazy {
         SpendAlertServiceAsyncImpl(clientOptions)
     }
@@ -85,6 +91,8 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     override fun roles(): RoleServiceAsync = roles
 
     override fun dataRetention(): DataRetentionServiceAsync = dataRetention
+
+    override fun spendLimit(): SpendLimitServiceAsync = spendLimit
 
     override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
 
@@ -127,6 +135,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
             DataRetentionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val spendLimit: SpendLimitServiceAsync.WithRawResponse by lazy {
+            SpendLimitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendAlerts: SpendAlertServiceAsync.WithRawResponse by lazy {
             SpendAlertServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -162,6 +174,8 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         override fun roles(): RoleServiceAsync.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionServiceAsync.WithRawResponse = dataRetention
+
+        override fun spendLimit(): SpendLimitServiceAsync.WithRawResponse = spendLimit
 
         override fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse = spendAlerts
 
