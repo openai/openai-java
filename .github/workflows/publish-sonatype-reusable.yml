@@ -31,7 +31,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       - name: Compile the openai-java-core project
         run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
