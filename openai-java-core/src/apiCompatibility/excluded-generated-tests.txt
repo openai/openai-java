@@ -1,0 +1,24 @@
+# These baseline tests depend on Kotlin-internal implementation details. Public expressions from
+# them live in the consumer fixtures next to this manifest.
+openai-java-core/src/test/kotlin/com/openai/models/audio/transcriptions/TranscriptionCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/audio/translations/TranslationCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionMessageTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/containers/files/FileCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/files/FileCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/images/ImageCreateVariationParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseOutputMessageTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/skills/SkillCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/skills/versions/VersionCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/uploads/parts/PartCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoCreateCharacterParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoCreateParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoEditParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoExtendParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoRemixParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt

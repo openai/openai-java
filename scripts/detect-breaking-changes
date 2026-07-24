@@ -25,27 +25,12 @@ SUPPORT_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/core/StructuredOutputsTestUtils.kt
 )
 
-# Multipart fixtures exercise public parameter builders and union factories, but their generated
-# recursive-comparison assertions call the Kotlin-internal `MultipartField.map` helper. Preserve
-# each fixture and rewrite only that internal assertion expression.
-MULTIPART_FIXTURES=(
-	openai-java-core/src/test/kotlin/com/openai/models/audio/transcriptions/TranscriptionCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/audio/translations/TranslationCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/containers/files/FileCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/files/FileCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/images/ImageCreateVariationParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/skills/SkillCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/skills/versions/VersionCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/uploads/parts/PartCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoCreateCharacterParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoEditParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoExtendParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoRemixParamsTest.kt
-)
-
 COMPATIBILITY_ROOT="openai-java-core/build/api-compatibility-source"
+POLICY_PATH="openai-java-core/src/apiCompatibility"
+POLICY_ROOT="${COMPATIBILITY_ROOT}/${POLICY_PATH}"
+EXCLUSIONS_PATH="${POLICY_ROOT}/excluded-generated-tests.txt"
+PUBLIC_FIXTURE_PATH="${POLICY_ROOT}/kotlin"
+
 rm -rf "${COMPATIBILITY_ROOT}"
 mkdir -p "${COMPATIBILITY_ROOT}"
 
@@ -76,165 +61,58 @@ for PATHSPEC in "${SUPPORT_PATHS[@]}"; do
     git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
 done
 
-# These baseline tests combine public API coverage with Kotlin-internal implementation setup.
-# Replace them with consumer-style fixtures that preserve the public expressions without relying on
-# internal constructors or helpers.
-cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt" <<'KOTLIN'
-package com.openai.models.chat.completions
+# Compatibility exceptions are policy, not transformations of generated source. Always use the
+# policy from the base commit so a proposed SDK change cannot weaken its own compatibility gate.
+# The fallback bootstraps the policy on the first commit that introduces it.
+if git cat-file -e "${BASE_COMMIT}:${POLICY_PATH}" 2>/dev/null; then
+    git archive "${BASE_COMMIT}" -- "${POLICY_PATH}" | tar -x -C "${COMPATIBILITY_ROOT}"
+else
+    echo "Baseline has no API compatibility policy; using the proposed policy for bootstrap"
+    mkdir -p "${POLICY_ROOT}"
+    cp -R "${POLICY_PATH}/." "${POLICY_ROOT}/"
+fi
 
-import com.openai.models.ChatModel
-import com.openai.services.async.chat.ChatCompletionServiceAsync
-import com.openai.services.blocking.chat.ChatCompletionService
+if [ ! -f "${EXCLUSIONS_PATH}" ]; then
+    echo "Missing baseline compatibility exclusions: ${EXCLUSIONS_PATH}" >&2
+    exit 1
+fi
 
-internal class StructuredChatOutput(val value: String)
+while IFS= read -r PATHSPEC || [ -n "${PATHSPEC}" ]; do
+    case "${PATHSPEC}" in
+        ''|\#*) continue ;;
+    esac
 
-internal fun publicBuilder(): StructuredChatCompletionCreateParams<StructuredChatOutput> =
-    StructuredChatCompletionCreateParams.builder<StructuredChatOutput>()
-        .addUserMessage("input")
-        .model(ChatModel.GPT_4O_MINI)
-        .responseFormat(StructuredChatOutput::class.java)
-        .build()
+    case "${PATHSPEC}" in
+        *..*|/*)
+            echo "Unsafe compatibility exclusion: ${PATHSPEC}" >&2
+            exit 1
+            ;;
+        openai-java-core/src/test/kotlin/com/openai/models/*.kt | \
+            openai-java-core/src/test/kotlin/com/openai/services/*.kt) ;;
+        *)
+            echo "Compatibility exclusion is outside the restored test roots: ${PATHSPEC}" >&2
+            exit 1
+            ;;
+    esac
 
-internal fun blockingServiceOverloads(
-    service: ChatCompletionService,
-    params: StructuredChatCompletionCreateParams<StructuredChatOutput>,
-) {
-    service.create(params)
-    service.createStreaming(params)
-}
-
-internal fun asyncServiceOverloads(
-    service: ChatCompletionServiceAsync,
-    params: StructuredChatCompletionCreateParams<StructuredChatOutput>,
-) {
-    service.create(params)
-    service.createStreaming(params)
-}
-KOTLIN
-
-cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt" <<'KOTLIN'
-package com.openai.models.responses
-
-import com.openai.models.ChatModel
-import com.openai.services.async.ResponseServiceAsync
-import com.openai.services.blocking.ResponseService
-
-internal class StructuredResponseOutput(val value: String)
-
-internal fun publicBuilder(): StructuredResponseCreateParams<StructuredResponseOutput> =
-    StructuredResponseCreateParams.builder<StructuredResponseOutput>()
-        .input("input")
-        .model(ChatModel.GPT_4O_MINI)
-        .text(StructuredResponseOutput::class.java)
-        .build()
-
-internal fun blockingServiceOverloads(
-    service: ResponseService,
-    params: StructuredResponseCreateParams<StructuredResponseOutput>,
-) {
-    service.create(params)
-    service.createStreaming(params)
-}
-
-internal fun asyncServiceOverloads(
-    service: ResponseServiceAsync,
-    params: StructuredResponseCreateParams<StructuredResponseOutput>,
-) {
-    service.create(params)
-    service.createStreaming(params)
-}
-KOTLIN
-
-cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt" <<'KOTLIN'
-package com.openai.services
-
-import com.openai.models.responses.ResponseStreamEvent
-
-internal class ResponseStreamEventValidationTest {
-    fun outputTextDelta(event: ResponseStreamEvent): String? =
-        if (event.isOutputTextDelta()) event.asOutputTextDelta().delta() else null
-}
-KOTLIN
-
-# Keep the public API coverage in structured-output fixtures while replacing only references to
-# Kotlin-internal constructors and JsonField helpers.
-replace_internal_reference() {
-    local file_path="$1"
-    local internal_source="$2"
-    local public_source="$3"
-
-    if [ ! -f "${file_path}" ]; then
-        echo "Skipping compatibility rewrite; fixture was not restored: ${file_path}" >&2
-        return
+    if [ ! -f "${COMPATIBILITY_ROOT}/${PATHSPEC}" ]; then
+        echo "Baseline compatibility exclusion does not exist: ${PATHSPEC}" >&2
+        exit 1
     fi
 
-    if ! grep -Fq "${internal_source}" "${file_path}"; then
-        echo "Skipping compatibility rewrite; internal reference is absent: ${file_path}" >&2
-        return
-    fi
+    rm "${COMPATIBILITY_ROOT:?}/${PATHSPEC}"
+done < "${EXCLUSIONS_PATH}"
 
-    INTERNAL_SOURCE="${internal_source}" PUBLIC_SOURCE="${public_source}" \
-        perl -0pi -e 's/\Q$ENV{INTERNAL_SOURCE}\E/$ENV{PUBLIC_SOURCE}/g' "${file_path}"
-}
-
-for PATHSPEC in "${MULTIPART_FIXTURES[@]}"; do
-    replace_internal_reference \
-        "${COMPATIBILITY_ROOT}/${PATHSPEC}" \
-        'field.map { (it as? ByteArray)?.inputStream() ?: it }' \
-        'field'
-done
-
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionMessageTest.kt" \
-    'StructuredChatCompletionMessage<X>(X::class.java, mockDelegate)' \
-    'mock(StructuredChatCompletionMessage::class.java) as StructuredChatCompletionMessage<X>'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt" \
-    'StructuredChatCompletion.Choice<X>(X::class.java, mockChoiceDelegate)' \
-    'mock(StructuredChatCompletion.Choice::class.java) as StructuredChatCompletion.Choice<X>'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt" \
-    'assertThat(output.getRequired("_choices")[0].rawChoice).isEqualTo(CHOICE)' \
-    'assertThat(output).isEqualTo(input)'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt" \
-    'assertThat(output.getRequired("_message").rawMessage).isEqualTo(MESSAGE)' \
-    'assertThat(output).isEqualTo(input)'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseOutputMessageTest.kt" \
-    'assertThat(output.getRequired("content")[0].rawContent).isEqualTo(CONTENT)' \
-    'assertThat(output).isEqualTo(input)'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTest.kt" \
-    'assertThat(output.getRequired("_output")[0].rawOutputItem).isEqualTo(OUTPUT_ITEM)' \
-    'assertThat(output).isEqualTo(input)'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt" \
-    'import com.openai.core.jsonSchemaFromClass
-' \
-    ''
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt" \
-    'StructuredResponseTextConfig.builder<X>().inject(mockBuilderDelegate)' \
-    'StructuredResponseTextConfig.builder<X>()
-            .format(X::class.java)
-            .verbosity(VERBOSITY)
-            .verbosity(java.util.Optional.of(VERBOSITY))
-            .verbosity(com.openai.core.JsonField.of(VERBOSITY))
-            .additionalProperties(emptyMap())
-            .putAdditionalProperty("key", com.openai.core.JsonValue.from("value"))
-            .putAllAdditionalProperties(emptyMap())
-            .removeAdditionalProperty("key")
-            .removeAllAdditionalProperties(emptySet())'
-replace_internal_reference \
-    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt" \
-    'jsonSchemaFromClass(X::class.java)' \
-    'mock(ResponseFormatTextJsonSchemaConfig::class.java)'
+if ! find "${PUBLIC_FIXTURE_PATH}" -type f -name '*.kt' -print -quit | grep -q .; then
+    echo "No baseline public compatibility fixtures found in ${PUBLIC_FIXTURE_PATH}" >&2
+    exit 1
+fi
 
 # Keep the compatibility compilation policy in this detector rather than in the proposed build
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
 # by weakening a source set or task in openai-java-core/build.gradle.kts.
-COMPATIBILITY_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
+GENERATED_TEST_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
+PUBLIC_FIXTURE_SOURCE_ROOT="$(pwd)/${PUBLIC_FIXTURE_PATH}"
 COMPATIBILITY_INIT_SCRIPT="$(mktemp)"
 trap 'rm -f "${COMPATIBILITY_INIT_SCRIPT}"' EXIT
 
@@ -246,7 +124,10 @@ gradle.beforeProject { project ->
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             def sourceSets = project.extensions.getByName("sourceSets")
             def compatibility = sourceSets.create("externalApiCompatibility")
-            compatibility.kotlin.srcDir(System.getenv("COMPATIBILITY_SOURCE_ROOT"))
+            compatibility.kotlin.srcDirs(
+                System.getenv("GENERATED_TEST_SOURCE_ROOT"),
+                System.getenv("PUBLIC_FIXTURE_SOURCE_ROOT"),
+            )
             compatibility.compileClasspath += sourceSets.getByName("main").output
 
             project.configurations
@@ -261,7 +142,8 @@ gradle.beforeProject { project ->
 }
 GRADLE
 
-COMPATIBILITY_SOURCE_ROOT="${COMPATIBILITY_SOURCE_ROOT}" \
+GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
+    PUBLIC_FIXTURE_SOURCE_ROOT="${PUBLIC_FIXTURE_SOURCE_ROOT}" \
     ./scripts/gradle \
     --init-script "${COMPATIBILITY_INIT_SCRIPT}" \
     :openai-java-core:compileExternalApiCompatibilityKotlin \
