@@ -25,25 +25,6 @@ val mockitoAgent by configurations.creating {
     isVisible = false
 }
 
-// Compiles tests restored from the base commit as external consumers of the proposed SDK. Unlike
-// the normal test source set, this source set is not a Kotlin friend of main, so `internal`
-// implementation details are excluded from the compatibility surface.
-val apiCompatibility by sourceSets.creating {
-    kotlin.srcDir(
-        layout.buildDirectory.dir(
-            "api-compatibility-source/openai-java-core/src/test/kotlin"
-        )
-    )
-    compileClasspath += sourceSets.main.get().output
-}
-configurations[apiCompatibility.implementationConfigurationName].extendsFrom(
-    configurations.testImplementation.get()
-)
-configurations[apiCompatibility.compileClasspathConfigurationName].attributes.attribute(
-    org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE,
-    17,
-)
-
 // Runtime classpath for `testJacksonCompatibility`: the same dependencies as
 // `testRuntimeClasspath`, but forced to the older Jackson version that the SDK supports.
 val jacksonCompatibilityRuntime by configurations.creating {

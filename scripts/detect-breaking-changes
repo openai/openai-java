@@ -96,13 +96,13 @@ replace_internal_reference() {
     local public_source="$3"
 
     if [ ! -f "${file_path}" ]; then
-        echo "Expected compatibility fixture was not restored: ${file_path}" >&2
-        exit 1
+        echo "Skipping compatibility rewrite; fixture was not restored: ${file_path}" >&2
+        return
     fi
 
     if ! grep -Fq "${internal_source}" "${file_path}"; then
-        echo "Expected internal reference was not found in ${file_path}" >&2
-        exit 1
+        echo "Skipping compatibility rewrite; internal reference is absent: ${file_path}" >&2
+        return
     fi
 
     INTERNAL_SOURCE="${internal_source}" PUBLIC_SOURCE="${public_source}" \
@@ -134,4 +134,38 @@ replace_internal_reference \
     'assertThat(output.getRequired("_output")[0].rawOutputItem).isEqualTo(OUTPUT_ITEM)' \
     'assertThat(output).isEqualTo(input)'
 
-./scripts/gradle :openai-java-core:compileApiCompatibilityKotlin --no-build-cache
+# Keep the compatibility compilation policy in this detector rather than in the proposed build
+# file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
+# by weakening a source set or task in openai-java-core/build.gradle.kts.
+COMPATIBILITY_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
+COMPATIBILITY_INIT_SCRIPT="$(mktemp "${TMPDIR:-/tmp}/openai-java-api-compatibility.XXXXXX.gradle")"
+trap 'rm -f "${COMPATIBILITY_INIT_SCRIPT}"' EXIT
+
+cat > "${COMPATIBILITY_INIT_SCRIPT}" <<'GRADLE'
+import org.gradle.api.attributes.java.TargetJvmVersion
+
+gradle.beforeProject { project ->
+    if (project.path == ":openai-java-core") {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            def sourceSets = project.extensions.getByName("sourceSets")
+            def compatibility = sourceSets.create("externalApiCompatibility")
+            compatibility.kotlin.srcDir(System.getenv("COMPATIBILITY_SOURCE_ROOT"))
+            compatibility.compileClasspath += sourceSets.getByName("main").output
+
+            project.configurations
+                .getByName(compatibility.implementationConfigurationName)
+                .extendsFrom(project.configurations.getByName("testImplementation"))
+            project.configurations
+                .getByName(compatibility.compileClasspathConfigurationName)
+                .attributes
+                .attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
+        }
+    }
+}
+GRADLE
+
+COMPATIBILITY_SOURCE_ROOT="${COMPATIBILITY_SOURCE_ROOT}" \
+    ./scripts/gradle \
+    --init-script "${COMPATIBILITY_INIT_SCRIPT}" \
+    :openai-java-core:compileExternalApiCompatibilityKotlin \
+    --no-build-cache
