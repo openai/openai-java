@@ -25,18 +25,25 @@ SUPPORT_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/core/StructuredOutputsTestUtils.kt
 )
 
-# These generated tests explicitly exercise Kotlin `internal` helpers. They remain covered by the
-# normal test suite, but are not consumer fixtures and must not define the public compatibility
-# surface.
+# These generated tests explicitly exercise Kotlin `internal` structured-output or validation
+# helpers. They remain covered by the normal test suite, but are not consumer fixtures and must not
+# define the public compatibility surface.
 INTERNAL_FIXTURES=(
+	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt
+	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt
+	openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt
+)
+
+# Multipart fixtures exercise public parameter builders and union factories, but their generated
+# recursive-comparison assertions call the Kotlin-internal `MultipartField.map` helper. Preserve
+# each fixture and rewrite only that internal assertion expression.
+MULTIPART_FIXTURES=(
 	openai-java-core/src/test/kotlin/com/openai/models/audio/transcriptions/TranscriptionCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/audio/translations/TranslationCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/containers/files/FileCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/files/FileCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageCreateVariationParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/skills/SkillCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/skills/versions/VersionCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/uploads/parts/PartCreateParamsTest.kt
@@ -45,7 +52,6 @@ INTERNAL_FIXTURES=(
 	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoEditParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoExtendParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/videos/VideoRemixParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt
 )
 
 COMPATIBILITY_ROOT="openai-java-core/build/api-compatibility-source"
@@ -107,6 +113,13 @@ replace_internal_reference() {
     INTERNAL_SOURCE="${internal_source}" PUBLIC_SOURCE="${public_source}" \
         perl -0pi -e 's/\Q$ENV{INTERNAL_SOURCE}\E/$ENV{PUBLIC_SOURCE}/g' "${file_path}"
 }
+
+for PATHSPEC in "${MULTIPART_FIXTURES[@]}"; do
+    replace_internal_reference \
+        "${COMPATIBILITY_ROOT}/${PATHSPEC}" \
+        'field.map { (it as? ByteArray)?.inputStream() ?: it }' \
+        'field'
+done
 
 replace_internal_reference \
     "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionMessageTest.kt" \
