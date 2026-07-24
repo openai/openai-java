@@ -34,10 +34,6 @@ tasks.named<Jar>("jar") {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 
-    // Mockito/Byte Buddy can attach a test-time Java agent. Keep JVM warnings about that out of
-    // stderr so output-sensitive tests can assert application logs exactly.
-    jvmArgs("-XX:+EnableDynamicAgentLoading")
-
     // Run tests in parallel to some degree.
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
     forkEvery = 100
