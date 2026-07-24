@@ -1,3 +1,14 @@
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.Classpath
+import org.gradle.process.CommandLineArgumentProvider
+
+abstract class JavaAgentArgumentProvider : CommandLineArgumentProvider {
+    @get:Classpath abstract val classpath: ConfigurableFileCollection
+
+    override fun asArguments(): Iterable<String> =
+        listOf("-javaagent:${classpath.singleFile.absolutePath}")
+}
+
 plugins {
     id("java")
     id("openai.kotlin")
@@ -7,6 +18,11 @@ plugins {
 
 val jacksonCompatibilityVersion = "2.14.0"
 val jacksonPublishedVersion = "2.18.9"
+val mockitoVersion = "5.14.2"
+val mockitoAgent by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
 
 // Runtime classpath for `testJacksonCompatibility`: the same dependencies as
 // `testRuntimeClasspath`, but forced to the older Jackson version that the SDK supports.
@@ -75,9 +91,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
     testImplementation("org.junit-pioneer:junit-pioneer:1.9.1")
-    testImplementation("org.mockito:mockito-core:5.14.2")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    mockitoAgent("org.mockito:mockito-core:$mockitoVersion") { isTransitive = false }
 }
 
 // Re-run the core and model tests against the older supported Jackson version. Service and
@@ -95,6 +112,14 @@ val testJacksonCompatibility by tasks.registering(Test::class) {
     exclude("**/WireMockHandlebarsCompatibilityTest*")
     systemProperty("junit.jupiter.execution.parallel.enabled", false)
     systemProperty("expected.jackson.version", jacksonCompatibilityVersion)
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgumentProviders.add(
+        objects.newInstance<JavaAgentArgumentProvider>().apply {
+            classpath.from(mockitoAgent)
+        }
+    )
 }
 
 tasks.test {
