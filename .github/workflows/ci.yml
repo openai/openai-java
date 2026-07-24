@@ -6,6 +6,7 @@ on:
       - main
       - next
       - 'stl/**'
+      - 'codegen/stl/**'
   pull_request:
     branches:
       - main

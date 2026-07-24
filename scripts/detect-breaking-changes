@@ -87,13 +87,20 @@ while IFS= read -r PATHSPEC || [ -n "${PATHSPEC}" ]; do
             echo "Unsafe compatibility exclusion: ${PATHSPEC}" >&2
             exit 1
             ;;
-        openai-java-core/src/test/kotlin/com/openai/models/*.kt | \
-            openai-java-core/src/test/kotlin/com/openai/services/*.kt) ;;
-        *)
-            echo "Compatibility exclusion is outside the restored test roots: ${PATHSPEC}" >&2
-            exit 1
-            ;;
     esac
+
+    IS_RESTORED_TEST=false
+    for TEST_ROOT in "${TEST_PATHS[@]}"; do
+        if [[ "${PATHSPEC}" == "${TEST_ROOT}/"* && "${PATHSPEC}" == *.kt ]]; then
+            IS_RESTORED_TEST=true
+            break
+        fi
+    done
+
+    if [ "${IS_RESTORED_TEST}" != true ]; then
+        echo "Compatibility exclusion is outside the restored test roots: ${PATHSPEC}" >&2
+        exit 1
+    fi
 
     if [ ! -f "${COMPATIBILITY_ROOT}/${PATHSPEC}" ]; then
         echo "Baseline compatibility exclusion does not exist: ${PATHSPEC}" >&2
