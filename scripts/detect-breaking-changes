@@ -26,6 +26,7 @@ SUPPORT_PATHS=(
 )
 
 COMPATIBILITY_ROOT="openai-java-core/build/api-compatibility-source"
+PROPOSED_COMPATIBILITY_ROOT="${COMPATIBILITY_ROOT}/proposed"
 POLICY_PATH="openai-java-core/src/apiCompatibility"
 POLICY_ROOT="${COMPATIBILITY_ROOT}/${POLICY_PATH}"
 BASELINE_EXCLUSIONS_PATH="${POLICY_ROOT}/excluded-generated-tests.txt"
@@ -56,13 +57,36 @@ if [ "${RESTORED_TEST_PATHS}" -eq 0 ]; then
     exit 1
 fi
 
-for PATHSPEC in "${SUPPORT_PATHS[@]}"; do
-    if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
-        echo "Skipping support path absent from base commit: ${PATHSPEC}"
+PROPOSED_TEST_PATHS=0
+for PATHSPEC in "${TEST_PATHS[@]}"; do
+    if [ ! -d "${PATHSPEC}" ]; then
+        echo "Skipping proposed test path absent from working tree: ${PATHSPEC}"
         continue
     fi
 
-    git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
+    mkdir -p "${PROPOSED_COMPATIBILITY_ROOT}/$(dirname "${PATHSPEC}")"
+    cp -R "${PATHSPEC}" "${PROPOSED_COMPATIBILITY_ROOT}/$(dirname "${PATHSPEC}")/"
+    PROPOSED_TEST_PATHS=$((PROPOSED_TEST_PATHS + 1))
+done
+
+if [ "${PROPOSED_TEST_PATHS}" -eq 0 ]; then
+    echo "No proposed test paths were found in the working tree" >&2
+    exit 1
+fi
+
+for PATHSPEC in "${SUPPORT_PATHS[@]}"; do
+    if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
+        echo "Skipping support path absent from base commit: ${PATHSPEC}"
+    else
+        git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
+    fi
+
+    if [ ! -f "${PATHSPEC}" ]; then
+        echo "Skipping proposed support path absent from working tree: ${PATHSPEC}"
+    else
+        mkdir -p "${PROPOSED_COMPATIBILITY_ROOT}/$(dirname "${PATHSPEC}")"
+        cp "${PATHSPEC}" "${PROPOSED_COMPATIBILITY_ROOT}/${PATHSPEC}"
+    fi
 done
 
 # Compatibility exceptions are policy, not transformations of generated source. Always use the
@@ -146,9 +170,9 @@ validate_exclusions \
     true
 validate_exclusions \
     "${PROPOSED_EXCLUSIONS_PATH}" \
-    . \
+    "${PROPOSED_COMPATIBILITY_ROOT}" \
     proposed \
-    false
+    true
 validate_policy_files "${BASELINE_DEPENDENCIES_PATH}" "${BASELINE_FIXTURE_PATH}" baseline
 validate_policy_files "${PROPOSED_DEPENDENCIES_PATH}" "${PROPOSED_FIXTURE_PATH}" proposed
 
@@ -156,6 +180,7 @@ validate_policy_files "${PROPOSED_DEPENDENCIES_PATH}" "${PROPOSED_FIXTURE_PATH}"
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
 # by weakening a source set or task in openai-java-core/build.gradle.kts.
 GENERATED_TEST_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
+PROPOSED_GENERATED_TEST_SOURCE_ROOT="$(pwd)/${PROPOSED_COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
 BASELINE_FIXTURE_SOURCE_ROOT="$(pwd)/${BASELINE_FIXTURE_PATH}"
 BASELINE_DEPENDENCIES_FILE="$(pwd)/${BASELINE_DEPENDENCIES_PATH}"
 PROPOSED_FIXTURE_SOURCE_ROOT="$(pwd)/${PROPOSED_FIXTURE_PATH}"
@@ -196,7 +221,7 @@ gradle.beforeProject { project ->
                 }
                 project.dependencies.add(
                     implementation.name,
-                    project.dependencies.project([path: ":openai-java-client-okhttp"]),
+                    project.dependencies.project([path: ":openai-java-client-okhttp"])
                 )
 
                 project.configurations
@@ -209,13 +234,13 @@ gradle.beforeProject { project ->
                 "externalApiCompatibility",
                 System.getenv("GENERATED_TEST_SOURCE_ROOT"),
                 System.getenv("BASELINE_FIXTURE_SOURCE_ROOT"),
-                System.getenv("BASELINE_DEPENDENCIES_FILE"),
+                System.getenv("BASELINE_DEPENDENCIES_FILE")
             )
             configureCompatibility(
                 "proposedApiCompatibility",
-                null,
+                System.getenv("PROPOSED_GENERATED_TEST_SOURCE_ROOT"),
                 System.getenv("PROPOSED_FIXTURE_SOURCE_ROOT"),
-                System.getenv("PROPOSED_DEPENDENCIES_FILE"),
+                System.getenv("PROPOSED_DEPENDENCIES_FILE")
             )
         }
     }
@@ -223,6 +248,7 @@ gradle.beforeProject { project ->
 GRADLE
 
 GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
+    PROPOSED_GENERATED_TEST_SOURCE_ROOT="${PROPOSED_GENERATED_TEST_SOURCE_ROOT}" \
     BASELINE_FIXTURE_SOURCE_ROOT="${BASELINE_FIXTURE_SOURCE_ROOT}" \
     BASELINE_DEPENDENCIES_FILE="${BASELINE_DEPENDENCIES_FILE}" \
     PROPOSED_FIXTURE_SOURCE_ROOT="${PROPOSED_FIXTURE_SOURCE_ROOT}" \
