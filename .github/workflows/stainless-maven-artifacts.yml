@@ -1,5 +1,8 @@
 name: Stainless Maven artifacts
 
+# GitHub Actions does not support repository filters on workflow triggers. Keep this push trigger in
+# shared history so the Stainless fork inherits artifact publication; upstream runs stop at the
+# uniquely named, non-required skipped job below.
 on:
   push:
     branches:

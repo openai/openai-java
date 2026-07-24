@@ -37,7 +37,6 @@ INTERNAL_FIXTURES=(
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageCreateVariationParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/skills/SkillCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/skills/versions/VersionCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/uploads/parts/PartCreateParamsTest.kt
@@ -133,6 +132,28 @@ replace_internal_reference \
     "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTest.kt" \
     'assertThat(output.getRequired("_output")[0].rawOutputItem).isEqualTo(OUTPUT_ITEM)' \
     'assertThat(output).isEqualTo(input)'
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt" \
+    'import com.openai.core.jsonSchemaFromClass
+' \
+    ''
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt" \
+    'StructuredResponseTextConfig.builder<X>().inject(mockBuilderDelegate)' \
+    'StructuredResponseTextConfig.builder<X>()
+            .format(X::class.java)
+            .verbosity(VERBOSITY)
+            .verbosity(java.util.Optional.of(VERBOSITY))
+            .verbosity(com.openai.core.JsonField.of(VERBOSITY))
+            .additionalProperties(emptyMap())
+            .putAdditionalProperty("key", com.openai.core.JsonValue.from("value"))
+            .putAllAdditionalProperties(emptyMap())
+            .removeAdditionalProperty("key")
+            .removeAllAdditionalProperties(emptySet())'
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt" \
+    'jsonSchemaFromClass(X::class.java)' \
+    'mock(ResponseFormatTextJsonSchemaConfig::class.java)'
 
 # Keep the compatibility compilation policy in this detector rather than in the proposed build
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
