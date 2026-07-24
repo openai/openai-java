@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -144,6 +145,38 @@ internal class AutoPagerAsyncTest {
             verify(handler, times(1)).onNext("chunk4")
             verify(handler, times(1)).onComplete(Optional.empty())
         }
+    }
+
+    @Test
+    fun subscribe_whenHandlerOnNextThrowsOnFirstPage_callsOnComplete() {
+        val page = PageAsyncImpl(listOf("chunk1", "chunk2"), hasNext = false)
+        val autoPagerAsync = AutoPagerAsync.from(page, executor)
+        doThrow(ERROR).whenever(handler).onNext("chunk1")
+
+        autoPagerAsync.subscribe(handler)
+
+        verify(handler, times(1)).onNext("chunk1")
+        verify(handler, never()).onNext("chunk2")
+        verify(handler, times(1)).onComplete(Optional.of(ERROR))
+        assertThat(autoPagerAsync.onCompleteFuture()).isCompletedExceptionally
+    }
+
+    @Test
+    fun subscribe_whenHandlerOnNextThrowsOnNextPage_callsOnComplete() {
+        val page = PageAsyncImpl(listOf("chunk1"))
+        val autoPagerAsync = AutoPagerAsync.from(page, executor)
+        doThrow(ERROR).whenever(handler).onNext("chunk2")
+
+        autoPagerAsync.subscribe(handler)
+        page.nextPageFuture.complete(PageAsyncImpl(listOf("chunk2", "chunk3"), hasNext = false))
+
+        inOrder(handler) {
+            verify(handler, times(1)).onNext("chunk1")
+            verify(handler, times(1)).onNext("chunk2")
+            verify(handler, times(1)).onComplete(Optional.of(ERROR))
+        }
+        verify(handler, never()).onNext("chunk3")
+        assertThat(autoPagerAsync.onCompleteFuture()).isCompletedExceptionally
     }
 
     @Test
