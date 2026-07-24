@@ -31,9 +31,11 @@ POLICY_PATH="openai-java-core/src/apiCompatibility"
 POLICY_ROOT="${COMPATIBILITY_ROOT}/${POLICY_PATH}"
 BASELINE_EXCLUSIONS_PATH="${POLICY_ROOT}/excluded-generated-tests.txt"
 BASELINE_DEPENDENCIES_PATH="${POLICY_ROOT}/dependencies.txt"
+BASELINE_PUBLIC_API_PATH="${POLICY_ROOT}/structured-output-public-api.txt"
 BASELINE_FIXTURE_PATH="${POLICY_ROOT}/kotlin"
 PROPOSED_EXCLUSIONS_PATH="${POLICY_PATH}/excluded-generated-tests.txt"
 PROPOSED_DEPENDENCIES_PATH="${POLICY_PATH}/dependencies.txt"
+PROPOSED_PUBLIC_API_PATH="${POLICY_PATH}/structured-output-public-api.txt"
 PROPOSED_FIXTURE_PATH="${POLICY_PATH}/kotlin"
 
 rm -rf "${COMPATIBILITY_ROOT}"
@@ -150,7 +152,8 @@ validate_exclusions() {
 validate_policy_files() {
     local dependencies_path="$1"
     local fixture_path="$2"
-    local policy_name="$3"
+    local public_api_path="$3"
+    local policy_name="$4"
 
     if [ ! -s "${dependencies_path}" ]; then
         echo "No ${policy_name} compatibility dependencies found in ${dependencies_path}" >&2
@@ -159,6 +162,11 @@ validate_policy_files() {
 
     if ! find "${fixture_path}" -type f -name '*.kt' -print -quit | grep -q .; then
         echo "No ${policy_name} public compatibility fixtures found in ${fixture_path}" >&2
+        exit 1
+    fi
+
+    if [ ! -s "${public_api_path}" ]; then
+        echo "No ${policy_name} structured-output API signatures found in ${public_api_path}" >&2
         exit 1
     fi
 }
@@ -173,8 +181,16 @@ validate_exclusions \
     "${PROPOSED_COMPATIBILITY_ROOT}" \
     proposed \
     true
-validate_policy_files "${BASELINE_DEPENDENCIES_PATH}" "${BASELINE_FIXTURE_PATH}" baseline
-validate_policy_files "${PROPOSED_DEPENDENCIES_PATH}" "${PROPOSED_FIXTURE_PATH}" proposed
+validate_policy_files \
+    "${BASELINE_DEPENDENCIES_PATH}" \
+    "${BASELINE_FIXTURE_PATH}" \
+    "${BASELINE_PUBLIC_API_PATH}" \
+    baseline
+validate_policy_files \
+    "${PROPOSED_DEPENDENCIES_PATH}" \
+    "${PROPOSED_FIXTURE_PATH}" \
+    "${PROPOSED_PUBLIC_API_PATH}" \
+    proposed
 
 # Keep the compatibility compilation policy in this detector rather than in the proposed build
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
@@ -258,3 +274,112 @@ GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
     :openai-java-core:compileExternalApiCompatibilityKotlin \
     :openai-java-core:compileProposedApiCompatibilityKotlin \
     --no-build-cache
+
+validate_public_api_signatures() {
+    local manifest_path="$1"
+    local policy_name="$2"
+    local require_exact_match="$3"
+    local classes_root
+    local actual_signatures
+    local classes
+    local expected_signatures
+    local missing_signatures
+    local unexpected_signatures
+    local expected
+    local class_and_method
+    local descriptor
+    local class_name
+    local method_name
+    local extra
+
+    classes_root="$(pwd)/openai-java-core/build/classes/kotlin/main"
+    actual_signatures="$(mktemp)"
+    classes="$(mktemp)"
+    expected_signatures="$(mktemp)"
+    missing_signatures="$(mktemp)"
+    unexpected_signatures="$(mktemp)"
+
+    while IFS= read -r expected || [ -n "${expected}" ]; do
+        case "${expected}" in
+            ''|\#*) continue ;;
+        esac
+
+        read -r class_and_method descriptor extra <<< "${expected}"
+        class_name="${class_and_method%#*}"
+        method_name="${class_and_method##*#}"
+
+        if [ -n "${extra:-}" ] ||
+            [[ ! "${class_name}" =~ ^[A-Za-z0-9_.\$]+$ ]] ||
+            [[ ! "${method_name}" =~ ^[A-Za-z0-9_]+$ ]] ||
+            [[ ! "${descriptor}" =~ ^\([^[:space:]]*\)[^[:space:]]+$ ]]; then
+            echo "Invalid ${policy_name} public API signature: ${expected}" >&2
+            exit 1
+        fi
+
+        printf '%s\n' "${class_name}" >> "${classes}"
+        printf '%s\n' "${expected}" >> "${expected_signatures}"
+    done < "${manifest_path}"
+
+    if [ ! -s "${classes}" ]; then
+        echo "No ${policy_name} public API classes found in ${manifest_path}" >&2
+        exit 1
+    fi
+
+    LC_ALL=C sort -u "${classes}" -o "${classes}"
+    if [ "$(LC_ALL=C sort "${expected_signatures}" | uniq -d | wc -l)" -ne 0 ]; then
+        echo "${policy_name} public API manifest contains duplicate signatures" >&2
+        LC_ALL=C sort "${expected_signatures}" | uniq -d >&2
+        exit 1
+    fi
+    LC_ALL=C sort -o "${expected_signatures}" "${expected_signatures}"
+
+    while IFS= read -r class_name; do
+        if ! javap -classpath "${classes_root}" -public -s "${class_name}" |
+            awk -v class_name="${class_name}" '
+                /^  public/ && /\(/ {
+                    declaration = $0
+                    sub(/\(.*/, "", declaration)
+                    count = split(declaration, fields, /[[:space:]]+/)
+                    method_name = fields[count]
+                    next
+                }
+                /descriptor:/ && method_name != "" {
+                    if (method_name !~ /\$/ && method_name !~ /^com\.openai\./ && method_name != "equals" && method_name != "hashCode" && method_name != "toString") {
+                        print class_name "#" method_name " " $2
+                    }
+                    method_name = ""
+                }
+            ' >> "${actual_signatures}"; then
+            echo "${policy_name} public API class is missing: ${class_name}" >&2
+            exit 1
+        fi
+    done < "${classes}"
+
+    LC_ALL=C sort -u -o "${actual_signatures}" "${actual_signatures}"
+    comm -23 "${expected_signatures}" "${actual_signatures}" > "${missing_signatures}"
+    if [ -s "${missing_signatures}" ]; then
+        echo "${policy_name} structured-output API is missing:" >&2
+        sed 's/^/  /' "${missing_signatures}" >&2
+        exit 1
+    fi
+
+    if [ "${require_exact_match}" = true ]; then
+        comm -13 "${expected_signatures}" "${actual_signatures}" > "${unexpected_signatures}"
+        if [ -s "${unexpected_signatures}" ]; then
+            echo "${policy_name} structured-output API manifest is incomplete:" >&2
+            sed 's/^/  /' "${unexpected_signatures}" >&2
+            exit 1
+        fi
+    fi
+
+    rm -f \
+        "${actual_signatures}" \
+        "${classes}" \
+        "${expected_signatures}" \
+        "${missing_signatures}" \
+        "${unexpected_signatures}"
+    echo "${policy_name} structured-output public API is compatible."
+}
+
+validate_public_api_signatures "${BASELINE_PUBLIC_API_PATH}" baseline false
+validate_public_api_signatures "${PROPOSED_PUBLIC_API_PATH}" proposed true
