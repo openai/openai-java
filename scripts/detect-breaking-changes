@@ -25,13 +25,6 @@ SUPPORT_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/core/StructuredOutputsTestUtils.kt
 )
 
-# This generated test explicitly exercises Kotlin `internal` structured-output helpers. It remains
-# covered by the normal test suite, but is not a consumer fixture and must not define the public
-# compatibility surface.
-INTERNAL_FIXTURES=(
-	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt
-)
-
 # Multipart fixtures exercise public parameter builders and union factories, but their generated
 # recursive-comparison assertions call the Kotlin-internal `MultipartField.map` helper. Preserve
 # each fixture and rewrite only that internal assertion expression.
@@ -83,17 +76,42 @@ for PATHSPEC in "${SUPPORT_PATHS[@]}"; do
     git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
 done
 
-for PATHSPEC in "${INTERNAL_FIXTURES[@]}"; do
-    GENERATED_PATH="${COMPATIBILITY_ROOT}/${PATHSPEC}"
-    if [ -f "${GENERATED_PATH}" ]; then
-        echo "Excluding internal-only compatibility fixture: ${PATHSPEC}"
-        rm "${GENERATED_PATH}"
-    fi
-done
-
 # These baseline tests combine public API coverage with Kotlin-internal implementation setup.
 # Replace them with consumer-style fixtures that preserve the public expressions without relying on
 # internal constructors or helpers.
+cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt" <<'KOTLIN'
+package com.openai.models.chat.completions
+
+import com.openai.models.ChatModel
+import com.openai.services.async.chat.ChatCompletionServiceAsync
+import com.openai.services.blocking.chat.ChatCompletionService
+
+internal class StructuredChatOutput(val value: String)
+
+internal fun publicBuilder(): StructuredChatCompletionCreateParams<StructuredChatOutput> =
+    StructuredChatCompletionCreateParams.builder<StructuredChatOutput>()
+        .addUserMessage("input")
+        .model(ChatModel.GPT_4O_MINI)
+        .responseFormat(StructuredChatOutput::class.java)
+        .build()
+
+internal fun blockingServiceOverloads(
+    service: ChatCompletionService,
+    params: StructuredChatCompletionCreateParams<StructuredChatOutput>,
+) {
+    service.create(params)
+    service.createStreaming(params)
+}
+
+internal fun asyncServiceOverloads(
+    service: ChatCompletionServiceAsync,
+    params: StructuredChatCompletionCreateParams<StructuredChatOutput>,
+) {
+    service.create(params)
+    service.createStreaming(params)
+}
+KOTLIN
+
 cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt" <<'KOTLIN'
 package com.openai.models.responses
 
