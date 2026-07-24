@@ -25,13 +25,11 @@ SUPPORT_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/core/StructuredOutputsTestUtils.kt
 )
 
-# These generated tests explicitly exercise Kotlin `internal` structured-output or validation
-# helpers. They remain covered by the normal test suite, but are not consumer fixtures and must not
-# define the public compatibility surface.
+# This generated test explicitly exercises Kotlin `internal` structured-output helpers. It remains
+# covered by the normal test suite, but is not a consumer fixture and must not define the public
+# compatibility surface.
 INTERNAL_FIXTURES=(
 	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt
 )
 
 # Multipart fixtures exercise public parameter builders and union factories, but their generated
@@ -92,6 +90,53 @@ for PATHSPEC in "${INTERNAL_FIXTURES[@]}"; do
         rm "${GENERATED_PATH}"
     fi
 done
+
+# These baseline tests combine public API coverage with Kotlin-internal implementation setup.
+# Replace them with consumer-style fixtures that preserve the public expressions without relying on
+# internal constructors or helpers.
+cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt" <<'KOTLIN'
+package com.openai.models.responses
+
+import com.openai.models.ChatModel
+import com.openai.services.async.ResponseServiceAsync
+import com.openai.services.blocking.ResponseService
+
+internal class StructuredResponseOutput(val value: String)
+
+internal fun publicBuilder(): StructuredResponseCreateParams<StructuredResponseOutput> =
+    StructuredResponseCreateParams.builder<StructuredResponseOutput>()
+        .input("input")
+        .model(ChatModel.GPT_4O_MINI)
+        .text(StructuredResponseOutput::class.java)
+        .build()
+
+internal fun blockingServiceOverloads(
+    service: ResponseService,
+    params: StructuredResponseCreateParams<StructuredResponseOutput>,
+) {
+    service.create(params)
+    service.createStreaming(params)
+}
+
+internal fun asyncServiceOverloads(
+    service: ResponseServiceAsync,
+    params: StructuredResponseCreateParams<StructuredResponseOutput>,
+) {
+    service.create(params)
+    service.createStreaming(params)
+}
+KOTLIN
+
+cat > "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt" <<'KOTLIN'
+package com.openai.services
+
+import com.openai.models.responses.ResponseStreamEvent
+
+internal class ResponseStreamEventValidationTest {
+    fun outputTextDelta(event: ResponseStreamEvent): String? =
+        if (event.isOutputTextDelta()) event.asOutputTextDelta().delta() else null
+}
+KOTLIN
 
 # Keep the public API coverage in structured-output fixtures while replacing only references to
 # Kotlin-internal constructors and JsonField helpers.
