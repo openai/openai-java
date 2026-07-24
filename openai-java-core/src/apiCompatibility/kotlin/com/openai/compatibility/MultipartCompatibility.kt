@@ -21,7 +21,14 @@ import java.io.InputStream
 
 internal object MultipartCompatibility {
     fun transcription(stream: InputStream): TranscriptionCreateParams =
-        TranscriptionCreateParams.builder().file(stream).model(AudioModel.GPT_4O_TRANSCRIBE).build()
+        TranscriptionCreateParams.builder()
+            .file(stream)
+            .model(AudioModel.GPT_4O_TRANSCRIBE)
+            .chunkingStrategyAuto()
+            .build()
+
+    fun transcriptionChunkingStrategy(): TranscriptionCreateParams.ChunkingStrategy =
+        TranscriptionCreateParams.ChunkingStrategy.ofAuto()
 
     fun translation(stream: InputStream): TranslationCreateParams =
         TranslationCreateParams.builder().file(stream).model(AudioModel.WHISPER_1).build()

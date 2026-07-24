@@ -28,8 +28,12 @@ SUPPORT_PATHS=(
 COMPATIBILITY_ROOT="openai-java-core/build/api-compatibility-source"
 POLICY_PATH="openai-java-core/src/apiCompatibility"
 POLICY_ROOT="${COMPATIBILITY_ROOT}/${POLICY_PATH}"
-EXCLUSIONS_PATH="${POLICY_ROOT}/excluded-generated-tests.txt"
-PUBLIC_FIXTURE_PATH="${POLICY_ROOT}/kotlin"
+BASELINE_EXCLUSIONS_PATH="${POLICY_ROOT}/excluded-generated-tests.txt"
+BASELINE_DEPENDENCIES_PATH="${POLICY_ROOT}/dependencies.txt"
+BASELINE_FIXTURE_PATH="${POLICY_ROOT}/kotlin"
+PROPOSED_EXCLUSIONS_PATH="${POLICY_PATH}/excluded-generated-tests.txt"
+PROPOSED_DEPENDENCIES_PATH="${POLICY_PATH}/dependencies.txt"
+PROPOSED_FIXTURE_PATH="${POLICY_PATH}/kotlin"
 
 rm -rf "${COMPATIBILITY_ROOT}"
 mkdir -p "${COMPATIBILITY_ROOT}"
@@ -72,54 +76,90 @@ else
     cp -R "${POLICY_PATH}/." "${POLICY_ROOT}/"
 fi
 
-if [ ! -f "${EXCLUSIONS_PATH}" ]; then
-    echo "Missing baseline compatibility exclusions: ${EXCLUSIONS_PATH}" >&2
-    exit 1
-fi
+validate_exclusions() {
+    local exclusions_path="$1"
+    local source_root="$2"
+    local policy_name="$3"
+    local remove_exclusions="$4"
 
-while IFS= read -r PATHSPEC || [ -n "${PATHSPEC}" ]; do
-    case "${PATHSPEC}" in
-        ''|\#*) continue ;;
-    esac
+    if [ ! -f "${exclusions_path}" ]; then
+        echo "Missing ${policy_name} compatibility exclusions: ${exclusions_path}" >&2
+        exit 1
+    fi
 
-    case "${PATHSPEC}" in
-        *..*|/*)
-            echo "Unsafe compatibility exclusion: ${PATHSPEC}" >&2
+    while IFS= read -r PATHSPEC || [ -n "${PATHSPEC}" ]; do
+        case "${PATHSPEC}" in
+            ''|\#*) continue ;;
+        esac
+
+        case "${PATHSPEC}" in
+            *..*|/*)
+                echo "Unsafe ${policy_name} compatibility exclusion: ${PATHSPEC}" >&2
+                exit 1
+                ;;
+        esac
+
+        IS_RESTORED_TEST=false
+        for TEST_ROOT in "${TEST_PATHS[@]}"; do
+            if [[ "${PATHSPEC}" == "${TEST_ROOT}/"* && "${PATHSPEC}" == *.kt ]]; then
+                IS_RESTORED_TEST=true
+                break
+            fi
+        done
+
+        if [ "${IS_RESTORED_TEST}" != true ]; then
+            echo "${policy_name} compatibility exclusion is outside the test roots: ${PATHSPEC}" >&2
             exit 1
-            ;;
-    esac
-
-    IS_RESTORED_TEST=false
-    for TEST_ROOT in "${TEST_PATHS[@]}"; do
-        if [[ "${PATHSPEC}" == "${TEST_ROOT}/"* && "${PATHSPEC}" == *.kt ]]; then
-            IS_RESTORED_TEST=true
-            break
         fi
-    done
 
-    if [ "${IS_RESTORED_TEST}" != true ]; then
-        echo "Compatibility exclusion is outside the restored test roots: ${PATHSPEC}" >&2
+        if [ ! -f "${source_root}/${PATHSPEC}" ]; then
+            echo "${policy_name} compatibility exclusion does not exist: ${PATHSPEC}" >&2
+            exit 1
+        fi
+
+        if [ "${remove_exclusions}" = true ]; then
+            rm "${source_root:?}/${PATHSPEC}"
+        fi
+    done < "${exclusions_path}"
+}
+
+validate_policy_files() {
+    local dependencies_path="$1"
+    local fixture_path="$2"
+    local policy_name="$3"
+
+    if [ ! -s "${dependencies_path}" ]; then
+        echo "No ${policy_name} compatibility dependencies found in ${dependencies_path}" >&2
         exit 1
     fi
 
-    if [ ! -f "${COMPATIBILITY_ROOT}/${PATHSPEC}" ]; then
-        echo "Baseline compatibility exclusion does not exist: ${PATHSPEC}" >&2
+    if ! find "${fixture_path}" -type f -name '*.kt' -print -quit | grep -q .; then
+        echo "No ${policy_name} public compatibility fixtures found in ${fixture_path}" >&2
         exit 1
     fi
+}
 
-    rm "${COMPATIBILITY_ROOT:?}/${PATHSPEC}"
-done < "${EXCLUSIONS_PATH}"
-
-if ! find "${PUBLIC_FIXTURE_PATH}" -type f -name '*.kt' -print -quit | grep -q .; then
-    echo "No baseline public compatibility fixtures found in ${PUBLIC_FIXTURE_PATH}" >&2
-    exit 1
-fi
+validate_exclusions \
+    "${BASELINE_EXCLUSIONS_PATH}" \
+    "${COMPATIBILITY_ROOT}" \
+    baseline \
+    true
+validate_exclusions \
+    "${PROPOSED_EXCLUSIONS_PATH}" \
+    . \
+    proposed \
+    false
+validate_policy_files "${BASELINE_DEPENDENCIES_PATH}" "${BASELINE_FIXTURE_PATH}" baseline
+validate_policy_files "${PROPOSED_DEPENDENCIES_PATH}" "${PROPOSED_FIXTURE_PATH}" proposed
 
 # Keep the compatibility compilation policy in this detector rather than in the proposed build
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
 # by weakening a source set or task in openai-java-core/build.gradle.kts.
 GENERATED_TEST_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
-PUBLIC_FIXTURE_SOURCE_ROOT="$(pwd)/${PUBLIC_FIXTURE_PATH}"
+BASELINE_FIXTURE_SOURCE_ROOT="$(pwd)/${BASELINE_FIXTURE_PATH}"
+BASELINE_DEPENDENCIES_FILE="$(pwd)/${BASELINE_DEPENDENCIES_PATH}"
+PROPOSED_FIXTURE_SOURCE_ROOT="$(pwd)/${PROPOSED_FIXTURE_PATH}"
+PROPOSED_DEPENDENCIES_FILE="$(pwd)/${PROPOSED_DEPENDENCIES_PATH}"
 COMPATIBILITY_INIT_SCRIPT="$(mktemp)"
 trap 'rm -f "${COMPATIBILITY_INIT_SCRIPT}"' EXIT
 
@@ -130,28 +170,65 @@ gradle.beforeProject { project ->
     if (project.path == ":openai-java-core") {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             def sourceSets = project.extensions.getByName("sourceSets")
-            def compatibility = sourceSets.create("externalApiCompatibility")
-            compatibility.kotlin.srcDirs(
-                System.getenv("GENERATED_TEST_SOURCE_ROOT"),
-                System.getenv("PUBLIC_FIXTURE_SOURCE_ROOT"),
-            )
-            compatibility.compileClasspath += sourceSets.getByName("main").output
+            def main = sourceSets.getByName("main")
 
-            project.configurations
-                .getByName(compatibility.implementationConfigurationName)
-                .extendsFrom(project.configurations.getByName("testImplementation"))
-            project.configurations
-                .getByName(compatibility.compileClasspathConfigurationName)
-                .attributes
-                .attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
+            def configureCompatibility = {
+                name,
+                generatedTestRoot,
+                fixtureRoot,
+                dependenciesFile ->
+                def compatibility = sourceSets.create(name)
+                if (generatedTestRoot) {
+                    compatibility.kotlin.srcDir(generatedTestRoot)
+                }
+                compatibility.kotlin.srcDir(fixtureRoot)
+                compatibility.compileClasspath += main.output + main.compileClasspath
+
+                def implementation =
+                    project.configurations.getByName(
+                        compatibility.implementationConfigurationName
+                    )
+                new File(dependenciesFile).readLines().each { dependency ->
+                    dependency = dependency.trim()
+                    if (dependency && !dependency.startsWith("#")) {
+                        project.dependencies.add(implementation.name, dependency)
+                    }
+                }
+                project.dependencies.add(
+                    implementation.name,
+                    project.dependencies.project([path: ":openai-java-client-okhttp"]),
+                )
+
+                project.configurations
+                    .getByName(compatibility.compileClasspathConfigurationName)
+                    .attributes
+                    .attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
+            }
+
+            configureCompatibility(
+                "externalApiCompatibility",
+                System.getenv("GENERATED_TEST_SOURCE_ROOT"),
+                System.getenv("BASELINE_FIXTURE_SOURCE_ROOT"),
+                System.getenv("BASELINE_DEPENDENCIES_FILE"),
+            )
+            configureCompatibility(
+                "proposedApiCompatibility",
+                null,
+                System.getenv("PROPOSED_FIXTURE_SOURCE_ROOT"),
+                System.getenv("PROPOSED_DEPENDENCIES_FILE"),
+            )
         }
     }
 }
 GRADLE
 
 GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
-    PUBLIC_FIXTURE_SOURCE_ROOT="${PUBLIC_FIXTURE_SOURCE_ROOT}" \
+    BASELINE_FIXTURE_SOURCE_ROOT="${BASELINE_FIXTURE_SOURCE_ROOT}" \
+    BASELINE_DEPENDENCIES_FILE="${BASELINE_DEPENDENCIES_FILE}" \
+    PROPOSED_FIXTURE_SOURCE_ROOT="${PROPOSED_FIXTURE_SOURCE_ROOT}" \
+    PROPOSED_DEPENDENCIES_FILE="${PROPOSED_DEPENDENCIES_FILE}" \
     ./scripts/gradle \
     --init-script "${COMPATIBILITY_INIT_SCRIPT}" \
     :openai-java-core:compileExternalApiCompatibilityKotlin \
+    :openai-java-core:compileProposedApiCompatibilityKotlin \
     --no-build-cache

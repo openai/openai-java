@@ -6,6 +6,7 @@ import com.openai.models.chat.completions.StructuredChatCompletionCreateParams
 import com.openai.models.responses.ResponseTextConfig
 import com.openai.models.responses.StructuredResponse
 import com.openai.models.responses.StructuredResponseCreateParams
+import com.openai.models.responses.StructuredResponseOutputMessage
 import com.openai.models.responses.StructuredResponseTextConfig
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.chat.ChatCompletionServiceAsync
@@ -38,7 +39,20 @@ internal object StructuredOutputsCompatibility {
 
     fun chatOutput(
         completion: StructuredChatCompletion<CompatibilityOutput>
-    ): Optional<CompatibilityOutput> = completion.choices().first().message().content()
+    ): Optional<CompatibilityOutput> {
+        completion.validate()
+        completion.isValid()
+        return completion.choices().first().message().content()
+    }
+
+    fun validateChatOutput(completion: StructuredChatCompletion<CompatibilityOutput>): Boolean {
+        completion.validate()
+        val choice = completion.choices().first()
+        choice.validate()
+        val message = choice.message()
+        message.validate()
+        return completion.isValid() && choice.isValid() && message.isValid()
+    }
 
     fun responseOutput(response: StructuredResponse<CompatibilityOutput>): CompatibilityOutput? =
         response
@@ -48,6 +62,21 @@ internal object StructuredOutputsCompatibility {
             ?.content()
             ?.firstOrNull { it.isOutputText() }
             ?.asOutputText()
+
+    fun optionalResponseOutput(
+        content: StructuredResponseOutputMessage.Content<CompatibilityOutput>
+    ): Optional<CompatibilityOutput> = content.outputText()
+
+    fun validateResponseOutput(response: StructuredResponse<CompatibilityOutput>): Boolean {
+        response.validate()
+        val item = response.output().first()
+        item.validate()
+        val message = item.asMessage()
+        message.validate()
+        val content = message.content().first()
+        content.validate()
+        return response.isValid() && item.isValid() && message.isValid() && content.isValid()
+    }
 
     fun blockingChat(
         service: ChatCompletionService,
