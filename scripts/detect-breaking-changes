@@ -39,8 +39,6 @@ INTERNAL_FIXTURES=(
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageCreateVariationParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseOutputMessageTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTextConfigTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/skills/SkillCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/skills/versions/VersionCreateParamsTest.kt
@@ -91,5 +89,30 @@ for PATHSPEC in "${INTERNAL_FIXTURES[@]}"; do
         rm "${GENERATED_PATH}"
     fi
 done
+
+# Keep the public API coverage in these structured-output fixtures while replacing their one
+# assertion that calls the Kotlin-internal JsonField.getRequired helper.
+sanitize_internal_assertion() {
+    local file_path="$1"
+    local internal_assertion="$2"
+    local public_assertion="$3"
+
+    if ! grep -Fq "${internal_assertion}" "${file_path}"; then
+        echo "Expected internal assertion was not found in ${file_path}" >&2
+        exit 1
+    fi
+
+    INTERNAL_ASSERTION="${internal_assertion}" PUBLIC_ASSERTION="${public_assertion}" \
+        perl -0pi -e 's/\Q$ENV{INTERNAL_ASSERTION}\E/$ENV{PUBLIC_ASSERTION}/g' "${file_path}"
+}
+
+sanitize_internal_assertion \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseOutputMessageTest.kt" \
+    'assertThat(output.getRequired("content")[0].rawContent).isEqualTo(CONTENT)' \
+    'assertThat(output).isEqualTo(input)'
+sanitize_internal_assertion \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTest.kt" \
+    'assertThat(output.getRequired("_output")[0].rawOutputItem).isEqualTo(OUTPUT_ITEM)' \
+    'assertThat(output).isEqualTo(input)'
 
 ./scripts/gradle :openai-java-core:compileApiCompatibilityKotlin --no-build-cache

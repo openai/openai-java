@@ -18,7 +18,7 @@ jobs:
     if: >-
       github.repository == 'openai/openai-java' &&
       github.event.head_commit.message != 'codegen metadata'
-    environment: ci
+    environment: CI
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 

@@ -123,7 +123,18 @@ jobs:
         env:
           BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
-        run: ./scripts/detect-breaking-changes "$BASE_COMMIT"
+        run: |
+          set -euo pipefail
+
+          # The proposed detector verifies the current compatibility policy. Running the baseline
+          # detector as well prevents a PR from weakening that policy to hide an SDK break.
+          ./scripts/detect-breaking-changes "$BASE_COMMIT"
+
+          BASE_DETECTOR="$(mktemp ./scripts/detect-breaking-changes.baseline.XXXXXX)"
+          trap 'rm -f "$BASE_DETECTOR"' EXIT
+          git show "${BASE_COMMIT}:scripts/detect-breaking-changes" > "$BASE_DETECTOR"
+          chmod +x "$BASE_DETECTOR"
+          "$BASE_DETECTOR" "$BASE_COMMIT"
 
   required:
     name: CI / required
