@@ -19,7 +19,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -84,52 +84,115 @@ private constructor(
             !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
+        val result = CompletableFuture<HttpResponse>()
+        val currentResponseFuture = AtomicReference<CompletableFuture<HttpResponse>?>(null)
+        val currentSleepFuture = AtomicReference<CompletableFuture<Void>?>(null)
+
+        fun <T> trackFuture(
+            futureReference: AtomicReference<CompletableFuture<T>?>,
+            future: CompletableFuture<T>,
+        ) {
+            futureReference.set(future)
+            if (result.isCancelled) {
+                futureReference.getAndSet(null)?.cancel(false)
+            }
+        }
+
+        fun completeResult(response: HttpResponse?, throwable: Throwable?) {
+            if (throwable == null) {
+                val completedResponse = checkNotNull(response)
+                if (!result.complete(completedResponse)) {
+                    completedResponse.close()
+                }
+            } else {
+                result.completeExceptionally(throwable)
+            }
+        }
 
         fun executeWithRetries(
             request: HttpRequest,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ) {
+            if (result.isDone) {
+                return
+            }
+
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
             val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            trackFuture(currentResponseFuture, responseFuture)
             if (!isRetryable(requestWithRetryCount)) {
-                return responseFuture
+                responseFuture.whenComplete nonRetryableResponse@{ response, throwable ->
+                    currentResponseFuture.compareAndSet(responseFuture, null)
+
+                    if (result.isDone) {
+                        response?.close()
+                        return@nonRetryableResponse
+                    }
+
+                    completeResult(response, throwable)
+                }
+                return
             }
 
-            return responseFuture
-                .handleAsync(
-                    fun(
-                        response: HttpResponse?,
-                        throwable: Throwable?,
-                    ): CompletableFuture<HttpResponse> {
-                        if (response != null) {
-                            if (++retries > maxRetries || !shouldRetry(response)) {
-                                return CompletableFuture.completedFuture(response)
-                            }
-                        } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
-                                val failedFuture = CompletableFuture<HttpResponse>()
-                                failedFuture.completeExceptionally(throwable)
-                                return failedFuture
-                            }
-                        }
+            responseFuture.whenComplete responseHandler@{ response, throwable ->
+                currentResponseFuture.compareAndSet(responseFuture, null)
 
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
-                        return sleeper.sleepAsync(backoffDuration).thenCompose {
-                            executeWithRetries(requestWithRetryCount, requestOptions)
-                        }
-                    }
-                ) {
-                    // Run in the same thread.
-                    it.run()
+                if (result.isDone) {
+                    response?.close()
+                    return@responseHandler
                 }
-                .thenCompose(Function.identity())
+
+                if (response != null) {
+                    if (++retries > maxRetries || !shouldRetry(response)) {
+                        completeResult(response, null)
+                        return@responseHandler
+                    }
+                } else {
+                    val actualThrowable = checkNotNull(throwable)
+                    if (++retries > maxRetries || !shouldRetry(actualThrowable)) {
+                        completeResult(null, actualThrowable)
+                        return@responseHandler
+                    }
+                }
+
+                val backoffDuration = getRetryBackoffDuration(retries, response)
+                // All responses must be closed, so close the failed one before retrying.
+                response?.close()
+
+                if (result.isDone) {
+                    return@responseHandler
+                }
+
+                val sleepFuture = sleeper.sleepAsync(backoffDuration)
+                trackFuture(currentSleepFuture, sleepFuture)
+                sleepFuture.whenComplete sleepHandler@{ _, sleepThrowable ->
+                    currentSleepFuture.compareAndSet(sleepFuture, null)
+
+                    if (result.isDone) {
+                        return@sleepHandler
+                    }
+
+                    if (sleepThrowable != null) {
+                        result.completeExceptionally(sleepThrowable)
+                        return@sleepHandler
+                    }
+
+                    executeWithRetries(requestWithRetryCount, requestOptions)
+                }
+            }
         }
 
-        return executeWithRetries(modifiedRequest, requestOptions)
+        result.whenComplete { _, _ ->
+            if (result.isCancelled) {
+                currentResponseFuture.getAndSet(null)?.cancel(false)
+                currentSleepFuture.getAndSet(null)?.cancel(false)
+            }
+        }
+
+        executeWithRetries(modifiedRequest, requestOptions)
+        return result
     }
 
     override fun close() {
