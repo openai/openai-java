@@ -58,6 +58,15 @@ jobs:
 
           max_retries=5
           attempt=1
+          upload_log=""
+
+          cleanup_upload_log() {
+            if [ -n "$upload_log" ]; then
+              rm -f "$upload_log"
+              upload_log=""
+            fi
+          }
+          trap cleanup_upload_log EXIT
 
           while true; do
             echo "Maven artifact upload attempt ${attempt}/${max_retries}"
@@ -76,12 +85,14 @@ jobs:
             set -e
 
             if [ "$upload_status" -eq 0 ]; then
+              cleanup_upload_log
               break
             fi
 
             if [[ "$attempt" -lt "$max_retries" ]] &&
               grep -q "Failed to get valid signed URL" "$upload_log" &&
               grep -q "GitHub JWT is missing or invalid\\." "$upload_log"; then
+              cleanup_upload_log
               sleep_seconds=$((3 * (1 << (attempt - 1))))
               echo "Retrying after fresh OIDC token due to transient GitHub JWT validation failure"
               echo "Sleeping ${sleep_seconds}s before retry"
