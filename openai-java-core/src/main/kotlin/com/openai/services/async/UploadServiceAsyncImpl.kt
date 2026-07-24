@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.uploads.Upload
 import com.openai.models.uploads.UploadCancelParams
 import com.openai.models.uploads.UploadCompleteParams
@@ -50,21 +52,27 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<Upload> =
         // post /uploads
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun cancel(
         params: UploadCancelParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Upload> =
         // post /uploads/{upload_id}/cancel
-        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().cancel(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun complete(
         params: UploadCompleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Upload> =
         // post /uploads/{upload_id}/complete
-        withRawResponse().complete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().complete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         UploadServiceAsync.WithRawResponse {
@@ -106,8 +114,10 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -143,8 +153,10 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
@@ -180,8 +192,10 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { completeHandler.handle(it) }

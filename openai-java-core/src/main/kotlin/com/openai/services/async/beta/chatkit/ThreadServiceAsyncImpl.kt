@@ -18,6 +18,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.beta.chatkit.threads.ChatKitThread
 import com.openai.models.beta.chatkit.threads.ChatKitThreadItemList
 import com.openai.models.beta.chatkit.threads.ThreadDeleteParams
@@ -55,28 +57,36 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatKitThread> =
         // get /chatkit/threads/{thread_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: ThreadListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ThreadListPageAsync> =
         // get /chatkit/threads
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: ThreadDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ThreadDeleteResponse> =
         // delete /chatkit/threads/{thread_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun listItems(
         params: ThreadListItemsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ThreadListItemsPageAsync> =
         // get /chatkit/threads/{thread_id}/items
-        withRawResponse().listItems(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().listItems(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ThreadServiceAsync.WithRawResponse {
@@ -115,8 +125,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -150,8 +162,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -197,8 +211,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
@@ -235,8 +251,10 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listItemsHandler.handle(it) }

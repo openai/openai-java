@@ -24,6 +24,8 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
@@ -65,7 +67,9 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletion> =
         // post /chat/completions
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun createStreaming(
         params: ChatCompletionCreateParams,
@@ -74,7 +78,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         // post /chat/completions
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun retrieve(
@@ -82,28 +86,36 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletion> =
         // get /chat/completions/{completion_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: ChatCompletionUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletion> =
         // post /chat/completions/{completion_id}
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: ChatCompletionListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletionListPageAsync> =
         // get /chat/completions
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletionDeleted> =
         // delete /chat/completions/{completion_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ChatCompletionServiceAsync.WithRawResponse {
@@ -146,8 +158,10 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -191,8 +205,10 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { createStreamingHandler.handle(it) }
@@ -230,8 +246,10 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -268,8 +286,10 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -302,8 +322,10 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -348,8 +370,10 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }

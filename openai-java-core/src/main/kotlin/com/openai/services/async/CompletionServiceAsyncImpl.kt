@@ -23,6 +23,8 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.completions.Completion
 import com.openai.models.completions.CompletionCreateParams
 import java.util.concurrent.CompletableFuture
@@ -49,7 +51,9 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<Completion> =
         // post /completions
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun createStreaming(
         params: CompletionCreateParams,
@@ -58,7 +62,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
         // post /completions
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -95,8 +99,10 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -140,8 +146,10 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { createStreamingHandler.handle(it) }

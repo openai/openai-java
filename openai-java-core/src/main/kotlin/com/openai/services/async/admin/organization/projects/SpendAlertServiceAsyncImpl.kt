@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.projects.spendalerts.ProjectSpendAlert
 import com.openai.models.admin.organization.projects.spendalerts.ProjectSpendAlertDeleted
 import com.openai.models.admin.organization.projects.spendalerts.SpendAlertCreateParams
@@ -47,7 +49,9 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectSpendAlert> =
         // post /organization/projects/{project_id}/spend_alerts
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieve(
         params: SpendAlertRetrieveParams,
@@ -61,21 +65,27 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectSpendAlert> =
         // post /organization/projects/{project_id}/spend_alerts/{alert_id}
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: SpendAlertListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<SpendAlertListPageAsync> =
         // get /organization/projects/{project_id}/spend_alerts
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: SpendAlertDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectSpendAlertDeleted> =
         // delete /organization/projects/{project_id}/spend_alerts/{alert_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SpendAlertServiceAsync.WithRawResponse {
@@ -119,8 +129,10 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -206,8 +218,10 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -248,8 +262,10 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -300,8 +316,10 @@ class SpendAlertServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }

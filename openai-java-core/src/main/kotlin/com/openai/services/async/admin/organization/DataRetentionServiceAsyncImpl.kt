@@ -16,6 +16,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.dataretention.DataRetentionRetrieveParams
 import com.openai.models.admin.organization.dataretention.DataRetentionUpdateParams
 import com.openai.models.admin.organization.dataretention.OrganizationDataRetention
@@ -39,14 +41,18 @@ class DataRetentionServiceAsyncImpl internal constructor(private val clientOptio
         requestOptions: RequestOptions,
     ): CompletableFuture<OrganizationDataRetention> =
         // get /organization/data_retention
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: DataRetentionUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<OrganizationDataRetention> =
         // post /organization/data_retention
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         DataRetentionServiceAsync.WithRawResponse {
@@ -81,8 +87,10 @@ class DataRetentionServiceAsyncImpl internal constructor(private val clientOptio
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -116,8 +124,10 @@ class DataRetentionServiceAsyncImpl internal constructor(private val clientOptio
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }

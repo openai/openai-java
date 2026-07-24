@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.batches.Batch
 import com.openai.models.batches.BatchCancelParams
 import com.openai.models.batches.BatchCreateParams
@@ -46,28 +48,36 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Batch> =
         // post /batches
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Batch> =
         // get /batches/{batch_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: BatchListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<BatchListPageAsync> =
         // get /batches
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun cancel(
         params: BatchCancelParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Batch> =
         // post /batches/{batch_id}/cancel
-        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().cancel(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BatchServiceAsync.WithRawResponse {
@@ -102,8 +112,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -138,8 +150,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -172,8 +186,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -217,8 +233,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }

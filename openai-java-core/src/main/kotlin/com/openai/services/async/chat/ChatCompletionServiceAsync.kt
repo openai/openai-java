@@ -8,6 +8,7 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
+import com.openai.core.thenApplyPropagatingCancellation
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
@@ -93,7 +94,7 @@ interface ChatCompletionServiceAsync {
         params: StructuredChatCompletionCreateParams<T>,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<StructuredChatCompletion<T>> =
-        create(params.rawParams, requestOptions).thenApply {
+        create(params.rawParams, requestOptions).thenApplyPropagatingCancellation {
             StructuredChatCompletion<T>(params.responseType, it)
         }
 
