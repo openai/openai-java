@@ -159,7 +159,7 @@ replace_internal_reference \
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
 # by weakening a source set or task in openai-java-core/build.gradle.kts.
 COMPATIBILITY_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
-COMPATIBILITY_INIT_SCRIPT="$(mktemp "${TMPDIR:-/tmp}/openai-java-api-compatibility.XXXXXX.gradle")"
+COMPATIBILITY_INIT_SCRIPT="$(mktemp)"
 trap 'rm -f "${COMPATIBILITY_INIT_SCRIPT}"' EXIT
 
 cat > "${COMPATIBILITY_INIT_SCRIPT}" <<'GRADLE'
