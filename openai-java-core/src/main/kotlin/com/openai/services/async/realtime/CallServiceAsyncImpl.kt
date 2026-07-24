@@ -41,28 +41,28 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/accept
-        withRawResponse().accept(params, requestOptions).thenAccept {}
+        withRawResponse().accept(params, requestOptions).thenAccept { it.close() }
 
     override fun hangup(
         params: CallHangupParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/hangup
-        withRawResponse().hangup(params, requestOptions).thenAccept {}
+        withRawResponse().hangup(params, requestOptions).thenAccept { it.close() }
 
     override fun refer(
         params: CallReferParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/refer
-        withRawResponse().refer(params, requestOptions).thenAccept {}
+        withRawResponse().refer(params, requestOptions).thenAccept { it.close() }
 
     override fun reject(
         params: CallRejectParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/reject
-        withRawResponse().reject(params, requestOptions).thenAccept {}
+        withRawResponse().reject(params, requestOptions).thenAccept { it.close() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CallServiceAsync.WithRawResponse {

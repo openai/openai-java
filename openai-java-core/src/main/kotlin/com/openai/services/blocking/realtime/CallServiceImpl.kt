@@ -36,22 +36,22 @@ class CallServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun accept(params: CallAcceptParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/accept
-        withRawResponse().accept(params, requestOptions)
+        withRawResponse().accept(params, requestOptions).close()
     }
 
     override fun hangup(params: CallHangupParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/hangup
-        withRawResponse().hangup(params, requestOptions)
+        withRawResponse().hangup(params, requestOptions).close()
     }
 
     override fun refer(params: CallReferParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/refer
-        withRawResponse().refer(params, requestOptions)
+        withRawResponse().refer(params, requestOptions).close()
     }
 
     override fun reject(params: CallRejectParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/reject
-        withRawResponse().reject(params, requestOptions)
+        withRawResponse().reject(params, requestOptions).close()
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :

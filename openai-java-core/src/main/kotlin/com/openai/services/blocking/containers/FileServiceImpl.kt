@@ -67,7 +67,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun delete(params: FileDeleteParams, requestOptions: RequestOptions) {
         // delete /containers/{container_id}/files/{file_id}
-        withRawResponse().delete(params, requestOptions)
+        withRawResponse().delete(params, requestOptions).close()
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
