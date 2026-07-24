@@ -48,7 +48,11 @@ internal class FileCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("Example data".byteInputStream()),
+                        "file" to
+                            MultipartField.builder<InputStream>()
+                                .value("Example data".byteInputStream())
+                                .filename("file.bin")
+                                .build(),
                         "file_id" to MultipartField.of("file_id"),
                     )
                     .mapValues { (_, field) ->
@@ -64,5 +68,53 @@ internal class FileCreateParamsTest {
         val body = params._body()
 
         assertThat(body.filterValues { !it.value.isNull() }).isEmpty()
+    }
+
+    @Test
+    fun fileWithInputStreamUsesDefaultFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".byteInputStream())
+                .build()
+
+        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithBytesUsesDefaultFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".toByteArray())
+                .build()
+
+        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithInputStreamAndFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".byteInputStream(), "container-input.txt")
+                .build()
+
+        assertThat(params._file().filename()).contains("container-input.txt")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithBytesAndFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".toByteArray(), "container-input.txt")
+                .build()
+
+        assertThat(params._file().filename()).contains("container-input.txt")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
     }
 }
