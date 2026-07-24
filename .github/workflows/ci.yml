@@ -44,6 +44,10 @@ jobs:
 
   build:
     name: CI / build + Jackson compatibility
+    if: >-
+      !(github.repository == 'stainless-sdks/openai-java' &&
+        github.event_name == 'push' &&
+        !startsWith(github.ref, 'refs/heads/stl/'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
 
@@ -136,6 +140,8 @@ jobs:
       - name: Verify required jobs succeeded
         env:
           EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          REF: ${{ github.ref }}
           LINT_RESULT: ${{ needs.lint.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           TEST_RESULT: ${{ needs.test.result }}
@@ -145,8 +151,16 @@ jobs:
 
           failed_jobs=()
           [[ "$LINT_RESULT" == "success" ]] || failed_jobs+=("lint: $LINT_RESULT")
-          [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
           [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
+
+          if [[ "$EVENT_NAME" == "push" &&
+                "$REPOSITORY" == "stainless-sdks/openai-java" &&
+                "$REF" != refs/heads/stl/* ]]; then
+            [[ "$BUILD_RESULT" == "skipped" ]] ||
+              failed_jobs+=("build: expected skipped, got $BUILD_RESULT")
+          else
+            [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
+          fi
 
           if [[ "$EVENT_NAME" == "pull_request" && "$API_COMPATIBILITY_RESULT" != "success" ]]; then
             failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
