@@ -32,8 +32,6 @@ INTERNAL_FIXTURES=(
 	openai-java-core/src/test/kotlin/com/openai/models/audio/transcriptions/TranscriptionCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/audio/translations/TranslationCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParamsTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionMessageTest.kt
-	openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/containers/files/FileCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/files/FileCreateParamsTest.kt
 	openai-java-core/src/test/kotlin/com/openai/models/images/ImageCreateVariationParamsTest.kt
@@ -90,27 +88,48 @@ for PATHSPEC in "${INTERNAL_FIXTURES[@]}"; do
     fi
 done
 
-# Keep the public API coverage in these structured-output fixtures while replacing their one
-# assertion that calls the Kotlin-internal JsonField.getRequired helper.
-sanitize_internal_assertion() {
+# Keep the public API coverage in structured-output fixtures while replacing only references to
+# Kotlin-internal constructors and JsonField helpers.
+replace_internal_reference() {
     local file_path="$1"
-    local internal_assertion="$2"
-    local public_assertion="$3"
+    local internal_source="$2"
+    local public_source="$3"
 
-    if ! grep -Fq "${internal_assertion}" "${file_path}"; then
-        echo "Expected internal assertion was not found in ${file_path}" >&2
+    if [ ! -f "${file_path}" ]; then
+        echo "Expected compatibility fixture was not restored: ${file_path}" >&2
         exit 1
     fi
 
-    INTERNAL_ASSERTION="${internal_assertion}" PUBLIC_ASSERTION="${public_assertion}" \
-        perl -0pi -e 's/\Q$ENV{INTERNAL_ASSERTION}\E/$ENV{PUBLIC_ASSERTION}/g' "${file_path}"
+    if ! grep -Fq "${internal_source}" "${file_path}"; then
+        echo "Expected internal reference was not found in ${file_path}" >&2
+        exit 1
+    fi
+
+    INTERNAL_SOURCE="${internal_source}" PUBLIC_SOURCE="${public_source}" \
+        perl -0pi -e 's/\Q$ENV{INTERNAL_SOURCE}\E/$ENV{PUBLIC_SOURCE}/g' "${file_path}"
 }
 
-sanitize_internal_assertion \
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionMessageTest.kt" \
+    'StructuredChatCompletionMessage<X>(X::class.java, mockDelegate)' \
+    'mock(StructuredChatCompletionMessage::class.java) as StructuredChatCompletionMessage<X>'
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt" \
+    'StructuredChatCompletion.Choice<X>(X::class.java, mockChoiceDelegate)' \
+    'mock(StructuredChatCompletion.Choice::class.java) as StructuredChatCompletion.Choice<X>'
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt" \
+    'assertThat(output.getRequired("_choices")[0].rawChoice).isEqualTo(CHOICE)' \
+    'assertThat(output).isEqualTo(input)'
+replace_internal_reference \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/chat/completions/StructuredChatCompletionTest.kt" \
+    'assertThat(output.getRequired("_message").rawMessage).isEqualTo(MESSAGE)' \
+    'assertThat(output).isEqualTo(input)'
+replace_internal_reference \
     "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseOutputMessageTest.kt" \
     'assertThat(output.getRequired("content")[0].rawContent).isEqualTo(CONTENT)' \
     'assertThat(output).isEqualTo(input)'
-sanitize_internal_assertion \
+replace_internal_reference \
     "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin/com/openai/models/responses/StructuredResponseTest.kt" \
     'assertThat(output.getRequired("_output")[0].rawOutputItem).isEqualTo(OUTPUT_ITEM)' \
     'assertThat(output).isEqualTo(input)'
