@@ -1,0 +1,108 @@
+name: Stainless Maven artifacts
+
+# GitHub Actions does not support repository filters on workflow triggers. Keep this push trigger in
+# shared history so the Stainless fork inherits artifact publication; upstream runs stop at the
+# uniquely named, non-required skipped job below.
+on:
+  push:
+    branches:
+      - '**'
+      - '!integrated/**'
+      - '!stl-preview-head/**'
+      - '!stl-preview-base/**'
+      - '!generated'
+      - '!codegen/**'
+      - 'codegen/stl/**'
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    name: Stainless / publish Maven artifacts
+    if: >-
+      github.repository == 'stainless-sdks/openai-java' &&
+      github.event.head_commit.message != 'codegen metadata' &&
+      !startsWith(github.ref, 'refs/heads/stl/')
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: depot-ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Build SDK
+        env:
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
+        run: ./scripts/build
+
+      - name: Upload Maven artifacts
+        env:
+          URL: https://pkg.stainless.com/s
+          SHA: ${{ github.sha }}
+          PROJECT: openai-java
+        run: |
+          set -euo pipefail
+
+          max_retries=5
+          attempt=1
+          upload_log=""
+
+          cleanup_upload_log() {
+            if [ -n "$upload_log" ]; then
+              rm -f "$upload_log"
+              upload_log=""
+            fi
+          }
+          trap cleanup_upload_log EXIT
+
+          while true; do
+            echo "Maven artifact upload attempt ${attempt}/${max_retries}"
+
+            oidc_response="$(
+              curl -sSf \
+                -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+                "${ACTIONS_ID_TOKEN_REQUEST_URL}"
+            )"
+            github_token="$(printf '%s' "$oidc_response" | jq -er '.value')"
+
+            upload_log="$(mktemp)"
+            set +e
+            AUTH="$github_token" ./scripts/upload-artifacts 2>&1 | tee "$upload_log"
+            upload_status=${PIPESTATUS[0]}
+            set -e
+
+            if [ "$upload_status" -eq 0 ]; then
+              cleanup_upload_log
+              break
+            fi
+
+            if [[ "$attempt" -lt "$max_retries" ]] &&
+              grep -q "Failed to get valid signed URL" "$upload_log" &&
+              grep -q "GitHub JWT is missing or invalid\\." "$upload_log"; then
+              cleanup_upload_log
+              sleep_seconds=$((3 * (1 << (attempt - 1))))
+              echo "Retrying after fresh OIDC token due to transient GitHub JWT validation failure"
+              echo "Sleeping ${sleep_seconds}s before retry"
+              sleep "$sleep_seconds"
+              attempt=$((attempt + 1))
+              continue
+            fi
+
+            exit "$upload_status"
+          done

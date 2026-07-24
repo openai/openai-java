@@ -1,22 +1,385 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
 echo "==> Detecting breaking changes"
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <base-commit>" >&2
+    exit 2
+fi
+
+BASE_COMMIT="$1"
+
+git cat-file -e "${BASE_COMMIT}^{commit}"
 
 TEST_PATHS=(
 	openai-java-core/src/test/kotlin/com/openai/models
 	openai-java-core/src/test/kotlin/com/openai/services
 )
 
+SUPPORT_PATHS=(
+	openai-java-core/src/test/kotlin/com/openai/TestServerExtension.kt
+	openai-java-core/src/test/kotlin/com/openai/core/StructuredOutputsTestUtils.kt
+)
+
+COMPATIBILITY_ROOT="openai-java-core/build/api-compatibility-source"
+PROPOSED_COMPATIBILITY_ROOT="${COMPATIBILITY_ROOT}/proposed"
+POLICY_PATH="openai-java-core/src/apiCompatibility"
+POLICY_ROOT="${COMPATIBILITY_ROOT}/${POLICY_PATH}"
+BASELINE_EXCLUSIONS_PATH="${POLICY_ROOT}/excluded-generated-tests.txt"
+BASELINE_DEPENDENCIES_PATH="${POLICY_ROOT}/dependencies.txt"
+BASELINE_PUBLIC_API_PATH="${POLICY_ROOT}/structured-output-public-api.txt"
+BASELINE_FIXTURE_PATH="${POLICY_ROOT}/kotlin"
+PROPOSED_EXCLUSIONS_PATH="${POLICY_PATH}/excluded-generated-tests.txt"
+PROPOSED_DEPENDENCIES_PATH="${POLICY_PATH}/dependencies.txt"
+PROPOSED_PUBLIC_API_PATH="${POLICY_PATH}/structured-output-public-api.txt"
+PROPOSED_FIXTURE_PATH="${POLICY_PATH}/kotlin"
+
+rm -rf "${COMPATIBILITY_ROOT}"
+mkdir -p "${COMPATIBILITY_ROOT}"
+
+RESTORED_TEST_PATHS=0
 for PATHSPEC in "${TEST_PATHS[@]}"; do
-    # Try to check out previous versions of the test files
-    # with the current SDK.
-    git checkout "$1" -- "${PATHSPEC}" 2>/dev/null || true
+    if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
+        echo "Skipping test path absent from base commit: ${PATHSPEC}"
+        continue
+    fi
+
+    # Extract the previous tests into an isolated source tree. This avoids collisions with renamed
+    # current tests and keeps the working tree untouched.
+    git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
+    RESTORED_TEST_PATHS=$((RESTORED_TEST_PATHS + 1))
 done
 
-# Instead of running the tests, use the linter to check if an
-# older test is no longer compatible with the latest SDK.
-./scripts/lint
+if [ "${RESTORED_TEST_PATHS}" -eq 0 ]; then
+    echo "No baseline test paths were found in ${BASE_COMMIT}" >&2
+    exit 1
+fi
+
+PROPOSED_TEST_PATHS=0
+for PATHSPEC in "${TEST_PATHS[@]}"; do
+    if [ ! -d "${PATHSPEC}" ]; then
+        echo "Skipping proposed test path absent from working tree: ${PATHSPEC}"
+        continue
+    fi
+
+    mkdir -p "${PROPOSED_COMPATIBILITY_ROOT}/$(dirname "${PATHSPEC}")"
+    cp -R "${PATHSPEC}" "${PROPOSED_COMPATIBILITY_ROOT}/$(dirname "${PATHSPEC}")/"
+    PROPOSED_TEST_PATHS=$((PROPOSED_TEST_PATHS + 1))
+done
+
+if [ "${PROPOSED_TEST_PATHS}" -eq 0 ]; then
+    echo "No proposed test paths were found in the working tree" >&2
+    exit 1
+fi
+
+for PATHSPEC in "${SUPPORT_PATHS[@]}"; do
+    if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
+        echo "Skipping support path absent from base commit: ${PATHSPEC}"
+    else
+        git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
+    fi
+
+    if [ ! -f "${PATHSPEC}" ]; then
+        echo "Skipping proposed support path absent from working tree: ${PATHSPEC}"
+    else
+        mkdir -p "${PROPOSED_COMPATIBILITY_ROOT}/$(dirname "${PATHSPEC}")"
+        cp "${PATHSPEC}" "${PROPOSED_COMPATIBILITY_ROOT}/${PATHSPEC}"
+    fi
+done
+
+# Compatibility exceptions are policy, not transformations of generated source. Always use the
+# policy from the base commit so a proposed SDK change cannot weaken its own compatibility gate.
+# The fallback bootstraps the policy on the first commit that introduces it.
+if git cat-file -e "${BASE_COMMIT}:${POLICY_PATH}" 2>/dev/null; then
+    git archive "${BASE_COMMIT}" -- "${POLICY_PATH}" | tar -x -C "${COMPATIBILITY_ROOT}"
+else
+    echo "Baseline has no API compatibility policy; using the proposed policy for bootstrap"
+    mkdir -p "${POLICY_ROOT}"
+    cp -R "${POLICY_PATH}/." "${POLICY_ROOT}/"
+fi
+
+validate_exclusions() {
+    local exclusions_path="$1"
+    local source_root="$2"
+    local policy_name="$3"
+    local remove_exclusions="$4"
+
+    if [ ! -f "${exclusions_path}" ]; then
+        echo "Missing ${policy_name} compatibility exclusions: ${exclusions_path}" >&2
+        exit 1
+    fi
+
+    while IFS= read -r PATHSPEC || [ -n "${PATHSPEC}" ]; do
+        case "${PATHSPEC}" in
+            ''|\#*) continue ;;
+        esac
+
+        case "${PATHSPEC}" in
+            *..*|/*)
+                echo "Unsafe ${policy_name} compatibility exclusion: ${PATHSPEC}" >&2
+                exit 1
+                ;;
+        esac
+
+        IS_RESTORED_TEST=false
+        for TEST_ROOT in "${TEST_PATHS[@]}"; do
+            if [[ "${PATHSPEC}" == "${TEST_ROOT}/"* && "${PATHSPEC}" == *.kt ]]; then
+                IS_RESTORED_TEST=true
+                break
+            fi
+        done
+
+        if [ "${IS_RESTORED_TEST}" != true ]; then
+            echo "${policy_name} compatibility exclusion is outside the test roots: ${PATHSPEC}" >&2
+            exit 1
+        fi
+
+        if [ ! -f "${source_root}/${PATHSPEC}" ]; then
+            echo "${policy_name} compatibility exclusion does not exist: ${PATHSPEC}" >&2
+            exit 1
+        fi
+
+        if [ "${remove_exclusions}" = true ]; then
+            rm "${source_root:?}/${PATHSPEC}"
+        fi
+    done < "${exclusions_path}"
+}
+
+validate_policy_files() {
+    local dependencies_path="$1"
+    local fixture_path="$2"
+    local public_api_path="$3"
+    local policy_name="$4"
+
+    if [ ! -s "${dependencies_path}" ]; then
+        echo "No ${policy_name} compatibility dependencies found in ${dependencies_path}" >&2
+        exit 1
+    fi
+
+    if ! find "${fixture_path}" -type f -name '*.kt' -print -quit | grep -q .; then
+        echo "No ${policy_name} public compatibility fixtures found in ${fixture_path}" >&2
+        exit 1
+    fi
+
+    if [ ! -s "${public_api_path}" ]; then
+        echo "No ${policy_name} structured-output API signatures found in ${public_api_path}" >&2
+        exit 1
+    fi
+}
+
+validate_exclusions \
+    "${BASELINE_EXCLUSIONS_PATH}" \
+    "${COMPATIBILITY_ROOT}" \
+    baseline \
+    true
+validate_exclusions \
+    "${PROPOSED_EXCLUSIONS_PATH}" \
+    "${PROPOSED_COMPATIBILITY_ROOT}" \
+    proposed \
+    true
+validate_policy_files \
+    "${BASELINE_DEPENDENCIES_PATH}" \
+    "${BASELINE_FIXTURE_PATH}" \
+    "${BASELINE_PUBLIC_API_PATH}" \
+    baseline
+validate_policy_files \
+    "${PROPOSED_DEPENDENCIES_PATH}" \
+    "${PROPOSED_FIXTURE_PATH}" \
+    "${PROPOSED_PUBLIC_API_PATH}" \
+    proposed
+
+# Keep the compatibility compilation policy in this detector rather than in the proposed build
+# file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
+# by weakening a source set or task in openai-java-core/build.gradle.kts.
+GENERATED_TEST_SOURCE_ROOT="$(pwd)/${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
+PROPOSED_GENERATED_TEST_SOURCE_ROOT="$(pwd)/${PROPOSED_COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin"
+BASELINE_FIXTURE_SOURCE_ROOT="$(pwd)/${BASELINE_FIXTURE_PATH}"
+BASELINE_DEPENDENCIES_FILE="$(pwd)/${BASELINE_DEPENDENCIES_PATH}"
+PROPOSED_FIXTURE_SOURCE_ROOT="$(pwd)/${PROPOSED_FIXTURE_PATH}"
+PROPOSED_DEPENDENCIES_FILE="$(pwd)/${PROPOSED_DEPENDENCIES_PATH}"
+COMPATIBILITY_INIT_SCRIPT="$(mktemp)"
+trap 'rm -f "${COMPATIBILITY_INIT_SCRIPT}"' EXIT
+
+cat > "${COMPATIBILITY_INIT_SCRIPT}" <<'GRADLE'
+import org.gradle.api.attributes.java.TargetJvmVersion
+
+gradle.beforeProject { project ->
+    if (project.path == ":openai-java-core") {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            def sourceSets = project.extensions.getByName("sourceSets")
+            def main = sourceSets.getByName("main")
+
+            def configureCompatibility = {
+                name,
+                generatedTestRoot,
+                fixtureRoot,
+                dependenciesFile ->
+                def compatibility = sourceSets.create(name)
+                if (generatedTestRoot) {
+                    compatibility.kotlin.srcDir(generatedTestRoot)
+                }
+                compatibility.kotlin.srcDir(fixtureRoot)
+                compatibility.compileClasspath += main.output + main.compileClasspath
+
+                def implementation =
+                    project.configurations.getByName(
+                        compatibility.implementationConfigurationName
+                    )
+                new File(dependenciesFile).readLines().each { dependency ->
+                    dependency = dependency.trim()
+                    if (dependency && !dependency.startsWith("#")) {
+                        project.dependencies.add(implementation.name, dependency)
+                    }
+                }
+                project.dependencies.add(
+                    implementation.name,
+                    project.dependencies.project([path: ":openai-java-client-okhttp"])
+                )
+
+                project.configurations
+                    .getByName(compatibility.compileClasspathConfigurationName)
+                    .attributes
+                    .attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
+            }
+
+            configureCompatibility(
+                "externalApiCompatibility",
+                System.getenv("GENERATED_TEST_SOURCE_ROOT"),
+                System.getenv("BASELINE_FIXTURE_SOURCE_ROOT"),
+                System.getenv("BASELINE_DEPENDENCIES_FILE")
+            )
+            configureCompatibility(
+                "proposedApiCompatibility",
+                System.getenv("PROPOSED_GENERATED_TEST_SOURCE_ROOT"),
+                System.getenv("PROPOSED_FIXTURE_SOURCE_ROOT"),
+                System.getenv("PROPOSED_DEPENDENCIES_FILE")
+            )
+        }
+    }
+}
+GRADLE
+
+GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
+    PROPOSED_GENERATED_TEST_SOURCE_ROOT="${PROPOSED_GENERATED_TEST_SOURCE_ROOT}" \
+    BASELINE_FIXTURE_SOURCE_ROOT="${BASELINE_FIXTURE_SOURCE_ROOT}" \
+    BASELINE_DEPENDENCIES_FILE="${BASELINE_DEPENDENCIES_FILE}" \
+    PROPOSED_FIXTURE_SOURCE_ROOT="${PROPOSED_FIXTURE_SOURCE_ROOT}" \
+    PROPOSED_DEPENDENCIES_FILE="${PROPOSED_DEPENDENCIES_FILE}" \
+    ./scripts/gradle \
+    --init-script "${COMPATIBILITY_INIT_SCRIPT}" \
+    :openai-java-core:compileExternalApiCompatibilityKotlin \
+    :openai-java-core:compileProposedApiCompatibilityKotlin \
+    --no-build-cache
+
+validate_public_api_signatures() {
+    local manifest_path="$1"
+    local policy_name="$2"
+    local require_exact_match="$3"
+    local classes_root
+    local actual_signatures
+    local classes
+    local expected_signatures
+    local missing_signatures
+    local unexpected_signatures
+    local expected
+    local class_and_method
+    local descriptor
+    local class_name
+    local method_name
+    local extra
+
+    classes_root="$(pwd)/openai-java-core/build/classes/kotlin/main"
+    actual_signatures="$(mktemp)"
+    classes="$(mktemp)"
+    expected_signatures="$(mktemp)"
+    missing_signatures="$(mktemp)"
+    unexpected_signatures="$(mktemp)"
+
+    while IFS= read -r expected || [ -n "${expected}" ]; do
+        case "${expected}" in
+            ''|\#*) continue ;;
+        esac
+
+        read -r class_and_method descriptor extra <<< "${expected}"
+        class_name="${class_and_method%#*}"
+        method_name="${class_and_method##*#}"
+
+        if [ -n "${extra:-}" ] ||
+            [[ ! "${class_name}" =~ ^[A-Za-z0-9_.\$]+$ ]] ||
+            [[ ! "${method_name}" =~ ^[A-Za-z0-9_]+$ ]] ||
+            [[ ! "${descriptor}" =~ ^\([^[:space:]]*\)[^[:space:]]+$ ]]; then
+            echo "Invalid ${policy_name} public API signature: ${expected}" >&2
+            exit 1
+        fi
+
+        printf '%s\n' "${class_name}" >> "${classes}"
+        printf '%s\n' "${expected}" >> "${expected_signatures}"
+    done < "${manifest_path}"
+
+    if [ ! -s "${classes}" ]; then
+        echo "No ${policy_name} public API classes found in ${manifest_path}" >&2
+        exit 1
+    fi
+
+    LC_ALL=C sort -u "${classes}" -o "${classes}"
+    if [ "$(LC_ALL=C sort "${expected_signatures}" | uniq -d | wc -l)" -ne 0 ]; then
+        echo "${policy_name} public API manifest contains duplicate signatures" >&2
+        LC_ALL=C sort "${expected_signatures}" | uniq -d >&2
+        exit 1
+    fi
+    LC_ALL=C sort -o "${expected_signatures}" "${expected_signatures}"
+
+    while IFS= read -r class_name; do
+        if ! javap -classpath "${classes_root}" -public -s "${class_name}" |
+            awk -v class_name="${class_name}" '
+                /^  public/ && /\(/ {
+                    declaration = $0
+                    sub(/\(.*/, "", declaration)
+                    count = split(declaration, fields, /[[:space:]]+/)
+                    method_name = fields[count]
+                    next
+                }
+                /descriptor:/ && method_name != "" {
+                    if (method_name !~ /\$/ && method_name !~ /^com\.openai\./ && method_name != "equals" && method_name != "hashCode" && method_name != "toString") {
+                        print class_name "#" method_name " " $2
+                    }
+                    method_name = ""
+                }
+            ' >> "${actual_signatures}"; then
+            echo "${policy_name} public API class is missing: ${class_name}" >&2
+            exit 1
+        fi
+    done < "${classes}"
+
+    LC_ALL=C sort -u -o "${actual_signatures}" "${actual_signatures}"
+    comm -23 "${expected_signatures}" "${actual_signatures}" > "${missing_signatures}"
+    if [ -s "${missing_signatures}" ]; then
+        echo "${policy_name} structured-output API is missing:" >&2
+        sed 's/^/  /' "${missing_signatures}" >&2
+        exit 1
+    fi
+
+    if [ "${require_exact_match}" = true ]; then
+        comm -13 "${expected_signatures}" "${actual_signatures}" > "${unexpected_signatures}"
+        if [ -s "${unexpected_signatures}" ]; then
+            echo "${policy_name} structured-output API manifest is incomplete:" >&2
+            sed 's/^/  /' "${unexpected_signatures}" >&2
+            exit 1
+        fi
+    fi
+
+    rm -f \
+        "${actual_signatures}" \
+        "${classes}" \
+        "${expected_signatures}" \
+        "${missing_signatures}" \
+        "${unexpected_signatures}"
+    echo "${policy_name} structured-output public API is compatible."
+}
+
+validate_public_api_signatures "${BASELINE_PUBLIC_API_PATH}" baseline false
+validate_public_api_signatures "${PROPOSED_PUBLIC_API_PATH}" proposed true
