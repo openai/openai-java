@@ -37,7 +37,7 @@ dependencies {
         }
     }
 
-    testImplementation(platform("org.eclipse.jetty:jetty-bom:12.0.33"))
-    testImplementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.33"))
+    testImplementation(platform("org.eclipse.jetty:jetty-bom:12.0.36"))
+    testImplementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.36"))
     testImplementation("org.wiremock:wiremock-jetty12:3.13.2")
 }
