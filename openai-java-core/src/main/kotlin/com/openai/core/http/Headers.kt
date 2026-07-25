@@ -11,6 +11,7 @@ import com.openai.core.JsonObject
 import com.openai.core.JsonString
 import com.openai.core.JsonValue
 import com.openai.core.toImmutable
+import java.util.Locale
 import java.util.TreeMap
 
 class Headers
@@ -29,13 +30,19 @@ private constructor(
 
     companion object {
 
+        // HTTP header names are case-insensitive using ASCII/ROOT rules (not the default locale).
+        // String.CASE_INSENSITIVE_ORDER is insufficient for locales like Turkish (I/ı).
+        private val HEADER_NAME_COMPARATOR: Comparator<String> = Comparator { a, b ->
+            a.lowercase(Locale.ROOT).compareTo(b.lowercase(Locale.ROOT))
+        }
+
         @JvmStatic fun builder() = Builder()
     }
 
     class Builder internal constructor() {
 
         private val map: MutableMap<String, MutableList<String>> =
-            TreeMap(String.CASE_INSENSITIVE_ORDER)
+            TreeMap(HEADER_NAME_COMPARATOR)
         private var size: Int = 0
 
         fun put(name: String, value: JsonValue): Builder = apply {
@@ -93,7 +100,7 @@ private constructor(
 
         fun build() =
             Headers(
-                map.mapValuesTo(TreeMap(String.CASE_INSENSITIVE_ORDER)) { (_, values) ->
+                map.mapValuesTo(TreeMap(HEADER_NAME_COMPARATOR)) { (_, values) ->
                         values.toImmutable()
                     }
                     .toImmutable(),

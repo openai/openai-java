@@ -1,6 +1,10 @@
 package com.openai.core.http
 
+import java.util.Locale
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceLock
+import org.junit.jupiter.api.parallel.Resources
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
@@ -238,5 +242,28 @@ internal class HeadersTest {
         val size = testCase.headers.size
 
         assertThat(size).isEqualTo(testCase.expectedSize)
+    }
+
+    @Test
+    @ResourceLock(Resources.LOCALE)
+    fun caseInsensitiveUnderTurkishLocale() {
+        val previous = Locale.getDefault()
+        try {
+            Locale.setDefault(Locale("tr", "TR"))
+
+            val headers =
+                Headers.builder()
+                    .put("OpenAI-Organization", "org-value")
+                    .put("OpenAI-Project", "project-value")
+                    .build()
+
+            assertThat(headers.values("openai-organization")).containsExactly("org-value")
+            assertThat(headers.values("OPENAI-ORGANIZATION")).containsExactly("org-value")
+            assertThat(headers.values("OpenAI-Organization")).containsExactly("org-value")
+            assertThat(headers.values("openai-project")).containsExactly("project-value")
+            assertThat(headers.values("OPENAI-PROJECT")).containsExactly("project-value")
+        } finally {
+            Locale.setDefault(previous)
+        }
     }
 }
