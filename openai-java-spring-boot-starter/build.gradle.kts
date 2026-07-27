@@ -1,6 +1,5 @@
 plugins {
   id("openai.kotlin")
-  id("openai.publish")
 }
 
 repositories {

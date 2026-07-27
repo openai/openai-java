@@ -86,14 +86,15 @@ tasks.register("verifyVersionSupportPolicy") {
 
 subprojects {
     val artifactName = name
+    val artifactSupport = versionSupport.artifacts[artifactName]
 
     pluginManager.withPlugin("openai.publish") {
-        val artifactSupport =
-            versionSupport.artifacts[artifactName]
-                ?: error(
-                    "$artifactName is published but missing from ${versionSupportFile.asFile}"
-                )
+        checkNotNull(artifactSupport) {
+            "$artifactName is published but missing from ${versionSupportFile.asFile}"
+        }
+    }
 
+    if (artifactSupport != null) {
         pluginManager.withPlugin("java") {
             val java = extensions.getByType(JavaPluginExtension::class.java)
             val mainSourceSet = extensions.getByType(SourceSetContainer::class.java).getByName("main")

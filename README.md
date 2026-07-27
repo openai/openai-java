@@ -1454,8 +1454,8 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 
 > [!WARNING]
 > `openai-java-spring-boot-starter` targets Spring Boot 2.7 and is OpenAI EOL as of 2026-07-27.
-> Version 4.45.0 is the final supported and tested release. The artifact remains downloadable but
-> receives no fixes, testing, or compatibility support. See the
+> Version 4.45.0 is the final supported, tested, and published release. The artifact remains
+> downloadable but receives no fixes, testing, or compatibility support. See the
 > [Spring Boot 2 EOL decision and migration path](docs/spring-boot-2-eol.md). New Spring
 > applications should depend on `openai-java` directly and provide an `OpenAIClient` bean until a
 > supported, generation-specific integration is available.
@@ -1463,8 +1463,6 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 Existing Spring Boot 2 applications can use the legacy starter to simplify configuration.
 
 ### Installation
-
-<!-- x-release-please-start-version -->
 
 #### Gradle
 
@@ -1481,8 +1479,6 @@ implementation("com.openai:openai-java-spring-boot-starter:4.45.0")
   <version>4.45.0</version>
 </dependency>
 ```
-
-<!-- x-release-please-end -->
 
 ### Configuration
 

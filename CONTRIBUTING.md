@@ -25,7 +25,7 @@ The SDK's primary artifacts are:
   - Adds optional Amazon Bedrock authentication and credential-provider integration
 - `openai-java-spring-boot-starter`
   - Provides the legacy Spring Boot 2 integration
-  - Is OpenAI EOL and receives no new features
+  - Is retained to verify the final 4.45.0 release, but is OpenAI EOL and no longer published
 
 `openai-java-runtime-compatibility` is a non-published fixture that exercises representative
 behavior for each supported artifact on an isolated runtime classpath. Its JVM matrix and each

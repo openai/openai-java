@@ -5,9 +5,9 @@
 ## Decision
 
 `com.openai:openai-java-spring-boot-starter` targets Spring Boot 2.7 and is OpenAI EOL effective
-2026-07-27. Version 4.45.0 is its final supported and tested OpenAI SDK release. The coordinate and
-old releases may remain downloadable, but later availability does not imply fixes, testing, or
-compatibility support.
+2026-07-27. Version 4.45.0 is its final supported, tested, and published OpenAI SDK release. That
+release remains downloadable, but no later starter versions will be published and it receives no
+fixes, testing, or compatibility support.
 
 Spring ended public OSS support for Boot 2 with
 [2.7.18 on 2023-11-23](https://spring.io/blog/2023/11/23/spring-boot-2-7-18-available-now/).
