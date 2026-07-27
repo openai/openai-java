@@ -1,3 +1,4 @@
+import com.openai.gradle.VersionSupportPolicy
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
@@ -8,18 +9,22 @@ repositories {
     mavenCentral()
 }
 
+val versionSupportPolicy =
+    VersionSupportPolicy.load(rootProject.file("gradle/version-support.properties"))
+val runtimeFloor = versionSupportPolicy.runtimeFloor(project.name)
+
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(versionSupportPolicy.buildJdk))
     }
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.toVersion(runtimeFloor)
+    targetCompatibility = JavaVersion.toVersion(runtimeFloor)
 }
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Werror")
-    options.release.set(8)
+    options.release.set(runtimeFloor)
 }
 
 tasks.named<Jar>("jar") {

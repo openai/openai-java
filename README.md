@@ -19,8 +19,6 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 
 <!-- x-release-please-start-version -->
 
-[_Try `openai-java-spring-boot-starter` if you're using Spring Boot!_](#spring-boot)
-
 ### Gradle
 
 ```kotlin
@@ -41,7 +39,8 @@ implementation("com.openai:openai-java:4.45.0")
 
 ## Requirements
 
-This library requires Java 8 or later.
+The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
+are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
 
 ## Usage
 
@@ -1453,11 +1452,17 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 
 ## Spring Boot
 
-If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#using.build-systems.starters) to simplify configuration and get set up quickly.
+> [!WARNING]
+> `openai-java-spring-boot-starter` targets Spring Boot 2.7 and is OpenAI EOL as of 2026-07-27.
+> Version 4.45.0 is the final supported, tested, and published release. The artifact remains
+> downloadable but receives no fixes, testing, or compatibility support. See the
+> [Spring Boot 2 EOL decision and migration path](docs/spring-boot-2-eol.md). New Spring
+> applications should depend on `openai-java` directly and provide an `OpenAIClient` bean until a
+> supported, generation-specific integration is available.
+
+Existing Spring Boot 2 applications can use the legacy starter to simplify configuration.
 
 ### Installation
-
-<!-- x-release-please-start-version -->
 
 #### Gradle
 
@@ -1474,8 +1479,6 @@ implementation("com.openai:openai-java-spring-boot-starter:4.45.0")
   <version>4.45.0</version>
 </dependency>
 ```
-
-<!-- x-release-please-end -->
 
 ### Configuration
 
@@ -1960,6 +1963,11 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 1. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
 2. Changes that we do not expect to impact the vast majority of users in practice.
+
+Those exceptions do not apply to raising a supported JVM or JDK API floor, changing an integration's
+framework generation, removing a published artifact, or removing a transitive dependency that
+consumers may rely on; those changes require a major release. Announcing EOL without removing or
+changing the last available artifact may be a minor release.
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 

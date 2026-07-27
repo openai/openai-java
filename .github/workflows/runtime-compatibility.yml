@@ -1,0 +1,82 @@
+# Exercises representative consumer entry points on every supported JVM. It runs nightly to catch
+# ecosystem drift and is reusable so automated and manual publications are gated by the same matrix.
+name: Runtime compatibility
+
+on:
+  workflow_call:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-compatibility-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version_support_matrix:
+    name: Runtime compatibility / version support matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    outputs:
+      runtime-matrix: ${{ steps.matrix.outputs.runtime-matrix }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Read version support policy
+        id: matrix
+        run: |
+          ./scripts/gradle generateVersionSupportMatrix -PversionSupportMatrix=full
+          echo "runtime-matrix=$(< build/version-support-matrix.json)" >> "$GITHUB_OUTPUT"
+
+  runtime_compatibility:
+    name: Runtime compatibility / Java ${{ matrix.java }}
+    needs: version_support_matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ${{ fromJSON(needs.version_support_matrix.outputs.runtime-matrix) }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up consumer Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Set up build Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Run consumer compatibility smoke test
+        run: >-
+          ./scripts/gradle
+          :openai-java-runtime-compatibility:runRuntimeCompatibility
+          -PruntimeJavaVersion=${{ matrix.java }}
