@@ -8,15 +8,40 @@ policy_file="gradle/version-support.properties"
 
 property() {
   local name="$1"
-  awk -F= -v name="$name" '$1 == name { print $2 }' "$policy_file"
+  local key
+  local value
+
+  if [[ ! -r "$policy_file" ]]; then
+    echo "Cannot read version support policy at $policy_file" >&2
+    return 1
+  fi
+
+  while IFS='=' read -r key value; do
+    [[ "$key" == "$name" ]] || continue
+
+    if [[ -z "$value" ]]; then
+      echo "Required property '$name' in $policy_file must not be empty" >&2
+      return 1
+    fi
+
+    printf '%s\n' "$value"
+    return 0
+  done < "$policy_file"
+
+  echo "Missing required property '$name' in $policy_file" >&2
+  return 1
 }
 
 case "${1:-}" in
   pull-request)
-    versions="$(property test.minimum),$(property test.current-lts)"
+    minimum="$(property test.minimum)"
+    current_lts="$(property test.current-lts)"
+    versions="$minimum,$current_lts"
     ;;
   nightly)
-    versions="$(property test.supported-lts),$(property test.current-non-lts)"
+    supported_lts="$(property test.supported-lts)"
+    current_non_lts="$(property test.current-non-lts)"
+    versions="$supported_lts,$current_non_lts"
     ;;
   *)
     echo "Usage: $0 {pull-request|nightly}" >&2
