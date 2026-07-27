@@ -11,8 +11,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  runtime_compatibility:
+    name: Publish / runtime compatibility
+    uses: ./.github/workflows/runtime-compatibility.yml
+
   publish:
     name: Publish / Sonatype
+    needs: runtime_compatibility
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     environment: publish

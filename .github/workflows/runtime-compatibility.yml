@@ -1,6 +1,9 @@
+# Exercises representative consumer entry points on every supported JVM. It runs nightly to catch
+# ecosystem drift and is reusable so automated and manual publications are gated by the same matrix.
 name: Runtime compatibility
 
 on:
+  workflow_call:
   schedule:
     - cron: '0 7 * * *'
   workflow_dispatch:
@@ -28,7 +31,7 @@ jobs:
 
       - name: Read version support policy
         id: matrix
-        run: echo "runtime-matrix=$(./scripts/version-support-matrix nightly)" >> "$GITHUB_OUTPUT"
+        run: echo "runtime-matrix=$(./scripts/version-support-matrix full)" >> "$GITHUB_OUTPUT"
 
   runtime_compatibility:
     name: Runtime compatibility / Java ${{ matrix.java }}

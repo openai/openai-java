@@ -38,13 +38,13 @@ case "${1:-}" in
     current_lts="$(property test.current-lts)"
     versions="$minimum,$current_lts"
     ;;
-  nightly)
+  full)
     supported_lts="$(property test.supported-lts)"
     current_non_lts="$(property test.current-non-lts)"
     versions="$supported_lts,$current_non_lts"
     ;;
   *)
-    echo "Usage: $0 {pull-request|nightly}" >&2
+    echo "Usage: $0 {pull-request|full}" >&2
     exit 2
     ;;
 esac
