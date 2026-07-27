@@ -138,6 +138,60 @@ jobs:
           chmod +x "$BASE_DETECTOR"
           "$BASE_DETECTOR" "$BASE_COMMIT"
 
+  version_support_matrix:
+    name: CI / version support matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    outputs:
+      runtime-matrix: ${{ steps.matrix.outputs.runtime-matrix }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Read version support policy
+        id: matrix
+        run: echo "runtime-matrix=$(./scripts/version-support-matrix pull-request)" >> "$GITHUB_OUTPUT"
+
+  runtime_compatibility:
+    name: CI / runtime compatibility / Java ${{ matrix.java }}
+    needs: version_support_matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ${{ fromJSON(needs.version_support_matrix.outputs.runtime-matrix) }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up consumer Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Set up build Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Run consumer compatibility smoke test
+        run: >-
+          ./scripts/gradle
+          :openai-java-runtime-compatibility:runRuntimeCompatibility
+          -PruntimeJavaVersion=${{ matrix.java }}
+
   required:
     name: CI / required
     if: always()
@@ -146,6 +200,7 @@ jobs:
       - build
       - test
       - api_compatibility
+      - runtime_compatibility
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -159,6 +214,7 @@ jobs:
           BUILD_RESULT: ${{ needs.build.result }}
           TEST_RESULT: ${{ needs.test.result }}
           API_COMPATIBILITY_RESULT: ${{ needs.api_compatibility.result }}
+          RUNTIME_COMPATIBILITY_RESULT: ${{ needs.runtime_compatibility.result }}
         run: |
           set -euo pipefail
 
@@ -178,6 +234,8 @@ jobs:
           if [[ "$EVENT_NAME" == "pull_request" && "$API_COMPATIBILITY_RESULT" != "success" ]]; then
             failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
           fi
+          [[ "$RUNTIME_COMPATIBILITY_RESULT" == "success" ]] ||
+            failed_jobs+=("runtime compatibility: $RUNTIME_COMPATIBILITY_RESULT")
 
           if (( ${#failed_jobs[@]} > 0 )); then
             printf 'Required CI job did not succeed: %s\n' "${failed_jobs[@]}"

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+policy_file="gradle/version-support.properties"
+
+property() {
+  local name="$1"
+  awk -F= -v name="$name" '$1 == name { print $2 }' "$policy_file"
+}
+
+case "${1:-}" in
+  pull-request)
+    versions="$(property test.minimum),$(property test.current-lts)"
+    ;;
+  nightly)
+    versions="$(property test.supported-lts),$(property test.current-non-lts)"
+    ;;
+  *)
+    echo "Usage: $0 {pull-request|nightly}" >&2
+    exit 2
+    ;;
+esac
+
+printf '['
+separator=""
+IFS=',' read -r -a version_list <<< "$versions"
+for version in "${version_list[@]}"; do
+  printf '%s"%s"' "$separator" "$version"
+  separator=","
+done
+printf ']\n'

@@ -19,8 +19,6 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 
 <!-- x-release-please-start-version -->
 
-[_Try `openai-java-spring-boot-starter` if you're using Spring Boot!_](#spring-boot)
-
 ### Gradle
 
 ```kotlin
@@ -41,7 +39,8 @@ implementation("com.openai:openai-java:4.45.0")
 
 ## Requirements
 
-This library requires Java 8 or later.
+The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
+are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
 
 ## Usage
 
@@ -1453,7 +1452,14 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 
 ## Spring Boot
 
-If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#using.build-systems.starters) to simplify configuration and get set up quickly.
+> [!WARNING]
+> `openai-java-spring-boot-starter` targets Spring Boot 2.7, which is OpenAI EOL under the
+> [Java version support policy](docs/version-support-policy.md). The artifact remains available for
+> existing applications but does not receive new features. New Spring applications should depend
+> on `openai-java` directly and provide an `OpenAIClient` bean until a supported,
+> generation-specific integration is available.
+
+Existing Spring Boot 2 applications can use the legacy starter to simplify configuration.
 
 ### Installation
 

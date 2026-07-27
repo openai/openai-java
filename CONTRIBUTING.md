@@ -2,11 +2,14 @@
 
 ## Setting up the environment
 
-This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency management. The SDK requires Java 8, but development requires JDK 21 for the Kotlin toolchain.
+This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency
+management. The framework-neutral SDK requires Java 8, while development requires JDK 21 for the
+Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
+artifact-level runtime, framework, lifecycle, and release rules.
 
 ## Project structure
 
-The SDK consists of three artifacts:
+The SDK's primary artifacts are:
 
 - `openai-java-core`
   - Contains core SDK logic
@@ -18,6 +21,14 @@ The SDK consists of three artifacts:
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
   - Does not have its own logic
+- `openai-java-bedrock`
+  - Adds optional Amazon Bedrock authentication and credential-provider integration
+- `openai-java-spring-boot-starter`
+  - Provides the legacy Spring Boot 2 integration
+  - Is OpenAI EOL and receives no new features
+
+`openai-java-runtime-compatibility` is a non-published fixture that loads representative public
+entry points on the JVMs declared in `gradle/version-support.properties`.
 
 ## Modifying or adding code
 

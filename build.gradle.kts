@@ -1,3 +1,8 @@
+import com.openai.gradle.VerifyVersionSupportPolicyTask
+import java.util.Properties
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.SourceSetContainer
+
 buildscript {
     dependencies {
         constraints {
@@ -54,6 +59,65 @@ subprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.dokka")
+}
+
+val versionSupportFile = layout.projectDirectory.file("gradle/version-support.properties")
+val versionSupport =
+    Properties().apply { versionSupportFile.asFile.inputStream().use(::load) }
+val artifactRuntimeFloors =
+    versionSupport
+        .stringPropertyNames()
+        .filter { it.startsWith("artifact.") && it.endsWith(".runtime") }
+        .associate { property ->
+            property.removePrefix("artifact.").removeSuffix(".runtime") to
+                versionSupport.getProperty(property).toInt()
+        }
+
+tasks.register("verifyVersionSupportPolicy") {
+    group = "verification"
+    description = "Verifies published artifact runtime floors and lifecycle declarations."
+
+    inputs.file(versionSupportFile)
+    dependsOn(artifactRuntimeFloors.keys.map { ":$it:verifyVersionSupportPolicy" })
+}
+
+subprojects {
+    val artifactName = name
+
+    pluginManager.withPlugin("openai.publish") {
+        val runtimeFloor =
+            artifactRuntimeFloors[artifactName]
+                ?: error(
+                    "$artifactName is published but missing from ${versionSupportFile.asFile}"
+                )
+        val lifecycle =
+            versionSupport.getProperty("artifact.$artifactName.lifecycle")
+                ?: error(
+                    "$artifactName is missing a lifecycle in ${versionSupportFile.asFile}"
+                )
+
+        pluginManager.withPlugin("java") {
+            val java = extensions.getByType(JavaPluginExtension::class.java)
+            val mainSourceSet = extensions.getByType(SourceSetContainer::class.java).getByName("main")
+
+            tasks.register<VerifyVersionSupportPolicyTask>("verifyVersionSupportPolicy") {
+                group = "verification"
+                description =
+                    "Verifies $artifactName against its declared version support policy."
+
+                this.artifactName.set(artifactName)
+                this.runtimeFloor.set(runtimeFloor)
+                this.lifecycle.set(lifecycle)
+                requiredBuildJdk.set(versionSupport.getProperty("build.jdk").toInt())
+                configuredBuildJdk.set(java.toolchain.languageVersion.map { it.asInt() })
+                sourceCompatibility.set(java.sourceCompatibility.majorVersion.toInt())
+                targetCompatibility.set(java.targetCompatibility.majorVersion.toInt())
+                classFiles.from(mainSourceSet.output.classesDirs)
+
+                dependsOn(tasks.named("classes"))
+            }
+        }
+    }
 }
 
 // Avoid race conditions between `dokkaJavadocCollector` and `dokkaJavadocJar` tasks
