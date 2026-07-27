@@ -1,3 +1,4 @@
+import com.openai.gradle.VersionSupportPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
@@ -10,20 +11,25 @@ repositories {
     mavenCentral()
 }
 
+val versionSupportPolicy =
+    VersionSupportPolicy.load(rootProject.file("gradle/version-support.properties"))
+val runtimeFloor = versionSupportPolicy.runtimeFloor(project.name)
+val kotlinJvmTarget = if (runtimeFloor == 8) "1.8" else runtimeFloor.toString()
+
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(versionSupportPolicy.buildJdk))
     }
 
     compilerOptions {
         freeCompilerArgs = listOf(
             "-Xjvm-default=all",
-            "-Xjdk-release=1.8",
+            "-Xjdk-release=$kotlinJvmTarget",
             // Suppress deprecation warnings because we may still reference and test deprecated members.
             // TODO: Replace with `-Xsuppress-warning=DEPRECATION` once we use Kotlin compiler 2.1.0+.
             "-nowarn",
         )
-        jvmTarget.set(JvmTarget.JVM_1_8)
+        jvmTarget.set(JvmTarget.fromTarget(kotlinJvmTarget))
         languageVersion.set(KotlinVersion.KOTLIN_1_8)
         apiVersion.set(KotlinVersion.KOTLIN_1_8)
         coreLibrariesVersion = "1.8.0"

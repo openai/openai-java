@@ -43,17 +43,18 @@ that apply this policy.
 | --- | --- |
 | Fix or dependency update within the supported contract | Patch |
 | Add a new, explicit integration artifact | Minor |
-| Move an existing generation to maintenance or deprecate it | Minor |
+| Move an existing generation to maintenance, deprecate it, or declare it EOL while leaving its last release available | Minor |
 | Raise an artifact's JVM/API floor; change its framework generation; remove an artifact; or remove a transitive dependency consumers may rely on | Major |
 | Urgent security-driven incompatible change | Major by default; security changes timing, not compatibility |
 
 ## Required proof
 
-- **Every PR:** verify every published artifact's declared JVM floor and emitted bytecode; run a
-  consumer-facing smoke test on the minimum JVM and current LTS; enforce the JDK API floor; check
-  public API compatibility; and run the normal build, test, and dependency-compatibility suites.
-- **Nightly and before release:** run the consumer smoke test on every supported LTS and use the
-  current non-LTS JDK as a forward-compatibility signal.
+- **Every PR:** verify every published artifact's declared JVM floor, compiler API floor, and
+  emitted bytecode; run each supported artifact's isolated consumer smoke test on its runtime floor
+  and the current LTS; check public API compatibility; and run the normal build, test, and
+  dependency-compatibility suites.
+- **Nightly and before release:** run every supported artifact's isolated consumer smoke test on
+  every compatible supported LTS and use the current non-LTS JDK as a forward-compatibility signal.
 - **Quarterly and before GA:** review upstream lifecycles and revalidate the 12-month admission gate,
   generated metadata, dependency ownership, and migration plan.
 - Any material runtime, framework, or dependency-generation change requires an ADR covering
@@ -65,7 +66,7 @@ that apply this policy.
 | Surface | Decision | Next action |
 | --- | --- | --- |
 | Framework-neutral artifacts | Keep Java 8 through SDK v4. | Raise the floor only in an SDK major; first prefer replacing or isolating a constraining dependency. |
-| Existing Spring Boot 2 starter | Legacy/OpenAI EOL; upstream EOL and the maximum grace period have elapsed. | Document final compatibility and migration in a Spring ADR; add no features. |
+| Existing Spring Boot 2 starter | OpenAI EOL as of 2026-07-27; 4.45.0 is the final supported release. | Follow the [Spring Boot 2 EOL decision](spring-boot-2-eol.md); add no features or compatibility claims. |
 | Potential Spring Boot 4 integration | Candidate Java 17 integration using a new generation-specific artifact. | Pass the admission gate and Spring ADR before implementation. |
 
 Do not publish an OpenAI Java BOM until independently versioned artifacts or demonstrated consumer

@@ -3,6 +3,7 @@ package com.openai.gradle
 import java.io.DataInputStream
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -27,6 +28,12 @@ abstract class VerifyVersionSupportPolicyTask : DefaultTask() {
 
     @get:Input abstract val targetCompatibility: Property<Int>
 
+    @get:Input abstract val javaRelease: Property<Int>
+
+    @get:Input abstract val kotlinJvmTarget: Property<String>
+
+    @get:Input abstract val kotlinFreeCompilerArgs: ListProperty<String>
+
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val classFiles: ConfigurableFileCollection
@@ -48,6 +55,19 @@ abstract class VerifyVersionSupportPolicyTask : DefaultTask() {
         }
         check(targetCompatibility.get() == floor) {
             "$name target compatibility must be Java $floor"
+        }
+        check(javaRelease.get() == floor) {
+            "$name Java compiler must enforce --release $floor"
+        }
+
+        val expectedKotlinTarget = if (floor == 8) "1.8" else floor.toString()
+        check(kotlinJvmTarget.get() == expectedKotlinTarget) {
+            "$name Kotlin JVM target must be $expectedKotlinTarget"
+        }
+        val jdkReleaseArguments =
+            kotlinFreeCompilerArgs.get().filter { it.startsWith("-Xjdk-release=") }
+        check(jdkReleaseArguments == listOf("-Xjdk-release=$expectedKotlinTarget")) {
+            "$name Kotlin compiler must enforce exactly -Xjdk-release=$expectedKotlinTarget"
         }
 
         val maximumClassMajorVersion = 44 + floor

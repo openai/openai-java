@@ -27,8 +27,9 @@ The SDK's primary artifacts are:
   - Provides the legacy Spring Boot 2 integration
   - Is OpenAI EOL and receives no new features
 
-`openai-java-runtime-compatibility` is a non-published fixture that loads representative public
-entry points on the JVMs declared in `gradle/version-support.properties`.
+`openai-java-runtime-compatibility` is a non-published fixture that exercises representative
+behavior for each supported artifact on an isolated runtime classpath. Its JVM matrix and each
+artifact's eligibility on a given JVM come from `gradle/version-support.properties`.
 
 ## Modifying or adding code
 

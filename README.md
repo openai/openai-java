@@ -1453,11 +1453,12 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 ## Spring Boot
 
 > [!WARNING]
-> `openai-java-spring-boot-starter` targets Spring Boot 2.7, which is OpenAI EOL under the
-> [Java version support policy](docs/version-support-policy.md). The artifact remains available for
-> existing applications but does not receive new features. New Spring applications should depend
-> on `openai-java` directly and provide an `OpenAIClient` bean until a supported,
-> generation-specific integration is available.
+> `openai-java-spring-boot-starter` targets Spring Boot 2.7 and is OpenAI EOL as of 2026-07-27.
+> Version 4.45.0 is the final supported and tested release. The artifact remains downloadable but
+> receives no fixes, testing, or compatibility support. See the
+> [Spring Boot 2 EOL decision and migration path](docs/spring-boot-2-eol.md). New Spring
+> applications should depend on `openai-java` directly and provide an `OpenAIClient` bean until a
+> supported, generation-specific integration is available.
 
 Existing Spring Boot 2 applications can use the legacy starter to simplify configuration.
 
@@ -1966,6 +1967,11 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 1. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
 2. Changes that we do not expect to impact the vast majority of users in practice.
+
+Those exceptions do not apply to raising a supported JVM or JDK API floor, changing an integration's
+framework generation, removing a published artifact, or removing a transitive dependency that
+consumers may rely on; those changes require a major release. Announcing EOL without removing or
+changing the last available artifact may be a minor release.
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
