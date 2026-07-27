@@ -95,6 +95,9 @@ dependencies {
     testImplementation("org.mockito:mockito-core:$mockitoVersion")
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testRuntimeOnly("org.slf4j:slf4j-nop:2.0.17") {
+        because("prevent SLF4J provider diagnostics from racing stderr assertions")
+    }
     mockitoAgent("org.mockito:mockito-core:$mockitoVersion") { isTransitive = false }
 }
 
