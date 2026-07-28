@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.audio.transcriptions.TranscriptionLanguage
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
 import org.assertj.core.api.Assertions.assertThat
@@ -313,6 +314,7 @@ internal class RealtimeServerEventTest {
                         )
                         .build()
                 )
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
                 )
@@ -400,6 +402,7 @@ internal class RealtimeServerEventTest {
                             )
                             .build()
                     )
+                    .addLanguage(TranscriptionLanguage.builder().code("code").build())
                     .addLogprob(
                         LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
                     )
@@ -3051,7 +3054,9 @@ internal class RealtimeServerEventTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .delay(AudioTranscription.Delay.MINIMAL)
+                                                .addKeyword("string")
                                                 .language("language")
+                                                .addLanguage("string")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
@@ -3201,7 +3206,9 @@ internal class RealtimeServerEventTest {
                                             .transcription(
                                                 AudioTranscription.builder()
                                                     .delay(AudioTranscription.Delay.MINIMAL)
+                                                    .addKeyword("string")
                                                     .language("language")
+                                                    .addLanguage("string")
                                                     .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
                                                     .build()
@@ -3311,7 +3318,9 @@ internal class RealtimeServerEventTest {
                                         .transcription(
                                             AudioTranscription.builder()
                                                 .delay(AudioTranscription.Delay.MINIMAL)
+                                                .addKeyword("string")
                                                 .language("language")
+                                                .addLanguage("string")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
@@ -3461,7 +3470,9 @@ internal class RealtimeServerEventTest {
                                             .transcription(
                                                 AudioTranscription.builder()
                                                     .delay(AudioTranscription.Delay.MINIMAL)
+                                                    .addKeyword("string")
                                                     .language("language")
+                                                    .addLanguage("string")
                                                     .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
                                                     .build()

@@ -15,6 +15,7 @@ internal class TranscriptionTextDoneEventTest {
         val transcriptionTextDoneEvent =
             TranscriptionTextDoneEvent.builder()
                 .text("text")
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     TranscriptionTextDoneEvent.Logprob.builder()
                         .token("token")
@@ -38,6 +39,8 @@ internal class TranscriptionTextDoneEventTest {
                 .build()
 
         assertThat(transcriptionTextDoneEvent.text()).isEqualTo("text")
+        assertThat(transcriptionTextDoneEvent.languages().getOrNull())
+            .containsExactly(TranscriptionLanguage.builder().code("code").build())
         assertThat(transcriptionTextDoneEvent.logprobs().getOrNull())
             .containsExactly(
                 TranscriptionTextDoneEvent.Logprob.builder()
@@ -68,6 +71,7 @@ internal class TranscriptionTextDoneEventTest {
         val transcriptionTextDoneEvent =
             TranscriptionTextDoneEvent.builder()
                 .text("text")
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     TranscriptionTextDoneEvent.Logprob.builder()
                         .token("token")
