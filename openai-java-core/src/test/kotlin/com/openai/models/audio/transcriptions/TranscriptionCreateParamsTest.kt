@@ -18,9 +18,11 @@ internal class TranscriptionCreateParamsTest {
             .model(AudioModel.GPT_4O_TRANSCRIBE)
             .chunkingStrategyAuto()
             .addInclude(TranscriptionInclude.LOGPROBS)
+            .addKeyword("string")
             .addKnownSpeakerName("string")
             .addKnownSpeakerReference("string")
             .language("language")
+            .addLanguage("string")
             .prompt("prompt")
             .responseFormat(AudioResponseFormat.JSON)
             .temperature(0.0)
@@ -36,9 +38,11 @@ internal class TranscriptionCreateParamsTest {
                 .model(AudioModel.GPT_4O_TRANSCRIBE)
                 .chunkingStrategyAuto()
                 .addInclude(TranscriptionInclude.LOGPROBS)
+                .addKeyword("string")
                 .addKnownSpeakerName("string")
                 .addKnownSpeakerReference("string")
                 .language("language")
+                .addLanguage("string")
                 .prompt("prompt")
                 .responseFormat(AudioResponseFormat.JSON)
                 .temperature(0.0)
@@ -62,9 +66,11 @@ internal class TranscriptionCreateParamsTest {
                         "chunking_strategy" to
                             MultipartField.of(TranscriptionCreateParams.ChunkingStrategy.ofAuto()),
                         "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
+                        "keywords" to MultipartField.of(listOf("string")),
                         "known_speaker_names" to MultipartField.of(listOf("string")),
                         "known_speaker_references" to MultipartField.of(listOf("string")),
                         "language" to MultipartField.of("language"),
+                        "languages" to MultipartField.of(listOf("string")),
                         "prompt" to MultipartField.of("prompt"),
                         "response_format" to MultipartField.of(AudioResponseFormat.JSON),
                         "temperature" to MultipartField.of(0.0),

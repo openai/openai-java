@@ -11,6 +11,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -21,7 +23,9 @@ class AudioTranscription
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delay: JsonField<Delay>,
+    private val keywords: JsonField<List<String>>,
     private val language: JsonField<String>,
+    private val languages: JsonField<List<String>>,
     private val model: JsonField<Model>,
     private val prompt: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -30,10 +34,16 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("delay") @ExcludeMissing delay: JsonField<Delay> = JsonMissing.of(),
+        @JsonProperty("keywords")
+        @ExcludeMissing
+        keywords: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("language") @ExcludeMissing language: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("languages")
+        @ExcludeMissing
+        languages: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
         @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
-    ) : this(delay, language, model, prompt, mutableMapOf())
+    ) : this(delay, keywords, language, languages, model, prompt, mutableMapOf())
 
     /**
      * Controls how long the model waits before emitting transcription text. Higher values can
@@ -46,6 +56,15 @@ private constructor(
     fun delay(): Optional<Delay> = delay.getOptional("delay")
 
     /**
+     * Words or phrases to guide transcription of the input audio. Supported by `gpt-transcribe` and
+     * `gpt-live-transcribe`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun keywords(): Optional<List<String>> = keywords.getOptional("keywords")
+
+    /**
      * The language of the input audio. Supplying the input language in
      * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format will
      * improve accuracy and latency.
@@ -56,10 +75,20 @@ private constructor(
     fun language(): Optional<String> = language.getOptional("language")
 
     /**
-     * The model to use for transcription. Current options are `whisper-1`,
-     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`,
-     * `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize` when
-     * you need diarization with speaker labels.
+     * Possible languages of the input audio, in
+     * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by
+     * `gpt-transcribe` and `gpt-live-transcribe`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun languages(): Optional<List<String>> = languages.getOptional("languages")
+
+    /**
+     * The model to use for transcription. Current options are `whisper-1`, `gpt-transcribe`,
+     * `gpt-live-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`,
+     * `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use
+     * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -87,11 +116,25 @@ private constructor(
     @JsonProperty("delay") @ExcludeMissing fun _delay(): JsonField<Delay> = delay
 
     /**
+     * Returns the raw JSON value of [keywords].
+     *
+     * Unlike [keywords], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("keywords") @ExcludeMissing fun _keywords(): JsonField<List<String>> = keywords
+
+    /**
      * Returns the raw JSON value of [language].
      *
      * Unlike [language], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("language") @ExcludeMissing fun _language(): JsonField<String> = language
+
+    /**
+     * Returns the raw JSON value of [languages].
+     *
+     * Unlike [languages], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("languages") @ExcludeMissing fun _languages(): JsonField<List<String>> = languages
 
     /**
      * Returns the raw JSON value of [model].
@@ -129,7 +172,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var delay: JsonField<Delay> = JsonMissing.of()
+        private var keywords: JsonField<MutableList<String>>? = null
         private var language: JsonField<String> = JsonMissing.of()
+        private var languages: JsonField<MutableList<String>>? = null
         private var model: JsonField<Model> = JsonMissing.of()
         private var prompt: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -137,7 +182,9 @@ private constructor(
         @JvmSynthetic
         internal fun from(audioTranscription: AudioTranscription) = apply {
             delay = audioTranscription.delay
+            keywords = audioTranscription.keywords.map { it.toMutableList() }
             language = audioTranscription.language
+            languages = audioTranscription.languages.map { it.toMutableList() }
             model = audioTranscription.model
             prompt = audioTranscription.prompt
             additionalProperties = audioTranscription.additionalProperties.toMutableMap()
@@ -159,6 +206,35 @@ private constructor(
         fun delay(delay: JsonField<Delay>) = apply { this.delay = delay }
 
         /**
+         * Words or phrases to guide transcription of the input audio. Supported by `gpt-transcribe`
+         * and `gpt-live-transcribe`.
+         */
+        fun keywords(keywords: List<String>) = keywords(JsonField.of(keywords))
+
+        /**
+         * Sets [Builder.keywords] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.keywords] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun keywords(keywords: JsonField<List<String>>) = apply {
+            this.keywords = keywords.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [String] to [keywords].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addKeyword(keyword: String) = apply {
+            keywords =
+                (keywords ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("keywords", it).add(keyword)
+                }
+        }
+
+        /**
          * The language of the input audio. Supplying the input language in
          * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
          * will improve accuracy and latency.
@@ -174,10 +250,40 @@ private constructor(
         fun language(language: JsonField<String>) = apply { this.language = language }
 
         /**
-         * The model to use for transcription. Current options are `whisper-1`,
-         * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`,
-         * `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize`
-         * when you need diarization with speaker labels.
+         * Possible languages of the input audio, in
+         * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by
+         * `gpt-transcribe` and `gpt-live-transcribe`.
+         */
+        fun languages(languages: List<String>) = languages(JsonField.of(languages))
+
+        /**
+         * Sets [Builder.languages] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.languages] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun languages(languages: JsonField<List<String>>) = apply {
+            this.languages = languages.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [String] to [languages].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLanguage(language: String) = apply {
+            languages =
+                (languages ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("languages", it).add(language)
+                }
+        }
+
+        /**
+         * The model to use for transcription. Current options are `whisper-1`, `gpt-transcribe`,
+         * `gpt-live-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`,
+         * `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use
+         * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
          */
         fun model(model: Model) = model(JsonField.of(model))
 
@@ -240,7 +346,15 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): AudioTranscription =
-            AudioTranscription(delay, language, model, prompt, additionalProperties.toMutableMap())
+            AudioTranscription(
+                delay,
+                (keywords ?: JsonMissing.of()).map { it.toImmutable() },
+                language,
+                (languages ?: JsonMissing.of()).map { it.toImmutable() },
+                model,
+                prompt,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -259,7 +373,9 @@ private constructor(
         }
 
         delay().ifPresent { it.validate() }
+        keywords()
         language()
+        languages()
         model()
         prompt()
         validated = true
@@ -281,7 +397,9 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (delay.asKnown().getOrNull()?.validity() ?: 0) +
+            (keywords.asKnown().getOrNull()?.size ?: 0) +
             (if (language.asKnown().isPresent) 1 else 0) +
+            (languages.asKnown().getOrNull()?.size ?: 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (prompt.asKnown().isPresent) 1 else 0)
 
@@ -443,10 +561,10 @@ private constructor(
     }
 
     /**
-     * The model to use for transcription. Current options are `whisper-1`,
-     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`,
-     * `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize` when
-     * you need diarization with speaker labels.
+     * The model to use for transcription. Current options are `whisper-1`, `gpt-transcribe`,
+     * `gpt-live-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`,
+     * `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use
+     * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -463,6 +581,10 @@ private constructor(
         companion object {
 
             @JvmField val WHISPER_1 = of("whisper-1")
+
+            @JvmField val GPT_TRANSCRIBE = of("gpt-transcribe")
+
+            @JvmField val GPT_LIVE_TRANSCRIBE = of("gpt-live-transcribe")
 
             @JvmField val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
 
@@ -481,6 +603,8 @@ private constructor(
         /** An enum containing [Model]'s known values. */
         enum class Known {
             WHISPER_1,
+            GPT_TRANSCRIBE,
+            GPT_LIVE_TRANSCRIBE,
             GPT_4O_MINI_TRANSCRIBE,
             GPT_4O_MINI_TRANSCRIBE_2025_12_15,
             GPT_4O_TRANSCRIBE,
@@ -499,6 +623,8 @@ private constructor(
          */
         enum class Value {
             WHISPER_1,
+            GPT_TRANSCRIBE,
+            GPT_LIVE_TRANSCRIBE,
             GPT_4O_MINI_TRANSCRIBE,
             GPT_4O_MINI_TRANSCRIBE_2025_12_15,
             GPT_4O_TRANSCRIBE,
@@ -518,6 +644,8 @@ private constructor(
         fun value(): Value =
             when (this) {
                 WHISPER_1 -> Value.WHISPER_1
+                GPT_TRANSCRIBE -> Value.GPT_TRANSCRIBE
+                GPT_LIVE_TRANSCRIBE -> Value.GPT_LIVE_TRANSCRIBE
                 GPT_4O_MINI_TRANSCRIBE -> Value.GPT_4O_MINI_TRANSCRIBE
                 GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Value.GPT_4O_MINI_TRANSCRIBE_2025_12_15
                 GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
@@ -538,6 +666,8 @@ private constructor(
         fun known(): Known =
             when (this) {
                 WHISPER_1 -> Known.WHISPER_1
+                GPT_TRANSCRIBE -> Known.GPT_TRANSCRIBE
+                GPT_LIVE_TRANSCRIBE -> Known.GPT_LIVE_TRANSCRIBE
                 GPT_4O_MINI_TRANSCRIBE -> Known.GPT_4O_MINI_TRANSCRIBE
                 GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Known.GPT_4O_MINI_TRANSCRIBE_2025_12_15
                 GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
@@ -614,18 +744,20 @@ private constructor(
 
         return other is AudioTranscription &&
             delay == other.delay &&
+            keywords == other.keywords &&
             language == other.language &&
+            languages == other.languages &&
             model == other.model &&
             prompt == other.prompt &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(delay, language, model, prompt, additionalProperties)
+        Objects.hash(delay, keywords, language, languages, model, prompt, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AudioTranscription{delay=$delay, language=$language, model=$model, prompt=$prompt, additionalProperties=$additionalProperties}"
+        "AudioTranscription{delay=$delay, keywords=$keywords, language=$language, languages=$languages, model=$model, prompt=$prompt, additionalProperties=$additionalProperties}"
 }

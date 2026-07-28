@@ -15,6 +15,7 @@ internal class TranscriptionTest {
         val transcription =
             Transcription.builder()
                 .text("text")
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
                 )
@@ -34,6 +35,8 @@ internal class TranscriptionTest {
                 .build()
 
         assertThat(transcription.text()).isEqualTo("text")
+        assertThat(transcription.languages().getOrNull())
+            .containsExactly(TranscriptionLanguage.builder().code("code").build())
         assertThat(transcription.logprobs().getOrNull())
             .containsExactly(
                 Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
@@ -62,6 +65,7 @@ internal class TranscriptionTest {
         val transcription =
             Transcription.builder()
                 .text("text")
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
                 )
