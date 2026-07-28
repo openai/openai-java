@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.46.0 (2026-07-28)
+
+Full Changelog: [v4.45.0...v4.46.0](https://github.com/openai/openai-java/compare/v4.45.0...v4.46.0)
+
+### Features
+
+* **api:** transcription model updates ([82b568b](https://github.com/openai/openai-java/commit/82b568bbd3e1bb5f2e80756a2f06284fbe28a192))
+* **support:** establish Java support policy and retire the Spring Boot 2 starter ([#820](https://github.com/openai/openai-java/issues/820)) ([f87609f](https://github.com/openai/openai-java/commit/f87609f0039f9dc4fc4b0e224f977c8ee1a86627))
+
+
+### Build System
+
+* **deps:** fix 27 consumer-isolated Dependabot alerts ([#810](https://github.com/openai/openai-java/issues/810)) ([d9eefdc](https://github.com/openai/openai-java/commit/d9eefdc7ede7b648894ca8f2aadd9626a38353c1))
+* **deps:** patch consumer-neutral dependencies ([#816](https://github.com/openai/openai-java/issues/816)) ([8b79573](https://github.com/openai/openai-java/commit/8b7957326f399314a0a40027865b01ae49f0c304))
+
 ## 4.45.0 (2026-07-23)
 
 Full Changelog: [v4.44.0...v4.45.0](https://github.com/openai/openai-java/compare/v4.44.0...v4.45.0)
