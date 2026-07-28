@@ -22,6 +22,8 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
 
         @JvmField val WHISPER_1 = of("whisper-1")
 
+        @JvmField val GPT_TRANSCRIBE = of("gpt-transcribe")
+
         @JvmField val GPT_4O_TRANSCRIBE = of("gpt-4o-transcribe")
 
         @JvmField val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
@@ -36,6 +38,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
     /** An enum containing [AudioModel]'s known values. */
     enum class Known {
         WHISPER_1,
+        GPT_TRANSCRIBE,
         GPT_4O_TRANSCRIBE,
         GPT_4O_MINI_TRANSCRIBE,
         GPT_4O_MINI_TRANSCRIBE_2025_12_15,
@@ -53,6 +56,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
      */
     enum class Value {
         WHISPER_1,
+        GPT_TRANSCRIBE,
         GPT_4O_TRANSCRIBE,
         GPT_4O_MINI_TRANSCRIBE,
         GPT_4O_MINI_TRANSCRIBE_2025_12_15,
@@ -71,6 +75,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
     fun value(): Value =
         when (this) {
             WHISPER_1 -> Value.WHISPER_1
+            GPT_TRANSCRIBE -> Value.GPT_TRANSCRIBE
             GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
             GPT_4O_MINI_TRANSCRIBE -> Value.GPT_4O_MINI_TRANSCRIBE
             GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Value.GPT_4O_MINI_TRANSCRIBE_2025_12_15
@@ -89,6 +94,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
     fun known(): Known =
         when (this) {
             WHISPER_1 -> Known.WHISPER_1
+            GPT_TRANSCRIBE -> Known.GPT_TRANSCRIBE
             GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
             GPT_4O_MINI_TRANSCRIBE -> Known.GPT_4O_MINI_TRANSCRIBE
             GPT_4O_MINI_TRANSCRIBE_2025_12_15 -> Known.GPT_4O_MINI_TRANSCRIBE_2025_12_15

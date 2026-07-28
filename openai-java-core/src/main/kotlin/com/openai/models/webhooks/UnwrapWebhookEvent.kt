@@ -33,6 +33,7 @@ private constructor(
     private val fineTuningJobCancelled: FineTuningJobCancelledWebhookEvent? = null,
     private val fineTuningJobFailed: FineTuningJobFailedWebhookEvent? = null,
     private val fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent? = null,
+    private val liveCallIncoming: LiveCallIncomingWebhookEvent? = null,
     private val realtimeCallIncoming: RealtimeCallIncomingWebhookEvent? = null,
     private val responseCancelled: ResponseCancelledWebhookEvent? = null,
     private val responseCompleted: ResponseCompletedWebhookEvent? = null,
@@ -76,7 +77,19 @@ private constructor(
     fun fineTuningJobSucceeded(): Optional<FineTuningJobSucceededWebhookEvent> =
         Optional.ofNullable(fineTuningJobSucceeded)
 
-    /** Sent when Realtime API Receives a incoming SIP call. */
+    /**
+     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
+    fun liveCallIncoming(): Optional<LiveCallIncomingWebhookEvent> =
+        Optional.ofNullable(liveCallIncoming)
+
+    /**
+     * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
+     * session can also emit `live.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
     fun realtimeCallIncoming(): Optional<RealtimeCallIncomingWebhookEvent> =
         Optional.ofNullable(realtimeCallIncoming)
 
@@ -114,6 +127,8 @@ private constructor(
     fun isFineTuningJobFailed(): Boolean = fineTuningJobFailed != null
 
     fun isFineTuningJobSucceeded(): Boolean = fineTuningJobSucceeded != null
+
+    fun isLiveCallIncoming(): Boolean = liveCallIncoming != null
 
     fun isRealtimeCallIncoming(): Boolean = realtimeCallIncoming != null
 
@@ -160,7 +175,19 @@ private constructor(
     fun asFineTuningJobSucceeded(): FineTuningJobSucceededWebhookEvent =
         fineTuningJobSucceeded.getOrThrow("fineTuningJobSucceeded")
 
-    /** Sent when Realtime API Receives a incoming SIP call. */
+    /**
+     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
+    fun asLiveCallIncoming(): LiveCallIncomingWebhookEvent =
+        liveCallIncoming.getOrThrow("liveCallIncoming")
+
+    /**
+     * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
+     * session can also emit `live.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
     fun asRealtimeCallIncoming(): RealtimeCallIncomingWebhookEvent =
         realtimeCallIncoming.getOrThrow("realtimeCallIncoming")
 
@@ -224,6 +251,7 @@ private constructor(
             fineTuningJobFailed != null -> visitor.visitFineTuningJobFailed(fineTuningJobFailed)
             fineTuningJobSucceeded != null ->
                 visitor.visitFineTuningJobSucceeded(fineTuningJobSucceeded)
+            liveCallIncoming != null -> visitor.visitLiveCallIncoming(liveCallIncoming)
             realtimeCallIncoming != null -> visitor.visitRealtimeCallIncoming(realtimeCallIncoming)
             responseCancelled != null -> visitor.visitResponseCancelled(responseCancelled)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
@@ -293,6 +321,10 @@ private constructor(
                     fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
                 ) {
                     fineTuningJobSucceeded.validate()
+                }
+
+                override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) {
+                    liveCallIncoming.validate()
                 }
 
                 override fun visitRealtimeCallIncoming(
@@ -377,6 +409,9 @@ private constructor(
                     fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
                 ) = fineTuningJobSucceeded.validity()
 
+                override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
+                    liveCallIncoming.validity()
+
                 override fun visitRealtimeCallIncoming(
                     realtimeCallIncoming: RealtimeCallIncomingWebhookEvent
                 ) = realtimeCallIncoming.validity()
@@ -416,6 +451,7 @@ private constructor(
             fineTuningJobCancelled == other.fineTuningJobCancelled &&
             fineTuningJobFailed == other.fineTuningJobFailed &&
             fineTuningJobSucceeded == other.fineTuningJobSucceeded &&
+            liveCallIncoming == other.liveCallIncoming &&
             realtimeCallIncoming == other.realtimeCallIncoming &&
             responseCancelled == other.responseCancelled &&
             responseCompleted == other.responseCompleted &&
@@ -435,6 +471,7 @@ private constructor(
             fineTuningJobCancelled,
             fineTuningJobFailed,
             fineTuningJobSucceeded,
+            liveCallIncoming,
             realtimeCallIncoming,
             responseCancelled,
             responseCompleted,
@@ -457,6 +494,7 @@ private constructor(
                 "UnwrapWebhookEvent{fineTuningJobFailed=$fineTuningJobFailed}"
             fineTuningJobSucceeded != null ->
                 "UnwrapWebhookEvent{fineTuningJobSucceeded=$fineTuningJobSucceeded}"
+            liveCallIncoming != null -> "UnwrapWebhookEvent{liveCallIncoming=$liveCallIncoming}"
             realtimeCallIncoming != null ->
                 "UnwrapWebhookEvent{realtimeCallIncoming=$realtimeCallIncoming}"
             responseCancelled != null -> "UnwrapWebhookEvent{responseCancelled=$responseCancelled}"
@@ -520,7 +558,20 @@ private constructor(
         fun ofFineTuningJobSucceeded(fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent) =
             UnwrapWebhookEvent(fineTuningJobSucceeded = fineTuningJobSucceeded)
 
-        /** Sent when Realtime API Receives a incoming SIP call. */
+        /**
+         * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+         * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
+         * accept endpoint selects the runtime surface.
+         */
+        @JvmStatic
+        fun ofLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
+            UnwrapWebhookEvent(liveCallIncoming = liveCallIncoming)
+
+        /**
+         * Sent when an incoming API SIP session is available for Realtime acceptance. The same
+         * pending session can also emit `live.call.incoming`; the first successful Realtime or Live
+         * accept endpoint selects the runtime surface.
+         */
         @JvmStatic
         fun ofRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent) =
             UnwrapWebhookEvent(realtimeCallIncoming = realtimeCallIncoming)
@@ -586,7 +637,18 @@ private constructor(
             fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
         ): T
 
-        /** Sent when Realtime API Receives a incoming SIP call. */
+        /**
+         * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+         * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
+         * accept endpoint selects the runtime surface.
+         */
+        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+
+        /**
+         * Sent when an incoming API SIP session is available for Realtime acceptance. The same
+         * pending session can also emit `live.call.incoming`; the first successful Realtime or Live
+         * accept endpoint selects the runtime surface.
+         */
         fun visitRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent): T
 
         /** Sent when a background response has been cancelled. */
@@ -679,6 +741,11 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(fineTuningJobSucceeded = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "live.call.incoming" -> {
+                    return tryDeserialize(node, jacksonTypeRef<LiveCallIncomingWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(liveCallIncoming = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "realtime.call.incoming" -> {
                     return tryDeserialize(node, jacksonTypeRef<RealtimeCallIncomingWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(realtimeCallIncoming = it, _json = json) }
@@ -731,6 +798,7 @@ private constructor(
                     generator.writeObject(value.fineTuningJobFailed)
                 value.fineTuningJobSucceeded != null ->
                     generator.writeObject(value.fineTuningJobSucceeded)
+                value.liveCallIncoming != null -> generator.writeObject(value.liveCallIncoming)
                 value.realtimeCallIncoming != null ->
                     generator.writeObject(value.realtimeCallIncoming)
                 value.responseCancelled != null -> generator.writeObject(value.responseCancelled)

@@ -21,11 +21,11 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
- * session can also emit `live.call.incoming`; the first successful Realtime or Live accept endpoint
+ * Sent when an incoming API SIP session is available for Live acceptance. The same pending session
+ * can also emit `realtime.call.incoming`; the first successful Realtime or Live accept endpoint
  * selects the runtime surface.
  */
-class RealtimeCallIncomingWebhookEvent
+class LiveCallIncomingWebhookEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
@@ -54,7 +54,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp (in seconds) of when the model response was completed.
+     * The Unix timestamp (in seconds) of when the event was created.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -70,11 +70,11 @@ private constructor(
     fun data(): Data = data.getRequired("data")
 
     /**
-     * The type of the event. Always `realtime.call.incoming`.
+     * The type of the event. Always `live.call.incoming`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("realtime.call.incoming")
+     * JsonValue.from("live.call.incoming")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -133,8 +133,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of
-         * [RealtimeCallIncomingWebhookEvent].
+         * Returns a mutable builder for constructing an instance of [LiveCallIncomingWebhookEvent].
          *
          * The following fields are required:
          * ```java
@@ -146,27 +145,25 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [RealtimeCallIncomingWebhookEvent]. */
+    /** A builder for [LiveCallIncomingWebhookEvent]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var data: JsonField<Data>? = null
-        private var type: JsonValue = JsonValue.from("realtime.call.incoming")
+        private var type: JsonValue = JsonValue.from("live.call.incoming")
         private var object_: JsonField<Object> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(realtimeCallIncomingWebhookEvent: RealtimeCallIncomingWebhookEvent) =
-            apply {
-                id = realtimeCallIncomingWebhookEvent.id
-                createdAt = realtimeCallIncomingWebhookEvent.createdAt
-                data = realtimeCallIncomingWebhookEvent.data
-                type = realtimeCallIncomingWebhookEvent.type
-                object_ = realtimeCallIncomingWebhookEvent.object_
-                additionalProperties =
-                    realtimeCallIncomingWebhookEvent.additionalProperties.toMutableMap()
-            }
+        internal fun from(liveCallIncomingWebhookEvent: LiveCallIncomingWebhookEvent) = apply {
+            id = liveCallIncomingWebhookEvent.id
+            createdAt = liveCallIncomingWebhookEvent.createdAt
+            data = liveCallIncomingWebhookEvent.data
+            type = liveCallIncomingWebhookEvent.type
+            object_ = liveCallIncomingWebhookEvent.object_
+            additionalProperties = liveCallIncomingWebhookEvent.additionalProperties.toMutableMap()
+        }
 
         /** The unique ID of the event. */
         fun id(id: String) = id(JsonField.of(id))
@@ -179,7 +176,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The Unix timestamp (in seconds) of when the model response was completed. */
+        /** The Unix timestamp (in seconds) of when the event was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /**
@@ -207,7 +204,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("realtime.call.incoming")
+         * JsonValue.from("live.call.incoming")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -246,7 +243,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [RealtimeCallIncomingWebhookEvent].
+         * Returns an immutable instance of [LiveCallIncomingWebhookEvent].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -259,8 +256,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): RealtimeCallIncomingWebhookEvent =
-            RealtimeCallIncomingWebhookEvent(
+        fun build(): LiveCallIncomingWebhookEvent =
+            LiveCallIncomingWebhookEvent(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("data", data),
@@ -280,7 +277,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
      *   expected type.
      */
-    fun validate(): RealtimeCallIncomingWebhookEvent = apply {
+    fun validate(): LiveCallIncomingWebhookEvent = apply {
         if (validated) {
             return@apply
         }
@@ -289,7 +286,7 @@ private constructor(
         createdAt()
         data().validate()
         _type().let {
-            if (it != JsonValue.from("realtime.call.incoming")) {
+            if (it != JsonValue.from("live.call.incoming")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -315,34 +312,36 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (data.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("realtime.call.incoming")) 1 else 0 } +
+            type.let { if (it == JsonValue.from("live.call.incoming")) 1 else 0 } +
             (object_.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Event data payload. */
     class Data
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val callId: JsonField<String>,
+        private val sessionId: JsonField<String>,
         private val sipHeaders: JsonField<List<SipHeader>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("session_id")
+            @ExcludeMissing
+            sessionId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("sip_headers")
             @ExcludeMissing
             sipHeaders: JsonField<List<SipHeader>> = JsonMissing.of(),
-        ) : this(callId, sipHeaders, mutableMapOf())
+        ) : this(sessionId, sipHeaders, mutableMapOf())
 
         /**
          * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-         * `session_id` in `live.call.incoming`.
+         * `call_id` in `realtime.call.incoming`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun callId(): String = callId.getRequired("call_id")
+        fun sessionId(): String = sessionId.getRequired("session_id")
 
         /**
          * Headers from the SIP Invite.
@@ -353,11 +352,11 @@ private constructor(
         fun sipHeaders(): List<SipHeader> = sipHeaders.getRequired("sip_headers")
 
         /**
-         * Returns the raw JSON value of [callId].
+         * Returns the raw JSON value of [sessionId].
          *
-         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+        @JsonProperty("session_id") @ExcludeMissing fun _sessionId(): JsonField<String> = sessionId
 
         /**
          * Returns the raw JSON value of [sipHeaders].
@@ -387,7 +386,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .callId()
+             * .sessionId()
              * .sipHeaders()
              * ```
              */
@@ -397,31 +396,31 @@ private constructor(
         /** A builder for [Data]. */
         class Builder internal constructor() {
 
-            private var callId: JsonField<String>? = null
+            private var sessionId: JsonField<String>? = null
             private var sipHeaders: JsonField<MutableList<SipHeader>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(data: Data) = apply {
-                callId = data.callId
+                sessionId = data.sessionId
                 sipHeaders = data.sipHeaders.map { it.toMutableList() }
                 additionalProperties = data.additionalProperties.toMutableMap()
             }
 
             /**
              * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-             * `session_id` in `live.call.incoming`.
+             * `call_id` in `realtime.call.incoming`.
              */
-            fun callId(callId: String) = callId(JsonField.of(callId))
+            fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
 
             /**
-             * Sets [Builder.callId] to an arbitrary JSON value.
+             * Sets [Builder.sessionId] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * You should usually call [Builder.sessionId] with a well-typed [String] value instead.
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+            fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
 
             /** Headers from the SIP Invite. */
             fun sipHeaders(sipHeaders: List<SipHeader>) = sipHeaders(JsonField.of(sipHeaders))
@@ -475,7 +474,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .callId()
+             * .sessionId()
              * .sipHeaders()
              * ```
              *
@@ -483,7 +482,7 @@ private constructor(
              */
             fun build(): Data =
                 Data(
-                    checkRequired("callId", callId),
+                    checkRequired("sessionId", sessionId),
                     checkRequired("sipHeaders", sipHeaders).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -505,7 +504,7 @@ private constructor(
                 return@apply
             }
 
-            callId()
+            sessionId()
             sipHeaders().forEach { it.validate() }
             validated = true
         }
@@ -526,7 +525,7 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (callId.asKnown().isPresent) 1 else 0) +
+            (if (sessionId.asKnown().isPresent) 1 else 0) +
                 (sipHeaders.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         /** A header from the SIP Invite. */
@@ -748,17 +747,19 @@ private constructor(
             }
 
             return other is Data &&
-                callId == other.callId &&
+                sessionId == other.sessionId &&
                 sipHeaders == other.sipHeaders &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(callId, sipHeaders, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(sessionId, sipHeaders, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Data{callId=$callId, sipHeaders=$sipHeaders, additionalProperties=$additionalProperties}"
+            "Data{sessionId=$sessionId, sipHeaders=$sipHeaders, additionalProperties=$additionalProperties}"
     }
 
     /** The object of the event. Always `event`. */
@@ -895,7 +896,7 @@ private constructor(
             return true
         }
 
-        return other is RealtimeCallIncomingWebhookEvent &&
+        return other is LiveCallIncomingWebhookEvent &&
             id == other.id &&
             createdAt == other.createdAt &&
             data == other.data &&
@@ -911,5 +912,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeCallIncomingWebhookEvent{id=$id, createdAt=$createdAt, data=$data, type=$type, object_=$object_, additionalProperties=$additionalProperties}"
+        "LiveCallIncomingWebhookEvent{id=$id, createdAt=$createdAt, data=$data, type=$type, object_=$object_, additionalProperties=$additionalProperties}"
 }
