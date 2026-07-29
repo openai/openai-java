@@ -1696,6 +1696,80 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+#### Mutual TLS with native JSSE
+
+API-key authenticated HTTP requests can use mTLS without a dedicated SDK API. Build an
+`SSLContext` using Java's native JSSE APIs and pass it through the existing OkHttp TLS hooks.
+
+To opt in, follow the
+[OpenAI Mutual TLS Beta Program](https://help.openai.com/en/articles/10876024-openai-mutual-tls-beta-program)
+guide to upload a CA certificate and activate it for your project or organization before
+configuring the client.
+
+The PKCS#12 key store must contain the client private key and the complete certificate chain:
+the leaf certificate first, followed by any intermediate certificates. Keep server trust separate
+from that client identity. Initializing `TrustManagerFactory` with a null `KeyStore` retains the
+JVM's normal server-trust configuration.
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.util.Arrays;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+char[] password = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD").toCharArray();
+KeyStore clientKeyStore = KeyStore.getInstance("PKCS12");
+KeyManagerFactory keyManagers =
+    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+try {
+    try (InputStream input =
+            Files.newInputStream(Paths.get(System.getenv("OPENAI_MTLS_KEYSTORE")))) {
+        clientKeyStore.load(input, password);
+    }
+    keyManagers.init(clientKeyStore, password);
+} finally {
+    Arrays.fill(password, '\0');
+}
+
+TrustManagerFactory trustManagers =
+    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+trustManagers.init((KeyStore) null);
+X509TrustManager trustManager = Arrays.stream(trustManagers.getTrustManagers())
+    .filter(X509TrustManager.class::isInstance)
+    .map(X509TrustManager.class::cast)
+    .findFirst()
+    .orElseThrow(IllegalStateException::new);
+
+SSLContext sslContext = SSLContext.getInstance("TLS");
+sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    // Native TLS configuration does not select an mTLS endpoint automatically.
+    .baseUrl("https://mtls.api.openai.com/v1")
+    // Avoid presenting the client identity to a redirect target.
+    .followRedirects(false)
+    .sslSocketFactory(sslContext.getSocketFactory())
+    .trustManager(trustManager)
+    .build();
+```
+
+An explicit EU or custom endpoint can be used instead of the global mTLS endpoint. The SDK does not
+inspect or rewrite that URL. To rotate the client identity, build a new `SSLContext`, HTTP transport,
+and SDK client, then close the old client. This recipe applies to ordinary HTTP API-key traffic; it
+does not add certificate-only authentication or Realtime/WebSocket mTLS support.
+
+See the complete, compilable
+[`MutualTlsExample`](openai-java-example/src/main/java/com/openai/example/MutualTlsExample.java).
+
 ### Custom HTTP client
 
 The SDK consists of three artifacts:
