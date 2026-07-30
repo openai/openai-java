@@ -3,6 +3,11 @@ name: Publish Sonatype
 
 on:
   workflow_dispatch:
+    inputs:
+      release-tag:
+        description: Existing release tag to publish, for example v4.47.0
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -10,3 +15,9 @@ permissions:
 jobs:
   publish:
     uses: ./.github/workflows/publish-sonatype-reusable.yml
+    with:
+      release-tag: ${{ inputs.release-tag }}
+    # Reusable workflows do not receive the caller's secrets by default. The called publish job
+    # still binds the protected `publish` environment, whose credentials take precedence. GitHub
+    # does not allow the calling job to bind that environment while it calls a reusable workflow.
+    secrets: inherit # zizmor: ignore[secrets-inherit]

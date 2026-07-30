@@ -40,3 +40,7 @@ jobs:
     needs: release
     if: needs.release.outputs.releases_created == 'true'
     uses: ./.github/workflows/publish-sonatype-reusable.yml
+    # Reusable workflows do not receive the caller's secrets by default. The called publish job
+    # still binds the protected `publish` environment, whose credentials take precedence. GitHub
+    # does not allow the calling job to bind that environment while it calls a reusable workflow.
+    secrets: inherit # zizmor: ignore[secrets-inherit]

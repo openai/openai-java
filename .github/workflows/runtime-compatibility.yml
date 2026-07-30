@@ -4,6 +4,12 @@ name: Runtime compatibility
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        description: Git ref to test; defaults to the triggering commit
+        required: false
+        type: string
+        default: ''
   schedule:
     - cron: '0 7 * * *'
   workflow_dispatch:
@@ -28,6 +34,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Set up Java
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
@@ -59,6 +66,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Set up consumer Java
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
@@ -76,7 +84,9 @@ jobs:
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       - name: Run consumer compatibility smoke test
+        env:
+          RUNTIME_JAVA_VERSION: ${{ matrix.java }}
         run: >-
           ./scripts/gradle
           :openai-java-runtime-compatibility:runRuntimeCompatibility
-          -PruntimeJavaVersion=${{ matrix.java }}
+          -PruntimeJavaVersion="$RUNTIME_JAVA_VERSION"
