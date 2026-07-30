@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.47.0 (2026-07-30)
+
+Full Changelog: [v4.46.0...v4.47.0](https://github.com/openai/openai-java/compare/v4.46.0...v4.47.0)
+
+### Features
+
+* **api:** fast tier ([5a139f4](https://github.com/openai/openai-java/commit/5a139f47a9d6482ef4759f14a81d03633861dc5c))
+
 ## 4.46.0 (2026-07-28)
 
 Full Changelog: [v4.45.0...v4.46.0](https://github.com/openai/openai-java/compare/v4.45.0...v4.46.0)
