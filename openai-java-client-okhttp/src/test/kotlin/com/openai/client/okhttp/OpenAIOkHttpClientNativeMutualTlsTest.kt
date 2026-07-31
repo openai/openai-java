@@ -53,7 +53,10 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
                 client.close()
             }
 
-            assertThat(fixture.server.takeRequest().path).isEqualTo("/v1/files")
+            val request = fixture.server.takeRequest()
+            assertThat(request.path).isEqualTo("/v1/files")
+            assertThat(requireNotNull(request.handshake).peerCertificates)
+                .containsSubsequence(clientLeaf.certificate, clientIntermediate.certificate)
         }
     }
 

@@ -1752,6 +1752,7 @@ URI baseUri;
 try {
     baseUri = URI.create(baseUrl);
 } catch (IllegalArgumentException ignored) {
+    // URI parse exceptions include the rejected value, which may contain credentials.
     throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
 }
 if (!"https".equalsIgnoreCase(baseUri.getScheme()) || baseUri.getRawAuthority() == null) {
