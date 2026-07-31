@@ -6,6 +6,17 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing GitHub release tag to retry, for example v4.47.0
+        required: true
+        type: string
+      confirm_no_pending_deployment:
+        description: I verified that Central Portal has no deployment for this version
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -14,29 +25,235 @@ concurrency:
   group: create-releases
   cancel-in-progress: false
 
+env:
+  MAVEN_CENTRAL_BASE_URL: https://repo.maven.apache.org/maven2/com/openai
+  # Keep this list in sync with projects that apply the openai.publish plugin.
+  MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock
+
 jobs:
   release:
-    name: Release / create
+    name: Release / select source
     if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: publish
     outputs:
-      releases_created: ${{ steps.release.outputs.releases_created }}
+      should_publish: >-
+        ${{ github.event_name == 'workflow_dispatch' ||
+        steps.automatic.outputs.releases_created == 'true' }}
+      source_sha: ${{ steps.retry.outputs.source_sha || steps.automatic.outputs.sha }}
+      release_tag: ${{ steps.retry.outputs.release_tag || steps.automatic.outputs.tag_name }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Check out main
+        if: github.event_name != 'workflow_dispatch'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
       - name: Create release
-        id: release
+        if: github.event_name != 'workflow_dispatch'
+        id: automatic
         uses: stainless-api/trigger-release-please@bb6677c5a04578eec1ccfd9e1913b5b78ed64c61 # v1.4.0
         with:
           repo: ${{ github.event.repository.full_name }}
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
-  publish:
+      - name: Validate retry request
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          CONFIRMED: ${{ inputs.confirm_no_pending_deployment }}
+        run: |
+          if [[ "$CONFIRMED" != "true" ]]; then
+            echo "::error::Confirm that Central Portal has no deployment before retrying"
+            exit 1
+          fi
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Expected a semantic version tag such as v4.47.0"
+            exit 1
+          fi
+
+      - name: Check out retry source
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: refs/tags/${{ inputs.release_tag }}
+
+      - name: Verify retry source
+        if: github.event_name == 'workflow_dispatch'
+        id: retry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+
+          source_sha="$(git rev-parse HEAD)"
+          if [[ "$source_sha" != "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" ]]; then
+            echo "::error::$RELEASE_TAG does not match the checked-out commit"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$source_sha" refs/remotes/origin/main; then
+            echo "::error::$RELEASE_TAG is not an ancestor of main"
+            exit 1
+          fi
+
+          release_json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG")"
+          if [[ "$(jq -r '.draft' <<< "$release_json")" != "false" ||
+                "$(jq -r '.target_commitish' <<< "$release_json")" != "$source_sha" ]]; then
+            echo "::error::$RELEASE_TAG is not a published GitHub release for $source_sha"
+            exit 1
+          fi
+
+          version="$(
+            sed -n \
+              's/^[[:space:]]*version = "\([^"]*\)" \/\/ x-release-please-version$/\1/p' \
+              build.gradle.kts
+          )"
+          if [[ "$RELEASE_TAG" != "v$version" ]]; then
+            echo "::error::Tag $RELEASE_TAG does not match Gradle version $version"
+            exit 1
+          fi
+
+          {
+            echo "source_sha=$source_sha"
+            echo "release_tag=$RELEASE_TAG"
+          } >> "$GITHUB_OUTPUT"
+
+  runtime_compatibility:
+    name: Release / runtime compatibility
     needs: release
-    if: needs.release.outputs.releases_created == 'true'
-    uses: ./.github/workflows/publish-sonatype-reusable.yml
+    if: needs.release.outputs.should_publish == 'true'
+    uses: ./.github/workflows/runtime-compatibility.yml
+    with:
+      ref: ${{ needs.release.outputs.source_sha }}
+
+  publish:
+    name: Release / publish Maven Central
+    needs:
+      - release
+      - runtime_compatibility
+    if: >-
+      needs.release.outputs.should_publish == 'true' &&
+      needs.runtime_compatibility.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    environment: publish
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+          ref: ${{ needs.release.outputs.source_sha }}
+
+      - name: Set up Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Compile the openai-java-core project
+        run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
+
+      - name: Run the mock server
+        run: ./scripts/mock --daemon
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@03e8abf916fd0e281b2efe7b2da3378bb0a1d085 # v1
+        with:
+          java-version: 21
+          distribution: graalvm-community
+
+      - name: Run GraalVM native-image agent tests
+        run: >-
+          ./gradlew :openai-java-core:test
+          -x compileJava
+          -x compileTestJava
+          -x compileKotlin
+          -x compileTestKotlin
+          -PgraalvmAgent
+
+      - name: Check generated GraalVM files
+        run: |
+          directory="openai-java-core/src/main/resources/META-INF/native-image"
+          if [[ ! -d "$directory" || -z "$(ls -A "$directory")" ]]; then
+            echo "::error::No GraalVM metadata found in $directory"
+            exit 1
+          fi
+
+      - name: Publish to Maven Central
+        env:
+          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          for variable in SONATYPE_USERNAME SONATYPE_PASSWORD GPG_SIGNING_KEY GPG_SIGNING_PASSWORD; do
+            if [[ -z "${!variable}" ]]; then
+              echo "::error::$variable is empty"
+              exit 1
+            fi
+          done
+
+          printf '%s' "$GPG_SIGNING_KEY" |
+            gpg --batch --passphrase-fd 3 --import 3<<< "$GPG_SIGNING_PASSWORD"
+          GPG_SIGNING_KEY_ID="$(
+            gpg --with-colons --list-secret-keys |
+              awk -F : '$1 == "sec" { primary = 1; next }
+                primary && $1 == "fpr" { print "0x" substr($10, length($10) - 7); exit }'
+          )"
+          if [[ ! "$GPG_SIGNING_KEY_ID" =~ ^0x[0-9A-Fa-f]{8}$ ]]; then
+            echo "::error::Could not determine the signing key ID"
+            exit 1
+          fi
+          export GPG_SIGNING_KEY_ID
+
+          ./gradlew publishAndReleaseToMavenCentral \
+            --stacktrace \
+            -PmavenCentralUsername="$SONATYPE_USERNAME" \
+            -PmavenCentralPassword="$SONATYPE_PASSWORD" \
+            --no-configuration-cache
+
+      - name: Wait for Maven Central
+        env:
+          RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+
+          version="${RELEASE_TAG#v}"
+          for attempt in {1..31}; do
+            missing=()
+            for artifact in $MAVEN_ARTIFACTS; do
+              for suffix in .pom .jar -sources.jar -javadoc.jar; do
+                file="$artifact-$version$suffix"
+                url="$MAVEN_CENTRAL_BASE_URL/$artifact/$version/$file"
+                if ! curl --fail --silent --show-error --head --location \
+                  --connect-timeout 10 --max-time 30 "$url" >/dev/null; then
+                  missing+=("$file")
+                fi
+              done
+            done
+
+            if [[ "${#missing[@]}" -eq 0 ]]; then
+              echo "Maven Central serves every expected $version artifact"
+              exit 0
+            fi
+
+            echo "Attempt $attempt/31; waiting for: ${missing[*]}"
+            if [[ "$attempt" -lt 31 ]]; then
+              sleep 60
+            fi
+          done
+
+          echo "::error::Upload completed, but $version was not fully public after 30 minutes"
+          exit 1

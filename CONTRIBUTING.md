@@ -196,7 +196,15 @@ the changes aren't made through the automated pipeline, you may want to make rel
 
 ### Publish with a GitHub workflow
 
-You can release to package managers by using [the `Publish Sonatype` GitHub action](https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml). This requires the GitHub `publish` environment to be configured.
+The [`Create releases` workflow](https://www.github.com/openai/openai-java/actions/workflows/create-releases.yml)
+publishes new releases automatically. To recover a failed Maven Central publication, run that workflow manually from
+`main` with the existing GitHub release tag.
+
+Before retrying, check Central Portal and confirm that the version has no existing deployment. Maven Central releases are
+immutable, so do not upload the same version while an earlier deployment is still processing. The workflow verifies the
+exact release source, runs the runtime compatibility matrix, and waits for every expected artifact to become public.
+
+The workflow requires the GitHub `publish` environment to be configured.
 
 The `publish` environment must have these environment secrets:
 
@@ -232,12 +240,15 @@ After the rotated secrets work, revoke the old Central Portal token and remove a
 
 ### Publish manually
 
-If you need to manually release a package, you can run:
+The GitHub workflow is preferred because it validates the immutable release identity and requires a Central Portal check
+before retrying. If you need to publish directly as a last resort, first confirm in Central Portal that the version has no
+existing deployment, then run:
 
 ```sh
 $ ./gradlew publishAndReleaseToMavenCentral \
     -PmavenCentralUsername="$SONATYPE_USERNAME" \
-    -PmavenCentralPassword="$SONATYPE_PASSWORD"
+    -PmavenCentralPassword="$SONATYPE_PASSWORD" \
+    --no-configuration-cache
 ```
 
 This requires the following environment variables to be set:
