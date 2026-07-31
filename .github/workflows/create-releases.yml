@@ -42,7 +42,7 @@ jobs:
         ${{ github.event_name == 'workflow_dispatch' ||
         steps.automatic.outputs.releases_created == 'true' }}
       source_sha: ${{ steps.retry.outputs.source_sha || steps.automatic.outputs.sha }}
-      release_tag: ${{ inputs.release_tag || steps.automatic.outputs.tag_name }}
+      release_tag: ${{ steps.retry.outputs.release_tag || steps.automatic.outputs.tag_name }}
 
     steps:
       - name: Check out main
@@ -118,7 +118,10 @@ jobs:
             exit 1
           fi
 
-          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "source_sha=$source_sha"
+            echo "release_tag=$RELEASE_TAG"
+          } >> "$GITHUB_OUTPUT"
 
   runtime_compatibility:
     name: Release / runtime compatibility
@@ -181,7 +184,10 @@ jobs:
       - name: Check generated GraalVM files
         run: |
           directory="openai-java-core/src/main/resources/META-INF/native-image"
-          [[ -d "$directory" && -n "$(ls -A "$directory")" ]]
+          if [[ ! -d "$directory" || -z "$(ls -A "$directory")" ]]; then
+            echo "::error::No GraalVM metadata found in $directory"
+            exit 1
+          fi
 
       - name: Publish to Maven Central
         env:
