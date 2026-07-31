@@ -66,7 +66,7 @@ that apply this policy.
 | Surface | Decision | Next action |
 | --- | --- | --- |
 | Framework-neutral artifacts | Keep Java 8 through SDK v4. | Raise the floor only in an SDK major; first prefer replacing or isolating a constraining dependency. |
-| Existing Spring Boot 2 starter | OpenAI EOL as of 2026-07-27; 4.45.0 is the final supported and published release. | Follow the [Spring Boot 2 EOL decision](spring-boot-2-eol.md); publish no later versions. |
+| Retired Spring Boot 2 starter | OpenAI EOL as of 2026-07-27; 4.45.0 is the final supported and published release, and its source is no longer in the active build. | Keep the final artifact and tagged source available; follow the [Spring Boot 2 EOL decision](spring-boot-2-eol.md); publish no later versions. |
 | Potential Spring Boot 4 integration | Candidate Java 17 integration using a new generation-specific artifact. | Pass the admission gate and Spring ADR before implementation. |
 
 Do not publish an OpenAI Java BOM until independently versioned artifacts or demonstrated consumer
