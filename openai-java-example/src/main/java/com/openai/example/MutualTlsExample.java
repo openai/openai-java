@@ -33,6 +33,8 @@ public final class MutualTlsExample {
         if (baseUrl == null || baseUrl.isEmpty()) {
             baseUrl = DEFAULT_MTLS_BASE_URL;
         }
+        String organization = configuredValue("openai.orgId", "OPENAI_ORG_ID");
+        String project = configuredValue("openai.projectId", "OPENAI_PROJECT_ID");
         Path keyStorePath = Paths.get(requireEnv("OPENAI_MTLS_KEYSTORE"));
         char[] password = requireEnv("OPENAI_MTLS_KEYSTORE_PASSWORD").toCharArray();
 
@@ -62,6 +64,9 @@ public final class MutualTlsExample {
             client = OpenAIOkHttpClient.builder()
                     // Select an OpenAI bearer credential explicitly; do not fall back to Azure.
                     .apiKey(apiKey)
+                    // Retain the organization and project scope from normal SDK configuration.
+                    .organization(organization)
+                    .project(project)
                     // An explicit system property or environment variable preserves EU/custom routing.
                     .baseUrl(baseUrl)
                     // Avoid presenting the client identity to a redirect target.

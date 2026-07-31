@@ -1744,6 +1744,14 @@ if (baseUrl == null) {
 if (baseUrl == null || baseUrl.isEmpty()) {
     baseUrl = "https://mtls.api.openai.com/v1";
 }
+String organization = System.getProperty("openai.orgId");
+if (organization == null) {
+    organization = System.getenv("OPENAI_ORG_ID");
+}
+String project = System.getProperty("openai.projectId");
+if (project == null) {
+    project = System.getenv("OPENAI_PROJECT_ID");
+}
 
 String keyStorePath = System.getenv("OPENAI_MTLS_KEYSTORE");
 String keyStorePassword = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD");
@@ -1783,6 +1791,9 @@ sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager},
 OpenAIClient client = OpenAIOkHttpClient.builder()
     // Set the OpenAI credential explicitly so an Azure key cannot be selected accidentally.
     .apiKey(apiKey)
+    // Preserve the organization and project scope selected by normal SDK configuration.
+    .organization(organization)
+    .project(project)
     .baseUrl(baseUrl)
     // Avoid presenting the client identity to a redirect target.
     .followRedirects(false)
