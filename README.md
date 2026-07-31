@@ -1706,10 +1706,14 @@ To opt in, follow the
 guide to upload a CA certificate and activate it for your project or organization before
 configuring the client.
 
-The PKCS#12 key store must contain the client private key and the complete certificate chain:
-the leaf certificate first, followed by any intermediate certificates. Keep server trust separate
-from that client identity. Initializing `TrustManagerFactory` with a null `KeyStore` retains the
-JVM's normal server-trust configuration.
+Certificate-chain support is a separate mTLS beta capability that is available by request. Contact
+your Account Director or OpenAI Support to enable it. When it is enabled, the PKCS#12 key store must
+contain the client private key and the complete certificate chain: the leaf certificate first,
+followed by every required intermediate certificate. Without certificate-chain support, the client
+leaf certificate must be directly signed by an active CA certificate that you uploaded to OpenAI.
+
+Keep server trust separate from the client identity. Initializing `TrustManagerFactory` with a null
+`KeyStore` retains the JVM's normal server-trust configuration.
 
 ```java
 import com.openai.client.OpenAIClient;
@@ -1724,6 +1728,16 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+String apiKey = System.getProperty("openai.apiKey", System.getenv("OPENAI_API_KEY"));
+if (apiKey == null || apiKey.isEmpty()) {
+    throw new IllegalStateException(
+        "openai.apiKey or OPENAI_API_KEY must be set for OpenAI mTLS");
+}
+String baseUrl = System.getProperty("openai.baseUrl", System.getenv("OPENAI_BASE_URL"));
+if (baseUrl == null || baseUrl.isEmpty()) {
+    baseUrl = "https://mtls.api.openai.com/v1";
+}
 
 String keyStorePath = System.getenv("OPENAI_MTLS_KEYSTORE");
 String keyStorePassword = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD");
@@ -1761,9 +1775,9 @@ SSLContext sslContext = SSLContext.getInstance("TLS");
 sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
-    .fromEnv()
-    // Native TLS configuration does not select an mTLS endpoint automatically.
-    .baseUrl("https://mtls.api.openai.com/v1")
+    // Set the OpenAI credential explicitly so an Azure key cannot be selected accidentally.
+    .apiKey(apiKey)
+    .baseUrl(baseUrl)
     // Avoid presenting the client identity to a redirect target.
     .followRedirects(false)
     .sslSocketFactory(sslContext.getSocketFactory())
@@ -1771,10 +1785,12 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
-An explicit EU or custom endpoint can be used instead of the global mTLS endpoint. The SDK does not
-inspect or rewrite that URL. To rotate the client identity, build a new `SSLContext`, HTTP transport,
-and SDK client, then close the old client. This recipe applies to ordinary HTTP API-key traffic; it
-does not add certificate-only authentication or Realtime/WebSocket mTLS support.
+Set `openai.baseUrl` or `OPENAI_BASE_URL` to `https://mtls-eu.api.openai.com/v1` for EU Data
+Residency, or to an appropriate custom mTLS gateway. If neither is set, the recipe uses
+`https://mtls.api.openai.com/v1`. The SDK does not inspect or rewrite that URL. To rotate the client
+identity, build a new `SSLContext`, HTTP transport, and SDK client, then close the old client. This
+recipe applies to ordinary HTTP API-key traffic; it does not add certificate-only authentication or
+Realtime/WebSocket mTLS support.
 
 See the complete, compilable
 [`MutualTlsExample`](openai-java-example/src/main/java/com/openai/example/MutualTlsExample.java).

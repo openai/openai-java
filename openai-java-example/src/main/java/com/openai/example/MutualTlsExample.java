@@ -19,13 +19,20 @@ import javax.net.ssl.X509TrustManager;
  *
  * <p>The PKCS#12 key store must contain the client private key and its certificate chain, ordered
  * leaf first followed by any intermediate certificates. The OpenAI API key is still required.
+ * OpenAI certificate-chain verification requires separate enablement; without it, the leaf must be
+ * directly signed by an active CA certificate uploaded to OpenAI.
  */
 public final class MutualTlsExample {
-    private static final String MTLS_BASE_URL = "https://mtls.api.openai.com/v1";
+    private static final String DEFAULT_MTLS_BASE_URL = "https://mtls.api.openai.com/v1";
 
     private MutualTlsExample() {}
 
     public static void main(String[] args) throws Exception {
+        String apiKey = requireConfiguredValue("openai.apiKey", "OPENAI_API_KEY");
+        String baseUrl = configuredValue("openai.baseUrl", "OPENAI_BASE_URL");
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            baseUrl = DEFAULT_MTLS_BASE_URL;
+        }
         Path keyStorePath = Paths.get(requireEnv("OPENAI_MTLS_KEYSTORE"));
         char[] password = requireEnv("OPENAI_MTLS_KEYSTORE_PASSWORD").toCharArray();
 
@@ -53,9 +60,10 @@ public final class MutualTlsExample {
             sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
 
             client = OpenAIOkHttpClient.builder()
-                    .fromEnv()
-                    // Native TLS configuration does not select an mTLS endpoint automatically.
-                    .baseUrl(MTLS_BASE_URL)
+                    // Select an OpenAI bearer credential explicitly; do not fall back to Azure.
+                    .apiKey(apiKey)
+                    // An explicit system property or environment variable preserves EU/custom routing.
+                    .baseUrl(baseUrl)
                     // Avoid presenting the client identity to a redirect target.
                     .followRedirects(false)
                     .sslSocketFactory(sslContext.getSocketFactory())
@@ -77,6 +85,20 @@ public final class MutualTlsExample {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "The default TrustManagerFactory did not provide an X509TrustManager"));
+    }
+
+    private static String requireConfiguredValue(String propertyName, String environmentVariable) {
+        String value = configuredValue(propertyName, environmentVariable);
+        if (value == null || value.isEmpty()) {
+            throw new IllegalStateException(
+                    propertyName + " or " + environmentVariable + " must be set for OpenAI mTLS");
+        }
+        return value;
+    }
+
+    private static String configuredValue(String propertyName, String environmentVariable) {
+        String value = System.getProperty(propertyName);
+        return value != null ? value : System.getenv(environmentVariable);
     }
 
     private static String requireEnv(String name) {
