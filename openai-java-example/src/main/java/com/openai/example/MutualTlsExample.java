@@ -3,6 +3,7 @@ package com.openai.example;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,6 +36,7 @@ public final class MutualTlsExample {
         } else if (baseUrl.isEmpty()) {
             throw new IllegalStateException("openai.baseUrl or OPENAI_BASE_URL must not be empty for OpenAI mTLS");
         }
+        requireHttpsBaseUrl(baseUrl);
         String organization = configuredValue("openai.orgId", "OPENAI_ORG_ID");
         String project = configuredValue("openai.projectId", "OPENAI_PROJECT_ID");
         Path keyStorePath = Paths.get(requireEnv("OPENAI_MTLS_KEYSTORE"));
@@ -106,6 +108,18 @@ public final class MutualTlsExample {
     private static String configuredValue(String propertyName, String environmentVariable) {
         String value = System.getProperty(propertyName);
         return value != null ? value : System.getenv(environmentVariable);
+    }
+
+    private static void requireHttpsBaseUrl(String baseUrl) {
+        URI baseUri;
+        try {
+            baseUri = URI.create(baseUrl);
+        } catch (IllegalArgumentException ignored) {
+            throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+        }
+        if (!"https".equalsIgnoreCase(baseUri.getScheme()) || baseUri.getRawAuthority() == null) {
+            throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+        }
     }
 
     private static String requireEnv(String name) {

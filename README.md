@@ -1719,6 +1719,7 @@ Keep server trust separate from the client identity. Initializing `TrustManagerF
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
@@ -1746,6 +1747,15 @@ if (baseUrl == null) {
 } else if (baseUrl.isEmpty()) {
     throw new IllegalStateException(
         "openai.baseUrl or OPENAI_BASE_URL must not be empty for OpenAI mTLS");
+}
+URI baseUri;
+try {
+    baseUri = URI.create(baseUrl);
+} catch (IllegalArgumentException ignored) {
+    throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+}
+if (!"https".equalsIgnoreCase(baseUri.getScheme()) || baseUri.getRawAuthority() == null) {
+    throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
 }
 String organization = System.getProperty("openai.orgId");
 if (organization == null) {
