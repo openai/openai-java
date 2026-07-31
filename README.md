@@ -1725,13 +1725,21 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-char[] password = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD").toCharArray();
+String keyStorePath = System.getenv("OPENAI_MTLS_KEYSTORE");
+String keyStorePassword = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD");
+if (keyStorePath == null || keyStorePath.isEmpty()) {
+    throw new IllegalStateException("OPENAI_MTLS_KEYSTORE must be set");
+}
+if (keyStorePassword == null || keyStorePassword.isEmpty()) {
+    throw new IllegalStateException("OPENAI_MTLS_KEYSTORE_PASSWORD must be set");
+}
+
+char[] password = keyStorePassword.toCharArray();
 KeyStore clientKeyStore = KeyStore.getInstance("PKCS12");
 KeyManagerFactory keyManagers =
     KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 try {
-    try (InputStream input =
-            Files.newInputStream(Paths.get(System.getenv("OPENAI_MTLS_KEYSTORE")))) {
+    try (InputStream input = Files.newInputStream(Paths.get(keyStorePath))) {
         clientKeyStore.load(input, password);
     }
     keyManagers.init(clientKeyStore, password);
@@ -1746,7 +1754,8 @@ X509TrustManager trustManager = Arrays.stream(trustManagers.getTrustManagers())
     .filter(X509TrustManager.class::isInstance)
     .map(X509TrustManager.class::cast)
     .findFirst()
-    .orElseThrow(IllegalStateException::new);
+    .orElseThrow(() -> new IllegalStateException(
+        "The default TrustManagerFactory did not provide an X509TrustManager"));
 
 SSLContext sslContext = SSLContext.getInstance("TLS");
 sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
