@@ -42,10 +42,8 @@ jobs:
   analyze:
     name: Analyze Java and Kotlin
     needs: changes
-    if: >-
-      always() &&
-      (github.event_name == 'workflow_dispatch' ||
-        (needs.changes.result == 'success' && needs.changes.outputs.codeql == 'true'))
+    # Only an explicit safe-to-skip classification may reduce security coverage.
+    if: always() && needs.changes.outputs.codeql != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
