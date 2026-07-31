@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   analyze:
     name: Analyze Java and Kotlin
@@ -39,10 +43,10 @@ jobs:
           languages: java-kotlin
           build-mode: manual
 
-      - name: Build SDK
+      - name: Build production classes
         env:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
-        run: ./scripts/build --no-build-cache
+        run: ./scripts/gradle classes --no-build-cache
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4
