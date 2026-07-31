@@ -20,8 +20,36 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    name: CI / change classification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+
+    outputs:
+      full_ci: ${{ steps.filter.outputs.full_ci }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Classify changes
+        id: filter
+        uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        with:
+          # On push, compare only the commits in this push. Pull requests use the GitHub API
+          # to compare the entire PR with its base branch.
+          base: ${{ github.ref }}
+          predicate-quantifier: every
+          filters: .github/ci-path-filters.yml
+
   lint:
     name: CI / lint
+    needs: changes
+    if: needs.changes.outputs.full_ci == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -46,7 +74,9 @@ jobs:
 
   build:
     name: CI / build + Jackson compatibility
+    needs: changes
     if: >-
+      needs.changes.outputs.full_ci == 'true' &&
       !(github.repository == 'stainless-sdks/openai-java' &&
         github.event_name == 'push' &&
         !startsWith(github.ref, 'refs/heads/stl/'))
@@ -76,6 +106,8 @@ jobs:
 
   test:
     name: CI / tests
+    needs: changes
+    if: needs.changes.outputs.full_ci == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
 
@@ -100,7 +132,8 @@ jobs:
 
   api_compatibility:
     name: CI / API compatibility
-    if: github.event_name == 'pull_request'
+    needs: changes
+    if: needs.changes.outputs.full_ci == 'true' && github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -140,6 +173,8 @@ jobs:
 
   version_support_matrix:
     name: CI / version support matrix
+    needs: changes
+    if: needs.changes.outputs.full_ci == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -168,7 +203,10 @@ jobs:
 
   runtime_compatibility:
     name: CI / runtime compatibility / Java ${{ matrix.java }}
-    needs: version_support_matrix
+    needs:
+      - changes
+      - version_support_matrix
+    if: needs.changes.outputs.full_ci == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -207,10 +245,12 @@ jobs:
     name: CI / required
     if: always()
     needs:
+      - changes
       - lint
       - build
       - test
       - api_compatibility
+      - version_support_matrix
       - runtime_compatibility
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -218,6 +258,8 @@ jobs:
     steps:
       - name: Verify required jobs succeeded
         env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          FULL_CI: ${{ needs.changes.outputs.full_ci }}
           EVENT_NAME: ${{ github.event_name }}
           REPOSITORY: ${{ github.repository }}
           REF: ${{ github.ref }}
@@ -225,32 +267,74 @@ jobs:
           BUILD_RESULT: ${{ needs.build.result }}
           TEST_RESULT: ${{ needs.test.result }}
           API_COMPATIBILITY_RESULT: ${{ needs.api_compatibility.result }}
+          VERSION_SUPPORT_MATRIX_RESULT: ${{ needs.version_support_matrix.result }}
           RUNTIME_COMPATIBILITY_RESULT: ${{ needs.runtime_compatibility.result }}
         run: |
           set -euo pipefail
 
           failed_jobs=()
-          [[ "$LINT_RESULT" == "success" ]] || failed_jobs+=("lint: $LINT_RESULT")
-          [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
+          expect_result() {
+            local job="$1"
+            local actual="$2"
+            local expected="$3"
+            if [[ "$actual" != "$expected" ]]; then
+              failed_jobs+=("$job: expected $expected, got $actual")
+            fi
+          }
 
-          if [[ "$EVENT_NAME" == "push" &&
-                "$REPOSITORY" == "stainless-sdks/openai-java" &&
-                "$REF" != refs/heads/stl/* ]]; then
-            [[ "$BUILD_RESULT" == "skipped" ]] ||
-              failed_jobs+=("build: expected skipped, got $BUILD_RESULT")
-          else
-            [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
-          fi
+          expect_result "change classification" "$CHANGES_RESULT" "success"
 
-          if [[ "$EVENT_NAME" == "pull_request" && "$API_COMPATIBILITY_RESULT" != "success" ]]; then
-            failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
+          case "$FULL_CI" in
+            true)
+              expected_lint="success"
+              expected_build="success"
+              expected_test="success"
+              expected_api_compatibility="skipped"
+              expected_version_support_matrix="success"
+              expected_runtime_compatibility="success"
+
+              if [[ "$EVENT_NAME" == "pull_request" ]]; then
+                expected_api_compatibility="success"
+              fi
+
+              if [[ "$EVENT_NAME" == "push" &&
+                    "$REPOSITORY" == "stainless-sdks/openai-java" &&
+                    "$REF" != refs/heads/stl/* ]]; then
+                expected_build="skipped"
+              fi
+              ;;
+            false)
+              expected_lint="skipped"
+              expected_build="skipped"
+              expected_test="skipped"
+              expected_api_compatibility="skipped"
+              expected_version_support_matrix="skipped"
+              expected_runtime_compatibility="skipped"
+              ;;
+            *)
+              failed_jobs+=("change classification: invalid full_ci output '$FULL_CI'")
+              ;;
+          esac
+
+          if [[ "$FULL_CI" == "true" || "$FULL_CI" == "false" ]]; then
+            expect_result "lint" "$LINT_RESULT" "$expected_lint"
+            expect_result "build" "$BUILD_RESULT" "$expected_build"
+            expect_result "test" "$TEST_RESULT" "$expected_test"
+            expect_result \
+              "API compatibility" "$API_COMPATIBILITY_RESULT" "$expected_api_compatibility"
+            expect_result \
+              "version support matrix" \
+              "$VERSION_SUPPORT_MATRIX_RESULT" \
+              "$expected_version_support_matrix"
+            expect_result \
+              "runtime compatibility" \
+              "$RUNTIME_COMPATIBILITY_RESULT" \
+              "$expected_runtime_compatibility"
           fi
-          [[ "$RUNTIME_COMPATIBILITY_RESULT" == "success" ]] ||
-            failed_jobs+=("runtime compatibility: $RUNTIME_COMPATIBILITY_RESULT")
 
           if (( ${#failed_jobs[@]} > 0 )); then
             printf 'Required CI job did not succeed: %s\n' "${failed_jobs[@]}"
             exit 1
           fi
 
-          echo "All required CI jobs succeeded."
+          echo "All required CI jobs succeeded or were safely skipped."
