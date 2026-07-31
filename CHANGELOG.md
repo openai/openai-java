@@ -7,6 +7,7 @@ Full Changelog: [v4.47.0...v4.48.0](https://github.com/openai/openai-java/compar
 ### Features
 
 * **api:** content provenance checks ([b89a308](https://github.com/openai/openai-java/commit/b89a3082b84d68cd7003f53397fb56cdd3062bd6))
+* **api:** support the fast service tier for response compaction ([b89a308](https://github.com/openai/openai-java/commit/b89a3082b84d68cd7003f53397fb56cdd3062bd6))
 
 ## 4.47.0 (2026-07-30)
 
