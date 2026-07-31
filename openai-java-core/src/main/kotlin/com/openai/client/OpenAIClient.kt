@@ -10,6 +10,7 @@ import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.ContainerService
+import com.openai.services.blocking.ContentProvenanceCheckService
 import com.openai.services.blocking.ConversationService
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
@@ -86,6 +87,8 @@ interface OpenAIClient {
 
     /** Given a prompt and/or an input image, the model will generate a new image. */
     fun images(): ImageService
+
+    fun contentProvenanceChecks(): ContentProvenanceCheckService
 
     fun audio(): AudioService
 
@@ -174,6 +177,8 @@ interface OpenAIClient {
 
         /** Given a prompt and/or an input image, the model will generate a new image. */
         fun images(): ImageService.WithRawResponse
+
+        fun contentProvenanceChecks(): ContentProvenanceCheckService.WithRawResponse
 
         fun audio(): AudioService.WithRawResponse
 
