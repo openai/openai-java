@@ -234,17 +234,18 @@ jobs:
           for attempt in {1..31}; do
             missing=()
             for artifact in $MAVEN_ARTIFACTS; do
-              for extension in pom jar; do
-                url="$MAVEN_CENTRAL_BASE_URL/$artifact/$version/$artifact-$version.$extension"
+              for suffix in .pom .jar -sources.jar -javadoc.jar; do
+                file="$artifact-$version$suffix"
+                url="$MAVEN_CENTRAL_BASE_URL/$artifact/$version/$file"
                 if ! curl --fail --silent --show-error --head --location \
                   --connect-timeout 10 --max-time 30 "$url" >/dev/null; then
-                  missing+=("$artifact.$extension")
+                  missing+=("$file")
                 fi
               done
             done
 
             if [[ "${#missing[@]}" -eq 0 ]]; then
-              echo "Maven Central serves every $version POM and JAR"
+              echo "Maven Central serves every expected $version artifact"
               exit 0
             fi
 
