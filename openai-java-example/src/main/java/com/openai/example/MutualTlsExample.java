@@ -30,8 +30,10 @@ public final class MutualTlsExample {
     public static void main(String[] args) throws Exception {
         String apiKey = requireConfiguredValue("openai.apiKey", "OPENAI_API_KEY");
         String baseUrl = configuredValue("openai.baseUrl", "OPENAI_BASE_URL");
-        if (baseUrl == null || baseUrl.isEmpty()) {
+        if (baseUrl == null) {
             baseUrl = DEFAULT_MTLS_BASE_URL;
+        } else if (baseUrl.isEmpty()) {
+            throw new IllegalStateException("openai.baseUrl or OPENAI_BASE_URL must not be empty for OpenAI mTLS");
         }
         String organization = configuredValue("openai.orgId", "OPENAI_ORG_ID");
         String project = configuredValue("openai.projectId", "OPENAI_PROJECT_ID");

@@ -1741,8 +1741,11 @@ String baseUrl = System.getProperty("openai.baseUrl");
 if (baseUrl == null) {
     baseUrl = System.getenv("OPENAI_BASE_URL");
 }
-if (baseUrl == null || baseUrl.isEmpty()) {
+if (baseUrl == null) {
     baseUrl = "https://mtls.api.openai.com/v1";
+} else if (baseUrl.isEmpty()) {
+    throw new IllegalStateException(
+        "openai.baseUrl or OPENAI_BASE_URL must not be empty for OpenAI mTLS");
 }
 String organization = System.getProperty("openai.orgId");
 if (organization == null) {
