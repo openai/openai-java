@@ -19,4 +19,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    workingDir(layout.projectDirectory)
+    inputs
+        .file(layout.projectDirectory.file("../scripts/detect-breaking-changes"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
