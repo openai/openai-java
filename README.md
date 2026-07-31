@@ -1696,6 +1696,136 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+#### Mutual TLS with native JSSE
+
+API-key authenticated HTTP requests can use mTLS without a dedicated SDK API. Build an
+`SSLContext` using Java's native JSSE APIs and pass it through the existing OkHttp TLS hooks.
+
+To opt in, follow the
+[OpenAI Mutual TLS Beta Program](https://help.openai.com/en/articles/10876024-openai-mutual-tls-beta-program)
+guide to upload a CA certificate and activate it for your project or organization before
+configuring the client.
+
+Certificate-chain support is a separate mTLS beta capability that is available by request. Contact
+your Account Director or OpenAI Support to enable it. When it is enabled, the PKCS#12 key store must
+contain the client private key and the complete certificate chain: the leaf certificate first,
+followed by every required intermediate certificate. Without certificate-chain support, the client
+leaf certificate must be directly signed by an active CA certificate that you uploaded to OpenAI.
+
+Keep server trust separate from the client identity. Initializing `TrustManagerFactory` with a null
+`KeyStore` retains the JVM's normal server-trust configuration.
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.util.Arrays;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+String apiKey = System.getProperty("openai.apiKey");
+if (apiKey == null) {
+    apiKey = System.getenv("OPENAI_API_KEY");
+}
+if (apiKey == null || apiKey.isEmpty()) {
+    throw new IllegalStateException(
+        "openai.apiKey or OPENAI_API_KEY must be set for OpenAI mTLS");
+}
+String baseUrl = System.getProperty("openai.baseUrl");
+if (baseUrl == null) {
+    baseUrl = System.getenv("OPENAI_BASE_URL");
+}
+if (baseUrl == null) {
+    baseUrl = "https://mtls.api.openai.com/v1";
+} else if (baseUrl.isEmpty()) {
+    throw new IllegalStateException(
+        "openai.baseUrl or OPENAI_BASE_URL must not be empty for OpenAI mTLS");
+}
+URI baseUri;
+try {
+    baseUri = URI.create(baseUrl);
+} catch (IllegalArgumentException ignored) {
+    // URI parse exceptions include the rejected value, which may contain credentials.
+    throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+}
+if (!"https".equalsIgnoreCase(baseUri.getScheme()) || baseUri.getRawAuthority() == null) {
+    throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+}
+String organization = System.getProperty("openai.orgId");
+if (organization == null) {
+    organization = System.getenv("OPENAI_ORG_ID");
+}
+String project = System.getProperty("openai.projectId");
+if (project == null) {
+    project = System.getenv("OPENAI_PROJECT_ID");
+}
+
+String keyStorePath = System.getenv("OPENAI_MTLS_KEYSTORE");
+String keyStorePassword = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD");
+if (keyStorePath == null || keyStorePath.isEmpty()) {
+    throw new IllegalStateException("OPENAI_MTLS_KEYSTORE must be set");
+}
+if (keyStorePassword == null || keyStorePassword.isEmpty()) {
+    throw new IllegalStateException("OPENAI_MTLS_KEYSTORE_PASSWORD must be set");
+}
+
+char[] password = keyStorePassword.toCharArray();
+KeyStore clientKeyStore = KeyStore.getInstance("PKCS12");
+KeyManagerFactory keyManagers =
+    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+try {
+    try (InputStream input = Files.newInputStream(Paths.get(keyStorePath))) {
+        clientKeyStore.load(input, password);
+    }
+    keyManagers.init(clientKeyStore, password);
+} finally {
+    Arrays.fill(password, '\0');
+}
+
+TrustManagerFactory trustManagers =
+    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+trustManagers.init((KeyStore) null);
+X509TrustManager trustManager = Arrays.stream(trustManagers.getTrustManagers())
+    .filter(X509TrustManager.class::isInstance)
+    .map(X509TrustManager.class::cast)
+    .findFirst()
+    .orElseThrow(() -> new IllegalStateException(
+        "The default TrustManagerFactory did not provide an X509TrustManager"));
+
+SSLContext sslContext = SSLContext.getInstance("TLS");
+sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    // Set the OpenAI credential explicitly so an Azure key cannot be selected accidentally.
+    .apiKey(apiKey)
+    // Preserve the organization and project scope selected by normal SDK configuration.
+    .organization(organization)
+    .project(project)
+    .baseUrl(baseUrl)
+    // Avoid presenting the client identity to a redirect target.
+    .followRedirects(false)
+    .sslSocketFactory(sslContext.getSocketFactory())
+    .trustManager(trustManager)
+    .build();
+```
+
+Set `openai.baseUrl` or `OPENAI_BASE_URL` to `https://mtls-eu.api.openai.com/v1` for EU Data
+Residency, or to an appropriate custom mTLS gateway. If neither is set, the recipe uses
+`https://mtls.api.openai.com/v1`. The SDK does not inspect or rewrite that URL. To rotate the client
+identity, build a new `SSLContext`, HTTP transport, and SDK client, then close the old client. This
+recipe applies to ordinary HTTP API-key traffic; it does not add certificate-only authentication or
+Realtime/WebSocket mTLS support.
+
+See the complete, compilable
+[`MutualTlsExample`](openai-java-example/src/main/java/com/openai/example/MutualTlsExample.java).
+
 ### Custom HTTP client
 
 The SDK consists of three artifacts:

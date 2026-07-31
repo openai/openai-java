@@ -75,8 +75,11 @@ class OpenAIOkHttpClientAsync private constructor() {
             this.dispatcherExecutorService = dispatcherExecutorService
         }
 
-        /** Configures whether the underlying transport follows redirects automatically. */
-        @JvmSynthetic
+        /**
+         * Configures whether the underlying transport follows redirects automatically.
+         *
+         * Defaults to true.
+         */
         fun followRedirects(followRedirects: Boolean) = apply {
             this.followRedirects = followRedirects
         }
