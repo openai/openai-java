@@ -65,6 +65,7 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.embeddings()).isNotNull()
         assertThat(client.files()).isNotNull()
         assertThat(client.images()).isNotNull()
+        assertThat(client.contentProvenanceChecks()).isNotNull()
         assertThat(client.audio()).isNotNull()
         assertThat(client.moderations()).isNotNull()
         assertThat(client.models()).isNotNull()
