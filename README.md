@@ -1729,12 +1729,18 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-String apiKey = System.getProperty("openai.apiKey", System.getenv("OPENAI_API_KEY"));
+String apiKey = System.getProperty("openai.apiKey");
+if (apiKey == null) {
+    apiKey = System.getenv("OPENAI_API_KEY");
+}
 if (apiKey == null || apiKey.isEmpty()) {
     throw new IllegalStateException(
         "openai.apiKey or OPENAI_API_KEY must be set for OpenAI mTLS");
 }
-String baseUrl = System.getProperty("openai.baseUrl", System.getenv("OPENAI_BASE_URL"));
+String baseUrl = System.getProperty("openai.baseUrl");
+if (baseUrl == null) {
+    baseUrl = System.getenv("OPENAI_BASE_URL");
+}
 if (baseUrl == null || baseUrl.isEmpty()) {
     baseUrl = "https://mtls.api.openai.com/v1";
 }
