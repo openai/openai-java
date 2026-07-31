@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.49.0 (2026-07-31)
+
+Full Changelog: [v4.48.0...v4.49.0](https://github.com/openai/openai-java/compare/v4.48.0...v4.49.0)
+
+### Features
+
+* **client:** add native mTLS transport recipe ([#828](https://github.com/openai/openai-java/issues/828)) ([b40ba7a](https://github.com/openai/openai-java/commit/b40ba7ad78835c92d5f15876dfaadc59235eb6cb))
+
 ## 4.48.0 (2026-07-31)
 
 Full Changelog: [v4.47.0...v4.48.0](https://github.com/openai/openai-java/compare/v4.47.0...v4.48.0)
