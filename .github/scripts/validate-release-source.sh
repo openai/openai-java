@@ -49,10 +49,9 @@ fi
 
 release_json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$release_tag")"
 release_draft="$(jq -r '.draft' <<< "$release_json")"
-release_prerelease="$(jq -r '.prerelease' <<< "$release_json")"
 release_target="$(jq -er '.target_commitish' <<< "$release_json")"
-if [[ "$release_draft" != "false" || "$release_prerelease" != "false" ]]; then
-  echo "::error title=Invalid GitHub release::$release_tag must be a published, non-prerelease release"
+if [[ "$release_draft" != "false" ]]; then
+  echo "::error title=Invalid GitHub release::$release_tag must be a published release"
   exit 1
 fi
 if [[ "$release_target" != "$source_sha" ]]; then

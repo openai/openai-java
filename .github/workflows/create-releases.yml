@@ -8,11 +8,11 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      release-tag:
+      release_tag:
         description: Existing GitHub release tag to publish, for example v4.47.0
         required: true
         type: string
-      confirm-no-pending-deployment:
+      confirm_no_pending_deployment:
         description: I verified that Central Portal has no pending deployment for this version
         required: true
         type: boolean
@@ -80,8 +80,9 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           WORKFLOW_REF: ${{ github.ref }}
-          MANUAL_TAG: ${{ inputs.release-tag }}
-          MANUAL_CONFIRMATION: ${{ inputs.confirm-no-pending-deployment }}
+          MANUAL_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || '' }}
+          MANUAL_CONFIRMATION: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_no_pending_deployment || false }}
           AUTOMATIC_TAG: ${{ needs.release.outputs.release_tag }}
           AUTOMATIC_SHA: ${{ needs.release.outputs.release_sha }}
         run: |
