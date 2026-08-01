@@ -7104,7 +7104,22 @@ private constructor(
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun value(): Optional<Double> = value.getOptional("value")
+                    fun value(): Optional<Double> {
+                        val knownValue = value.asKnown()
+                        if (knownValue.isPresent || value.isMissing() || value.isNull()) {
+                            return knownValue
+                        }
+
+                        val stringValue = value.asString()
+                        if (stringValue.isPresent) {
+                            val parsedValue = stringValue.get().toDoubleOrNull()
+                            if (parsedValue != null && parsedValue.isFinite()) {
+                                return Optional.of(parsedValue)
+                            }
+                        }
+
+                        throw OpenAIInvalidDataException("`value` is invalid, received $value")
+                    }
 
                     /**
                      * Returns the raw JSON value of [currency].
