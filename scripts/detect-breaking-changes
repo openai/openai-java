@@ -37,6 +37,7 @@ PROPOSED_EXCLUSIONS_PATH="${POLICY_PATH}/excluded-generated-tests.txt"
 PROPOSED_DEPENDENCIES_PATH="${POLICY_PATH}/dependencies.txt"
 PROPOSED_PUBLIC_API_PATH="${POLICY_PATH}/structured-output-public-api.txt"
 PROPOSED_FIXTURE_PATH="${POLICY_PATH}/kotlin"
+MULTIPART_INTERNAL_EXPRESSION='field.map { (it as? ByteArray)?.inputStream() ?: it }'
 
 rm -rf "${COMPATIBILITY_ROOT}"
 mkdir -p "${COMPATIBILITY_ROOT}"
@@ -171,6 +172,32 @@ validate_policy_files() {
     fi
 }
 
+# Generated multipart assertions call the Kotlin-internal MultipartField.map helper. Rewrite only
+# the isolated compatibility copies so their public builders and factories remain covered.
+normalize_multipart_assertions() {
+    local source_root="$1"
+    local policy_name="$2"
+    local rewritten_files=0
+    local file_path
+    local grep_status
+
+    while IFS= read -r -d '' file_path; do
+        if grep -Fq "${MULTIPART_INTERNAL_EXPRESSION}" "${file_path}"; then
+            INTERNAL_SOURCE="${MULTIPART_INTERNAL_EXPRESSION}" PUBLIC_SOURCE='field' \
+                perl -0pi -e 's/\Q$ENV{INTERNAL_SOURCE}\E/$ENV{PUBLIC_SOURCE}/g' "${file_path}"
+            rewritten_files=$((rewritten_files + 1))
+        else
+            grep_status=$?
+            if [ "${grep_status}" -ne 1 ]; then
+                echo "Failed to inspect ${policy_name} compatibility fixture: ${file_path}" >&2
+                return "${grep_status}"
+            fi
+        fi
+    done < <(find "${source_root}" -type f -name '*.kt' -print0)
+
+    echo "Normalized ${rewritten_files} ${policy_name} multipart compatibility fixture(s)."
+}
+
 validate_exclusions \
     "${BASELINE_EXCLUSIONS_PATH}" \
     "${COMPATIBILITY_ROOT}" \
@@ -190,6 +217,12 @@ validate_policy_files \
     "${PROPOSED_DEPENDENCIES_PATH}" \
     "${PROPOSED_FIXTURE_PATH}" \
     "${PROPOSED_PUBLIC_API_PATH}" \
+    proposed
+normalize_multipart_assertions \
+    "${COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin" \
+    baseline
+normalize_multipart_assertions \
+    "${PROPOSED_COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin" \
     proposed
 
 # Keep the compatibility compilation policy in this detector rather than in the proposed build

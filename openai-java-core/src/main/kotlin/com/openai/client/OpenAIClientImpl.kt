@@ -18,6 +18,8 @@ import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.CompletionServiceImpl
 import com.openai.services.blocking.ContainerService
 import com.openai.services.blocking.ContainerServiceImpl
+import com.openai.services.blocking.ContentProvenanceCheckService
+import com.openai.services.blocking.ContentProvenanceCheckServiceImpl
 import com.openai.services.blocking.ConversationService
 import com.openai.services.blocking.ConversationServiceImpl
 import com.openai.services.blocking.EmbeddingService
@@ -82,6 +84,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     private val files: FileService by lazy { FileServiceImpl(clientOptionsWithUserAgent) }
 
     private val images: ImageService by lazy { ImageServiceImpl(clientOptionsWithUserAgent) }
+
+    private val contentProvenanceChecks: ContentProvenanceCheckService by lazy {
+        ContentProvenanceCheckServiceImpl(clientOptionsWithUserAgent)
+    }
 
     private val audio: AudioService by lazy { AudioServiceImpl(clientOptionsWithUserAgent) }
 
@@ -163,6 +169,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     /** Given a prompt and/or an input image, the model will generate a new image. */
     override fun images(): ImageService = images
 
+    override fun contentProvenanceChecks(): ContentProvenanceCheckService = contentProvenanceChecks
+
     override fun audio(): AudioService = audio
 
     /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
@@ -228,6 +236,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         private val images: ImageService.WithRawResponse by lazy {
             ImageServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val contentProvenanceChecks: ContentProvenanceCheckService.WithRawResponse by lazy {
+            ContentProvenanceCheckServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val audio: AudioService.WithRawResponse by lazy {
@@ -331,6 +343,9 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         /** Given a prompt and/or an input image, the model will generate a new image. */
         override fun images(): ImageService.WithRawResponse = images
+
+        override fun contentProvenanceChecks(): ContentProvenanceCheckService.WithRawResponse =
+            contentProvenanceChecks
 
         override fun audio(): AudioService.WithRawResponse = audio
 
