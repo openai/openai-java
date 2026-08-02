@@ -8,6 +8,8 @@ import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class UsageCostsResponseTest {
 
@@ -47,14 +49,15 @@ internal class UsageCostsResponseTest {
 
         val amounts =
             response.data().single().results().map {
-                it.asOrganizationCosts().amount().orElseThrow().value().orElseThrow()
+                it.asOrganizationCosts().amount().get().value().get()
             }
 
         assertThat(amounts).containsExactly(0.0, 0.0036275)
     }
 
-    @Test
-    fun rejectsInvalidStringEncodedCostAmount() {
+    @ParameterizedTest
+    @ValueSource(strings = ["not-a-number", "1f", "0x1.0p0", " 1 ", "01", "+1"])
+    fun rejectsInvalidStringEncodedCostAmount(invalidValue: String) {
         val response =
             jsonMapper()
                 .readValue(
@@ -66,7 +69,7 @@ internal class UsageCostsResponseTest {
                           "results": [
                             {
                               "object": "organization.costs.result",
-                              "amount": {"value": "not-a-number", "currency": "usd"}
+                              "amount": {"value": "$invalidValue", "currency": "usd"}
                             }
                           ],
                           "start_time": 0
@@ -81,7 +84,7 @@ internal class UsageCostsResponseTest {
                 )
 
         val amount =
-            response.data().single().results().single().asOrganizationCosts().amount().orElseThrow()
+            response.data().single().results().single().asOrganizationCosts().amount().get()
 
         assertThatThrownBy { amount.value() }.isInstanceOf(OpenAIInvalidDataException::class.java)
     }

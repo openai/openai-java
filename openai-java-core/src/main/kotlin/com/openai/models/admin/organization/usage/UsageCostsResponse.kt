@@ -7112,8 +7112,14 @@ private constructor(
 
                         val stringValue = value.asString()
                         if (stringValue.isPresent) {
-                            val parsedValue = stringValue.get().toDoubleOrNull()
-                            if (parsedValue != null && parsedValue.isFinite()) {
+                            val rawValue = stringValue.get()
+                            val parsedValue =
+                                if (DECIMAL_NUMBER_PATTERN.matches(rawValue)) {
+                                    rawValue.toDoubleOrNull()
+                                } else {
+                                    null
+                                }
+                            if (parsedValue?.isFinite() == true) {
                                 return Optional.of(parsedValue)
                             }
                         }
@@ -7152,6 +7158,9 @@ private constructor(
                     fun toBuilder() = Builder().from(this)
 
                     companion object {
+
+                        private val DECIMAL_NUMBER_PATTERN =
+                            Regex("""-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?""")
 
                         /** Returns a mutable builder for constructing an instance of [Amount]. */
                         @JvmStatic fun builder() = Builder()
