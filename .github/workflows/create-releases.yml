@@ -18,8 +18,7 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: create-releases
@@ -31,36 +30,102 @@ env:
   MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock
 
 jobs:
-  release:
-    name: Release / select source
-    if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
+  automatic_release:
+    name: Release / create
+    if: >-
+      github.event_name != 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'openai/openai-java'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    environment: publish
     outputs:
-      should_publish: >-
-        ${{ github.event_name == 'workflow_dispatch' ||
-        steps.automatic.outputs.releases_created == 'true' }}
-      source_sha: ${{ steps.retry.outputs.source_sha || steps.automatic.outputs.sha }}
-      release_tag: ${{ steps.retry.outputs.release_tag || steps.automatic.outputs.tag_name }}
+      prs_created: ${{ steps.release.outputs.prs_created }}
+      release_pr: ${{ steps.release.outputs.pr }}
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      source_sha: ${{ steps.release.outputs.sha }}
+      release_tag: ${{ steps.release.outputs.tag_name }}
 
     steps:
-      - name: Check out main
-        if: github.event_name != 'workflow_dispatch'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          persist-credentials: false
+      - name: Check for a legacy release PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LEGACY_RELEASE_BRANCH: release-please--branches--main--changes--next
+        run: |
+          set -euo pipefail
+
+          legacy_pr="$(
+            gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --state open \
+              --head "$LEGACY_RELEASE_BRANCH" \
+              --json number,url \
+              --jq '.[0] // empty'
+          )"
+          if [[ -n "$legacy_pr" ]]; then
+            legacy_number="$(jq -r '.number' <<< "$legacy_pr")"
+            legacy_url="$(jq -r '.url' <<< "$legacy_pr")"
+            echo "::error::Merge or close legacy release PR #$legacy_number before running upstream release-please: $legacy_url"
+            exit 1
+          fi
 
       - name: Create release
-        if: github.event_name != 'workflow_dispatch'
-        id: automatic
-        uses: stainless-api/trigger-release-please@bb6677c5a04578eec1ccfd9e1913b5b78ed64c61 # v1.4.0
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          repo: ${{ github.event.repository.full_name }}
-          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
 
+  release_pr_ci:
+    name: Release / run release PR CI
+    needs: automatic_release
+    if: needs.automatic_release.outputs.prs_created == 'true'
+    permissions:
+      actions: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      # Events created by GITHUB_TOKEN do not recursively trigger pull_request workflows.
+      # workflow_dispatch is an explicit exception, so dispatch CI for the generated PR head.
+      - name: Run CI for the release PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PR: ${{ needs.automatic_release.outputs.release_pr }}
+        run: |
+          set -euo pipefail
+
+          release_branch="$(jq -r '.headBranchName // empty' <<< "$RELEASE_PR")"
+          if [[ "$release_branch" != "release-please--branches--main" ]]; then
+            echo "::error::Unexpected release PR branch: $release_branch"
+            exit 1
+          fi
+
+          gh workflow run ci.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$release_branch"
+
+  retry_release:
+    name: Release / select retry source
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'openai/openai-java'
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      source_sha: ${{ steps.retry.outputs.source_sha }}
+      release_tag: ${{ steps.retry.outputs.release_tag }}
+
+    steps:
       - name: Validate retry request
-        if: github.event_name == 'workflow_dispatch'
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
           CONFIRMED: ${{ inputs.confirm_no_pending_deployment }}
@@ -75,7 +140,6 @@ jobs:
           fi
 
       - name: Check out retry source
-        if: github.event_name == 'workflow_dispatch'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
@@ -83,10 +147,9 @@ jobs:
           ref: refs/tags/${{ inputs.release_tag }}
 
       - name: Verify retry source
-        if: github.event_name == 'workflow_dispatch'
         id: retry
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
@@ -123,10 +186,39 @@ jobs:
             echo "release_tag=$RELEASE_TAG"
           } >> "$GITHUB_OUTPUT"
 
+  release:
+    name: Release / select source
+    needs:
+      - automatic_release
+      - retry_release
+    if: >-
+      always() &&
+      (needs.automatic_release.result == 'success' ||
+      needs.retry_release.result == 'success')
+    permissions: {}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    outputs:
+      should_publish: >-
+        ${{ needs.retry_release.result == 'success' ||
+        needs.automatic_release.outputs.releases_created == 'true' }}
+      source_sha: >-
+        ${{ needs.retry_release.outputs.source_sha ||
+        needs.automatic_release.outputs.source_sha }}
+      release_tag: >-
+        ${{ needs.retry_release.outputs.release_tag ||
+        needs.automatic_release.outputs.release_tag }}
+
+    steps:
+      - name: Select release source
+        run: echo "Release source selected"
+
   runtime_compatibility:
     name: Release / runtime compatibility
     needs: release
     if: needs.release.outputs.should_publish == 'true'
+    permissions:
+      contents: read
     uses: ./.github/workflows/runtime-compatibility.yml
     with:
       ref: ${{ needs.release.outputs.source_sha }}
@@ -139,6 +231,8 @@ jobs:
     if: >-
       needs.release.outputs.should_publish == 'true' &&
       needs.runtime_compatibility.result == 'success'
+    permissions:
+      contents: read
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     environment: publish
