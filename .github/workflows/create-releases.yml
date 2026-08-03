@@ -34,9 +34,12 @@ jobs:
   release:
     name: Release / select source
     if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    environment: publish
     outputs:
       should_publish: >-
         ${{ github.event_name == 'workflow_dispatch' ||
@@ -45,19 +48,14 @@ jobs:
       release_tag: ${{ steps.retry.outputs.release_tag || steps.automatic.outputs.tag_name }}
 
     steps:
-      - name: Check out main
-        if: github.event_name != 'workflow_dispatch'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          persist-credentials: false
-
       - name: Create release
         if: github.event_name != 'workflow_dispatch'
         id: automatic
-        uses: stainless-api/trigger-release-please@bb6677c5a04578eec1ccfd9e1913b5b78ed64c61 # v1.4.0
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          repo: ${{ github.event.repository.full_name }}
-          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
 
       - name: Validate retry request
         if: github.event_name == 'workflow_dispatch'
