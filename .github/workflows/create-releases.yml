@@ -192,7 +192,7 @@ jobs:
       - automatic_release
       - retry_release
     if: >-
-      always() &&
+      !cancelled() &&
       (needs.automatic_release.result == 'success' ||
       needs.retry_release.result == 'success')
     permissions: {}
@@ -249,7 +249,12 @@ jobs:
   runtime_compatibility:
     name: Release / runtime compatibility
     needs: release
-    if: needs.release.outputs.should_publish == 'true'
+    # One release-source job is intentionally skipped. Without a status-check
+    # function, GitHub's implicit success() propagates that skip to this job.
+    if: >-
+      !cancelled() &&
+      needs.release.result == 'success' &&
+      needs.release.outputs.should_publish == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/runtime-compatibility.yml
@@ -262,6 +267,8 @@ jobs:
       - release
       - runtime_compatibility
     if: >-
+      !cancelled() &&
+      needs.release.result == 'success' &&
       needs.release.outputs.should_publish == 'true' &&
       needs.runtime_compatibility.result == 'success'
     permissions:
@@ -384,3 +391,119 @@ jobs:
 
           echo "::error::Upload completed, but $version was not fully public after 30 minutes"
           exit 1
+
+  release_outcome:
+    name: Release / verify outcome
+    needs:
+      - automatic_release
+      - release_pr_ci
+      - retry_release
+      - release
+      - runtime_compatibility
+      - publish
+    # Run after failures and intentional skips, but do not keep a cancelled
+    # workflow alive. This makes an unexpected skipped publication fail closed.
+    if: ${{ !cancelled() && github.repository == 'openai/openai-java' }}
+    permissions: {}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+
+    steps:
+      - name: Verify release outcome
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          AUTOMATIC_RESULT: ${{ needs.automatic_release.result }}
+          AUTOMATIC_PRS_CREATED: ${{ needs.automatic_release.outputs.prs_created }}
+          RELEASE_PR_CI_RESULT: ${{ needs.release_pr_ci.result }}
+          RETRY_RESULT: ${{ needs.retry_release.result }}
+          RELEASE_RESULT: ${{ needs.release.result }}
+          SHOULD_PUBLISH: ${{ needs.release.outputs.should_publish }}
+          RUNTIME_RESULT: ${{ needs.runtime_compatibility.result }}
+          PUBLISH_RESULT: ${{ needs.publish.result }}
+        run: |
+          set -euo pipefail
+
+          failure_count=0
+          fail() {
+            echo "::error::$1"
+            failure_count=$((failure_count + 1))
+          }
+
+          if [[ "$RELEASE_RESULT" != "success" ]]; then
+            fail "Release source selection concluded $RELEASE_RESULT"
+          fi
+
+          case "$EVENT_NAME" in
+            workflow_dispatch)
+              if [[ "$AUTOMATIC_RESULT" != "skipped" ]]; then
+                fail "Manual retry expected automatic release to be skipped, got $AUTOMATIC_RESULT"
+              fi
+              if [[ "$RETRY_RESULT" != "success" ]]; then
+                fail "Manual retry source selection concluded $RETRY_RESULT"
+              fi
+              if [[ "$RELEASE_PR_CI_RESULT" != "skipped" ]]; then
+                fail "Manual retry expected release PR CI to be skipped, got $RELEASE_PR_CI_RESULT"
+              fi
+              if [[ "$SHOULD_PUBLISH" != "true" ]]; then
+                fail "Manual retry did not select a release to publish"
+              fi
+              ;;
+            push | schedule)
+              if [[ "$AUTOMATIC_RESULT" != "success" ]]; then
+                fail "Automatic release concluded $AUTOMATIC_RESULT"
+              fi
+              if [[ "$RETRY_RESULT" != "skipped" ]]; then
+                fail "Automatic release expected retry selection to be skipped, got $RETRY_RESULT"
+              fi
+              case "$AUTOMATIC_PRS_CREATED" in
+                true)
+                  if [[ "$RELEASE_PR_CI_RESULT" != "success" ]]; then
+                    fail "Release PR CI concluded $RELEASE_PR_CI_RESULT"
+                  fi
+                  ;;
+                false)
+                  if [[ "$RELEASE_PR_CI_RESULT" != "skipped" ]]; then
+                    fail "No-PR run expected release PR CI to be skipped, got $RELEASE_PR_CI_RESULT"
+                  fi
+                  ;;
+                *)
+                  fail "Invalid prs_created output: $AUTOMATIC_PRS_CREATED"
+                  ;;
+              esac
+              ;;
+            *)
+              fail "Unexpected release event: $EVENT_NAME"
+              ;;
+          esac
+
+          case "$SHOULD_PUBLISH" in
+            true)
+              if [[ "$RUNTIME_RESULT" != "success" ]]; then
+                fail "Runtime compatibility concluded $RUNTIME_RESULT"
+              fi
+              if [[ "$PUBLISH_RESULT" != "success" ]]; then
+                fail "Maven Central publication concluded $PUBLISH_RESULT"
+              fi
+              ;;
+            false)
+              if [[ "$RUNTIME_RESULT" != "skipped" ]]; then
+                fail "No-release run expected runtime compatibility to be skipped, got $RUNTIME_RESULT"
+              fi
+              if [[ "$PUBLISH_RESULT" != "skipped" ]]; then
+                fail "No-release run expected Maven Central publication to be skipped, got $PUBLISH_RESULT"
+              fi
+              ;;
+            *)
+              fail "Invalid should_publish output: $SHOULD_PUBLISH"
+              ;;
+          esac
+
+          if [[ "$failure_count" -ne 0 ]]; then
+            exit 1
+          fi
+
+          if [[ "$SHOULD_PUBLISH" == "true" ]]; then
+            echo "Release publication completed successfully"
+          else
+            echo "No release was created; publication was correctly skipped"
+          fi
