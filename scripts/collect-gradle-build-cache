@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <destination>" >&2
+    exit 2
+fi
+
+CACHE_DESTINATION="$1"
+GRADLE_CACHE_ROOT="${GRADLE_USER_HOME:-${HOME}/.gradle}/caches/build-cache-1"
+CACHE_KEYS="$(mktemp)"
+GRADLE_LOG="$(mktemp)"
+trap 'rm -f "${CACHE_KEYS}" "${GRADLE_LOG}"' EXIT
+
+if [ -e "${CACHE_DESTINATION}" ]; then
+    echo "Cache destination already exists: ${CACHE_DESTINATION}" >&2
+    exit 1
+fi
+if [ ! -d "${GRADLE_CACHE_ROOT}" ]; then
+    echo "Gradle build cache does not exist: ${GRADLE_CACHE_ROOT}" >&2
+    exit 1
+fi
+
+mkdir -p "${CACHE_DESTINATION}"
+
+# The build already populated these outputs. Re-evaluating the task graph with --info exposes each
+# content-addressed cache key without recompiling, allowing the artifact to omit unrelated history.
+if ! ./scripts/gradle classes testClasses --info > "${GRADLE_LOG}" 2>&1; then
+    cat "${GRADLE_LOG}" >&2
+    exit 1
+fi
+
+LC_ALL=C sed -nE \
+    's/^Build cache key for task .* is ([0-9a-f]{32})$/\1/p' \
+    "${GRADLE_LOG}" | sort -u > "${CACHE_KEYS}"
+
+if [ ! -s "${CACHE_KEYS}" ]; then
+    echo "Gradle did not report any reusable build cache keys" >&2
+    exit 1
+fi
+
+CACHE_ENTRY_COUNT=0
+while IFS= read -r CACHE_KEY; do
+    CACHE_ENTRY="${GRADLE_CACHE_ROOT}/${CACHE_KEY}"
+    if [ ! -f "${CACHE_ENTRY}" ]; then
+        echo "Gradle build cache entry is missing: ${CACHE_KEY}" >&2
+        exit 1
+    fi
+    cp "${CACHE_ENTRY}" "${CACHE_DESTINATION}/${CACHE_KEY}"
+    CACHE_ENTRY_COUNT=$((CACHE_ENTRY_COUNT + 1))
+done < "${CACHE_KEYS}"
+
+echo "Collected ${CACHE_ENTRY_COUNT} exact-run Gradle build cache entries."
