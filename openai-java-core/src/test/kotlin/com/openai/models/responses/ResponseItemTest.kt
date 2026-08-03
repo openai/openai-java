@@ -665,6 +665,8 @@ internal class ResponseItemTest {
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         val responseItem = ResponseItem.ofFunctionCallOutput(functionCallOutput)
@@ -712,6 +714,8 @@ internal class ResponseItemTest {
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                     .callerDirect()
                     .createdBy("created_by")
+                    .name("name")
+                    .namespace("namespace")
                     .build()
             )
 
