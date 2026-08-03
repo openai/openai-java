@@ -18,8 +18,7 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: create-releases
@@ -31,9 +30,12 @@ env:
   MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock
 
 jobs:
-  release:
-    name: Release / select source
-    if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
+  automatic_release:
+    name: Release / create
+    if: >-
+      github.event_name != 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'openai/openai-java'
     permissions:
       contents: write
       issues: write
@@ -41,24 +43,35 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
-      should_publish: >-
-        ${{ github.event_name == 'workflow_dispatch' ||
-        steps.automatic.outputs.releases_created == 'true' }}
-      source_sha: ${{ steps.retry.outputs.source_sha || steps.automatic.outputs.sha }}
-      release_tag: ${{ steps.retry.outputs.release_tag || steps.automatic.outputs.tag_name }}
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      source_sha: ${{ steps.release.outputs.sha }}
+      release_tag: ${{ steps.release.outputs.tag_name }}
 
     steps:
       - name: Create release
-        if: github.event_name != 'workflow_dispatch'
-        id: automatic
+        id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
+  retry_release:
+    name: Release / select retry source
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'openai/openai-java'
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      source_sha: ${{ steps.retry.outputs.source_sha }}
+      release_tag: ${{ steps.retry.outputs.release_tag }}
+
+    steps:
       - name: Validate retry request
-        if: github.event_name == 'workflow_dispatch'
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
           CONFIRMED: ${{ inputs.confirm_no_pending_deployment }}
@@ -73,7 +86,6 @@ jobs:
           fi
 
       - name: Check out retry source
-        if: github.event_name == 'workflow_dispatch'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
@@ -81,7 +93,6 @@ jobs:
           ref: refs/tags/${{ inputs.release_tag }}
 
       - name: Verify retry source
-        if: github.event_name == 'workflow_dispatch'
         id: retry
         env:
           GH_TOKEN: ${{ github.token }}
@@ -121,10 +132,39 @@ jobs:
             echo "release_tag=$RELEASE_TAG"
           } >> "$GITHUB_OUTPUT"
 
+  release:
+    name: Release / select source
+    needs:
+      - automatic_release
+      - retry_release
+    if: >-
+      always() &&
+      (needs.automatic_release.result == 'success' ||
+      needs.retry_release.result == 'success')
+    permissions: {}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    outputs:
+      should_publish: >-
+        ${{ needs.retry_release.result == 'success' ||
+        needs.automatic_release.outputs.releases_created == 'true' }}
+      source_sha: >-
+        ${{ needs.retry_release.outputs.source_sha ||
+        needs.automatic_release.outputs.source_sha }}
+      release_tag: >-
+        ${{ needs.retry_release.outputs.release_tag ||
+        needs.automatic_release.outputs.release_tag }}
+
+    steps:
+      - name: Select release source
+        run: echo "Release source selected"
+
   runtime_compatibility:
     name: Release / runtime compatibility
     needs: release
     if: needs.release.outputs.should_publish == 'true'
+    permissions:
+      contents: read
     uses: ./.github/workflows/runtime-compatibility.yml
     with:
       ref: ${{ needs.release.outputs.source_sha }}
@@ -137,6 +177,8 @@ jobs:
     if: >-
       needs.release.outputs.should_publish == 'true' &&
       needs.runtime_compatibility.result == 'success'
+    permissions:
+      contents: read
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     environment: publish
