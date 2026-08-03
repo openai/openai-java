@@ -826,6 +826,8 @@ internal class BetaResponseInputItemTest {
                         .build()
                 )
                 .callerDirect()
+                .name("x")
+                .namespace("namespace")
                 .status(BetaResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                 .build()
 
@@ -883,6 +885,8 @@ internal class BetaResponseInputItemTest {
                             .build()
                     )
                     .callerDirect()
+                    .name("x")
+                    .namespace("namespace")
                     .status(BetaResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                     .build()
             )

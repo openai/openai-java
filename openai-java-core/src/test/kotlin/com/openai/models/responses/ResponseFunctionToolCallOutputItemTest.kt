@@ -19,6 +19,8 @@ internal class ResponseFunctionToolCallOutputItemTest {
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         assertThat(responseFunctionToolCallOutputItem.id()).isEqualTo("id")
@@ -30,6 +32,8 @@ internal class ResponseFunctionToolCallOutputItemTest {
         assertThat(responseFunctionToolCallOutputItem.caller())
             .contains(ResponseFunctionToolCallOutputItem.Caller.ofDirect())
         assertThat(responseFunctionToolCallOutputItem.createdBy()).contains("created_by")
+        assertThat(responseFunctionToolCallOutputItem.name()).contains("name")
+        assertThat(responseFunctionToolCallOutputItem.namespace()).contains("namespace")
     }
 
     @Test
@@ -43,6 +47,8 @@ internal class ResponseFunctionToolCallOutputItemTest {
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         val roundtrippedResponseFunctionToolCallOutputItem =
