@@ -199,19 +199,52 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     outputs:
-      should_publish: >-
-        ${{ needs.retry_release.result == 'success' ||
-        needs.automatic_release.outputs.releases_created == 'true' }}
-      source_sha: >-
-        ${{ needs.retry_release.outputs.source_sha ||
-        needs.automatic_release.outputs.source_sha }}
-      release_tag: >-
-        ${{ needs.retry_release.outputs.release_tag ||
-        needs.automatic_release.outputs.release_tag }}
+      should_publish: ${{ steps.source.outputs.should_publish }}
+      source_sha: ${{ steps.source.outputs.source_sha }}
+      release_tag: ${{ steps.source.outputs.release_tag }}
 
     steps:
       - name: Select release source
-        run: echo "Release source selected"
+        id: source
+        env:
+          AUTOMATIC_RELEASES_CREATED: ${{ needs.automatic_release.outputs.releases_created }}
+          AUTOMATIC_SOURCE_SHA: ${{ needs.automatic_release.outputs.source_sha }}
+          AUTOMATIC_RELEASE_TAG: ${{ needs.automatic_release.outputs.release_tag }}
+          RETRY_RESULT: ${{ needs.retry_release.result }}
+          RETRY_SOURCE_SHA: ${{ needs.retry_release.outputs.source_sha }}
+          RETRY_RELEASE_TAG: ${{ needs.retry_release.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+
+          should_publish=false
+          source_sha=""
+          release_tag=""
+          if [[ "$RETRY_RESULT" == "success" ]]; then
+            should_publish=true
+            source_sha="$RETRY_SOURCE_SHA"
+            release_tag="$RETRY_RELEASE_TAG"
+          elif [[ "$AUTOMATIC_RELEASES_CREATED" == "true" ]]; then
+            should_publish=true
+            source_sha="$AUTOMATIC_SOURCE_SHA"
+            release_tag="$AUTOMATIC_RELEASE_TAG"
+          fi
+
+          if [[ "$should_publish" == "true" ]]; then
+            if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "::error::Invalid release source SHA: $source_sha"
+              exit 1
+            fi
+            if [[ ! "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "::error::Invalid release tag: $release_tag"
+              exit 1
+            fi
+          fi
+
+          {
+            echo "should_publish=$should_publish"
+            echo "source_sha=$source_sha"
+            echo "release_tag=$release_tag"
+          } >> "$GITHUB_OUTPUT"
 
   runtime_compatibility:
     name: Release / runtime compatibility
