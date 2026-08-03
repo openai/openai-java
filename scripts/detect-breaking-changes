@@ -291,6 +291,18 @@ gradle.beforeProject { project ->
                 System.getenv("PROPOSED_FIXTURE_SOURCE_ROOT"),
                 System.getenv("PROPOSED_DEPENDENCIES_FILE")
             )
+
+            [
+                "compileExternalApiCompatibilityKotlin",
+                "compileProposedApiCompatibilityKotlin"
+            ].each { taskName ->
+                project.tasks.named(taskName).configure { task ->
+                    task.outputs.upToDateWhen { false }
+                    task.outputs.doNotCacheIf(
+                        "API compatibility compilation must always execute"
+                    ) { true }
+                }
+            }
         }
     }
 }
@@ -305,8 +317,7 @@ GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
     ./scripts/gradle \
     --init-script "${COMPATIBILITY_INIT_SCRIPT}" \
     :openai-java-core:compileExternalApiCompatibilityKotlin \
-    :openai-java-core:compileProposedApiCompatibilityKotlin \
-    --no-build-cache
+    :openai-java-core:compileProposedApiCompatibilityKotlin
 
 validate_public_api_signatures() {
     local manifest_path="$1"

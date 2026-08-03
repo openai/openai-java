@@ -13,6 +13,7 @@ concurrency:
 jobs:
   analyze:
     name: Analyze Java and Kotlin
+    if: github.repository != 'openai/openai-java-internal'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
