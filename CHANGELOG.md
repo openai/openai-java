@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.49.1 (2026-08-03)
+
+Full Changelog: [v4.49.0...v4.49.1](https://github.com/openai/openai-java/compare/v4.49.0...v4.49.1)
+
+### Chores
+
+* **api:** disable stainless codeflow ([7f0cbd5](https://github.com/openai/openai-java/commit/7f0cbd55a6e7cbfb587d10380f9d891e3c0309ea))
+* **internal:** codegen related update ([eec196b](https://github.com/openai/openai-java/commit/eec196b75822485c4507f37f2eed0a503e276d99))
+* remove retired Spring Boot 2 starter ([#827](https://github.com/openai/openai-java/issues/827)) ([52e3c64](https://github.com/openai/openai-java/commit/52e3c64215b647aeebe1e9123c1c857a7bbe95af))
+
 ## 4.49.0 (2026-07-31)
 
 Full Changelog: [v4.48.0...v4.49.0](https://github.com/openai/openai-java/compare/v4.48.0...v4.49.0)
