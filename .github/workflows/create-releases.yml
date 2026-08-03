@@ -43,11 +43,35 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
+      prs_created: ${{ steps.release.outputs.prs_created }}
+      release_pr: ${{ steps.release.outputs.pr }}
       releases_created: ${{ steps.release.outputs.releases_created }}
       source_sha: ${{ steps.release.outputs.sha }}
       release_tag: ${{ steps.release.outputs.tag_name }}
 
     steps:
+      - name: Check for a legacy release PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LEGACY_RELEASE_BRANCH: release-please--branches--main--changes--next
+        run: |
+          set -euo pipefail
+
+          legacy_pr="$(
+            gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --state open \
+              --head "$LEGACY_RELEASE_BRANCH" \
+              --json number,url \
+              --jq '.[0] // empty'
+          )"
+          if [[ -n "$legacy_pr" ]]; then
+            legacy_number="$(jq -r '.number' <<< "$legacy_pr")"
+            legacy_url="$(jq -r '.url' <<< "$legacy_pr")"
+            echo "::error::Merge or close legacy release PR #$legacy_number before running upstream release-please: $legacy_url"
+            exit 1
+          fi
+
       - name: Create release
         id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
@@ -56,6 +80,36 @@ jobs:
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  release_pr_ci:
+    name: Release / run release PR CI
+    needs: automatic_release
+    if: needs.automatic_release.outputs.prs_created == 'true'
+    permissions:
+      actions: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      # Events created by GITHUB_TOKEN do not recursively trigger pull_request workflows.
+      # workflow_dispatch is an explicit exception, so dispatch CI for the generated PR head.
+      - name: Run CI for the release PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PR: ${{ needs.automatic_release.outputs.release_pr }}
+        run: |
+          set -euo pipefail
+
+          release_branch="$(jq -r '.headBranchName // empty' <<< "$RELEASE_PR")"
+          if [[ "$release_branch" != "release-please--branches--main" ]]; then
+            echo "::error::Unexpected release PR branch: $release_branch"
+            exit 1
+          fi
+
+          gh workflow run ci.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$release_branch" \
+            -f base_sha="$GITHUB_SHA"
 
   retry_release:
     name: Release / select retry source

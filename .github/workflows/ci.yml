@@ -11,6 +11,12 @@ on:
     branches:
       - main
       - next
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Base commit used for API compatibility checks
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -100,7 +106,9 @@ jobs:
 
   api_compatibility:
     name: CI / API compatibility
-    if: github.event_name == 'pull_request'
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -123,7 +131,7 @@ jobs:
 
       - name: Compile previous tests against the proposed SDK
         env:
-          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: |
           set -euo pipefail
@@ -198,10 +206,12 @@ jobs:
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       - name: Run consumer compatibility smoke test
+        env:
+          RUNTIME_JAVA_VERSION: ${{ matrix.java }}
         run: >-
           ./scripts/gradle
           :openai-java-runtime-compatibility:runRuntimeCompatibility
-          -PruntimeJavaVersion=${{ matrix.java }}
+          -PruntimeJavaVersion="$RUNTIME_JAVA_VERSION"
 
   required:
     name: CI / required
@@ -242,7 +252,9 @@ jobs:
             [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
           fi
 
-          if [[ "$EVENT_NAME" == "pull_request" && "$API_COMPATIBILITY_RESULT" != "success" ]]; then
+          if [[ ( "$EVENT_NAME" == "pull_request" ||
+                  "$EVENT_NAME" == "workflow_dispatch" ) &&
+                "$API_COMPATIBILITY_RESULT" != "success" ]]; then
             failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
           fi
           [[ "$RUNTIME_COMPATIBILITY_RESULT" == "success" ]] ||
