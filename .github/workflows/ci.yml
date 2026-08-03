@@ -23,7 +23,7 @@ concurrency:
 jobs:
   lint:
     name: CI / lint
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
 
     steps:
@@ -51,7 +51,7 @@ jobs:
       !(github.repository == 'stainless-sdks/openai-java' &&
         github.event_name == 'push' &&
         !startsWith(github.ref, 'refs/heads/stl/'))
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
 
     steps:
@@ -95,7 +95,7 @@ jobs:
 
   test:
     name: CI / tests
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
 
     steps:
@@ -127,7 +127,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 20
 
     steps:
@@ -228,7 +228,7 @@ jobs:
 
   version_support_matrix:
     name: CI / version support matrix
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 5
 
     outputs:
@@ -266,7 +266,7 @@ jobs:
         (github.repository == 'stainless-sdks/openai-java' &&
           github.event_name == 'push' &&
           !startsWith(github.ref, 'refs/heads/stl/')))
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 20
 
     strategy:
@@ -320,7 +320,7 @@ jobs:
       - test
       - api_compatibility
       - runtime_compatibility
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 5
 
     steps:

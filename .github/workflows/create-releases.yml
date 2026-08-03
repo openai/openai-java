@@ -40,7 +40,7 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
     outputs:
       prs_created: ${{ steps.release.outputs.prs_created }}
@@ -87,7 +87,7 @@ jobs:
     if: needs.automatic_release.outputs.prs_created == 'true'
     permissions:
       actions: write
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 5
 
     steps:
@@ -118,7 +118,7 @@ jobs:
       github.repository == 'openai/openai-java'
     permissions:
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
     outputs:
       source_sha: ${{ steps.retry.outputs.source_sha }}
@@ -196,7 +196,7 @@ jobs:
       (needs.automatic_release.result == 'success' ||
       needs.retry_release.result == 'success')
     permissions: {}
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 1
     outputs:
       should_publish: >-
@@ -233,7 +233,7 @@ jobs:
       needs.runtime_compatibility.result == 'success'
     permissions:
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 90
     environment: publish
 
