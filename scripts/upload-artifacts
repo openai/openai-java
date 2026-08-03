@@ -91,6 +91,7 @@ generate_instructions() {
 <html>
 <head>
     <title>Maven Repo</title>
+    <meta name="robots" content="noindex, nofollow">
 </head>
 <body>
     <h1>Stainless SDK Maven Repository</h1>
