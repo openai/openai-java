@@ -1455,79 +1455,15 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 > [!WARNING]
 > `openai-java-spring-boot-starter` targets Spring Boot 2.7 and is OpenAI EOL as of 2026-07-27.
 > Version 4.45.0 is the final supported, tested, and published release. The artifact remains
-> downloadable but receives no fixes, testing, or compatibility support. See the
+> downloadable but receives no fixes, testing, or compatibility support, and its source is no
+> longer part of the active build. See the
 > [Spring Boot 2 EOL decision and migration path](docs/spring-boot-2-eol.md). New Spring
 > applications should depend on `openai-java` directly and provide an `OpenAIClient` bean until a
 > supported, generation-specific integration is available.
 
-Existing Spring Boot 2 applications can use the legacy starter to simplify configuration.
-
-### Installation
-
-#### Gradle
-
-```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:4.45.0")
-```
-
-#### Maven
-
-```xml
-<dependency>
-  <groupId>com.openai</groupId>
-  <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>4.45.0</version>
-</dependency>
-```
-
-### Configuration
-
-The [client's environment variable options](#client-configuration) can be configured in [`application.properties` or `application.yml`](https://docs.spring.io/spring-boot/how-to/properties-and-configuration.html).
-
-#### `application.properties`
-
-```properties
-openai.base-url=https://api.openai.com/v1
-openai.api-key=My API Key
-openai.admin-key=My Admin API Key
-openai.org-id=My Organization
-openai.project-id=My Project
-openai.webhook-secret=My Webhook Secret
-```
-
-#### `application.yml`
-
-```yaml
-openai:
-  base-url: https://api.openai.com/v1
-  api-key: My API Key
-  admin-key: My Admin API Key
-  org-id: My Organization
-  project-id: My Project
-  webhook-secret: My Webhook Secret
-```
-
-#### Other configuration
-
-Configure any other client option by providing one or more instances of [`OpenAIClientCustomizer`](openai-java-spring-boot-starter/src/main/kotlin/com/openai/springboot/OpenAIClientCustomizer.kt). For example, here's how you'd set [`maxRetries`](#retries):
-
-```java
-import com.openai.springboot.OpenAIClientCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class OpenAIConfig {
-    @Bean
-    public OpenAIClientCustomizer customizer() {
-        return builder -> builder.maxRetries(3);
-    }
-}
-```
-
-### Usage
-
-[Inject](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html) [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt) anywhere and start using it!
+Existing Spring Boot 2 users can refer to the
+[`v4.45.0` Spring Boot documentation](https://github.com/openai/openai-java/blob/v4.45.0/README.md#spring-boot)
+for the final legacy configuration and usage instructions.
 
 ## Jackson
 
