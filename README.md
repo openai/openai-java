@@ -1,6 +1,6 @@
 # OpenAI Java API Library
 
-<!-- These URLs intentionally omit a version so they always resolve to the latest release. -->
+<!-- These URLs intentionally omit versions and stay outside Release Please markers so they track the latest release. -->
 [![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java)
 [![javadoc](https://javadoc.io/badge2/com.openai/openai-java/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java)
 
