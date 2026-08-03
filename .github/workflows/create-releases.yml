@@ -3,11 +3,7 @@ name: Create releases
 on:
   schedule:
     - cron: '0 5 * * *' # every day at 5am UTC
-  workflow_run:
-    workflows:
-      - CodeQL
-    types:
-      - completed
+  push:
     branches:
       - main
   workflow_dispatch:
@@ -23,7 +19,6 @@ on:
         default: false
 
 permissions:
-  actions: read
   contents: read
 
 concurrency:
@@ -38,12 +33,7 @@ env:
 jobs:
   release:
     name: Release / select source
-    if: >-
-      github.repository == 'openai/openai-java' &&
-      ((github.event_name == 'workflow_run' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'))
+    if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: publish
@@ -60,7 +50,14 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Create release
+        if: github.event_name != 'workflow_dispatch'
+        id: automatic
+        uses: stainless-api/trigger-release-please@bb6677c5a04578eec1ccfd9e1913b5b78ed64c61 # v1.4.0
+        with:
+          repo: ${{ github.event.repository.full_name }}
+          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Validate retry request
         if: github.event_name == 'workflow_dispatch'
@@ -125,77 +122,6 @@ jobs:
             echo "source_sha=$source_sha"
             echo "release_tag=$RELEASE_TAG"
           } >> "$GITHUB_OUTPUT"
-
-      - name: Ensure automatic source is still current
-        if: github.event_name != 'workflow_dispatch'
-        id: automatic_source
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-        run: |
-          set -euo pipefail
-
-          main_sha="$(
-            gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha'
-          )"
-          if [[ "$main_sha" != "$SOURCE_SHA" ]]; then
-            echo "Skipping stale source $SOURCE_SHA; main is now $main_sha"
-            echo "is_current=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "is_current=true" >> "$GITHUB_OUTPUT"
-
-      - name: Verify successful CodeQL analysis
-        if: >-
-          github.event_name != 'workflow_run' &&
-          (github.event_name == 'workflow_dispatch' ||
-          steps.automatic_source.outputs.is_current == 'true')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ steps.retry.outputs.source_sha || github.sha }}
-        run: |
-          set -euo pipefail
-
-          run_json="$(
-            gh run list \
-              --repo "$GITHUB_REPOSITORY" \
-              --workflow codeql.yml \
-              --commit "$SOURCE_SHA" \
-              --event push \
-              --limit 100 \
-              --json conclusion,headSha,status,url
-          )"
-          successful_run="$(
-            jq -c --arg source_sha "$SOURCE_SHA" '
-              first(
-                .[] |
-                select(
-                  .headSha == $source_sha and
-                  .status == "completed" and
-                  .conclusion == "success"
-                )
-              ) // empty
-            ' <<< "$run_json"
-          )"
-
-          if [[ -z "$successful_run" ]]; then
-            echo "::error::No successful CodeQL push analysis found for $SOURCE_SHA"
-            exit 1
-          fi
-
-          url="$(jq -r '.url' <<< "$successful_run")"
-          echo "Verified successful CodeQL analysis for $SOURCE_SHA: $url"
-
-      - name: Create release
-        if: >-
-          github.event_name != 'workflow_dispatch' &&
-          steps.automatic_source.outputs.is_current == 'true'
-        id: automatic
-        uses: stainless-api/trigger-release-please@bb6677c5a04578eec1ccfd9e1913b5b78ed64c61 # v1.4.0
-        with:
-          repo: ${{ github.event.repository.full_name }}
-          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
   runtime_compatibility:
     name: Release / runtime compatibility
