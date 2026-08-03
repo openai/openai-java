@@ -748,6 +748,8 @@ internal class ResponseInputItemTest {
                 .output("string")
                 .id("fc_123")
                 .callerDirect()
+                .name("x")
+                .namespace("namespace")
                 .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                 .build()
 
@@ -797,6 +799,8 @@ internal class ResponseInputItemTest {
                     .output("string")
                     .id("fc_123")
                     .callerDirect()
+                    .name("x")
+                    .namespace("namespace")
                     .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                     .build()
             )
