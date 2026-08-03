@@ -40,6 +40,8 @@ private constructor(
     private val type: JsonValue,
     private val caller: JsonField<Caller>,
     private val createdBy: JsonField<String>,
+    private val name: JsonField<String>,
+    private val namespace: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -52,7 +54,9 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("caller") @ExcludeMissing caller: JsonField<Caller> = JsonMissing.of(),
         @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
-    ) : this(id, callId, output, status, type, caller, createdBy, mutableMapOf())
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("namespace") @ExcludeMissing namespace: JsonField<String> = JsonMissing.of(),
+    ) : this(id, callId, output, status, type, caller, createdBy, name, namespace, mutableMapOf())
 
     /**
      * The unique ID of the function call tool output.
@@ -118,6 +122,22 @@ private constructor(
     fun createdBy(): Optional<String> = createdBy.getOptional("created_by")
 
     /**
+     * The name of the tool that produced the output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun name(): Optional<String> = name.getOptional("name")
+
+    /**
+     * The namespace of the tool that produced the output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun namespace(): Optional<String> = namespace.getOptional("namespace")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -159,6 +179,20 @@ private constructor(
      */
     @JsonProperty("created_by") @ExcludeMissing fun _createdBy(): JsonField<String> = createdBy
 
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /**
+     * Returns the raw JSON value of [namespace].
+     *
+     * Unlike [namespace], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("namespace") @ExcludeMissing fun _namespace(): JsonField<String> = namespace
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -198,6 +232,8 @@ private constructor(
         private var type: JsonValue = JsonValue.from("function_call_output")
         private var caller: JsonField<Caller> = JsonMissing.of()
         private var createdBy: JsonField<String> = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
+        private var namespace: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -210,6 +246,8 @@ private constructor(
                 type = responseFunctionToolCallOutputItem.type
                 caller = responseFunctionToolCallOutputItem.caller
                 createdBy = responseFunctionToolCallOutputItem.createdBy
+                name = responseFunctionToolCallOutputItem.name
+                namespace = responseFunctionToolCallOutputItem.namespace
                 additionalProperties =
                     responseFunctionToolCallOutputItem.additionalProperties.toMutableMap()
             }
@@ -328,6 +366,29 @@ private constructor(
          */
         fun createdBy(createdBy: JsonField<String>) = apply { this.createdBy = createdBy }
 
+        /** The name of the tool that produced the output. */
+        fun name(name: String) = name(JsonField.of(name))
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /** The namespace of the tool that produced the output. */
+        fun namespace(namespace: String) = namespace(JsonField.of(namespace))
+
+        /**
+         * Sets [Builder.namespace] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.namespace] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun namespace(namespace: JsonField<String>) = apply { this.namespace = namespace }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -371,6 +432,8 @@ private constructor(
                 type,
                 caller,
                 createdBy,
+                name,
+                namespace,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -401,6 +464,8 @@ private constructor(
         }
         caller().ifPresent { it.validate() }
         createdBy()
+        name()
+        namespace()
         validated = true
     }
 
@@ -425,7 +490,9 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
             (caller.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (createdBy.asKnown().isPresent) 1 else 0)
+            (if (createdBy.asKnown().isPresent) 1 else 0) +
+            (if (name.asKnown().isPresent) 1 else 0) +
+            (if (namespace.asKnown().isPresent) 1 else 0)
 
     /**
      * The output from the function call generated by your code. Can be a string or an list of
@@ -1521,15 +1588,28 @@ private constructor(
             type == other.type &&
             caller == other.caller &&
             createdBy == other.createdBy &&
+            name == other.name &&
+            namespace == other.namespace &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, callId, output, status, type, caller, createdBy, additionalProperties)
+        Objects.hash(
+            id,
+            callId,
+            output,
+            status,
+            type,
+            caller,
+            createdBy,
+            name,
+            namespace,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionToolCallOutputItem{id=$id, callId=$callId, output=$output, status=$status, type=$type, caller=$caller, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseFunctionToolCallOutputItem{id=$id, callId=$callId, output=$output, status=$status, type=$type, caller=$caller, createdBy=$createdBy, name=$name, namespace=$namespace, additionalProperties=$additionalProperties}"
 }
