@@ -108,8 +108,7 @@ jobs:
 
           gh workflow run ci.yml \
             --repo "$GITHUB_REPOSITORY" \
-            --ref "$release_branch" \
-            -f base_sha="$GITHUB_SHA"
+            --ref "$release_branch"
 
   retry_release:
     name: Release / select retry source
