@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.50.0](https://github.com/openai/openai-java/compare/v4.49.0...v4.50.0) (2026-08-03)
+
+
+### Features
+
+* **api:** Add GPT-5.5 model and optional tool name/namespace fields ([#837](https://github.com/openai/openai-java/issues/837)) ([af860dc](https://github.com/openai/openai-java/commit/af860dc957fdb1d02acaf721ae7ace8fdf16dbf4))
+
+
+### Chores
+
+* remove retired Spring Boot 2 starter ([#827](https://github.com/openai/openai-java/issues/827)) ([52e3c64](https://github.com/openai/openai-java/commit/52e3c64215b647aeebe1e9123c1c857a7bbe95af))
+
 ## 4.49.0 (2026-07-31)
 
 Full Changelog: [v4.48.0...v4.49.0](https://github.com/openai/openai-java/compare/v4.48.0...v4.49.0)
