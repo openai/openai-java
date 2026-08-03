@@ -24,7 +24,7 @@ concurrency:
 jobs:
   version_support_matrix:
     name: Runtime compatibility / version support matrix
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 5
 
     outputs:
@@ -54,7 +54,7 @@ jobs:
   runtime_compatibility:
     name: Runtime compatibility / Java ${{ matrix.java }}
     needs: version_support_matrix
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 20
 
     strategy:
