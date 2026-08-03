@@ -188,8 +188,8 @@ private constructor(
         /** Alias for calling [action] with `Action.ofOpenPage(openPage)`. */
         fun action(openPage: Action.OpenPage) = action(Action.ofOpenPage(openPage))
 
-        /** Alias for calling [action] with `Action.ofFind(findInPage)`. */
-        fun action(findInPage: Action.Find) = action(Action.ofFind(findInPage))
+        /** Alias for calling [action] with `Action.ofFindInPage(findInPage)`. */
+        fun action(findInPage: Action.FindInPage) = action(Action.ofFindInPage(findInPage))
 
         /** The status of the web search tool call. */
         fun status(status: Status) = status(JsonField.of(status))
@@ -315,7 +315,7 @@ private constructor(
     private constructor(
         private val search: Search? = null,
         private val openPage: OpenPage? = null,
-        private val findInPage: Find? = null,
+        private val findInPage: FindInPage? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -326,13 +326,13 @@ private constructor(
         fun openPage(): Optional<OpenPage> = Optional.ofNullable(openPage)
 
         /** Action type "find_in_page": Searches for a pattern within a loaded page. */
-        fun findInPage(): Optional<Find> = Optional.ofNullable(findInPage)
+        fun findInPage(): Optional<FindInPage> = Optional.ofNullable(findInPage)
 
         fun isSearch(): Boolean = search != null
 
         fun isOpenPage(): Boolean = openPage != null
 
-        fun isFind(): Boolean = findInPage != null
+        fun isFindInPage(): Boolean = findInPage != null
 
         /** Action type "search" - Performs a web search query. */
         fun asSearch(): Search = search.getOrThrow("search")
@@ -341,7 +341,7 @@ private constructor(
         fun asOpenPage(): OpenPage = openPage.getOrThrow("openPage")
 
         /** Action type "find_in_page": Searches for a pattern within a loaded page. */
-        fun asFind(): Find = findInPage.getOrThrow("findInPage")
+        fun asFindInPage(): FindInPage = findInPage.getOrThrow("findInPage")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -378,7 +378,7 @@ private constructor(
             when {
                 search != null -> visitor.visitSearch(search)
                 openPage != null -> visitor.visitOpenPage(openPage)
-                findInPage != null -> visitor.visitFind(findInPage)
+                findInPage != null -> visitor.visitFindInPage(findInPage)
                 else -> visitor.unknown(_json)
             }
 
@@ -408,7 +408,7 @@ private constructor(
                         openPage.validate()
                     }
 
-                    override fun visitFind(findInPage: Find) {
+                    override fun visitFindInPage(findInPage: FindInPage) {
                         findInPage.validate()
                     }
                 }
@@ -438,7 +438,7 @@ private constructor(
 
                     override fun visitOpenPage(openPage: OpenPage) = openPage.validity()
 
-                    override fun visitFind(findInPage: Find) = findInPage.validity()
+                    override fun visitFindInPage(findInPage: FindInPage) = findInPage.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -475,7 +475,7 @@ private constructor(
             @JvmStatic fun ofOpenPage(openPage: OpenPage) = Action(openPage = openPage)
 
             /** Action type "find_in_page": Searches for a pattern within a loaded page. */
-            @JvmStatic fun ofFind(findInPage: Find) = Action(findInPage = findInPage)
+            @JvmStatic fun ofFindInPage(findInPage: FindInPage) = Action(findInPage = findInPage)
         }
 
         /** An interface that defines how to map each variant of [Action] to a value of type [T]. */
@@ -488,7 +488,7 @@ private constructor(
             fun visitOpenPage(openPage: OpenPage): T
 
             /** Action type "find_in_page": Searches for a pattern within a loaded page. */
-            fun visitFind(findInPage: Find): T
+            fun visitFindInPage(findInPage: FindInPage): T
 
             /**
              * Maps an unknown variant of [Action] to a value of type [T].
@@ -523,7 +523,7 @@ private constructor(
                         } ?: Action(_json = json)
                     }
                     "find_in_page" -> {
-                        return tryDeserialize(node, jacksonTypeRef<Find>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<FindInPage>())?.let {
                             Action(findInPage = it, _json = json)
                         } ?: Action(_json = json)
                     }
@@ -1272,7 +1272,7 @@ private constructor(
         }
 
         /** Action type "find_in_page": Searches for a pattern within a loaded page. */
-        class Find
+        class FindInPage
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val pattern: JsonField<String>,
@@ -1350,7 +1350,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [Find].
+                 * Returns a mutable builder for constructing an instance of [FindInPage].
                  *
                  * The following fields are required:
                  * ```java
@@ -1361,7 +1361,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [Find]. */
+            /** A builder for [FindInPage]. */
             class Builder internal constructor() {
 
                 private var pattern: JsonField<String>? = null
@@ -1370,7 +1370,7 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(findInPage: Find) = apply {
+                internal fun from(findInPage: FindInPage) = apply {
                     pattern = findInPage.pattern
                     type = findInPage.type
                     url = findInPage.url
@@ -1438,7 +1438,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [Find].
+                 * Returns an immutable instance of [FindInPage].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -1450,8 +1450,8 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): Find =
-                    Find(
+                fun build(): FindInPage =
+                    FindInPage(
                         checkRequired("pattern", pattern),
                         type,
                         checkRequired("url", url),
@@ -1471,7 +1471,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
              *   expected type.
              */
-            fun validate(): Find = apply {
+            fun validate(): FindInPage = apply {
                 if (validated) {
                     return@apply
                 }
@@ -1511,7 +1511,7 @@ private constructor(
                     return true
                 }
 
-                return other is Find &&
+                return other is FindInPage &&
                     pattern == other.pattern &&
                     type == other.type &&
                     url == other.url &&
@@ -1525,7 +1525,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Find{pattern=$pattern, type=$type, url=$url, additionalProperties=$additionalProperties}"
+                "FindInPage{pattern=$pattern, type=$type, url=$url, additionalProperties=$additionalProperties}"
         }
     }
 

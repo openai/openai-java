@@ -35,7 +35,6 @@ import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputItemServiceImpl
 import com.openai.services.blocking.responses.InputTokenService
 import com.openai.services.blocking.responses.InputTokenServiceImpl
-import com.openai.services.validateForStream
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -193,7 +192,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .let { createStreamingHandler.handle(it) }
                     .let { streamResponse ->
                         if (requestOptions.responseValidation!!) {
-                            streamResponse.map { it.validateForStream() }
+                            streamResponse.map { it.validate() }
                         } else {
                             streamResponse
                         }
@@ -265,7 +264,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .let { retrieveStreamingHandler.handle(it) }
                     .let { streamResponse ->
                         if (requestOptions.responseValidation!!) {
-                            streamResponse.map { it.validateForStream() }
+                            streamResponse.map { it.validate() }
                         } else {
                             streamResponse
                         }

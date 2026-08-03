@@ -11,7 +11,6 @@ import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.ThreadCreateAndRunParams
 import com.openai.models.beta.threads.ThreadCreateParams
 import com.openai.models.beta.threads.ThreadUpdateParams
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -285,7 +284,6 @@ internal class ThreadServiceAsyncTest {
         run.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createAndRunStreaming() {
         val client =

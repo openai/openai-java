@@ -11,7 +11,6 @@ import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
-import com.openai.core.handlers.stringHandler
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
@@ -24,13 +23,11 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
-import com.openai.models.audio.transcriptions.Transcription
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
-import kotlin.jvm.optionals.getOrNull
 
 /** Turn audio into text or text into audio. */
 class TranscriptionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -75,18 +72,8 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val createJsonHandler: Handler<TranscriptionCreateResponse> =
+        private val createHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
-        private val createStringHandler: Handler<TranscriptionCreateResponse> =
-            object : Handler<TranscriptionCreateResponse> {
-
-                private val stringHandler = stringHandler()
-
-                override fun handle(response: HttpResponse): TranscriptionCreateResponse =
-                    TranscriptionCreateResponse.ofTranscription(
-                        Transcription.builder().text(stringHandler.handle(response)).build()
-                    )
-            }
 
         override fun create(
             params: TranscriptionCreateParams,
@@ -108,13 +95,9 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    val handler =
-                        if (params.responseFormat().getOrNull()?.isJson() != false)
-                            createJsonHandler
-                        else createStringHandler
                     errorHandler.handle(response).parseable {
                         response
-                            .use { handler.handle(it) }
+                            .use { createHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

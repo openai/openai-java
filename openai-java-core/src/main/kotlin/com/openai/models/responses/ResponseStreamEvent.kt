@@ -2423,7 +2423,6 @@ private constructor(
                     generator.writeObject(value.customToolCallInputDelta)
                 value.customToolCallInputDone != null ->
                     generator.writeObject(value.customToolCallInputDone)
-
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseStreamEvent")
             }

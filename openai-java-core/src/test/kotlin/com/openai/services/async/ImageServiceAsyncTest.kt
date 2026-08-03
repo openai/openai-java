@@ -8,7 +8,6 @@ import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImageModel
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -75,7 +74,6 @@ internal class ImageServiceAsyncTest {
         imagesResponse.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun editStreaming() {
         val client =
@@ -146,7 +144,6 @@ internal class ImageServiceAsyncTest {
         imagesResponse.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun generateStreaming() {
         val client =

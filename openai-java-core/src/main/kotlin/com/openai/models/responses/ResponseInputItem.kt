@@ -25,7 +25,6 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
-import com.openai.core.toJsonString
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -3236,14 +3235,6 @@ private constructor(
 
             /** Alias for calling [output] with `Output.ofString(string)`. */
             fun output(string: String) = output(Output.ofString(string))
-
-            /**
-             * Sets the output to text representing the JSON serialized form of a given object. This
-             * is useful when passing data that is the result of a function call.
-             *
-             * @see output
-             */
-            fun outputAsJson(functionResult: Any) = apply { output(toJsonString(functionResult)) }
 
             /**
              * Alias for calling [output] with

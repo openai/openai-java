@@ -15,7 +15,6 @@ import com.openai.models.beta.threads.runs.RunRetrieveParams
 import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
 import com.openai.models.beta.threads.runs.RunUpdateParams
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -85,7 +84,6 @@ internal class RunServiceAsyncTest {
         run.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =
@@ -259,7 +257,6 @@ internal class RunServiceAsyncTest {
         run.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun submitToolOutputsStreaming() {
         val client =

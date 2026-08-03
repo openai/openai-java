@@ -5,7 +5,6 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsync
-import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.ResponseServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsync
 import java.util.function.Consumer
@@ -23,11 +22,6 @@ interface BetaServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync
-
-    @Deprecated(
-        "Realtime has now launched and is generally available. The old beta API is now deprecated."
-    )
-    fun realtime(): RealtimeServiceAsync
 
     fun responses(): ResponseServiceAsync
 
@@ -49,11 +43,6 @@ interface BetaServiceAsync {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync.WithRawResponse
-
-        @Deprecated(
-            "Realtime has now launched and is generally available. The old beta API is now deprecated."
-        )
-        fun realtime(): RealtimeServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
 

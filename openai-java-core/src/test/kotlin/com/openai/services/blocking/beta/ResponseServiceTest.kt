@@ -296,7 +296,9 @@ internal class ResponseServiceTest {
                     .build()
             )
 
-        betaResponseStreamResponse.use { check(betaResponseStreamResponse.stream().count() > 0) }
+        betaResponseStreamResponse.use {
+            betaResponseStreamResponse.stream().forEach { betaResponse -> betaResponse.validate() }
+        }
     }
 
     @Test
