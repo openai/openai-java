@@ -3347,6 +3347,8 @@ private constructor(
 
                 @JvmField val GPT_5_6_LUNA = of("gpt-5.6-luna")
 
+                @JvmField val GPT_5_5 = of("gpt-5.5")
+
                 @JvmField val GPT_5_4 = of("gpt-5.4")
 
                 @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
@@ -3549,6 +3551,7 @@ private constructor(
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
+                GPT_5_5,
                 GPT_5_4,
                 GPT_5_4_MINI,
                 GPT_5_4_NANO,
@@ -3656,6 +3659,7 @@ private constructor(
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
+                GPT_5_5,
                 GPT_5_4,
                 GPT_5_4_MINI,
                 GPT_5_4_NANO,
@@ -3766,6 +3770,7 @@ private constructor(
                     GPT_5_6_SOL -> Value.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
+                    GPT_5_5 -> Value.GPT_5_5
                     GPT_5_4 -> Value.GPT_5_4
                     GPT_5_4_MINI -> Value.GPT_5_4_MINI
                     GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -3877,6 +3882,7 @@ private constructor(
                     GPT_5_6_SOL -> Known.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
+                    GPT_5_5 -> Known.GPT_5_5
                     GPT_5_4 -> Known.GPT_5_4
                     GPT_5_4_MINI -> Known.GPT_5_4_MINI
                     GPT_5_4_NANO -> Known.GPT_5_4_NANO

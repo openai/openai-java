@@ -200,6 +200,8 @@ internal class ConversationItemTest {
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         val conversationItem = ConversationItem.ofFunctionCallOutput(functionCallOutput)
@@ -246,6 +248,8 @@ internal class ConversationItemTest {
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                     .callerDirect()
                     .createdBy("created_by")
+                    .name("name")
+                    .namespace("namespace")
                     .build()
             )
 
