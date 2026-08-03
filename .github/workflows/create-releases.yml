@@ -405,7 +405,7 @@ jobs:
     # workflow alive. This makes an unexpected skipped publication fail closed.
     if: ${{ !cancelled() && github.repository == 'openai/openai-java' }}
     permissions: {}
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 1
 
     steps:
