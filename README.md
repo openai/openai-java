@@ -1,12 +1,11 @@
 # OpenAI Java API Library
 
-<!-- These URLs intentionally omit versions and stay outside Release Please markers so they track the latest release. -->
+<!-- This URL intentionally omits a version and stays outside Release Please markers so it tracks the latest release. -->
 [![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java)
 
 The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://platform.openai.com/docs) from applications written in Java.
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs).
 
 ## Installation
 
