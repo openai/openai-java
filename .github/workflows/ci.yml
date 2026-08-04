@@ -122,8 +122,7 @@ jobs:
     needs: build
     if: >-
       needs.build.result == 'success' &&
-      (github.event_name == 'pull_request' ||
-        github.event_name == 'workflow_dispatch')
+      github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: read
@@ -135,58 +134,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Validate dispatched release PR
-        if: github.event_name == 'workflow_dispatch'
-        id: release-pr
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-
-          expected_ref="refs/heads/release-please--branches--main"
-          if [[ "$GITHUB_REF" != "$expected_ref" ]]; then
-            echo "::error::Release PR CI must run on $expected_ref, not $GITHUB_REF"
-            exit 1
-          fi
-
-          release_pr="$(
-            gh api \
-              --method GET \
-              "repos/$GITHUB_REPOSITORY/pulls" \
-              -f state=open \
-              -f head="$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" \
-              -f base=main \
-              -F per_page=2
-          )"
-          if [[ "$(jq length <<< "$release_pr")" != "1" ]]; then
-            echo "::error::Expected exactly one open release PR from $GITHUB_REF_NAME into main"
-            exit 1
-          fi
-
-          if ! jq -e \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg head_ref "$GITHUB_REF_NAME" \
-            --arg head_sha "$GITHUB_SHA" \
-            '.[0] |
-              .user.id == 41898282 and
-              .user.type == "Bot" and
-              .head.repo.full_name == $repository and
-              .head.ref == $head_ref and
-              .head.sha == $head_sha and
-              .base.repo.full_name == $repository and
-              .base.ref == "main"' \
-            <<< "$release_pr" > /dev/null; then
-            echo "::error::Release PR is not the expected github-actions[bot] PR for $GITHUB_SHA"
-            exit 1
-          fi
-
-          base_sha="$(jq -r '.[0].base.sha' <<< "$release_pr")"
-          if ! git cat-file -e "${base_sha}^{commit}"; then
-            echo "::error::PR base commit is not available: $base_sha"
-            exit 1
-          fi
-          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
@@ -209,9 +156,7 @@ jobs:
 
       - name: Compile previous tests against the proposed SDK
         env:
-          BASE_COMMIT: >-
-            ${{ github.event.pull_request.base.sha ||
-            steps.release-pr.outputs.base_sha }}
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: |
           set -euo pipefail
@@ -350,8 +295,7 @@ jobs:
             [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
           fi
 
-          if [[ ( "$EVENT_NAME" == "pull_request" ||
-                  "$EVENT_NAME" == "workflow_dispatch" ) &&
+          if [[ "$EVENT_NAME" == "pull_request" &&
                 "$API_COMPATIBILITY_RESULT" != "success" ]]; then
             failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
           fi

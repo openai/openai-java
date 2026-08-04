@@ -36,23 +36,29 @@ jobs:
       github.event_name != 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
       github.repository == 'openai/openai-java'
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+    environment: castiron-promotion
+    permissions: {}
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
     outputs:
-      prs_created: ${{ steps.release.outputs.prs_created }}
-      release_pr: ${{ steps.release.outputs.pr }}
       releases_created: ${{ steps.release.outputs.releases_created }}
       source_sha: ${{ steps.release.outputs.sha }}
       release_tag: ${{ steps.release.outputs.tag_name }}
 
     steps:
+      - name: Create release app token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.OPENAI_SDKS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPENAI_SDKS_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+
       - name: Check for a legacy release PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           LEGACY_RELEASE_BRANCH: release-please--branches--main--changes--next
         run: |
           set -euo pipefail
@@ -76,39 +82,10 @@ jobs:
         id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-
-  release_pr_ci:
-    name: Release / run release PR CI
-    needs: automatic_release
-    if: needs.automatic_release.outputs.prs_created == 'true'
-    permissions:
-      actions: write
-    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
-    timeout-minutes: 5
-
-    steps:
-      # Events created by GITHUB_TOKEN do not recursively trigger pull_request workflows.
-      # workflow_dispatch is an explicit exception, so dispatch CI for the generated PR head.
-      - name: Run CI for the release PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ needs.automatic_release.outputs.release_pr }}
-        run: |
-          set -euo pipefail
-
-          release_branch="$(jq -r '.headBranchName // empty' <<< "$RELEASE_PR")"
-          if [[ "$release_branch" != "release-please--branches--main" ]]; then
-            echo "::error::Unexpected release PR branch: $release_branch"
-            exit 1
-          fi
-
-          gh workflow run ci.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref "$release_branch"
 
   retry_release:
     name: Release / select retry source
@@ -396,7 +373,6 @@ jobs:
     name: Release / verify outcome
     needs:
       - automatic_release
-      - release_pr_ci
       - retry_release
       - release
       - runtime_compatibility
@@ -413,8 +389,6 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           AUTOMATIC_RESULT: ${{ needs.automatic_release.result }}
-          AUTOMATIC_PRS_CREATED: ${{ needs.automatic_release.outputs.prs_created }}
-          RELEASE_PR_CI_RESULT: ${{ needs.release_pr_ci.result }}
           RETRY_RESULT: ${{ needs.retry_release.result }}
           RELEASE_RESULT: ${{ needs.release.result }}
           SHOULD_PUBLISH: ${{ needs.release.outputs.should_publish }}
@@ -441,9 +415,6 @@ jobs:
               if [[ "$RETRY_RESULT" != "success" ]]; then
                 fail "Manual retry source selection concluded $RETRY_RESULT"
               fi
-              if [[ "$RELEASE_PR_CI_RESULT" != "skipped" ]]; then
-                fail "Manual retry expected release PR CI to be skipped, got $RELEASE_PR_CI_RESULT"
-              fi
               if [[ "$SHOULD_PUBLISH" != "true" ]]; then
                 fail "Manual retry did not select a release to publish"
               fi
@@ -455,21 +426,6 @@ jobs:
               if [[ "$RETRY_RESULT" != "skipped" ]]; then
                 fail "Automatic release expected retry selection to be skipped, got $RETRY_RESULT"
               fi
-              case "$AUTOMATIC_PRS_CREATED" in
-                true)
-                  if [[ "$RELEASE_PR_CI_RESULT" != "success" ]]; then
-                    fail "Release PR CI concluded $RELEASE_PR_CI_RESULT"
-                  fi
-                  ;;
-                false)
-                  if [[ "$RELEASE_PR_CI_RESULT" != "skipped" ]]; then
-                    fail "No-PR run expected release PR CI to be skipped, got $RELEASE_PR_CI_RESULT"
-                  fi
-                  ;;
-                *)
-                  fail "Invalid prs_created output: $AUTOMATIC_PRS_CREATED"
-                  ;;
-              esac
               ;;
             *)
               fail "Unexpected release event: $EVENT_NAME"
