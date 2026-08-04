@@ -23,6 +23,7 @@ import com.openai.services.blocking.admin.organization.projects.RateLimitService
 import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
 import com.openai.services.blocking.admin.organization.projects.SpendAlertService
+import com.openai.services.blocking.admin.organization.projects.SpendLimitService
 import com.openai.services.blocking.admin.organization.projects.UserService
 import java.util.function.Consumer
 
@@ -57,6 +58,8 @@ interface ProjectService {
     fun roles(): RoleService
 
     fun dataRetention(): DataRetentionService
+
+    fun spendLimit(): SpendLimitService
 
     fun spendAlerts(): SpendAlertService
 
@@ -205,6 +208,8 @@ interface ProjectService {
         fun roles(): RoleService.WithRawResponse
 
         fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun spendLimit(): SpendLimitService.WithRawResponse
 
         fun spendAlerts(): SpendAlertService.WithRawResponse
 

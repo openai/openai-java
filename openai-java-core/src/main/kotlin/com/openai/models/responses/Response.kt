@@ -500,9 +500,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-     *   processed with the corresponding service tier.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     *   request will be processed with the Flex Processing service tier.
+     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
+     *   The response will show `service_tier=priority` regardless of if you specify
+     *   `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -1778,7 +1781,12 @@ private constructor(
          * Replaces the `user` field.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
          */
-        fun promptCacheKey(promptCacheKey: String) = promptCacheKey(JsonField.of(promptCacheKey))
+        fun promptCacheKey(promptCacheKey: String?) =
+            promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
 
         /**
          * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -1876,8 +1884,12 @@ private constructor(
          * address, in order to avoid sending us any identifying information.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
          */
-        fun safetyIdentifier(safetyIdentifier: String) =
-            safetyIdentifier(JsonField.of(safetyIdentifier))
+        fun safetyIdentifier(safetyIdentifier: String?) =
+            safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
 
         /**
          * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -1896,9 +1908,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-         *   processed with the corresponding service tier.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+         *   request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         *   Completions. The response will show `service_tier=priority` regardless of if you
+         *   specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -6990,9 +7005,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-     *   processed with the corresponding service tier.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     *   request will be processed with the Flex Processing service tier.
+     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
+     *   The response will show `service_tier=priority` regardless of if you specify
+     *   `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -7024,6 +7042,8 @@ private constructor(
 
             @JvmField val PRIORITY = of("priority")
 
+            @JvmField val FAST = of("fast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -7034,6 +7054,7 @@ private constructor(
             FLEX,
             SCALE,
             PRIORITY,
+            FAST,
         }
 
         /**
@@ -7051,6 +7072,7 @@ private constructor(
             FLEX,
             SCALE,
             PRIORITY,
+            FAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -7071,6 +7093,7 @@ private constructor(
                 FLEX -> Value.FLEX
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
+                FAST -> Value.FAST
                 else -> Value._UNKNOWN
             }
 
@@ -7090,6 +7113,7 @@ private constructor(
                 FLEX -> Known.FLEX
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
+                FAST -> Known.FAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 

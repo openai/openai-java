@@ -250,7 +250,7 @@ internal class LoggingHttpClientTest {
             loggingClient(
                 fakeHttpClient(),
                 LogLevel.DEBUG,
-                redactedHeaders = setOf("Authorization", "X-Secret"),
+                redactedHeaders = setOf("Authorization", "X-Amz-Security-Token", "X-Secret"),
             )
 
         client
@@ -260,6 +260,7 @@ internal class LoggingHttpClientTest {
                     .baseUrl("https://api.example.com")
                     .addPathSegment("test")
                     .putHeader("Authorization", "Bearer token-123")
+                    .putHeader("X-Amz-Security-Token", "aws-session-token")
                     .putHeader("X-Secret", "secret-value")
                     .putHeader("X-Public", "public-value")
                     .build(),
@@ -273,6 +274,7 @@ internal class LoggingHttpClientTest {
                 """
                 |--> GET https://api.example.com/test
                 |Authorization: ██
+                |X-Amz-Security-Token: ██
                 |X-Public: public-value
                 |X-Secret: ██
                 |--> END GET
@@ -875,7 +877,14 @@ internal class LoggingHttpClientTest {
         level: LogLevel,
         clock: Clock = clockFrom(Instant.parse("1998-04-21T00:00:00Z")),
         redactedHeaders: Set<String> =
-            setOf("authorization", "api-key", "x-api-key", "cookie", "set-cookie"),
+            setOf(
+                "authorization",
+                "api-key",
+                "x-api-key",
+                "x-amz-security-token",
+                "cookie",
+                "set-cookie",
+            ),
     ): LoggingHttpClient =
         LoggingHttpClient.builder()
             .httpClient(httpClient)

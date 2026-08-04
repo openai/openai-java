@@ -736,6 +736,8 @@ internal class BetaResponseItemTest {
                 )
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         val betaResponseItem = BetaResponseItem.ofFunctionCallOutput(functionCallOutput)
@@ -791,6 +793,8 @@ internal class BetaResponseItemTest {
                     )
                     .callerDirect()
                     .createdBy("created_by")
+                    .name("name")
+                    .namespace("namespace")
                     .build()
             )
 

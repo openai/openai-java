@@ -47,8 +47,12 @@ private constructor(
     ) : this(context, effort, generateSummary, mode, summary, mutableMapOf())
 
     /**
-     * Controls which reasoning items are rendered back to the model on later turns. When returned
-     * on a response, this is the effective reasoning context mode used for the response.
+     * Controls which reasoning items are rendered back to the model on later turns. If omitted or
+     * set to `auto`, the model determines the context mode. The `gpt-5.6` model family defaults to
+     * `all_turns`; earlier models default to `current_turn`.
+     *
+     * When returned on a response, this is the effective reasoning context mode used for the
+     * response.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -180,8 +184,11 @@ private constructor(
         }
 
         /**
-         * Controls which reasoning items are rendered back to the model on later turns. When
-         * returned on a response, this is the effective reasoning context mode used for the
+         * Controls which reasoning items are rendered back to the model on later turns. If omitted
+         * or set to `auto`, the model determines the context mode. The `gpt-5.6` model family
+         * defaults to `all_turns`; earlier models default to `current_turn`.
+         *
+         * When returned on a response, this is the effective reasoning context mode used for the
          * response.
          */
         fun context(context: Context?) = context(JsonField.ofNullable(context))
@@ -369,8 +376,12 @@ private constructor(
             (summary.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
-     * Controls which reasoning items are rendered back to the model on later turns. When returned
-     * on a response, this is the effective reasoning context mode used for the response.
+     * Controls which reasoning items are rendered back to the model on later turns. If omitted or
+     * set to `auto`, the model determines the context mode. The `gpt-5.6` model family defaults to
+     * `all_turns`; earlier models default to `current_turn`.
+     *
+     * When returned on a response, this is the effective reasoning context mode used for the
+     * response.
      */
     class Context @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

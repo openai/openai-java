@@ -222,6 +222,8 @@ private constructor(
 
             @JvmField val INVALID_PROMPT = of("invalid_prompt")
 
+            @JvmField val DATA_RESIDENCY_MISMATCH = of("data_residency_mismatch")
+
             @JvmField val BIO_POLICY = of("bio_policy")
 
             @JvmField val VECTOR_STORE_TIMEOUT = of("vector_store_timeout")
@@ -262,6 +264,7 @@ private constructor(
             SERVER_ERROR,
             RATE_LIMIT_EXCEEDED,
             INVALID_PROMPT,
+            DATA_RESIDENCY_MISMATCH,
             BIO_POLICY,
             VECTOR_STORE_TIMEOUT,
             INVALID_IMAGE,
@@ -293,6 +296,7 @@ private constructor(
             SERVER_ERROR,
             RATE_LIMIT_EXCEEDED,
             INVALID_PROMPT,
+            DATA_RESIDENCY_MISMATCH,
             BIO_POLICY,
             VECTOR_STORE_TIMEOUT,
             INVALID_IMAGE,
@@ -325,6 +329,7 @@ private constructor(
                 SERVER_ERROR -> Value.SERVER_ERROR
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
                 INVALID_PROMPT -> Value.INVALID_PROMPT
+                DATA_RESIDENCY_MISMATCH -> Value.DATA_RESIDENCY_MISMATCH
                 BIO_POLICY -> Value.BIO_POLICY
                 VECTOR_STORE_TIMEOUT -> Value.VECTOR_STORE_TIMEOUT
                 INVALID_IMAGE -> Value.INVALID_IMAGE
@@ -358,6 +363,7 @@ private constructor(
                 SERVER_ERROR -> Known.SERVER_ERROR
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
                 INVALID_PROMPT -> Known.INVALID_PROMPT
+                DATA_RESIDENCY_MISMATCH -> Known.DATA_RESIDENCY_MISMATCH
                 BIO_POLICY -> Known.BIO_POLICY
                 VECTOR_STORE_TIMEOUT -> Known.VECTOR_STORE_TIMEOUT
                 INVALID_IMAGE -> Known.INVALID_IMAGE

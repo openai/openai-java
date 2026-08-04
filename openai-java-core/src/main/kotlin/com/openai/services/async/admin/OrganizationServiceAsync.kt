@@ -12,6 +12,7 @@ import com.openai.services.async.admin.organization.InviteServiceAsync
 import com.openai.services.async.admin.organization.ProjectServiceAsync
 import com.openai.services.async.admin.organization.RoleServiceAsync
 import com.openai.services.async.admin.organization.SpendAlertServiceAsync
+import com.openai.services.async.admin.organization.SpendLimitServiceAsync
 import com.openai.services.async.admin.organization.UsageServiceAsync
 import com.openai.services.async.admin.organization.UserServiceAsync
 import java.util.function.Consumer
@@ -46,6 +47,8 @@ interface OrganizationServiceAsync {
     fun roles(): RoleServiceAsync
 
     fun dataRetention(): DataRetentionServiceAsync
+
+    fun spendLimit(): SpendLimitServiceAsync
 
     fun spendAlerts(): SpendAlertServiceAsync
 
@@ -84,6 +87,8 @@ interface OrganizationServiceAsync {
         fun roles(): RoleServiceAsync.WithRawResponse
 
         fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
 
         fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 

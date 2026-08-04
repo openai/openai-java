@@ -24,6 +24,8 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
                 )
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         assertThat(betaResponseFunctionToolCallOutputItem.id()).isEqualTo("id")
@@ -41,6 +43,8 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
         assertThat(betaResponseFunctionToolCallOutputItem.caller())
             .contains(BetaResponseFunctionToolCallOutputItem.Caller.ofDirect())
         assertThat(betaResponseFunctionToolCallOutputItem.createdBy()).contains("created_by")
+        assertThat(betaResponseFunctionToolCallOutputItem.name()).contains("name")
+        assertThat(betaResponseFunctionToolCallOutputItem.namespace()).contains("namespace")
     }
 
     @Test
@@ -59,6 +63,8 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
                 )
                 .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         val roundtrippedBetaResponseFunctionToolCallOutputItem =

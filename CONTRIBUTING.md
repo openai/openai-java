@@ -2,11 +2,14 @@
 
 ## Setting up the environment
 
-This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency management. The SDK requires Java 8, but development requires JDK 21 for the Kotlin toolchain.
+This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency
+management. The framework-neutral SDK requires Java 8, while development requires JDK 21 for the
+Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
+artifact-level runtime, framework, lifecycle, and release rules.
 
 ## Project structure
 
-The SDK consists of three artifacts:
+The SDK's primary artifacts are:
 
 - `openai-java-core`
   - Contains core SDK logic
@@ -18,6 +21,17 @@ The SDK consists of three artifacts:
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
   - Does not have its own logic
+- `openai-java-bedrock`
+  - Adds optional Amazon Bedrock authentication and credential-provider integration
+
+The retired Spring Boot 2 starter is not part of the active build. Its final source remains available
+in the [`v4.45.0` tag](https://github.com/openai/openai-java/tree/v4.45.0/openai-java-spring-boot-starter),
+and its lifecycle history and consumer migration path are documented in the
+[Spring Boot 2 EOL decision](docs/spring-boot-2-eol.md).
+
+`openai-java-runtime-compatibility` is a non-published fixture that exercises representative
+behavior for each supported artifact on an isolated runtime classpath. Its JVM matrix and each
+artifact's eligibility on a given JVM come from `gradle/version-support.properties`.
 
 ## Modifying or adding code
 
@@ -62,14 +76,14 @@ Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally pu
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:2.9.1")
+implementation("com.openai:openai-java:4.50.0")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>2.9.1</version>
+  <version>4.50.0</version>
 </dependency>
 ```
 
@@ -184,7 +198,15 @@ the changes aren't made through the automated pipeline, you may want to make rel
 
 ### Publish with a GitHub workflow
 
-You can release to package managers by using [the `Publish Sonatype` GitHub action](https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml). This requires the GitHub `publish` environment to be configured.
+The [`Create releases` workflow](https://www.github.com/openai/openai-java/actions/workflows/create-releases.yml)
+publishes new releases automatically. To recover a failed Maven Central publication, run that workflow manually from
+`main` with the existing GitHub release tag.
+
+Before retrying, check Central Portal and confirm that the version has no existing deployment. Maven Central releases are
+immutable, so do not upload the same version while an earlier deployment is still processing. The workflow verifies the
+exact release source, runs the runtime compatibility matrix, and waits for every expected artifact to become public.
+
+The workflow requires the GitHub `publish` environment to be configured.
 
 The `publish` environment must have these environment secrets:
 
@@ -220,12 +242,15 @@ After the rotated secrets work, revoke the old Central Portal token and remove a
 
 ### Publish manually
 
-If you need to manually release a package, you can run:
+The GitHub workflow is preferred because it validates the immutable release identity and requires a Central Portal check
+before retrying. If you need to publish directly as a last resort, first confirm in Central Portal that the version has no
+existing deployment, then run:
 
 ```sh
 $ ./gradlew publishAndReleaseToMavenCentral \
     -PmavenCentralUsername="$SONATYPE_USERNAME" \
-    -PmavenCentralPassword="$SONATYPE_PASSWORD"
+    -PmavenCentralPassword="$SONATYPE_PASSWORD" \
+    --no-configuration-cache
 ```
 
 This requires the following environment variables to be set:

@@ -293,9 +293,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-     *   processed with the corresponding service tier.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     *   request will be processed with the Flex Processing service tier.
+     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
+     *   The response will show `service_tier=priority` regardless of if you specify
+     *   `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -1095,7 +1098,11 @@ private constructor(
          * Replaces the `user` field.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
          */
-        fun promptCacheKey(promptCacheKey: String) = apply { body.promptCacheKey(promptCacheKey) }
+        fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
 
         /**
          * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -1202,9 +1209,13 @@ private constructor(
          * address, in order to avoid sending us any identifying information.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
          */
-        fun safetyIdentifier(safetyIdentifier: String) = apply {
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
             body.safetyIdentifier(safetyIdentifier)
         }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
 
         /**
          * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -1223,9 +1234,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-         *   processed with the corresponding service tier.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+         *   request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         *   Completions. The response will show `service_tier=priority` regardless of if you
+         *   specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -2209,9 +2223,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-         *   processed with the corresponding service tier.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+         *   request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         *   Completions. The response will show `service_tier=priority` regardless of if you
+         *   specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -3124,8 +3141,12 @@ private constructor(
              * rates. Replaces the `user` field.
              * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
              */
-            fun promptCacheKey(promptCacheKey: String) =
-                promptCacheKey(JsonField.of(promptCacheKey))
+            fun promptCacheKey(promptCacheKey: String?) =
+                promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+            /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+            fun promptCacheKey(promptCacheKey: Optional<String>) =
+                promptCacheKey(promptCacheKey.getOrNull())
 
             /**
              * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -3232,8 +3253,14 @@ private constructor(
              * information.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
              */
-            fun safetyIdentifier(safetyIdentifier: String) =
-                safetyIdentifier(JsonField.of(safetyIdentifier))
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
 
             /**
              * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -3253,9 +3280,12 @@ private constructor(
              *   use 'default'.
              * - If set to 'default', then the request will be processed with the standard pricing
              *   and performance for the selected model.
-             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-             *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-             *   processed with the corresponding service tier.
+             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then
+             *   the request will be processed with the Flex Processing service tier.
+             * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include
+             *   the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+             *   Completions. The response will show `service_tier=priority` regardless of if you
+             *   specify `service_tier=fast` or `priority` in your request.
              * - When not set, the default behavior is 'auto'.
              *
              *   When the `service_tier` parameter is set, the response body will include the
@@ -4790,6 +4820,8 @@ private constructor(
 
             @JvmField val GPT_5_6_LUNA = of("gpt-5.6-luna")
 
+            @JvmField val GPT_5_5 = of("gpt-5.5")
+
             @JvmField val GPT_5_4 = of("gpt-5.4")
 
             @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
@@ -4984,6 +5016,7 @@ private constructor(
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
+            GPT_5_5,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -5091,6 +5124,7 @@ private constructor(
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
+            GPT_5_5,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -5199,6 +5233,7 @@ private constructor(
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
+                GPT_5_5 -> Value.GPT_5_5
                 GPT_5_4 -> Value.GPT_5_4
                 GPT_5_4_MINI -> Value.GPT_5_4_MINI
                 GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -5308,6 +5343,7 @@ private constructor(
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
+                GPT_5_5 -> Known.GPT_5_5
                 GPT_5_4 -> Known.GPT_5_4
                 GPT_5_4_MINI -> Known.GPT_5_4_MINI
                 GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -7407,8 +7443,11 @@ private constructor(
         ) : this(context, effort, generateSummary, mode, summary, mutableMapOf())
 
         /**
-         * Controls which reasoning items are rendered back to the model on later turns. When
-         * returned on a response, this is the effective reasoning context mode used for the
+         * Controls which reasoning items are rendered back to the model on later turns. If omitted
+         * or set to `auto`, the model determines the context mode. The `gpt-5.6` model family
+         * defaults to `all_turns`; earlier models default to `current_turn`.
+         *
+         * When returned on a response, this is the effective reasoning context mode used for the
          * response.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -7542,9 +7581,12 @@ private constructor(
             }
 
             /**
-             * Controls which reasoning items are rendered back to the model on later turns. When
-             * returned on a response, this is the effective reasoning context mode used for the
-             * response.
+             * Controls which reasoning items are rendered back to the model on later turns. If
+             * omitted or set to `auto`, the model determines the context mode. The `gpt-5.6` model
+             * family defaults to `all_turns`; earlier models default to `current_turn`.
+             *
+             * When returned on a response, this is the effective reasoning context mode used for
+             * the response.
              */
             fun context(context: Context?) = context(JsonField.ofNullable(context))
 
@@ -7738,8 +7780,11 @@ private constructor(
                 (summary.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
-         * Controls which reasoning items are rendered back to the model on later turns. When
-         * returned on a response, this is the effective reasoning context mode used for the
+         * Controls which reasoning items are rendered back to the model on later turns. If omitted
+         * or set to `auto`, the model determines the context mode. The `gpt-5.6` model family
+         * defaults to `all_turns`; earlier models default to `current_turn`.
+         *
+         * When returned on a response, this is the effective reasoning context mode used for the
          * response.
          */
         class Context @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -8545,9 +8590,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-     *   processed with the corresponding service tier.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     *   request will be processed with the Flex Processing service tier.
+     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
+     *   The response will show `service_tier=priority` regardless of if you specify
+     *   `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -8579,6 +8627,8 @@ private constructor(
 
             @JvmField val PRIORITY = of("priority")
 
+            @JvmField val FAST = of("fast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -8589,6 +8639,7 @@ private constructor(
             FLEX,
             SCALE,
             PRIORITY,
+            FAST,
         }
 
         /**
@@ -8606,6 +8657,7 @@ private constructor(
             FLEX,
             SCALE,
             PRIORITY,
+            FAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -8626,6 +8678,7 @@ private constructor(
                 FLEX -> Value.FLEX
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
+                FAST -> Value.FAST
                 else -> Value._UNKNOWN
             }
 
@@ -8645,6 +8698,7 @@ private constructor(
                 FLEX -> Known.FLEX
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
+                FAST -> Known.FAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
