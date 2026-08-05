@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class TranscriptionCreateResponseTest {
 
@@ -164,14 +165,16 @@ internal class TranscriptionCreateResponseTest {
         assertThat(roundtrippedTranscriptionCreateResponse).isEqualTo(transcriptionCreateResponse)
     }
 
-    @Test
-    fun deserializeDiarizedWithEmptySegments() {
+    @ParameterizedTest
+    @ValueSource(strings = ["", "\"task\": null,", "\"task\": \"transcribe\","])
+    fun deserializeDiarizedWithEmptySegments(task: String) {
         val transcriptionCreateResponse =
             jsonMapper()
                 .readValue(
                     """
                     {
                       "text": "",
+                      $task
                       "segments": []
                     }
                     """

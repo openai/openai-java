@@ -11,6 +11,12 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionDiarizedTest {
 
     @Test
+    fun durationGetterKeepsItsBinaryCompatibleReturnType() {
+        assertThat(TranscriptionDiarized::class.java.getMethod("duration").returnType)
+            .isEqualTo(Double::class.javaPrimitiveType)
+    }
+
+    @Test
     fun create() {
         val transcriptionDiarized =
             TranscriptionDiarized.builder()
@@ -39,7 +45,7 @@ internal class TranscriptionDiarizedTest {
                 )
                 .build()
 
-        assertThat(transcriptionDiarized.duration()).isEmpty
+        assertThat(transcriptionDiarized.durationOptional()).isEmpty
         assertThat(transcriptionDiarized.segments())
             .containsExactly(
                 TranscriptionDiarizedSegment.builder()
@@ -93,7 +99,7 @@ internal class TranscriptionDiarizedTest {
                     jacksonTypeRef<TranscriptionDiarized>(),
                 )
 
-        assertThat(transcriptionDiarized.duration()).isEmpty
+        assertThat(transcriptionDiarized.durationOptional()).isEmpty
         assertThat(transcriptionDiarized.isValid()).isTrue()
     }
 
@@ -146,6 +152,36 @@ internal class TranscriptionDiarizedTest {
     }
 
     @Test
+    fun acceptsMissingAndNullTask() {
+        val json =
+            """
+            {
+              "text": "text",
+              %s
+              "segments": []
+            }
+            """
+                .trimIndent()
+
+        val missingTask =
+            jsonMapper().readValue(json.format(""), jacksonTypeRef<TranscriptionDiarized>())
+        val nullTask =
+            jsonMapper()
+                .readValue(json.format("\"task\": null,"), jacksonTypeRef<TranscriptionDiarized>())
+        val explicitTask =
+            jsonMapper()
+                .readValue(
+                    json.format("\"task\": \"transcribe\","),
+                    jacksonTypeRef<TranscriptionDiarized>(),
+                )
+
+        assertThat(missingTask.isValid()).isTrue()
+        assertThat(nullTask.isValid()).isTrue()
+        assertThat(missingTask.validity()).isEqualTo(explicitTask.validity())
+        assertThat(nullTask.validity()).isEqualTo(explicitTask.validity())
+    }
+
+    @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val transcriptionDiarized =
@@ -183,6 +219,7 @@ internal class TranscriptionDiarizedTest {
             )
 
         assertThat(roundtrippedTranscriptionDiarized).isEqualTo(transcriptionDiarized)
-        assertThat(roundtrippedTranscriptionDiarized.duration()).contains(0.0)
+        assertThat(roundtrippedTranscriptionDiarized.duration()).isEqualTo(0.0)
+        assertThat(roundtrippedTranscriptionDiarized.durationOptional()).contains(0.0)
     }
 }

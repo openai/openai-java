@@ -58,10 +58,18 @@ private constructor(
     /**
      * Duration of the input audio in seconds.
      *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun duration(): Double = duration.getRequired("duration")
+
+    /**
+     * Returns the duration of the input audio when provided by the server.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun duration(): Optional<Double> = duration.getOptional("duration")
+    fun durationOptional(): Optional<Double> = duration.getOptional("duration")
 
     /**
      * Segments of the transcript annotated with timestamps and speaker labels.
@@ -335,10 +343,10 @@ private constructor(
             return@apply
         }
 
-        duration()
+        durationOptional()
         segments().forEach { it.validate() }
         _task().let {
-            if (it != JsonMissing.of() && it != JsonValue.from("transcribe")) {
+            if (!it.isMissing() && !it.isNull() && it != JsonValue.from("transcribe")) {
                 throw OpenAIInvalidDataException("'task' is invalid, received $it")
             }
         }
@@ -365,7 +373,9 @@ private constructor(
         (if (duration.asKnown().isPresent) 1 else 0) +
             (if (segments.asKnown().isPresent) 1 else 0) +
             (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            task.let { if (it == JsonValue.from("transcribe")) 1 else 0 } +
+            task.let {
+                if (it.isMissing() || it.isNull() || it == JsonValue.from("transcribe")) 1 else 0
+            } +
             (if (text.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
 
