@@ -177,8 +177,8 @@ internal class TranscriptionDiarizedTest {
 
         assertThat(missingTask.isValid()).isTrue()
         assertThat(nullTask.isValid()).isTrue()
-        assertThat(missingTask.validity()).isEqualTo(explicitTask.validity())
-        assertThat(nullTask.validity()).isEqualTo(explicitTask.validity())
+        assertThat(missingTask.validity()).isEqualTo(nullTask.validity())
+        assertThat(explicitTask.validity()).isEqualTo(missingTask.validity() + 1)
     }
 
     @Test

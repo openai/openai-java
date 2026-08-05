@@ -58,6 +58,9 @@ private constructor(
     /**
      * Duration of the input audio in seconds.
      *
+     * This accessor preserves the existing behavior and throws when the field is missing or null.
+     * Use [durationOptional] when the server may omit the field.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -345,6 +348,7 @@ private constructor(
 
         durationOptional()
         segments().forEach { it.validate() }
+        // The API may omit task or return null; when present, it must be "transcribe".
         _task().let {
             if (!it.isMissing() && !it.isNull() && it != JsonValue.from("transcribe")) {
                 throw OpenAIInvalidDataException("'task' is invalid, received $it")
@@ -373,9 +377,7 @@ private constructor(
         (if (duration.asKnown().isPresent) 1 else 0) +
             (if (segments.asKnown().isPresent) 1 else 0) +
             (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            task.let {
-                if (it.isMissing() || it.isNull() || it == JsonValue.from("transcribe")) 1 else 0
-            } +
+            task.let { if (it == JsonValue.from("transcribe")) 1 else 0 } +
             (if (text.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
 

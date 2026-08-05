@@ -186,6 +186,23 @@ internal class TranscriptionCreateResponseTest {
     }
 
     @Test
+    fun deserializePlainTranscriptionWithoutDiarizedFields() {
+        val transcriptionCreateResponse =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "text": "hello"
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionCreateResponse>(),
+                )
+
+        assertThat(transcriptionCreateResponse.isTranscription()).isTrue()
+    }
+
+    @Test
     fun deserializeVerboseWithEmptySegments() {
         val transcriptionCreateResponse =
             jsonMapper()
