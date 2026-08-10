@@ -305,6 +305,119 @@ internal class RetryingHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun execute_withNegativeRetryAfterHeader(async: Boolean) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("negative-retry-after")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(serviceUnavailable().withHeader("Retry-After", "-1"))
+                .willSetStateTo("RETRY")
+        )
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("negative-retry-after")
+                .whenScenarioStateIs("RETRY")
+                .willReturn(ok())
+        )
+        val sleeper = RecordingSleeper()
+        val retryingClient = retryingHttpClientBuilder(sleeper).maxRetries(1).build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        verify(2, postRequestedFor(urlPathEqualTo("/something")))
+        assertThat(sleeper.durations).containsExactly(Duration.ZERO)
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withNegativeRetryAfterMsHeader(async: Boolean) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("negative-retry-after-ms")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(serviceUnavailable().withHeader("Retry-After-Ms", "-1"))
+                .willSetStateTo("RETRY")
+        )
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("negative-retry-after-ms")
+                .whenScenarioStateIs("RETRY")
+                .willReturn(ok())
+        )
+        val sleeper = RecordingSleeper()
+        val retryingClient = retryingHttpClientBuilder(sleeper).maxRetries(1).build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        verify(2, postRequestedFor(urlPathEqualTo("/something")))
+        assertThat(sleeper.durations).containsExactly(Duration.ZERO)
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withPastRetryAfterDate(async: Boolean) {
+        val retryAfterDate = "Wed, 21 Oct 2015 07:28:00 GMT"
+        val clock =
+            Clock.fixed(
+                OffsetDateTime.parse(retryAfterDate, DateTimeFormatter.RFC_1123_DATE_TIME)
+                    .plusSeconds(1)
+                    .toInstant(),
+                ZoneOffset.UTC,
+            )
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("past-retry-after-date")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(serviceUnavailable().withHeader("Retry-After", retryAfterDate))
+                .willSetStateTo("RETRY")
+        )
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("past-retry-after-date")
+                .whenScenarioStateIs("RETRY")
+                .willReturn(ok())
+        )
+        val sleeper = RecordingSleeper()
+        val retryingClient = retryingHttpClientBuilder(sleeper, clock).maxRetries(1).build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        verify(2, postRequestedFor(urlPathEqualTo("/something")))
+        assertThat(sleeper.durations).containsExactly(Duration.ZERO)
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun execute_withRetryableException(async: Boolean) {
         stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
 
