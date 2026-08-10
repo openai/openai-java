@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -14,7 +14,7 @@ internal class BetaNamespaceToolTest {
     fun create() {
         val betaNamespaceTool =
             BetaNamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     BetaNamespaceTool.Tool.Function.builder()
@@ -33,7 +33,7 @@ internal class BetaNamespaceToolTest {
                 )
                 .build()
 
-        assertThat(betaNamespaceTool.description()).isEqualTo("x")
+        assertThat(betaNamespaceTool.description()).isEqualTo("description")
         assertThat(betaNamespaceTool.name()).isEqualTo("x")
         assertThat(betaNamespaceTool.tools())
             .containsExactly(
@@ -60,7 +60,7 @@ internal class BetaNamespaceToolTest {
         val jsonMapper = jsonMapper()
         val betaNamespaceTool =
             BetaNamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     BetaNamespaceTool.Tool.Function.builder()
