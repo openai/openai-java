@@ -7,12 +7,15 @@ import com.openai.auth.SubjectTokenProvider
 import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
 import com.openai.azure.credential.AzureApiKeyCredential
+import com.openai.client.OpenAIClientAsyncImpl
+import com.openai.client.OpenAIClientImpl
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutorService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
@@ -208,6 +212,93 @@ internal class ClientOptionsTest {
 
         assertThat(clientOptions.headers.values("OpenAI-Organization"))
             .containsExactly("another My Organization")
+    }
+
+    @Test
+    fun toBuilder_closingDerivedOptionsDoesNotCloseSharedResources() {
+        val executor = mock<ExecutorService>()
+        val sleeper = mock<Sleeper>()
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .streamHandlerExecutor(executor)
+                .sleeper(sleeper)
+                .apiKey("My API Key")
+                .build()
+        val derived = original.toBuilder().baseUrl("https://example.test").build()
+
+        derived.close()
+
+        verify(httpClient, never()).close()
+        verify(executor, never()).shutdown()
+        verify(sleeper, never()).close()
+
+        original.close()
+
+        verify(httpClient).close()
+        verify(executor).shutdown()
+        verify(sleeper).close()
+    }
+
+    @Test
+    fun toBuilder_closingOriginalOptionsDoesNotCloseResourcesUsedByDerivedOptions() {
+        val executor = mock<ExecutorService>()
+        val sleeper = mock<Sleeper>()
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .streamHandlerExecutor(executor)
+                .sleeper(sleeper)
+                .apiKey("My API Key")
+                .build()
+        val derived = original.toBuilder().build()
+
+        original.close()
+
+        verify(httpClient, never()).close()
+        verify(executor, never()).shutdown()
+        verify(sleeper, never()).close()
+
+        derived.close()
+        derived.close()
+
+        verify(httpClient, times(1)).close()
+        verify(executor, times(1)).shutdown()
+        verify(sleeper, times(1)).close()
+    }
+
+    @Test
+    fun toBuilder_replacingHttpClientOnlyClosesReplacement() {
+        val replacement = mock<HttpClient>()
+        val original = ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
+        val derived = original.toBuilder().httpClient(replacement).build()
+
+        derived.close()
+
+        verify(replacement).close()
+        verify(httpClient, never()).close()
+
+        original.close()
+
+        verify(httpClient).close()
+    }
+
+    @Test
+    fun syncClientCloseClosesInternalUserAgentOptions() {
+        val options = ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
+
+        OpenAIClientImpl(options).close()
+
+        verify(httpClient).close()
+    }
+
+    @Test
+    fun asyncClientCloseClosesInternalUserAgentOptions() {
+        val options = ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
+
+        OpenAIClientAsyncImpl(options).close()
+
+        verify(httpClient).close()
     }
 
     @Test
