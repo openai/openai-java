@@ -1343,12 +1343,12 @@ import java.util.concurrent.CompletableFuture;
 
 CompletableFuture<JobListPageAsync> pageFuture = client.async().fineTuning().jobs().list();
 
-pageFuture.thenRun(page -> page.autoPager().subscribe(job -> {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(job -> {
     System.out.println(job);
 }));
 
 // If you need to handle errors or completion of the stream
-pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
     public void onNext(FineTuningJob job) {
         System.out.println(job);
@@ -1366,7 +1366,7 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Ha
 }));
 
 // Or use futures
-pageFuture.thenRun(page -> page.autoPager()
+pageFuture.thenAccept(page -> page.autoPager()
     .subscribe(job -> {
         System.out.println(job);
     })
