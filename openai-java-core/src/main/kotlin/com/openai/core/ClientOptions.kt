@@ -200,7 +200,9 @@ private constructor(
         if (checkJacksonVersionCompatibility) {
             checkJacksonVersionCompatibility()
         }
-        closeWhenPhantomReachable(this, closeAction)
+        // Async request futures retain the HTTP client chain, not this options object. Observe the
+        // chain so phantom cleanup cannot close resources while an in-flight request still uses it.
+        closeWhenPhantomReachable(httpClient, closeAction)
     }
 
     /**

@@ -10,21 +10,27 @@ import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.client.OpenAIClientAsyncImpl
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAuthenticator
+import com.openai.core.http.HttpResponse
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
+import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExtendWith(MockitoExtension::class)
 internal class ClientOptionsTest {
@@ -338,6 +344,56 @@ internal class ClientOptionsTest {
         verify(authenticator, never()).close()
         // This exists so that `clientOptions` is still reachable.
         assertThat(clientOptions).isEqualTo(clientOptions)
+    }
+
+    @Test
+    fun inFlightAsyncRequest_keepsResourcesOpenWhenClientOptionsIsGarbageCollected() {
+        val pendingResponse = CompletableFuture<HttpResponse>()
+        val sleeper = mock<Sleeper>()
+        val executor = mock<ExecutorService>()
+        whenever(
+                httpClient.executeAsync(
+                    any<HttpRequest>(),
+                    any(),
+                )
+            )
+            .thenReturn(pendingResponse)
+
+        val (requestFuture, optionsReference) =
+            startPendingAsyncRequest(httpClient, sleeper, executor)
+
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (System.nanoTime() < deadline && optionsReference.get() != null) {
+            System.gc()
+            Thread.sleep(10)
+        }
+
+        assertThat(optionsReference.get()).isNull()
+        verify(httpClient, never()).close()
+        verify(sleeper, never()).close()
+        verify(executor, never()).shutdown()
+
+        requestFuture.cancel(false)
+    }
+
+    private fun startPendingAsyncRequest(
+        httpClient: HttpClient,
+        sleeper: Sleeper,
+        executor: ExecutorService,
+    ): Pair<CompletableFuture<HttpResponse>, WeakReference<ClientOptions>> {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .sleeper(sleeper)
+                .streamHandlerExecutor(executor)
+                .build()
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://example.com")
+                .build()
+        val future = clientOptions.httpClient.executeAsync(request)
+        return future to WeakReference(clientOptions)
     }
 
     @Test
