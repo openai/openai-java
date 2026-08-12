@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.models.beta.realtime.sessions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef

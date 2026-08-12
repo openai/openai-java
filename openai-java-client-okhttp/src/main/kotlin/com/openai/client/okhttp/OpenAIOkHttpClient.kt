@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
