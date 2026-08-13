@@ -21,12 +21,14 @@ internal class BetaResponsesServerEventTest {
                 .delta("delta")
                 .sequenceNumber(0L)
                 .agent(BetaResponseAudioDeltaEvent.Agent.builder().agentName("agent_name").build())
+                .putAdditionalProperty("stream_id", JsonValue.from("stream_id"))
                 .build()
 
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseAudioDelta(responseAudioDelta)
 
         assertThat(betaResponsesServerEvent.responseAudioDelta()).contains(responseAudioDelta)
+        assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
         assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
@@ -8337,6 +8339,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).contains(responseInjectCreated)
+        assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
 
@@ -8479,6 +8482,37 @@ internal class BetaResponsesServerEventTest {
             )
 
         assertThat(roundtrippedBetaResponsesServerEvent).isEqualTo(betaResponsesServerEvent)
+    }
+
+    @Test
+    fun websocketStreamId() {
+        val betaResponsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":"stream_id"}""",
+                    jacksonTypeRef<BetaResponsesServerEvent>(),
+                )
+
+        assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
+        assertThat(betaResponsesServerEvent.responseAudioDelta()).isPresent
+        assertThat(betaResponsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
+        assertThat(jsonMapper().writeValueAsString(betaResponsesServerEvent)).contains("stream_id")
+        assertThat(betaResponsesServerEvent.validate()).isSameAs(betaResponsesServerEvent)
+        assertThat(betaResponsesServerEvent.isValid()).isTrue()
+    }
+
+    @Test
+    fun websocketStreamIdRejectsMalformedValue() {
+        val betaResponsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
+                    jacksonTypeRef<BetaResponsesServerEvent>(),
+                )
+
+        assertThrows<OpenAIInvalidDataException> { betaResponsesServerEvent.streamId() }
+        assertThrows<OpenAIInvalidDataException> { betaResponsesServerEvent.validate() }
+        assertThat(betaResponsesServerEvent.isValid()).isFalse()
     }
 
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {

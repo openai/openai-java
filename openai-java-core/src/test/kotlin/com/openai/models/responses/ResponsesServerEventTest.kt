@@ -21,11 +21,16 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseAudioDelta() {
         val responseAudioDelta =
-            ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
+            ResponseAudioDeltaEvent.builder()
+                .delta("delta")
+                .sequenceNumber(0L)
+                .putAdditionalProperty("stream_id", JsonValue.from("stream_id"))
+                .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseAudioDelta(responseAudioDelta)
 
         assertThat(responsesServerEvent.responseAudioDelta()).contains(responseAudioDelta)
+        assertThat(responsesServerEvent.streamId()).contains("stream_id")
         assertThat(responsesServerEvent.responseAudioDone()).isEmpty
         assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
         assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
@@ -7571,6 +7576,37 @@ internal class ResponsesServerEventTest {
             )
 
         assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun websocketStreamId() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":"stream_id"}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThat(responsesServerEvent.streamId()).contains("stream_id")
+        assertThat(responsesServerEvent.responseAudioDelta()).isPresent
+        assertThat(responsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
+        assertThat(jsonMapper().writeValueAsString(responsesServerEvent)).contains("stream_id")
+        assertThat(responsesServerEvent.validate()).isSameAs(responsesServerEvent)
+        assertThat(responsesServerEvent.isValid()).isTrue()
+    }
+
+    @Test
+    fun websocketStreamIdRejectsMalformedValue() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.streamId() }
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.validate() }
+        assertThat(responsesServerEvent.isValid()).isFalse()
     }
 
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
