@@ -8337,6 +8337,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).contains(responseInjectCreated)
+        assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
 

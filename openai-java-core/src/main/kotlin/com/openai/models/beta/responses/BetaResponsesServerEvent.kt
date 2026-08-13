@@ -13,6 +13,7 @@ import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
 import com.openai.core.JsonValue
 import com.openai.core.getOrThrow
+import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
@@ -338,7 +339,11 @@ private constructor(
      * `response.create` event supplied a `stream_id`.
      */
     fun streamId(): Optional<String> =
-        _json?.asObject()?.getOrNull()?.get("stream_id")?.asString() ?: Optional.empty()
+        (_json ?: JsonValue.fromJsonNode(jsonMapper().valueToTree<JsonNode>(this)))
+            .asObject()
+            .getOrNull()
+            ?.get("stream_id")
+            ?.asString() ?: Optional.empty()
 
     fun isResponseAudioDelta(): Boolean = responseAudioDelta != null
 

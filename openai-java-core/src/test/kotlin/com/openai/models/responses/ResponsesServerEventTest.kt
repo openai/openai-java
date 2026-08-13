@@ -21,11 +21,16 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseAudioDelta() {
         val responseAudioDelta =
-            ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
+            ResponseAudioDeltaEvent.builder()
+                .delta("delta")
+                .sequenceNumber(0L)
+                .putAdditionalProperty("stream_id", JsonValue.from("stream_id"))
+                .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseAudioDelta(responseAudioDelta)
 
         assertThat(responsesServerEvent.responseAudioDelta()).contains(responseAudioDelta)
+        assertThat(responsesServerEvent.streamId()).contains("stream_id")
         assertThat(responsesServerEvent.responseAudioDone()).isEmpty
         assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
         assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
