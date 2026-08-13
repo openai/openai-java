@@ -28,6 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create an extension of a completed video. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoExtendParams
 private constructor(
     private val body: Body,

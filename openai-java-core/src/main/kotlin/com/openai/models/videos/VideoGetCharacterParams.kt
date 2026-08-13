@@ -10,6 +10,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Fetch a character. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoGetCharacterParams
 private constructor(
     private val characterId: String?,
