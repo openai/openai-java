@@ -1297,6 +1297,7 @@ private constructor(
                 }
             }
         )
+        streamId()
         validated = true
     }
 

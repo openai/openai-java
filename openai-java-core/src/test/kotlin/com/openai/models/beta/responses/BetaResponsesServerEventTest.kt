@@ -8497,6 +8497,8 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseAudioDelta()).isPresent
         assertThat(betaResponsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
         assertThat(jsonMapper().writeValueAsString(betaResponsesServerEvent)).contains("stream_id")
+        assertThat(betaResponsesServerEvent.validate()).isSameAs(betaResponsesServerEvent)
+        assertThat(betaResponsesServerEvent.isValid()).isTrue()
     }
 
     @Test
@@ -8509,6 +8511,8 @@ internal class BetaResponsesServerEventTest {
                 )
 
         assertThrows<OpenAIInvalidDataException> { betaResponsesServerEvent.streamId() }
+        assertThrows<OpenAIInvalidDataException> { betaResponsesServerEvent.validate() }
+        assertThat(betaResponsesServerEvent.isValid()).isFalse()
     }
 
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
