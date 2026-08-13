@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Emitted when there is a partial audio response. */
+/** Event emitted while a response is streamed. */
 @JsonDeserialize(using = BetaResponseStreamEvent.Deserializer::class)
 @JsonSerialize(using = BetaResponseStreamEvent.Serializer::class)
 class BetaResponseStreamEvent
