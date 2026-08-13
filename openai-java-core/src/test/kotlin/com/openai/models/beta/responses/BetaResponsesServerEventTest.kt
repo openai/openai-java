@@ -21,12 +21,14 @@ internal class BetaResponsesServerEventTest {
                 .delta("delta")
                 .sequenceNumber(0L)
                 .agent(BetaResponseAudioDeltaEvent.Agent.builder().agentName("agent_name").build())
+                .putAdditionalProperty("stream_id", JsonValue.from("stream_id"))
                 .build()
 
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseAudioDelta(responseAudioDelta)
 
         assertThat(betaResponsesServerEvent.responseAudioDelta()).contains(responseAudioDelta)
+        assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
         assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
@@ -8495,6 +8497,18 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseAudioDelta()).isPresent
         assertThat(betaResponsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
         assertThat(jsonMapper().writeValueAsString(betaResponsesServerEvent)).contains("stream_id")
+    }
+
+    @Test
+    fun websocketStreamIdRejectsMalformedValue() {
+        val betaResponsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
+                    jacksonTypeRef<BetaResponsesServerEvent>(),
+                )
+
+        assertThrows<OpenAIInvalidDataException> { betaResponsesServerEvent.streamId() }
     }
 
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {

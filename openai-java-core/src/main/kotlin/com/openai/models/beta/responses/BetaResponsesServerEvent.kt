@@ -11,13 +11,20 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.getOrThrow
-import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
+
+private fun Map<String, JsonValue>.streamId(): JsonField<String> =
+    get("stream_id") ?: JsonMissing.of()
+
+private fun JsonField<String>.asStreamId(): Optional<String> =
+    if (isMissing() || isNull()) Optional.empty() else Optional.of(asStringOrThrow())
 
 /** Server events emitted by the Responses WebSocket server. */
 @JsonDeserialize(using = BetaResponsesServerEvent.Deserializer::class)
@@ -338,12 +345,112 @@ private constructor(
      * The WebSocket lane that emitted this event. This field is present when the originating
      * `response.create` event supplied a `stream_id`.
      */
-    fun streamId(): Optional<String> =
-        (_json ?: JsonValue.fromJsonNode(jsonMapper().valueToTree<JsonNode>(this)))
-            .asObject()
-            .getOrNull()
-            ?.get("stream_id")
-            ?.asString() ?: Optional.empty()
+    fun streamId(): Optional<String> = streamIdField().asStreamId()
+
+    private fun streamIdField(): JsonField<String> =
+        _json?.asObject()?.getOrNull()?.get("stream_id")
+            ?: when {
+                responseAudioDelta != null -> responseAudioDelta._additionalProperties().streamId()
+                responseAudioDone != null -> responseAudioDone._additionalProperties().streamId()
+                responseAudioTranscriptDelta != null ->
+                    responseAudioTranscriptDelta._additionalProperties().streamId()
+                responseAudioTranscriptDone != null ->
+                    responseAudioTranscriptDone._additionalProperties().streamId()
+                responseCodeInterpreterCallCodeDelta != null ->
+                    responseCodeInterpreterCallCodeDelta._additionalProperties().streamId()
+                responseCodeInterpreterCallCodeDone != null ->
+                    responseCodeInterpreterCallCodeDone._additionalProperties().streamId()
+                responseCodeInterpreterCallCompleted != null ->
+                    responseCodeInterpreterCallCompleted._additionalProperties().streamId()
+                responseCodeInterpreterCallInProgress != null ->
+                    responseCodeInterpreterCallInProgress._additionalProperties().streamId()
+                responseCodeInterpreterCallInterpreting != null ->
+                    responseCodeInterpreterCallInterpreting._additionalProperties().streamId()
+                responseCompleted != null -> responseCompleted._additionalProperties().streamId()
+                responseContentPartAdded != null ->
+                    responseContentPartAdded._additionalProperties().streamId()
+                responseContentPartDone != null ->
+                    responseContentPartDone._additionalProperties().streamId()
+                responseCreated != null -> responseCreated._additionalProperties().streamId()
+                error != null -> error._additionalProperties().streamId()
+                responseFileSearchCallCompleted != null ->
+                    responseFileSearchCallCompleted._additionalProperties().streamId()
+                responseFileSearchCallInProgress != null ->
+                    responseFileSearchCallInProgress._additionalProperties().streamId()
+                responseFileSearchCallSearching != null ->
+                    responseFileSearchCallSearching._additionalProperties().streamId()
+                responseFunctionCallArgumentsDelta != null ->
+                    responseFunctionCallArgumentsDelta._additionalProperties().streamId()
+                responseFunctionCallArgumentsDone != null ->
+                    responseFunctionCallArgumentsDone._additionalProperties().streamId()
+                responseInProgress != null -> responseInProgress._additionalProperties().streamId()
+                responseFailed != null -> responseFailed._additionalProperties().streamId()
+                responseIncomplete != null -> responseIncomplete._additionalProperties().streamId()
+                responseOutputItemAdded != null ->
+                    responseOutputItemAdded._additionalProperties().streamId()
+                responseOutputItemDone != null ->
+                    responseOutputItemDone._additionalProperties().streamId()
+                responseReasoningSummaryPartAdded != null ->
+                    responseReasoningSummaryPartAdded._additionalProperties().streamId()
+                responseReasoningSummaryPartDone != null ->
+                    responseReasoningSummaryPartDone._additionalProperties().streamId()
+                responseReasoningSummaryTextDelta != null ->
+                    responseReasoningSummaryTextDelta._additionalProperties().streamId()
+                responseReasoningSummaryTextDone != null ->
+                    responseReasoningSummaryTextDone._additionalProperties().streamId()
+                responseReasoningTextDelta != null ->
+                    responseReasoningTextDelta._additionalProperties().streamId()
+                responseReasoningTextDone != null ->
+                    responseReasoningTextDone._additionalProperties().streamId()
+                responseRefusalDelta != null ->
+                    responseRefusalDelta._additionalProperties().streamId()
+                responseRefusalDone != null ->
+                    responseRefusalDone._additionalProperties().streamId()
+                responseOutputTextDelta != null ->
+                    responseOutputTextDelta._additionalProperties().streamId()
+                responseOutputTextDone != null ->
+                    responseOutputTextDone._additionalProperties().streamId()
+                responseWebSearchCallCompleted != null ->
+                    responseWebSearchCallCompleted._additionalProperties().streamId()
+                responseWebSearchCallInProgress != null ->
+                    responseWebSearchCallInProgress._additionalProperties().streamId()
+                responseWebSearchCallSearching != null ->
+                    responseWebSearchCallSearching._additionalProperties().streamId()
+                responseImageGenerationCallCompleted != null ->
+                    responseImageGenerationCallCompleted._additionalProperties().streamId()
+                responseImageGenerationCallGenerating != null ->
+                    responseImageGenerationCallGenerating._additionalProperties().streamId()
+                responseImageGenerationCallInProgress != null ->
+                    responseImageGenerationCallInProgress._additionalProperties().streamId()
+                responseImageGenerationCallPartialImage != null ->
+                    responseImageGenerationCallPartialImage._additionalProperties().streamId()
+                responseMcpCallArgumentsDelta != null ->
+                    responseMcpCallArgumentsDelta._additionalProperties().streamId()
+                responseMcpCallArgumentsDone != null ->
+                    responseMcpCallArgumentsDone._additionalProperties().streamId()
+                responseMcpCallCompleted != null ->
+                    responseMcpCallCompleted._additionalProperties().streamId()
+                responseMcpCallFailed != null ->
+                    responseMcpCallFailed._additionalProperties().streamId()
+                responseMcpCallInProgress != null ->
+                    responseMcpCallInProgress._additionalProperties().streamId()
+                responseMcpListToolsCompleted != null ->
+                    responseMcpListToolsCompleted._additionalProperties().streamId()
+                responseMcpListToolsFailed != null ->
+                    responseMcpListToolsFailed._additionalProperties().streamId()
+                responseMcpListToolsInProgress != null ->
+                    responseMcpListToolsInProgress._additionalProperties().streamId()
+                responseOutputTextAnnotationAdded != null ->
+                    responseOutputTextAnnotationAdded._additionalProperties().streamId()
+                responseQueued != null -> responseQueued._additionalProperties().streamId()
+                responseCustomToolCallInputDelta != null ->
+                    responseCustomToolCallInputDelta._additionalProperties().streamId()
+                responseCustomToolCallInputDone != null ->
+                    responseCustomToolCallInputDone._additionalProperties().streamId()
+                responseInjectCreated != null -> responseInjectCreated._streamId()
+                responseInjectFailed != null -> responseInjectFailed._streamId()
+                else -> JsonMissing.of()
+            }
 
     fun isResponseAudioDelta(): Boolean = responseAudioDelta != null
 

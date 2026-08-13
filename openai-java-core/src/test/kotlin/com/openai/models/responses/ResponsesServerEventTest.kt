@@ -7593,6 +7593,18 @@ internal class ResponsesServerEventTest {
         assertThat(jsonMapper().writeValueAsString(responsesServerEvent)).contains("stream_id")
     }
 
+    @Test
+    fun websocketStreamIdRejectsMalformedValue() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.streamId() }
+    }
+
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
         BOOLEAN(JsonValue.from(false)),
         STRING(JsonValue.from("invalid")),
