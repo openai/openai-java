@@ -36,23 +36,29 @@ jobs:
       github.event_name != 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
       github.repository == 'openai/openai-java'
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    runs-on: ubuntu-24.04
+    environment: release
+    permissions: {}
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
     outputs:
-      prs_created: ${{ steps.release.outputs.prs_created }}
-      release_pr: ${{ steps.release.outputs.pr }}
       releases_created: ${{ steps.release.outputs.releases_created }}
       source_sha: ${{ steps.release.outputs.sha }}
       release_tag: ${{ steps.release.outputs.tag_name }}
 
     steps:
+      - name: Create release app token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.OPENAI_SDKS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPENAI_SDKS_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+
       - name: Check for a legacy release PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           LEGACY_RELEASE_BRANCH: release-please--branches--main--changes--next
         run: |
           set -euo pipefail
@@ -76,39 +82,10 @@ jobs:
         id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-
-  release_pr_ci:
-    name: Release / run release PR CI
-    needs: automatic_release
-    if: needs.automatic_release.outputs.prs_created == 'true'
-    permissions:
-      actions: write
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    steps:
-      # Events created by GITHUB_TOKEN do not recursively trigger pull_request workflows.
-      # workflow_dispatch is an explicit exception, so dispatch CI for the generated PR head.
-      - name: Run CI for the release PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ needs.automatic_release.outputs.release_pr }}
-        run: |
-          set -euo pipefail
-
-          release_branch="$(jq -r '.headBranchName // empty' <<< "$RELEASE_PR")"
-          if [[ "$release_branch" != "release-please--branches--main" ]]; then
-            echo "::error::Unexpected release PR branch: $release_branch"
-            exit 1
-          fi
-
-          gh workflow run ci.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref "$release_branch"
 
   retry_release:
     name: Release / select retry source
@@ -118,7 +95,7 @@ jobs:
       github.repository == 'openai/openai-java'
     permissions:
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
     outputs:
       source_sha: ${{ steps.retry.outputs.source_sha }}
@@ -192,31 +169,69 @@ jobs:
       - automatic_release
       - retry_release
     if: >-
-      always() &&
+      !cancelled() &&
       (needs.automatic_release.result == 'success' ||
       needs.retry_release.result == 'success')
     permissions: {}
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 1
     outputs:
-      should_publish: >-
-        ${{ needs.retry_release.result == 'success' ||
-        needs.automatic_release.outputs.releases_created == 'true' }}
-      source_sha: >-
-        ${{ needs.retry_release.outputs.source_sha ||
-        needs.automatic_release.outputs.source_sha }}
-      release_tag: >-
-        ${{ needs.retry_release.outputs.release_tag ||
-        needs.automatic_release.outputs.release_tag }}
+      should_publish: ${{ steps.source.outputs.should_publish }}
+      source_sha: ${{ steps.source.outputs.source_sha }}
+      release_tag: ${{ steps.source.outputs.release_tag }}
 
     steps:
       - name: Select release source
-        run: echo "Release source selected"
+        id: source
+        env:
+          AUTOMATIC_RELEASES_CREATED: ${{ needs.automatic_release.outputs.releases_created }}
+          AUTOMATIC_SOURCE_SHA: ${{ needs.automatic_release.outputs.source_sha }}
+          AUTOMATIC_RELEASE_TAG: ${{ needs.automatic_release.outputs.release_tag }}
+          RETRY_RESULT: ${{ needs.retry_release.result }}
+          RETRY_SOURCE_SHA: ${{ needs.retry_release.outputs.source_sha }}
+          RETRY_RELEASE_TAG: ${{ needs.retry_release.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+
+          should_publish=false
+          source_sha=""
+          release_tag=""
+          if [[ "$RETRY_RESULT" == "success" ]]; then
+            should_publish=true
+            source_sha="$RETRY_SOURCE_SHA"
+            release_tag="$RETRY_RELEASE_TAG"
+          elif [[ "$AUTOMATIC_RELEASES_CREATED" == "true" ]]; then
+            should_publish=true
+            source_sha="$AUTOMATIC_SOURCE_SHA"
+            release_tag="$AUTOMATIC_RELEASE_TAG"
+          fi
+
+          if [[ "$should_publish" == "true" ]]; then
+            if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "::error::Invalid release source SHA: $source_sha"
+              exit 1
+            fi
+            if [[ ! "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "::error::Invalid release tag: $release_tag"
+              exit 1
+            fi
+          fi
+
+          {
+            echo "should_publish=$should_publish"
+            echo "source_sha=$source_sha"
+            echo "release_tag=$release_tag"
+          } >> "$GITHUB_OUTPUT"
 
   runtime_compatibility:
     name: Release / runtime compatibility
     needs: release
-    if: needs.release.outputs.should_publish == 'true'
+    # One release-source job is intentionally skipped. Without a status-check
+    # function, GitHub's implicit success() propagates that skip to this job.
+    if: >-
+      !cancelled() &&
+      needs.release.result == 'success' &&
+      needs.release.outputs.should_publish == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/runtime-compatibility.yml
@@ -229,11 +244,13 @@ jobs:
       - release
       - runtime_compatibility
     if: >-
+      !cancelled() &&
+      needs.release.result == 'success' &&
       needs.release.outputs.should_publish == 'true' &&
       needs.runtime_compatibility.result == 'success'
     permissions:
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 90
     environment: publish
 
@@ -351,3 +368,98 @@ jobs:
 
           echo "::error::Upload completed, but $version was not fully public after 30 minutes"
           exit 1
+
+  release_outcome:
+    name: Release / verify outcome
+    needs:
+      - automatic_release
+      - retry_release
+      - release
+      - runtime_compatibility
+      - publish
+    # Run after failures and intentional skips, but do not keep a cancelled
+    # workflow alive. This makes an unexpected skipped publication fail closed.
+    if: ${{ !cancelled() && github.repository == 'openai/openai-java' }}
+    permissions: {}
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 1
+
+    steps:
+      - name: Verify release outcome
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          AUTOMATIC_RESULT: ${{ needs.automatic_release.result }}
+          RETRY_RESULT: ${{ needs.retry_release.result }}
+          RELEASE_RESULT: ${{ needs.release.result }}
+          SHOULD_PUBLISH: ${{ needs.release.outputs.should_publish }}
+          RUNTIME_RESULT: ${{ needs.runtime_compatibility.result }}
+          PUBLISH_RESULT: ${{ needs.publish.result }}
+        run: |
+          set -euo pipefail
+
+          failure_count=0
+          fail() {
+            echo "::error::$1"
+            failure_count=$((failure_count + 1))
+          }
+
+          if [[ "$RELEASE_RESULT" != "success" ]]; then
+            fail "Release source selection concluded $RELEASE_RESULT"
+          fi
+
+          case "$EVENT_NAME" in
+            workflow_dispatch)
+              if [[ "$AUTOMATIC_RESULT" != "skipped" ]]; then
+                fail "Manual retry expected automatic release to be skipped, got $AUTOMATIC_RESULT"
+              fi
+              if [[ "$RETRY_RESULT" != "success" ]]; then
+                fail "Manual retry source selection concluded $RETRY_RESULT"
+              fi
+              if [[ "$SHOULD_PUBLISH" != "true" ]]; then
+                fail "Manual retry did not select a release to publish"
+              fi
+              ;;
+            push | schedule)
+              if [[ "$AUTOMATIC_RESULT" != "success" ]]; then
+                fail "Automatic release concluded $AUTOMATIC_RESULT"
+              fi
+              if [[ "$RETRY_RESULT" != "skipped" ]]; then
+                fail "Automatic release expected retry selection to be skipped, got $RETRY_RESULT"
+              fi
+              ;;
+            *)
+              fail "Unexpected release event: $EVENT_NAME"
+              ;;
+          esac
+
+          case "$SHOULD_PUBLISH" in
+            true)
+              if [[ "$RUNTIME_RESULT" != "success" ]]; then
+                fail "Runtime compatibility concluded $RUNTIME_RESULT"
+              fi
+              if [[ "$PUBLISH_RESULT" != "success" ]]; then
+                fail "Maven Central publication concluded $PUBLISH_RESULT"
+              fi
+              ;;
+            false)
+              if [[ "$RUNTIME_RESULT" != "skipped" ]]; then
+                fail "No-release run expected runtime compatibility to be skipped, got $RUNTIME_RESULT"
+              fi
+              if [[ "$PUBLISH_RESULT" != "skipped" ]]; then
+                fail "No-release run expected Maven Central publication to be skipped, got $PUBLISH_RESULT"
+              fi
+              ;;
+            *)
+              fail "Invalid should_publish output: $SHOULD_PUBLISH"
+              ;;
+          esac
+
+          if [[ "$failure_count" -ne 0 ]]; then
+            exit 1
+          fi
+
+          if [[ "$SHOULD_PUBLISH" == "true" ]]; then
+            echo "Release publication completed successfully"
+          else
+            echo "No release was created; publication was correctly skipped"
+          fi

@@ -19,7 +19,7 @@ jobs:
       github.repository == 'openai/openai-java' &&
       github.event.head_commit.message != 'codegen metadata'
     environment: CI
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 20
 
     steps:

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.auditlogs
 
@@ -818,6 +818,10 @@ private constructor(
             val TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED =
                 of("tenant.workload_identity.principal.provisioned")
 
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED =
+                of("tenant.workload_identity.access_token.issued")
+
             @JvmField val TENANT_ADMIN_API_KEY_CREATED = of("tenant.admin_api_key.created")
 
             @JvmField val TENANT_ADMIN_API_KEY_UPDATED = of("tenant.admin_api_key.updated")
@@ -1074,6 +1078,7 @@ private constructor(
             TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED,
             TENANT_WORKLOAD_IDENTITY_BINDING_CREATED,
             TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED,
+            TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED,
             TENANT_ADMIN_API_KEY_CREATED,
             TENANT_ADMIN_API_KEY_UPDATED,
             TENANT_ADMIN_API_KEY_DELETED,
@@ -1229,6 +1234,7 @@ private constructor(
             TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED,
             TENANT_WORKLOAD_IDENTITY_BINDING_CREATED,
             TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED,
+            TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED,
             TENANT_ADMIN_API_KEY_CREATED,
             TENANT_ADMIN_API_KEY_UPDATED,
             TENANT_ADMIN_API_KEY_DELETED,
@@ -1400,6 +1406,8 @@ private constructor(
                     Value.TENANT_WORKLOAD_IDENTITY_BINDING_CREATED
                 TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED ->
                     Value.TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED
+                TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED
                 TENANT_ADMIN_API_KEY_CREATED -> Value.TENANT_ADMIN_API_KEY_CREATED
                 TENANT_ADMIN_API_KEY_UPDATED -> Value.TENANT_ADMIN_API_KEY_UPDATED
                 TENANT_ADMIN_API_KEY_DELETED -> Value.TENANT_ADMIN_API_KEY_DELETED
@@ -1580,6 +1588,8 @@ private constructor(
                     Known.TENANT_WORKLOAD_IDENTITY_BINDING_CREATED
                 TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED ->
                     Known.TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED
+                TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED
                 TENANT_ADMIN_API_KEY_CREATED -> Known.TENANT_ADMIN_API_KEY_CREATED
                 TENANT_ADMIN_API_KEY_UPDATED -> Known.TENANT_ADMIN_API_KEY_UPDATED
                 TENANT_ADMIN_API_KEY_DELETED -> Known.TENANT_ADMIN_API_KEY_DELETED

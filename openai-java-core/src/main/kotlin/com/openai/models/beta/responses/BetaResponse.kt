@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -3158,6 +3158,12 @@ private constructor(
 
             @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
 
+            @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+            @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+            @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
@@ -3259,6 +3265,9 @@ private constructor(
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
         }
 
         /**
@@ -3367,6 +3376,9 @@ private constructor(
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -3476,6 +3488,9 @@ private constructor(
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
                 else -> Value._UNKNOWN
             }
 
@@ -3586,6 +3601,9 @@ private constructor(
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 

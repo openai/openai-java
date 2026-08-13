@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -14,7 +14,7 @@ internal class NamespaceToolTest {
     fun create() {
         val namespaceTool =
             NamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
@@ -33,7 +33,7 @@ internal class NamespaceToolTest {
                 )
                 .build()
 
-        assertThat(namespaceTool.description()).isEqualTo("x")
+        assertThat(namespaceTool.description()).isEqualTo("description")
         assertThat(namespaceTool.name()).isEqualTo("x")
         assertThat(namespaceTool.tools())
             .containsExactly(
@@ -60,7 +60,7 @@ internal class NamespaceToolTest {
         val jsonMapper = jsonMapper()
         val namespaceTool =
             NamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
