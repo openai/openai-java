@@ -37,6 +37,7 @@ import com.openai.models.videos.VideoRetrieveParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     VideoService {
 
@@ -49,18 +50,22 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService =
         VideoServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun create(params: VideoCreateParams, requestOptions: RequestOptions): Video =
         // post /videos
         withRawResponse().create(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun retrieve(params: VideoRetrieveParams, requestOptions: RequestOptions): Video =
         // get /videos/{video_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun list(params: VideoListParams, requestOptions: RequestOptions): VideoListPage =
         // get /videos
         withRawResponse().list(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun delete(
         params: VideoDeleteParams,
         requestOptions: RequestOptions,
@@ -68,6 +73,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         // delete /videos/{video_id}
         withRawResponse().delete(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun createCharacter(
         params: VideoCreateCharacterParams,
         requestOptions: RequestOptions,
@@ -75,6 +81,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         // post /videos/characters
         withRawResponse().createCharacter(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun downloadContent(
         params: VideoDownloadContentParams,
         requestOptions: RequestOptions,
@@ -82,14 +89,17 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         // get /videos/{video_id}/content
         withRawResponse().downloadContent(params, requestOptions)
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun edit(params: VideoEditParams, requestOptions: RequestOptions): Video =
         // post /videos/edits
         withRawResponse().edit(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun extend(params: VideoExtendParams, requestOptions: RequestOptions): Video =
         // post /videos/extensions
         withRawResponse().extend(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun getCharacter(
         params: VideoGetCharacterParams,
         requestOptions: RequestOptions,
@@ -97,10 +107,12 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         // get /videos/characters/{character_id}
         withRawResponse().getCharacter(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun remix(params: VideoRemixParams, requestOptions: RequestOptions): Video =
         // post /videos/{video_id}/remix
         withRawResponse().remix(params, requestOptions).parse()
 
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         VideoService.WithRawResponse {
 
@@ -116,6 +128,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val createHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun create(
             params: VideoCreateParams,
             requestOptions: RequestOptions,
@@ -147,6 +160,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val retrieveHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun retrieve(
             params: VideoRetrieveParams,
             requestOptions: RequestOptions,
@@ -181,6 +195,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val listHandler: Handler<VideoListPageResponse> =
             jsonHandler<VideoListPageResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun list(
             params: VideoListParams,
             requestOptions: RequestOptions,
@@ -219,6 +234,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val deleteHandler: Handler<VideoDeleteResponse> =
             jsonHandler<VideoDeleteResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun delete(
             params: VideoDeleteParams,
             requestOptions: RequestOptions,
@@ -254,6 +270,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val createCharacterHandler: Handler<VideoCreateCharacterResponse> =
             jsonHandler<VideoCreateCharacterResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun createCharacter(
             params: VideoCreateCharacterParams,
             requestOptions: RequestOptions,
@@ -283,6 +300,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun downloadContent(
             params: VideoDownloadContentParams,
             requestOptions: RequestOptions,
@@ -309,6 +327,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val editHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun edit(
             params: VideoEditParams,
             requestOptions: RequestOptions,
@@ -340,6 +359,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val extendHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun extend(
             params: VideoExtendParams,
             requestOptions: RequestOptions,
@@ -372,6 +392,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val getCharacterHandler: Handler<VideoGetCharacterResponse> =
             jsonHandler<VideoGetCharacterResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun getCharacter(
             params: VideoGetCharacterParams,
             requestOptions: RequestOptions,
@@ -405,6 +426,7 @@ class VideoServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val remixHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
         override fun remix(
             params: VideoRemixParams,
             requestOptions: RequestOptions,

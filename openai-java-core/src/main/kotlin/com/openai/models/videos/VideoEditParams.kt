@@ -28,6 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create a new video generation job by editing a source video or existing generated video. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoEditParams
 private constructor(
     private val body: Body,

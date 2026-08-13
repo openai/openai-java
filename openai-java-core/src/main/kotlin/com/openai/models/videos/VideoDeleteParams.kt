@@ -12,6 +12,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Permanently delete a completed or failed video and its stored assets. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoDeleteParams
 private constructor(
     private val videoId: String?,

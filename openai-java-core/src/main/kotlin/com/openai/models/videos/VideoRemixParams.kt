@@ -20,6 +20,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Create a remix of a completed video using a refreshed prompt. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoRemixParams
 private constructor(
     private val videoId: String?,
