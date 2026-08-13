@@ -60,6 +60,7 @@ private constructor(
     private val serviceTier: JsonField<ServiceTier>,
     private val store: JsonField<Boolean>,
     private val stream: JsonField<Boolean>,
+    private val streamId: JsonField<String>,
     private val streamOptions: JsonField<StreamOptions>,
     private val temperature: JsonField<Double>,
     private val text: JsonField<ResponseTextConfig>,
@@ -131,6 +132,7 @@ private constructor(
         serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
         @JsonProperty("store") @ExcludeMissing store: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("stream") @ExcludeMissing stream: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("stream_id") @ExcludeMissing streamId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("stream_options")
         @ExcludeMissing
         streamOptions: JsonField<StreamOptions> = JsonMissing.of(),
@@ -176,6 +178,7 @@ private constructor(
         serviceTier,
         store,
         stream,
+        streamId,
         streamOptions,
         temperature,
         text,
@@ -475,6 +478,18 @@ private constructor(
     fun stream(): Optional<Boolean> = stream.getOptional("stream")
 
     /**
+     * The WebSocket lane for this response. Requests with the same `stream_id` are processed FIFO,
+     * and events for the response echo the same `stream_id`.
+     *
+     * `stream_id` controls routing; `previous_response_id` controls conversation lineage, so a new
+     * lane can fork from a response created on another lane.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun streamId(): Optional<String> = streamId.getOptional("stream_id")
+
+    /**
      * Options for streaming responses. Only set this when you set `stream: true`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -772,6 +787,13 @@ private constructor(
     @JsonProperty("stream") @ExcludeMissing fun _stream(): JsonField<Boolean> = stream
 
     /**
+     * Returns the raw JSON value of [streamId].
+     *
+     * Unlike [streamId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("stream_id") @ExcludeMissing fun _streamId(): JsonField<String> = streamId
+
+    /**
      * Returns the raw JSON value of [streamOptions].
      *
      * Unlike [streamOptions], this method doesn't throw if the JSON field has an unexpected type.
@@ -888,6 +910,7 @@ private constructor(
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var store: JsonField<Boolean> = JsonMissing.of()
         private var stream: JsonField<Boolean> = JsonMissing.of()
+        private var streamId: JsonField<String> = JsonMissing.of()
         private var streamOptions: JsonField<StreamOptions> = JsonMissing.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
@@ -924,6 +947,7 @@ private constructor(
             serviceTier = responsesClientEvent.serviceTier
             store = responsesClientEvent.store
             stream = responsesClientEvent.stream
+            streamId = responsesClientEvent.streamId
             streamOptions = responsesClientEvent.streamOptions
             temperature = responsesClientEvent.temperature
             text = responsesClientEvent.text
@@ -1539,6 +1563,23 @@ private constructor(
          */
         fun stream(stream: JsonField<Boolean>) = apply { this.stream = stream }
 
+        /**
+         * The WebSocket lane for this response. Requests with the same `stream_id` are processed
+         * FIFO, and events for the response echo the same `stream_id`.
+         *
+         * `stream_id` controls routing; `previous_response_id` controls conversation lineage, so a
+         * new lane can fork from a response created on another lane.
+         */
+        fun streamId(streamId: String) = streamId(JsonField.of(streamId))
+
+        /**
+         * Sets [Builder.streamId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.streamId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun streamId(streamId: JsonField<String>) = apply { this.streamId = streamId }
+
         /** Options for streaming responses. Only set this when you set `stream: true`. */
         fun streamOptions(streamOptions: StreamOptions?) =
             streamOptions(JsonField.ofNullable(streamOptions))
@@ -1946,6 +1987,7 @@ private constructor(
                 serviceTier,
                 store,
                 stream,
+                streamId,
                 streamOptions,
                 temperature,
                 text,
@@ -2001,6 +2043,7 @@ private constructor(
         serviceTier().ifPresent { it.validate() }
         store()
         stream()
+        streamId()
         streamOptions().ifPresent { it.validate() }
         temperature()
         text().ifPresent { it.validate() }
@@ -2051,6 +2094,7 @@ private constructor(
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (if (store.asKnown().isPresent) 1 else 0) +
             (if (stream.asKnown().isPresent) 1 else 0) +
+            (if (streamId.asKnown().isPresent) 1 else 0) +
             (streamOptions.asKnown().getOrNull()?.validity() ?: 0) +
             (if (temperature.asKnown().isPresent) 1 else 0) +
             (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -5609,6 +5653,7 @@ private constructor(
             serviceTier == other.serviceTier &&
             store == other.store &&
             stream == other.stream &&
+            streamId == other.streamId &&
             streamOptions == other.streamOptions &&
             temperature == other.temperature &&
             text == other.text &&
@@ -5646,6 +5691,7 @@ private constructor(
             serviceTier,
             store,
             stream,
+            streamId,
             streamOptions,
             temperature,
             text,
@@ -5662,5 +5708,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponsesClientEvent{type=$type, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+        "ResponsesClientEvent{type=$type, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
 }

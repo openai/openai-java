@@ -17,10 +17,11 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseAudioDelta() {
         val responseAudioDelta =
-            BetaResponseAudioDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseAudioWsDelta.builder()
                 .delta("delta")
                 .sequenceNumber(0L)
                 .agent(BetaResponseAudioDeltaEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -88,12 +89,13 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseAudioDelta(
-                BetaResponseAudioDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseAudioWsDelta.builder()
                     .delta("delta")
                     .sequenceNumber(0L)
                     .agent(
                         BetaResponseAudioDeltaEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -109,9 +111,10 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseAudioDone() {
         val responseAudioDone =
-            BetaResponseAudioDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseAudioWsDone.builder()
                 .sequenceNumber(0L)
                 .agent(BetaResponseAudioDoneEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -179,11 +182,12 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseAudioDone(
-                BetaResponseAudioDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseAudioWsDone.builder()
                     .sequenceNumber(0L)
                     .agent(
                         BetaResponseAudioDoneEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -199,7 +203,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseAudioTranscriptDelta() {
         val responseAudioTranscriptDelta =
-            BetaResponseAudioTranscriptDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseAudioTranscriptWsDelta.builder()
                 .delta("delta")
                 .sequenceNumber(0L)
                 .agent(
@@ -207,6 +211,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -275,7 +280,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseAudioTranscriptDelta(
-                BetaResponseAudioTranscriptDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseAudioTranscriptWsDelta.builder()
                     .delta("delta")
                     .sequenceNumber(0L)
                     .agent(
@@ -283,6 +288,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -298,13 +304,14 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseAudioTranscriptDone() {
         val responseAudioTranscriptDone =
-            BetaResponseAudioTranscriptDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseAudioTranscriptWsDone.builder()
                 .sequenceNumber(0L)
                 .agent(
                     BetaResponseAudioTranscriptDoneEvent.Agent.builder()
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -373,13 +380,14 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseAudioTranscriptDone(
-                BetaResponseAudioTranscriptDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseAudioTranscriptWsDone.builder()
                     .sequenceNumber(0L)
                     .agent(
                         BetaResponseAudioTranscriptDoneEvent.Agent.builder()
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -395,7 +403,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallCodeDelta() {
         val responseCodeInterpreterCallCodeDelta =
-            BetaResponseCodeInterpreterCallCodeDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCodeInterpreterCallCodeWsDelta.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -405,6 +413,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -475,7 +484,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCodeInterpreterCallCodeDelta(
-                BetaResponseCodeInterpreterCallCodeDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCodeInterpreterCallCodeWsDelta.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -485,6 +494,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -500,7 +510,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallCodeDone() {
         val responseCodeInterpreterCallCodeDone =
-            BetaResponseCodeInterpreterCallCodeDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCodeInterpreterCallCodeWsDone.builder()
                 .code("code")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -510,6 +520,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -580,7 +591,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCodeInterpreterCallCodeDone(
-                BetaResponseCodeInterpreterCallCodeDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCodeInterpreterCallCodeWsDone.builder()
                     .code("code")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -590,6 +601,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -605,7 +617,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallCompleted() {
         val responseCodeInterpreterCallCompleted =
-            BetaResponseCodeInterpreterCallCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCodeInterpreterCallWsCompleted.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -614,6 +626,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -684,7 +697,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCodeInterpreterCallCompleted(
-                BetaResponseCodeInterpreterCallCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCodeInterpreterCallWsCompleted.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -693,6 +706,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -708,7 +722,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallInProgress() {
         val responseCodeInterpreterCallInProgress =
-            BetaResponseCodeInterpreterCallInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCodeInterpreterCallInWsProgress.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -717,6 +731,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -787,7 +802,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCodeInterpreterCallInProgress(
-                BetaResponseCodeInterpreterCallInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCodeInterpreterCallInWsProgress.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -796,6 +811,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -811,7 +827,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallInterpreting() {
         val responseCodeInterpreterCallInterpreting =
-            BetaResponseCodeInterpreterCallInterpretingEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCodeInterpreterCallWsInterpreting.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -820,6 +836,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -890,7 +907,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCodeInterpreterCallInterpreting(
-                BetaResponseCodeInterpreterCallInterpretingEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCodeInterpreterCallWsInterpreting.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -899,6 +916,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -914,7 +932,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCompleted() {
         val responseCompleted =
-            BetaResponseCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWsCompleted.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
@@ -1131,6 +1149,7 @@ internal class BetaResponsesServerEventTest {
                 )
                 .sequenceNumber(0L)
                 .agent(BetaResponseCompletedEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -1198,7 +1217,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCompleted(
-                BetaResponseCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWsCompleted.builder()
                     .response(
                         BetaResponse.builder()
                             .id("id")
@@ -1424,6 +1443,7 @@ internal class BetaResponsesServerEventTest {
                     .agent(
                         BetaResponseCompletedEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -1439,7 +1459,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseContentPartAdded() {
         val responseContentPartAdded =
-            BetaResponseContentPartAddedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseContentPartWsAdded.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -1475,6 +1495,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -1543,7 +1564,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseContentPartAdded(
-                BetaResponseContentPartAddedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseContentPartWsAdded.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -1579,6 +1600,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -1594,7 +1616,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseContentPartDone() {
         val responseContentPartDone =
-            BetaResponseContentPartDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseContentPartWsDone.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -1628,6 +1650,7 @@ internal class BetaResponsesServerEventTest {
                 .agent(
                     BetaResponseContentPartDoneEvent.Agent.builder().agentName("agent_name").build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -1696,7 +1719,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseContentPartDone(
-                BetaResponseContentPartDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseContentPartWsDone.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -1732,6 +1755,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -1747,7 +1771,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCreated() {
         val responseCreated =
-            BetaResponseCreatedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWsCreated.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
@@ -1964,6 +1988,7 @@ internal class BetaResponsesServerEventTest {
                 )
                 .sequenceNumber(0L)
                 .agent(BetaResponseCreatedEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent = BetaResponsesServerEvent.ofResponseCreated(responseCreated)
@@ -2030,7 +2055,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCreated(
-                BetaResponseCreatedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWsCreated.builder()
                     .response(
                         BetaResponse.builder()
                             .id("id")
@@ -2254,6 +2279,7 @@ internal class BetaResponsesServerEventTest {
                     )
                     .sequenceNumber(0L)
                     .agent(BetaResponseCreatedEvent.Agent.builder().agentName("agent_name").build())
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2269,12 +2295,13 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofError() {
         val error =
-            BetaResponseErrorEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWsError.builder()
                 .code("code")
                 .message("message")
                 .param("param")
                 .sequenceNumber(0L)
                 .agent(BetaResponseErrorEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent = BetaResponsesServerEvent.ofError(error)
@@ -2341,12 +2368,13 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofError(
-                BetaResponseErrorEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWsError.builder()
                     .code("code")
                     .message("message")
                     .param("param")
                     .sequenceNumber(0L)
                     .agent(BetaResponseErrorEvent.Agent.builder().agentName("agent_name").build())
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2362,7 +2390,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseFileSearchCallCompleted() {
         val responseFileSearchCallCompleted =
-            BetaResponseFileSearchCallCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseFileSearchCallWsCompleted.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -2371,6 +2399,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -2441,7 +2470,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseFileSearchCallCompleted(
-                BetaResponseFileSearchCallCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseFileSearchCallWsCompleted.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -2450,6 +2479,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2465,7 +2495,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseFileSearchCallInProgress() {
         val responseFileSearchCallInProgress =
-            BetaResponseFileSearchCallInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseFileSearchCallInWsProgress.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -2474,6 +2504,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -2544,7 +2575,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseFileSearchCallInProgress(
-                BetaResponseFileSearchCallInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseFileSearchCallInWsProgress.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -2553,6 +2584,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2568,7 +2600,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseFileSearchCallSearching() {
         val responseFileSearchCallSearching =
-            BetaResponseFileSearchCallSearchingEvent.builder()
+            BetaResponsesServerEvent.BetaResponseFileSearchCallWsSearching.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -2577,6 +2609,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -2647,7 +2680,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseFileSearchCallSearching(
-                BetaResponseFileSearchCallSearchingEvent.builder()
+                BetaResponsesServerEvent.BetaResponseFileSearchCallWsSearching.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -2656,6 +2689,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2671,7 +2705,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseFunctionCallArgumentsDelta() {
         val responseFunctionCallArgumentsDelta =
-            BetaResponseFunctionCallArgumentsDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseFunctionCallArgumentsWsDelta.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -2681,6 +2715,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -2751,7 +2786,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseFunctionCallArgumentsDelta(
-                BetaResponseFunctionCallArgumentsDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseFunctionCallArgumentsWsDelta.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -2761,6 +2796,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2776,7 +2812,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseFunctionCallArgumentsDone() {
         val responseFunctionCallArgumentsDone =
-            BetaResponseFunctionCallArgumentsDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseFunctionCallArgumentsWsDone.builder()
                 .arguments("arguments")
                 .itemId("item_id")
                 .name("name")
@@ -2787,6 +2823,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -2857,7 +2894,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseFunctionCallArgumentsDone(
-                BetaResponseFunctionCallArgumentsDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseFunctionCallArgumentsWsDone.builder()
                     .arguments("arguments")
                     .itemId("item_id")
                     .name("name")
@@ -2868,6 +2905,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -2883,7 +2921,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseInProgress() {
         val responseInProgress =
-            BetaResponseInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseInWsProgress.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
@@ -3100,6 +3138,7 @@ internal class BetaResponsesServerEventTest {
                 )
                 .sequenceNumber(0L)
                 .agent(BetaResponseInProgressEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -3167,7 +3206,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseInProgress(
-                BetaResponseInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseInWsProgress.builder()
                     .response(
                         BetaResponse.builder()
                             .id("id")
@@ -3393,6 +3432,7 @@ internal class BetaResponsesServerEventTest {
                     .agent(
                         BetaResponseInProgressEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -3408,7 +3448,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseFailed() {
         val responseFailed =
-            BetaResponseFailedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWsFailed.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
@@ -3625,6 +3665,7 @@ internal class BetaResponsesServerEventTest {
                 )
                 .sequenceNumber(0L)
                 .agent(BetaResponseFailedEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent = BetaResponsesServerEvent.ofResponseFailed(responseFailed)
@@ -3691,7 +3732,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseFailed(
-                BetaResponseFailedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWsFailed.builder()
                     .response(
                         BetaResponse.builder()
                             .id("id")
@@ -3915,6 +3956,7 @@ internal class BetaResponsesServerEventTest {
                     )
                     .sequenceNumber(0L)
                     .agent(BetaResponseFailedEvent.Agent.builder().agentName("agent_name").build())
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -3930,7 +3972,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseIncomplete() {
         val responseIncomplete =
-            BetaResponseIncompleteEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWsIncomplete.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
@@ -4147,6 +4189,7 @@ internal class BetaResponsesServerEventTest {
                 )
                 .sequenceNumber(0L)
                 .agent(BetaResponseIncompleteEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -4214,7 +4257,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseIncomplete(
-                BetaResponseIncompleteEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWsIncomplete.builder()
                     .response(
                         BetaResponse.builder()
                             .id("id")
@@ -4440,6 +4483,7 @@ internal class BetaResponsesServerEventTest {
                     .agent(
                         BetaResponseIncompleteEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -4455,7 +4499,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseOutputItemAdded() {
         val responseOutputItemAdded =
-            BetaResponseOutputItemAddedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseOutputItemWsAdded.builder()
                 .item(
                     BetaResponseOutputMessage.builder()
                         .id("id")
@@ -4499,6 +4543,7 @@ internal class BetaResponsesServerEventTest {
                 .agent(
                     BetaResponseOutputItemAddedEvent.Agent.builder().agentName("agent_name").build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -4567,7 +4612,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseOutputItemAdded(
-                BetaResponseOutputItemAddedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseOutputItemWsAdded.builder()
                     .item(
                         BetaResponseOutputMessage.builder()
                             .id("id")
@@ -4613,6 +4658,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -4628,7 +4674,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseOutputItemDone() {
         val responseOutputItemDone =
-            BetaResponseOutputItemDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseOutputItemWsDone.builder()
                 .item(
                     BetaResponseOutputMessage.builder()
                         .id("id")
@@ -4672,6 +4718,7 @@ internal class BetaResponsesServerEventTest {
                 .agent(
                     BetaResponseOutputItemDoneEvent.Agent.builder().agentName("agent_name").build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -4740,7 +4787,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseOutputItemDone(
-                BetaResponseOutputItemDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseOutputItemWsDone.builder()
                     .item(
                         BetaResponseOutputMessage.builder()
                             .id("id")
@@ -4786,6 +4833,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -4801,7 +4849,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryPartAdded() {
         val responseReasoningSummaryPartAdded =
-            BetaResponseReasoningSummaryPartAddedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseReasoningSummaryPartWsAdded.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .part(
@@ -4814,6 +4862,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -4884,7 +4933,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseReasoningSummaryPartAdded(
-                BetaResponseReasoningSummaryPartAddedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseReasoningSummaryPartWsAdded.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .part(
@@ -4899,6 +4948,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -4914,7 +4964,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryPartDone() {
         val responseReasoningSummaryPartDone =
-            BetaResponseReasoningSummaryPartDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseReasoningSummaryPartWsDone.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .part(BetaResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
@@ -4926,6 +4976,7 @@ internal class BetaResponsesServerEventTest {
                         .build()
                 )
                 .status(BetaResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -4996,7 +5047,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseReasoningSummaryPartDone(
-                BetaResponseReasoningSummaryPartDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseReasoningSummaryPartWsDone.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .part(
@@ -5012,6 +5063,7 @@ internal class BetaResponsesServerEventTest {
                             .build()
                     )
                     .status(BetaResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5027,7 +5079,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryTextDelta() {
         val responseReasoningSummaryTextDelta =
-            BetaResponseReasoningSummaryTextDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseReasoningSummaryTextWsDelta.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -5038,6 +5090,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5108,7 +5161,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseReasoningSummaryTextDelta(
-                BetaResponseReasoningSummaryTextDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseReasoningSummaryTextWsDelta.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -5119,6 +5172,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5134,7 +5188,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryTextDone() {
         val responseReasoningSummaryTextDone =
-            BetaResponseReasoningSummaryTextDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseReasoningSummaryTextWsDone.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -5145,6 +5199,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5215,7 +5270,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseReasoningSummaryTextDone(
-                BetaResponseReasoningSummaryTextDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseReasoningSummaryTextWsDone.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -5226,6 +5281,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5241,7 +5297,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseReasoningTextDelta() {
         val responseReasoningTextDelta =
-            BetaResponseReasoningTextDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseReasoningTextWsDelta.builder()
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
@@ -5252,6 +5308,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5320,7 +5377,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseReasoningTextDelta(
-                BetaResponseReasoningTextDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseReasoningTextWsDelta.builder()
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
@@ -5331,6 +5388,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5346,7 +5404,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseReasoningTextDone() {
         val responseReasoningTextDone =
-            BetaResponseReasoningTextDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseReasoningTextWsDone.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -5357,6 +5415,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5425,7 +5484,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseReasoningTextDone(
-                BetaResponseReasoningTextDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseReasoningTextWsDone.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -5436,6 +5495,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5451,7 +5511,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseRefusalDelta() {
         val responseRefusalDelta =
-            BetaResponseRefusalDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseRefusalWsDelta.builder()
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
@@ -5460,6 +5520,7 @@ internal class BetaResponsesServerEventTest {
                 .agent(
                     BetaResponseRefusalDeltaEvent.Agent.builder().agentName("agent_name").build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5527,7 +5588,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseRefusalDelta(
-                BetaResponseRefusalDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseRefusalWsDelta.builder()
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
@@ -5538,6 +5599,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5553,13 +5615,14 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseRefusalDone() {
         val responseRefusalDone =
-            BetaResponseRefusalDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseRefusalWsDone.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
                 .refusal("refusal")
                 .sequenceNumber(0L)
                 .agent(BetaResponseRefusalDoneEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5627,7 +5690,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseRefusalDone(
-                BetaResponseRefusalDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseRefusalWsDone.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -5636,6 +5699,7 @@ internal class BetaResponsesServerEventTest {
                     .agent(
                         BetaResponseRefusalDoneEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5651,7 +5715,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseOutputTextDelta() {
         val responseOutputTextDelta =
-            BetaResponseTextDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseTextWsDelta.builder()
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
@@ -5670,6 +5734,7 @@ internal class BetaResponsesServerEventTest {
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(BetaResponseTextDeltaEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5738,7 +5803,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseOutputTextDelta(
-                BetaResponseTextDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseTextWsDelta.builder()
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
@@ -5759,6 +5824,7 @@ internal class BetaResponsesServerEventTest {
                     .agent(
                         BetaResponseTextDeltaEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5774,7 +5840,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseOutputTextDone() {
         val responseOutputTextDone =
-            BetaResponseTextDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseTextWsDone.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .addLogprob(
@@ -5793,6 +5859,7 @@ internal class BetaResponsesServerEventTest {
                 .sequenceNumber(0L)
                 .text("text")
                 .agent(BetaResponseTextDoneEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5861,7 +5928,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseOutputTextDone(
-                BetaResponseTextDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseTextWsDone.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .addLogprob(
@@ -5882,6 +5949,7 @@ internal class BetaResponsesServerEventTest {
                     .agent(
                         BetaResponseTextDoneEvent.Agent.builder().agentName("agent_name").build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -5897,7 +5965,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseWebSearchCallCompleted() {
         val responseWebSearchCallCompleted =
-            BetaResponseWebSearchCallCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWebSearchCallWsCompleted.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -5906,6 +5974,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -5976,7 +6045,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseWebSearchCallCompleted(
-                BetaResponseWebSearchCallCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWebSearchCallWsCompleted.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -5985,6 +6054,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6000,7 +6070,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseWebSearchCallInProgress() {
         val responseWebSearchCallInProgress =
-            BetaResponseWebSearchCallInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWebSearchCallInWsProgress.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -6009,6 +6079,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6079,7 +6150,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseWebSearchCallInProgress(
-                BetaResponseWebSearchCallInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWebSearchCallInWsProgress.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -6088,6 +6159,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6103,7 +6175,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseWebSearchCallSearching() {
         val responseWebSearchCallSearching =
-            BetaResponseWebSearchCallSearchingEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWebSearchCallWsSearching.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -6112,6 +6184,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6182,7 +6255,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseWebSearchCallSearching(
-                BetaResponseWebSearchCallSearchingEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWebSearchCallWsSearching.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -6191,6 +6264,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6206,7 +6280,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallCompleted() {
         val responseImageGenerationCallCompleted =
-            BetaResponseImageGenCallCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseImageGenCallWsCompleted.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -6215,6 +6289,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6285,7 +6360,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseImageGenerationCallCompleted(
-                BetaResponseImageGenCallCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseImageGenCallWsCompleted.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -6294,6 +6369,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6309,7 +6385,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallGenerating() {
         val responseImageGenerationCallGenerating =
-            BetaResponseImageGenCallGeneratingEvent.builder()
+            BetaResponsesServerEvent.BetaResponseImageGenCallWsGenerating.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -6318,6 +6394,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6388,7 +6465,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseImageGenerationCallGenerating(
-                BetaResponseImageGenCallGeneratingEvent.builder()
+                BetaResponsesServerEvent.BetaResponseImageGenCallWsGenerating.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -6397,6 +6474,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6412,7 +6490,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallInProgress() {
         val responseImageGenerationCallInProgress =
-            BetaResponseImageGenCallInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseImageGenCallInWsProgress.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -6421,6 +6499,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6491,7 +6570,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseImageGenerationCallInProgress(
-                BetaResponseImageGenCallInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseImageGenCallInWsProgress.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -6500,6 +6579,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6515,7 +6595,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallPartialImage() {
         val responseImageGenerationCallPartialImage =
-            BetaResponseImageGenCallPartialImageEvent.builder()
+            BetaResponsesServerEvent.BetaResponseImageGenCallPartialWsImage.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .partialImageB64("partial_image_b64")
@@ -6526,6 +6606,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6596,7 +6677,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseImageGenerationCallPartialImage(
-                BetaResponseImageGenCallPartialImageEvent.builder()
+                BetaResponsesServerEvent.BetaResponseImageGenCallPartialWsImage.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .partialImageB64("partial_image_b64")
@@ -6607,6 +6688,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6622,7 +6704,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallArgumentsDelta() {
         val responseMcpCallArgumentsDelta =
-            BetaResponseMcpCallArgumentsDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpCallArgumentsWsDelta.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -6632,6 +6714,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6700,7 +6783,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpCallArgumentsDelta(
-                BetaResponseMcpCallArgumentsDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpCallArgumentsWsDelta.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -6710,6 +6793,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6725,7 +6809,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallArgumentsDone() {
         val responseMcpCallArgumentsDone =
-            BetaResponseMcpCallArgumentsDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpCallArgumentsWsDone.builder()
                 .arguments("arguments")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -6735,6 +6819,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6803,7 +6888,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpCallArgumentsDone(
-                BetaResponseMcpCallArgumentsDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpCallArgumentsWsDone.builder()
                     .arguments("arguments")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -6813,6 +6898,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6828,7 +6914,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallCompleted() {
         val responseMcpCallCompleted =
-            BetaResponseMcpCallCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpCallWsCompleted.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -6837,6 +6923,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -6905,7 +6992,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpCallCompleted(
-                BetaResponseMcpCallCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpCallWsCompleted.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -6914,6 +7001,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -6929,13 +7017,14 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallFailed() {
         val responseMcpCallFailed =
-            BetaResponseMcpCallFailedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpCallWsFailed.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(
                     BetaResponseMcpCallFailedEvent.Agent.builder().agentName("agent_name").build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -7003,7 +7092,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpCallFailed(
-                BetaResponseMcpCallFailedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpCallWsFailed.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -7012,6 +7101,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -7027,7 +7117,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallInProgress() {
         val responseMcpCallInProgress =
-            BetaResponseMcpCallInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpCallInWsProgress.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -7036,6 +7126,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -7104,7 +7195,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpCallInProgress(
-                BetaResponseMcpCallInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpCallInWsProgress.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -7113,6 +7204,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -7128,7 +7220,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpListToolsCompleted() {
         val responseMcpListToolsCompleted =
-            BetaResponseMcpListToolsCompletedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpListToolsWsCompleted.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -7137,6 +7229,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -7205,7 +7298,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpListToolsCompleted(
-                BetaResponseMcpListToolsCompletedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpListToolsWsCompleted.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -7214,6 +7307,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -7229,7 +7323,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpListToolsFailed() {
         val responseMcpListToolsFailed =
-            BetaResponseMcpListToolsFailedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpListToolsWsFailed.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -7238,6 +7332,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -7306,7 +7401,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpListToolsFailed(
-                BetaResponseMcpListToolsFailedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpListToolsWsFailed.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -7315,6 +7410,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -7330,7 +7426,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseMcpListToolsInProgress() {
         val responseMcpListToolsInProgress =
-            BetaResponseMcpListToolsInProgressEvent.builder()
+            BetaResponsesServerEvent.BetaResponseMcpListToolsInWsProgress.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -7339,6 +7435,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -7409,7 +7506,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseMcpListToolsInProgress(
-                BetaResponseMcpListToolsInProgressEvent.builder()
+                BetaResponsesServerEvent.BetaResponseMcpListToolsInWsProgress.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -7418,6 +7515,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -7433,7 +7531,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseOutputTextAnnotationAdded() {
         val responseOutputTextAnnotationAdded =
-            BetaResponseOutputTextAnnotationAddedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseOutputTextAnnotationWsAdded.builder()
                 .annotation(JsonValue.from(mapOf<String, Any>()))
                 .annotationIndex(0L)
                 .contentIndex(0L)
@@ -7445,6 +7543,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -7515,7 +7614,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseOutputTextAnnotationAdded(
-                BetaResponseOutputTextAnnotationAddedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseOutputTextAnnotationWsAdded.builder()
                     .annotation(JsonValue.from(mapOf<String, Any>()))
                     .annotationIndex(0L)
                     .contentIndex(0L)
@@ -7527,6 +7626,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -7542,7 +7642,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseQueued() {
         val responseQueued =
-            BetaResponseQueuedEvent.builder()
+            BetaResponsesServerEvent.BetaResponseWsQueued.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
@@ -7759,6 +7859,7 @@ internal class BetaResponsesServerEventTest {
                 )
                 .sequenceNumber(0L)
                 .agent(BetaResponseQueuedEvent.Agent.builder().agentName("agent_name").build())
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent = BetaResponsesServerEvent.ofResponseQueued(responseQueued)
@@ -7825,7 +7926,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseQueued(
-                BetaResponseQueuedEvent.builder()
+                BetaResponsesServerEvent.BetaResponseWsQueued.builder()
                     .response(
                         BetaResponse.builder()
                             .id("id")
@@ -8049,6 +8150,7 @@ internal class BetaResponsesServerEventTest {
                     )
                     .sequenceNumber(0L)
                     .agent(BetaResponseQueuedEvent.Agent.builder().agentName("agent_name").build())
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -8064,7 +8166,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCustomToolCallInputDelta() {
         val responseCustomToolCallInputDelta =
-            BetaResponseCustomToolCallInputDeltaEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCustomToolCallInputWsDelta.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -8074,6 +8176,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -8144,7 +8247,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCustomToolCallInputDelta(
-                BetaResponseCustomToolCallInputDeltaEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCustomToolCallInputWsDelta.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -8154,6 +8257,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
@@ -8169,7 +8273,7 @@ internal class BetaResponsesServerEventTest {
     @Test
     fun ofResponseCustomToolCallInputDone() {
         val responseCustomToolCallInputDone =
-            BetaResponseCustomToolCallInputDoneEvent.builder()
+            BetaResponsesServerEvent.BetaResponseCustomToolCallInputWsDone.builder()
                 .input("input")
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -8179,6 +8283,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .streamId("stream_id")
                 .build()
 
         val betaResponsesServerEvent =
@@ -8249,7 +8354,7 @@ internal class BetaResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseCustomToolCallInputDone(
-                BetaResponseCustomToolCallInputDoneEvent.builder()
+                BetaResponsesServerEvent.BetaResponseCustomToolCallInputWsDone.builder()
                     .input("input")
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -8259,6 +8364,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .streamId("stream_id")
                     .build()
             )
 
