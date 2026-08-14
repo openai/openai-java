@@ -7328,7 +7328,13 @@ internal class BetaResponseStreamEventTest {
     fun ofResponseOutputTextAnnotationAdded() {
         val responseOutputTextAnnotationAdded =
             BetaResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(JsonValue.from(mapOf<String, Any>()))
+                .annotation(
+                    BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                        .fileId("file_id")
+                        .filename("filename")
+                        .index(0L)
+                        .build()
+                )
                 .annotationIndex(0L)
                 .contentIndex(0L)
                 .itemId("item_id")
@@ -7408,7 +7414,13 @@ internal class BetaResponseStreamEventTest {
         val betaResponseStreamEvent =
             BetaResponseStreamEvent.ofResponseOutputTextAnnotationAdded(
                 BetaResponseOutputTextAnnotationAddedEvent.builder()
-                    .annotation(JsonValue.from(mapOf<String, Any>()))
+                    .annotation(
+                        BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                            .fileId("file_id")
+                            .filename("filename")
+                            .index(0L)
+                            .build()
+                    )
                     .annotationIndex(0L)
                     .contentIndex(0L)
                     .itemId("item_id")

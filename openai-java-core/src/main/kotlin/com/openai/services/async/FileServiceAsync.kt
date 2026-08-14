@@ -149,7 +149,7 @@ interface FileServiceAsync {
     fun delete(fileId: String, requestOptions: RequestOptions): CompletableFuture<FileDeleted> =
         delete(fileId, FileDeleteParams.none(), requestOptions)
 
-    /** Returns the contents of the specified file. */
+    /** Returns a response containing the contents of the specified file. */
     fun content(fileId: String): CompletableFuture<HttpResponse> =
         content(fileId, FileContentParams.none())
 

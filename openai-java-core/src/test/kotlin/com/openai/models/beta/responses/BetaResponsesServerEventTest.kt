@@ -41,7 +41,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -81,6 +80,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -132,7 +132,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -172,6 +171,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -228,7 +228,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -268,6 +267,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -326,7 +326,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -366,6 +365,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -428,7 +428,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -468,6 +467,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -533,7 +533,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -573,6 +572,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -637,7 +637,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -677,6 +676,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -740,7 +740,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -780,6 +779,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -843,7 +843,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -883,6 +882,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1151,7 +1151,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -1191,6 +1190,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1496,7 +1496,6 @@ internal class BetaResponsesServerEventTest {
             .contains(responseContentPartAdded)
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -1536,6 +1535,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1649,7 +1649,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartDone())
             .contains(responseContentPartDone)
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -1689,6 +1688,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1983,7 +1983,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).contains(responseCreated)
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -2023,6 +2022,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2269,99 +2269,6 @@ internal class BetaResponsesServerEventTest {
     }
 
     @Test
-    fun ofError() {
-        val error =
-            BetaResponseErrorEvent.builder()
-                .code("code")
-                .message("message")
-                .param("param")
-                .sequenceNumber(0L)
-                .agent(BetaResponseErrorEvent.Agent.builder().agentName("agent_name").build())
-                .build()
-
-        val betaResponsesServerEvent = BetaResponsesServerEvent.ofError(error)
-
-        assertThat(betaResponsesServerEvent.responseAudioDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
-        assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).contains(error)
-        assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
-        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseFailed()).isEmpty
-        assertThat(betaResponsesServerEvent.responseIncomplete()).isEmpty
-        assertThat(betaResponsesServerEvent.responseOutputItemAdded()).isEmpty
-        assertThat(betaResponsesServerEvent.responseOutputItemDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
-        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseReasoningTextDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseReasoningTextDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseRefusalDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseRefusalDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseOutputTextDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseOutputTextDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseWebSearchCallCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseWebSearchCallInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseWebSearchCallSearching()).isEmpty
-        assertThat(betaResponsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
-        assertThat(betaResponsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpCallCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpCallFailed()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpCallInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpListToolsCompleted()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpListToolsFailed()).isEmpty
-        assertThat(betaResponsesServerEvent.responseMcpListToolsInProgress()).isEmpty
-        assertThat(betaResponsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
-        assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
-        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
-        assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
-    }
-
-    @Test
-    fun ofErrorRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val betaResponsesServerEvent =
-            BetaResponsesServerEvent.ofError(
-                BetaResponseErrorEvent.builder()
-                    .code("code")
-                    .message("message")
-                    .param("param")
-                    .sequenceNumber(0L)
-                    .agent(BetaResponseErrorEvent.Agent.builder().agentName("agent_name").build())
-                    .build()
-            )
-
-        val roundtrippedBetaResponsesServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(betaResponsesServerEvent),
-                jacksonTypeRef<BetaResponsesServerEvent>(),
-            )
-
-        assertThat(roundtrippedBetaResponsesServerEvent).isEqualTo(betaResponsesServerEvent)
-    }
-
-    @Test
     fun ofResponseFileSearchCallCompleted() {
         val responseFileSearchCallCompleted =
             BetaResponseFileSearchCallCompletedEvent.builder()
@@ -2393,7 +2300,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted())
             .contains(responseFileSearchCallCompleted)
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
@@ -2434,6 +2340,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2496,7 +2403,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress())
             .contains(responseFileSearchCallInProgress)
@@ -2537,6 +2443,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2599,7 +2506,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching())
@@ -2640,6 +2546,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2703,7 +2610,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -2744,6 +2650,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2809,7 +2716,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -2850,6 +2756,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3120,7 +3027,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -3160,6 +3066,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3644,7 +3551,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -3684,6 +3590,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4167,7 +4074,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -4207,6 +4113,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4519,7 +4426,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -4560,6 +4466,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4692,7 +4599,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -4733,6 +4639,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4836,7 +4743,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -4877,6 +4783,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4948,7 +4855,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -4989,6 +4895,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5060,7 +4967,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5101,6 +5007,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5167,7 +5074,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5208,6 +5114,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5272,7 +5179,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5313,6 +5219,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5377,7 +5284,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5418,6 +5324,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5480,7 +5387,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5520,6 +5426,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5580,7 +5487,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5620,6 +5526,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5690,7 +5597,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5731,6 +5637,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5813,7 +5720,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5854,6 +5760,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5928,7 +5835,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -5969,6 +5875,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6031,7 +5938,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6072,6 +5978,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6134,7 +6041,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6175,6 +6081,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6237,7 +6144,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6278,6 +6184,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6340,7 +6247,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6381,6 +6287,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6443,7 +6350,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6484,6 +6390,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6548,7 +6455,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6589,6 +6495,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6652,7 +6559,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6693,6 +6599,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6755,7 +6662,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6796,6 +6702,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6857,7 +6764,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6898,6 +6804,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6956,7 +6863,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -6996,6 +6902,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7056,7 +6963,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -7097,6 +7003,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7157,7 +7064,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -7198,6 +7104,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7258,7 +7165,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -7299,6 +7205,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7361,7 +7268,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -7402,6 +7308,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7436,7 +7343,13 @@ internal class BetaResponsesServerEventTest {
     fun ofResponseOutputTextAnnotationAdded() {
         val responseOutputTextAnnotationAdded =
             BetaResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(JsonValue.from(mapOf<String, Any>()))
+                .annotation(
+                    BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                        .fileId("file_id")
+                        .filename("filename")
+                        .index(0L)
+                        .build()
+                )
                 .annotationIndex(0L)
                 .contentIndex(0L)
                 .itemId("item_id")
@@ -7467,7 +7380,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -7508,6 +7420,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7518,7 +7431,13 @@ internal class BetaResponsesServerEventTest {
         val betaResponsesServerEvent =
             BetaResponsesServerEvent.ofResponseOutputTextAnnotationAdded(
                 BetaResponseOutputTextAnnotationAddedEvent.builder()
-                    .annotation(JsonValue.from(mapOf<String, Any>()))
+                    .annotation(
+                        BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                            .fileId("file_id")
+                            .filename("filename")
+                            .index(0L)
+                            .build()
+                    )
                     .annotationIndex(0L)
                     .contentIndex(0L)
                     .itemId("item_id")
@@ -7778,7 +7697,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -7818,6 +7736,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).contains(responseQueued)
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8096,7 +8015,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -8137,6 +8055,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta())
             .contains(responseCustomToolCallInputDelta)
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8201,7 +8120,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -8242,6 +8160,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone())
             .contains(responseCustomToolCallInputDone)
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8274,16 +8193,33 @@ internal class BetaResponsesServerEventTest {
     }
 
     @Test
-    fun ofResponseInjectCreated() {
-        val responseInjectCreated =
-            BetaResponseInjectCreatedEvent.builder()
-                .responseId("response_id")
+    fun ofError() {
+        val error =
+            BetaResponsesServerEvent.BetaResponseWsError.builder()
+                .error(
+                    BetaResponsesServerEvent.BetaResponseWsError.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .param("param")
+                        .type("type")
+                        .headers(
+                            BetaResponsesServerEvent.BetaResponseWsError.Error.Headers.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .build()
+                )
+                .agent(
+                    BetaResponsesServerEvent.BetaResponseWsError.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
                 .sequenceNumber(0L)
+                .status(0L)
                 .streamId("stream_id")
                 .build()
 
-        val betaResponsesServerEvent =
-            BetaResponsesServerEvent.ofResponseInjectCreated(responseInjectCreated)
+        val betaResponsesServerEvent = BetaResponsesServerEvent.ofError(error)
 
         assertThat(betaResponsesServerEvent.responseAudioDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
@@ -8298,7 +8234,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -8338,6 +8273,115 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).contains(error)
+        assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
+    }
+
+    @Test
+    fun ofErrorRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofError(
+                BetaResponsesServerEvent.BetaResponseWsError.builder()
+                    .error(
+                        BetaResponsesServerEvent.BetaResponseWsError.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .headers(
+                                BetaResponsesServerEvent.BetaResponseWsError.Error.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .agent(
+                        BetaResponsesServerEvent.BetaResponseWsError.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .status(0L)
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedBetaResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponsesServerEvent),
+                jacksonTypeRef<BetaResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponsesServerEvent).isEqualTo(betaResponsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseInjectCreated() {
+        val responseInjectCreated =
+            BetaResponseInjectCreatedEvent.builder()
+                .responseId("response_id")
+                .sequenceNumber(0L)
+                .streamId("stream_id")
+                .build()
+
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseInjectCreated(responseInjectCreated)
+
+        assertThat(betaResponsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).contains(responseInjectCreated)
         assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
@@ -8403,7 +8447,6 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
-        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
@@ -8443,6 +8486,7 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).contains(responseInjectFailed)
     }

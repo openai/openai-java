@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns the contents of the specified file. */
+/** Returns a response containing the contents of the specified file. */
 class FileContentParams
 private constructor(
     private val fileId: String?,

@@ -289,6 +289,10 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
+            @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
+
+            @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
+
             @JvmField val GPT_5_CODEX = of("gpt-5-codex")
 
             @JvmField val GPT_5_PRO = of("gpt-5-pro")
@@ -318,6 +322,8 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
@@ -347,6 +353,8 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
@@ -380,6 +388,8 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Value.GPT_5_CODEX
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
@@ -411,6 +421,8 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Known.GPT_5_CODEX
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
