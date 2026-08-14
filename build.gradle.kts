@@ -30,7 +30,7 @@ repositories {
 
 allprojects {
     group = "com.openai"
-    version = "4.50.0" // x-release-please-version
+    version = "4.51.0" // x-release-please-version
 
     // Dokka 2.1.0 depends on Jackson 2.15.3. Keep its isolated build-tool classpaths on a
     // secure, internally aligned Jackson release without changing the SDK's published or
