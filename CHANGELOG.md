@@ -1,5 +1,35 @@
 # Changelog
 
+## [4.51.0](https://github.com/openai/openai-java/compare/v4.50.0...v4.51.0) (2026-08-14)
+
+
+### Features
+
+* **api:** Add GPT_DAYBREAK and GPT_5_6_CYBER model identifiers ([5b9ba3a](https://github.com/openai/openai-java/commit/5b9ba3a75cbbb77335408c92f02be6f7b8c406ac))
+* **api:** add WebSocket stream IDs ([#861](https://github.com/openai/openai-java/issues/861)) ([4936d0b](https://github.com/openai/openai-java/commit/4936d0befb937a6a53f209ca43786e54b151889b))
+* **api:** add workload identity access token issued event ([#859](https://github.com/openai/openai-java/issues/859)) ([2b763fe](https://github.com/openai/openai-java/commit/2b763fe6ffdce11b875513da81590931f28f335d))
+* **api:** deprecate Sora video APIs ([#860](https://github.com/openai/openai-java/issues/860)) ([a191575](https://github.com/openai/openai-java/commit/a191575f0c9ae1dd62e8abe803aa9f5f26acb833))
+* **api:** Ultrafast tier, structured MCP and websocket errors, separate websocket events ([#863](https://github.com/openai/openai-java/issues/863)) ([ec274a8](https://github.com/openai/openai-java/commit/ec274a87048efc4f32b1e9801e1e49ba086cc181))
+
+
+### Bug Fixes
+
+* **api:** Add GPT_DAYBREAK and GPT_5_6_CYBER model identifiers ([#856](https://github.com/openai/openai-java/issues/856)) ([5b9ba3a](https://github.com/openai/openai-java/commit/5b9ba3a75cbbb77335408c92f02be6f7b8c406ac))
+* **api:** clarify audio upload metadata requirements ([#857](https://github.com/openai/openai-java/issues/857)) ([593f04c](https://github.com/openai/openai-java/commit/593f04c912d9331cd83c71ba7a4f6846e2e02fcc))
+* restore ProGuard configuration caching ([#842](https://github.com/openai/openai-java/issues/842)) ([fb8daa4](https://github.com/openai/openai-java/commit/fb8daa45a0592f636732a74afc0df3a96fff3db5))
+
+
+### Chores
+
+* **api:** Update generated file header text ([#846](https://github.com/openai/openai-java/issues/846)) ([d11a357](https://github.com/openai/openai-java/commit/d11a357aea469a78400334beadeeac17ca24fd69))
+* remove Stainless attribution and infrastructure ([#858](https://github.com/openai/openai-java/issues/858)) ([942a097](https://github.com/openai/openai-java/commit/942a0979dfb895c13bc12745d69e006bc4f7ce2c))
+
+
+### Documentation
+
+* **api:** describe response stream event unions ([#862](https://github.com/openai/openai-java/issues/862)) ([73b39b8](https://github.com/openai/openai-java/commit/73b39b82618b98fe221bb27e76b51d96357366c1))
+* keep README badges on latest release ([#839](https://github.com/openai/openai-java/issues/839)) ([33c6b57](https://github.com/openai/openai-java/commit/33c6b57709af067148dea6026c0d160df3413635))
+
 ## [4.50.0](https://github.com/openai/openai-java/compare/v4.49.0...v4.50.0) (2026-08-03)
 
 
