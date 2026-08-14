@@ -3,7 +3,6 @@
 package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -14,7 +13,13 @@ internal class BetaResponseOutputTextAnnotationAddedEventTest {
     fun create() {
         val betaResponseOutputTextAnnotationAddedEvent =
             BetaResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(JsonValue.from(mapOf<String, Any>()))
+                .annotation(
+                    BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                        .fileId("file_id")
+                        .filename("filename")
+                        .index(0L)
+                        .build()
+                )
                 .annotationIndex(0L)
                 .contentIndex(0L)
                 .itemId("item_id")
@@ -27,8 +32,16 @@ internal class BetaResponseOutputTextAnnotationAddedEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseOutputTextAnnotationAddedEvent._annotation())
-            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(betaResponseOutputTextAnnotationAddedEvent.annotation())
+            .contains(
+                BetaResponseOutputTextAnnotationAddedEvent.Annotation.ofFileCitation(
+                    BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                        .fileId("file_id")
+                        .filename("filename")
+                        .index(0L)
+                        .build()
+                )
+            )
         assertThat(betaResponseOutputTextAnnotationAddedEvent.annotationIndex()).isEqualTo(0L)
         assertThat(betaResponseOutputTextAnnotationAddedEvent.contentIndex()).isEqualTo(0L)
         assertThat(betaResponseOutputTextAnnotationAddedEvent.itemId()).isEqualTo("item_id")
@@ -47,7 +60,13 @@ internal class BetaResponseOutputTextAnnotationAddedEventTest {
         val jsonMapper = jsonMapper()
         val betaResponseOutputTextAnnotationAddedEvent =
             BetaResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(JsonValue.from(mapOf<String, Any>()))
+                .annotation(
+                    BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                        .fileId("file_id")
+                        .filename("filename")
+                        .index(0L)
+                        .build()
+                )
                 .annotationIndex(0L)
                 .contentIndex(0L)
                 .itemId("item_id")

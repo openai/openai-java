@@ -267,6 +267,7 @@ internal class BetaToolTest {
         val webSearch =
             BetaWebSearchTool.builder()
                 .type(BetaWebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(BetaWebSearchTool.SearchContextSize.LOW)
                 .userLocation(
@@ -307,6 +308,7 @@ internal class BetaToolTest {
             BetaTool.ofWebSearch(
                 BetaWebSearchTool.builder()
                     .type(BetaWebSearchTool.Type.WEB_SEARCH)
+                    .externalWebAccess(true)
                     .filters(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
                     .searchContextSize(BetaWebSearchTool.SearchContextSize.LOW)
                     .userLocation(

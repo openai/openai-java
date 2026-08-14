@@ -140,7 +140,7 @@ interface FileService {
     fun delete(fileId: String, requestOptions: RequestOptions): FileDeleted =
         delete(fileId, FileDeleteParams.none(), requestOptions)
 
-    /** Returns the contents of the specified file. */
+    /** Returns a response containing the contents of the specified file. */
     @MustBeClosed
     fun content(fileId: String): HttpResponse = content(fileId, FileContentParams.none())
 

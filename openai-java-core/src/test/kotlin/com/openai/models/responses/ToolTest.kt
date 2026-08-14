@@ -256,6 +256,7 @@ internal class ToolTest {
         val webSearch =
             WebSearchTool.builder()
                 .type(WebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(
@@ -296,6 +297,7 @@ internal class ToolTest {
             Tool.ofWebSearch(
                 WebSearchTool.builder()
                     .type(WebSearchTool.Type.WEB_SEARCH)
+                    .externalWebAccess(true)
                     .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                     .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                     .userLocation(

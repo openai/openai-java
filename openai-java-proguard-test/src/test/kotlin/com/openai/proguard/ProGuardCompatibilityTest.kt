@@ -265,6 +265,7 @@ internal class ProGuardCompatibilityTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -272,6 +273,8 @@ internal class ProGuardCompatibilityTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()

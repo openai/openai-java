@@ -21740,7 +21740,7 @@ private constructor(
         private val type: JsonValue,
         private val agent: JsonField<Agent>,
         private val approvalRequestId: JsonField<String>,
-        private val error: JsonField<String>,
+        private val error: JsonField<BetaMcpToolCallError>,
         private val output: JsonField<String>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -21761,7 +21761,9 @@ private constructor(
             @JsonProperty("approval_request_id")
             @ExcludeMissing
             approvalRequestId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<BetaMcpToolCallError> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         ) : this(
@@ -21848,7 +21850,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun error(): Optional<String> = error.getOptional("error")
+        fun error(): Optional<BetaMcpToolCallError> = error.getOptional("error")
 
         /**
          * The output from the tool call.
@@ -21919,7 +21921,7 @@ private constructor(
          *
          * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<BetaMcpToolCallError> = error
 
         /**
          * Returns the raw JSON value of [output].
@@ -21973,7 +21975,7 @@ private constructor(
             private var type: JsonValue = JsonValue.from("mcp_call")
             private var agent: JsonField<Agent> = JsonMissing.of()
             private var approvalRequestId: JsonField<String> = JsonMissing.of()
-            private var error: JsonField<String> = JsonMissing.of()
+            private var error: JsonField<BetaMcpToolCallError> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -22098,19 +22100,45 @@ private constructor(
             }
 
             /** The error from the tool call, if any. */
-            fun error(error: String?) = error(JsonField.ofNullable(error))
+            fun error(error: BetaMcpToolCallError?) = error(JsonField.ofNullable(error))
 
             /** Alias for calling [Builder.error] with `error.orElse(null)`. */
-            fun error(error: Optional<String>) = error(error.getOrNull())
+            fun error(error: Optional<BetaMcpToolCallError>) = error(error.getOrNull())
 
             /**
              * Sets [Builder.error] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.error] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.error] with a well-typed [BetaMcpToolCallError]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
-            fun error(error: JsonField<String>) = apply { this.error = error }
+            fun error(error: JsonField<BetaMcpToolCallError>) = apply { this.error = error }
+
+            /** Alias for calling [error] with `BetaMcpToolCallError.ofMcpProtocol(mcpProtocol)`. */
+            fun error(mcpProtocol: BetaMcpToolCallError.McpProtocolError) =
+                error(BetaMcpToolCallError.ofMcpProtocol(mcpProtocol))
+
+            /**
+             * Alias for calling [error] with
+             * `BetaMcpToolCallError.ofMcpToolExecution(mcpToolExecution)`.
+             */
+            fun error(mcpToolExecution: BetaMcpToolCallError.McpToolExecutionError) =
+                error(BetaMcpToolCallError.ofMcpToolExecution(mcpToolExecution))
+
+            /**
+             * Alias for calling [error] with the following:
+             * ```java
+             * BetaMcpToolCallError.McpToolExecutionError.builder()
+             *     .content(content)
+             *     .build()
+             * ```
+             */
+            fun mcpToolExecutionError(content: JsonValue) =
+                error(BetaMcpToolCallError.McpToolExecutionError.builder().content(content).build())
+
+            /** Alias for calling [error] with `BetaMcpToolCallError.ofHttp(http)`. */
+            fun error(http: BetaMcpToolCallError.HttpError) =
+                error(BetaMcpToolCallError.ofHttp(http))
 
             /** The output from the tool call. */
             fun output(output: String?) = output(JsonField.ofNullable(output))
@@ -22219,7 +22247,7 @@ private constructor(
             }
             agent().ifPresent { it.validate() }
             approvalRequestId()
-            error()
+            error().ifPresent { it.validate() }
             output()
             status().ifPresent { it.validate() }
             validated = true
@@ -22248,7 +22276,7 @@ private constructor(
                 type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
                 (agent.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
-                (if (error.asKnown().isPresent) 1 else 0) +
+                (error.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (output.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 
