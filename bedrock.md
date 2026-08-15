@@ -1,8 +1,9 @@
 # OpenAI on Amazon Bedrock
 
 The optional `openai-java-bedrock` artifact configures the standard OpenAI Java client for the
-OpenAI-compatible Amazon Bedrock Mantle endpoint. It uses the AWS SDK for Java 2.x credential chain
-and signs the final HTTP request with SigV4 on every attempt.
+OpenAI-compatible Amazon Bedrock Mantle and Runtime endpoints. It uses the AWS SDK for Java 2.x
+credential chain and signs the final HTTP request with SigV4 on every attempt. Existing clients
+continue to use Mantle by default.
 
 ## Installation
 
@@ -23,6 +24,66 @@ implementation("com.openai:openai-java-bedrock:4.51.0")
 ```
 
 <!-- x-release-please-end -->
+
+## Bedrock Runtime
+
+Select `BedrockEndpoint.RUNTIME` to use the Bedrock Runtime OpenAI-compatible endpoint. This
+selects the regional `bedrock-runtime` hostname and the `bedrock` SigV4 signing service while
+retaining the standard OpenAI Chat Completions and Responses APIs:
+
+```java
+import com.openai.bedrock.BedrockEndpoint;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+
+OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
+        .endpoint(BedrockEndpoint.RUNTIME)
+        .awsRegion("us-east-1")
+        .build();
+
+ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+        .model("us.openai.gpt-5.6-sol")
+        .addUserMessage("Say hello from Amazon Bedrock Runtime")
+        .build();
+
+client.chat().completions().create(params).choices().stream()
+        .flatMap(choice -> choice.message().content().stream())
+        .forEach(System.out::println);
+```
+
+Use the cross-region inference-profile identifier configured for your AWS account and region.
+Examples include `us.openai.gpt-5.6-sol`, `us.openai.gpt-5.6-terra`, and
+`us.openai.gpt-5.6-luna`; AWS rejects bare model identifiers for these deployments. Availability,
+global inference-profile access, supported API routes, authentication methods, streaming behavior,
+and model permissions depend on AWS account configuration and the selected model.
+
+The default Runtime URL is `https://bedrock-runtime.{region}.amazonaws.com/openai/v1` in standard
+AWS regions. The SDK selects the appropriate DNS suffix automatically for China, European Sovereign
+Cloud, and ISO partitions. Canonical Runtime URLs, including FIPS and dual-stack URLs, also infer
+Runtime mode when passed to `baseUrl(...)` or `AWS_BEDROCK_BASE_URL`.
+
+Run the included example with your existing AWS credentials:
+
+```shell
+AWS_REGION=us-east-1 BEDROCK_MODEL=us.openai.gpt-5.6-sol \
+  ./gradlew :openai-java-example:run -Pexample=BedrockRuntimeChat
+```
+
+Set `BEDROCK_STREAM=true` to stream Chat Completions. Set `BEDROCK_AUTH=bearer` and
+`AWS_BEARER_TOKEN_BEDROCK` to use a Bedrock bearer token instead of SigV4. Set `AWS_PROFILE` to
+select an explicit AWS profile and ensure a stale environment bearer token does not take precedence.
+
+An opt-in live test exercises Sol, Terra, and Luna inference profiles using real AWS credentials:
+
+```shell
+BEDROCK_LIVE_TEST=1 AWS_REGION=us-east-1 \
+  ./gradlew :openai-java-bedrock:test --tests '*BedrockRuntimeLiveTest'
+```
+
+Set `BEDROCK_LIVE_AUTH=bearer`, `BEDROCK_LIVE_API=responses`, or
+`BEDROCK_LIVE_STREAM=true` to choose the authentication mode, API, and streaming behavior. Use
+`BEDROCK_LIVE_MODELS` to provide a comma-separated set of account-enabled inference profiles.
 
 ## Standard AWS credentials
 
@@ -54,17 +115,29 @@ Base URL resolution follows this order:
 
 1. `baseUrl(...)`
 2. `AWS_BEDROCK_BASE_URL`
-3. `https://bedrock-mantle.{region}.api.aws/openai/v1`
+3. the regional endpoint selected by `endpoint(...)`:
+   - Mantle: `https://bedrock-mantle.{region}.api.aws/openai/v1`
+   - Runtime: `https://bedrock-runtime.{region}.amazonaws.com/openai/v1`
 
-The `bedrock-mantle` SigV4 service name is intentional. Bedrock's OpenAI-compatible route is
-model-dependent: models such as `openai.gpt-5.5` use `/openai/v1`, while
-`openai.gpt-oss-120b` uses `/v1`. The builder defaults to `/openai/v1`; configure the
-model's documented route explicitly when it differs:
+Mantle requests use the `bedrock-mantle` SigV4 service name. Runtime requests use the `bedrock`
+SigV4 service name. Bedrock's OpenAI-compatible route is model-dependent: models such as
+`openai.gpt-5.5` use `/openai/v1`, while `openai.gpt-oss-120b` uses `/v1`. Both endpoint families
+default to `/openai/v1`; configure the model's documented route explicitly when it differs:
 
 ```java
 OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
         .awsRegion("us-east-1")
         .baseUrl("https://bedrock-mantle.us-east-1.api.aws/v1")
+        .build();
+```
+
+Runtime deployments that require the `/v1` route can be configured similarly:
+
+```java
+OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
+        .endpoint(BedrockEndpoint.RUNTIME)
+        .awsRegion("us-east-1")
+        .baseUrl("https://bedrock-runtime.us-east-1.amazonaws.com/v1")
         .build();
 ```
 
@@ -115,6 +188,10 @@ OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
 
 Explicit bearer and AWS credential modes are mutually exclusive.
 
+If a shell contains a stale `AWS_BEARER_TOKEN_BEDROCK`, default-chain authentication will use that
+token instead of signing with SigV4. Unset the variable, or select an explicit AWS profile,
+credentials provider, or static credentials to force SigV4.
+
 ## Async and streaming responses
 
 The same client configuration supports asynchronous and streaming calls:
@@ -135,6 +212,10 @@ pass `authenticationExecutor(...)` to use a caller-owned executor instead.
 
 - Do not ship AWS credentials in browser or untrusted client applications.
 - Prefer temporary credentials, roles, profiles, and workload identities over long-lived keys.
+- Canonical AWS Bedrock URLs require HTTPS. Their endpoint family and region must match the
+  selected endpoint and configured signing region.
+- An explicitly selected endpoint is required when signing requests for a custom proxy or test
+  server. This prevents an ambiguous hostname from selecting the wrong SigV4 service.
 - Do not log access keys, secret keys, session tokens, bearer tokens, or signed authorization
   headers. The SDK redacts `Authorization` and `X-Amz-Security-Token` from its HTTP logs.
 - OpenAI workload identity federation and AWS Bedrock SigV4 are separate authentication systems.

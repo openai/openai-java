@@ -349,6 +349,225 @@ internal class BedrockAuthTest {
     }
 
     @Test
+    fun runtimeDerivesPartitionEndpointsAndSignsForTheBedrockService() {
+        val partitions =
+            listOf(
+                "us-east-1" to "amazonaws.com",
+                "cn-north-1" to "amazonaws.com.cn",
+                "eusc-de-east-1" to "amazonaws.eu",
+                "us-iso-east-1" to "c2s.ic.gov",
+                "us-isob-east-1" to "sc2s.sgov.gov",
+                "eu-isoe-west-1" to "cloud.adc-e.uk",
+                "us-isof-south-1" to "csp.hci.ic.gov",
+            )
+
+        partitions.forEach { (region, suffix) ->
+            val configuration =
+                options(
+                        endpoint = BedrockEndpoint.RUNTIME,
+                        awsRegion = region,
+                        awsAccessKeyId = "ACCESSKEY",
+                        awsSecretAccessKey = "secret",
+                    )
+                    .resolve(getenv = { null }, regionProvider = { null })
+            val baseUrl = "https://bedrock-runtime.$region.$suffix/openai/v1"
+
+            assertThat(configuration.endpoint).isEqualTo(BedrockEndpoint.RUNTIME)
+            assertThat(configuration.baseUrl).isEqualTo(baseUrl)
+            assertThat(
+                    configuration.authenticator
+                        .authenticate(request(baseUrl))
+                        .headers
+                        .values("Authorization")
+                        .single()
+                )
+                .contains("/$region/bedrock/aws4_request")
+            configuration.authenticator.close()
+        }
+    }
+
+    @Test
+    fun canonicalRuntimeOverridesInferEndpointAndSigningService() {
+        val baseUrl = "https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1"
+        val explicit =
+            options(
+                    awsRegion = "us-east-1",
+                    baseUrl = baseUrl,
+                    awsAccessKeyId = "ACCESSKEY",
+                    awsSecretAccessKey = "secret",
+                )
+                .resolve(getenv = { null }, regionProvider = { null })
+        val environment =
+            options(awsRegion = "us-east-1", apiKey = "token")
+                .resolve(
+                    getenv = { name -> if (name == ENV_BASE_URL) baseUrl else null },
+                    regionProvider = { null },
+                )
+
+        assertThat(explicit.endpoint).isEqualTo(BedrockEndpoint.RUNTIME)
+        assertThat(
+                explicit.authenticator
+                    .authenticate(request(baseUrl))
+                    .headers
+                    .values("Authorization")
+                    .single()
+            )
+            .contains("/us-east-1/bedrock/aws4_request")
+        assertThat(environment.endpoint).isEqualTo(BedrockEndpoint.RUNTIME)
+        assertThat(
+                environment.authenticator
+                    .authenticate(request(baseUrl))
+                    .headers
+                    .values("Authorization")
+            )
+            .containsExactly("Bearer token")
+        explicit.authenticator.close()
+        environment.authenticator.close()
+    }
+
+    @Test
+    fun canonicalRuntimeFipsAndDualStackHostsRetainEndpointSecurity() {
+        val hostnames =
+            listOf(
+                "bedrock-runtime.us-east-1.amazonaws.com",
+                "bedrock-runtime-fips.us-east-1.amazonaws.com",
+                "bedrock-runtime.us-east-1.api.aws",
+                "bedrock-runtime-fips.us-east-1.api.aws",
+                "bedrock-runtime.eusc-de-east-1.amazonaws.eu",
+                "bedrock-runtime-fips.eusc-de-east-1.api.amazonwebservices.eu",
+                "bedrock-runtime.cn-north-1.api.amazonwebservices.com.cn",
+            )
+
+        hostnames.forEach { hostname ->
+            val region =
+                hostname
+                    .removePrefix("bedrock-runtime-fips.")
+                    .removePrefix("bedrock-runtime.")
+                    .substringBefore('.')
+            val baseUrl = "https://$hostname./openai/v1"
+            val configuration =
+                options(
+                        endpoint = BedrockEndpoint.RUNTIME,
+                        awsRegion = region,
+                        baseUrl = baseUrl,
+                        apiKey = "token",
+                    )
+                    .resolve(getenv = { null }, regionProvider = { null })
+
+            assertThat(configuration.endpoint).isEqualTo(BedrockEndpoint.RUNTIME)
+            assertThat(configuration.baseUrl).isEqualTo(baseUrl)
+            configuration.authenticator.close()
+
+            assertThatThrownBy {
+                    options(
+                            endpoint = BedrockEndpoint.RUNTIME,
+                            awsRegion = region,
+                            baseUrl = "http://$hostname./openai/v1",
+                            apiKey = "token",
+                        )
+                        .resolve(getenv = { null }, regionProvider = { null })
+                }
+                .hasMessageContaining("require HTTPS")
+        }
+    }
+
+    @Test
+    fun rejectsCanonicalEndpointFamilyAndRegionMismatches() {
+        val runtimeUrl = "https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1"
+
+        assertThatThrownBy {
+                options(
+                        endpoint = BedrockEndpoint.MANTLE,
+                        awsRegion = "us-east-1",
+                        baseUrl = runtimeUrl,
+                        apiKey = "token",
+                    )
+                    .resolve(getenv = { null }, regionProvider = { null })
+            }
+            .hasMessageContaining("does not match the selected `mantle` endpoint")
+
+        assertThatThrownBy {
+                options(
+                        endpoint = BedrockEndpoint.RUNTIME,
+                        awsRegion = "us-west-2",
+                        baseUrl = runtimeUrl,
+                        apiKey = "token",
+                    )
+                    .resolve(getenv = { null }, regionProvider = { null })
+            }
+            .hasMessageContaining("does not match the configured AWS region")
+    }
+
+    @Test
+    fun rejectsMalformedAwsRegionsBeforeEndpointConstruction() {
+        listOf(
+                "us-east-1.amazonaws.com@attacker.example#",
+                "us-east-1/../../attacker.example",
+                "us-east-1?target=attacker.example",
+                "not-a-region",
+            )
+            .forEach { region ->
+                assertThatThrownBy {
+                        options(
+                                endpoint = BedrockEndpoint.RUNTIME,
+                                awsRegion = region,
+                                apiKey = "token",
+                            )
+                            .resolve(getenv = { null }, regionProvider = { null })
+                    }
+                    .hasMessageContaining("AWS region is invalid")
+
+                assertThatThrownBy {
+                        options(endpoint = BedrockEndpoint.RUNTIME, apiKey = "token")
+                            .resolve(
+                                getenv = { name -> if (name == "AWS_REGION") region else null },
+                                regionProvider = { null },
+                            )
+                    }
+                    .hasMessageContaining("AWS region is invalid")
+            }
+    }
+
+    @Test
+    fun customSignedEndpointsRequireExplicitEndpointSelection() {
+        val baseUrl = "https://bedrock.example.com/openai/v1"
+
+        assertThatThrownBy {
+                options(
+                        awsRegion = "us-east-1",
+                        baseUrl = baseUrl,
+                        awsAccessKeyId = "ACCESSKEY",
+                        awsSecretAccessKey = "secret",
+                    )
+                    .resolve(getenv = { null }, regionProvider = { null })
+            }
+            .hasMessageContaining("requires an explicit `endpoint`")
+
+        listOf(BedrockEndpoint.MANTLE to "bedrock-mantle", BedrockEndpoint.RUNTIME to "bedrock")
+            .forEach { (endpoint, service) ->
+                val configuration =
+                    options(
+                            endpoint = endpoint,
+                            awsRegion = "us-east-1",
+                            baseUrl = baseUrl,
+                            awsAccessKeyId = "ACCESSKEY",
+                            awsSecretAccessKey = "secret",
+                        )
+                        .resolve(getenv = { null }, regionProvider = { null })
+
+                assertThat(
+                        configuration.authenticator
+                            .authenticate(request(baseUrl))
+                            .headers
+                            .values("Authorization")
+                            .single()
+                    )
+                    .contains("/us-east-1/$service/aws4_request")
+                configuration.authenticator.close()
+            }
+    }
+
+    @Test
     fun explicitBaseUrlBearerModesDoNotResolveDefaultRegion() {
         val configurations =
             listOf(
@@ -450,18 +669,17 @@ internal class BedrockAuthTest {
 
     @Test
     fun rejectsCanonicalEndpointRegionMismatch() {
-        val configuration =
-            options(
-                    awsRegion = "us-west-2",
-                    baseUrl = "https://bedrock-mantle.us-east-1.api.aws/openai/v1",
-                    awsAccessKeyId = "access",
-                    awsSecretAccessKey = "secret",
-                )
-                .resolve(getenv = { null }, regionProvider = { null })
-
-        assertThatThrownBy { configuration.authenticator.authenticate(request()) }
+        assertThatThrownBy {
+                options(
+                        awsRegion = "us-west-2",
+                        baseUrl = "https://bedrock-mantle.us-east-1.api.aws/openai/v1",
+                        awsAccessKeyId = "access",
+                        awsSecretAccessKey = "secret",
+                    )
+                    .resolve(getenv = { null }, regionProvider = { null })
+            }
             .isInstanceOf(OpenAIException::class.java)
-            .hasMessageContaining("does not match the SigV4 region")
+            .hasMessageContaining("does not match the configured AWS region")
     }
 
     @Test
@@ -648,16 +866,19 @@ internal class BedrockAuthTest {
             .hasMessageContaining("replayable request body")
     }
 
-    private fun request(): HttpRequest =
+    private fun request(
+        baseUrl: String = "https://bedrock-mantle.us-east-1.api.aws/openai/v1"
+    ): HttpRequest =
         HttpRequest.builder()
             .method(HttpMethod.POST)
-            .baseUrl("https://bedrock-mantle.us-east-1.api.aws/openai/v1")
+            .baseUrl(baseUrl)
             .addPathSegment("responses")
             .putHeader("Content-Type", "application/json")
             .body(StringBody("{}"))
             .build()
 
     private fun options(
+        endpoint: BedrockEndpoint? = null,
         awsRegion: String? = null,
         baseUrl: String? = null,
         apiKey: String? = null,
@@ -672,6 +893,7 @@ internal class BedrockAuthTest {
         authenticationExecutor: Executor? = null,
     ) =
         BedrockAuthOptions(
+            endpoint = endpoint,
             awsRegion = awsRegion,
             baseUrl = baseUrl,
             apiKey = apiKey,
