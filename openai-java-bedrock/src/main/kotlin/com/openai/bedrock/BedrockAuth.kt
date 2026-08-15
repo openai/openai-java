@@ -108,13 +108,13 @@ internal fun BedrockAuthOptions.resolve(
         )
     }
 
-    val configuredRegion =
+    val configuredRegion by lazy {
         normalizedRegion
             ?: normalizeEnvironment(getenv("AWS_REGION"))
             ?: normalizeEnvironment(getenv("AWS_DEFAULT_REGION"))
-    validateRegion(configuredRegion)
+    }
     val resolvedRegion by lazy {
-        configuredRegion ?: regionProvider()?.id()?.also(::validateRegion)
+        (configuredRegion ?: regionProvider()?.id()).also(::validateRegion)
     }
     val configuredBaseUrl = normalizedBaseUrl ?: normalizeEnvironment(getenv(ENV_BASE_URL))
     val normalizedResolvedBaseUrl =
@@ -137,7 +137,9 @@ internal fun BedrockAuthOptions.resolve(
         }
     val parsedEndpoint = parseBedrockEndpointHostname(normalizedResolvedBaseUrl.toHttpUrl().host)
     val resolvedEndpoint = endpoint ?: parsedEndpoint?.endpoint ?: BedrockEndpoint.MANTLE
-    validateCanonicalEndpoint(normalizedResolvedBaseUrl, resolvedEndpoint, configuredRegion)
+    val canonicalRegion =
+        if (parsedEndpoint != null) normalizedRegion?.also(::validateRegion) else null
+    validateCanonicalEndpoint(normalizedResolvedBaseUrl, resolvedEndpoint, canonicalRegion)
     val resolvedAuthenticationExecutor by lazy {
         authenticationExecutor ?: newAuthenticationExecutor()
     }

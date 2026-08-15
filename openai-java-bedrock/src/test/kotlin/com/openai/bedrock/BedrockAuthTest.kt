@@ -569,36 +569,62 @@ internal class BedrockAuthTest {
 
     @Test
     fun explicitBaseUrlBearerModesDoNotResolveDefaultRegion() {
+        val customUrl = "https://bedrock.example.com/openai/v1"
+        val canonicalUrl = "https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1"
         val configurations =
             listOf(
-                options(baseUrl = "https://bedrock.example.com/openai/v1", apiKey = "token"),
-                options(
-                    baseUrl = "https://bedrock.example.com/openai/v1",
-                    tokenProvider = Supplier { "token" },
-                ),
+                options(baseUrl = customUrl, apiKey = "token"),
+                options(baseUrl = customUrl, tokenProvider = Supplier { "token" }),
+                options(baseUrl = canonicalUrl, apiKey = "token"),
+                options(baseUrl = canonicalUrl, tokenProvider = Supplier { "token" }),
             )
 
-        configurations.forEach { options ->
+        configurations.forEach { configurationOptions ->
+            val environmentReads = mutableListOf<String>()
             val configuration =
-                options.resolve(
-                    getenv = { null },
+                configurationOptions.resolve(
+                    getenv = { name ->
+                        environmentReads.add(name)
+                        when (name) {
+                            "AWS_REGION",
+                            "AWS_DEFAULT_REGION" -> "auto"
+                            else -> null
+                        }
+                    },
                     regionProvider = { error("default region provider must not be called") },
                 )
 
-            assertThat(configuration.baseUrl).isEqualTo("https://bedrock.example.com/openai/v1")
+            assertThat(configuration.baseUrl).isEqualTo(configurationOptions.baseUrl)
+            assertThat(environmentReads).doesNotContain("AWS_REGION", "AWS_DEFAULT_REGION")
+            configuration.authenticator.close()
         }
     }
 
     @Test
     fun explicitBaseUrlSkipAuthDoesNotResolveDefaultRegion() {
-        val configuration =
-            options(baseUrl = "https://bedrock.example.com/openai/v1", skipAuth = true)
-                .resolve(
-                    getenv = { null },
-                    regionProvider = { error("default region provider must not be called") },
-                )
+        listOf(
+                "https://bedrock.example.com/openai/v1",
+                "https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1",
+            )
+            .forEach { baseUrl ->
+                val environmentReads = mutableListOf<String>()
+                val configuration =
+                    options(baseUrl = baseUrl, skipAuth = true)
+                        .resolve(
+                            getenv = { name ->
+                                environmentReads.add(name)
+                                when (name) {
+                                    "AWS_REGION",
+                                    "AWS_DEFAULT_REGION" -> "auto"
+                                    else -> null
+                                }
+                            },
+                            regionProvider = { error("default region provider must not be called") },
+                        )
 
-        assertThat(configuration.baseUrl).isEqualTo("https://bedrock.example.com/openai/v1")
+                assertThat(configuration.baseUrl).isEqualTo(baseUrl)
+                assertThat(environmentReads).doesNotContain("AWS_REGION", "AWS_DEFAULT_REGION")
+            }
     }
 
     @Test

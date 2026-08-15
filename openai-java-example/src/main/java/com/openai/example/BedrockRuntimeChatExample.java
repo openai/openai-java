@@ -11,13 +11,11 @@ public final class BedrockRuntimeChatExample {
     private BedrockRuntimeChatExample() {}
 
     public static void main(String[] args) {
-        String region = environmentOrDefault("AWS_REGION", "us-east-1");
         String model = environmentOrDefault("BEDROCK_MODEL", "us.openai.gpt-5.6-sol");
         String auth = environmentOrDefault("BEDROCK_AUTH", "sigv4");
 
-        BedrockOpenAIOkHttpClient.Builder builder = BedrockOpenAIOkHttpClient.builder()
-                .endpoint(BedrockEndpoint.RUNTIME)
-                .awsRegion(region);
+        BedrockOpenAIOkHttpClient.Builder builder =
+                BedrockOpenAIOkHttpClient.builder().endpoint(BedrockEndpoint.RUNTIME);
 
         if ("bearer".equals(auth)) {
             String bearerToken = System.getenv("AWS_BEARER_TOKEN_BEDROCK");
