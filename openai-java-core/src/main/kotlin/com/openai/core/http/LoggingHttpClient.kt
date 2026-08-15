@@ -188,15 +188,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
-        private var redactedHeaders: Set<String> =
-            setOf(
-                "authorization",
-                "api-key",
-                "x-api-key",
-                "x-amz-security-token",
-                "cookie",
-                "set-cookie",
-            )
+        private var redactedHeaders: Set<String> = DEFAULT_REDACTED_HEADERS
         private var clock: Clock = Clock.systemUTC()
         private var level: LogLevel? = null
 

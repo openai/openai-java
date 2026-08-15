@@ -203,6 +203,50 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+#### X.509 workload identity (HTTP)
+
+X.509 workload identity uses the client certificate presented by the configured HTTP transport as
+the subject credential. The SDK performs the token exchange lazily through that same transport,
+caches the short-lived bearer token, collapses concurrent refreshes, and retries one rejected bearer
+token only when the original API request is replayable. Certificate files, private keys,
+passphrases, server trust, proxies, HSMs, connection pools, and certificate rotation remain native
+JSSE/transport concerns.
+
+```java
+import com.openai.auth.WorkloadIdentity;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import java.time.Duration;
+
+WorkloadIdentity workloadIdentity = WorkloadIdentity.x509Builder()
+    .identityProviderId("idp_...")
+    .serviceAccountId("svc_acct_...")
+    .refreshBuffer(Duration.ofMinutes(20))
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .followRedirects(false)
+    .sslSocketFactory(clientSslContext.getSocketFactory())
+    .trustManager(defaultServerTrustManager)
+    .workloadIdentity(workloadIdentity)
+    .build();
+```
+
+When no base URL is configured, only X.509-mode clients default to
+`https://mtls.api.openai.com/v1`. The token exchange is always an exact `POST` to
+`https://mtls.auth.openai.com/oauth/token`; there is no public custom exchange URL, and the JSON
+body omits `subject_token`. Custom `HttpClient` implementations must honor
+`HttpRequest.followRedirects()` so X.509 requests cannot forward the client identity or bearer token
+to a redirect target.
+
+For a complete Java 8-compatible rollout example, including an application-owned
+`OPENAI_AUTH_MODE=api_key|x509` toggle, PKCS#12 loading, default JVM server trust, and cleanup, see
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java).
+Spring applications should configure the same long-lived client through standard JSSE/keystore or
+custom `OpenAIOkHttpClient` wiring; the SDK does not define OpenAI-specific certificate properties.
+This phase covers HTTP APIs only; Realtime/WebSockets are not yet supported for X.509 workload
+identity.
+
 #### Kubernetes service account token provider
 
 ```java
@@ -1655,7 +1699,6 @@ import java.security.KeyStore;
 import java.util.Arrays;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
@@ -1729,7 +1772,7 @@ X509TrustManager trustManager = Arrays.stream(trustManagers.getTrustManagers())
         "The default TrustManagerFactory did not provide an X509TrustManager"));
 
 SSLContext sslContext = SSLContext.getInstance("TLS");
-sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
+sslContext.init(keyManagers.getKeyManagers(), null, null);
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
     // Set the OpenAI credential explicitly so an Azure key cannot be selected accidentally.
@@ -1749,8 +1792,9 @@ Set `openai.baseUrl` or `OPENAI_BASE_URL` to `https://mtls-eu.api.openai.com/v1`
 Residency, or to an appropriate custom mTLS gateway. If neither is set, the recipe uses
 `https://mtls.api.openai.com/v1`. The SDK does not inspect or rewrite that URL. To rotate the client
 identity, build a new `SSLContext`, HTTP transport, and SDK client, then close the old client. This
-recipe applies to ordinary HTTP API-key traffic; it does not add certificate-only authentication or
-Realtime/WebSocket mTLS support.
+recipe applies to ordinary HTTP API-key traffic. For X.509 workload identity token exchange, use
+`WorkloadIdentity.x509Builder()` and the same configured transport as shown above. Neither recipe
+adds certificate-only authentication or Realtime/WebSocket X.509 workload identity support.
 
 See the complete, compilable
 [`MutualTlsExample`](openai-java-example/src/main/java/com/openai/example/MutualTlsExample.java).

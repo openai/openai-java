@@ -5,8 +5,8 @@ import com.openai.core.RequestOptions
 import com.openai.errors.OpenAIRetryableException
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.io.OutputStream
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -22,120 +23,274 @@ import org.mockito.kotlin.whenever
 internal class WorkloadIdentityHttpClientTest {
 
     @Test
-    fun execute_injectsBearerToken() {
-        val token = "test-token"
+    fun executeInjectsBearerToken() {
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
-        whenever(workloadIdentityAuth.getToken()).thenReturn(token)
-
+        whenever(workloadIdentityAuth.getToken()).thenReturn("test-token")
         val delegateHttpClient = mock<HttpClient>()
-        val response = mockResponse(200, "success")
-        whenever(delegateHttpClient.execute(any(), any())).thenReturn(response)
-
+        whenever(delegateHttpClient.execute(any(), any())).thenReturn(mockResponse(200, "success"))
         val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
 
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .baseUrl("https://api.openai.com/v1/models")
-                .build()
-
-        val result = client.execute(request, RequestOptions.none())
+        val result = client.execute(request(), RequestOptions.none())
 
         assertThat(result.statusCode()).isEqualTo(200)
         verify(delegateHttpClient)
             .execute(
-                argThat { req -> req.headers.values("Authorization").contains("Bearer $token") },
+                argThat { req ->
+                    req.headers.values("Authorization").contains("Bearer test-token")
+                },
                 any(),
             )
     }
 
     @Test
-    fun execute_on401_invalidatesTokenAndThrowsRetryableException() {
-        val token = "test-token"
+    fun executeWithX509RefusesRedirectsForApiRequest() {
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
-        whenever(workloadIdentityAuth.getToken()).thenReturn(token)
-
+        whenever(workloadIdentityAuth.getTokenLease()).thenReturn(tokenLease("test-token"))
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
         val delegateHttpClient = mock<HttpClient>()
-        val response401 = mockResponse(401, "Unauthorized")
-        whenever(delegateHttpClient.execute(any(), any())).thenReturn(response401)
-
+        whenever(delegateHttpClient.execute(any(), any())).thenReturn(mockResponse(200, "success"))
         val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
 
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .baseUrl("https://api.openai.com/v1/models")
-                .build()
+        client.execute(request(), RequestOptions.none())
 
-        assertThatThrownBy { client.execute(request, RequestOptions.none()) }
-            .isInstanceOf(OpenAIRetryableException::class.java)
-            .hasMessage("OAuth token is expired")
-
-        verify(workloadIdentityAuth).invalidateToken()
+        verify(delegateHttpClient).execute(argThat { req -> !req.followRedirects }, any())
     }
 
     @Test
-    fun executeAsync_on401_invalidatesTokenAndThrowsRetryableException() {
-        val token = "test-token"
+    fun executeOn401PreservesSubjectTokenRetrySignal() {
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
-        whenever(workloadIdentityAuth.getTokenAsync())
-            .thenReturn(CompletableFuture.completedFuture(token))
-
+        whenever(workloadIdentityAuth.getToken()).thenReturn("test-token")
         val delegateHttpClient = mock<HttpClient>()
-        val response401 = mockResponse(401, "Unauthorized")
-        whenever(delegateHttpClient.executeAsync(any(), any()))
-            .thenReturn(CompletableFuture.completedFuture(response401))
-
+        val response401 = mock<HttpResponse>()
+        whenever(response401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.execute(any(), any())).thenReturn(response401)
         val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
 
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .baseUrl("https://api.openai.com/v1/models")
-                .build()
+        assertThatThrownBy { client.execute(request(), RequestOptions.none()) }
+            .isInstanceOf(OpenAIRetryableException::class.java)
+            .hasMessage("OAuth token is expired")
 
-        assertThatThrownBy { client.executeAsync(request, RequestOptions.none()).get() }
-            .isInstanceOf(ExecutionException::class.java)
+        verify(delegateHttpClient).execute(any(), any())
+        verify(workloadIdentityAuth).invalidateToken()
+        verify(response401).close()
+    }
+
+    @Test
+    fun executeAsyncOn401PreservesSubjectTokenRetrySignal() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.getTokenAsync())
+            .thenReturn(CompletableFuture.completedFuture("test-token"))
+        val delegateHttpClient = mock<HttpClient>()
+        val response401 = mock<HttpResponse>()
+        whenever(response401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.executeAsync(any(), any()))
+            .thenReturn(CompletableFuture.completedFuture(response401))
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        assertThatThrownBy { client.executeAsync(request(), RequestOptions.none()).get() }
             .hasCauseInstanceOf(OpenAIRetryableException::class.java)
             .cause()
             .hasMessage("OAuth token is expired")
 
+        verify(delegateHttpClient).executeAsync(any(), any())
         verify(workloadIdentityAuth).invalidateToken()
+        verify(response401).close()
     }
 
     @Test
-    fun executeAsync_injectsBearerToken() {
-        val token = "test-token"
+    fun executeOn401InvalidatesAndReplaysExactlyOnce() {
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
-        whenever(workloadIdentityAuth.getTokenAsync())
-            .thenReturn(CompletableFuture.completedFuture(token))
-
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val oldToken = tokenLease("old-token")
+        val newToken = tokenLease("new-token")
+        whenever(workloadIdentityAuth.getTokenLease()).thenReturn(oldToken, newToken)
         val delegateHttpClient = mock<HttpClient>()
-        val response = mockResponse(200, "success")
-        whenever(delegateHttpClient.executeAsync(any(), any()))
-            .thenReturn(CompletableFuture.completedFuture(response))
-
+        val response401 = mock<HttpResponse>()
+        whenever(response401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.execute(any(), any()))
+            .thenReturn(response401, mockResponse(200, "success"))
         val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
 
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .baseUrl("https://api.openai.com/v1/models")
-                .build()
+        val result = client.execute(request(repeatable = true), RequestOptions.none())
 
-        val resultFuture = client.executeAsync(request, RequestOptions.none())
-        val result = resultFuture.get()
+        assertThat(result.statusCode()).isEqualTo(200)
+        verify(delegateHttpClient, times(2)).execute(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(oldToken)
+        verify(response401).close()
+    }
+
+    @Test
+    fun executeOnRepeated401DoesNotReplayMoreThanOnce() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val oldToken = tokenLease("old-token")
+        val newToken = tokenLease("new-token")
+        whenever(workloadIdentityAuth.getTokenLease()).thenReturn(oldToken, newToken)
+        val delegateHttpClient = mock<HttpClient>()
+        val first401 = mock<HttpResponse>()
+        val second401 = mock<HttpResponse>()
+        whenever(first401.statusCode()).thenReturn(401)
+        whenever(second401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.execute(any(), any())).thenReturn(first401, second401)
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val result = client.execute(request(), RequestOptions.none())
+
+        assertThat(result).isSameAs(second401)
+        verify(delegateHttpClient, times(2)).execute(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(oldToken)
+        verify(workloadIdentityAuth).invalidateToken(newToken)
+    }
+
+    @Test
+    fun executeOn401DoesNotReplayNonRepeatableBody() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val token = tokenLease("test-token")
+        whenever(workloadIdentityAuth.getTokenLease()).thenReturn(token)
+        val delegateHttpClient = mock<HttpClient>()
+        val response401 = mock<HttpResponse>()
+        whenever(response401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.execute(any(), any())).thenReturn(response401)
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val result = client.execute(request(repeatable = false), RequestOptions.none())
+
+        assertThat(result).isSameAs(response401)
+        verify(delegateHttpClient).execute(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(token)
+    }
+
+    @Test
+    fun executeAsyncOn401InvalidatesAndReplaysExactlyOnce() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val oldToken = tokenLease("old-token")
+        val newToken = tokenLease("new-token")
+        whenever(workloadIdentityAuth.getTokenLeaseAsync())
+            .thenReturn(
+                CompletableFuture.completedFuture(oldToken),
+                CompletableFuture.completedFuture(newToken),
+            )
+        val delegateHttpClient = mock<HttpClient>()
+        val response401 = mock<HttpResponse>()
+        whenever(response401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.executeAsync(any(), any()))
+            .thenReturn(
+                CompletableFuture.completedFuture(response401),
+                CompletableFuture.completedFuture(mockResponse(200, "success")),
+            )
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val result = client.executeAsync(request(repeatable = true), RequestOptions.none()).get()
+
+        assertThat(result.statusCode()).isEqualTo(200)
+        verify(delegateHttpClient, times(2)).executeAsync(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(oldToken)
+        verify(response401).close()
+    }
+
+    @Test
+    fun executeAsyncOnRepeated401DoesNotReplayMoreThanOnce() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val oldToken = tokenLease("old-token")
+        val newToken = tokenLease("new-token")
+        whenever(workloadIdentityAuth.getTokenLeaseAsync())
+            .thenReturn(
+                CompletableFuture.completedFuture(oldToken),
+                CompletableFuture.completedFuture(newToken),
+            )
+        val delegateHttpClient = mock<HttpClient>()
+        val first401 = mock<HttpResponse>()
+        val second401 = mock<HttpResponse>()
+        whenever(first401.statusCode()).thenReturn(401)
+        whenever(second401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.executeAsync(any(), any()))
+            .thenReturn(
+                CompletableFuture.completedFuture(first401),
+                CompletableFuture.completedFuture(second401),
+            )
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val result = client.executeAsync(request(), RequestOptions.none()).get()
+
+        assertThat(result).isSameAs(second401)
+        verify(delegateHttpClient, times(2)).executeAsync(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(oldToken)
+        verify(workloadIdentityAuth).invalidateToken(newToken)
+    }
+
+    @Test
+    fun executeAsyncOn401DoesNotReplayNonRepeatableBody() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val token = tokenLease("test-token")
+        whenever(workloadIdentityAuth.getTokenLeaseAsync())
+            .thenReturn(CompletableFuture.completedFuture(token))
+        val delegateHttpClient = mock<HttpClient>()
+        val response401 = mock<HttpResponse>()
+        whenever(response401.statusCode()).thenReturn(401)
+        whenever(delegateHttpClient.executeAsync(any(), any()))
+            .thenReturn(CompletableFuture.completedFuture(response401))
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val result = client.executeAsync(request(repeatable = false), RequestOptions.none()).get()
+
+        assertThat(result).isSameAs(response401)
+        verify(delegateHttpClient).executeAsync(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(token)
+    }
+
+    @Test
+    fun executeAsyncInjectsBearerToken() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.getTokenAsync())
+            .thenReturn(CompletableFuture.completedFuture("test-token"))
+        val delegateHttpClient = mock<HttpClient>()
+        whenever(delegateHttpClient.executeAsync(any(), any()))
+            .thenReturn(CompletableFuture.completedFuture(mockResponse(200, "success")))
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val result = client.executeAsync(request(), RequestOptions.none()).get()
 
         assertThat(result.statusCode()).isEqualTo(200)
         verify(delegateHttpClient)
             .executeAsync(
-                argThat { req -> req.headers.values("Authorization").contains("Bearer $token") },
+                argThat { req ->
+                    req.headers.values("Authorization").contains("Bearer test-token")
+                },
                 any(),
             )
     }
 
-    private fun mockResponse(statusCode: Int, body: String): HttpResponse {
-        return object : HttpResponse {
+    private fun request(repeatable: Boolean? = null): HttpRequest =
+        HttpRequest.builder()
+            .method(if (repeatable == null) HttpMethod.GET else HttpMethod.POST)
+            .baseUrl("https://api.openai.com/v1/models")
+            .apply {
+                repeatable?.let {
+                    body(
+                        object : HttpRequestBody {
+                            override fun writeTo(outputStream: OutputStream) {}
+
+                            override fun contentType(): String = "application/octet-stream"
+
+                            override fun contentLength(): Long = 0
+
+                            override fun repeatable(): Boolean = it
+
+                            override fun close() {}
+                        }
+                    )
+                }
+            }
+            .build()
+
+    private fun tokenLease(value: String) = WorkloadIdentityAuth.TokenLease(value)
+
+    private fun mockResponse(statusCode: Int, body: String): HttpResponse =
+        object : HttpResponse {
             override fun statusCode() = statusCode
 
             override fun headers() = Headers.builder().build()
@@ -144,5 +299,4 @@ internal class WorkloadIdentityHttpClientTest {
 
             override fun close() {}
         }
-    }
 }

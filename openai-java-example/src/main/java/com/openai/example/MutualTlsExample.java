@@ -11,7 +11,6 @@ import java.security.KeyStore;
 import java.util.Arrays;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
@@ -63,7 +62,7 @@ public final class MutualTlsExample {
             X509TrustManager trustManager = findX509TrustManager(trustManagers);
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
+            sslContext.init(keyManagers.getKeyManagers(), null, null);
 
             client = OpenAIOkHttpClient.builder()
                     // Select an OpenAI bearer credential explicitly; do not fall back to Azure.

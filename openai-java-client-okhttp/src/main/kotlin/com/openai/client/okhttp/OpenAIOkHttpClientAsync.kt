@@ -250,7 +250,8 @@ class OpenAIOkHttpClientAsync private constructor() {
         /**
          * The base URL to use for every request.
          *
-         * Defaults to the production environment: `https://api.openai.com/v1`.
+         * Defaults to `https://api.openai.com/v1`, or `https://mtls.api.openai.com/v1` for X.509
+         * workload identity.
          */
         fun baseUrl(baseUrl: String?) = apply { clientOptions.baseUrl(baseUrl) }
 

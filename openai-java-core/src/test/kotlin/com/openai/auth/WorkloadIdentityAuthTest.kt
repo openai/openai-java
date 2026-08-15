@@ -13,6 +13,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -116,6 +118,46 @@ internal class WorkloadIdentityAuthTest {
 
         assertThat(token).isEqualTo(accessToken)
         verify(httpClient, times(1)).execute(any<HttpRequest>())
+    }
+
+    @ParameterizedTest
+    @EnumSource(SubjectTokenType::class)
+    fun getToken_preservesExistingSubjectTokenExchangeFormats(tokenType: SubjectTokenType) {
+        val provider = mock<SubjectTokenProvider>()
+        whenever(provider.tokenType()).thenReturn(tokenType)
+        whenever(provider.getToken(any(), any())).thenReturn("legacy-subject-token")
+        val response =
+            mockResponse(200, """{"access_token":"legacy-access-token","expires_in":3600}""")
+        var capturedRequest: HttpRequest? = null
+        whenever(httpClient.execute(any<HttpRequest>())).thenAnswer { invocation ->
+            capturedRequest = invocation.getArgument(0)
+            response
+        }
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+            )
+
+        assertThat(auth.getToken()).isEqualTo("legacy-access-token")
+
+        val request = checkNotNull(capturedRequest)
+        val requestJson = requestJson(request)
+        val expectedTokenType =
+            when (tokenType) {
+                SubjectTokenType.JWT -> "urn:ietf:params:oauth:token-type:jwt"
+                SubjectTokenType.ID -> "urn:ietf:params:oauth:token-type:id_token"
+            }
+        assertThat(request.url()).isEqualTo("https://auth.openai.com/oauth/token")
+        assertThat(request.followRedirects).isTrue()
+        assertThat(requestJson.get("subject_token").asText()).isEqualTo("legacy-subject-token")
+        assertThat(requestJson.get("subject_token_type").asText()).isEqualTo(expectedTokenType)
     }
 
     @Test
@@ -380,7 +422,7 @@ internal class WorkloadIdentityAuthTest {
             }
 
         val httpClient = mock<HttpClient>()
-        val response = mockResponse(400, oauthErrorResponse, stubHeaders = true)
+        val response = mockResponse(400, oauthErrorResponse)
         whenever(httpClient.execute(any<HttpRequest>())).thenReturn(response)
 
         val auth =
@@ -521,14 +563,12 @@ internal class WorkloadIdentityAuthTest {
         verify(httpClient, times(2)).execute(any<HttpRequest>())
     }
 
-    private fun mockResponse(
-        statusCode: Int,
-        body: String,
-        stubHeaders: Boolean = false,
-    ): HttpResponse {
+    private fun mockResponse(statusCode: Int, body: String): HttpResponse {
         val response = mock<HttpResponse>()
         whenever(response.statusCode()).thenReturn(statusCode)
-        if (stubHeaders) whenever(response.headers()).thenReturn(Headers.builder().build())
+        if (statusCode !in 200..299) {
+            whenever(response.headers()).thenReturn(Headers.builder().build())
+        }
         whenever(response.body()).thenReturn(ByteArrayInputStream(body.toByteArray()))
         return response
     }

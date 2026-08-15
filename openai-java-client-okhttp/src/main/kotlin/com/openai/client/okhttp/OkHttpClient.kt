@@ -92,6 +92,10 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     private fun newCall(request: HttpRequest, requestOptions: RequestOptions): Call {
         val clientBuilder = okHttpClient.newBuilder()
 
+        if (!request.followRedirects) {
+            clientBuilder.followRedirects(false).followSslRedirects(false)
+        }
+
         requestOptions.timeout?.let {
             clientBuilder
                 .connectTimeout(it.connect())

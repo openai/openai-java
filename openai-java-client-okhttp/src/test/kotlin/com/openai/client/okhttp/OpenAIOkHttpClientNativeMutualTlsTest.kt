@@ -1,12 +1,20 @@
 package com.openai.client.okhttp
 
+import com.openai.auth.WorkloadIdentity
 import com.openai.client.OpenAIClient
+import com.openai.client.OpenAIClientImpl
+import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
+import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIIoException
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.KeyStore
 import java.security.cert.X509Certificate
+import java.util.concurrent.CompletableFuture
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -87,11 +95,92 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
         }
     }
 
+    @Test
+    fun x509WorkloadIdentityUsesSameFullChainTransportForExchangeAndApi() {
+        mutuallyAuthenticatedServer().use { fixture ->
+            fixture.server.enqueue(
+                MockResponse()
+                    .setHeader("Content-Type", "application/json")
+                    .setBody(
+                        """{"access_token":"test-token","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"Bearer","expires_in":3600}"""
+                    )
+            )
+            fixture.server.enqueue(
+                MockResponse()
+                    .setHeader("Content-Type", "application/json")
+                    .setBody("""{"object":"list","data":[]}""")
+            )
+            val transport =
+                routingTokenExchangeTo(
+                    nativeMutualTlsTransport(
+                        arrayOf(clientLeaf.certificate, clientIntermediate.certificate),
+                        fixture.clientTrust.trustManager,
+                    ),
+                    fixture.server.url("/oauth/token").toString(),
+                )
+            val client =
+                OpenAIClientImpl(
+                    ClientOptions.builder()
+                        .httpClient(transport)
+                        .baseUrl(fixture.baseUrl)
+                        .workloadIdentity(
+                            WorkloadIdentity.x509Builder()
+                                .identityProviderId("idp_test")
+                                .serviceAccountId("svc_acct_test")
+                                .build()
+                        )
+                        .build()
+                )
+
+            try {
+                client.files().list()
+            } finally {
+                client.close()
+            }
+
+            val exchange = fixture.server.takeRequest()
+            val api = fixture.server.takeRequest()
+            assertThat(exchange.path).isEqualTo("/oauth/token")
+            assertThat(exchange.getHeader("Authorization")).isNull()
+            assertThat(api.path).isEqualTo("/v1/files")
+            assertThat(api.getHeader("Authorization")).isEqualTo("Bearer test-token")
+            listOf(exchange, api).forEach { request ->
+                assertThat(requireNotNull(request.handshake).peerCertificates)
+                    .containsSubsequence(clientLeaf.certificate, clientIntermediate.certificate)
+            }
+        }
+    }
+
     private fun nativeMutualTlsClient(
         chain: Array<X509Certificate>,
         serverTrustManager: X509TrustManager,
         baseUrl: String,
     ): OpenAIClient {
+        val sslContext = nativeMutualTlsSslContext(chain, serverTrustManager)
+        return OpenAIOkHttpClient.builder()
+            .apiKey("test")
+            .baseUrl(baseUrl)
+            .followRedirects(false)
+            .sslSocketFactory(sslContext.socketFactory)
+            .trustManager(serverTrustManager)
+            .maxRetries(0)
+            .build()
+    }
+
+    private fun nativeMutualTlsTransport(
+        chain: Array<X509Certificate>,
+        serverTrustManager: X509TrustManager,
+    ): OkHttpClient =
+        OkHttpClient.builder()
+            .followRedirects(false)
+            .sslSocketFactory(nativeMutualTlsSslContext(chain, serverTrustManager).socketFactory)
+            .trustManager(serverTrustManager)
+            .build()
+
+    private fun nativeMutualTlsSslContext(
+        chain: Array<X509Certificate>,
+        serverTrustManager: X509TrustManager,
+    ): SSLContext {
         val password = "test password".toCharArray()
         val storedKeyStore =
             KeyStore.getInstance("PKCS12").apply {
@@ -116,15 +205,31 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
                 init(keyManagers.keyManagers, arrayOf<TrustManager>(serverTrustManager), null)
             }
 
-        return OpenAIOkHttpClient.builder()
-            .apiKey("test")
-            .baseUrl(baseUrl)
-            .followRedirects(false)
-            .sslSocketFactory(sslContext.socketFactory)
-            .trustManager(serverTrustManager)
-            .maxRetries(0)
-            .build()
+        return sslContext
     }
+
+    private fun routingTokenExchangeTo(delegate: HttpClient, tokenExchangeUrl: String): HttpClient =
+        object : HttpClient {
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): HttpResponse = delegate.execute(route(request), requestOptions)
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): CompletableFuture<HttpResponse> =
+                delegate.executeAsync(route(request), requestOptions)
+
+            override fun close() = delegate.close()
+
+            private fun route(request: HttpRequest): HttpRequest =
+                if (request.url() == "https://mtls.auth.openai.com/oauth/token") {
+                    request.toBuilder().baseUrl(tokenExchangeUrl).build()
+                } else {
+                    request
+                }
+        }
 
     private fun mutuallyAuthenticatedServer(): MutualTlsServer {
         val serverRoot =

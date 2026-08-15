@@ -151,9 +151,16 @@ private constructor(
     /**
      * The base URL to use for every request.
      *
-     * Defaults to the production environment: `https://api.openai.com/v1`.
+     * Defaults to `https://api.openai.com/v1`, or `https://mtls.api.openai.com/v1` for X.509
+     * workload identity.
      */
-    fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
+    fun baseUrl(): String =
+        baseUrl
+            ?: if ((credential as? WorkloadIdentityCredential)?.getAuth()?.isX509 == true) {
+                X509_PRODUCTION_URL
+            } else {
+                PRODUCTION_URL
+            }
 
     fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
 
@@ -170,6 +177,7 @@ private constructor(
     companion object {
 
         const val PRODUCTION_URL = "https://api.openai.com/v1"
+        private const val X509_PRODUCTION_URL = "https://mtls.api.openai.com/v1"
 
         /**
          * Returns a mutable builder for constructing an instance of [ClientOptions].
@@ -336,7 +344,8 @@ private constructor(
         /**
          * The base URL to use for every request.
          *
-         * Defaults to the production environment: `https://api.openai.com/v1`.
+         * Defaults to `https://api.openai.com/v1`, or `https://mtls.api.openai.com/v1` for X.509
+         * workload identity.
          */
         fun baseUrl(baseUrl: String?) = apply {
             require(!explicitDataResidency) { "baseUrl and dataResidency are mutually exclusive" }
@@ -559,10 +568,17 @@ private constructor(
         private fun effectiveCredential(
             httpClient: HttpClient,
             jsonMapper: JsonMapper,
+            sleeper: Sleeper,
+            clock: Clock,
+            maxRetries: Int,
         ): Credential {
+            val configuredCredential = credential
+            val configuredWorkloadIdentity = workloadIdentity
             if (httpRequestAuthenticator != null) {
                 if (
-                    credential != null || workloadIdentity != null || !adminApiKey.isNullOrEmpty()
+                    configuredCredential != null ||
+                        configuredWorkloadIdentity != null ||
+                        !adminApiKey.isNullOrEmpty()
                 ) {
                     throw IllegalStateException(
                         "Provider authentication cannot be combined with credential (apiKey), workloadIdentity, or adminApiKey"
@@ -571,25 +587,37 @@ private constructor(
                 return HttpRequestAuthenticatorCredential
             }
             if (
-                credential != null &&
-                    credential !== AdminApiKeyOnlyCredential &&
-                    credential !is WorkloadIdentityCredential &&
-                    workloadIdentity != null
+                configuredCredential != null &&
+                    configuredCredential !== AdminApiKeyOnlyCredential &&
+                    configuredCredential !is WorkloadIdentityCredential &&
+                    configuredWorkloadIdentity != null
             ) {
                 throw IllegalStateException(
                     "Cannot specify both credential (apiKey) and workloadIdentity. Please specify only one."
                 )
             }
             return when {
-                workloadIdentity != null ->
+                configuredWorkloadIdentity != null ->
                     WorkloadIdentityCredential(
                         WorkloadIdentityAuth(
-                            config = workloadIdentity!!,
+                            config = configuredWorkloadIdentity,
                             httpClient = httpClient,
                             jsonMapper = jsonMapper,
+                            sleeper = sleeper,
+                            clock = clock,
+                            maxRetries = maxRetries,
                         )
                     )
-                credential != null && credential !== AdminApiKeyOnlyCredential -> credential!!
+                configuredCredential is WorkloadIdentityCredential ->
+                    configuredCredential.withDependencies(
+                        httpClient = httpClient,
+                        jsonMapper = jsonMapper,
+                        sleeper = sleeper,
+                        clock = clock,
+                        maxRetries = maxRetries,
+                    )
+                configuredCredential != null &&
+                    configuredCredential !== AdminApiKeyOnlyCredential -> configuredCredential
                 !adminApiKey.isNullOrEmpty() -> AdminApiKeyOnlyCredential
                 else ->
                     throw IllegalStateException(
@@ -708,6 +736,12 @@ private constructor(
                         )
                     )
             val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
+            val configuredWorkloadIdentity =
+                workloadIdentity ?: (credential as? WorkloadIdentityCredential)?.getAuth()?.config
+            val effectiveBaseUrl =
+                baseUrl
+                    ?: if (configuredWorkloadIdentity?.isX509() == true) X509_PRODUCTION_URL
+                    else null
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -722,7 +756,7 @@ private constructor(
             // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
 
-            baseUrl?.let {
+            effectiveBaseUrl?.let {
                 when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
                     // Legacy Azure routes will still require an api-version value.
                     AzureUrlCategory.AZURE_LEGACY ->
@@ -744,18 +778,29 @@ private constructor(
             organization?.let { headers.replace("OpenAI-Organization", it) }
             project?.let { headers.replace("OpenAI-Project", it) }
 
-            val credential = effectiveCredential(httpClient, jsonMapper)
+            val credential =
+                effectiveCredential(
+                    httpClient = httpClient,
+                    jsonMapper = jsonMapper,
+                    sleeper = sleeper,
+                    clock = clock,
+                    maxRetries = maxRetries,
+                )
 
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
 
             val loggingDelegate =
-                if (httpRequestAuthenticator != null) httpClient
-                else
+                if (
+                    effectiveWorkloadIdentityAuth != null && !effectiveWorkloadIdentityAuth.isX509
+                ) {
                     WorkloadIdentityHttpClient(
                         delegate = httpClient,
                         workloadIdentityAuth = effectiveWorkloadIdentityAuth,
                     )
+                } else {
+                    httpClient
+                }
 
             val loggingHttpClient =
                 LoggingHttpClient.builder()
@@ -772,13 +817,23 @@ private constructor(
                     )
                 } ?: loggingHttpClient
 
-            val wrappedHttpClient =
+            val retryingHttpClient =
                 RetryingHttpClient.builder()
                     .httpClient(perAttemptHttpClient)
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
                     .build()
+
+            val wrappedHttpClient =
+                if (effectiveWorkloadIdentityAuth?.isX509 == true) {
+                    WorkloadIdentityHttpClient(
+                        delegate = retryingHttpClient,
+                        workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                    )
+                } else {
+                    retryingHttpClient
+                }
 
             return ClientOptions(
                 httpClient,

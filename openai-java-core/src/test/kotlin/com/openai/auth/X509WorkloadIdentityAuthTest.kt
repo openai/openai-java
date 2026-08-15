@@ -1,0 +1,505 @@
+package com.openai.auth
+
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.core.RequestOptions
+import com.openai.core.Sleeper
+import com.openai.core.http.Headers
+import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpMethod
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
+import com.openai.errors.BadRequestException
+import com.openai.errors.InternalServerException
+import com.openai.errors.OpenAIInvalidDataException
+import com.openai.errors.UnexpectedStatusCodeException
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.time.Duration
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
+import java.util.function.LongSupplier
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+
+internal class X509WorkloadIdentityAuthTest {
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun exchangeUsesExactEndpointAndStructurallyOmitsSubjectToken(async: Boolean) {
+        val capturedRequest = AtomicReference<HttpRequest>()
+        val httpClient = synchronousHttpClient { request ->
+            capturedRequest.set(request)
+            tokenResponse("access-token", expiresIn = 3600)
+        }
+        val auth = x509Auth(httpClient)
+
+        val token = if (async) auth.getTokenAsync().get(5, TimeUnit.SECONDS) else auth.getToken()
+        assertThat(token).isEqualTo("access-token")
+
+        val request = capturedRequest.get()
+        val body = requestJson(request)
+        assertThat(request.method).isEqualTo(HttpMethod.POST)
+        assertThat(request.url()).isEqualTo("https://mtls.auth.openai.com/oauth/token")
+        assertThat(request.followRedirects).isFalse()
+        assertThat(request.body?.contentType()).isEqualTo("application/json")
+        assertThat(body.get("grant_type").asText())
+            .isEqualTo("urn:ietf:params:oauth:grant-type:token-exchange")
+        assertThat(body.get("subject_token_type").asText())
+            .isEqualTo("urn:openai:params:oauth:token-type:x509")
+        assertThat(body.get("identity_provider_id").asText()).isEqualTo("idp_test")
+        assertThat(body.get("service_account_id").asText()).isEqualTo("svc_acct_test")
+        assertThat(body.has("subject_token")).isFalse()
+        assertThat(body.has("client_id")).isFalse()
+    }
+
+    @Test
+    fun exchangeIsLazy() {
+        val calls = AtomicInteger()
+        val auth =
+            x509Auth(
+                synchronousHttpClient {
+                    calls.incrementAndGet()
+                    tokenResponse("access-token", expiresIn = 3600)
+                }
+            )
+
+        assertThat(calls).hasValue(0)
+        assertThat(auth.getToken()).isEqualTo("access-token")
+        assertThat(calls).hasValue(1)
+    }
+
+    @Test
+    fun refreshBufferIsClampedToHalfOfShortTokenLifetimeUsingMonotonicTime() {
+        val nowNanos = AtomicLong()
+        val calls = AtomicInteger()
+        val responses =
+            ConcurrentLinkedQueue(
+                listOf(
+                    tokenResponse("first-token", expiresIn = 10),
+                    tokenResponse("second-token", expiresIn = 10),
+                )
+            )
+        val auth =
+            x509Auth(
+                httpClient =
+                    synchronousHttpClient {
+                        calls.incrementAndGet()
+                        responses.remove()
+                    },
+                refreshBuffer = Duration.ofMinutes(20),
+                nanoTime = LongSupplier(nowNanos::get),
+            )
+
+        assertThat(auth.getToken()).isEqualTo("first-token")
+        nowNanos.set(Duration.ofSeconds(4).toNanos())
+        assertThat(auth.getToken()).isEqualTo("first-token")
+        assertThat(calls).hasValue(1)
+
+        nowNanos.set(Duration.ofSeconds(5).toNanos())
+        assertThat(auth.getToken()).isEqualTo("second-token")
+        assertThat(calls).hasValue(2)
+    }
+
+    @Test
+    fun concurrentColdSynchronousCallersShareOneExchange() {
+        val exchangeStarted = CountDownLatch(1)
+        val releaseExchange = CountDownLatch(1)
+        val calls = AtomicInteger()
+        val auth =
+            x509Auth(
+                synchronousHttpClient {
+                    calls.incrementAndGet()
+                    exchangeStarted.countDown()
+                    check(releaseExchange.await(5, TimeUnit.SECONDS))
+                    tokenResponse("shared-token", expiresIn = 3600)
+                }
+            )
+        val executor = Executors.newFixedThreadPool(20)
+
+        try {
+            val results = (1..100).map { executor.submit<String> { auth.getToken() } }
+            assertThat(exchangeStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            releaseExchange.countDown()
+
+            assertThat(results.map { it.get(5, TimeUnit.SECONDS) }).containsOnly("shared-token")
+            assertThat(calls).hasValue(1)
+        } finally {
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun cancelingAsyncWaiterDoesNotCancelOrPoisonSharedRefresh() {
+        val exchange = CompletableFuture<HttpResponse>()
+        val calls = AtomicInteger()
+        val httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("unexpected synchronous call")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    calls.incrementAndGet()
+                    return exchange
+                }
+
+                override fun close() {}
+            }
+        val auth = x509Auth(httpClient)
+
+        val canceledWaiter = auth.getTokenAsync()
+        val successfulWaiter = auth.getTokenAsync()
+        assertThat(canceledWaiter.cancel(true)).isTrue()
+        assertThat(exchange.isCancelled).isFalse()
+
+        exchange.complete(tokenResponse("shared-token", expiresIn = 3600))
+
+        assertThat(successfulWaiter.get(5, TimeUnit.SECONDS)).isEqualTo("shared-token")
+        assertThat(calls).hasValue(1)
+        assertThat(auth.getTokenAsync().get(5, TimeUnit.SECONDS)).isEqualTo("shared-token")
+    }
+
+    @Test
+    fun synchronousAndAsynchronousColdCallersShareOneExchange() {
+        val exchangeStarted = CountDownLatch(1)
+        val releaseExchange = CountDownLatch(1)
+        val calls = AtomicInteger()
+        val auth =
+            x509Auth(
+                synchronousHttpClient {
+                    calls.incrementAndGet()
+                    exchangeStarted.countDown()
+                    check(releaseExchange.await(5, TimeUnit.SECONDS))
+                    tokenResponse("shared-token", expiresIn = 3600)
+                }
+            )
+        val executor = Executors.newSingleThreadExecutor()
+
+        try {
+            val synchronous = executor.submit<String> { auth.getToken() }
+            assertThat(exchangeStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            val asynchronous = auth.getTokenAsync()
+            releaseExchange.countDown()
+
+            assertThat(synchronous.get(5, TimeUnit.SECONDS)).isEqualTo("shared-token")
+            assertThat(asynchronous.get(5, TimeUnit.SECONDS)).isEqualTo("shared-token")
+            assertThat(calls).hasValue(1)
+        } finally {
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun asyncProactiveRefreshReturnsUsableCachedTokenUntilRefreshCompletes() {
+        val nowNanos = AtomicLong()
+        val refresh = CompletableFuture<HttpResponse>()
+        val calls = AtomicInteger()
+        val httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    calls.incrementAndGet()
+                    return tokenResponse("first-token", expiresIn = 10)
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    calls.incrementAndGet()
+                    return refresh
+                }
+
+                override fun close() {}
+            }
+        val auth = x509Auth(httpClient, nanoTime = LongSupplier(nowNanos::get))
+        assertThat(auth.getToken()).isEqualTo("first-token")
+
+        nowNanos.set(Duration.ofSeconds(5).toNanos())
+        assertThat(auth.getTokenAsync().get(5, TimeUnit.SECONDS)).isEqualTo("first-token")
+        assertThat(auth.getTokenAsync().get(5, TimeUnit.SECONDS)).isEqualTo("first-token")
+        assertThat(calls).hasValue(2)
+
+        refresh.complete(tokenResponse("refreshed-token", expiresIn = 10))
+
+        assertThat(auth.getTokenAsync().get(5, TimeUnit.SECONDS)).isEqualTo("refreshed-token")
+        assertThat(calls).hasValue(2)
+    }
+
+    @Test
+    fun staleTokenLeaseDoesNotInvalidateSameValuedRefreshedToken() {
+        val refreshExchange = CompletableFuture<HttpResponse>()
+        val calls = AtomicInteger()
+        val httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    calls.incrementAndGet()
+                    return tokenResponse("old-token", expiresIn = 3600)
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    calls.incrementAndGet()
+                    return refreshExchange
+                }
+
+                override fun close() {}
+            }
+        val auth = x509Auth(httpClient)
+        val oldToken = auth.getTokenLease()
+        assertThat(oldToken.value).isEqualTo("old-token")
+
+        auth.invalidateToken(oldToken)
+        val firstWaiter = auth.getTokenAsync()
+        refreshExchange.complete(tokenResponse("old-token", expiresIn = 3600))
+        assertThat(firstWaiter.get(5, TimeUnit.SECONDS)).isEqualTo("old-token")
+
+        auth.invalidateToken(oldToken)
+        val secondWaiter = auth.getTokenAsync()
+        assertThat(secondWaiter.get(5, TimeUnit.SECONDS)).isEqualTo("old-token")
+        assertThat(calls).hasValue(2)
+    }
+
+    @Test
+    fun tokenLeaseDebugRepresentationDoesNotExposeBearerToken() {
+        val auth =
+            x509Auth(
+                synchronousHttpClient { tokenResponse("sensitive-bearer-token", expiresIn = 3600) }
+            )
+
+        assertThat(auth.getTokenLease().toString()).doesNotContain("sensitive-bearer-token")
+    }
+
+    @Test
+    fun transientExchangeRetryIsBoundedAndHonorsRetryAfter() {
+        val calls = AtomicInteger()
+        val sleeper = RecordingSleeper()
+        val httpClient = synchronousHttpClient {
+            if (calls.getAndIncrement() == 0) {
+                response(
+                    statusCode = 429,
+                    body = "{}",
+                    headers = Headers.builder().put("Retry-After", "1.5").build(),
+                )
+            } else {
+                tokenResponse("access-token", expiresIn = 3600)
+            }
+        }
+        val auth = x509Auth(httpClient, sleeper = sleeper, maxRetries = 1)
+
+        assertThat(auth.getToken()).isEqualTo("access-token")
+        assertThat(calls).hasValue(2)
+        assertThat(sleeper.durations).containsExactly(Duration.ofMillis(1500))
+    }
+
+    @Test
+    fun transientExchangeRetriesDoNotExceedConfiguredBound() {
+        val calls = AtomicInteger()
+        val sleeper = RecordingSleeper()
+        val auth =
+            x509Auth(
+                httpClient =
+                    synchronousHttpClient {
+                        calls.incrementAndGet()
+                        response(500, "{}")
+                    },
+                sleeper = sleeper,
+                maxRetries = 2,
+            )
+
+        assertThatThrownBy { auth.getToken() }.isInstanceOf(InternalServerException::class.java)
+        assertThat(calls).hasValue(3)
+        assertThat(sleeper.durations).hasSize(2)
+    }
+
+    @Test
+    fun oauthClientErrorIsNotRetriedAndDoesNotExposeDescription() {
+        val calls = AtomicInteger()
+        val auth =
+            x509Auth(
+                synchronousHttpClient {
+                    calls.incrementAndGet()
+                    response(
+                        400,
+                        """{"error":"invalid_grant","error_description":"sensitive mapping detail"}""",
+                    )
+                },
+                maxRetries = 2,
+            )
+
+        val thrown = assertThrows<BadRequestException> { auth.getToken() }
+
+        assertThat(calls).hasValue(1)
+        assertThat(thrown.code()).contains("invalid_grant")
+        assertThat(thrown.message).doesNotContain("sensitive mapping detail")
+    }
+
+    @Test
+    fun redirectResponseIsRejectedWithoutRetry() {
+        val calls = AtomicInteger()
+        val auth =
+            x509Auth(
+                synchronousHttpClient {
+                    calls.incrementAndGet()
+                    response(
+                        302,
+                        "redirect",
+                        Headers.builder().put("Location", "https://example.com/").build(),
+                    )
+                }
+            )
+
+        assertThatThrownBy { auth.getToken() }
+            .isInstanceOf(UnexpectedStatusCodeException::class.java)
+        assertThat(calls).hasValue(1)
+    }
+
+    @Test
+    fun x509ExchangeRequiresPositiveExpiresIn() {
+        val missing = x509Auth(synchronousHttpClient { tokenResponse("token", expiresIn = null) })
+        val zero = x509Auth(synchronousHttpClient { tokenResponse("token", expiresIn = 0) })
+        val negative = x509Auth(synchronousHttpClient { tokenResponse("token", expiresIn = -1) })
+        val nonNumeric =
+            x509Auth(
+                synchronousHttpClient {
+                    response(200, """{"access_token":"token","expires_in":"3600"}""")
+                }
+            )
+
+        assertThatThrownBy { missing.getToken() }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("X.509 token exchange response missing 'expires_in' field")
+        assertThatThrownBy { zero.getToken() }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Token exchange returned invalid expires_in value: 0")
+        assertThatThrownBy { negative.getToken() }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Token exchange returned invalid expires_in value: -1")
+        assertThatThrownBy { nonNumeric.getToken() }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Token exchange returned a non-integer expires_in value")
+    }
+
+    @Test
+    fun invalidSuccessResponseDoesNotExposeBodyOrTokenMaterial() {
+        val auth =
+            x509Auth(
+                synchronousHttpClient {
+                    response(200, """{"access_token":"","expires_in":3600,"debug":"secret-body"}""")
+                }
+            )
+
+        assertThatThrownBy { auth.getToken() }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Token exchange response missing 'access_token' field")
+            .hasMessageNotContaining("secret-body")
+    }
+
+    private fun x509Auth(
+        httpClient: HttpClient,
+        refreshBuffer: Duration = Duration.ofMinutes(20),
+        sleeper: Sleeper = RecordingSleeper(),
+        maxRetries: Int = 2,
+        nanoTime: LongSupplier = LongSupplier { System.nanoTime() },
+    ): WorkloadIdentityAuth =
+        WorkloadIdentityAuth(
+            config =
+                WorkloadIdentity.x509Builder()
+                    .identityProviderId("idp_test")
+                    .serviceAccountId("svc_acct_test")
+                    .refreshBuffer(refreshBuffer)
+                    .build(),
+            httpClient = httpClient,
+            jsonMapper = JsonMapper(),
+            sleeper = sleeper,
+            maxRetries = maxRetries,
+            nanoTime = nanoTime,
+        )
+
+    private fun synchronousHttpClient(execute: (HttpRequest) -> HttpResponse): HttpClient =
+        object : HttpClient {
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): HttpResponse = execute(request)
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): CompletableFuture<HttpResponse> =
+                try {
+                    CompletableFuture.completedFuture(execute(request))
+                } catch (error: Throwable) {
+                    CompletableFuture<HttpResponse>().also { it.completeExceptionally(error) }
+                }
+
+            override fun close() {}
+        }
+
+    private fun tokenResponse(accessToken: String, expiresIn: Int?): HttpResponse {
+        val expiresInJson = expiresIn?.let { ",\"expires_in\":$it" } ?: ""
+        return response(
+            200,
+            """{"access_token":"$accessToken","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"Bearer"$expiresInJson}""",
+        )
+    }
+
+    private fun response(
+        statusCode: Int,
+        body: String,
+        headers: Headers = Headers.builder().build(),
+    ): HttpResponse =
+        object : HttpResponse {
+            override fun statusCode(): Int = statusCode
+
+            override fun headers(): Headers = headers
+
+            override fun body(): InputStream = ByteArrayInputStream(body.toByteArray())
+
+            override fun close() {}
+        }
+
+    private fun requestJson(request: HttpRequest): JsonNode {
+        val output = ByteArrayOutputStream()
+        checkNotNull(request.body).writeTo(output)
+        return JsonMapper().readTree(output.toByteArray())
+    }
+
+    private class RecordingSleeper : Sleeper {
+        val durations = mutableListOf<Duration>()
+
+        override fun sleep(duration: Duration) {
+            durations.add(duration)
+        }
+
+        override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
+            durations.add(duration)
+            return CompletableFuture.completedFuture(null)
+        }
+
+        override fun close() {}
+    }
+}

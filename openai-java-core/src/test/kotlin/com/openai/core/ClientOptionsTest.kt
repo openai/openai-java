@@ -276,6 +276,97 @@ internal class ClientOptionsTest {
                 .build()
 
         assertThat(clientOptions.credential).isInstanceOf(WorkloadIdentityCredential::class.java)
+        assertThat(clientOptions.baseUrl()).isEqualTo(ClientOptions.PRODUCTION_URL)
+    }
+
+    @Test
+    fun build_withX509WorkloadIdentity_defaultsToMtlsBaseUrl() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+
+        assertThat(clientOptions.credential).isInstanceOf(WorkloadIdentityCredential::class.java)
+        assertThat(clientOptions.baseUrl()).isEqualTo("https://mtls.api.openai.com/v1")
+    }
+
+    @Test
+    fun build_withX509WorkloadIdentity_preservesExplicitBaseUrl() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .baseUrl("https://mtls-eu.api.openai.com/v1")
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+
+        assertThat(clientOptions.baseUrl()).isEqualTo("https://mtls-eu.api.openai.com/v1")
+    }
+
+    @Test
+    fun toBuilder_switchingX509WorkloadIdentityToApiKey_restoresPublicDefaultBaseUrl() {
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+
+        val updated = original.toBuilder().apiKey("test-api-key").build()
+
+        assertThat(updated.baseUrl()).isEqualTo(ClientOptions.PRODUCTION_URL)
+    }
+
+    @Test
+    fun toBuilder_withX509WorkloadIdentity_carriesDiscriminator() {
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+
+        val updated = original.toBuilder().baseUrl(null as String?).build()
+
+        assertThat(updated.baseUrl()).isEqualTo("https://mtls.api.openai.com/v1")
+        assertThat(updated.credential).isSameAs(original.credential)
+    }
+
+    @Test
+    fun toBuilder_withX509WorkloadIdentity_rebindsAuthWhenTransportChanges() {
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+
+        val updated = original.toBuilder().httpClient(mock()).build()
+
+        assertThat(updated.credential).isNotSameAs(original.credential)
+        assertThat(updated.baseUrl()).isEqualTo("https://mtls.api.openai.com/v1")
     }
 
     @Test

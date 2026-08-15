@@ -11,6 +11,9 @@ import com.openai.core.JsonValue
 import com.openai.core.toImmutable
 import java.util.TreeMap
 
+internal val DEFAULT_REDACTED_HEADERS =
+    setOf("authorization", "api-key", "x-api-key", "x-amz-security-token", "cookie", "set-cookie")
+
 class Headers
 private constructor(
     private val map: Map<String, List<String>>,
@@ -109,5 +112,15 @@ private constructor(
         return other is Headers && map == other.map
     }
 
-    override fun toString(): String = "Headers{map=$map}"
+    override fun toString(): String {
+        val redactedMap =
+            map.mapValues { (name, values) ->
+                if (DEFAULT_REDACTED_HEADERS.any { it.equals(name, ignoreCase = true) }) {
+                    listOf("██")
+                } else {
+                    values
+                }
+            }
+        return "Headers{map=$redactedMap}"
+    }
 }

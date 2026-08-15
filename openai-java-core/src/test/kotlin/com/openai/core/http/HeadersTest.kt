@@ -1,10 +1,25 @@
 package com.openai.core.http
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
 internal class HeadersTest {
+
+    @Test
+    fun toStringRedactsCredentialHeaders() {
+        val headers =
+            Headers.builder()
+                .put("Authorization", "Bearer secret-token")
+                .put("Cookie", "secret-cookie")
+                .put("X-Request-ID", "request-id")
+                .build()
+
+        assertThat(headers.toString())
+            .contains("Authorization", "Cookie", "X-Request-ID", "request-id", "██")
+            .doesNotContain("secret-token", "secret-cookie")
+    }
 
     enum class TestCase(
         val headers: Headers,

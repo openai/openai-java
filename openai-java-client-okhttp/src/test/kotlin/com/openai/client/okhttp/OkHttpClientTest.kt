@@ -41,4 +41,23 @@ internal class OkHttpClientTest {
         // Should have cancelled the underlying call
         assertThat(call.isCanceled()).isTrue()
     }
+
+    @Test
+    fun execute_whenRequestRefusesRedirect_doesNotFollowTransportRedirect() {
+        stubFor(get(urlPathEqualTo("/redirect")).willReturn(temporaryRedirect("/target")))
+        stubFor(get(urlPathEqualTo("/target")).willReturn(ok()))
+
+        val response =
+            httpClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("redirect")
+                    .followRedirects(false)
+                    .build()
+            )
+
+        response.use { assertThat(it.statusCode()).isBetween(300, 399) }
+        verify(0, getRequestedFor(urlPathEqualTo("/target")))
+    }
 }

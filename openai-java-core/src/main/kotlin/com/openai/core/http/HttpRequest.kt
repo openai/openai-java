@@ -12,6 +12,8 @@ private constructor(
     @get:JvmName("headers") val headers: Headers,
     @get:JvmName("queryParams") val queryParams: QueryParams,
     @get:JvmName("body") val body: HttpRequestBody?,
+    /** Whether the transport may follow redirects for this request. */
+    @get:JvmName("followRedirects") val followRedirects: Boolean,
 ) {
 
     fun url(): String = buildString {
@@ -46,7 +48,7 @@ private constructor(
     fun toBuilder(): Builder = Builder().from(this)
 
     override fun toString(): String =
-        "HttpRequest{method=$method, baseUrl=$baseUrl, pathSegments=$pathSegments, headers=$headers, queryParams=$queryParams, body=$body}"
+        "HttpRequest{method=$method, baseUrl=$baseUrl, pathSegments=$pathSegments, headers=$headers, queryParams=$queryParams, body=$body, followRedirects=$followRedirects}"
 
     companion object {
         @JvmStatic fun builder() = Builder()
@@ -60,6 +62,7 @@ private constructor(
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var body: HttpRequestBody? = null
+        private var followRedirects: Boolean = true
 
         @JvmSynthetic
         internal fun from(request: HttpRequest) = apply {
@@ -69,6 +72,7 @@ private constructor(
             headers = request.headers.toBuilder()
             queryParams = request.queryParams.toBuilder()
             body = request.body
+            followRedirects = request.followRedirects
         }
 
         fun method(method: HttpMethod) = apply { this.method = method }
@@ -167,6 +171,11 @@ private constructor(
 
         fun body(body: HttpRequestBody) = apply { this.body = body }
 
+        /** Configures whether the transport may follow redirects for this request. */
+        fun followRedirects(followRedirects: Boolean) = apply {
+            this.followRedirects = followRedirects
+        }
+
         fun build(): HttpRequest =
             HttpRequest(
                 checkRequired("method", method),
@@ -175,6 +184,7 @@ private constructor(
                 headers.build(),
                 queryParams.build(),
                 body,
+                followRedirects,
             )
     }
 }

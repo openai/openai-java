@@ -1,37 +1,62 @@
 package com.openai.auth
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.DefaultSleeper
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
-import com.openai.core.JsonValue
+import com.openai.core.Sleeper
 import com.openai.core.handlers.errorHandler
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.RetryingHttpClient
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ErrorObject
 import java.io.OutputStream
-import java.time.Instant
+import java.time.Clock
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
+import java.util.function.LongSupplier
 import kotlin.concurrent.withLock
+import kotlin.math.max
+import kotlin.math.min
 
 private const val TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange"
 private const val JWT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt"
 private const val ID_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:id_token"
+private const val X509_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"
 private const val DEFAULT_TOKEN_EXPIRY_SECONDS = 3600
-private const val TOKEN_EXCHANGE_URL = "https://auth.openai.com/oauth/token"
+private const val SUBJECT_TOKEN_EXCHANGE_URL = "https://auth.openai.com/oauth/token"
+private const val X509_TOKEN_EXCHANGE_URL = "https://mtls.auth.openai.com/oauth/token"
 
 internal class WorkloadIdentityAuth(
-    private val config: WorkloadIdentity,
+    internal val config: WorkloadIdentity,
     private val httpClient: HttpClient,
     private val jsonMapper: JsonMapper,
+    sleeper: Sleeper? = null,
+    private val clock: Clock = Clock.systemUTC(),
+    private val maxRetries: Int = 2,
+    private val nanoTime: LongSupplier = LongSupplier { System.nanoTime() },
 ) : AutoCloseable {
+    internal val isX509 = config.isX509()
+    private val ownsSleeper = isX509 && sleeper == null
+    private val sleeper = sleeper ?: if (isX509) DefaultSleeper() else null
+    private val tokenExchangeHttpClient =
+        if (isX509) {
+            RetryingHttpClient.builder()
+                .httpClient(httpClient)
+                .sleeper(checkNotNull(this.sleeper))
+                .clock(clock)
+                .maxRetries(maxRetries)
+                .build()
+        } else {
+            httpClient
+        }
     private val errorHandler =
         errorHandler(
             object : HttpResponse.Handler<JsonField<ErrorObject>> {
@@ -44,49 +69,221 @@ internal class WorkloadIdentityAuth(
                         }
 
                     return try {
-                        val errorCode = node.get("error")?.asText()
-                        val errorMessage = node.get("error_description")?.asText() ?: errorCode
+                        val errorCode =
+                            node.get("error")?.asText()?.takeIf { it.isNotBlank() }
+                                ?: return JsonMissing.of()
+                        val errorMessage =
+                            if (isX509) errorCode
+                            else node.get("error_description")?.asText() ?: errorCode
                         JsonField.of(
                             jsonMapper.treeToValue(
                                 jsonMapper.createObjectNode().apply {
-                                    errorCode?.let { put("code", it) }
-                                    errorMessage?.let { put("message", it) }
+                                    put("code", errorCode)
+                                    put("message", errorMessage)
                                 },
                                 ErrorObject::class.java,
                             )
                         )
                     } catch (e: Exception) {
-                        JsonValue.fromJsonNode(node)
+                        JsonMissing.of()
                     }
                 }
             }
         )
     private val lock = ReentrantLock()
-    private val condition = lock.newCondition()
-    private var cachedToken: String? = null
-    private var tokenExpiry: Instant? = null
-    private var refreshInFlight: CompletableFuture<TokenRefreshResult>? = null
-    private var refreshing: Boolean = false
+    private var cachedToken: CachedToken? = null
+    private var refreshInFlight: CompletableFuture<CachedToken>? = null
 
-    private sealed interface TokenRefreshResult {
-        data class Success(val token: String) : TokenRefreshResult
+    private class CachedToken(
+        val lease: TokenLease,
+        val issuedAtNanos: Long,
+        val expiresAfterNanos: Long,
+        val refreshAfterNanos: Long,
+    )
 
-        data class Failure(val error: Throwable) : TokenRefreshResult
+    internal class TokenLease internal constructor(val value: String)
+
+    private sealed interface AsyncTokenAction {
+        class ReturnCached(val token: CachedToken) : AsyncTokenAction
+
+        class StartBackground(val refresh: CompletableFuture<CachedToken>, val token: CachedToken) :
+            AsyncTokenAction
+
+        class AwaitRefresh(val refresh: CompletableFuture<CachedToken>, val shouldStart: Boolean) :
+            AsyncTokenAction
     }
 
-    private sealed interface TokenAction {
-        data class ReturnCached(val token: String) : TokenAction
+    fun getToken(): String = getTokenLease().value
 
-        data class BackgroundRefresh(
-            val future: CompletableFuture<TokenRefreshResult>,
-            val token: String,
-        ) : TokenAction
+    internal fun getTokenLease(): TokenLease {
+        var shouldRefresh = false
+        val refresh =
+            lock.withLock {
+                val token = unexpiredCachedTokenUnsafe()
+                if (token != null && !isExpiringSoonUnsafe(token)) {
+                    return token.lease
+                }
+                if (token != null && refreshInFlight != null) {
+                    return token.lease
+                }
 
-        data class ForegroundRefresh(val future: CompletableFuture<TokenRefreshResult>) :
-            TokenAction
+                refreshInFlight
+                    ?: CompletableFuture<CachedToken>().also {
+                        refreshInFlight = it
+                        shouldRefresh = true
+                    }
+            }
 
-        data class WaitForRefresh(val future: CompletableFuture<TokenRefreshResult>) : TokenAction
+        if (shouldRefresh) {
+            try {
+                finishRefresh(refresh, performRefresh())
+            } catch (error: Throwable) {
+                finishRefresh(refresh, error)
+            }
+        }
+
+        return awaitRefresh(refresh).lease
     }
+
+    fun getTokenAsync(): CompletableFuture<String> = getTokenLeaseAsync().thenApply { it.value }
+
+    internal fun getTokenLeaseAsync(): CompletableFuture<TokenLease> {
+        val action =
+            lock.withLock {
+                val token = unexpiredCachedTokenUnsafe()
+                if (token != null) {
+                    if (isExpiringSoonUnsafe(token) && refreshInFlight == null) {
+                        val refresh = CompletableFuture<CachedToken>()
+                        refreshInFlight = refresh
+                        AsyncTokenAction.StartBackground(refresh, token)
+                    } else {
+                        AsyncTokenAction.ReturnCached(token)
+                    }
+                } else {
+                    val existing = refreshInFlight
+                    if (existing != null) {
+                        AsyncTokenAction.AwaitRefresh(existing, false)
+                    } else {
+                        val refresh = CompletableFuture<CachedToken>()
+                        refreshInFlight = refresh
+                        AsyncTokenAction.AwaitRefresh(refresh, true)
+                    }
+                }
+            }
+
+        return when (action) {
+            is AsyncTokenAction.ReturnCached ->
+                CompletableFuture.completedFuture(action.token.lease)
+            is AsyncTokenAction.StartBackground -> {
+                startRefreshAsync(action.refresh)
+                CompletableFuture.completedFuture(action.token.lease)
+            }
+            is AsyncTokenAction.AwaitRefresh -> {
+                if (action.shouldStart) {
+                    startRefreshAsync(action.refresh)
+                }
+                // Return a dependent future so canceling a waiter never cancels the shared refresh.
+                action.refresh.thenApply { it.lease }
+            }
+        }
+    }
+
+    fun invalidateToken() = lock.withLock { cachedToken = null }
+
+    internal fun invalidateToken(rejectedToken: TokenLease) =
+        lock.withLock {
+            if (cachedToken?.lease === rejectedToken) {
+                // Do not detach a newer in-flight refresh. Concurrent requests rejected with the
+                // same old token can all wait for that single exchange.
+                cachedToken = null
+            }
+        }
+
+    private fun unexpiredCachedTokenUnsafe(): CachedToken? {
+        val token = cachedToken ?: return null
+        return if (elapsedNanos(token) >= token.expiresAfterNanos) null else token
+    }
+
+    private fun isExpiringSoonUnsafe(token: CachedToken): Boolean =
+        elapsedNanos(token) >= token.refreshAfterNanos
+
+    private fun elapsedNanos(token: CachedToken): Long = nanoTime.asLong - token.issuedAtNanos
+
+    private fun performRefresh(): CachedToken {
+        val request =
+            if (isX509) {
+                buildX509TokenExchangeRequest()
+            } else {
+                val provider = checkNotNull(config.subjectTokenProvider())
+                buildSubjectTokenExchangeRequest(
+                    provider.getToken(httpClient, jsonMapper),
+                    provider.tokenType(),
+                )
+            }
+
+        return tokenExchangeHttpClient.execute(request).use { response ->
+            processTokenExchangeResponse(response)
+        }
+    }
+
+    private fun startRefreshAsync(refresh: CompletableFuture<CachedToken>) {
+        val request =
+            try {
+                if (isX509) {
+                    CompletableFuture.completedFuture(buildX509TokenExchangeRequest())
+                } else {
+                    val provider = checkNotNull(config.subjectTokenProvider())
+                    provider.getTokenAsync(httpClient, jsonMapper).thenApply { subjectToken ->
+                        buildSubjectTokenExchangeRequest(subjectToken, provider.tokenType())
+                    }
+                }
+            } catch (error: Throwable) {
+                finishRefresh(refresh, error)
+                return
+            }
+
+        request
+            .thenCompose { tokenRequest -> tokenExchangeHttpClient.executeAsync(tokenRequest) }
+            .thenApply { response -> response.use { processTokenExchangeResponse(it) } }
+            .whenComplete { token, error ->
+                val cause = unwrapCompletionException(error)
+                when {
+                    cause != null -> finishRefresh(refresh, cause)
+                    token != null -> finishRefresh(refresh, token)
+                    else ->
+                        finishRefresh(
+                            refresh,
+                            IllegalStateException("Token refresh completed without a result"),
+                        )
+                }
+            }
+    }
+
+    private fun finishRefresh(refresh: CompletableFuture<CachedToken>, token: CachedToken) {
+        lock.withLock {
+            if (refreshInFlight === refresh) {
+                cachedToken = token
+                refreshInFlight = null
+            }
+        }
+        refresh.complete(token)
+    }
+
+    private fun finishRefresh(refresh: CompletableFuture<CachedToken>, error: Throwable) {
+        lock.withLock {
+            if (refreshInFlight === refresh) {
+                refreshInFlight = null
+            }
+        }
+        refresh.completeExceptionally(error)
+    }
+
+    private fun awaitRefresh(refresh: CompletableFuture<CachedToken>): CachedToken =
+        try {
+            refresh.get()
+        } catch (error: ExecutionException) {
+            throw error.cause ?: error
+        }
 
     private fun unwrapCompletionException(error: Throwable?): Throwable? =
         when (error) {
@@ -95,176 +292,49 @@ internal class WorkloadIdentityAuth(
             else -> error
         }
 
-    fun getToken(): String {
-        lock.withLock {
-            while (refreshing && unexpiredCachedTokenUnsafe() == null) {
-                condition.await()
-            }
+    private fun buildX509TokenExchangeRequest(): HttpRequest =
+        buildTokenExchangeRequest(
+            url = X509_TOKEN_EXCHANGE_URL,
+            followRedirects = false,
+            requestBody =
+                linkedMapOf(
+                    "grant_type" to TOKEN_EXCHANGE_GRANT_TYPE,
+                    "subject_token_type" to X509_TOKEN_TYPE,
+                    "identity_provider_id" to config.identityProviderId,
+                    "service_account_id" to config.serviceAccountId,
+                ),
+        )
 
-            val token = unexpiredCachedTokenUnsafe()
-            if (token != null && !isExpiringSoonUnsafe()) {
-                return token
-            }
-
-            if (refreshing) {
-                while (refreshing) {
-                    condition.await()
-                }
-                return unexpiredCachedTokenUnsafe()
-                    ?: throw IllegalStateException("Token is unusable after refresh completed")
-            }
-
-            refreshing = true
-        }
-
-        try {
-            performRefresh()
-            lock.withLock {
-                return unexpiredCachedTokenUnsafe()
-                    ?: throw IllegalStateException("Token is unusable after refresh completed")
-            }
-        } finally {
-            lock.withLock {
-                refreshing = false
-                condition.signalAll()
-            }
-        }
-    }
-
-    fun getTokenAsync(): CompletableFuture<String> {
-        val action =
-            lock.withLock {
-                val token = unexpiredCachedTokenUnsafe()
-                if (token != null) {
-                    if (isExpiringSoonUnsafe() && refreshInFlight == null) {
-                        val future = CompletableFuture<TokenRefreshResult>()
-                        refreshInFlight = future
-                        TokenAction.BackgroundRefresh(future, token)
-                    } else {
-                        TokenAction.ReturnCached(token)
-                    }
-                } else if (refreshInFlight != null) {
-                    TokenAction.WaitForRefresh(refreshInFlight!!)
-                } else {
-                    val future = CompletableFuture<TokenRefreshResult>()
-                    refreshInFlight = future
-                    TokenAction.ForegroundRefresh(future)
-                }
-            }
-
-        return when (action) {
-            is TokenAction.ReturnCached -> CompletableFuture.completedFuture(action.token)
-            is TokenAction.BackgroundRefresh -> {
-                performRefreshAndComplete(action.future)
-                CompletableFuture.completedFuture(action.token)
-            }
-            is TokenAction.WaitForRefresh ->
-                action.future.thenApply { result ->
-                    when (result) {
-                        is TokenRefreshResult.Success -> result.token
-                        is TokenRefreshResult.Failure -> throw result.error
-                    }
-                }
-            is TokenAction.ForegroundRefresh -> {
-                val refresh = refreshTokenAsync()
-                refresh.whenComplete { token, error ->
-                    finishRefresh(action.future, token, unwrapCompletionException(error))
-                }
-                refresh
-            }
-        }
-    }
-
-    private fun performRefreshAndComplete(future: CompletableFuture<TokenRefreshResult>) {
-        refreshTokenAsync().whenComplete { token, error ->
-            finishRefresh(future, token, unwrapCompletionException(error))
-        }
-    }
-
-    private fun finishRefresh(
-        future: CompletableFuture<TokenRefreshResult>,
-        token: String?,
-        error: Throwable?,
-    ) {
-        val shouldComplete =
-            lock.withLock {
-                if (refreshInFlight != future) {
-                    false
-                } else {
-                    refreshInFlight = null
-                    true
-                }
-            }
-
-        if (shouldComplete) {
-            future.complete(
-                when {
-                    error != null -> TokenRefreshResult.Failure(error)
-                    token != null -> TokenRefreshResult.Success(token)
-                    else -> error("finishRefresh requires either a token or an error")
-                }
-            )
-        }
-    }
-
-    fun invalidateToken() {
-        lock.withLock {
-            cachedToken = null
-            tokenExpiry = null
-        }
-    }
-
-    private fun unexpiredCachedTokenUnsafe(): String? {
-        val token = cachedToken
-        val expiry = tokenExpiry
-        if (token == null || expiry == null) return null
-        return if (Instant.now().isAfter(expiry)) null else token
-    }
-
-    private fun isExpiringSoonUnsafe(): Boolean {
-        val expiry = tokenExpiry ?: return true
-        val refreshBuffer = config.refreshBufferSeconds
-        val refreshTime = expiry.minusSeconds(refreshBuffer.toLong())
-        return Instant.now().isAfter(refreshTime)
-    }
-
-    private fun performRefresh() {
-        val subjectToken = config.provider.getToken(httpClient, jsonMapper)
-        val request = buildTokenExchangeRequest(subjectToken)
-        val response = httpClient.execute(request)
-        response.use { processTokenExchangeResponse(it) }
-    }
-
-    private fun refreshTokenAsync(): CompletableFuture<String> {
-        return config.provider.getTokenAsync(httpClient, jsonMapper).thenCompose { subjectToken ->
-            val request = buildTokenExchangeRequest(subjectToken)
-            httpClient.executeAsync(request).thenApply { response ->
-                response.use { processTokenExchangeResponse(it) }
-            }
-        }
-    }
-
-    private fun buildTokenExchangeRequest(subjectToken: String): HttpRequest {
-        val subjectTokenTypeURN =
-            when (config.provider.tokenType()) {
+    private fun buildSubjectTokenExchangeRequest(
+        subjectToken: String,
+        subjectTokenType: SubjectTokenType,
+    ): HttpRequest {
+        val requestBody = linkedMapOf("grant_type" to TOKEN_EXCHANGE_GRANT_TYPE)
+        config.clientId?.let { requestBody["client_id"] = it }
+        requestBody["subject_token"] = subjectToken
+        requestBody["subject_token_type"] =
+            when (subjectTokenType) {
                 SubjectTokenType.JWT -> JWT_TOKEN_TYPE
                 SubjectTokenType.ID -> ID_TOKEN_TYPE
             }
-
-        val requestBody = mutableMapOf("grant_type" to TOKEN_EXCHANGE_GRANT_TYPE)
-        config.clientId?.let { requestBody["client_id"] = it }
-        requestBody["subject_token"] = subjectToken
-        requestBody["subject_token_type"] = subjectTokenTypeURN
         requestBody["identity_provider_id"] = config.identityProviderId
         requestBody["service_account_id"] = config.serviceAccountId
+        return buildTokenExchangeRequest(
+            url = SUBJECT_TOKEN_EXCHANGE_URL,
+            followRedirects = true,
+            requestBody = requestBody,
+        )
+    }
 
+    private fun buildTokenExchangeRequest(
+        url: String,
+        followRedirects: Boolean,
+        requestBody: Map<String, String>,
+    ): HttpRequest {
         val jsonBody = jsonMapper.writeValueAsBytes(requestBody)
-
         val body =
             object : HttpRequestBody {
-                override fun writeTo(outputStream: OutputStream) {
-                    outputStream.write(jsonBody)
-                }
+                override fun writeTo(outputStream: OutputStream) = outputStream.write(jsonBody)
 
                 override fun contentType(): String = "application/json"
 
@@ -277,43 +347,99 @@ internal class WorkloadIdentityAuth(
 
         return HttpRequest.builder()
             .method(HttpMethod.POST)
-            .baseUrl(TOKEN_EXCHANGE_URL)
+            .baseUrl(url)
             .body(body)
+            .followRedirects(followRedirects)
             .build()
     }
 
-    private fun processTokenExchangeResponse(response: HttpResponse): String {
+    private fun processTokenExchangeResponse(response: HttpResponse): CachedToken {
         errorHandler.handle(response)
 
-        val bodyString = response.body().bufferedReader().readText()
         val tokenResponse =
-            jsonMapper.readValue(bodyString, jacksonTypeRef<TokenExchangeResponse>())
+            try {
+                jsonMapper.readTree(response.body())
+                    ?: throw OpenAIInvalidDataException("Invalid token exchange response")
+            } catch (error: Exception) {
+                throw OpenAIInvalidDataException("Invalid token exchange response")
+            }
 
-        if (tokenResponse.accessToken.isBlank()) {
-            throw OpenAIInvalidDataException(
-                "Token exchange response missing 'access_token' field. Response: $bodyString"
-            )
+        val accessToken =
+            tokenResponse
+                .get("access_token")
+                ?.takeIf { it.isTextual }
+                ?.asText()
+                ?.takeIf { it.isNotBlank() }
+        if (accessToken == null) {
+            throw OpenAIInvalidDataException("Token exchange response missing 'access_token' field")
         }
 
-        val expiresIn = tokenResponse.expiresIn ?: DEFAULT_TOKEN_EXPIRY_SECONDS
-
+        val expiresInNode = tokenResponse.get("expires_in")
+        val expiresIn =
+            if (expiresInNode == null || expiresInNode.isNull) {
+                if (isX509) {
+                    throw OpenAIInvalidDataException(
+                        "X.509 token exchange response missing 'expires_in' field"
+                    )
+                } else {
+                    DEFAULT_TOKEN_EXPIRY_SECONDS
+                }
+            } else {
+                if (!expiresInNode.isIntegralNumber || !expiresInNode.canConvertToInt()) {
+                    throw OpenAIInvalidDataException(
+                        "Token exchange returned a non-integer expires_in value"
+                    )
+                }
+                expiresInNode.intValue()
+            }
         if (expiresIn <= 0) {
             throw OpenAIInvalidDataException(
                 "Token exchange returned invalid expires_in value: $expiresIn"
             )
         }
 
-        val newExpiry = Instant.now().plusSeconds(expiresIn.toLong())
-
-        lock.withLock {
-            cachedToken = tokenResponse.accessToken
-            tokenExpiry = newExpiry
-        }
-
-        return tokenResponse.accessToken
+        val expiresAfterNanos = TimeUnit.SECONDS.toNanos(expiresIn.toLong())
+        val configuredBufferNanos = max(0L, config.refreshBuffer.toNanos())
+        val effectiveBufferNanos = min(configuredBufferNanos, expiresAfterNanos / 2)
+        return CachedToken(
+            lease = TokenLease(accessToken),
+            issuedAtNanos = nanoTime.asLong,
+            expiresAfterNanos = expiresAfterNanos,
+            refreshAfterNanos = expiresAfterNanos - effectiveBufferNanos,
+        )
     }
 
+    internal fun uses(
+        httpClient: HttpClient,
+        jsonMapper: JsonMapper,
+        sleeper: Sleeper,
+        clock: Clock,
+        maxRetries: Int,
+    ): Boolean =
+        this.httpClient === httpClient &&
+            this.jsonMapper === jsonMapper &&
+            this.sleeper === sleeper &&
+            this.clock === clock &&
+            this.maxRetries == maxRetries
+
     override fun close() {
-        (config.provider as? AutoCloseable)?.close()
+        var failure: Throwable? = null
+        try {
+            (config.subjectTokenProvider() as? AutoCloseable)?.close()
+        } catch (error: Throwable) {
+            failure = error
+        }
+
+        if (ownsSleeper) {
+            try {
+                checkNotNull(sleeper).close()
+            } catch (error: Throwable) {
+                val providerFailure = failure
+                if (providerFailure == null) failure = error
+                else providerFailure.addSuppressed(error)
+            }
+        }
+
+        failure?.let { throw it }
     }
 }
