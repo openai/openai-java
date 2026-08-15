@@ -23,6 +23,31 @@ repositories {
     mavenCentral()
 }
 
+// Stable JPMS module names for the published artifacts, derived from the `com.openai` group ID and
+// the packages each artifact ships. Without them, consumers on the module path get a name derived
+// from the JAR file name, which is neither namespaced nor stable across renames. Treat these as
+// public API: once released, changing a name breaks every consumer that `requires` it.
+val automaticModuleNames =
+    mapOf(
+        // Aggregator artifact: ships no packages of its own, so it takes the group's root name.
+        "openai-java" to "com.openai",
+        // Ships `com.openai.core` along with the rest of the `com.openai` namespace.
+        "openai-java-core" to "com.openai.core",
+        "openai-java-client-okhttp" to "com.openai.client.okhttp",
+        "openai-java-bedrock" to "com.openai.bedrock",
+    )
+
+val automaticModuleName =
+    checkNotNull(automaticModuleNames[project.name]) {
+        "${project.name} is published but has no automatic module name"
+    }
+
+pluginManager.withPlugin("java") {
+    tasks.named<Jar>("jar") {
+        manifest { attributes("Automatic-Module-Name" to automaticModuleName) }
+    }
+}
+
 extra["signingInMemoryKey"] = System.getenv("GPG_SIGNING_KEY")
 extra["signingInMemoryKeyId"] = System.getenv("GPG_SIGNING_KEY_ID")
 extra["signingInMemoryKeyPassword"] = System.getenv("GPG_SIGNING_PASSWORD")
