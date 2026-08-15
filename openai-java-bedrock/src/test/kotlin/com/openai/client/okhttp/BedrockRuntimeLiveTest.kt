@@ -31,9 +31,11 @@ internal class BedrockRuntimeLiveTest {
     }
 
     private fun createClient(): OpenAIClient {
-        val region = environment("AWS_REGION") ?: environment("AWS_DEFAULT_REGION") ?: "us-east-1"
-        val builder =
-            BedrockOpenAIOkHttpClient.builder().endpoint(BedrockEndpoint.RUNTIME).awsRegion(region)
+        val region = environment("AWS_REGION") ?: environment("AWS_DEFAULT_REGION")
+        val builder = BedrockOpenAIOkHttpClient.builder().endpoint(BedrockEndpoint.RUNTIME)
+        if (region != null) {
+            builder.awsRegion(region)
+        }
 
         when (environment("BEDROCK_LIVE_AUTH") ?: "sigv4") {
             "bearer" ->
