@@ -93,8 +93,8 @@ implementation("com.openai:openai-java-bedrock:4.51.0")
 <!-- x-release-please-end -->
 
 ```java
+import com.openai.bedrock.BedrockOpenAIOkHttpClient;
 import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
 
 // Uses the standard AWS credential chain, including environment credentials,
 // ~/.aws/credentials, AWS_PROFILE, workload roles, and instance metadata.

@@ -29,8 +29,8 @@ implementation("com.openai:openai-java-bedrock:4.51.0")
 Configure AWS credentials as you normally would, then provide the region:
 
 ```java
+import com.openai.bedrock.BedrockOpenAIOkHttpClient;
 import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
 
 OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
         .awsRegion("us-east-1")

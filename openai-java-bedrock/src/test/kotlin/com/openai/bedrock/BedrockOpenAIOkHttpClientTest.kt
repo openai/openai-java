@@ -1,4 +1,4 @@
-package com.openai.client.okhttp
+package com.openai.bedrock
 
 import com.github.tomakehurst.wiremock.client.WireMock.findAll
 import com.github.tomakehurst.wiremock.client.WireMock.get
