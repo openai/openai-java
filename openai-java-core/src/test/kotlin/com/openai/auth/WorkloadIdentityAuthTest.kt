@@ -29,6 +29,29 @@ internal class WorkloadIdentityAuthTest {
     private val httpClient = mock<HttpClient>()
 
     @Test
+    fun legacyJvmAuthenticationTypesRemainBinaryCompatible() {
+        val authConstructor =
+            WorkloadIdentityAuth::class
+                .java
+                .getConstructor(
+                    WorkloadIdentity::class.java,
+                    HttpClient::class.java,
+                    JsonMapper::class.java,
+                )
+        val tokenResponseConstructor =
+            Class.forName("com.openai.auth.TokenExchangeResponse")
+                .getConstructor(
+                    String::class.java,
+                    String::class.java,
+                    String::class.java,
+                    Integer::class.java,
+                )
+
+        assertThat(authConstructor.parameterCount).isEqualTo(3)
+        assertThat(tokenResponseConstructor.parameterCount).isEqualTo(4)
+    }
+
+    @Test
     fun getToken_propagatesProviderFailure() {
         val failure = IllegalStateException("provider failed")
         val auth =

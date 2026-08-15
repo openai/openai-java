@@ -15,6 +15,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -311,6 +313,65 @@ internal class ClientOptionsTest {
                 .build()
 
         assertThat(clientOptions.baseUrl()).isEqualTo("https://mtls-eu.api.openai.com/v1")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+            [
+                "http://localhost:8080/v1",
+                "ftp://mtls.api.openai.com/v1",
+                "/v1",
+                "https:opaque",
+                "not a valid URL",
+            ]
+    )
+    fun build_withX509WorkloadIdentity_rejectsInsecureOrNonAbsoluteBaseUrl(baseUrl: String) {
+        val thrown =
+            assertThrows<IllegalArgumentException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .baseUrl(baseUrl)
+                    .workloadIdentity(
+                        WorkloadIdentity.x509Builder()
+                            .identityProviderId("idp_test")
+                            .serviceAccountId("svc_acct_test")
+                            .build()
+                    )
+                    .build()
+            }
+
+        assertThat(thrown).hasMessage("X.509 workload identity requires an absolute HTTPS base URL")
+    }
+
+    @Test
+    fun build_withApiKey_preservesPlaintextLocalBaseUrl() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .baseUrl("http://localhost:8080/v1")
+                .apiKey("test-api-key")
+                .build()
+
+        assertThat(clientOptions.baseUrl()).isEqualTo("http://localhost:8080/v1")
+    }
+
+    @Test
+    fun build_withSubjectTokenWorkloadIdentity_preservesPlaintextLocalBaseUrl() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .baseUrl("http://localhost:8080/v1")
+                .workloadIdentity(
+                    WorkloadIdentity.builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .provider(mock())
+                        .build()
+                )
+                .build()
+
+        assertThat(clientOptions.baseUrl()).isEqualTo("http://localhost:8080/v1")
     }
 
     @Test

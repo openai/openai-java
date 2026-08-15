@@ -2,15 +2,20 @@ package com.openai.core.http
 
 import com.openai.auth.WorkloadIdentityAuth
 import com.openai.core.RequestOptions
+import com.openai.core.Sleeper
 import com.openai.errors.OpenAIRetryableException
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
@@ -242,6 +247,82 @@ internal class WorkloadIdentityHttpClientTest {
         verify(workloadIdentityAuth).invalidateToken(token)
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun absentWorkloadIdentityPreservesTransparentTransport(async: Boolean) {
+        val transport = mock<HttpClient>()
+        val response = mockResponse(200, "legacy pass-through")
+        if (async) {
+            whenever(transport.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(response))
+        } else {
+            whenever(transport.execute(any(), any())).thenReturn(response)
+        }
+        val client = WorkloadIdentityHttpClient(transport, null)
+        val request = request()
+
+        val actual =
+            if (async) client.executeAsync(request, RequestOptions.none()).get()
+            else client.execute(request, RequestOptions.none())
+
+        assertThat(actual).isSameAs(response)
+        if (async) verify(transport).executeAsync(request, RequestOptions.none())
+        else verify(transport).execute(request, RequestOptions.none())
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun x509ReauthenticationPreservesTransientRetryBudget(async: Boolean) {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val oldToken = tokenLease("old-token")
+        val newToken = tokenLease("new-token")
+        if (async) {
+            whenever(workloadIdentityAuth.getTokenLeaseAsync())
+                .thenReturn(
+                    CompletableFuture.completedFuture(oldToken),
+                    CompletableFuture.completedFuture(newToken),
+                )
+        } else {
+            whenever(workloadIdentityAuth.getTokenLease()).thenReturn(oldToken, newToken)
+        }
+        val transport = mock<HttpClient>()
+        val calls = AtomicInteger()
+        val responses =
+            listOf(
+                mockResponse(500, "first transient error"),
+                mockResponse(401, "expired bearer"),
+                mockResponse(500, "second transient error"),
+                mockResponse(500, "retry budget exhausted"),
+                mockResponse(200, "must not be reached"),
+            )
+        if (async) {
+            whenever(transport.executeAsync(any(), any())).thenAnswer {
+                CompletableFuture.completedFuture(responses[calls.incrementAndGet() - 1])
+            }
+        } else {
+            whenever(transport.execute(any(), any())).thenAnswer {
+                responses[calls.incrementAndGet() - 1]
+            }
+        }
+        val retryingTransport =
+            RetryingHttpClient.builder()
+                .httpClient(transport)
+                .sleeper(NoopSleeper())
+                .maxRetries(2)
+                .build()
+        val client = WorkloadIdentityHttpClient(retryingTransport, workloadIdentityAuth)
+
+        val response =
+            if (async) client.executeAsync(request(), RequestOptions.none()).get()
+            else client.execute(request(), RequestOptions.none())
+
+        assertThat(response.statusCode()).isEqualTo(500)
+        if (async) verify(transport, times(4)).executeAsync(any(), any())
+        else verify(transport, times(4)).execute(any(), any())
+        verify(workloadIdentityAuth).invalidateToken(oldToken)
+    }
+
     @Test
     fun executeAsyncInjectsBearerToken() {
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
@@ -288,6 +369,15 @@ internal class WorkloadIdentityHttpClientTest {
             .build()
 
     private fun tokenLease(value: String) = WorkloadIdentityAuth.TokenLease(value)
+
+    private class NoopSleeper : Sleeper {
+        override fun sleep(duration: Duration) {}
+
+        override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
+            CompletableFuture.completedFuture(null)
+
+        override fun close() {}
+    }
 
     private fun mockResponse(statusCode: Int, body: String): HttpResponse =
         object : HttpResponse {

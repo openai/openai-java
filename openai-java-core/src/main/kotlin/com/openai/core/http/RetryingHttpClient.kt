@@ -17,6 +17,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
@@ -30,18 +31,24 @@ private constructor(
     private val idempotencyHeader: String?,
 ) : HttpClient {
 
-    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        execute(request, requestOptions, AtomicInteger())
+
+    @JvmSynthetic
+    internal fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        retries: AtomicInteger,
+    ): HttpResponse {
         var modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
             !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
-        var retries = 0
-
         while (true) {
             if (shouldSendRetryCount) {
-                modifiedRequest = setRetryCountHeader(modifiedRequest, retries)
+                modifiedRequest = setRetryCountHeader(modifiedRequest, retries.get())
             }
 
             if (!isRetryable(modifiedRequest)) {
@@ -51,20 +58,20 @@ private constructor(
             val response =
                 try {
                     val response = httpClient.execute(modifiedRequest, requestOptions)
-                    if (++retries > maxRetries || !shouldRetry(response)) {
+                    if (retries.get() >= maxRetries || !shouldRetry(response)) {
                         return response
                     }
 
                     response
                 } catch (throwable: Throwable) {
-                    if (++retries > maxRetries || !shouldRetry(throwable)) {
+                    if (retries.get() >= maxRetries || !shouldRetry(throwable)) {
                         throw throwable
                     }
 
                     null
                 }
 
-            val backoffDuration = getRetryBackoffDuration(retries, response)
+            val backoffDuration = getRetryBackoffDuration(retries.incrementAndGet(), response)
             // All responses must be closed, so close the failed one before retrying.
             response?.close()
             sleeper.sleep(backoffDuration)
@@ -74,6 +81,13 @@ private constructor(
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> = executeAsync(request, requestOptions, AtomicInteger())
+
+    @JvmSynthetic
+    internal fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        retries: AtomicInteger,
     ): CompletableFuture<HttpResponse> {
         val modifiedRequest = maybeAddIdempotencyHeader(request)
 
@@ -81,14 +95,12 @@ private constructor(
         val shouldSendRetryCount =
             !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
-        var retries = 0
-
         fun executeWithRetries(
             request: HttpRequest,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
             val requestWithRetryCount =
-                if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
+                if (shouldSendRetryCount) setRetryCountHeader(request, retries.get()) else request
 
             val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
             if (!isRetryable(requestWithRetryCount)) {
@@ -102,18 +114,19 @@ private constructor(
                         throwable: Throwable?,
                     ): CompletableFuture<HttpResponse> {
                         if (response != null) {
-                            if (++retries > maxRetries || !shouldRetry(response)) {
+                            if (retries.get() >= maxRetries || !shouldRetry(response)) {
                                 return CompletableFuture.completedFuture(response)
                             }
                         } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
+                            if (retries.get() >= maxRetries || !shouldRetry(throwable!!)) {
                                 val failedFuture = CompletableFuture<HttpResponse>()
                                 failedFuture.completeExceptionally(throwable)
                                 return failedFuture
                             }
                         }
 
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
+                        val backoffDuration =
+                            getRetryBackoffDuration(retries.incrementAndGet(), response)
                         // All responses must be closed, so close the failed one before retrying.
                         response?.close()
                         return sleeper.sleepAsync(backoffDuration).thenCompose {

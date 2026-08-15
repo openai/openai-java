@@ -41,6 +41,33 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
         HeldCertificate.Builder().commonName("client leaf").signedBy(clientIntermediate).build()
 
     @Test
+    fun publicX509ClientBuildersRejectPlaintextApiEndpoints() {
+        val workloadIdentity =
+            WorkloadIdentity.x509Builder()
+                .identityProviderId("idp_test")
+                .serviceAccountId("svc_acct_test")
+                .build()
+
+        listOf(false, true).forEach { async ->
+            assertThatThrownBy {
+                    if (async) {
+                        OpenAIOkHttpClientAsync.builder()
+                            .baseUrl("http://localhost:8080/v1")
+                            .workloadIdentity(workloadIdentity)
+                            .build()
+                    } else {
+                        OpenAIOkHttpClient.builder()
+                            .baseUrl("http://localhost:8080/v1")
+                            .workloadIdentity(workloadIdentity)
+                            .build()
+                    }
+                }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("X.509 workload identity requires an absolute HTTPS base URL")
+        }
+    }
+
+    @Test
     fun nativeMutualTlsPresentsFullPkcs12Chain() {
         mutuallyAuthenticatedServer().use { fixture ->
             fixture.server.enqueue(

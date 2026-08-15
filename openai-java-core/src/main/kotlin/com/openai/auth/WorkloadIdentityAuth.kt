@@ -43,6 +43,21 @@ internal class WorkloadIdentityAuth(
     private val maxRetries: Int = 2,
     private val nanoTime: LongSupplier = LongSupplier { System.nanoTime() },
 ) : AutoCloseable {
+
+    constructor(
+        config: WorkloadIdentity,
+        httpClient: HttpClient,
+        jsonMapper: JsonMapper,
+    ) : this(
+        config,
+        httpClient,
+        jsonMapper,
+        null,
+        Clock.systemUTC(),
+        2,
+        LongSupplier { System.nanoTime() },
+    )
+
     internal val isX509 = config.isX509()
     private val ownsSleeper = isX509 && sleeper == null
     private val sleeper = sleeper ?: if (isX509) DefaultSleeper() else null

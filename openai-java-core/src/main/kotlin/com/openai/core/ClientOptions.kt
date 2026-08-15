@@ -21,6 +21,7 @@ import com.openai.core.http.WorkloadIdentityHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
 import com.openai.credential.WorkloadIdentityCredential
+import java.net.URI
 import java.time.Clock
 import java.time.Duration
 import java.util.Optional
@@ -717,6 +718,27 @@ private constructor(
                 "dataResidency cannot be combined with third-party provider configuration"
             }
             val httpClient = checkRequired("httpClient", httpClient)
+            val configuredWorkloadIdentity =
+                workloadIdentity ?: (credential as? WorkloadIdentityCredential)?.getAuth()?.config
+            val x509WorkloadIdentity = configuredWorkloadIdentity?.isX509() == true
+            val effectiveBaseUrl =
+                baseUrl ?: if (x509WorkloadIdentity) X509_PRODUCTION_URL else null
+            if (x509WorkloadIdentity) {
+                val parsedBaseUrl =
+                    try {
+                        URI.create(checkNotNull(effectiveBaseUrl))
+                    } catch (_: IllegalArgumentException) {
+                        null
+                    }
+                require(
+                    parsedBaseUrl != null &&
+                        parsedBaseUrl.isAbsolute &&
+                        parsedBaseUrl.scheme.equals("https", ignoreCase = true) &&
+                        parsedBaseUrl.rawAuthority != null
+                ) {
+                    "X.509 workload identity requires an absolute HTTPS base URL"
+                }
+            }
             val streamHandlerExecutor =
                 streamHandlerExecutor
                     ?: PhantomReachableExecutorService(
@@ -736,12 +758,6 @@ private constructor(
                         )
                     )
             val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
-            val configuredWorkloadIdentity =
-                workloadIdentity ?: (credential as? WorkloadIdentityCredential)?.getAuth()?.config
-            val effectiveBaseUrl =
-                baseUrl
-                    ?: if (configuredWorkloadIdentity?.isX509() == true) X509_PRODUCTION_URL
-                    else null
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
