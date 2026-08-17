@@ -23,6 +23,10 @@ internal class BetaResponseImageGenCallPartialImageEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .background("background")
+                .outputFormat("output_format")
+                .quality("quality")
+                .size("size")
                 .build()
 
         assertThat(betaResponseImageGenCallPartialImageEvent.itemId()).isEqualTo("item_id")
@@ -37,6 +41,11 @@ internal class BetaResponseImageGenCallPartialImageEventTest {
                     .agentName("agent_name")
                     .build()
             )
+        assertThat(betaResponseImageGenCallPartialImageEvent.background()).contains("background")
+        assertThat(betaResponseImageGenCallPartialImageEvent.outputFormat())
+            .contains("output_format")
+        assertThat(betaResponseImageGenCallPartialImageEvent.quality()).contains("quality")
+        assertThat(betaResponseImageGenCallPartialImageEvent.size()).contains("size")
     }
 
     @Test
@@ -54,6 +63,10 @@ internal class BetaResponseImageGenCallPartialImageEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .background("background")
+                .outputFormat("output_format")
+                .quality("quality")
+                .size("size")
                 .build()
 
         val roundtrippedBetaResponseImageGenCallPartialImageEvent =

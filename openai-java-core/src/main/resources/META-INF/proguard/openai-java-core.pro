@@ -12,6 +12,13 @@
     public static ** valueOf(java.lang.String);
 }
 
+# Jackson discovers this composed annotation and instantiates its value filter.
+-keep @interface com.openai.core.ExcludeMissing { *; }
+-keep class com.openai.core.JsonField$IsMissing { *; }
+
+# Preserve Kotlin default-argument metadata for this reflective model constructor.
+-keep class com.openai.models.chat.completions.ChatCompletion { *; }
+
 # Jackson uses reflection to access annotation members.
 -keepclassmembers @interface com.fasterxml.jackson.annotation.** {
     *;

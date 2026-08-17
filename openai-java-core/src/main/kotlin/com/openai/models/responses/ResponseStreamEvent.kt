@@ -43,6 +43,11 @@ private constructor(
     private val fileSearchCallSearching: ResponseFileSearchCallSearchingEvent? = null,
     private val functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent? = null,
     private val functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent? = null,
+    private val shellCallCommandAdded: ResponseShellCallCommandAddedEvent? = null,
+    private val shellCallCommandDelta: ResponseShellCallCommandDeltaEvent? = null,
+    private val shellCallCommandDone: ResponseShellCallCommandDoneEvent? = null,
+    private val shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent? = null,
+    private val shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent? = null,
     private val inProgress: ResponseInProgressEvent? = null,
     private val failed: ResponseFailedEvent? = null,
     private val incomplete: ResponseIncompleteEvent? = null,
@@ -150,6 +155,26 @@ private constructor(
     /** Emitted when function-call arguments are finalized. */
     fun functionCallArgumentsDone(): Optional<ResponseFunctionCallArgumentsDoneEvent> =
         Optional.ofNullable(functionCallArgumentsDone)
+
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun shellCallCommandAdded(): Optional<ResponseShellCallCommandAddedEvent> =
+        Optional.ofNullable(shellCallCommandAdded)
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun shellCallCommandDelta(): Optional<ResponseShellCallCommandDeltaEvent> =
+        Optional.ofNullable(shellCallCommandDelta)
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun shellCallCommandDone(): Optional<ResponseShellCallCommandDoneEvent> =
+        Optional.ofNullable(shellCallCommandDone)
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun shellCallOutputContentDelta(): Optional<ResponseShellCallOutputContentDeltaEvent> =
+        Optional.ofNullable(shellCallOutputContentDelta)
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun shellCallOutputContentDone(): Optional<ResponseShellCallOutputContentDoneEvent> =
+        Optional.ofNullable(shellCallOutputContentDone)
 
     /** Emitted when the response is in progress. */
     fun inProgress(): Optional<ResponseInProgressEvent> = Optional.ofNullable(inProgress)
@@ -321,6 +346,16 @@ private constructor(
 
     fun isFunctionCallArgumentsDone(): Boolean = functionCallArgumentsDone != null
 
+    fun isShellCallCommandAdded(): Boolean = shellCallCommandAdded != null
+
+    fun isShellCallCommandDelta(): Boolean = shellCallCommandDelta != null
+
+    fun isShellCallCommandDone(): Boolean = shellCallCommandDone != null
+
+    fun isShellCallOutputContentDelta(): Boolean = shellCallOutputContentDelta != null
+
+    fun isShellCallOutputContentDone(): Boolean = shellCallOutputContentDone != null
+
     fun isInProgress(): Boolean = inProgress != null
 
     fun isFailed(): Boolean = failed != null
@@ -459,6 +494,26 @@ private constructor(
     /** Emitted when function-call arguments are finalized. */
     fun asFunctionCallArgumentsDone(): ResponseFunctionCallArgumentsDoneEvent =
         functionCallArgumentsDone.getOrThrow("functionCallArgumentsDone")
+
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun asShellCallCommandAdded(): ResponseShellCallCommandAddedEvent =
+        shellCallCommandAdded.getOrThrow("shellCallCommandAdded")
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun asShellCallCommandDelta(): ResponseShellCallCommandDeltaEvent =
+        shellCallCommandDelta.getOrThrow("shellCallCommandDelta")
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun asShellCallCommandDone(): ResponseShellCallCommandDoneEvent =
+        shellCallCommandDone.getOrThrow("shellCallCommandDone")
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun asShellCallOutputContentDelta(): ResponseShellCallOutputContentDeltaEvent =
+        shellCallOutputContentDelta.getOrThrow("shellCallOutputContentDelta")
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun asShellCallOutputContentDone(): ResponseShellCallOutputContentDoneEvent =
+        shellCallOutputContentDone.getOrThrow("shellCallOutputContentDone")
 
     /** Emitted when the response is in progress. */
     fun asInProgress(): ResponseInProgressEvent = inProgress.getOrThrow("inProgress")
@@ -654,6 +709,15 @@ private constructor(
                 visitor.visitFunctionCallArgumentsDelta(functionCallArgumentsDelta)
             functionCallArgumentsDone != null ->
                 visitor.visitFunctionCallArgumentsDone(functionCallArgumentsDone)
+            shellCallCommandAdded != null ->
+                visitor.visitShellCallCommandAdded(shellCallCommandAdded)
+            shellCallCommandDelta != null ->
+                visitor.visitShellCallCommandDelta(shellCallCommandDelta)
+            shellCallCommandDone != null -> visitor.visitShellCallCommandDone(shellCallCommandDone)
+            shellCallOutputContentDelta != null ->
+                visitor.visitShellCallOutputContentDelta(shellCallOutputContentDelta)
+            shellCallOutputContentDone != null ->
+                visitor.visitShellCallOutputContentDone(shellCallOutputContentDone)
             inProgress != null -> visitor.visitInProgress(inProgress)
             failed != null -> visitor.visitFailed(failed)
             incomplete != null -> visitor.visitIncomplete(incomplete)
@@ -825,6 +889,36 @@ private constructor(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
                 ) {
                     functionCallArgumentsDone.validate()
+                }
+
+                override fun visitShellCallCommandAdded(
+                    shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) {
+                    shellCallCommandAdded.validate()
+                }
+
+                override fun visitShellCallCommandDelta(
+                    shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) {
+                    shellCallCommandDelta.validate()
+                }
+
+                override fun visitShellCallCommandDone(
+                    shellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) {
+                    shellCallCommandDone.validate()
+                }
+
+                override fun visitShellCallOutputContentDelta(
+                    shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) {
+                    shellCallOutputContentDelta.validate()
+                }
+
+                override fun visitShellCallOutputContentDone(
+                    shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+                ) {
+                    shellCallOutputContentDone.validate()
                 }
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) {
@@ -1098,6 +1192,26 @@ private constructor(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
                 ) = functionCallArgumentsDone.validity()
 
+                override fun visitShellCallCommandAdded(
+                    shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) = shellCallCommandAdded.validity()
+
+                override fun visitShellCallCommandDelta(
+                    shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) = shellCallCommandDelta.validity()
+
+                override fun visitShellCallCommandDone(
+                    shellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) = shellCallCommandDone.validity()
+
+                override fun visitShellCallOutputContentDelta(
+                    shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) = shellCallOutputContentDelta.validity()
+
+                override fun visitShellCallOutputContentDone(
+                    shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+                ) = shellCallOutputContentDone.validity()
+
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) =
                     inProgress.validity()
 
@@ -1250,6 +1364,11 @@ private constructor(
             fileSearchCallSearching == other.fileSearchCallSearching &&
             functionCallArgumentsDelta == other.functionCallArgumentsDelta &&
             functionCallArgumentsDone == other.functionCallArgumentsDone &&
+            shellCallCommandAdded == other.shellCallCommandAdded &&
+            shellCallCommandDelta == other.shellCallCommandDelta &&
+            shellCallCommandDone == other.shellCallCommandDone &&
+            shellCallOutputContentDelta == other.shellCallOutputContentDelta &&
+            shellCallOutputContentDone == other.shellCallOutputContentDone &&
             inProgress == other.inProgress &&
             failed == other.failed &&
             incomplete == other.incomplete &&
@@ -1307,6 +1426,11 @@ private constructor(
             fileSearchCallSearching,
             functionCallArgumentsDelta,
             functionCallArgumentsDone,
+            shellCallCommandAdded,
+            shellCallCommandDelta,
+            shellCallCommandDone,
+            shellCallOutputContentDelta,
+            shellCallOutputContentDone,
             inProgress,
             failed,
             incomplete,
@@ -1376,6 +1500,16 @@ private constructor(
                 "ResponseStreamEvent{functionCallArgumentsDelta=$functionCallArgumentsDelta}"
             functionCallArgumentsDone != null ->
                 "ResponseStreamEvent{functionCallArgumentsDone=$functionCallArgumentsDone}"
+            shellCallCommandAdded != null ->
+                "ResponseStreamEvent{shellCallCommandAdded=$shellCallCommandAdded}"
+            shellCallCommandDelta != null ->
+                "ResponseStreamEvent{shellCallCommandDelta=$shellCallCommandDelta}"
+            shellCallCommandDone != null ->
+                "ResponseStreamEvent{shellCallCommandDone=$shellCallCommandDone}"
+            shellCallOutputContentDelta != null ->
+                "ResponseStreamEvent{shellCallOutputContentDelta=$shellCallOutputContentDelta}"
+            shellCallOutputContentDone != null ->
+                "ResponseStreamEvent{shellCallOutputContentDone=$shellCallOutputContentDone}"
             inProgress != null -> "ResponseStreamEvent{inProgress=$inProgress}"
             failed != null -> "ResponseStreamEvent{failed=$failed}"
             incomplete != null -> "ResponseStreamEvent{incomplete=$incomplete}"
@@ -1537,6 +1671,33 @@ private constructor(
         fun ofFunctionCallArgumentsDone(
             functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
         ) = ResponseStreamEvent(functionCallArgumentsDone = functionCallArgumentsDone)
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        @JvmStatic
+        fun ofShellCallCommandAdded(shellCallCommandAdded: ResponseShellCallCommandAddedEvent) =
+            ResponseStreamEvent(shellCallCommandAdded = shellCallCommandAdded)
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        @JvmStatic
+        fun ofShellCallCommandDelta(shellCallCommandDelta: ResponseShellCallCommandDeltaEvent) =
+            ResponseStreamEvent(shellCallCommandDelta = shellCallCommandDelta)
+
+        /** A streaming event that indicated a shell command was completed. */
+        @JvmStatic
+        fun ofShellCallCommandDone(shellCallCommandDone: ResponseShellCallCommandDoneEvent) =
+            ResponseStreamEvent(shellCallCommandDone = shellCallCommandDone)
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        @JvmStatic
+        fun ofShellCallOutputContentDelta(
+            shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+        ) = ResponseStreamEvent(shellCallOutputContentDelta = shellCallOutputContentDelta)
+
+        /** A streaming event that indicated shell call output was completed. */
+        @JvmStatic
+        fun ofShellCallOutputContentDone(
+            shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+        ) = ResponseStreamEvent(shellCallOutputContentDone = shellCallOutputContentDone)
 
         /** Emitted when the response is in progress. */
         @JvmStatic
@@ -1806,6 +1967,25 @@ private constructor(
         /** Emitted when function-call arguments are finalized. */
         fun visitFunctionCallArgumentsDone(
             functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        fun visitShellCallCommandAdded(shellCallCommandAdded: ResponseShellCallCommandAddedEvent): T
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        fun visitShellCallCommandDelta(shellCallCommandDelta: ResponseShellCallCommandDeltaEvent): T
+
+        /** A streaming event that indicated a shell command was completed. */
+        fun visitShellCallCommandDone(shellCallCommandDone: ResponseShellCallCommandDoneEvent): T
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        fun visitShellCallOutputContentDelta(
+            shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+        ): T
+
+        /** A streaming event that indicated shell call output was completed. */
+        fun visitShellCallOutputContentDone(
+            shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
         ): T
 
         /** Emitted when the response is in progress. */
@@ -2101,6 +2281,44 @@ private constructor(
                         ?.let { ResponseStreamEvent(functionCallArgumentsDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
+                "response.shell_call_command.added" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallCommandAddedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(shellCallCommandAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_command.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallCommandDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(shellCallCommandDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_command.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseShellCallCommandDoneEvent>())
+                        ?.let { ResponseStreamEvent(shellCallCommandDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_output_content.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallOutputContentDeltaEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(shellCallOutputContentDelta = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_output_content.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallOutputContentDoneEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(shellCallOutputContentDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
                 "response.in_progress" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseInProgressEvent>())?.let {
                         ResponseStreamEvent(inProgress = it, _json = json)
@@ -2371,6 +2589,16 @@ private constructor(
                     generator.writeObject(value.functionCallArgumentsDelta)
                 value.functionCallArgumentsDone != null ->
                     generator.writeObject(value.functionCallArgumentsDone)
+                value.shellCallCommandAdded != null ->
+                    generator.writeObject(value.shellCallCommandAdded)
+                value.shellCallCommandDelta != null ->
+                    generator.writeObject(value.shellCallCommandDelta)
+                value.shellCallCommandDone != null ->
+                    generator.writeObject(value.shellCallCommandDone)
+                value.shellCallOutputContentDelta != null ->
+                    generator.writeObject(value.shellCallOutputContentDelta)
+                value.shellCallOutputContentDone != null ->
+                    generator.writeObject(value.shellCallOutputContentDone)
                 value.inProgress != null -> generator.writeObject(value.inProgress)
                 value.failed != null -> generator.writeObject(value.failed)
                 value.incomplete != null -> generator.writeObject(value.incomplete)

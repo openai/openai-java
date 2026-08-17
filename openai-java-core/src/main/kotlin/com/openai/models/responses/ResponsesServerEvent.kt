@@ -58,12 +58,17 @@ private constructor(
     private val responseContentPartAdded: ResponseContentPartAddedEvent? = null,
     private val responseContentPartDone: ResponseContentPartDoneEvent? = null,
     private val responseCreated: ResponseCreatedEvent? = null,
-    private val error: ResponseWsError? = null,
     private val responseFileSearchCallCompleted: ResponseFileSearchCallCompletedEvent? = null,
     private val responseFileSearchCallInProgress: ResponseFileSearchCallInProgressEvent? = null,
     private val responseFileSearchCallSearching: ResponseFileSearchCallSearchingEvent? = null,
     private val responseFunctionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent? = null,
     private val responseFunctionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent? = null,
+    private val responseShellCallCommandAdded: ResponseShellCallCommandAddedEvent? = null,
+    private val responseShellCallCommandDelta: ResponseShellCallCommandDeltaEvent? = null,
+    private val responseShellCallCommandDone: ResponseShellCallCommandDoneEvent? = null,
+    private val responseShellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent? =
+        null,
+    private val responseShellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent? = null,
     private val responseInProgress: ResponseInProgressEvent? = null,
     private val responseFailed: ResponseFailedEvent? = null,
     private val responseIncomplete: ResponseIncompleteEvent? = null,
@@ -99,6 +104,7 @@ private constructor(
     private val responseQueued: ResponseQueuedEvent? = null,
     private val responseCustomToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent? = null,
     private val responseCustomToolCallInputDone: ResponseCustomToolCallInputDoneEvent? = null,
+    private val error: ResponseWsError? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -157,9 +163,6 @@ private constructor(
     /** An event that is emitted when a response is created. */
     fun responseCreated(): Optional<ResponseCreatedEvent> = Optional.ofNullable(responseCreated)
 
-    /** Emitted when an error occurs. */
-    fun error(): Optional<ResponseWsError> = Optional.ofNullable(error)
-
     /** Emitted when a file search call is completed (results found). */
     fun responseFileSearchCallCompleted(): Optional<ResponseFileSearchCallCompletedEvent> =
         Optional.ofNullable(responseFileSearchCallCompleted)
@@ -179,6 +182,26 @@ private constructor(
     /** Emitted when function-call arguments are finalized. */
     fun responseFunctionCallArgumentsDone(): Optional<ResponseFunctionCallArgumentsDoneEvent> =
         Optional.ofNullable(responseFunctionCallArgumentsDone)
+
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun responseShellCallCommandAdded(): Optional<ResponseShellCallCommandAddedEvent> =
+        Optional.ofNullable(responseShellCallCommandAdded)
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun responseShellCallCommandDelta(): Optional<ResponseShellCallCommandDeltaEvent> =
+        Optional.ofNullable(responseShellCallCommandDelta)
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun responseShellCallCommandDone(): Optional<ResponseShellCallCommandDoneEvent> =
+        Optional.ofNullable(responseShellCallCommandDone)
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun responseShellCallOutputContentDelta(): Optional<ResponseShellCallOutputContentDeltaEvent> =
+        Optional.ofNullable(responseShellCallOutputContentDelta)
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun responseShellCallOutputContentDone(): Optional<ResponseShellCallOutputContentDoneEvent> =
+        Optional.ofNullable(responseShellCallOutputContentDone)
 
     /** Emitted when the response is in progress. */
     fun responseInProgress(): Optional<ResponseInProgressEvent> =
@@ -319,6 +342,9 @@ private constructor(
     fun responseCustomToolCallInputDone(): Optional<ResponseCustomToolCallInputDoneEvent> =
         Optional.ofNullable(responseCustomToolCallInputDone)
 
+    /** Emitted when an error occurs while processing a Responses WebSocket request. */
+    fun error(): Optional<ResponseWsError> = Optional.ofNullable(error)
+
     /**
      * The WebSocket lane that emitted this event. This field is present when the originating
      * `response.create` event supplied a `stream_id`.
@@ -425,6 +451,16 @@ private constructor(
                     responseCustomToolCallInputDelta._additionalProperties().streamId()
                 responseCustomToolCallInputDone != null ->
                     responseCustomToolCallInputDone._additionalProperties().streamId()
+                responseShellCallCommandAdded != null ->
+                    responseShellCallCommandAdded._additionalProperties().streamId()
+                responseShellCallCommandDelta != null ->
+                    responseShellCallCommandDelta._additionalProperties().streamId()
+                responseShellCallCommandDone != null ->
+                    responseShellCallCommandDone._additionalProperties().streamId()
+                responseShellCallOutputContentDelta != null ->
+                    responseShellCallOutputContentDelta._additionalProperties().streamId()
+                responseShellCallOutputContentDone != null ->
+                    responseShellCallOutputContentDone._additionalProperties().streamId()
                 else -> JsonMissing.of()
             }
 
@@ -459,8 +495,6 @@ private constructor(
 
     fun isResponseCreated(): Boolean = responseCreated != null
 
-    fun isError(): Boolean = error != null
-
     fun isResponseFileSearchCallCompleted(): Boolean = responseFileSearchCallCompleted != null
 
     fun isResponseFileSearchCallInProgress(): Boolean = responseFileSearchCallInProgress != null
@@ -470,6 +504,17 @@ private constructor(
     fun isResponseFunctionCallArgumentsDelta(): Boolean = responseFunctionCallArgumentsDelta != null
 
     fun isResponseFunctionCallArgumentsDone(): Boolean = responseFunctionCallArgumentsDone != null
+
+    fun isResponseShellCallCommandAdded(): Boolean = responseShellCallCommandAdded != null
+
+    fun isResponseShellCallCommandDelta(): Boolean = responseShellCallCommandDelta != null
+
+    fun isResponseShellCallCommandDone(): Boolean = responseShellCallCommandDone != null
+
+    fun isResponseShellCallOutputContentDelta(): Boolean =
+        responseShellCallOutputContentDelta != null
+
+    fun isResponseShellCallOutputContentDone(): Boolean = responseShellCallOutputContentDone != null
 
     fun isResponseInProgress(): Boolean = responseInProgress != null
 
@@ -543,6 +588,8 @@ private constructor(
 
     fun isResponseCustomToolCallInputDone(): Boolean = responseCustomToolCallInputDone != null
 
+    fun isError(): Boolean = error != null
+
     /** Emitted when there is a partial audio response. */
     fun asResponseAudioDelta(): ResponseAudioDeltaEvent =
         responseAudioDelta.getOrThrow("responseAudioDelta")
@@ -596,9 +643,6 @@ private constructor(
     /** An event that is emitted when a response is created. */
     fun asResponseCreated(): ResponseCreatedEvent = responseCreated.getOrThrow("responseCreated")
 
-    /** Emitted when an error occurs. */
-    fun asError(): ResponseWsError = error.getOrThrow("error")
-
     /** Emitted when a file search call is completed (results found). */
     fun asResponseFileSearchCallCompleted(): ResponseFileSearchCallCompletedEvent =
         responseFileSearchCallCompleted.getOrThrow("responseFileSearchCallCompleted")
@@ -618,6 +662,26 @@ private constructor(
     /** Emitted when function-call arguments are finalized. */
     fun asResponseFunctionCallArgumentsDone(): ResponseFunctionCallArgumentsDoneEvent =
         responseFunctionCallArgumentsDone.getOrThrow("responseFunctionCallArgumentsDone")
+
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun asResponseShellCallCommandAdded(): ResponseShellCallCommandAddedEvent =
+        responseShellCallCommandAdded.getOrThrow("responseShellCallCommandAdded")
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun asResponseShellCallCommandDelta(): ResponseShellCallCommandDeltaEvent =
+        responseShellCallCommandDelta.getOrThrow("responseShellCallCommandDelta")
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun asResponseShellCallCommandDone(): ResponseShellCallCommandDoneEvent =
+        responseShellCallCommandDone.getOrThrow("responseShellCallCommandDone")
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun asResponseShellCallOutputContentDelta(): ResponseShellCallOutputContentDeltaEvent =
+        responseShellCallOutputContentDelta.getOrThrow("responseShellCallOutputContentDelta")
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun asResponseShellCallOutputContentDone(): ResponseShellCallOutputContentDoneEvent =
+        responseShellCallOutputContentDone.getOrThrow("responseShellCallOutputContentDone")
 
     /** Emitted when the response is in progress. */
     fun asResponseInProgress(): ResponseInProgressEvent =
@@ -760,6 +824,9 @@ private constructor(
     fun asResponseCustomToolCallInputDone(): ResponseCustomToolCallInputDoneEvent =
         responseCustomToolCallInputDone.getOrThrow("responseCustomToolCallInputDone")
 
+    /** Emitted when an error occurs while processing a Responses WebSocket request. */
+    fun asError(): ResponseWsError = error.getOrThrow("error")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     /**
@@ -825,7 +892,6 @@ private constructor(
             responseContentPartDone != null ->
                 visitor.visitResponseContentPartDone(responseContentPartDone)
             responseCreated != null -> visitor.visitResponseCreated(responseCreated)
-            error != null -> visitor.visitError(error)
             responseFileSearchCallCompleted != null ->
                 visitor.visitResponseFileSearchCallCompleted(responseFileSearchCallCompleted)
             responseFileSearchCallInProgress != null ->
@@ -836,6 +902,18 @@ private constructor(
                 visitor.visitResponseFunctionCallArgumentsDelta(responseFunctionCallArgumentsDelta)
             responseFunctionCallArgumentsDone != null ->
                 visitor.visitResponseFunctionCallArgumentsDone(responseFunctionCallArgumentsDone)
+            responseShellCallCommandAdded != null ->
+                visitor.visitResponseShellCallCommandAdded(responseShellCallCommandAdded)
+            responseShellCallCommandDelta != null ->
+                visitor.visitResponseShellCallCommandDelta(responseShellCallCommandDelta)
+            responseShellCallCommandDone != null ->
+                visitor.visitResponseShellCallCommandDone(responseShellCallCommandDone)
+            responseShellCallOutputContentDelta != null ->
+                visitor.visitResponseShellCallOutputContentDelta(
+                    responseShellCallOutputContentDelta
+                )
+            responseShellCallOutputContentDone != null ->
+                visitor.visitResponseShellCallOutputContentDone(responseShellCallOutputContentDone)
             responseInProgress != null -> visitor.visitResponseInProgress(responseInProgress)
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
             responseIncomplete != null -> visitor.visitResponseIncomplete(responseIncomplete)
@@ -906,6 +984,7 @@ private constructor(
                 visitor.visitResponseCustomToolCallInputDelta(responseCustomToolCallInputDelta)
             responseCustomToolCallInputDone != null ->
                 visitor.visitResponseCustomToolCallInputDone(responseCustomToolCallInputDone)
+            error != null -> visitor.visitError(error)
             else -> visitor.unknown(_json)
         }
 
@@ -998,10 +1077,6 @@ private constructor(
                     responseCreated.validate()
                 }
 
-                override fun visitError(error: ResponseWsError) {
-                    error.validate()
-                }
-
                 override fun visitResponseFileSearchCallCompleted(
                     responseFileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
                 ) {
@@ -1030,6 +1105,36 @@ private constructor(
                     responseFunctionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
                 ) {
                     responseFunctionCallArgumentsDone.validate()
+                }
+
+                override fun visitResponseShellCallCommandAdded(
+                    responseShellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) {
+                    responseShellCallCommandAdded.validate()
+                }
+
+                override fun visitResponseShellCallCommandDelta(
+                    responseShellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) {
+                    responseShellCallCommandDelta.validate()
+                }
+
+                override fun visitResponseShellCallCommandDone(
+                    responseShellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) {
+                    responseShellCallCommandDone.validate()
+                }
+
+                override fun visitResponseShellCallOutputContentDelta(
+                    responseShellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) {
+                    responseShellCallOutputContentDelta.validate()
+                }
+
+                override fun visitResponseShellCallOutputContentDone(
+                    responseShellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+                ) {
+                    responseShellCallOutputContentDone.validate()
                 }
 
                 override fun visitResponseInProgress(responseInProgress: ResponseInProgressEvent) {
@@ -1227,6 +1332,10 @@ private constructor(
                 ) {
                     responseCustomToolCallInputDone.validate()
                 }
+
+                override fun visitError(error: ResponseWsError) {
+                    error.validate()
+                }
             }
         )
         streamId()
@@ -1300,8 +1409,6 @@ private constructor(
                 override fun visitResponseCreated(responseCreated: ResponseCreatedEvent) =
                     responseCreated.validity()
 
-                override fun visitError(error: ResponseWsError) = error.validity()
-
                 override fun visitResponseFileSearchCallCompleted(
                     responseFileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
                 ) = responseFileSearchCallCompleted.validity()
@@ -1321,6 +1428,26 @@ private constructor(
                 override fun visitResponseFunctionCallArgumentsDone(
                     responseFunctionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
                 ) = responseFunctionCallArgumentsDone.validity()
+
+                override fun visitResponseShellCallCommandAdded(
+                    responseShellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) = responseShellCallCommandAdded.validity()
+
+                override fun visitResponseShellCallCommandDelta(
+                    responseShellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) = responseShellCallCommandDelta.validity()
+
+                override fun visitResponseShellCallCommandDone(
+                    responseShellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) = responseShellCallCommandDone.validity()
+
+                override fun visitResponseShellCallOutputContentDelta(
+                    responseShellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) = responseShellCallOutputContentDelta.validity()
+
+                override fun visitResponseShellCallOutputContentDone(
+                    responseShellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+                ) = responseShellCallOutputContentDone.validity()
 
                 override fun visitResponseInProgress(responseInProgress: ResponseInProgressEvent) =
                     responseInProgress.validity()
@@ -1454,6 +1581,8 @@ private constructor(
                     responseCustomToolCallInputDone: ResponseCustomToolCallInputDoneEvent
                 ) = responseCustomToolCallInputDone.validity()
 
+                override fun visitError(error: ResponseWsError) = error.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -1478,12 +1607,16 @@ private constructor(
             responseContentPartAdded == other.responseContentPartAdded &&
             responseContentPartDone == other.responseContentPartDone &&
             responseCreated == other.responseCreated &&
-            error == other.error &&
             responseFileSearchCallCompleted == other.responseFileSearchCallCompleted &&
             responseFileSearchCallInProgress == other.responseFileSearchCallInProgress &&
             responseFileSearchCallSearching == other.responseFileSearchCallSearching &&
             responseFunctionCallArgumentsDelta == other.responseFunctionCallArgumentsDelta &&
             responseFunctionCallArgumentsDone == other.responseFunctionCallArgumentsDone &&
+            responseShellCallCommandAdded == other.responseShellCallCommandAdded &&
+            responseShellCallCommandDelta == other.responseShellCallCommandDelta &&
+            responseShellCallCommandDone == other.responseShellCallCommandDone &&
+            responseShellCallOutputContentDelta == other.responseShellCallOutputContentDelta &&
+            responseShellCallOutputContentDone == other.responseShellCallOutputContentDone &&
             responseInProgress == other.responseInProgress &&
             responseFailed == other.responseFailed &&
             responseIncomplete == other.responseIncomplete &&
@@ -1518,7 +1651,8 @@ private constructor(
             responseOutputTextAnnotationAdded == other.responseOutputTextAnnotationAdded &&
             responseQueued == other.responseQueued &&
             responseCustomToolCallInputDelta == other.responseCustomToolCallInputDelta &&
-            responseCustomToolCallInputDone == other.responseCustomToolCallInputDone
+            responseCustomToolCallInputDone == other.responseCustomToolCallInputDone &&
+            error == other.error
     }
 
     override fun hashCode(): Int =
@@ -1536,12 +1670,16 @@ private constructor(
             responseContentPartAdded,
             responseContentPartDone,
             responseCreated,
-            error,
             responseFileSearchCallCompleted,
             responseFileSearchCallInProgress,
             responseFileSearchCallSearching,
             responseFunctionCallArgumentsDelta,
             responseFunctionCallArgumentsDone,
+            responseShellCallCommandAdded,
+            responseShellCallCommandDelta,
+            responseShellCallCommandDone,
+            responseShellCallOutputContentDelta,
+            responseShellCallOutputContentDone,
             responseInProgress,
             responseFailed,
             responseIncomplete,
@@ -1576,6 +1714,7 @@ private constructor(
             responseQueued,
             responseCustomToolCallInputDelta,
             responseCustomToolCallInputDone,
+            error,
         )
 
     override fun toString(): String =
@@ -1605,7 +1744,6 @@ private constructor(
             responseContentPartDone != null ->
                 "ResponsesServerEvent{responseContentPartDone=$responseContentPartDone}"
             responseCreated != null -> "ResponsesServerEvent{responseCreated=$responseCreated}"
-            error != null -> "ResponsesServerEvent{error=$error}"
             responseFileSearchCallCompleted != null ->
                 "ResponsesServerEvent{responseFileSearchCallCompleted=$responseFileSearchCallCompleted}"
             responseFileSearchCallInProgress != null ->
@@ -1616,6 +1754,16 @@ private constructor(
                 "ResponsesServerEvent{responseFunctionCallArgumentsDelta=$responseFunctionCallArgumentsDelta}"
             responseFunctionCallArgumentsDone != null ->
                 "ResponsesServerEvent{responseFunctionCallArgumentsDone=$responseFunctionCallArgumentsDone}"
+            responseShellCallCommandAdded != null ->
+                "ResponsesServerEvent{responseShellCallCommandAdded=$responseShellCallCommandAdded}"
+            responseShellCallCommandDelta != null ->
+                "ResponsesServerEvent{responseShellCallCommandDelta=$responseShellCallCommandDelta}"
+            responseShellCallCommandDone != null ->
+                "ResponsesServerEvent{responseShellCallCommandDone=$responseShellCallCommandDone}"
+            responseShellCallOutputContentDelta != null ->
+                "ResponsesServerEvent{responseShellCallOutputContentDelta=$responseShellCallOutputContentDelta}"
+            responseShellCallOutputContentDone != null ->
+                "ResponsesServerEvent{responseShellCallOutputContentDone=$responseShellCallOutputContentDone}"
             responseInProgress != null ->
                 "ResponsesServerEvent{responseInProgress=$responseInProgress}"
             responseFailed != null -> "ResponsesServerEvent{responseFailed=$responseFailed}"
@@ -1682,6 +1830,7 @@ private constructor(
                 "ResponsesServerEvent{responseCustomToolCallInputDelta=$responseCustomToolCallInputDelta}"
             responseCustomToolCallInputDone != null ->
                 "ResponsesServerEvent{responseCustomToolCallInputDone=$responseCustomToolCallInputDone}"
+            error != null -> "ResponsesServerEvent{error=$error}"
             _json != null -> "ResponsesServerEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponsesServerEvent")
         }
@@ -1775,9 +1924,6 @@ private constructor(
         fun ofResponseCreated(responseCreated: ResponseCreatedEvent) =
             ResponsesServerEvent(responseCreated = responseCreated)
 
-        /** Emitted when an error occurs. */
-        @JvmStatic fun ofError(error: ResponseWsError) = ResponsesServerEvent(error = error)
-
         /** Emitted when a file search call is completed (results found). */
         @JvmStatic
         fun ofResponseFileSearchCallCompleted(
@@ -1815,6 +1961,42 @@ private constructor(
         ) =
             ResponsesServerEvent(
                 responseFunctionCallArgumentsDone = responseFunctionCallArgumentsDone
+            )
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        @JvmStatic
+        fun ofResponseShellCallCommandAdded(
+            responseShellCallCommandAdded: ResponseShellCallCommandAddedEvent
+        ) = ResponsesServerEvent(responseShellCallCommandAdded = responseShellCallCommandAdded)
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        @JvmStatic
+        fun ofResponseShellCallCommandDelta(
+            responseShellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+        ) = ResponsesServerEvent(responseShellCallCommandDelta = responseShellCallCommandDelta)
+
+        /** A streaming event that indicated a shell command was completed. */
+        @JvmStatic
+        fun ofResponseShellCallCommandDone(
+            responseShellCallCommandDone: ResponseShellCallCommandDoneEvent
+        ) = ResponsesServerEvent(responseShellCallCommandDone = responseShellCallCommandDone)
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        @JvmStatic
+        fun ofResponseShellCallOutputContentDelta(
+            responseShellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+        ) =
+            ResponsesServerEvent(
+                responseShellCallOutputContentDelta = responseShellCallOutputContentDelta
+            )
+
+        /** A streaming event that indicated shell call output was completed. */
+        @JvmStatic
+        fun ofResponseShellCallOutputContentDone(
+            responseShellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+        ) =
+            ResponsesServerEvent(
+                responseShellCallOutputContentDone = responseShellCallOutputContentDone
             )
 
         /** Emitted when the response is in progress. */
@@ -2044,6 +2226,9 @@ private constructor(
         fun ofResponseCustomToolCallInputDone(
             responseCustomToolCallInputDone: ResponseCustomToolCallInputDoneEvent
         ) = ResponsesServerEvent(responseCustomToolCallInputDone = responseCustomToolCallInputDone)
+
+        /** Emitted when an error occurs while processing a Responses WebSocket request. */
+        @JvmStatic fun ofError(error: ResponseWsError) = ResponsesServerEvent(error = error)
     }
 
     /**
@@ -2107,9 +2292,6 @@ private constructor(
         /** An event that is emitted when a response is created. */
         fun visitResponseCreated(responseCreated: ResponseCreatedEvent): T
 
-        /** Emitted when an error occurs. */
-        fun visitError(error: ResponseWsError): T
-
         /** Emitted when a file search call is completed (results found). */
         fun visitResponseFileSearchCallCompleted(
             responseFileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
@@ -2133,6 +2315,31 @@ private constructor(
         /** Emitted when function-call arguments are finalized. */
         fun visitResponseFunctionCallArgumentsDone(
             responseFunctionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        fun visitResponseShellCallCommandAdded(
+            responseShellCallCommandAdded: ResponseShellCallCommandAddedEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        fun visitResponseShellCallCommandDelta(
+            responseShellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was completed. */
+        fun visitResponseShellCallCommandDone(
+            responseShellCallCommandDone: ResponseShellCallCommandDoneEvent
+        ): T
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        fun visitResponseShellCallOutputContentDelta(
+            responseShellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+        ): T
+
+        /** A streaming event that indicated shell call output was completed. */
+        fun visitResponseShellCallOutputContentDone(
+            responseShellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
         ): T
 
         /** Emitted when the response is in progress. */
@@ -2291,6 +2498,9 @@ private constructor(
             responseCustomToolCallInputDone: ResponseCustomToolCallInputDoneEvent
         ): T
 
+        /** Emitted when an error occurs while processing a Responses WebSocket request. */
+        fun visitError(error: ResponseWsError): T
+
         /**
          * Maps an unknown variant of [ResponsesServerEvent] to a value of type [T].
          *
@@ -2416,11 +2626,6 @@ private constructor(
                         ResponsesServerEvent(responseCreated = it, _json = json)
                     } ?: ResponsesServerEvent(_json = json)
                 }
-                "error" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ResponseWsError>())?.let {
-                        ResponsesServerEvent(error = it, _json = json)
-                    } ?: ResponsesServerEvent(_json = json)
-                }
                 "response.file_search_call.completed" -> {
                     return tryDeserialize(
                             node,
@@ -2471,6 +2676,54 @@ private constructor(
                         ?.let {
                             ResponsesServerEvent(
                                 responseFunctionCallArgumentsDone = it,
+                                _json = json,
+                            )
+                        } ?: ResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_command.added" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallCommandAddedEvent>(),
+                        )
+                        ?.let {
+                            ResponsesServerEvent(responseShellCallCommandAdded = it, _json = json)
+                        } ?: ResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_command.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallCommandDeltaEvent>(),
+                        )
+                        ?.let {
+                            ResponsesServerEvent(responseShellCallCommandDelta = it, _json = json)
+                        } ?: ResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_command.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseShellCallCommandDoneEvent>())
+                        ?.let {
+                            ResponsesServerEvent(responseShellCallCommandDone = it, _json = json)
+                        } ?: ResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_output_content.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallOutputContentDeltaEvent>(),
+                        )
+                        ?.let {
+                            ResponsesServerEvent(
+                                responseShellCallOutputContentDelta = it,
+                                _json = json,
+                            )
+                        } ?: ResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_output_content.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallOutputContentDoneEvent>(),
+                        )
+                        ?.let {
+                            ResponsesServerEvent(
+                                responseShellCallOutputContentDone = it,
                                 _json = json,
                             )
                         } ?: ResponsesServerEvent(_json = json)
@@ -2746,6 +2999,11 @@ private constructor(
                             ResponsesServerEvent(responseCustomToolCallInputDone = it, _json = json)
                         } ?: ResponsesServerEvent(_json = json)
                 }
+                "error" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseWsError>())?.let {
+                        ResponsesServerEvent(error = it, _json = json)
+                    } ?: ResponsesServerEvent(_json = json)
+                }
             }
 
             return ResponsesServerEvent(_json = json)
@@ -2782,7 +3040,6 @@ private constructor(
                 value.responseContentPartDone != null ->
                     generator.writeObject(value.responseContentPartDone)
                 value.responseCreated != null -> generator.writeObject(value.responseCreated)
-                value.error != null -> generator.writeObject(value.error)
                 value.responseFileSearchCallCompleted != null ->
                     generator.writeObject(value.responseFileSearchCallCompleted)
                 value.responseFileSearchCallInProgress != null ->
@@ -2793,6 +3050,16 @@ private constructor(
                     generator.writeObject(value.responseFunctionCallArgumentsDelta)
                 value.responseFunctionCallArgumentsDone != null ->
                     generator.writeObject(value.responseFunctionCallArgumentsDone)
+                value.responseShellCallCommandAdded != null ->
+                    generator.writeObject(value.responseShellCallCommandAdded)
+                value.responseShellCallCommandDelta != null ->
+                    generator.writeObject(value.responseShellCallCommandDelta)
+                value.responseShellCallCommandDone != null ->
+                    generator.writeObject(value.responseShellCallCommandDone)
+                value.responseShellCallOutputContentDelta != null ->
+                    generator.writeObject(value.responseShellCallOutputContentDelta)
+                value.responseShellCallOutputContentDone != null ->
+                    generator.writeObject(value.responseShellCallOutputContentDone)
                 value.responseInProgress != null -> generator.writeObject(value.responseInProgress)
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)
                 value.responseIncomplete != null -> generator.writeObject(value.responseIncomplete)
@@ -2857,6 +3124,7 @@ private constructor(
                     generator.writeObject(value.responseCustomToolCallInputDelta)
                 value.responseCustomToolCallInputDone != null ->
                     generator.writeObject(value.responseCustomToolCallInputDone)
+                value.error != null -> generator.writeObject(value.error)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponsesServerEvent")
             }
