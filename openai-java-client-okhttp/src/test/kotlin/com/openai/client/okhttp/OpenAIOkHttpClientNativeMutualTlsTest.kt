@@ -85,6 +85,10 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
                     "https://tenant.services.ai.azure.com/openai/v1",
                     "https://tenant.azure-api.net/openai/v1",
                     "https://tenant.cognitiveservices.azure.com/openai/v1",
+                    "https://tenant.openai.azure.com./openai/v1",
+                    "https://tenant.services.ai.azure.com./openai/v1",
+                    "https://tenant.azure-api.net./openai/v1",
+                    "https://tenant.cognitiveservices.azure.com./openai/v1",
                 )
                 .forEach { baseUrl ->
                     listOf(false, true).forEach { ambient ->

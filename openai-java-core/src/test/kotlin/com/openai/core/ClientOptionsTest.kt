@@ -349,7 +349,12 @@ internal class ClientOptionsTest {
 
     @ParameterizedTest
     @ValueSource(
-        strings = ["https://mtls-eu.api.openai.com/v1", "https://gateway.customer.example/v1"]
+        strings =
+            [
+                "https://mtls-eu.api.openai.com/v1",
+                "https://gateway.customer.example/v1",
+                "https://gateway.customer.example./v1",
+            ]
     )
     fun build_withX509WorkloadIdentity_preservesExplicitOpenAiGateway(baseUrl: String) {
         val clientOptions =
@@ -375,6 +380,10 @@ internal class ClientOptionsTest {
                 "https://tenant.services.ai.azure.com/openai/v1",
                 "https://tenant.azure-api.net/openai/v1",
                 "https://tenant.cognitiveservices.azure.com/openai/v1",
+                "https://tenant.openai.azure.com./openai/v1",
+                "https://tenant.services.ai.azure.com./openai/v1",
+                "https://tenant.azure-api.net./openai/v1",
+                "https://tenant.cognitiveservices.azure.com./openai/v1",
             ]
     )
     fun build_withX509WorkloadIdentity_rejectsAzureBaseUrlBeforeTokenExchange(baseUrl: String) {
@@ -405,6 +414,10 @@ internal class ClientOptionsTest {
                 "https://tenant.services.ai.azure.com/openai/v1",
                 "https://tenant.azure-api.net/openai/v1",
                 "https://tenant.cognitiveservices.azure.com/openai/v1",
+                "https://tenant.openai.azure.com./openai/v1",
+                "https://tenant.services.ai.azure.com./openai/v1",
+                "https://tenant.azure-api.net./openai/v1",
+                "https://tenant.cognitiveservices.azure.com./openai/v1",
             ]
     )
     fun build_withExistingCredentials_preservesAzureBaseUrls(baseUrl: String) {

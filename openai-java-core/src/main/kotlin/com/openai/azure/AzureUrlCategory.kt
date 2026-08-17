@@ -22,7 +22,7 @@ internal enum class AzureUrlCategory {
 
         fun categorizeBaseUrl(baseUrl: String, pathMode: AzureUrlPathMode): AzureUrlCategory {
             val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-            val host = URI.create(trimmedBaseUrl).host
+            val host = URI.create(trimmedBaseUrl).host.removeSuffix(".")
 
             return when (pathMode) {
                 AzureUrlPathMode.LEGACY -> AZURE_LEGACY
