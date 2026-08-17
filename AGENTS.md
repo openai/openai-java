@@ -12,9 +12,15 @@ the generator.
 - Never commit OpenAI API keys, bearer tokens, AWS/Bedrock credentials, Sonatype tokens, GPG private
   keys or passphrases, or any other secrets. Read credentials from environment variables such as
   `OPENAI_API_KEY`; use obviously fake values in examples, JUnit/WireMock fixtures, recordings, and
-  snapshots. Tests must not send real credentials or customer data to live services.
-- Redact credentials, authorization or cookie headers, signed requests, customer data, and sensitive
-  request/response content from logs, error messages, exceptions, traces, and test output.
+  snapshots. Keep ordinary unit and pull-request tests offline and free of real credentials.
+  Purpose-built, explicitly opt-in live integration tests such as `BedrockRuntimeLiveTest` may use
+  dedicated, least-privilege credentials and synthetic inputs; never log credentials or customer
+  data.
+- Keep credentials, authorization or cookie headers, signed requests, and real customer data out of
+  default or uncontrolled logs, errors, traces, and test output. Preserve documented diagnostics,
+  including `OpenAIServiceException.body()`, API-error and validation messages, and explicitly
+  enabled `DEBUG` request/response body logging. Warn before enabling sensitive diagnostics, use
+  sanitized fixtures, and redact before forwarding data to untrusted sinks.
 - Review direct and transitive Maven dependencies, Gradle plugins and repositories, the Gradle
   wrapper and distribution integrity, dependency locks, and build/install/download scripts before
   changing them. Avoid untrusted artifacts, repositories, and executable installation hooks.

@@ -302,14 +302,18 @@ jobs:
 
       - name: Publish to Maven Central
         env:
-          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
         run: |
           set -euo pipefail
 
-          for variable in SONATYPE_USERNAME SONATYPE_PASSWORD GPG_SIGNING_KEY GPG_SIGNING_PASSWORD; do
+          for variable in \
+            ORG_GRADLE_PROJECT_mavenCentralUsername \
+            ORG_GRADLE_PROJECT_mavenCentralPassword \
+            GPG_SIGNING_KEY \
+            GPG_SIGNING_PASSWORD; do
             if [[ -z "${!variable}" ]]; then
               echo "::error::$variable is empty"
               exit 1
@@ -331,8 +335,6 @@ jobs:
 
           ./gradlew publishAndReleaseToMavenCentral \
             --stacktrace \
-            -PmavenCentralUsername="$SONATYPE_USERNAME" \
-            -PmavenCentralPassword="$SONATYPE_PASSWORD" \
             --no-configuration-cache
 
       - name: Wait for Maven Central
