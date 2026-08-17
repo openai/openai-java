@@ -1,18 +1,36 @@
 # Security Policy
 
-## Reporting Security Issues
+## Reporting a vulnerability
 
-Please report potential security vulnerabilities through OpenAI's
+Please report security vulnerabilities privately through OpenAI's
 [coordinated vulnerability disclosure process](https://openai.com/policies/coordinated-vulnerability-disclosure-policy).
 For questions about that process, contact disclosure@openai.com.
 
-Do not report vulnerabilities through public GitHub issues, discussions, or pull requests. Include
-the affected SDK version, potential impact, and reproduction steps using fake credentials and
-redacted data; never include real API keys, customer data, AWS credentials, Sonatype tokens, or GPG
-private keys.
+Do not report security vulnerabilities through public GitHub issues, pull requests, or discussions.
 
-## Responsible Disclosure
+This policy covers source code in this repository and the official `com.openai`
+Maven artifacts `openai-java`, `openai-java-core`,
+`openai-java-client-okhttp`, and `openai-java-bedrock`. Supported releases are
+described in the [Java version support policy](docs/version-support-policy.md).
 
-Please allow OpenAI a reasonable amount of time to investigate and address the
-issue before making information public. Thank you for helping us keep this SDK
-and the systems it interacts with secure.
+## What to include
+
+When reporting a vulnerability, include:
+
+- The affected package or product and version, or the affected Git commit.
+- A clear description of the security impact.
+- Sanitized reproduction steps or a minimal proof of concept using fake credentials.
+- Relevant Java runtime, operating system, and integration details, such as
+  OkHttp or Amazon Bedrock.
+- Any known mitigations or workarounds.
+
+Do not include live credentials, API keys, customer data, or unredacted sensitive logs.
+
+Also redact access tokens, authorization headers, webhook secrets, AWS credentials,
+Sonatype tokens, and private signing keys before submitting a report.
+
+## Coordinated disclosure
+
+Please give the maintainers a reasonable opportunity to investigate and address the issue before public disclosure.
+
+Thank you for helping us keep this SDK and the systems it interacts with secure.
