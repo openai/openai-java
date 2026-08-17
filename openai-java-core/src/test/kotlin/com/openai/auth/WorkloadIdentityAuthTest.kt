@@ -9,6 +9,9 @@ import com.openai.errors.BadRequestException
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
+import java.util.function.LongSupplier
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -350,6 +353,79 @@ internal class WorkloadIdentityAuthTest {
         assertThat(token1).isEqualTo(accessToken)
         assertThat(token2).isEqualTo(accessToken)
         verify(httpClient, times(1)).execute(any<HttpRequest>())
+    }
+
+    @ParameterizedTest
+    @EnumSource(SubjectTokenType::class)
+    fun getToken_preservesConfiguredSubjectTokenRefreshMargin(tokenType: SubjectTokenType) {
+        val provider = mock<SubjectTokenProvider>()
+        whenever(provider.tokenType()).thenReturn(tokenType)
+        whenever(provider.getToken(any(), any())).thenReturn("legacy-subject-token")
+        val firstResponse =
+            mockResponse(200, """{"access_token":"first-token","expires_in":3600}""")
+        val refreshedResponse =
+            mockResponse(200, """{"access_token":"refreshed-token","expires_in":3600}""")
+        whenever(httpClient.execute(any<HttpRequest>()))
+            .thenReturn(firstResponse, refreshedResponse)
+        val elapsedNanos = AtomicLong()
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .refreshBufferSeconds(3000)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+                nanoTime = LongSupplier(elapsedNanos::get),
+            )
+
+        assertThat(auth.getToken()).isEqualTo("first-token")
+        elapsedNanos.set(TimeUnit.SECONDS.toNanos(600))
+
+        assertThat(auth.getToken()).isEqualTo("refreshed-token")
+        verify(httpClient, times(2)).execute(any<HttpRequest>())
+    }
+
+    @ParameterizedTest
+    @EnumSource(SubjectTokenType::class)
+    fun getTokenAsync_preservesConfiguredSubjectTokenRefreshMargin(tokenType: SubjectTokenType) {
+        val provider = mock<SubjectTokenProvider>()
+        whenever(provider.tokenType()).thenReturn(tokenType)
+        whenever(provider.getTokenAsync(any(), any()))
+            .thenReturn(CompletableFuture.completedFuture("legacy-subject-token"))
+        val firstResponse =
+            mockResponse(200, """{"access_token":"first-token","expires_in":3600}""")
+        val refreshedResponse =
+            mockResponse(200, """{"access_token":"refreshed-token","expires_in":3600}""")
+        whenever(httpClient.executeAsync(any<HttpRequest>()))
+            .thenReturn(
+                CompletableFuture.completedFuture(firstResponse),
+                CompletableFuture.completedFuture(refreshedResponse),
+            )
+        val elapsedNanos = AtomicLong()
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .refreshBufferSeconds(3000)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+                nanoTime = LongSupplier(elapsedNanos::get),
+            )
+
+        assertThat(auth.getTokenAsync().get()).isEqualTo("first-token")
+        elapsedNanos.set(TimeUnit.SECONDS.toNanos(600))
+
+        assertThat(auth.getTokenAsync().get()).isEqualTo("first-token")
+        assertThat(auth.getTokenAsync().get()).isEqualTo("refreshed-token")
+        verify(httpClient, times(2)).executeAsync(any<HttpRequest>())
     }
 
     @Test

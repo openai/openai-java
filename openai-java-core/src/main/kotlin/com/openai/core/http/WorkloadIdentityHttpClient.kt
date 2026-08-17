@@ -3,13 +3,26 @@ package com.openai.core.http
 import com.openai.auth.WorkloadIdentityAuth
 import com.openai.core.RequestOptions
 import com.openai.errors.OpenAIRetryableException
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class WorkloadIdentityHttpClient(
     private val delegate: HttpClient,
     private val workloadIdentityAuth: WorkloadIdentityAuth?,
+    allowedApiBaseUrl: String,
 ) : HttpClient {
+
+    private val allowedApiOrigin =
+        requireNotNull(secureHttpsUri(allowedApiBaseUrl)) {
+            "X.509 workload identity requires an absolute HTTPS base URL"
+        }
+
+    constructor(
+        delegate: HttpClient,
+        workloadIdentityAuth: WorkloadIdentityAuth?,
+    ) : this(delegate, workloadIdentityAuth, "https://mtls.api.openai.com/v1")
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val auth = workloadIdentityAuth ?: return delegate.execute(request, requestOptions)
@@ -17,6 +30,7 @@ internal class WorkloadIdentityHttpClient(
             return executeLegacy(request, requestOptions, auth)
         }
 
+        requireAllowedApiOrigin(request)
         val retries = AtomicInteger()
         val attempt = executeWithToken(request, requestOptions, retries, auth)
         if (attempt.response.statusCode() != 401) {
@@ -46,6 +60,7 @@ internal class WorkloadIdentityHttpClient(
             return executeLegacyAsync(request, requestOptions, auth)
         }
 
+        requireAllowedApiOrigin(request)
         val retries = AtomicInteger()
         val firstAttempt = executeWithTokenAsync(request, requestOptions, retries, auth)
         return firstAttempt.thenCompose { attempt ->
@@ -117,6 +132,7 @@ internal class WorkloadIdentityHttpClient(
     ): AuthenticatedResponse {
         val token = auth.getTokenLease()
         val authenticatedRequest = authenticate(request, token.value, auth)
+        requireAllowedApiOrigin(authenticatedRequest)
         val response =
             if (delegate is RetryingHttpClient) {
                 delegate.execute(authenticatedRequest, requestOptions, retries)
@@ -134,6 +150,7 @@ internal class WorkloadIdentityHttpClient(
     ): CompletableFuture<AuthenticatedResponse> =
         auth.getTokenLeaseAsync().thenCompose { token ->
             val authenticatedRequest = authenticate(request, token.value, auth)
+            requireAllowedApiOrigin(authenticatedRequest)
             val response =
                 if (delegate is RetryingHttpClient) {
                     delegate.executeAsync(authenticatedRequest, requestOptions, retries)
@@ -159,6 +176,35 @@ internal class WorkloadIdentityHttpClient(
                 }
             }
             .build()
+
+    private fun requireAllowedApiOrigin(request: HttpRequest) {
+        val destination = secureHttpsUri(request.url())
+        require(
+            destination != null &&
+                allowedApiOrigin.host.equals(destination.host, ignoreCase = true) &&
+                effectivePort(allowedApiOrigin) == effectivePort(destination)
+        ) {
+            "X.509 workload identity requests must remain on the configured HTTPS origin"
+        }
+    }
+
+    private fun secureHttpsUri(value: String): URI? =
+        try {
+            URI.create(value).parseServerAuthority().takeIf { uri ->
+                uri.isAbsolute &&
+                    !uri.isOpaque &&
+                    uri.scheme.equals("https", ignoreCase = true) &&
+                    uri.host != null &&
+                    uri.rawUserInfo == null &&
+                    (uri.port == -1 || uri.port in 1..65535)
+            }
+        } catch (_: IllegalArgumentException) {
+            null
+        } catch (_: URISyntaxException) {
+            null
+        }
+
+    private fun effectivePort(uri: URI): Int = if (uri.port == -1) 443 else uri.port
 
     private fun isReplayable(request: HttpRequest): Boolean = request.body?.repeatable() ?: true
 

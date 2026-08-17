@@ -16,6 +16,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ErrorObject
 import java.io.OutputStream
 import java.time.Clock
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.ExecutionException
@@ -68,6 +69,7 @@ internal class WorkloadIdentityAuth(
                 .sleeper(checkNotNull(this.sleeper))
                 .clock(clock)
                 .maxRetries(maxRetries)
+                .maxRetryAfter(Duration.ofSeconds(60))
                 .build()
         } else {
             httpClient
@@ -108,6 +110,7 @@ internal class WorkloadIdentityAuth(
     private val lock = ReentrantLock()
     private var cachedToken: CachedToken? = null
     private var refreshInFlight: CompletableFuture<CachedToken>? = null
+    private var refreshSourceLease: TokenLease? = null
 
     private class CachedToken(
         val lease: TokenLease,
@@ -170,6 +173,7 @@ internal class WorkloadIdentityAuth(
                     if (isExpiringSoonUnsafe(token) && refreshInFlight == null) {
                         val refresh = CompletableFuture<CachedToken>()
                         refreshInFlight = refresh
+                        refreshSourceLease = token.lease
                         AsyncTokenAction.StartBackground(refresh, token)
                     } else {
                         AsyncTokenAction.ReturnCached(token)
@@ -205,14 +209,27 @@ internal class WorkloadIdentityAuth(
 
     fun invalidateToken() = lock.withLock { cachedToken = null }
 
-    internal fun invalidateToken(rejectedToken: TokenLease) =
+    internal fun invalidateToken(rejectedToken: TokenLease) {
+        var displacedRefresh: CompletableFuture<CachedToken>? = null
+        var replacementRefresh: CompletableFuture<CachedToken>? = null
         lock.withLock {
             if (cachedToken?.lease === rejectedToken) {
-                // Do not detach a newer in-flight refresh. Concurrent requests rejected with the
-                // same old token can all wait for that single exchange.
                 cachedToken = null
+                if (refreshSourceLease === rejectedToken) {
+                    displacedRefresh = refreshInFlight
+                    replacementRefresh = CompletableFuture()
+                    refreshInFlight = replacementRefresh
+                    refreshSourceLease = null
+                }
             }
         }
+        val replacement = replacementRefresh ?: return
+        val displaced = checkNotNull(displacedRefresh)
+        replacement.whenComplete { token, error ->
+            if (error != null) displaced.completeExceptionally(error) else displaced.complete(token)
+        }
+        startRefreshAsync(replacement)
+    }
 
     private fun unexpiredCachedTokenUnsafe(): CachedToken? {
         val token = cachedToken ?: return null
@@ -279,6 +296,7 @@ internal class WorkloadIdentityAuth(
             if (refreshInFlight === refresh) {
                 cachedToken = token
                 refreshInFlight = null
+                refreshSourceLease = null
             }
         }
         refresh.complete(token)
@@ -288,6 +306,7 @@ internal class WorkloadIdentityAuth(
         lock.withLock {
             if (refreshInFlight === refresh) {
                 refreshInFlight = null
+                refreshSourceLease = null
             }
         }
         refresh.completeExceptionally(error)
@@ -415,7 +434,8 @@ internal class WorkloadIdentityAuth(
 
         val expiresAfterNanos = TimeUnit.SECONDS.toNanos(expiresIn.toLong())
         val configuredBufferNanos = max(0L, config.refreshBuffer.toNanos())
-        val effectiveBufferNanos = min(configuredBufferNanos, expiresAfterNanos / 2)
+        val effectiveBufferNanos =
+            if (isX509) min(configuredBufferNanos, expiresAfterNanos / 2) else configuredBufferNanos
         return CachedToken(
             lease = TokenLease(accessToken),
             issuedAtNanos = nanoTime.asLong,

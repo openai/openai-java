@@ -6,16 +6,21 @@ import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAuthenticator
+import com.openai.core.http.HttpResponse
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
+import java.io.ByteArrayInputStream
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
@@ -182,6 +187,49 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun build_withHttpRequestAuthenticatorAndX509WorkloadIdentity_throws() {
+        val authenticator =
+            object : HttpRequestAuthenticator {
+                override fun authenticate(request: HttpRequest): HttpRequest = request
+            }
+
+        val thrown =
+            assertThrows<IllegalStateException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .httpRequestAuthenticator(authenticator)
+                    .workloadIdentity(
+                        WorkloadIdentity.x509Builder()
+                            .identityProviderId("idp_test")
+                            .serviceAccountId("svc_acct_test")
+                            .build()
+                    )
+                    .build()
+            }
+
+        assertThat(thrown.message).contains("Provider authentication cannot be combined")
+    }
+
+    @Test
+    fun build_withAzureApiKeyAndX509WorkloadIdentity_throws() {
+        val thrown =
+            assertThrows<IllegalStateException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .credential(AzureApiKeyCredential.create("azure-api-key"))
+                    .workloadIdentity(
+                        WorkloadIdentity.x509Builder()
+                            .identityProviderId("idp_test")
+                            .serviceAccountId("svc_acct_test")
+                            .build()
+                    )
+                    .build()
+            }
+
+        assertThat(thrown.message).contains("Cannot specify both")
+    }
+
+    @Test
     fun putHeader_canOverwriteDefaultHeader() {
         val clientOptions =
             ClientOptions.builder()
@@ -316,6 +364,86 @@ internal class ClientOptionsTest {
     }
 
     @ParameterizedTest
+    @CsvSource(
+        value =
+            [
+                "false|http://mtls.api.openai.com/v1/models",
+                "true|http://mtls.api.openai.com/v1/models",
+                "false|https://attacker.invalid/exfiltrate",
+                "true|https://attacker.invalid/exfiltrate",
+                "false|https://mtls.api.openai.com.@attacker.invalid/exfiltrate",
+                "true|https://mtls.api.openai.com.@attacker.invalid/exfiltrate",
+                "false|https://mtls.api.openai.com:444/exfiltrate",
+                "true|https://mtls.api.openai.com:444/exfiltrate",
+                "false|https://user@mtls.api.openai.com/exfiltrate",
+                "true|https://user@mtls.api.openai.com/exfiltrate",
+                "false|https://mtls.api.openai.com%2eattacker.invalid/exfiltrate",
+                "true|https://mtls.api.openai.com%2eattacker.invalid/exfiltrate",
+                "false|https://mtls.api.openai.com\\@attacker.invalid/exfiltrate",
+                "true|https://mtls.api.openai.com\\@attacker.invalid/exfiltrate",
+            ],
+        delimiter = '|',
+    )
+    fun x509HttpClient_rejectsCrossOriginRequestsBeforeTokenExchange(
+        async: Boolean,
+        requestUrl: String,
+    ) {
+        val requests = AtomicInteger()
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    requests.incrementAndGet()
+                    val responseBody =
+                        if (request.url() == "https://mtls.auth.openai.com/oauth/token") {
+                            """{"access_token":"sensitive-bearer","expires_in":3600}"""
+                        } else {
+                            "{}"
+                        }
+                    return object : HttpResponse {
+                        override fun statusCode() = 200
+
+                        override fun headers() = com.openai.core.http.Headers.builder().build()
+
+                        override fun body() = ByteArrayInputStream(responseBody.toByteArray())
+
+                        override fun close() {}
+                    }
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+
+                override fun close() {}
+            }
+        val options =
+            ClientOptions.builder()
+                .httpClient(transport)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+        val request = HttpRequest.builder().method(HttpMethod.GET).baseUrl(requestUrl).build()
+
+        val thrown =
+            assertThrows<IllegalArgumentException> {
+                if (async) options.httpClient.executeAsync(request, RequestOptions.none())
+                else options.httpClient.execute(request, RequestOptions.none())
+            }
+
+        assertThat(thrown.message).contains("X.509 workload identity", "configured HTTPS origin")
+        assertThat(requests).hasValue(0)
+    }
+
+    @ParameterizedTest
     @ValueSource(
         strings =
             [
@@ -324,6 +452,10 @@ internal class ClientOptionsTest {
                 "/v1",
                 "https:opaque",
                 "not a valid URL",
+                "https://mtls.api.openai.com@attacker.invalid/v1",
+                "https://user:password@mtls.api.openai.com/v1",
+                "https://mtls.api.openai.com%2eattacker.invalid/v1",
+                "https://mtls.api.openai.com:65536/v1",
             ]
     )
     fun build_withX509WorkloadIdentity_rejectsInsecureOrNonAbsoluteBaseUrl(baseUrl: String) {
@@ -428,6 +560,34 @@ internal class ClientOptionsTest {
 
         assertThat(updated.credential).isNotSameAs(original.credential)
         assertThat(updated.baseUrl()).isEqualTo("https://mtls.api.openai.com/v1")
+    }
+
+    @Test
+    fun toBuilder_withDifferentX509Identity_doesNotReuseAnotherTenantsCredential() {
+        val identityBuilder =
+            WorkloadIdentity.x509Builder()
+                .identityProviderId("provider-a")
+                .serviceAccountId("service-account-a")
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .workloadIdentity(identityBuilder.build())
+                .build()
+        val replacement =
+            identityBuilder
+                .identityProviderId("provider-b")
+                .serviceAccountId("service-account-b")
+                .build()
+
+        val updated = original.toBuilder().workloadIdentity(replacement).build()
+
+        val originalConfig = (original.credential as WorkloadIdentityCredential).getAuth().config
+        val updatedConfig = (updated.credential as WorkloadIdentityCredential).getAuth().config
+        assertThat(originalConfig.identityProviderId).isEqualTo("provider-a")
+        assertThat(originalConfig.serviceAccountId).isEqualTo("service-account-a")
+        assertThat(updatedConfig.identityProviderId).isEqualTo("provider-b")
+        assertThat(updatedConfig.serviceAccountId).isEqualTo("service-account-b")
+        assertThat(updated.credential).isNotSameAs(original.credential)
     }
 
     @Test

@@ -29,6 +29,7 @@ private constructor(
     private val clock: Clock,
     private val maxRetries: Int,
     private val idempotencyHeader: String?,
+    private val maxRetryAfter: Duration?,
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
@@ -225,8 +226,13 @@ private constructor(
                     }
             }
             ?.let { retryAfterNanos ->
-                // If the API asks us to wait a certain amount of time, do what it says.
-                return Duration.ofNanos(retryAfterNanos.toLong())
+                val retryAfter = Duration.ofNanos(retryAfterNanos.toLong())
+                if (maxRetryAfter == null) {
+                    return retryAfter
+                }
+                if (!retryAfter.isNegative && !retryAfter.isZero) {
+                    return if (retryAfter > maxRetryAfter) maxRetryAfter else retryAfter
+                }
             }
 
         // Apply exponential backoff, but not more than the max.
@@ -250,6 +256,7 @@ private constructor(
         private var clock: Clock = Clock.systemUTC()
         private var maxRetries: Int = 2
         private var idempotencyHeader: String? = null
+        private var maxRetryAfter: Duration? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
@@ -261,6 +268,9 @@ private constructor(
 
         fun idempotencyHeader(header: String) = apply { this.idempotencyHeader = header }
 
+        @JvmSynthetic
+        internal fun maxRetryAfter(duration: Duration) = apply { maxRetryAfter = duration }
+
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
@@ -268,6 +278,7 @@ private constructor(
                 clock,
                 maxRetries,
                 idempotencyHeader,
+                maxRetryAfter,
             )
     }
 }

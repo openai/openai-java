@@ -734,7 +734,9 @@ private constructor(
                     parsedBaseUrl != null &&
                         parsedBaseUrl.isAbsolute &&
                         parsedBaseUrl.scheme.equals("https", ignoreCase = true) &&
-                        parsedBaseUrl.rawAuthority != null
+                        parsedBaseUrl.host != null &&
+                        parsedBaseUrl.rawUserInfo == null &&
+                        (parsedBaseUrl.port == -1 || parsedBaseUrl.port in 1..65535)
                 ) {
                     "X.509 workload identity requires an absolute HTTPS base URL"
                 }
@@ -846,6 +848,7 @@ private constructor(
                     WorkloadIdentityHttpClient(
                         delegate = retryingHttpClient,
                         workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                        allowedApiBaseUrl = checkNotNull(effectiveBaseUrl),
                     )
                 } else {
                     retryingHttpClient

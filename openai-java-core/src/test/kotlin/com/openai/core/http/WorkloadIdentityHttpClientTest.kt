@@ -15,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
@@ -59,6 +60,47 @@ internal class WorkloadIdentityHttpClientTest {
         client.execute(request(), RequestOptions.none())
 
         verify(delegateHttpClient).execute(argThat { req -> !req.followRedirects }, any())
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        value =
+            [
+                "false|https://MTLS.API.OPENAI.COM/v1|https://mtls.api.openai.com:443/v1/models",
+                "true|https://MTLS.API.OPENAI.COM/v1|https://mtls.api.openai.com:443/v1/models",
+                "false|https://regional.example:8443/v1|https://REGIONAL.EXAMPLE:8443/models",
+                "true|https://regional.example:8443/v1|https://REGIONAL.EXAMPLE:8443/models",
+            ],
+        delimiter = '|',
+    )
+    fun x509AllowsNormalizedConfiguredHttpsOrigin(
+        async: Boolean,
+        configuredBaseUrl: String,
+        requestUrl: String,
+    ) {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        whenever(workloadIdentityAuth.isX509).thenReturn(true)
+        val token = tokenLease("test-token")
+        val delegateHttpClient = mock<HttpClient>()
+        val response = mockResponse(200, "success")
+        if (async) {
+            whenever(workloadIdentityAuth.getTokenLeaseAsync())
+                .thenReturn(CompletableFuture.completedFuture(token))
+            whenever(delegateHttpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(response))
+        } else {
+            whenever(workloadIdentityAuth.getTokenLease()).thenReturn(token)
+            whenever(delegateHttpClient.execute(any(), any())).thenReturn(response)
+        }
+        val client =
+            WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth, configuredBaseUrl)
+        val request = HttpRequest.builder().method(HttpMethod.GET).baseUrl(requestUrl).build()
+
+        val actual =
+            if (async) client.executeAsync(request, RequestOptions.none()).get()
+            else client.execute(request, RequestOptions.none())
+
+        assertThat(actual).isSameAs(response)
     }
 
     @Test
@@ -348,7 +390,7 @@ internal class WorkloadIdentityHttpClientTest {
     private fun request(repeatable: Boolean? = null): HttpRequest =
         HttpRequest.builder()
             .method(if (repeatable == null) HttpMethod.GET else HttpMethod.POST)
-            .baseUrl("https://api.openai.com/v1/models")
+            .baseUrl("https://mtls.api.openai.com/v1/models")
             .apply {
                 repeatable?.let {
                     body(

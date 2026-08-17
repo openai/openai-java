@@ -31,6 +31,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class X509WorkloadIdentityAuthTest {
@@ -284,6 +285,64 @@ internal class X509WorkloadIdentityAuthTest {
     }
 
     @Test
+    fun invalidatedTokenDoesNotWaitForAnEarlierProactiveRefreshBackoff() {
+        val nowNanos = AtomicLong()
+        val asynchronousExchanges = AtomicInteger()
+        val blockedBackoff = CompletableFuture<Void>()
+        val sleeper =
+            object : Sleeper {
+                override fun sleep(duration: Duration) {}
+
+                override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
+                    blockedBackoff
+
+                override fun close() {}
+            }
+        val httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = tokenResponse("rejected-token", expiresIn = 10)
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(
+                        if (asynchronousExchanges.getAndIncrement() == 0) {
+                            response(
+                                statusCode = 429,
+                                body = "{}",
+                                headers = Headers.builder().put("Retry-After", "60").build(),
+                            )
+                        } else {
+                            tokenResponse("replacement-token", expiresIn = 10)
+                        }
+                    )
+
+                override fun close() {}
+            }
+        val auth = x509Auth(httpClient, sleeper = sleeper, nanoTime = LongSupplier(nowNanos::get))
+        val rejectedToken = auth.getTokenLease()
+        nowNanos.set(Duration.ofSeconds(5).toNanos())
+
+        assertThat(auth.getTokenAsync().get()).isEqualTo("rejected-token")
+        assertThat(asynchronousExchanges).hasValue(1)
+        nowNanos.set(Duration.ofSeconds(10).toNanos())
+        val displacedWaiter = auth.getTokenAsync()
+        assertThat(displacedWaiter).isNotCompleted
+        auth.invalidateToken(rejectedToken)
+
+        val recoveredToken = auth.getTokenAsync()
+
+        assertThat(recoveredToken).isCompletedWithValue("replacement-token")
+        assertThat(displacedWaiter).isCompletedWithValue("replacement-token")
+        assertThat(asynchronousExchanges).hasValue(2)
+        assertThat(blockedBackoff).isNotCompleted
+    }
+
+    @Test
     fun tokenLeaseDebugRepresentationDoesNotExposeBearerToken() {
         val auth =
             x509Auth(
@@ -313,6 +372,54 @@ internal class X509WorkloadIdentityAuthTest {
         assertThat(auth.getToken()).isEqualTo("access-token")
         assertThat(calls).hasValue(2)
         assertThat(sleeper.durations).containsExactly(Duration.ofMillis(1500))
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        value =
+            [
+                "false|Infinity",
+                "true|Infinity",
+                "false|1e30",
+                "true|1e30",
+                "false|999999999999",
+                "true|999999999999",
+                "false|-1",
+                "true|-1",
+                "false|NaN",
+                "true|NaN",
+            ],
+        delimiter = '|',
+    )
+    fun transientExchangeRejectsUnboundedOrInvalidRetryAfter(async: Boolean, retryAfter: String) {
+        val calls = AtomicInteger()
+        val sleeper = RecordingSleeper()
+        val auth =
+            x509Auth(
+                httpClient =
+                    synchronousHttpClient {
+                        if (calls.getAndIncrement() == 0) {
+                            response(
+                                statusCode = 429,
+                                body = "{}",
+                                headers = Headers.builder().put("Retry-After", retryAfter).build(),
+                            )
+                        } else {
+                            tokenResponse("access-token", expiresIn = 3600)
+                        }
+                    },
+                sleeper = sleeper,
+                maxRetries = 1,
+            )
+
+        val token = if (async) auth.getTokenAsync().get() else auth.getToken()
+
+        assertThat(token).isEqualTo("access-token")
+        assertThat(calls).hasValue(2)
+        assertThat(sleeper.durations).hasSize(1)
+        assertThat(sleeper.durations.single())
+            .isPositive()
+            .isLessThanOrEqualTo(Duration.ofSeconds(60))
     }
 
     @Test
