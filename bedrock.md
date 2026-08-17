@@ -12,14 +12,14 @@ Use this artifact instead of adding AWS dependencies to the base OpenAI package 
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.51.0")
+implementation("com.openai:openai-java-bedrock:4.52.0")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-bedrock</artifactId>
-  <version>4.51.0</version>
+  <version>4.52.0</version>
 </dependency>
 ```
 

@@ -76,14 +76,14 @@ Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally pu
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:4.51.0")
+implementation("com.openai:openai-java:4.52.0")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.51.0</version>
+  <version>4.52.0</version>
 </dependency>
 ```
 
