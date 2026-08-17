@@ -89,6 +89,8 @@ jobs:
 
   test:
     name: CI / tests
+    needs: build
+    if: needs.build.result == 'success'
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
 
@@ -107,6 +109,14 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: true
+
+      - name: Restore exact-run Gradle build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ci-gradle-build-cache-${{ github.run_id }}
+          path: ~/.gradle/caches/build-cache-1
 
       - name: Run tests
         run: ./scripts/test
@@ -155,15 +165,22 @@ jobs:
         run: |
           set -euo pipefail
 
-          # The proposed detector verifies the current compatibility policy. Running the baseline
-          # detector as well prevents a PR from weakening that policy to hide an SDK break.
-          ./scripts/detect-breaking-changes "$BASE_COMMIT"
-
           BASE_DETECTOR="$(mktemp ./scripts/detect-breaking-changes.baseline.XXXXXX)"
           trap 'rm -f "$BASE_DETECTOR"' EXIT
           git show "${BASE_COMMIT}:scripts/detect-breaking-changes" > "$BASE_DETECTOR"
           chmod +x "$BASE_DETECTOR"
+
+          # Always enforce the trusted baseline policy so a PR cannot weaken the detector to hide
+          # an SDK break. The proposed detector is identical on most PRs, so only run its duplicate
+          # compilation when the PR actually changes the detector.
           "$BASE_DETECTOR" "$BASE_COMMIT"
+
+          if git diff --quiet "$BASE_COMMIT" -- scripts/detect-breaking-changes; then
+            echo "API compatibility detector is unchanged; skipping duplicate validation."
+          else
+            echo "API compatibility detector changed; validating the proposed detector."
+            ./scripts/detect-breaking-changes "$BASE_COMMIT"
+          fi
 
   version_support_matrix:
     name: CI / version support matrix

@@ -23,4 +23,7 @@ tasks.test {
     inputs
         .file(layout.projectDirectory.file("../scripts/detect-breaking-changes"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../.github/workflows/ci.yml"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
