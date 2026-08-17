@@ -103,6 +103,11 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
+                        .metadata(
+                            ChatCompletion.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .moderation(
                             ChatCompletion.Moderation.builder()
                                 .input(
@@ -327,6 +332,11 @@ internal class ChatCompletionListPageResponseTest {
                     )
                     .created(0L)
                     .model("model")
+                    .metadata(
+                        ChatCompletion.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .moderation(
                         ChatCompletion.Moderation.builder()
                             .input(
@@ -542,6 +552,11 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
+                        .metadata(
+                            ChatCompletion.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .moderation(
                             ChatCompletion.Moderation.builder()
                                 .input(

@@ -61,13 +61,19 @@ private constructor(
     private val responseContentPartAdded: BetaResponseContentPartAddedEvent? = null,
     private val responseContentPartDone: BetaResponseContentPartDoneEvent? = null,
     private val responseCreated: BetaResponseCreatedEvent? = null,
-    private val error: BetaResponseWsError? = null,
     private val responseFileSearchCallCompleted: BetaResponseFileSearchCallCompletedEvent? = null,
     private val responseFileSearchCallInProgress: BetaResponseFileSearchCallInProgressEvent? = null,
     private val responseFileSearchCallSearching: BetaResponseFileSearchCallSearchingEvent? = null,
     private val responseFunctionCallArgumentsDelta: BetaResponseFunctionCallArgumentsDeltaEvent? =
         null,
     private val responseFunctionCallArgumentsDone: BetaResponseFunctionCallArgumentsDoneEvent? =
+        null,
+    private val responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent? = null,
+    private val responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent? = null,
+    private val responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent? = null,
+    private val responseShellCallOutputContentDelta: BetaResponseShellCallOutputContentDeltaEvent? =
+        null,
+    private val responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent? =
         null,
     private val responseInProgress: BetaResponseInProgressEvent? = null,
     private val responseFailed: BetaResponseFailedEvent? = null,
@@ -111,6 +117,7 @@ private constructor(
     private val responseQueued: BetaResponseQueuedEvent? = null,
     private val responseCustomToolCallInputDelta: BetaResponseCustomToolCallInputDeltaEvent? = null,
     private val responseCustomToolCallInputDone: BetaResponseCustomToolCallInputDoneEvent? = null,
+    private val error: BetaResponseWsError? = null,
     private val responseInjectCreated: BetaResponseInjectCreatedEvent? = null,
     private val responseInjectFailed: BetaResponseInjectFailedEvent? = null,
     private val _json: JsonValue? = null,
@@ -172,9 +179,6 @@ private constructor(
     /** An event that is emitted when a response is created. */
     fun responseCreated(): Optional<BetaResponseCreatedEvent> = Optional.ofNullable(responseCreated)
 
-    /** Emitted when an error occurs. */
-    fun error(): Optional<BetaResponseWsError> = Optional.ofNullable(error)
-
     /** Emitted when a file search call is completed (results found). */
     fun responseFileSearchCallCompleted(): Optional<BetaResponseFileSearchCallCompletedEvent> =
         Optional.ofNullable(responseFileSearchCallCompleted)
@@ -195,6 +199,28 @@ private constructor(
     /** Emitted when function-call arguments are finalized. */
     fun responseFunctionCallArgumentsDone(): Optional<BetaResponseFunctionCallArgumentsDoneEvent> =
         Optional.ofNullable(responseFunctionCallArgumentsDone)
+
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun responseShellCallCommandAdded(): Optional<BetaResponseShellCallCommandAddedEvent> =
+        Optional.ofNullable(responseShellCallCommandAdded)
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun responseShellCallCommandDelta(): Optional<BetaResponseShellCallCommandDeltaEvent> =
+        Optional.ofNullable(responseShellCallCommandDelta)
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun responseShellCallCommandDone(): Optional<BetaResponseShellCallCommandDoneEvent> =
+        Optional.ofNullable(responseShellCallCommandDone)
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun responseShellCallOutputContentDelta():
+        Optional<BetaResponseShellCallOutputContentDeltaEvent> =
+        Optional.ofNullable(responseShellCallOutputContentDelta)
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun responseShellCallOutputContentDone():
+        Optional<BetaResponseShellCallOutputContentDoneEvent> =
+        Optional.ofNullable(responseShellCallOutputContentDone)
 
     /** Emitted when the response is in progress. */
     fun responseInProgress(): Optional<BetaResponseInProgressEvent> =
@@ -336,6 +362,9 @@ private constructor(
     fun responseCustomToolCallInputDone(): Optional<BetaResponseCustomToolCallInputDoneEvent> =
         Optional.ofNullable(responseCustomToolCallInputDone)
 
+    /** Emitted when an error occurs while processing a Responses WebSocket request. */
+    fun error(): Optional<BetaResponseWsError> = Optional.ofNullable(error)
+
     /**
      * Emitted when all injected input items were validated and committed to the active response.
      */
@@ -457,6 +486,16 @@ private constructor(
                     responseCustomToolCallInputDone._additionalProperties().streamId()
                 responseInjectCreated != null -> responseInjectCreated._streamId()
                 responseInjectFailed != null -> responseInjectFailed._streamId()
+                responseShellCallCommandAdded != null ->
+                    responseShellCallCommandAdded._additionalProperties().streamId()
+                responseShellCallCommandDelta != null ->
+                    responseShellCallCommandDelta._additionalProperties().streamId()
+                responseShellCallCommandDone != null ->
+                    responseShellCallCommandDone._additionalProperties().streamId()
+                responseShellCallOutputContentDelta != null ->
+                    responseShellCallOutputContentDelta._additionalProperties().streamId()
+                responseShellCallOutputContentDone != null ->
+                    responseShellCallOutputContentDone._additionalProperties().streamId()
                 else -> JsonMissing.of()
             }
 
@@ -491,8 +530,6 @@ private constructor(
 
     fun isResponseCreated(): Boolean = responseCreated != null
 
-    fun isError(): Boolean = error != null
-
     fun isResponseFileSearchCallCompleted(): Boolean = responseFileSearchCallCompleted != null
 
     fun isResponseFileSearchCallInProgress(): Boolean = responseFileSearchCallInProgress != null
@@ -502,6 +539,17 @@ private constructor(
     fun isResponseFunctionCallArgumentsDelta(): Boolean = responseFunctionCallArgumentsDelta != null
 
     fun isResponseFunctionCallArgumentsDone(): Boolean = responseFunctionCallArgumentsDone != null
+
+    fun isResponseShellCallCommandAdded(): Boolean = responseShellCallCommandAdded != null
+
+    fun isResponseShellCallCommandDelta(): Boolean = responseShellCallCommandDelta != null
+
+    fun isResponseShellCallCommandDone(): Boolean = responseShellCallCommandDone != null
+
+    fun isResponseShellCallOutputContentDelta(): Boolean =
+        responseShellCallOutputContentDelta != null
+
+    fun isResponseShellCallOutputContentDone(): Boolean = responseShellCallOutputContentDone != null
 
     fun isResponseInProgress(): Boolean = responseInProgress != null
 
@@ -575,6 +623,8 @@ private constructor(
 
     fun isResponseCustomToolCallInputDone(): Boolean = responseCustomToolCallInputDone != null
 
+    fun isError(): Boolean = error != null
+
     fun isResponseInjectCreated(): Boolean = responseInjectCreated != null
 
     fun isResponseInjectFailed(): Boolean = responseInjectFailed != null
@@ -634,9 +684,6 @@ private constructor(
     fun asResponseCreated(): BetaResponseCreatedEvent =
         responseCreated.getOrThrow("responseCreated")
 
-    /** Emitted when an error occurs. */
-    fun asError(): BetaResponseWsError = error.getOrThrow("error")
-
     /** Emitted when a file search call is completed (results found). */
     fun asResponseFileSearchCallCompleted(): BetaResponseFileSearchCallCompletedEvent =
         responseFileSearchCallCompleted.getOrThrow("responseFileSearchCallCompleted")
@@ -656,6 +703,26 @@ private constructor(
     /** Emitted when function-call arguments are finalized. */
     fun asResponseFunctionCallArgumentsDone(): BetaResponseFunctionCallArgumentsDoneEvent =
         responseFunctionCallArgumentsDone.getOrThrow("responseFunctionCallArgumentsDone")
+
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun asResponseShellCallCommandAdded(): BetaResponseShellCallCommandAddedEvent =
+        responseShellCallCommandAdded.getOrThrow("responseShellCallCommandAdded")
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun asResponseShellCallCommandDelta(): BetaResponseShellCallCommandDeltaEvent =
+        responseShellCallCommandDelta.getOrThrow("responseShellCallCommandDelta")
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun asResponseShellCallCommandDone(): BetaResponseShellCallCommandDoneEvent =
+        responseShellCallCommandDone.getOrThrow("responseShellCallCommandDone")
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun asResponseShellCallOutputContentDelta(): BetaResponseShellCallOutputContentDeltaEvent =
+        responseShellCallOutputContentDelta.getOrThrow("responseShellCallOutputContentDelta")
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun asResponseShellCallOutputContentDone(): BetaResponseShellCallOutputContentDoneEvent =
+        responseShellCallOutputContentDone.getOrThrow("responseShellCallOutputContentDone")
 
     /** Emitted when the response is in progress. */
     fun asResponseInProgress(): BetaResponseInProgressEvent =
@@ -798,6 +865,9 @@ private constructor(
     fun asResponseCustomToolCallInputDone(): BetaResponseCustomToolCallInputDoneEvent =
         responseCustomToolCallInputDone.getOrThrow("responseCustomToolCallInputDone")
 
+    /** Emitted when an error occurs while processing a Responses WebSocket request. */
+    fun asError(): BetaResponseWsError = error.getOrThrow("error")
+
     /**
      * Emitted when all injected input items were validated and committed to the active response.
      */
@@ -876,7 +946,6 @@ private constructor(
             responseContentPartDone != null ->
                 visitor.visitResponseContentPartDone(responseContentPartDone)
             responseCreated != null -> visitor.visitResponseCreated(responseCreated)
-            error != null -> visitor.visitError(error)
             responseFileSearchCallCompleted != null ->
                 visitor.visitResponseFileSearchCallCompleted(responseFileSearchCallCompleted)
             responseFileSearchCallInProgress != null ->
@@ -887,6 +956,18 @@ private constructor(
                 visitor.visitResponseFunctionCallArgumentsDelta(responseFunctionCallArgumentsDelta)
             responseFunctionCallArgumentsDone != null ->
                 visitor.visitResponseFunctionCallArgumentsDone(responseFunctionCallArgumentsDone)
+            responseShellCallCommandAdded != null ->
+                visitor.visitResponseShellCallCommandAdded(responseShellCallCommandAdded)
+            responseShellCallCommandDelta != null ->
+                visitor.visitResponseShellCallCommandDelta(responseShellCallCommandDelta)
+            responseShellCallCommandDone != null ->
+                visitor.visitResponseShellCallCommandDone(responseShellCallCommandDone)
+            responseShellCallOutputContentDelta != null ->
+                visitor.visitResponseShellCallOutputContentDelta(
+                    responseShellCallOutputContentDelta
+                )
+            responseShellCallOutputContentDone != null ->
+                visitor.visitResponseShellCallOutputContentDone(responseShellCallOutputContentDone)
             responseInProgress != null -> visitor.visitResponseInProgress(responseInProgress)
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
             responseIncomplete != null -> visitor.visitResponseIncomplete(responseIncomplete)
@@ -957,6 +1038,7 @@ private constructor(
                 visitor.visitResponseCustomToolCallInputDelta(responseCustomToolCallInputDelta)
             responseCustomToolCallInputDone != null ->
                 visitor.visitResponseCustomToolCallInputDone(responseCustomToolCallInputDone)
+            error != null -> visitor.visitError(error)
             responseInjectCreated != null ->
                 visitor.visitResponseInjectCreated(responseInjectCreated)
             responseInjectFailed != null -> visitor.visitResponseInjectFailed(responseInjectFailed)
@@ -1057,10 +1139,6 @@ private constructor(
                     responseCreated.validate()
                 }
 
-                override fun visitError(error: BetaResponseWsError) {
-                    error.validate()
-                }
-
                 override fun visitResponseFileSearchCallCompleted(
                     responseFileSearchCallCompleted: BetaResponseFileSearchCallCompletedEvent
                 ) {
@@ -1089,6 +1167,37 @@ private constructor(
                     responseFunctionCallArgumentsDone: BetaResponseFunctionCallArgumentsDoneEvent
                 ) {
                     responseFunctionCallArgumentsDone.validate()
+                }
+
+                override fun visitResponseShellCallCommandAdded(
+                    responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent
+                ) {
+                    responseShellCallCommandAdded.validate()
+                }
+
+                override fun visitResponseShellCallCommandDelta(
+                    responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent
+                ) {
+                    responseShellCallCommandDelta.validate()
+                }
+
+                override fun visitResponseShellCallCommandDone(
+                    responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent
+                ) {
+                    responseShellCallCommandDone.validate()
+                }
+
+                override fun visitResponseShellCallOutputContentDelta(
+                    responseShellCallOutputContentDelta:
+                        BetaResponseShellCallOutputContentDeltaEvent
+                ) {
+                    responseShellCallOutputContentDelta.validate()
+                }
+
+                override fun visitResponseShellCallOutputContentDone(
+                    responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent
+                ) {
+                    responseShellCallOutputContentDone.validate()
                 }
 
                 override fun visitResponseInProgress(
@@ -1292,6 +1401,10 @@ private constructor(
                     responseCustomToolCallInputDone.validate()
                 }
 
+                override fun visitError(error: BetaResponseWsError) {
+                    error.validate()
+                }
+
                 override fun visitResponseInjectCreated(
                     responseInjectCreated: BetaResponseInjectCreatedEvent
                 ) {
@@ -1380,8 +1493,6 @@ private constructor(
                 override fun visitResponseCreated(responseCreated: BetaResponseCreatedEvent) =
                     responseCreated.validity()
 
-                override fun visitError(error: BetaResponseWsError) = error.validity()
-
                 override fun visitResponseFileSearchCallCompleted(
                     responseFileSearchCallCompleted: BetaResponseFileSearchCallCompletedEvent
                 ) = responseFileSearchCallCompleted.validity()
@@ -1401,6 +1512,27 @@ private constructor(
                 override fun visitResponseFunctionCallArgumentsDone(
                     responseFunctionCallArgumentsDone: BetaResponseFunctionCallArgumentsDoneEvent
                 ) = responseFunctionCallArgumentsDone.validity()
+
+                override fun visitResponseShellCallCommandAdded(
+                    responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent
+                ) = responseShellCallCommandAdded.validity()
+
+                override fun visitResponseShellCallCommandDelta(
+                    responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent
+                ) = responseShellCallCommandDelta.validity()
+
+                override fun visitResponseShellCallCommandDone(
+                    responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent
+                ) = responseShellCallCommandDone.validity()
+
+                override fun visitResponseShellCallOutputContentDelta(
+                    responseShellCallOutputContentDelta:
+                        BetaResponseShellCallOutputContentDeltaEvent
+                ) = responseShellCallOutputContentDelta.validity()
+
+                override fun visitResponseShellCallOutputContentDone(
+                    responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent
+                ) = responseShellCallOutputContentDone.validity()
 
                 override fun visitResponseInProgress(
                     responseInProgress: BetaResponseInProgressEvent
@@ -1537,6 +1669,8 @@ private constructor(
                     responseCustomToolCallInputDone: BetaResponseCustomToolCallInputDoneEvent
                 ) = responseCustomToolCallInputDone.validity()
 
+                override fun visitError(error: BetaResponseWsError) = error.validity()
+
                 override fun visitResponseInjectCreated(
                     responseInjectCreated: BetaResponseInjectCreatedEvent
                 ) = responseInjectCreated.validity()
@@ -1569,12 +1703,16 @@ private constructor(
             responseContentPartAdded == other.responseContentPartAdded &&
             responseContentPartDone == other.responseContentPartDone &&
             responseCreated == other.responseCreated &&
-            error == other.error &&
             responseFileSearchCallCompleted == other.responseFileSearchCallCompleted &&
             responseFileSearchCallInProgress == other.responseFileSearchCallInProgress &&
             responseFileSearchCallSearching == other.responseFileSearchCallSearching &&
             responseFunctionCallArgumentsDelta == other.responseFunctionCallArgumentsDelta &&
             responseFunctionCallArgumentsDone == other.responseFunctionCallArgumentsDone &&
+            responseShellCallCommandAdded == other.responseShellCallCommandAdded &&
+            responseShellCallCommandDelta == other.responseShellCallCommandDelta &&
+            responseShellCallCommandDone == other.responseShellCallCommandDone &&
+            responseShellCallOutputContentDelta == other.responseShellCallOutputContentDelta &&
+            responseShellCallOutputContentDone == other.responseShellCallOutputContentDone &&
             responseInProgress == other.responseInProgress &&
             responseFailed == other.responseFailed &&
             responseIncomplete == other.responseIncomplete &&
@@ -1610,6 +1748,7 @@ private constructor(
             responseQueued == other.responseQueued &&
             responseCustomToolCallInputDelta == other.responseCustomToolCallInputDelta &&
             responseCustomToolCallInputDone == other.responseCustomToolCallInputDone &&
+            error == other.error &&
             responseInjectCreated == other.responseInjectCreated &&
             responseInjectFailed == other.responseInjectFailed
     }
@@ -1629,12 +1768,16 @@ private constructor(
             responseContentPartAdded,
             responseContentPartDone,
             responseCreated,
-            error,
             responseFileSearchCallCompleted,
             responseFileSearchCallInProgress,
             responseFileSearchCallSearching,
             responseFunctionCallArgumentsDelta,
             responseFunctionCallArgumentsDone,
+            responseShellCallCommandAdded,
+            responseShellCallCommandDelta,
+            responseShellCallCommandDone,
+            responseShellCallOutputContentDelta,
+            responseShellCallOutputContentDone,
             responseInProgress,
             responseFailed,
             responseIncomplete,
@@ -1669,6 +1812,7 @@ private constructor(
             responseQueued,
             responseCustomToolCallInputDelta,
             responseCustomToolCallInputDone,
+            error,
             responseInjectCreated,
             responseInjectFailed,
         )
@@ -1700,7 +1844,6 @@ private constructor(
             responseContentPartDone != null ->
                 "BetaResponsesServerEvent{responseContentPartDone=$responseContentPartDone}"
             responseCreated != null -> "BetaResponsesServerEvent{responseCreated=$responseCreated}"
-            error != null -> "BetaResponsesServerEvent{error=$error}"
             responseFileSearchCallCompleted != null ->
                 "BetaResponsesServerEvent{responseFileSearchCallCompleted=$responseFileSearchCallCompleted}"
             responseFileSearchCallInProgress != null ->
@@ -1711,6 +1854,16 @@ private constructor(
                 "BetaResponsesServerEvent{responseFunctionCallArgumentsDelta=$responseFunctionCallArgumentsDelta}"
             responseFunctionCallArgumentsDone != null ->
                 "BetaResponsesServerEvent{responseFunctionCallArgumentsDone=$responseFunctionCallArgumentsDone}"
+            responseShellCallCommandAdded != null ->
+                "BetaResponsesServerEvent{responseShellCallCommandAdded=$responseShellCallCommandAdded}"
+            responseShellCallCommandDelta != null ->
+                "BetaResponsesServerEvent{responseShellCallCommandDelta=$responseShellCallCommandDelta}"
+            responseShellCallCommandDone != null ->
+                "BetaResponsesServerEvent{responseShellCallCommandDone=$responseShellCallCommandDone}"
+            responseShellCallOutputContentDelta != null ->
+                "BetaResponsesServerEvent{responseShellCallOutputContentDelta=$responseShellCallOutputContentDelta}"
+            responseShellCallOutputContentDone != null ->
+                "BetaResponsesServerEvent{responseShellCallOutputContentDone=$responseShellCallOutputContentDone}"
             responseInProgress != null ->
                 "BetaResponsesServerEvent{responseInProgress=$responseInProgress}"
             responseFailed != null -> "BetaResponsesServerEvent{responseFailed=$responseFailed}"
@@ -1777,6 +1930,7 @@ private constructor(
                 "BetaResponsesServerEvent{responseCustomToolCallInputDelta=$responseCustomToolCallInputDelta}"
             responseCustomToolCallInputDone != null ->
                 "BetaResponsesServerEvent{responseCustomToolCallInputDone=$responseCustomToolCallInputDone}"
+            error != null -> "BetaResponsesServerEvent{error=$error}"
             responseInjectCreated != null ->
                 "BetaResponsesServerEvent{responseInjectCreated=$responseInjectCreated}"
             responseInjectFailed != null ->
@@ -1876,9 +2030,6 @@ private constructor(
         fun ofResponseCreated(responseCreated: BetaResponseCreatedEvent) =
             BetaResponsesServerEvent(responseCreated = responseCreated)
 
-        /** Emitted when an error occurs. */
-        @JvmStatic fun ofError(error: BetaResponseWsError) = BetaResponsesServerEvent(error = error)
-
         /** Emitted when a file search call is completed (results found). */
         @JvmStatic
         fun ofResponseFileSearchCallCompleted(
@@ -1922,6 +2073,42 @@ private constructor(
         ) =
             BetaResponsesServerEvent(
                 responseFunctionCallArgumentsDone = responseFunctionCallArgumentsDone
+            )
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        @JvmStatic
+        fun ofResponseShellCallCommandAdded(
+            responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent
+        ) = BetaResponsesServerEvent(responseShellCallCommandAdded = responseShellCallCommandAdded)
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        @JvmStatic
+        fun ofResponseShellCallCommandDelta(
+            responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent
+        ) = BetaResponsesServerEvent(responseShellCallCommandDelta = responseShellCallCommandDelta)
+
+        /** A streaming event that indicated a shell command was completed. */
+        @JvmStatic
+        fun ofResponseShellCallCommandDone(
+            responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent
+        ) = BetaResponsesServerEvent(responseShellCallCommandDone = responseShellCallCommandDone)
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        @JvmStatic
+        fun ofResponseShellCallOutputContentDelta(
+            responseShellCallOutputContentDelta: BetaResponseShellCallOutputContentDeltaEvent
+        ) =
+            BetaResponsesServerEvent(
+                responseShellCallOutputContentDelta = responseShellCallOutputContentDelta
+            )
+
+        /** A streaming event that indicated shell call output was completed. */
+        @JvmStatic
+        fun ofResponseShellCallOutputContentDone(
+            responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent
+        ) =
+            BetaResponsesServerEvent(
+                responseShellCallOutputContentDone = responseShellCallOutputContentDone
             )
 
         /** Emitted when the response is in progress. */
@@ -2170,6 +2357,9 @@ private constructor(
                 responseCustomToolCallInputDone = responseCustomToolCallInputDone
             )
 
+        /** Emitted when an error occurs while processing a Responses WebSocket request. */
+        @JvmStatic fun ofError(error: BetaResponseWsError) = BetaResponsesServerEvent(error = error)
+
         /**
          * Emitted when all injected input items were validated and committed to the active
          * response.
@@ -2251,9 +2441,6 @@ private constructor(
         /** An event that is emitted when a response is created. */
         fun visitResponseCreated(responseCreated: BetaResponseCreatedEvent): T
 
-        /** Emitted when an error occurs. */
-        fun visitError(error: BetaResponseWsError): T
-
         /** Emitted when a file search call is completed (results found). */
         fun visitResponseFileSearchCallCompleted(
             responseFileSearchCallCompleted: BetaResponseFileSearchCallCompletedEvent
@@ -2277,6 +2464,31 @@ private constructor(
         /** Emitted when function-call arguments are finalized. */
         fun visitResponseFunctionCallArgumentsDone(
             responseFunctionCallArgumentsDone: BetaResponseFunctionCallArgumentsDoneEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        fun visitResponseShellCallCommandAdded(
+            responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        fun visitResponseShellCallCommandDelta(
+            responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent
+        ): T
+
+        /** A streaming event that indicated a shell command was completed. */
+        fun visitResponseShellCallCommandDone(
+            responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent
+        ): T
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        fun visitResponseShellCallOutputContentDelta(
+            responseShellCallOutputContentDelta: BetaResponseShellCallOutputContentDeltaEvent
+        ): T
+
+        /** A streaming event that indicated shell call output was completed. */
+        fun visitResponseShellCallOutputContentDone(
+            responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent
         ): T
 
         /** Emitted when the response is in progress. */
@@ -2437,6 +2649,9 @@ private constructor(
             responseCustomToolCallInputDone: BetaResponseCustomToolCallInputDoneEvent
         ): T
 
+        /** Emitted when an error occurs while processing a Responses WebSocket request. */
+        fun visitError(error: BetaResponseWsError): T
+
         /**
          * Emitted when all injected input items were validated and committed to the active
          * response.
@@ -2585,11 +2800,6 @@ private constructor(
                         BetaResponsesServerEvent(responseCreated = it, _json = json)
                     } ?: BetaResponsesServerEvent(_json = json)
                 }
-                "error" -> {
-                    return tryDeserialize(node, jacksonTypeRef<BetaResponseWsError>())?.let {
-                        BetaResponsesServerEvent(error = it, _json = json)
-                    } ?: BetaResponsesServerEvent(_json = json)
-                }
                 "response.file_search_call.completed" -> {
                     return tryDeserialize(
                             node,
@@ -2646,6 +2856,66 @@ private constructor(
                         ?.let {
                             BetaResponsesServerEvent(
                                 responseFunctionCallArgumentsDone = it,
+                                _json = json,
+                            )
+                        } ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_command.added" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseShellCallCommandAddedEvent>(),
+                        )
+                        ?.let {
+                            BetaResponsesServerEvent(
+                                responseShellCallCommandAdded = it,
+                                _json = json,
+                            )
+                        } ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_command.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseShellCallCommandDeltaEvent>(),
+                        )
+                        ?.let {
+                            BetaResponsesServerEvent(
+                                responseShellCallCommandDelta = it,
+                                _json = json,
+                            )
+                        } ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_command.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseShellCallCommandDoneEvent>(),
+                        )
+                        ?.let {
+                            BetaResponsesServerEvent(
+                                responseShellCallCommandDone = it,
+                                _json = json,
+                            )
+                        } ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_output_content.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseShellCallOutputContentDeltaEvent>(),
+                        )
+                        ?.let {
+                            BetaResponsesServerEvent(
+                                responseShellCallOutputContentDelta = it,
+                                _json = json,
+                            )
+                        } ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.shell_call_output_content.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseShellCallOutputContentDoneEvent>(),
+                        )
+                        ?.let {
+                            BetaResponsesServerEvent(
+                                responseShellCallOutputContentDone = it,
                                 _json = json,
                             )
                         } ?: BetaResponsesServerEvent(_json = json)
@@ -2965,6 +3235,11 @@ private constructor(
                             )
                         } ?: BetaResponsesServerEvent(_json = json)
                 }
+                "error" -> {
+                    return tryDeserialize(node, jacksonTypeRef<BetaResponseWsError>())?.let {
+                        BetaResponsesServerEvent(error = it, _json = json)
+                    } ?: BetaResponsesServerEvent(_json = json)
+                }
                 "response.inject.created" -> {
                     return tryDeserialize(node, jacksonTypeRef<BetaResponseInjectCreatedEvent>())
                         ?.let { BetaResponsesServerEvent(responseInjectCreated = it, _json = json) }
@@ -3012,7 +3287,6 @@ private constructor(
                 value.responseContentPartDone != null ->
                     generator.writeObject(value.responseContentPartDone)
                 value.responseCreated != null -> generator.writeObject(value.responseCreated)
-                value.error != null -> generator.writeObject(value.error)
                 value.responseFileSearchCallCompleted != null ->
                     generator.writeObject(value.responseFileSearchCallCompleted)
                 value.responseFileSearchCallInProgress != null ->
@@ -3023,6 +3297,16 @@ private constructor(
                     generator.writeObject(value.responseFunctionCallArgumentsDelta)
                 value.responseFunctionCallArgumentsDone != null ->
                     generator.writeObject(value.responseFunctionCallArgumentsDone)
+                value.responseShellCallCommandAdded != null ->
+                    generator.writeObject(value.responseShellCallCommandAdded)
+                value.responseShellCallCommandDelta != null ->
+                    generator.writeObject(value.responseShellCallCommandDelta)
+                value.responseShellCallCommandDone != null ->
+                    generator.writeObject(value.responseShellCallCommandDone)
+                value.responseShellCallOutputContentDelta != null ->
+                    generator.writeObject(value.responseShellCallOutputContentDelta)
+                value.responseShellCallOutputContentDone != null ->
+                    generator.writeObject(value.responseShellCallOutputContentDone)
                 value.responseInProgress != null -> generator.writeObject(value.responseInProgress)
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)
                 value.responseIncomplete != null -> generator.writeObject(value.responseIncomplete)
@@ -3087,6 +3371,7 @@ private constructor(
                     generator.writeObject(value.responseCustomToolCallInputDelta)
                 value.responseCustomToolCallInputDone != null ->
                     generator.writeObject(value.responseCustomToolCallInputDone)
+                value.error != null -> generator.writeObject(value.error)
                 value.responseInjectCreated != null ->
                     generator.writeObject(value.responseInjectCreated)
                 value.responseInjectFailed != null ->
