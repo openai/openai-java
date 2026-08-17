@@ -139,27 +139,24 @@ The project uses:
 
 ## Linting and formatting
 
-This repository uses [Spotless](https://github.com/diffplug/spotless) with Palantir Java Format for code formatting and various linting tools.
+Kotlin formatting uses the repository-pinned ktfmt version and Kotlin style. The same
+Gradle tasks cover SDK sources and the `.kt` build-logic sources under `buildSrc/src`,
+whether or not a standalone `ktfmt` is installed. Java formatting uses Palantir Java Format.
 
-To check formatting and run lints:
+To check formatting:
 
 ```sh
 $ ./scripts/lint
 ```
 
-This will compile all modules and run static analysis checks.
-
-To fix all formatting issues automatically:
+To fix formatting:
 
 ```sh
 $ ./scripts/format
 ```
 
-You can also check formatting directly with Gradle:
-
-```sh
-$ ./gradlew spotlessCheck  # Check formatting
-```
+For Kotlin only, run `./gradlew lintKotlin` or `./gradlew formatKotlin`. A module's
+own tasks remain available, such as `./gradlew :openai-java-core:lintKotlin`.
 
 ## Building
 
