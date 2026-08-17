@@ -22,7 +22,15 @@ plugins {
     id("org.jetbrains.dokka") version "2.1.0"
 }
 
-val dokkaJacksonVersion = "2.18.9"
+val dokkaJacksonVersion =
+    buildscript.configurations
+        .getByName("classpath")
+        .dependencyConstraints
+        .first {
+            it.group == "com.fasterxml.jackson.core" && it.name == "jackson-databind"
+        }
+        .versionConstraint
+        .requiredVersion
 
 repositories {
     mavenCentral()

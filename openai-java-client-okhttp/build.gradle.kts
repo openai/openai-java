@@ -4,6 +4,8 @@ plugins {
     id("openai.publish")
 }
 
+val jacksonPublishedVersion = "2.18.9"
+
 listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath).forEach {
     it.configure {
         resolutionStrategy.eachDependency {
@@ -11,7 +13,7 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
                 requested.group == "com.fasterxml.jackson" ||
                     requested.group.startsWith("com.fasterxml.jackson.")
             ) {
-                useVersion("2.18.9")
+                useVersion(jacksonPublishedVersion)
                 because("test classpaths must use the SDK's secure published Jackson release")
             }
         }
@@ -25,7 +27,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    testImplementation(platform("com.fasterxml.jackson:jackson-bom:$jacksonPublishedVersion"))
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
 }
