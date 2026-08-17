@@ -787,6 +787,11 @@ annotations. These allow type-specific constraints to be added to your schema pr
 learn more about the supported constraints in the OpenAI documentation on
 [Supported properties](https://platform.openai.com/docs/guides/structured-outputs#supported-properties).
 
+Add either `io.swagger.core.v3:swagger-annotations` or `io.swagger.core.v3:swagger-annotations-jakarta`
+to your project yourself (the SDK no longer ships either as a transitive dependency, so javax and
+Jakarta consumers do not conflict). Without one of those artifacts on the classpath, Swagger
+annotations are ignored and Jackson annotations still work for schema generation.
+
 ```java
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

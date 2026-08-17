@@ -75,7 +75,10 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-core:$jacksonPublishedVersion")
     api("com.fasterxml.jackson.core:jackson-databind:$jacksonPublishedVersion")
     api("com.google.errorprone:error_prone_annotations:2.33.0")
-    api("io.swagger.core.v3:swagger-annotations:2.2.31")
+    // compileOnly: do not force javax swagger-annotations onto consumers. It conflicts with
+    // swagger-annotations-jakarta (same package). Consumers who use @Schema / @ArraySchema must
+    // declare either artifact themselves. See extractSchema() for optional Swagger2Module wiring.
+    compileOnly("io.swagger.core.v3:swagger-annotations:2.2.31")
 
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonPublishedVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonPublishedVersion")
@@ -88,6 +91,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
     testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    testImplementation("io.swagger.core.v3:swagger-annotations:2.2.31")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
