@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.52.0](https://github.com/openai/openai-java/compare/v4.51.0...v4.52.0) (2026-08-17)
+
+
+### Features
+
+* add first-class Bedrock Runtime support (SDK-290) ([#866](https://github.com/openai/openai-java/issues/866)) ([676b475](https://github.com/openai/openai-java/commit/676b475f0955a9a7ddcecf184f8913ec998840c4))
+* **api:** Add shell call streaming events and image partial fields ([#868](https://github.com/openai/openai-java/issues/868)) ([9d0c42d](https://github.com/openai/openai-java/commit/9d0c42db9fe9d5e8c061367f33fc5010865c41c1))
+
+
+### Bug Fixes
+
+* make Kotlin formatting consistent locally and in CI ([#867](https://github.com/openai/openai-java/issues/867)) ([0ede78d](https://github.com/openai/openai-java/commit/0ede78d9c813cf2fd086df96cbfa555440c83147))
+
 ## [4.51.0](https://github.com/openai/openai-java/compare/v4.50.0...v4.51.0) (2026-08-14)
 
 
