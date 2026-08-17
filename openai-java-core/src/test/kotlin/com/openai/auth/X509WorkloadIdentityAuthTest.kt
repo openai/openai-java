@@ -342,6 +342,79 @@ internal class X509WorkloadIdentityAuthTest {
         assertThat(blockedBackoff).isNotCompleted
     }
 
+    @Test
+    fun invalidatedTokenDoesNotWaitForASynchronousProactiveRefreshBackoff() {
+        val nowNanos = AtomicLong()
+        val synchronousExchanges = AtomicInteger()
+        val asynchronousExchanges = AtomicInteger()
+        val backoffStarted = CountDownLatch(1)
+        val releaseBackoff = CountDownLatch(1)
+        val sleeper =
+            object : Sleeper {
+                override fun sleep(duration: Duration) {
+                    backoffStarted.countDown()
+                    check(releaseBackoff.await(5, TimeUnit.SECONDS))
+                }
+
+                override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
+                    CompletableFuture.completedFuture(null)
+
+                override fun close() {}
+            }
+        val httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse =
+                    when (synchronousExchanges.getAndIncrement()) {
+                        0 -> tokenResponse("rejected-token", expiresIn = 10)
+                        1 ->
+                            response(
+                                statusCode = 429,
+                                body = "{}",
+                                headers = Headers.builder().put("Retry-After", "60").build(),
+                            )
+                        else -> tokenResponse("superseded-token", expiresIn = 10)
+                    }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    asynchronousExchanges.incrementAndGet()
+                    return CompletableFuture.completedFuture(
+                        tokenResponse("replacement-token", expiresIn = 10)
+                    )
+                }
+
+                override fun close() {}
+            }
+        val auth = x509Auth(httpClient, sleeper = sleeper, nanoTime = LongSupplier(nowNanos::get))
+        val rejectedToken = auth.getTokenLease()
+        val executor = Executors.newSingleThreadExecutor()
+
+        try {
+            nowNanos.set(Duration.ofSeconds(5).toNanos())
+            val synchronousRefresh = executor.submit<String> { auth.getToken() }
+            assertThat(backoffStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(auth.getTokenLeaseAsync()).isCompletedWithValue(rejectedToken)
+
+            auth.invalidateToken(rejectedToken)
+
+            assertThat(auth.getTokenAsync()).isCompletedWithValue("replacement-token")
+            assertThat(asynchronousExchanges).hasValue(1)
+            assertThat(releaseBackoff.count).isEqualTo(1)
+
+            releaseBackoff.countDown()
+            assertThat(synchronousRefresh.get(5, TimeUnit.SECONDS)).isEqualTo("replacement-token")
+            assertThat(auth.getToken()).isEqualTo("replacement-token")
+        } finally {
+            releaseBackoff.countDown()
+            executor.shutdownNow()
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
     fun displacedRefreshCannotCompleteWaitersBeforeReplacement(failedRefresh: Boolean) {
@@ -591,7 +664,10 @@ internal class X509WorkloadIdentityAuthTest {
         val nonNumeric =
             x509Auth(
                 synchronousHttpClient {
-                    response(200, """{"access_token":"token","expires_in":"3600"}""")
+                    response(
+                        200,
+                        """{"access_token":"token","token_type":"Bearer","expires_in":"3600"}""",
+                    )
                 }
             )
 
@@ -625,15 +701,16 @@ internal class X509WorkloadIdentityAuthTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["\"Basic\"", "\"MAC\"", "\"DPoP\"", "null", "5"])
+    @ValueSource(strings = ["", "\"Basic\"", "\"MAC\"", "\"DPoP\"", "null", "5", "true"])
     fun x509RejectsNonBearerTokenTypes(tokenType: String) {
         listOf(false, true).forEach { async ->
+            val tokenTypeField = if (tokenType.isEmpty()) "" else ",\"token_type\":$tokenType"
             val auth =
                 x509Auth(
                     synchronousHttpClient {
                         response(
                             200,
-                            """{"access_token":"safe-token","token_type":$tokenType,"expires_in":3600}""",
+                            """{"access_token":"safe-token"$tokenTypeField,"expires_in":3600}""",
                         )
                     }
                 )
@@ -646,6 +723,26 @@ internal class X509WorkloadIdentityAuthTest {
             assertThat(cause)
                 .isInstanceOf(OpenAIInvalidDataException::class.java)
                 .hasMessage("X.509 token exchange returned a non-Bearer token type")
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["Bearer", "bearer", "BEARER"])
+    fun x509AcceptsBearerTokenTypeCaseInsensitively(tokenType: String) {
+        listOf(false, true).forEach { async ->
+            val auth =
+                x509Auth(
+                    synchronousHttpClient {
+                        response(
+                            200,
+                            """{"access_token":"safe-token","token_type":"$tokenType","expires_in":3600}""",
+                        )
+                    }
+                )
+
+            val token = if (async) auth.getTokenAsync().join() else auth.getToken()
+
+            assertThat(token).isEqualTo("safe-token")
         }
     }
 

@@ -572,15 +572,14 @@ internal class WorkloadIdentityAuthTest {
     }
 
     @Test
-    fun getToken_usesDefaultExpiry() {
+    fun getToken_usesDefaultExpiryAndAllowsMissingTokenType() {
         val subjectToken = "subject-token"
         val accessToken = "test-access-token"
         val oauthResponse =
             """
             {
                 "access_token": "$accessToken",
-                "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
-                "token_type": "Bearer"
+                "issued_token_type": "urn:ietf:params:oauth:token-type:access_token"
             }
         """
                 .trimIndent()

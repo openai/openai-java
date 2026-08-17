@@ -181,6 +181,7 @@ internal class WorkloadIdentityAuth(
                 refreshInFlight
                     ?: CompletableFuture<CachedToken>().also {
                         refreshInFlight = it
+                        refreshSourceLease = token?.lease
                         shouldRefresh = true
                     }
             }
@@ -449,8 +450,9 @@ internal class WorkloadIdentityAuth(
         val tokenType = tokenResponse.get("token_type")
         if (
             isX509 &&
-                tokenType != null &&
-                (!tokenType.isTextual || !tokenType.asText().equals("Bearer", ignoreCase = true))
+                (tokenType == null ||
+                    !tokenType.isTextual ||
+                    !tokenType.asText().equals("Bearer", ignoreCase = true))
         ) {
             throw OpenAIInvalidDataException(
                 "X.509 token exchange returned a non-Bearer token type"
