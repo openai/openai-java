@@ -17,66 +17,55 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Emitted when a partial image is available during image generation streaming. */
-class BetaResponseImageGenCallPartialImageEvent
+/** A streaming event that indicated shell call output was incrementally added. */
+class BetaResponseShellCallOutputContentDeltaEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
+    private val commandIndex: JsonField<Long>,
+    private val delta: JsonField<Delta>,
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
-    private val partialImageB64: JsonField<String>,
-    private val partialImageIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val agent: JsonField<Agent>,
-    private val background: JsonField<String>,
-    private val outputFormat: JsonField<String>,
-    private val quality: JsonField<String>,
-    private val size: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
+        @JsonProperty("command_index")
+        @ExcludeMissing
+        commandIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("delta") @ExcludeMissing delta: JsonField<Delta> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("partial_image_b64")
-        @ExcludeMissing
-        partialImageB64: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("partial_image_index")
-        @ExcludeMissing
-        partialImageIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("sequence_number")
         @ExcludeMissing
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
-        @JsonProperty("background")
-        @ExcludeMissing
-        background: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("output_format")
-        @ExcludeMissing
-        outputFormat: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("quality") @ExcludeMissing quality: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("size") @ExcludeMissing size: JsonField<String> = JsonMissing.of(),
-    ) : this(
-        itemId,
-        outputIndex,
-        partialImageB64,
-        partialImageIndex,
-        sequenceNumber,
-        type,
-        agent,
-        background,
-        outputFormat,
-        quality,
-        size,
-        mutableMapOf(),
-    )
+    ) : this(commandIndex, delta, itemId, outputIndex, sequenceNumber, type, agent, mutableMapOf())
 
     /**
-     * The unique identifier of the image generation item being processed.
+     * The index of the shell command that produced output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun commandIndex(): Long = commandIndex.getRequired("command_index")
+
+    /**
+     * The stdout/stderr delta that was emitted.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun delta(): Delta = delta.getRequired("delta")
+
+    /**
+     * The ID of the output item that was updated.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -84,7 +73,7 @@ private constructor(
     fun itemId(): String = itemId.getRequired("item_id")
 
     /**
-     * The index of the output item in the response's output array.
+     * The index of the output item that was updated.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -92,23 +81,7 @@ private constructor(
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
     /**
-     * Base64-encoded partial image data, suitable for rendering as an image.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun partialImageB64(): String = partialImageB64.getRequired("partial_image_b64")
-
-    /**
-     * 0-based index for the partial image (backend is 1-based, but this is 0-based for the user).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun partialImageIndex(): Long = partialImageIndex.getRequired("partial_image_index")
-
-    /**
-     * The sequence number of the image generation item being processed.
+     * The sequence number of the event that was emitted.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -116,11 +89,11 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The type of the event. Always 'response.image_generation_call.partial_image'.
+     * The type of the event, always `response.shell_call_output_content.delta`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.image_generation_call.partial_image")
+     * JsonValue.from("response.shell_call_output_content.delta")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -137,36 +110,20 @@ private constructor(
     fun agent(): Optional<Agent> = agent.getOptional("agent")
 
     /**
-     * The background setting that was used.
+     * Returns the raw JSON value of [commandIndex].
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Unlike [commandIndex], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun background(): Optional<String> = background.getOptional("background")
+    @JsonProperty("command_index")
+    @ExcludeMissing
+    fun _commandIndex(): JsonField<Long> = commandIndex
 
     /**
-     * The output format that was used.
+     * Returns the raw JSON value of [delta].
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun outputFormat(): Optional<String> = outputFormat.getOptional("output_format")
-
-    /**
-     * The image quality that was used.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun quality(): Optional<String> = quality.getOptional("quality")
-
-    /**
-     * The image size that was used.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun size(): Optional<String> = size.getOptional("size")
+    @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<Delta> = delta
 
     /**
      * Returns the raw JSON value of [itemId].
@@ -181,25 +138,6 @@ private constructor(
      * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
-
-    /**
-     * Returns the raw JSON value of [partialImageB64].
-     *
-     * Unlike [partialImageB64], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("partial_image_b64")
-    @ExcludeMissing
-    fun _partialImageB64(): JsonField<String> = partialImageB64
-
-    /**
-     * Returns the raw JSON value of [partialImageIndex].
-     *
-     * Unlike [partialImageIndex], this method doesn't throw if the JSON field has an unexpected
-     * type.
-     */
-    @JsonProperty("partial_image_index")
-    @ExcludeMissing
-    fun _partialImageIndex(): JsonField<Long> = partialImageIndex
 
     /**
      * Returns the raw JSON value of [sequenceNumber].
@@ -217,36 +155,6 @@ private constructor(
      */
     @JsonProperty("agent") @ExcludeMissing fun _agent(): JsonField<Agent> = agent
 
-    /**
-     * Returns the raw JSON value of [background].
-     *
-     * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("background") @ExcludeMissing fun _background(): JsonField<String> = background
-
-    /**
-     * Returns the raw JSON value of [outputFormat].
-     *
-     * Unlike [outputFormat], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("output_format")
-    @ExcludeMissing
-    fun _outputFormat(): JsonField<String> = outputFormat
-
-    /**
-     * Returns the raw JSON value of [quality].
-     *
-     * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<String> = quality
-
-    /**
-     * Returns the raw JSON value of [size].
-     *
-     * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<String> = size
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -263,56 +171,72 @@ private constructor(
 
         /**
          * Returns a mutable builder for constructing an instance of
-         * [BetaResponseImageGenCallPartialImageEvent].
+         * [BetaResponseShellCallOutputContentDeltaEvent].
          *
          * The following fields are required:
          * ```java
+         * .commandIndex()
+         * .delta()
          * .itemId()
          * .outputIndex()
-         * .partialImageB64()
-         * .partialImageIndex()
          * .sequenceNumber()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [BetaResponseImageGenCallPartialImageEvent]. */
+    /** A builder for [BetaResponseShellCallOutputContentDeltaEvent]. */
     class Builder internal constructor() {
 
+        private var commandIndex: JsonField<Long>? = null
+        private var delta: JsonField<Delta>? = null
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
-        private var partialImageB64: JsonField<String>? = null
-        private var partialImageIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.image_generation_call.partial_image")
+        private var type: JsonValue = JsonValue.from("response.shell_call_output_content.delta")
         private var agent: JsonField<Agent> = JsonMissing.of()
-        private var background: JsonField<String> = JsonMissing.of()
-        private var outputFormat: JsonField<String> = JsonMissing.of()
-        private var quality: JsonField<String> = JsonMissing.of()
-        private var size: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(
-            betaResponseImageGenCallPartialImageEvent: BetaResponseImageGenCallPartialImageEvent
+            betaResponseShellCallOutputContentDeltaEvent:
+                BetaResponseShellCallOutputContentDeltaEvent
         ) = apply {
-            itemId = betaResponseImageGenCallPartialImageEvent.itemId
-            outputIndex = betaResponseImageGenCallPartialImageEvent.outputIndex
-            partialImageB64 = betaResponseImageGenCallPartialImageEvent.partialImageB64
-            partialImageIndex = betaResponseImageGenCallPartialImageEvent.partialImageIndex
-            sequenceNumber = betaResponseImageGenCallPartialImageEvent.sequenceNumber
-            type = betaResponseImageGenCallPartialImageEvent.type
-            agent = betaResponseImageGenCallPartialImageEvent.agent
-            background = betaResponseImageGenCallPartialImageEvent.background
-            outputFormat = betaResponseImageGenCallPartialImageEvent.outputFormat
-            quality = betaResponseImageGenCallPartialImageEvent.quality
-            size = betaResponseImageGenCallPartialImageEvent.size
+            commandIndex = betaResponseShellCallOutputContentDeltaEvent.commandIndex
+            delta = betaResponseShellCallOutputContentDeltaEvent.delta
+            itemId = betaResponseShellCallOutputContentDeltaEvent.itemId
+            outputIndex = betaResponseShellCallOutputContentDeltaEvent.outputIndex
+            sequenceNumber = betaResponseShellCallOutputContentDeltaEvent.sequenceNumber
+            type = betaResponseShellCallOutputContentDeltaEvent.type
+            agent = betaResponseShellCallOutputContentDeltaEvent.agent
             additionalProperties =
-                betaResponseImageGenCallPartialImageEvent.additionalProperties.toMutableMap()
+                betaResponseShellCallOutputContentDeltaEvent.additionalProperties.toMutableMap()
         }
 
-        /** The unique identifier of the image generation item being processed. */
+        /** The index of the shell command that produced output. */
+        fun commandIndex(commandIndex: Long) = commandIndex(JsonField.of(commandIndex))
+
+        /**
+         * Sets [Builder.commandIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.commandIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun commandIndex(commandIndex: JsonField<Long>) = apply { this.commandIndex = commandIndex }
+
+        /** The stdout/stderr delta that was emitted. */
+        fun delta(delta: Delta) = delta(JsonField.of(delta))
+
+        /**
+         * Sets [Builder.delta] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delta] with a well-typed [Delta] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun delta(delta: JsonField<Delta>) = apply { this.delta = delta }
+
+        /** The ID of the output item that was updated. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
         /**
@@ -323,7 +247,7 @@ private constructor(
          */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
-        /** The index of the output item in the response's output array. */
+        /** The index of the output item that was updated. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
         /**
@@ -335,40 +259,7 @@ private constructor(
          */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** Base64-encoded partial image data, suitable for rendering as an image. */
-        fun partialImageB64(partialImageB64: String) =
-            partialImageB64(JsonField.of(partialImageB64))
-
-        /**
-         * Sets [Builder.partialImageB64] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.partialImageB64] with a well-typed [String] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun partialImageB64(partialImageB64: JsonField<String>) = apply {
-            this.partialImageB64 = partialImageB64
-        }
-
-        /**
-         * 0-based index for the partial image (backend is 1-based, but this is 0-based for the
-         * user).
-         */
-        fun partialImageIndex(partialImageIndex: Long) =
-            partialImageIndex(JsonField.of(partialImageIndex))
-
-        /**
-         * Sets [Builder.partialImageIndex] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.partialImageIndex] with a well-typed [Long] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun partialImageIndex(partialImageIndex: JsonField<Long>) = apply {
-            this.partialImageIndex = partialImageIndex
-        }
-
-        /** The sequence number of the image generation item being processed. */
+        /** The sequence number of the event that was emitted. */
         fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
 
         /**
@@ -388,7 +279,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.image_generation_call.partial_image")
+         * JsonValue.from("response.shell_call_output_content.delta")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -397,10 +288,7 @@ private constructor(
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The agent that owns this multi-agent streaming event. */
-        fun agent(agent: Agent?) = agent(JsonField.ofNullable(agent))
-
-        /** Alias for calling [Builder.agent] with `agent.orElse(null)`. */
-        fun agent(agent: Optional<Agent>) = agent(agent.getOrNull())
+        fun agent(agent: Agent) = agent(JsonField.of(agent))
 
         /**
          * Sets [Builder.agent] to an arbitrary JSON value.
@@ -409,54 +297,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun agent(agent: JsonField<Agent>) = apply { this.agent = agent }
-
-        /** The background setting that was used. */
-        fun background(background: String) = background(JsonField.of(background))
-
-        /**
-         * Sets [Builder.background] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.background] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun background(background: JsonField<String>) = apply { this.background = background }
-
-        /** The output format that was used. */
-        fun outputFormat(outputFormat: String) = outputFormat(JsonField.of(outputFormat))
-
-        /**
-         * Sets [Builder.outputFormat] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.outputFormat] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun outputFormat(outputFormat: JsonField<String>) = apply {
-            this.outputFormat = outputFormat
-        }
-
-        /** The image quality that was used. */
-        fun quality(quality: String) = quality(JsonField.of(quality))
-
-        /**
-         * Sets [Builder.quality] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.quality] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun quality(quality: JsonField<String>) = apply { this.quality = quality }
-
-        /** The image size that was used. */
-        fun size(size: String) = size(JsonField.of(size))
-
-        /**
-         * Sets [Builder.size] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.size] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun size(size: JsonField<String>) = apply { this.size = size }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -478,34 +318,30 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [BetaResponseImageGenCallPartialImageEvent].
+         * Returns an immutable instance of [BetaResponseShellCallOutputContentDeltaEvent].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
+         * .commandIndex()
+         * .delta()
          * .itemId()
          * .outputIndex()
-         * .partialImageB64()
-         * .partialImageIndex()
          * .sequenceNumber()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): BetaResponseImageGenCallPartialImageEvent =
-            BetaResponseImageGenCallPartialImageEvent(
+        fun build(): BetaResponseShellCallOutputContentDeltaEvent =
+            BetaResponseShellCallOutputContentDeltaEvent(
+                checkRequired("commandIndex", commandIndex),
+                checkRequired("delta", delta),
                 checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
-                checkRequired("partialImageB64", partialImageB64),
-                checkRequired("partialImageIndex", partialImageIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 agent,
-                background,
-                outputFormat,
-                quality,
-                size,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -520,26 +356,22 @@ private constructor(
      * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
      *   expected type.
      */
-    fun validate(): BetaResponseImageGenCallPartialImageEvent = apply {
+    fun validate(): BetaResponseShellCallOutputContentDeltaEvent = apply {
         if (validated) {
             return@apply
         }
 
+        commandIndex()
+        delta().validate()
         itemId()
         outputIndex()
-        partialImageB64()
-        partialImageIndex()
         sequenceNumber()
         _type().let {
-            if (it != JsonValue.from("response.image_generation_call.partial_image")) {
+            if (it != JsonValue.from("response.shell_call_output_content.delta")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
         agent().ifPresent { it.validate() }
-        background()
-        outputFormat()
-        quality()
-        size()
         validated = true
     }
 
@@ -558,19 +390,201 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (itemId.asKnown().isPresent) 1 else 0) +
+        (if (commandIndex.asKnown().isPresent) 1 else 0) +
+            (delta.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
-            (if (partialImageB64.asKnown().isPresent) 1 else 0) +
-            (if (partialImageIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
-                if (it == JsonValue.from("response.image_generation_call.partial_image")) 1 else 0
+                if (it == JsonValue.from("response.shell_call_output_content.delta")) 1 else 0
             } +
-            (agent.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (background.asKnown().isPresent) 1 else 0) +
-            (if (outputFormat.asKnown().isPresent) 1 else 0) +
-            (if (quality.asKnown().isPresent) 1 else 0) +
-            (if (size.asKnown().isPresent) 1 else 0)
+            (agent.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** The stdout/stderr delta that was emitted. */
+    class Delta
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val stderr: JsonField<String>,
+        private val stdout: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("stderr") @ExcludeMissing stderr: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("stdout") @ExcludeMissing stdout: JsonField<String> = JsonMissing.of(),
+        ) : this(stderr, stdout, mutableMapOf())
+
+        /**
+         * The stderr delta that was emitted.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun stderr(): Optional<String> = stderr.getOptional("stderr")
+
+        /**
+         * The stdout delta that was emitted.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun stdout(): Optional<String> = stdout.getOptional("stdout")
+
+        /**
+         * Returns the raw JSON value of [stderr].
+         *
+         * Unlike [stderr], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("stderr") @ExcludeMissing fun _stderr(): JsonField<String> = stderr
+
+        /**
+         * Returns the raw JSON value of [stdout].
+         *
+         * Unlike [stdout], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("stdout") @ExcludeMissing fun _stdout(): JsonField<String> = stdout
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Delta]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Delta]. */
+        class Builder internal constructor() {
+
+            private var stderr: JsonField<String> = JsonMissing.of()
+            private var stdout: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(delta: Delta) = apply {
+                stderr = delta.stderr
+                stdout = delta.stdout
+                additionalProperties = delta.additionalProperties.toMutableMap()
+            }
+
+            /** The stderr delta that was emitted. */
+            fun stderr(stderr: String) = stderr(JsonField.of(stderr))
+
+            /**
+             * Sets [Builder.stderr] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.stderr] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun stderr(stderr: JsonField<String>) = apply { this.stderr = stderr }
+
+            /** The stdout delta that was emitted. */
+            fun stdout(stdout: String) = stdout(JsonField.of(stdout))
+
+            /**
+             * Sets [Builder.stdout] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.stdout] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun stdout(stdout: JsonField<String>) = apply { this.stdout = stdout }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Delta].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Delta = Delta(stderr, stdout, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Delta = apply {
+            if (validated) {
+                return@apply
+            }
+
+            stderr()
+            stdout()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (stderr.asKnown().isPresent) 1 else 0) + (if (stdout.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Delta &&
+                stderr == other.stderr &&
+                stdout == other.stdout &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(stderr, stdout, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Delta{stderr=$stderr, stdout=$stdout, additionalProperties=$additionalProperties}"
+    }
 
     /** The agent that owns this multi-agent streaming event. */
     class Agent
@@ -745,34 +759,26 @@ private constructor(
             return true
         }
 
-        return other is BetaResponseImageGenCallPartialImageEvent &&
+        return other is BetaResponseShellCallOutputContentDeltaEvent &&
+            commandIndex == other.commandIndex &&
+            delta == other.delta &&
             itemId == other.itemId &&
             outputIndex == other.outputIndex &&
-            partialImageB64 == other.partialImageB64 &&
-            partialImageIndex == other.partialImageIndex &&
             sequenceNumber == other.sequenceNumber &&
             type == other.type &&
             agent == other.agent &&
-            background == other.background &&
-            outputFormat == other.outputFormat &&
-            quality == other.quality &&
-            size == other.size &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
         Objects.hash(
+            commandIndex,
+            delta,
             itemId,
             outputIndex,
-            partialImageB64,
-            partialImageIndex,
             sequenceNumber,
             type,
             agent,
-            background,
-            outputFormat,
-            quality,
-            size,
             additionalProperties,
         )
     }
@@ -780,5 +786,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseImageGenCallPartialImageEvent{itemId=$itemId, outputIndex=$outputIndex, partialImageB64=$partialImageB64, partialImageIndex=$partialImageIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, background=$background, outputFormat=$outputFormat, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
+        "BetaResponseShellCallOutputContentDeltaEvent{commandIndex=$commandIndex, delta=$delta, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
 }

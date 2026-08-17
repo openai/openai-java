@@ -45,6 +45,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -133,6 +138,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -227,6 +237,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -323,6 +338,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -423,6 +443,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -526,6 +551,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -628,6 +658,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -729,6 +764,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -830,6 +870,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -1135,6 +1180,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -1478,6 +1528,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -1629,6 +1684,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -1961,6 +2021,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2270,6 +2335,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2368,6 +2438,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2469,6 +2544,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2570,6 +2650,11 @@ internal class BetaResponseStreamEventTest {
             .contains(responseFileSearchCallSearching)
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2672,6 +2757,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta())
             .contains(responseFunctionCallArgumentsDelta)
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2776,6 +2866,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone())
             .contains(responseFunctionCallArgumentsDone)
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -2825,6 +2920,570 @@ internal class BetaResponseStreamEventTest {
                     .sequenceNumber(0L)
                     .agent(
                         BetaResponseFunctionCallArgumentsDoneEvent.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseStreamEvent),
+                jacksonTypeRef<BetaResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponseStreamEvent).isEqualTo(betaResponseStreamEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandAdded() {
+        val responseShellCallCommandAdded =
+            BetaResponseShellCallCommandAddedEvent.builder()
+                .command("command")
+                .commandIndex(0L)
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .agent(
+                    BetaResponseShellCallCommandAddedEvent.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .build()
+
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallCommandAdded(responseShellCallCommandAdded)
+
+        assertThat(betaResponseStreamEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCreated()).isEmpty
+        assertThat(betaResponseStreamEvent.error()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded())
+            .contains(responseShellCallCommandAdded)
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseQueued()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallCommandAdded(
+                BetaResponseShellCallCommandAddedEvent.builder()
+                    .command("command")
+                    .commandIndex(0L)
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .agent(
+                        BetaResponseShellCallCommandAddedEvent.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseStreamEvent),
+                jacksonTypeRef<BetaResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponseStreamEvent).isEqualTo(betaResponseStreamEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDelta() {
+        val responseShellCallCommandDelta =
+            BetaResponseShellCallCommandDeltaEvent.builder()
+                .commandIndex(0L)
+                .delta("delta")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .agent(
+                    BetaResponseShellCallCommandDeltaEvent.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .obfuscation("obfuscation")
+                .build()
+
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallCommandDelta(responseShellCallCommandDelta)
+
+        assertThat(betaResponseStreamEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCreated()).isEmpty
+        assertThat(betaResponseStreamEvent.error()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta())
+            .contains(responseShellCallCommandDelta)
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseQueued()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallCommandDelta(
+                BetaResponseShellCallCommandDeltaEvent.builder()
+                    .commandIndex(0L)
+                    .delta("delta")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .agent(
+                        BetaResponseShellCallCommandDeltaEvent.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .obfuscation("obfuscation")
+                    .build()
+            )
+
+        val roundtrippedBetaResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseStreamEvent),
+                jacksonTypeRef<BetaResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponseStreamEvent).isEqualTo(betaResponseStreamEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDone() {
+        val responseShellCallCommandDone =
+            BetaResponseShellCallCommandDoneEvent.builder()
+                .command("command")
+                .commandIndex(0L)
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .agent(
+                    BetaResponseShellCallCommandDoneEvent.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .build()
+
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallCommandDone(responseShellCallCommandDone)
+
+        assertThat(betaResponseStreamEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCreated()).isEmpty
+        assertThat(betaResponseStreamEvent.error()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone())
+            .contains(responseShellCallCommandDone)
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseQueued()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallCommandDone(
+                BetaResponseShellCallCommandDoneEvent.builder()
+                    .command("command")
+                    .commandIndex(0L)
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .agent(
+                        BetaResponseShellCallCommandDoneEvent.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseStreamEvent),
+                jacksonTypeRef<BetaResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponseStreamEvent).isEqualTo(betaResponseStreamEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDelta() {
+        val responseShellCallOutputContentDelta =
+            BetaResponseShellCallOutputContentDeltaEvent.builder()
+                .commandIndex(0L)
+                .delta(
+                    BetaResponseShellCallOutputContentDeltaEvent.Delta.builder()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .build()
+                )
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .agent(
+                    BetaResponseShellCallOutputContentDeltaEvent.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .build()
+
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallOutputContentDelta(
+                responseShellCallOutputContentDelta
+            )
+
+        assertThat(betaResponseStreamEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCreated()).isEmpty
+        assertThat(betaResponseStreamEvent.error()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta())
+            .contains(responseShellCallOutputContentDelta)
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseQueued()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallOutputContentDelta(
+                BetaResponseShellCallOutputContentDeltaEvent.builder()
+                    .commandIndex(0L)
+                    .delta(
+                        BetaResponseShellCallOutputContentDeltaEvent.Delta.builder()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .build()
+                    )
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .agent(
+                        BetaResponseShellCallOutputContentDeltaEvent.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseStreamEvent),
+                jacksonTypeRef<BetaResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponseStreamEvent).isEqualTo(betaResponseStreamEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDone() {
+        val responseShellCallOutputContentDone =
+            BetaResponseShellCallOutputContentDoneEvent.builder()
+                .commandIndex(0L)
+                .itemId("item_id")
+                .addOutput(
+                    BetaResponseShellCallOutputContentDoneEvent.Output.builder()
+                        .outcomeTimeout()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .createdBy("created_by")
+                        .build()
+                )
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .agent(
+                    BetaResponseShellCallOutputContentDoneEvent.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .build()
+
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallOutputContentDone(
+                responseShellCallOutputContentDone
+            )
+
+        assertThat(betaResponseStreamEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCreated()).isEmpty
+        assertThat(betaResponseStreamEvent.error()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone())
+            .contains(responseShellCallOutputContentDone)
+        assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseQueued()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseShellCallOutputContentDone(
+                BetaResponseShellCallOutputContentDoneEvent.builder()
+                    .commandIndex(0L)
+                    .itemId("item_id")
+                    .addOutput(
+                        BetaResponseShellCallOutputContentDoneEvent.Output.builder()
+                            .outcomeTimeout()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .createdBy("created_by")
+                            .build()
+                    )
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .agent(
+                        BetaResponseShellCallOutputContentDoneEvent.Agent.builder()
                             .agentName("agent_name")
                             .build()
                     )
@@ -3084,6 +3743,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).contains(responseInProgress)
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -3606,6 +4270,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).contains(responseFailed)
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -4127,6 +4796,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).contains(responseIncomplete)
@@ -4477,6 +5151,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -4648,6 +5327,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -4790,6 +5474,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -4900,6 +5589,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5010,6 +5704,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5115,6 +5814,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5218,6 +5922,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5321,6 +6030,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5422,6 +6136,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5520,6 +6239,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5628,6 +6352,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5749,6 +6478,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5860,6 +6594,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -5961,6 +6700,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6060,6 +6804,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6161,6 +6910,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6262,6 +7016,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6363,6 +7122,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6440,6 +7204,10 @@ internal class BetaResponseStreamEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .background("background")
+                .outputFormat("output_format")
+                .quality("quality")
+                .size("size")
                 .build()
 
         val betaResponseStreamEvent =
@@ -6466,6 +7234,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6519,6 +7292,10 @@ internal class BetaResponseStreamEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .background("background")
+                    .outputFormat("output_format")
+                    .quality("quality")
+                    .size("size")
                     .build()
             )
 
@@ -6568,6 +7345,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6669,6 +7451,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6769,6 +7556,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6866,6 +7658,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -6964,6 +7761,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -7063,6 +7865,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -7162,6 +7969,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -7261,6 +8073,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -7371,6 +8188,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -7686,6 +8508,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -8002,6 +8829,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
@@ -8105,6 +8937,11 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
         assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty

@@ -51,6 +51,11 @@ import com.openai.models.responses.ResponseReasoningTextDeltaEvent
 import com.openai.models.responses.ResponseReasoningTextDoneEvent
 import com.openai.models.responses.ResponseRefusalDeltaEvent
 import com.openai.models.responses.ResponseRefusalDoneEvent
+import com.openai.models.responses.ResponseShellCallCommandAddedEvent
+import com.openai.models.responses.ResponseShellCallCommandDeltaEvent
+import com.openai.models.responses.ResponseShellCallCommandDoneEvent
+import com.openai.models.responses.ResponseShellCallOutputContentDeltaEvent
+import com.openai.models.responses.ResponseShellCallOutputContentDoneEvent
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.models.responses.ResponseTextDeltaEvent
 import com.openai.models.responses.ResponseTextDoneEvent
@@ -227,6 +232,26 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitFunctionCallArgumentsDone(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
+                ) {}
+
+                override fun visitShellCallCommandAdded(
+                    shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) {}
+
+                override fun visitShellCallCommandDelta(
+                    shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) {}
+
+                override fun visitShellCallCommandDone(
+                    shellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) {}
+
+                override fun visitShellCallOutputContentDelta(
+                    shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) {}
+
+                override fun visitShellCallOutputContentDone(
+                    shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
                 ) {}
 
                 override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {}

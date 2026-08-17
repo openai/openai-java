@@ -60,6 +60,20 @@ subprojects {
     }
 }
 
+apply(from = "gradle/kotlin-format.gradle.kts")
+
+// The root tasks include buildSrc and every SDK module using the same formatter.
+subprojects {
+    val modulePath = path
+    pluginManager.withPlugin("openai.kotlin") {
+        listOf("formatKotlin", "lintKotlin").forEach { taskName ->
+            rootProject.tasks.named(taskName) {
+                dependsOn("$modulePath:$taskName")
+            }
+        }
+    }
+}
+
 subprojects {
     apply(plugin = "org.jetbrains.dokka")
 }

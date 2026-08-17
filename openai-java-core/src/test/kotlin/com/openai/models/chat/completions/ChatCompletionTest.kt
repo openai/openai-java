@@ -99,6 +99,11 @@ internal class ChatCompletionTest {
                 )
                 .created(0L)
                 .model("model")
+                .metadata(
+                    ChatCompletion.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .moderation(
                     ChatCompletion.Moderation.builder()
                         .input(
@@ -292,6 +297,12 @@ internal class ChatCompletionTest {
             )
         assertThat(chatCompletion.created()).isEqualTo(0L)
         assertThat(chatCompletion.model()).isEqualTo("model")
+        assertThat(chatCompletion.metadata())
+            .contains(
+                ChatCompletion.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
         assertThat(chatCompletion.moderation())
             .contains(
                 ChatCompletion.Moderation.builder()
@@ -486,6 +497,11 @@ internal class ChatCompletionTest {
                 )
                 .created(0L)
                 .model("model")
+                .metadata(
+                    ChatCompletion.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .moderation(
                     ChatCompletion.Moderation.builder()
                         .input(
