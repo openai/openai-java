@@ -151,7 +151,7 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
                         .httpClient(transport)
                         .baseUrl(fixture.baseUrl)
                         .putHeader("Cookie", "session=api-only")
-                        .putHeader("X-API-Key", "api-only-key")
+                        .putHeader("X-Request-Metadata", "api-only-metadata")
                         .workloadIdentity(
                             WorkloadIdentity.x509Builder()
                                 .identityProviderId("idp_test")
@@ -172,11 +172,11 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
             assertThat(exchange.path).isEqualTo("/oauth/token")
             assertThat(exchange.getHeader("Authorization")).isNull()
             assertThat(exchange.getHeader("Cookie")).isNull()
-            assertThat(exchange.getHeader("X-API-Key")).isNull()
+            assertThat(exchange.getHeader("X-Request-Metadata")).isNull()
             assertThat(api.path).isEqualTo("/v1/files")
             assertThat(api.getHeader("Authorization")).isEqualTo("Bearer test-token")
             assertThat(api.getHeader("Cookie")).isEqualTo("session=api-only")
-            assertThat(api.getHeader("X-API-Key")).isEqualTo("api-only-key")
+            assertThat(api.getHeader("X-Request-Metadata")).isEqualTo("api-only-metadata")
             listOf(exchange, api).forEach { request ->
                 assertThat(requireNotNull(request.handshake).peerCertificates)
                     .containsSubsequence(clientLeaf.certificate, clientIntermediate.certificate)

@@ -849,6 +849,7 @@ private constructor(
                         delegate = retryingHttpClient,
                         workloadIdentityAuth = effectiveWorkloadIdentityAuth,
                         allowedApiBaseUrl = checkNotNull(effectiveBaseUrl),
+                        adminApiKey = adminApiKey,
                     )
                 } else {
                     retryingHttpClient

@@ -187,6 +187,33 @@ internal class WorkloadIdentityAuthTest {
     }
 
     @Test
+    fun getToken_preservesLegacyResponseSizeBehavior() {
+        val provider = mock<SubjectTokenProvider>()
+        whenever(provider.tokenType()).thenReturn(SubjectTokenType.JWT)
+        whenever(provider.getToken(any(), any())).thenReturn("legacy-subject-token")
+        val padding = "a".repeat(1_048_577)
+        val response =
+            mockResponse(
+                200,
+                """{"access_token":"legacy-access-token","expires_in":3600,"padding":"$padding"}""",
+            )
+        whenever(httpClient.execute(any<HttpRequest>())).thenReturn(response)
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+            )
+
+        assertThat(auth.getToken()).isEqualTo("legacy-access-token")
+    }
+
+    @Test
     fun getToken_omitsClientIdFromTokenExchangeRequestWhenUnset() {
         val subjectToken = "subject-token"
         val accessToken = "test-access-token"

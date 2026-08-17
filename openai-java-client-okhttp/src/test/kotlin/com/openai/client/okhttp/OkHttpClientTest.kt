@@ -25,7 +25,7 @@ internal class OkHttpClientTest {
 
     @Test
     fun executeAsync_whenFutureCancelled_cancelsUnderlyingCall() {
-        stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
+        stubFor(post(urlPathEqualTo("/something")).willReturn(ok().withFixedDelay(1_000)))
         val responseFuture =
             httpClient.executeAsync(
                 HttpRequest.builder()

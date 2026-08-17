@@ -12,6 +12,7 @@ internal class WorkloadIdentityHttpClient(
     private val delegate: HttpClient,
     private val workloadIdentityAuth: WorkloadIdentityAuth?,
     allowedApiBaseUrl: String,
+    private val adminApiKey: String?,
 ) : HttpClient {
 
     private val allowedApiOrigin =
@@ -22,7 +23,13 @@ internal class WorkloadIdentityHttpClient(
     constructor(
         delegate: HttpClient,
         workloadIdentityAuth: WorkloadIdentityAuth?,
-    ) : this(delegate, workloadIdentityAuth, "https://mtls.api.openai.com/v1")
+        allowedApiBaseUrl: String,
+    ) : this(delegate, workloadIdentityAuth, allowedApiBaseUrl, null)
+
+    constructor(
+        delegate: HttpClient,
+        workloadIdentityAuth: WorkloadIdentityAuth?,
+    ) : this(delegate, workloadIdentityAuth, "https://mtls.api.openai.com/v1", null)
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val auth = workloadIdentityAuth ?: return delegate.execute(request, requestOptions)
@@ -30,7 +37,11 @@ internal class WorkloadIdentityHttpClient(
             return executeLegacy(request, requestOptions, auth)
         }
 
-        requireAllowedApiOrigin(request)
+        requireSafeX509Request(request)
+        authenticatedAdminRequest(request)?.let { adminRequest ->
+            requireSafeX509Request(adminRequest)
+            return delegate.execute(adminRequest, requestOptions)
+        }
         val retries = AtomicInteger()
         val attempt = executeWithToken(request, requestOptions, retries, auth)
         if (attempt.response.statusCode() != 401) {
@@ -60,7 +71,11 @@ internal class WorkloadIdentityHttpClient(
             return executeLegacyAsync(request, requestOptions, auth)
         }
 
-        requireAllowedApiOrigin(request)
+        requireSafeX509Request(request)
+        authenticatedAdminRequest(request)?.let { adminRequest ->
+            requireSafeX509Request(adminRequest)
+            return delegate.executeAsync(adminRequest, requestOptions)
+        }
         val retries = AtomicInteger()
         val firstAttempt = executeWithTokenAsync(request, requestOptions, retries, auth)
         return firstAttempt.thenCompose { attempt ->
@@ -132,7 +147,7 @@ internal class WorkloadIdentityHttpClient(
     ): AuthenticatedResponse {
         val token = auth.getTokenLease()
         val authenticatedRequest = authenticate(request, token.value, auth)
-        requireAllowedApiOrigin(authenticatedRequest)
+        requireSafeX509Request(authenticatedRequest)
         val response =
             if (delegate is RetryingHttpClient) {
                 delegate.execute(authenticatedRequest, requestOptions, retries)
@@ -150,7 +165,7 @@ internal class WorkloadIdentityHttpClient(
     ): CompletableFuture<AuthenticatedResponse> =
         auth.getTokenLeaseAsync().thenCompose { token ->
             val authenticatedRequest = authenticate(request, token.value, auth)
-            requireAllowedApiOrigin(authenticatedRequest)
+            requireSafeX509Request(authenticatedRequest)
             val response =
                 if (delegate is RetryingHttpClient) {
                     delegate.executeAsync(authenticatedRequest, requestOptions, retries)
@@ -177,7 +192,7 @@ internal class WorkloadIdentityHttpClient(
             }
             .build()
 
-    private fun requireAllowedApiOrigin(request: HttpRequest) {
+    private fun requireSafeX509Request(request: HttpRequest) {
         val destination = secureHttpsUri(request.url())
         require(
             destination != null &&
@@ -186,6 +201,49 @@ internal class WorkloadIdentityHttpClient(
         ) {
             "X.509 workload identity requests must remain on the configured HTTPS origin"
         }
+
+        val hostHeaders = request.headers.values("Host")
+        val hostAuthority =
+            if (hostHeaders.size == 1) secureHttpsUri("https://${hostHeaders.single()}") else null
+        require(
+            request.headers.values(":authority").isEmpty() &&
+                (hostHeaders.isEmpty() ||
+                    hostAuthority != null &&
+                        hostAuthority.rawPath.isEmpty() &&
+                        hostAuthority.rawQuery == null &&
+                        hostAuthority.rawFragment == null &&
+                        destination.host.equals(hostAuthority.host, ignoreCase = true) &&
+                        effectivePort(destination) == effectivePort(hostAuthority))
+        ) {
+            "X.509 workload identity requests must use the configured HTTPS authority"
+        }
+
+        require(
+            request.headers.names().none { name ->
+                val normalizedName = name.replace('_', '-')
+                normalizedName.equals("api-key", ignoreCase = true) ||
+                    normalizedName.equals("x-api-key", ignoreCase = true) ||
+                    normalizedName.equals("proxy-authorization", ignoreCase = true)
+            }
+        ) {
+            "X.509 workload identity requests must not include API-key credentials or proxy credentials"
+        }
+    }
+
+    private fun authenticatedAdminRequest(request: HttpRequest): HttpRequest? {
+        val authorization = request.headers.values("Authorization")
+        if (authorization.isEmpty()) {
+            return null
+        }
+
+        require(
+            adminApiKey != null &&
+                authorization.size == 1 &&
+                authorization.single() == "Bearer $adminApiKey"
+        ) {
+            "X.509 workload identity requests must not override the selected authorization"
+        }
+        return request.toBuilder().followRedirects(false).build()
     }
 
     private fun secureHttpsUri(value: String): URI? =

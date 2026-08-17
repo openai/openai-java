@@ -213,13 +213,24 @@ private constructor(
                     ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
                         retryAfter.toFloatOrNull()?.times(TimeUnit.SECONDS.toNanos(1))
                             ?: try {
-                                ChronoUnit.NANOS.between(
-                                    OffsetDateTime.now(clock),
+                                val now = OffsetDateTime.now(clock)
+                                val retryAfterDate =
                                     OffsetDateTime.parse(
                                         retryAfter,
                                         DateTimeFormatter.RFC_1123_DATE_TIME,
-                                    ),
-                                )
+                                    )
+                                try {
+                                    ChronoUnit.NANOS.between(now, retryAfterDate)
+                                } catch (e: ArithmeticException) {
+                                    if (maxRetryAfter == null) {
+                                        throw e
+                                    }
+                                    if (retryAfterDate.isAfter(now)) {
+                                        maxRetryAfter.toNanos()
+                                    } else {
+                                        null
+                                    }
+                                }
                             } catch (e: DateTimeParseException) {
                                 null
                             }

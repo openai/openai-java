@@ -14,6 +14,9 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.RetryingHttpClient
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ErrorObject
+import java.io.FilterInputStream
+import java.io.IOException
+import java.io.InputStream
 import java.io.OutputStream
 import java.time.Clock
 import java.time.Duration
@@ -34,6 +37,8 @@ private const val X509_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"
 private const val DEFAULT_TOKEN_EXPIRY_SECONDS = 3600
 private const val SUBJECT_TOKEN_EXCHANGE_URL = "https://auth.openai.com/oauth/token"
 private const val X509_TOKEN_EXCHANGE_URL = "https://mtls.auth.openai.com/oauth/token"
+private const val MAX_X509_TOKEN_RESPONSE_BYTES = 1_048_576
+private val X509_BEARER_TOKEN_PATTERN = Regex("[A-Za-z0-9._~+/-]+=*")
 
 internal class WorkloadIdentityAuth(
     internal val config: WorkloadIdentity,
@@ -80,7 +85,7 @@ internal class WorkloadIdentityAuth(
                 override fun handle(response: HttpResponse): JsonField<ErrorObject> {
                     val node =
                         try {
-                            jsonMapper.readTree(response.body())
+                            jsonMapper.readTree(tokenExchangeResponseBody(response))
                         } catch (e: Exception) {
                             return JsonMissing.of()
                         }
@@ -118,6 +123,34 @@ internal class WorkloadIdentityAuth(
         val expiresAfterNanos: Long,
         val refreshAfterNanos: Long,
     )
+
+    private class BoundedTokenResponseBody(stream: InputStream) : FilterInputStream(stream) {
+
+        private var remaining = MAX_X509_TOKEN_RESPONSE_BYTES
+
+        override fun read(): Int {
+            val value = super.read()
+            if (value != -1 && remaining-- == 0) {
+                throw IOException("Token exchange response exceeds the maximum allowed size")
+            }
+            return value
+        }
+
+        override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+            if (length == 0) {
+                return 0
+            }
+            if (remaining == 0) {
+                return read()
+            }
+
+            val count = super.read(buffer, offset, min(length, remaining))
+            if (count > 0) {
+                remaining -= count
+            }
+            return count
+        }
+    }
 
     internal class TokenLease internal constructor(val value: String)
 
@@ -392,7 +425,7 @@ internal class WorkloadIdentityAuth(
 
         val tokenResponse =
             try {
-                jsonMapper.readTree(response.body())
+                jsonMapper.readTree(tokenExchangeResponseBody(response))
                     ?: throw OpenAIInvalidDataException("Invalid token exchange response")
             } catch (error: Exception) {
                 throw OpenAIInvalidDataException("Invalid token exchange response")
@@ -406,6 +439,22 @@ internal class WorkloadIdentityAuth(
                 ?.takeIf { it.isNotBlank() }
         if (accessToken == null) {
             throw OpenAIInvalidDataException("Token exchange response missing 'access_token' field")
+        }
+        if (isX509 && !X509_BEARER_TOKEN_PATTERN.matches(accessToken)) {
+            throw OpenAIInvalidDataException(
+                "X.509 token exchange returned an invalid access token"
+            )
+        }
+
+        val tokenType = tokenResponse.get("token_type")
+        if (
+            isX509 &&
+                tokenType != null &&
+                (!tokenType.isTextual || !tokenType.asText().equals("Bearer", ignoreCase = true))
+        ) {
+            throw OpenAIInvalidDataException(
+                "X.509 token exchange returned a non-Bearer token type"
+            )
         }
 
         val expiresInNode = tokenResponse.get("expires_in")
@@ -443,6 +492,9 @@ internal class WorkloadIdentityAuth(
             refreshAfterNanos = expiresAfterNanos - effectiveBufferNanos,
         )
     }
+
+    private fun tokenExchangeResponseBody(response: HttpResponse): InputStream =
+        if (isX509) BoundedTokenResponseBody(response.body()) else response.body()
 
     internal fun uses(
         httpClient: HttpClient,

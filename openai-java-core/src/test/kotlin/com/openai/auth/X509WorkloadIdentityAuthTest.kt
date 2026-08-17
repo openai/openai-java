@@ -388,6 +388,10 @@ internal class X509WorkloadIdentityAuthTest {
                 "true|-1",
                 "false|NaN",
                 "true|NaN",
+                "false|Fri, 31 Dec 9999 23:59:59 GMT",
+                "true|Fri, 31 Dec 9999 23:59:59 GMT",
+                "false|Mon, 01 Jan 0001 00:00:00 GMT",
+                "true|Mon, 01 Jan 0001 00:00:00 GMT",
             ],
         delimiter = '|',
     )
@@ -464,6 +468,51 @@ internal class X509WorkloadIdentityAuthTest {
         assertThat(thrown.message).doesNotContain("sensitive mapping detail")
     }
 
+    @ParameterizedTest
+    @CsvSource("false,200", "true,200", "false,400", "true,400")
+    fun oversizedOauthResponseStopsReadingAtBound(async: Boolean, statusCode: Int) {
+        val oversizedField = "a".repeat(1_048_577)
+        val body =
+            if (statusCode == 200) {
+                """{"access_token":"$oversizedField","expires_in":3600}"""
+            } else {
+                """{"error":"invalid_grant","error_description":"$oversizedField"}"""
+            }
+        val bytesRead = AtomicInteger()
+        val source = ByteArrayInputStream(body.toByteArray())
+        val stream =
+            object : InputStream() {
+                override fun read(): Int =
+                    source.read().also { value -> if (value != -1) bytesRead.incrementAndGet() }
+
+                override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
+                    source.read(buffer, offset, length).also { count ->
+                        if (count > 0) bytesRead.addAndGet(count)
+                    }
+            }
+        val response =
+            object : HttpResponse {
+                override fun statusCode() = statusCode
+
+                override fun headers() = Headers.builder().build()
+
+                override fun body() = stream
+
+                override fun close() {}
+            }
+        val auth = x509Auth(synchronousHttpClient { response })
+
+        val error =
+            assertThrows<Throwable> { if (async) auth.getTokenAsync().join() else auth.getToken() }
+        val cause = if (async) checkNotNull(error.cause) else error
+        if (statusCode == 200) {
+            assertThat(cause).isInstanceOf(OpenAIInvalidDataException::class.java)
+        } else {
+            assertThat(cause).isInstanceOf(BadRequestException::class.java)
+        }
+        assertThat(bytesRead.get()).isLessThanOrEqualTo(1_048_577)
+    }
+
     @Test
     fun redirectResponseIsRejectedWithoutRetry() {
         val calls = AtomicInteger()
@@ -523,6 +572,65 @@ internal class X509WorkloadIdentityAuthTest {
             .isInstanceOf(OpenAIInvalidDataException::class.java)
             .hasMessage("Token exchange response missing 'access_token' field")
             .hasMessageNotContaining("secret-body")
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["\"Basic\"", "\"MAC\"", "\"DPoP\"", "null", "5"])
+    fun x509RejectsNonBearerTokenTypes(tokenType: String) {
+        listOf(false, true).forEach { async ->
+            val auth =
+                x509Auth(
+                    synchronousHttpClient {
+                        response(
+                            200,
+                            """{"access_token":"safe-token","token_type":$tokenType,"expires_in":3600}""",
+                        )
+                    }
+                )
+
+            val failure =
+                assertThrows<Throwable> {
+                    if (async) auth.getTokenAsync().join() else auth.getToken()
+                }
+            val cause = if (async) checkNotNull(failure.cause) else failure
+            assertThat(cause)
+                .isInstanceOf(OpenAIInvalidDataException::class.java)
+                .hasMessage("X.509 token exchange returned a non-Bearer token type")
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+            [
+                "token\r\ninjected",
+                "token\ninjected",
+                "token\u0000injected",
+                "token\tinjected",
+                "token value",
+                "tökén",
+                "token=value",
+            ]
+    )
+    fun x509RejectsUnsafeBearerTokenCharacters(accessToken: String) {
+        listOf(false, true).forEach { async ->
+            val encodedToken = JsonMapper().writeValueAsString(accessToken)
+            val auth =
+                x509Auth(
+                    synchronousHttpClient {
+                        response(200, """{"access_token":$encodedToken,"expires_in":3600}""")
+                    }
+                )
+
+            val failure =
+                assertThrows<Throwable> {
+                    if (async) auth.getTokenAsync().join() else auth.getToken()
+                }
+            val cause = if (async) checkNotNull(failure.cause) else failure
+            assertThat(cause)
+                .isInstanceOf(OpenAIInvalidDataException::class.java)
+                .hasMessage("X.509 token exchange returned an invalid access token")
+        }
     }
 
     private fun x509Auth(
