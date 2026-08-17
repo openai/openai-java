@@ -23,6 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -346,12 +347,15 @@ internal class ClientOptionsTest {
         assertThat(clientOptions.baseUrl()).isEqualTo("https://mtls.api.openai.com/v1")
     }
 
-    @Test
-    fun build_withX509WorkloadIdentity_preservesExplicitBaseUrl() {
+    @ParameterizedTest
+    @ValueSource(
+        strings = ["https://mtls-eu.api.openai.com/v1", "https://gateway.customer.example/v1"]
+    )
+    fun build_withX509WorkloadIdentity_preservesExplicitOpenAiGateway(baseUrl: String) {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(httpClient)
-                .baseUrl("https://mtls-eu.api.openai.com/v1")
+                .baseUrl(baseUrl)
                 .workloadIdentity(
                     WorkloadIdentity.x509Builder()
                         .identityProviderId("idp_test")
@@ -360,7 +364,71 @@ internal class ClientOptionsTest {
                 )
                 .build()
 
-        assertThat(clientOptions.baseUrl()).isEqualTo("https://mtls-eu.api.openai.com/v1")
+        assertThat(clientOptions.baseUrl()).isEqualTo(baseUrl)
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+            [
+                "https://tenant.openai.azure.com/openai/v1",
+                "https://tenant.services.ai.azure.com/openai/v1",
+                "https://tenant.azure-api.net/openai/v1",
+                "https://tenant.cognitiveservices.azure.com/openai/v1",
+            ]
+    )
+    fun build_withX509WorkloadIdentity_rejectsAzureBaseUrlBeforeTokenExchange(baseUrl: String) {
+        val thrown =
+            assertThrows<IllegalArgumentException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .baseUrl(baseUrl)
+                    .workloadIdentity(
+                        WorkloadIdentity.x509Builder()
+                            .identityProviderId("idp_test")
+                            .serviceAccountId("svc_acct_test")
+                            .build()
+                    )
+                    .build()
+            }
+
+        assertThat(thrown).hasMessage("X.509 workload identity cannot be used with Azure endpoints")
+        verify(httpClient, never()).execute(any(), any())
+        verify(httpClient, never()).executeAsync(any(), any())
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+            [
+                "https://tenant.openai.azure.com/openai/v1",
+                "https://tenant.services.ai.azure.com/openai/v1",
+                "https://tenant.azure-api.net/openai/v1",
+                "https://tenant.cognitiveservices.azure.com/openai/v1",
+            ]
+    )
+    fun build_withExistingCredentials_preservesAzureBaseUrls(baseUrl: String) {
+        val apiKeyOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .baseUrl(baseUrl)
+                .apiKey("test-api-key")
+                .build()
+        val subjectTokenOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .baseUrl(baseUrl)
+                .workloadIdentity(
+                    WorkloadIdentity.builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .provider(mock())
+                        .build()
+                )
+                .build()
+
+        assertThat(apiKeyOptions.baseUrl()).isEqualTo(baseUrl)
+        assertThat(subjectTokenOptions.baseUrl()).isEqualTo(baseUrl)
     }
 
     @ParameterizedTest

@@ -741,6 +741,11 @@ private constructor(
                     "X.509 workload identity requires an absolute HTTPS base URL"
                 }
             }
+            val azureUrlCategory =
+                effectiveBaseUrl?.let { AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode) }
+            require(!x509WorkloadIdentity || azureUrlCategory == AzureUrlCategory.NON_AZURE) {
+                "X.509 workload identity cannot be used with Azure endpoints"
+            }
             val streamHandlerExecutor =
                 streamHandlerExecutor
                     ?: PhantomReachableExecutorService(
@@ -774,8 +779,8 @@ private constructor(
             // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
 
-            effectiveBaseUrl?.let {
-                when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
+            azureUrlCategory?.let {
+                when (it) {
                     // Legacy Azure routes will still require an api-version value.
                     AzureUrlCategory.AZURE_LEGACY ->
                         replaceQueryParams(

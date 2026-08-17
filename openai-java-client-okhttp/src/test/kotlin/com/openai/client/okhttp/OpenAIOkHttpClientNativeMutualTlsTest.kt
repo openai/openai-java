@@ -26,6 +26,8 @@ import okhttp3.tls.HeldCertificate
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceLock
+import org.junit.jupiter.api.parallel.Resources
 
 internal class OpenAIOkHttpClientNativeMutualTlsTest {
 
@@ -64,6 +66,55 @@ internal class OpenAIOkHttpClientNativeMutualTlsTest {
                 }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("X.509 workload identity requires an absolute HTTPS base URL")
+        }
+    }
+
+    @Test
+    @ResourceLock(Resources.SYSTEM_PROPERTIES)
+    fun publicX509ClientBuildersRejectExplicitAndAmbientAzureEndpoints() {
+        val workloadIdentity =
+            WorkloadIdentity.x509Builder()
+                .identityProviderId("idp_test")
+                .serviceAccountId("svc_acct_test")
+                .build()
+        val previousBaseUrl = System.getProperty("openai.baseUrl")
+
+        try {
+            listOf(
+                    "https://tenant.openai.azure.com/openai/v1",
+                    "https://tenant.services.ai.azure.com/openai/v1",
+                    "https://tenant.azure-api.net/openai/v1",
+                    "https://tenant.cognitiveservices.azure.com/openai/v1",
+                )
+                .forEach { baseUrl ->
+                    listOf(false, true).forEach { ambient ->
+                        if (ambient) System.setProperty("openai.baseUrl", baseUrl)
+                        else System.clearProperty("openai.baseUrl")
+
+                        listOf(false, true).forEach { async ->
+                            assertThatThrownBy {
+                                    if (async) {
+                                        OpenAIOkHttpClientAsync.builder()
+                                            .apply { if (ambient) fromEnv() else baseUrl(baseUrl) }
+                                            .workloadIdentity(workloadIdentity)
+                                            .build()
+                                    } else {
+                                        OpenAIOkHttpClient.builder()
+                                            .apply { if (ambient) fromEnv() else baseUrl(baseUrl) }
+                                            .workloadIdentity(workloadIdentity)
+                                            .build()
+                                    }
+                                }
+                                .isInstanceOf(IllegalArgumentException::class.java)
+                                .hasMessage(
+                                    "X.509 workload identity cannot be used with Azure endpoints"
+                                )
+                        }
+                    }
+                }
+        } finally {
+            if (previousBaseUrl == null) System.clearProperty("openai.baseUrl")
+            else System.setProperty("openai.baseUrl", previousBaseUrl)
         }
     }
 
