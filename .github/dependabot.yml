@@ -1,0 +1,50 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    # settings.gradle.kts computes include(it) dynamically, which Dependabot
+    # cannot resolve. List only directories with build.gradle.kts; the root
+    # update also discovers buildSrc and the Gradle wrapper automatically.
+    directories:
+      - /
+      - /openai-java
+      - /openai-java-bedrock
+      - /openai-java-client-okhttp
+      - /openai-java-core
+      - /openai-java-example
+      - /openai-java-proguard-test
+      - /openai-java-runtime-compatibility
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Etc/UTC
+    cooldown:
+      default-days: 8
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    groups:
+      # Keep each dependency aligned across modules without combining unrelated
+      # upgrades. Review the ProGuard fixture's older Jackson pin separately.
+      sdk-dependencies:
+        group-by: dependency-name
+        patterns:
+          - "*"
+        exclude-patterns:
+          - com.fasterxml.jackson.module:jackson-module-kotlin
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: Etc/UTC
+    cooldown:
+      default-days: 8
+    open-pull-requests-limit: 3
+    groups:
+      # CodeQL init/analyze actions share versioned state. Keep every other
+      # pinned action update separate so its replacement SHA can be reviewed.
+      codeql:
+        patterns:
+          - github/codeql-action/*
