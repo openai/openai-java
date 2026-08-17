@@ -214,8 +214,8 @@ pass `authenticationExecutor(...)` to use a caller-owned executor instead.
 - Prefer temporary credentials, roles, profiles, and workload identities over long-lived keys.
 - Canonical AWS Bedrock URLs require HTTPS. Their endpoint family and region must match the
   selected endpoint and configured signing region.
-- An explicitly selected endpoint is required when signing requests for a custom proxy or test
-  server. This prevents an ambiguous hostname from selecting the wrong SigV4 service.
+- Custom proxy or test-server endpoints default to Mantle signing. Explicitly select Runtime when
+  a custom hostname should use the Bedrock Runtime signing service.
 - Do not log access keys, secret keys, session tokens, bearer tokens, or signed authorization
   headers. The SDK redacts `Authorization` and `X-Amz-Security-Token` from its HTTP logs.
 - OpenAI workload identity federation and AWS Bedrock SigV4 are separate authentication systems.

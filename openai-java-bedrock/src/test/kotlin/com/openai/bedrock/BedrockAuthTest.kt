@@ -529,32 +529,33 @@ internal class BedrockAuthTest {
     }
 
     @Test
-    fun customSignedEndpointsRequireExplicitEndpointSelection() {
+    fun customSignedEndpointsDefaultToMantleUnlessRuntimeIsSelected() {
         val baseUrl = "https://bedrock.example.com/openai/v1"
 
-        assertThatThrownBy {
-                options(
-                        awsRegion = "us-east-1",
-                        baseUrl = baseUrl,
-                        awsAccessKeyId = "ACCESSKEY",
-                        awsSecretAccessKey = "secret",
-                    )
-                    .resolve(getenv = { null }, regionProvider = { null })
-            }
-            .hasMessageContaining("requires an explicit `endpoint`")
-
-        listOf(BedrockEndpoint.MANTLE to "bedrock-mantle", BedrockEndpoint.RUNTIME to "bedrock")
-            .forEach { (endpoint, service) ->
+        listOf(
+                Triple(null, baseUrl, "bedrock-mantle"),
+                Triple(null, null, "bedrock-mantle"),
+                Triple(BedrockEndpoint.MANTLE, baseUrl, "bedrock-mantle"),
+                Triple(BedrockEndpoint.RUNTIME, baseUrl, "bedrock"),
+            )
+            .forEach { (endpoint, configuredBaseUrl, service) ->
                 val configuration =
                     options(
                             endpoint = endpoint,
                             awsRegion = "us-east-1",
-                            baseUrl = baseUrl,
+                            baseUrl = configuredBaseUrl,
                             awsAccessKeyId = "ACCESSKEY",
                             awsSecretAccessKey = "secret",
                         )
-                        .resolve(getenv = { null }, regionProvider = { null })
+                        .resolve(
+                            getenv = { name ->
+                                if (configuredBaseUrl == null && name == ENV_BASE_URL) baseUrl
+                                else null
+                            },
+                            regionProvider = { null },
+                        )
 
+                assertThat(configuration.endpoint).isEqualTo(endpoint ?: BedrockEndpoint.MANTLE)
                 assertThat(
                         configuration.authenticator
                             .authenticate(request(baseUrl))

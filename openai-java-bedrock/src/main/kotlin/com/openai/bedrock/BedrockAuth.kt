@@ -29,6 +29,9 @@ import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner
 import software.amazon.awssdk.http.auth.spi.signer.HttpSigner
 import software.amazon.awssdk.http.auth.spi.signer.SignRequest
 import software.amazon.awssdk.identity.spi.AwsCredentialsIdentity
+import software.amazon.awssdk.regions.EndpointTag
+import software.amazon.awssdk.regions.PartitionEndpointKey
+import software.amazon.awssdk.regions.PartitionMetadata
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain
 
@@ -186,11 +189,6 @@ internal fun BedrockAuthOptions.resolve(
                 "Bedrock requires an AWS region. Pass `awsRegion` to the builder, or set `AWS_REGION` or `AWS_DEFAULT_REGION`."
             )
     validateCanonicalEndpoint(normalizedResolvedBaseUrl, resolvedEndpoint, region)
-    if (endpoint == null && parsedEndpoint == null) {
-        throw OpenAIException(
-            "A custom Bedrock endpoint requires an explicit `endpoint` when using AWS credential authentication."
-        )
-    }
     val (credentialsProvider, ownsCredentialsProvider) =
         when {
             staticCredentials != null -> AwsCredentialsProvider { staticCredentials } to false
@@ -275,15 +273,10 @@ private fun validateRegion(region: String?) {
     }
 }
 
-private fun runtimeDnsSuffixes(region: String): Pair<String, String> =
-    when {
-        region.startsWith("cn-") -> "amazonaws.com.cn" to "api.amazonwebservices.com.cn"
-        region.startsWith("eusc-") -> "amazonaws.eu" to "api.amazonwebservices.eu"
-        region.startsWith("us-iso-") -> "c2s.ic.gov" to "api.aws.ic.gov"
-        region.startsWith("us-isob-") -> "sc2s.sgov.gov" to "api.aws.scloud"
-        region.startsWith("eu-isoe-") -> "cloud.adc-e.uk" to "api.cloud-aws.adc-e.uk"
-        region.startsWith("us-isof-") -> "csp.hci.ic.gov" to "api.aws.hci.ic.gov"
-        else -> "amazonaws.com" to "api.aws"
+private fun runtimeDnsSuffixes(region: String): Pair<String, String?> =
+    PartitionMetadata.of(Region.of(region)).let { partition ->
+        val dualStackEndpoint = PartitionEndpointKey.builder().tags(EndpointTag.DUALSTACK).build()
+        partition.dnsSuffix() to partition.dnsSuffix(dualStackEndpoint)
     }
 
 private data class CanonicalBedrockEndpoint(val endpoint: BedrockEndpoint, val region: String)
