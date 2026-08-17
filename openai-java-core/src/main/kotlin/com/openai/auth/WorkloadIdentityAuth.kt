@@ -326,21 +326,21 @@ internal class WorkloadIdentityAuth(
 
     private fun finishRefresh(refresh: CompletableFuture<CachedToken>, token: CachedToken) {
         lock.withLock {
-            if (refreshInFlight === refresh) {
-                cachedToken = token
-                refreshInFlight = null
-                refreshSourceLease = null
-            }
+            if (refreshInFlight !== refresh) return
+
+            cachedToken = token
+            refreshInFlight = null
+            refreshSourceLease = null
         }
         refresh.complete(token)
     }
 
     private fun finishRefresh(refresh: CompletableFuture<CachedToken>, error: Throwable) {
         lock.withLock {
-            if (refreshInFlight === refresh) {
-                refreshInFlight = null
-                refreshSourceLease = null
-            }
+            if (refreshInFlight !== refresh) return
+
+            refreshInFlight = null
+            refreshSourceLease = null
         }
         refresh.completeExceptionally(error)
     }

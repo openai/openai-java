@@ -342,6 +342,56 @@ internal class X509WorkloadIdentityAuthTest {
         assertThat(blockedBackoff).isNotCompleted
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun displacedRefreshCannotCompleteWaitersBeforeReplacement(failedRefresh: Boolean) {
+        val nowNanos = AtomicLong()
+        val asynchronousExchanges = AtomicInteger()
+        val displacedExchange = CompletableFuture<HttpResponse>()
+        val replacementExchange = CompletableFuture<HttpResponse>()
+        val httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = tokenResponse("rejected-token", expiresIn = 10)
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    if (asynchronousExchanges.getAndIncrement() == 0) displacedExchange
+                    else replacementExchange
+
+                override fun close() {}
+            }
+        val auth = x509Auth(httpClient, nanoTime = LongSupplier(nowNanos::get))
+        val rejectedToken = auth.getTokenLease()
+        nowNanos.set(Duration.ofSeconds(5).toNanos())
+        assertThat(auth.getTokenAsync()).isCompletedWithValue("rejected-token")
+
+        nowNanos.set(Duration.ofSeconds(10).toNanos())
+        val displacedWaiter = auth.getTokenAsync()
+        auth.invalidateToken(rejectedToken)
+        val replacementWaiter = auth.getTokenAsync()
+
+        if (failedRefresh) {
+            displacedExchange.completeExceptionally(IllegalStateException("superseded failure"))
+        } else {
+            displacedExchange.complete(tokenResponse("superseded-token", expiresIn = 10))
+        }
+
+        assertThat(displacedWaiter).isNotCompleted
+        assertThat(replacementWaiter).isNotCompleted
+
+        replacementExchange.complete(tokenResponse("replacement-token", expiresIn = 10))
+
+        assertThat(displacedWaiter).isCompletedWithValue("replacement-token")
+        assertThat(replacementWaiter).isCompletedWithValue("replacement-token")
+        assertThat(auth.getToken()).isEqualTo("replacement-token")
+        assertThat(asynchronousExchanges).hasValue(2)
+    }
+
     @Test
     fun tokenLeaseDebugRepresentationDoesNotExposeBearerToken() {
         val auth =
