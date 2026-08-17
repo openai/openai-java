@@ -12,8 +12,10 @@ artifact-level runtime, framework, lifecycle, and release rules.
 - Never commit API keys, bearer tokens, AWS/Bedrock credentials, Maven Central/Sonatype tokens, GPG
   private keys or passphrases, or other secrets. Use environment variables such as `OPENAI_API_KEY`
   and clearly fake values in examples, JUnit/WireMock fixtures, recordings, and snapshots.
-- Redact credentials, authorization headers, signed requests, customer data, and sensitive request
-  or response content from logs, errors, exceptions, and test output.
+- Keep credentials, authorization headers, signed requests, and customer data out of default or
+  uncontrolled logs, errors, and test output. Preserve documented `OpenAIServiceException.body()`,
+  API-error and validation messages, and explicitly enabled `DEBUG` diagnostics; use sanitized
+  fixtures and redact sensitive data before forwarding it to untrusted sinks.
 - Scrutinize direct and transitive Maven dependencies, Gradle plugins and repositories, Gradle
   wrapper/distribution changes, dependency locks, and build/install scripts. Verify integrity and
   provenance before adding or updating anything that executes during the build.

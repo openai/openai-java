@@ -31,6 +31,7 @@ the generator.
 - Require security-focused review for changes to API-key or Bedrock/AWS authentication; OkHttp
   transport, base URLs, redirects, proxies, TLS, or header forwarding; file uploads and path
   handling; Jackson serialization/deserialization or polymorphic types; and signing, release, or
-  publication logic. Add focused JUnit/WireMock regression tests for changed security boundaries.
+  publication logic. Add focused, boundary-appropriate regression coverage: JUnit/WireMock tests for
+  SDK behavior and workflow, Gradle, or shell checks for signing, release, and publication logic.
 - Report suspected vulnerabilities privately through [SECURITY.md](SECURITY.md). Do not open public
   issues, discussions, or pull requests containing vulnerability details or secrets.
