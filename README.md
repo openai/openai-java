@@ -35,6 +35,21 @@ implementation("com.openai:openai-java:4.51.0")
 The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
 are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
 
+### Java Platform Module System
+
+The published artifacts are not modular JARs, but each one declares a stable `Automatic-Module-Name`
+so it can be placed on the module path:
+
+| Artifact | Module name |
+| --- | --- |
+| `openai-java` | `com.openai` |
+| `openai-java-core` | `com.openai.core` |
+| `openai-java-client-okhttp` | `com.openai.client.okhttp` |
+| `openai-java-bedrock` | `com.openai.bedrock` |
+
+Each package is contained in exactly one artifact, so these modules can be resolved together on the
+module path.
+
 ## Usage
 
 > [!TIP]
@@ -93,8 +108,8 @@ implementation("com.openai:openai-java-bedrock:4.51.0")
 <!-- x-release-please-end -->
 
 ```java
+import com.openai.bedrock.BedrockOpenAIOkHttpClient;
 import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
 
 // Uses the standard AWS credential chain, including environment credentials,
 // ~/.aws/credentials, AWS_PROFILE, workload roles, and instance metadata.

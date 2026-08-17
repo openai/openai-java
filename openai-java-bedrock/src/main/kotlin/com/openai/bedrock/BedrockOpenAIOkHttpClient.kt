@@ -1,9 +1,8 @@
-package com.openai.client.okhttp
+package com.openai.bedrock
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.openai.bedrock.BedrockAuthOptions
-import com.openai.bedrock.resolve
 import com.openai.client.OpenAIClient
+import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.LogLevel
 import com.openai.core.Sleeper
 import com.openai.core.Timeout

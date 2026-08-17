@@ -1,7 +1,7 @@
 package com.openai.example;
 
+import com.openai.bedrock.BedrockOpenAIOkHttpClient;
 import com.openai.client.OpenAIClientAsync;
-import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
 import com.openai.models.responses.ResponseCreateParams;
 
 public final class BedrockResponsesStreamingAsyncExample {

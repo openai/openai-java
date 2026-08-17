@@ -1,7 +1,7 @@
 package com.openai.compatibility;
 
+import com.openai.bedrock.BedrockOpenAIOkHttpClient;
 import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
 
 public final class BedrockRuntimeProbe {
     private static final String[] RUNTIME_PROVIDER_CLASSES = {
