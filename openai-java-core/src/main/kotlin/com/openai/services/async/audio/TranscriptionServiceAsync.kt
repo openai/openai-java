@@ -1,0 +1,111 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.services.async.audio
+
+import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
+import com.openai.core.http.AsyncStreamResponse
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.StreamResponse
+import com.openai.models.audio.transcriptions.TranscriptionCreateParams
+import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
+import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
+import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
+
+/** Turn audio into text or text into audio. */
+interface TranscriptionServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionServiceAsync
+
+    /**
+     * Transcribes audio into the input language.
+     *
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
+     */
+    fun create(params: TranscriptionCreateParams): CompletableFuture<TranscriptionCreateResponse> =
+        create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(
+        params: TranscriptionCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<TranscriptionCreateResponse>
+
+    /**
+     * Transcribes audio into the input language.
+     *
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
+     */
+    fun createStreaming(
+        params: TranscriptionCreateParams
+    ): AsyncStreamResponse<TranscriptionStreamEvent> =
+        createStreaming(params, RequestOptions.none())
+
+    /** @see createStreaming */
+    fun createStreaming(
+        params: TranscriptionCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<TranscriptionStreamEvent>
+
+    /**
+     * A view of [TranscriptionServiceAsync] that provides access to raw HTTP responses for each
+     * method.
+     */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TranscriptionServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /audio/transcriptions`, but is otherwise the same
+         * as [TranscriptionServiceAsync.create].
+         */
+        fun create(
+            params: TranscriptionCreateParams
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> =
+            create(params, RequestOptions.none())
+
+        /** @see create */
+        fun create(
+            params: TranscriptionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>>
+
+        /**
+         * Returns a raw HTTP response for `post /audio/transcriptions`, but is otherwise the same
+         * as [TranscriptionServiceAsync.createStreaming].
+         */
+        @MustBeClosed
+        fun createStreaming(
+            params: TranscriptionCreateParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<TranscriptionStreamEvent>>> =
+            createStreaming(params, RequestOptions.none())
+
+        /** @see createStreaming */
+        @MustBeClosed
+        fun createStreaming(
+            params: TranscriptionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<TranscriptionStreamEvent>>>
+    }
+}

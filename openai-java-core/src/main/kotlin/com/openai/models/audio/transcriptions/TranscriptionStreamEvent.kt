@@ -1,0 +1,361 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.audio.transcriptions
+
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
+import com.openai.core.JsonValue
+import com.openai.core.getOrThrow
+import com.openai.errors.OpenAIInvalidDataException
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/**
+ * Emitted when a diarized transcription returns a completed segment with speaker information. Only
+ * emitted when you
+ * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+ * with `stream` set to `true` and `response_format` set to `diarized_json`.
+ */
+@JsonDeserialize(using = TranscriptionStreamEvent.Deserializer::class)
+@JsonSerialize(using = TranscriptionStreamEvent.Serializer::class)
+class TranscriptionStreamEvent
+private constructor(
+    private val transcriptTextSegment: TranscriptionTextSegmentEvent? = null,
+    private val transcriptTextDelta: TranscriptionTextDeltaEvent? = null,
+    private val transcriptTextDone: TranscriptionTextDoneEvent? = null,
+    private val _json: JsonValue? = null,
+) {
+
+    /**
+     * Emitted when a diarized transcription returns a completed segment with speaker information.
+     * Only emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with `stream` set to `true` and `response_format` set to `diarized_json`.
+     */
+    fun transcriptTextSegment(): Optional<TranscriptionTextSegmentEvent> =
+        Optional.ofNullable(transcriptTextSegment)
+
+    /**
+     * Emitted when there is an additional text delta. This is also the first event emitted when the
+     * transcription starts. Only emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with the `Stream` parameter set to `true`.
+     */
+    fun transcriptTextDelta(): Optional<TranscriptionTextDeltaEvent> =
+        Optional.ofNullable(transcriptTextDelta)
+
+    /**
+     * Emitted when the transcription is complete. Contains the complete transcription text. Only
+     * emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with the `Stream` parameter set to `true`.
+     */
+    fun transcriptTextDone(): Optional<TranscriptionTextDoneEvent> =
+        Optional.ofNullable(transcriptTextDone)
+
+    fun isTranscriptTextSegment(): Boolean = transcriptTextSegment != null
+
+    fun isTranscriptTextDelta(): Boolean = transcriptTextDelta != null
+
+    fun isTranscriptTextDone(): Boolean = transcriptTextDone != null
+
+    /**
+     * Emitted when a diarized transcription returns a completed segment with speaker information.
+     * Only emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with `stream` set to `true` and `response_format` set to `diarized_json`.
+     */
+    fun asTranscriptTextSegment(): TranscriptionTextSegmentEvent =
+        transcriptTextSegment.getOrThrow("transcriptTextSegment")
+
+    /**
+     * Emitted when there is an additional text delta. This is also the first event emitted when the
+     * transcription starts. Only emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with the `Stream` parameter set to `true`.
+     */
+    fun asTranscriptTextDelta(): TranscriptionTextDeltaEvent =
+        transcriptTextDelta.getOrThrow("transcriptTextDelta")
+
+    /**
+     * Emitted when the transcription is complete. Contains the complete transcription text. Only
+     * emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with the `Stream` parameter set to `true`.
+     */
+    fun asTranscriptTextDone(): TranscriptionTextDoneEvent =
+        transcriptTextDone.getOrThrow("transcriptTextDone")
+
+    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+    /**
+     * Maps this instance's current variant to a value of type [T] using the given [visitor].
+     *
+     * Note that this method is _not_ forwards compatible with new variants from the API, unless
+     * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of the
+     * SDK gracefully, consider overriding [Visitor.unknown]:
+     * ```java
+     * import com.openai.core.JsonValue;
+     * import java.util.Optional;
+     *
+     * Optional<String> result = transcriptionStreamEvent.accept(new TranscriptionStreamEvent.Visitor<Optional<String>>() {
+     *     @Override
+     *     public Optional<String> visitTranscriptTextSegment(TranscriptionTextSegmentEvent transcriptTextSegment) {
+     *         return Optional.of(transcriptTextSegment.toString());
+     *     }
+     *
+     *     // ...
+     *
+     *     @Override
+     *     public Optional<String> unknown(JsonValue json) {
+     *         // Or inspect the `json`.
+     *         return Optional.empty();
+     *     }
+     * });
+     * ```
+     *
+     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
+     *   the current variant is unknown.
+     */
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
+            transcriptTextSegment != null ->
+                visitor.visitTranscriptTextSegment(transcriptTextSegment)
+            transcriptTextDelta != null -> visitor.visitTranscriptTextDelta(transcriptTextDelta)
+            transcriptTextDone != null -> visitor.visitTranscriptTextDone(transcriptTextDone)
+            else -> visitor.unknown(_json)
+        }
+
+    private var validated: Boolean = false
+
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
+    fun validate(): TranscriptionStreamEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitTranscriptTextSegment(
+                    transcriptTextSegment: TranscriptionTextSegmentEvent
+                ) {
+                    transcriptTextSegment.validate()
+                }
+
+                override fun visitTranscriptTextDelta(
+                    transcriptTextDelta: TranscriptionTextDeltaEvent
+                ) {
+                    transcriptTextDelta.validate()
+                }
+
+                override fun visitTranscriptTextDone(
+                    transcriptTextDone: TranscriptionTextDoneEvent
+                ) {
+                    transcriptTextDone.validate()
+                }
+            }
+        )
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitTranscriptTextSegment(
+                    transcriptTextSegment: TranscriptionTextSegmentEvent
+                ) = transcriptTextSegment.validity()
+
+                override fun visitTranscriptTextDelta(
+                    transcriptTextDelta: TranscriptionTextDeltaEvent
+                ) = transcriptTextDelta.validity()
+
+                override fun visitTranscriptTextDone(
+                    transcriptTextDone: TranscriptionTextDoneEvent
+                ) = transcriptTextDone.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is TranscriptionStreamEvent &&
+            transcriptTextSegment == other.transcriptTextSegment &&
+            transcriptTextDelta == other.transcriptTextDelta &&
+            transcriptTextDone == other.transcriptTextDone
+    }
+
+    override fun hashCode(): Int =
+        Objects.hash(transcriptTextSegment, transcriptTextDelta, transcriptTextDone)
+
+    override fun toString(): String =
+        when {
+            transcriptTextSegment != null ->
+                "TranscriptionStreamEvent{transcriptTextSegment=$transcriptTextSegment}"
+            transcriptTextDelta != null ->
+                "TranscriptionStreamEvent{transcriptTextDelta=$transcriptTextDelta}"
+            transcriptTextDone != null ->
+                "TranscriptionStreamEvent{transcriptTextDone=$transcriptTextDone}"
+            _json != null -> "TranscriptionStreamEvent{_unknown=$_json}"
+            else -> throw IllegalStateException("Invalid TranscriptionStreamEvent")
+        }
+
+    companion object {
+
+        /**
+         * Emitted when a diarized transcription returns a completed segment with speaker
+         * information. Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with `stream` set to `true` and `response_format` set to `diarized_json`.
+         */
+        @JvmStatic
+        fun ofTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent) =
+            TranscriptionStreamEvent(transcriptTextSegment = transcriptTextSegment)
+
+        /**
+         * Emitted when there is an additional text delta. This is also the first event emitted when
+         * the transcription starts. Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with the `Stream` parameter set to `true`.
+         */
+        @JvmStatic
+        fun ofTranscriptTextDelta(transcriptTextDelta: TranscriptionTextDeltaEvent) =
+            TranscriptionStreamEvent(transcriptTextDelta = transcriptTextDelta)
+
+        /**
+         * Emitted when the transcription is complete. Contains the complete transcription text.
+         * Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with the `Stream` parameter set to `true`.
+         */
+        @JvmStatic
+        fun ofTranscriptTextDone(transcriptTextDone: TranscriptionTextDoneEvent) =
+            TranscriptionStreamEvent(transcriptTextDone = transcriptTextDone)
+    }
+
+    /**
+     * An interface that defines how to map each variant of [TranscriptionStreamEvent] to a value of
+     * type [T].
+     */
+    interface Visitor<out T> {
+
+        /**
+         * Emitted when a diarized transcription returns a completed segment with speaker
+         * information. Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with `stream` set to `true` and `response_format` set to `diarized_json`.
+         */
+        fun visitTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent): T
+
+        /**
+         * Emitted when there is an additional text delta. This is also the first event emitted when
+         * the transcription starts. Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with the `Stream` parameter set to `true`.
+         */
+        fun visitTranscriptTextDelta(transcriptTextDelta: TranscriptionTextDeltaEvent): T
+
+        /**
+         * Emitted when the transcription is complete. Contains the complete transcription text.
+         * Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with the `Stream` parameter set to `true`.
+         */
+        fun visitTranscriptTextDone(transcriptTextDone: TranscriptionTextDoneEvent): T
+
+        /**
+         * Maps an unknown variant of [TranscriptionStreamEvent] to a value of type [T].
+         *
+         * An instance of [TranscriptionStreamEvent] can contain an unknown variant if it was
+         * deserialized from data that doesn't match any known variant. For example, if the SDK is
+         * on an older version than the API, then the API may respond with new variants that the SDK
+         * is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
+        fun unknown(json: JsonValue?): T {
+            throw OpenAIInvalidDataException("Unknown TranscriptionStreamEvent: $json")
+        }
+    }
+
+    internal class Deserializer :
+        BaseDeserializer<TranscriptionStreamEvent>(TranscriptionStreamEvent::class) {
+
+        override fun ObjectCodec.deserialize(node: JsonNode): TranscriptionStreamEvent {
+            val json = JsonValue.fromJsonNode(node)
+            val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+            when (type) {
+                "transcript.text.segment" -> {
+                    return tryDeserialize(node, jacksonTypeRef<TranscriptionTextSegmentEvent>())
+                        ?.let { TranscriptionStreamEvent(transcriptTextSegment = it, _json = json) }
+                        ?: TranscriptionStreamEvent(_json = json)
+                }
+                "transcript.text.delta" -> {
+                    return tryDeserialize(node, jacksonTypeRef<TranscriptionTextDeltaEvent>())
+                        ?.let { TranscriptionStreamEvent(transcriptTextDelta = it, _json = json) }
+                        ?: TranscriptionStreamEvent(_json = json)
+                }
+                "transcript.text.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<TranscriptionTextDoneEvent>())?.let {
+                        TranscriptionStreamEvent(transcriptTextDone = it, _json = json)
+                    } ?: TranscriptionStreamEvent(_json = json)
+                }
+            }
+
+            return TranscriptionStreamEvent(_json = json)
+        }
+    }
+
+    internal class Serializer :
+        BaseSerializer<TranscriptionStreamEvent>(TranscriptionStreamEvent::class) {
+
+        override fun serialize(
+            value: TranscriptionStreamEvent,
+            generator: JsonGenerator,
+            provider: SerializerProvider,
+        ) {
+            when {
+                value.transcriptTextSegment != null ->
+                    generator.writeObject(value.transcriptTextSegment)
+                value.transcriptTextDelta != null ->
+                    generator.writeObject(value.transcriptTextDelta)
+                value.transcriptTextDone != null -> generator.writeObject(value.transcriptTextDone)
+                value._json != null -> generator.writeObject(value._json)
+                else -> throw IllegalStateException("Invalid TranscriptionStreamEvent")
+            }
+        }
+    }
+}

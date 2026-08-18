@@ -1,0 +1,91 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.responses
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class ResponseComputerToolCallOutputItemTest {
+
+    @Test
+    fun create() {
+        val responseComputerToolCallOutputItem =
+            ResponseComputerToolCallOutputItem.builder()
+                .id("id")
+                .callId("call_id")
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId("file_id")
+                        .imageUrl("https://example.com")
+                        .build()
+                )
+                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+                .addAcknowledgedSafetyCheck(
+                    ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .createdBy("created_by")
+                .build()
+
+        assertThat(responseComputerToolCallOutputItem.id()).isEqualTo("id")
+        assertThat(responseComputerToolCallOutputItem.callId()).isEqualTo("call_id")
+        assertThat(responseComputerToolCallOutputItem.output())
+            .isEqualTo(
+                ResponseComputerToolCallOutputScreenshot.builder()
+                    .fileId("file_id")
+                    .imageUrl("https://example.com")
+                    .build()
+            )
+        assertThat(responseComputerToolCallOutputItem.status())
+            .isEqualTo(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+        assertThat(responseComputerToolCallOutputItem.acknowledgedSafetyChecks().getOrNull())
+            .containsExactly(
+                ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                    .id("id")
+                    .code("code")
+                    .message("message")
+                    .build()
+            )
+        assertThat(responseComputerToolCallOutputItem.createdBy()).contains("created_by")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseComputerToolCallOutputItem =
+            ResponseComputerToolCallOutputItem.builder()
+                .id("id")
+                .callId("call_id")
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId("file_id")
+                        .imageUrl("https://example.com")
+                        .build()
+                )
+                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+                .addAcknowledgedSafetyCheck(
+                    ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .createdBy("created_by")
+                .build()
+
+        val roundtrippedResponseComputerToolCallOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseComputerToolCallOutputItem),
+                jacksonTypeRef<ResponseComputerToolCallOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseComputerToolCallOutputItem)
+            .isEqualTo(responseComputerToolCallOutputItem)
+    }
+}

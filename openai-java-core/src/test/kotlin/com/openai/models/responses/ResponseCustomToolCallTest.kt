@@ -1,0 +1,54 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.responses
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class ResponseCustomToolCallTest {
+
+    @Test
+    fun create() {
+        val responseCustomToolCall =
+            ResponseCustomToolCall.builder()
+                .callId("call_id")
+                .input("input")
+                .name("name")
+                .id("id")
+                .callerDirect()
+                .namespace("namespace")
+                .build()
+
+        assertThat(responseCustomToolCall.callId()).isEqualTo("call_id")
+        assertThat(responseCustomToolCall.input()).isEqualTo("input")
+        assertThat(responseCustomToolCall.name()).isEqualTo("name")
+        assertThat(responseCustomToolCall.id()).contains("id")
+        assertThat(responseCustomToolCall.caller())
+            .contains(ResponseCustomToolCall.Caller.ofDirect())
+        assertThat(responseCustomToolCall.namespace()).contains("namespace")
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseCustomToolCall =
+            ResponseCustomToolCall.builder()
+                .callId("call_id")
+                .input("input")
+                .name("name")
+                .id("id")
+                .callerDirect()
+                .namespace("namespace")
+                .build()
+
+        val roundtrippedResponseCustomToolCall =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseCustomToolCall),
+                jacksonTypeRef<ResponseCustomToolCall>(),
+            )
+
+        assertThat(roundtrippedResponseCustomToolCall).isEqualTo(responseCustomToolCall)
+    }
+}

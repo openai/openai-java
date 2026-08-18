@@ -1,0 +1,105 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.services.blocking
+
+import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.StreamResponse
+import com.openai.models.completions.Completion
+import com.openai.models.completions.CompletionCreateParams
+import java.util.function.Consumer
+
+/**
+ * Given a prompt, the model will return one or more predicted completions, and can also return the
+ * probabilities of alternative tokens at each position.
+ */
+interface CompletionService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompletionService
+
+    /**
+     * Creates a completion for the provided prompt and parameters.
+     *
+     * Returns a completion object, or a sequence of completion objects if the request is streamed.
+     */
+    fun create(params: CompletionCreateParams): Completion = create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(
+        params: CompletionCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Completion
+
+    /**
+     * Creates a completion for the provided prompt and parameters.
+     *
+     * Returns a completion object, or a sequence of completion objects if the request is streamed.
+     */
+    @MustBeClosed
+    fun createStreaming(params: CompletionCreateParams): StreamResponse<Completion> =
+        createStreaming(params, RequestOptions.none())
+
+    /** @see createStreaming */
+    @MustBeClosed
+    fun createStreaming(
+        params: CompletionCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<Completion>
+
+    /** A view of [CompletionService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CompletionService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
+         * [CompletionService.create].
+         */
+        @MustBeClosed
+        fun create(params: CompletionCreateParams): HttpResponseFor<Completion> =
+            create(params, RequestOptions.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: CompletionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Completion>
+
+        /**
+         * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
+         * [CompletionService.createStreaming].
+         */
+        @MustBeClosed
+        fun createStreaming(
+            params: CompletionCreateParams
+        ): HttpResponseFor<StreamResponse<Completion>> =
+            createStreaming(params, RequestOptions.none())
+
+        /** @see createStreaming */
+        @MustBeClosed
+        fun createStreaming(
+            params: CompletionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<Completion>>
+    }
+}

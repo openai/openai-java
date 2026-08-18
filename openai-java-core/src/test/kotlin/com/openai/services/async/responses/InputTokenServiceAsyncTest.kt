@@ -1,0 +1,82 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.services.async.responses
+
+import com.openai.TestServerExtension
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
+import com.openai.core.JsonValue
+import com.openai.models.Reasoning
+import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
+import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.ToolChoiceOptions
+import com.openai.models.responses.inputtokens.InputTokenCountParams
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+
+@ExtendWith(TestServerExtension::class)
+internal class InputTokenServiceAsyncTest {
+
+    @Test
+    fun count() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val inputTokenServiceAsync = client.responses().inputTokens()
+
+        val responseFuture =
+            inputTokenServiceAsync.count(
+                InputTokenCountParams.builder()
+                    .conversation("string")
+                    .input("string")
+                    .instructions("instructions")
+                    .model("model")
+                    .parallelToolCalls(true)
+                    .personality(InputTokenCountParams.Personality.FRIENDLY)
+                    .previousResponseId("resp_123")
+                    .reasoning(
+                        Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
+                            .effort(ReasoningEffort.NONE)
+                            .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .mode(Reasoning.Mode.STANDARD)
+                            .summary(Reasoning.Summary.AUTO)
+                            .build()
+                    )
+                    .text(
+                        InputTokenCountParams.Text.builder()
+                            .format(ResponseFormatText.builder().build())
+                            .verbosity(InputTokenCountParams.Text.Verbosity.LOW)
+                            .build()
+                    )
+                    .toolChoice(ToolChoiceOptions.NONE)
+                    .addTool(
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .deferLoading(true)
+                            .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .truncation(InputTokenCountParams.Truncation.AUTO)
+                    .build()
+            )
+
+        val response = responseFuture.get()
+        response.validate()
+    }
+}

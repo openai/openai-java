@@ -1,0 +1,171 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.realtime
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class RealtimeTranscriptionSessionCreateRequestTest {
+
+    @Test
+    fun create() {
+        val realtimeTranscriptionSessionCreateRequest =
+            RealtimeTranscriptionSessionCreateRequest.builder()
+                .audio(
+                    RealtimeTranscriptionSessionAudio.builder()
+                        .input(
+                            RealtimeTranscriptionSessionAudioInput.builder()
+                                .format(
+                                    RealtimeAudioFormats.AudioPcm.builder()
+                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                        .build()
+                                )
+                                .noiseReduction(
+                                    RealtimeTranscriptionSessionAudioInput.NoiseReduction.builder()
+                                        .type(NoiseReductionType.NEAR_FIELD)
+                                        .build()
+                                )
+                                .transcription(
+                                    AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
+                                        .addKeyword("string")
+                                        .language("language")
+                                        .addLanguage("string")
+                                        .model(AudioTranscription.Model.WHISPER_1)
+                                        .prompt("prompt")
+                                        .build()
+                                )
+                                .turnDetection(
+                                    RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad
+                                        .builder()
+                                        .createResponse(true)
+                                        .idleTimeoutMs(5000L)
+                                        .interruptResponse(true)
+                                        .prefixPaddingMs(0L)
+                                        .silenceDurationMs(0L)
+                                        .threshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .addInclude(
+                    RealtimeTranscriptionSessionCreateRequest.Include
+                        .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
+                )
+                .build()
+
+        assertThat(realtimeTranscriptionSessionCreateRequest.audio())
+            .contains(
+                RealtimeTranscriptionSessionAudio.builder()
+                    .input(
+                        RealtimeTranscriptionSessionAudioInput.builder()
+                            .format(
+                                RealtimeAudioFormats.AudioPcm.builder()
+                                    .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                    .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                    .build()
+                            )
+                            .noiseReduction(
+                                RealtimeTranscriptionSessionAudioInput.NoiseReduction.builder()
+                                    .type(NoiseReductionType.NEAR_FIELD)
+                                    .build()
+                            )
+                            .transcription(
+                                AudioTranscription.builder()
+                                    .delay(AudioTranscription.Delay.MINIMAL)
+                                    .addKeyword("string")
+                                    .language("language")
+                                    .addLanguage("string")
+                                    .model(AudioTranscription.Model.WHISPER_1)
+                                    .prompt("prompt")
+                                    .build()
+                            )
+                            .turnDetection(
+                                RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad
+                                    .builder()
+                                    .createResponse(true)
+                                    .idleTimeoutMs(5000L)
+                                    .interruptResponse(true)
+                                    .prefixPaddingMs(0L)
+                                    .silenceDurationMs(0L)
+                                    .threshold(0.0)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+        assertThat(realtimeTranscriptionSessionCreateRequest.include().getOrNull())
+            .containsExactly(
+                RealtimeTranscriptionSessionCreateRequest.Include
+                    .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
+            )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val realtimeTranscriptionSessionCreateRequest =
+            RealtimeTranscriptionSessionCreateRequest.builder()
+                .audio(
+                    RealtimeTranscriptionSessionAudio.builder()
+                        .input(
+                            RealtimeTranscriptionSessionAudioInput.builder()
+                                .format(
+                                    RealtimeAudioFormats.AudioPcm.builder()
+                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                        .build()
+                                )
+                                .noiseReduction(
+                                    RealtimeTranscriptionSessionAudioInput.NoiseReduction.builder()
+                                        .type(NoiseReductionType.NEAR_FIELD)
+                                        .build()
+                                )
+                                .transcription(
+                                    AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
+                                        .addKeyword("string")
+                                        .language("language")
+                                        .addLanguage("string")
+                                        .model(AudioTranscription.Model.WHISPER_1)
+                                        .prompt("prompt")
+                                        .build()
+                                )
+                                .turnDetection(
+                                    RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad
+                                        .builder()
+                                        .createResponse(true)
+                                        .idleTimeoutMs(5000L)
+                                        .interruptResponse(true)
+                                        .prefixPaddingMs(0L)
+                                        .silenceDurationMs(0L)
+                                        .threshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .addInclude(
+                    RealtimeTranscriptionSessionCreateRequest.Include
+                        .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
+                )
+                .build()
+
+        val roundtrippedRealtimeTranscriptionSessionCreateRequest =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(realtimeTranscriptionSessionCreateRequest),
+                jacksonTypeRef<RealtimeTranscriptionSessionCreateRequest>(),
+            )
+
+        assertThat(roundtrippedRealtimeTranscriptionSessionCreateRequest)
+            .isEqualTo(realtimeTranscriptionSessionCreateRequest)
+    }
+}

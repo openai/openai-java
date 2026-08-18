@@ -1,0 +1,227 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.realtime
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.models.responses.ResponsePrompt
+import kotlin.jvm.optionals.getOrNull
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class RealtimeSessionTest {
+
+    @Test
+    fun create() {
+        val realtimeSession =
+            RealtimeSession.builder()
+                .id("id")
+                .expiresAt(0L)
+                .addInclude(RealtimeSession.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS)
+                .inputAudioFormat(RealtimeSession.InputAudioFormat.PCM16)
+                .inputAudioNoiseReduction(
+                    RealtimeSession.InputAudioNoiseReduction.builder()
+                        .type(NoiseReductionType.NEAR_FIELD)
+                        .build()
+                )
+                .inputAudioTranscription(
+                    AudioTranscription.builder()
+                        .delay(AudioTranscription.Delay.MINIMAL)
+                        .addKeyword("string")
+                        .language("language")
+                        .addLanguage("string")
+                        .model(AudioTranscription.Model.WHISPER_1)
+                        .prompt("prompt")
+                        .build()
+                )
+                .instructions("instructions")
+                .maxResponseOutputTokensInf()
+                .addModality(RealtimeSession.Modality.TEXT)
+                .model(RealtimeSession.Model.GPT_REALTIME)
+                .object_(RealtimeSession.Object.REALTIME_SESSION)
+                .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
+                .prompt(
+                    ResponsePrompt.builder()
+                        .id("id")
+                        .variables(
+                            ResponsePrompt.Variables.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .version("version")
+                        .build()
+                )
+                .speed(0.25)
+                .temperature(0.0)
+                .toolChoice("tool_choice")
+                .addTool(
+                    RealtimeFunctionTool.builder()
+                        .description("description")
+                        .name("name")
+                        .parameters(JsonValue.from(mapOf<String, Any>()))
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
+                        .build()
+                )
+                .tracingAuto()
+                .turnDetection(
+                    RealtimeSession.TurnDetection.ServerVad.builder()
+                        .createResponse(true)
+                        .idleTimeoutMs(5000L)
+                        .interruptResponse(true)
+                        .prefixPaddingMs(0L)
+                        .silenceDurationMs(0L)
+                        .threshold(0.0)
+                        .build()
+                )
+                .voice(RealtimeSession.Voice.ASH)
+                .build()
+
+        assertThat(realtimeSession.id()).contains("id")
+        assertThat(realtimeSession.expiresAt()).contains(0L)
+        assertThat(realtimeSession.include().getOrNull())
+            .containsExactly(RealtimeSession.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS)
+        assertThat(realtimeSession.inputAudioFormat())
+            .contains(RealtimeSession.InputAudioFormat.PCM16)
+        assertThat(realtimeSession.inputAudioNoiseReduction())
+            .contains(
+                RealtimeSession.InputAudioNoiseReduction.builder()
+                    .type(NoiseReductionType.NEAR_FIELD)
+                    .build()
+            )
+        assertThat(realtimeSession.inputAudioTranscription())
+            .contains(
+                AudioTranscription.builder()
+                    .delay(AudioTranscription.Delay.MINIMAL)
+                    .addKeyword("string")
+                    .language("language")
+                    .addLanguage("string")
+                    .model(AudioTranscription.Model.WHISPER_1)
+                    .prompt("prompt")
+                    .build()
+            )
+        assertThat(realtimeSession.instructions()).contains("instructions")
+        assertThat(realtimeSession.maxResponseOutputTokens())
+            .contains(RealtimeSession.MaxResponseOutputTokens.ofInf())
+        assertThat(realtimeSession.modalities().getOrNull())
+            .containsExactly(RealtimeSession.Modality.TEXT)
+        assertThat(realtimeSession.model()).contains(RealtimeSession.Model.GPT_REALTIME)
+        assertThat(realtimeSession.object_()).contains(RealtimeSession.Object.REALTIME_SESSION)
+        assertThat(realtimeSession.outputAudioFormat())
+            .contains(RealtimeSession.OutputAudioFormat.PCM16)
+        assertThat(realtimeSession.prompt())
+            .contains(
+                ResponsePrompt.builder()
+                    .id("id")
+                    .variables(
+                        ResponsePrompt.Variables.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .version("version")
+                    .build()
+            )
+        assertThat(realtimeSession.speed()).contains(0.25)
+        assertThat(realtimeSession.temperature()).contains(0.0)
+        assertThat(realtimeSession.toolChoice()).contains("tool_choice")
+        assertThat(realtimeSession.tools().getOrNull())
+            .containsExactly(
+                RealtimeFunctionTool.builder()
+                    .description("description")
+                    .name("name")
+                    .parameters(JsonValue.from(mapOf<String, Any>()))
+                    .type(RealtimeFunctionTool.Type.FUNCTION)
+                    .build()
+            )
+        assertThat(realtimeSession.tracing()).contains(RealtimeSession.Tracing.ofAuto())
+        assertThat(realtimeSession.turnDetection())
+            .contains(
+                RealtimeSession.TurnDetection.ofServerVad(
+                    RealtimeSession.TurnDetection.ServerVad.builder()
+                        .createResponse(true)
+                        .idleTimeoutMs(5000L)
+                        .interruptResponse(true)
+                        .prefixPaddingMs(0L)
+                        .silenceDurationMs(0L)
+                        .threshold(0.0)
+                        .build()
+                )
+            )
+        assertThat(realtimeSession.voice()).contains(RealtimeSession.Voice.ASH)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val realtimeSession =
+            RealtimeSession.builder()
+                .id("id")
+                .expiresAt(0L)
+                .addInclude(RealtimeSession.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS)
+                .inputAudioFormat(RealtimeSession.InputAudioFormat.PCM16)
+                .inputAudioNoiseReduction(
+                    RealtimeSession.InputAudioNoiseReduction.builder()
+                        .type(NoiseReductionType.NEAR_FIELD)
+                        .build()
+                )
+                .inputAudioTranscription(
+                    AudioTranscription.builder()
+                        .delay(AudioTranscription.Delay.MINIMAL)
+                        .addKeyword("string")
+                        .language("language")
+                        .addLanguage("string")
+                        .model(AudioTranscription.Model.WHISPER_1)
+                        .prompt("prompt")
+                        .build()
+                )
+                .instructions("instructions")
+                .maxResponseOutputTokensInf()
+                .addModality(RealtimeSession.Modality.TEXT)
+                .model(RealtimeSession.Model.GPT_REALTIME)
+                .object_(RealtimeSession.Object.REALTIME_SESSION)
+                .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
+                .prompt(
+                    ResponsePrompt.builder()
+                        .id("id")
+                        .variables(
+                            ResponsePrompt.Variables.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .version("version")
+                        .build()
+                )
+                .speed(0.25)
+                .temperature(0.0)
+                .toolChoice("tool_choice")
+                .addTool(
+                    RealtimeFunctionTool.builder()
+                        .description("description")
+                        .name("name")
+                        .parameters(JsonValue.from(mapOf<String, Any>()))
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
+                        .build()
+                )
+                .tracingAuto()
+                .turnDetection(
+                    RealtimeSession.TurnDetection.ServerVad.builder()
+                        .createResponse(true)
+                        .idleTimeoutMs(5000L)
+                        .interruptResponse(true)
+                        .prefixPaddingMs(0L)
+                        .silenceDurationMs(0L)
+                        .threshold(0.0)
+                        .build()
+                )
+                .voice(RealtimeSession.Voice.ASH)
+                .build()
+
+        val roundtrippedRealtimeSession =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(realtimeSession),
+                jacksonTypeRef<RealtimeSession>(),
+            )
+
+        assertThat(roundtrippedRealtimeSession).isEqualTo(realtimeSession)
+    }
+}

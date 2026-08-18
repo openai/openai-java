@@ -1,0 +1,273 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.responses.inputitems
+
+import com.openai.core.AutoPager
+import com.openai.core.Page
+import com.openai.core.checkRequired
+import com.openai.models.responses.ResponseApplyPatchToolCall
+import com.openai.models.responses.ResponseApplyPatchToolCallOutput
+import com.openai.models.responses.ResponseCodeInterpreterToolCall
+import com.openai.models.responses.ResponseCompactionItem
+import com.openai.models.responses.ResponseComputerToolCall
+import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseCustomToolCallItem
+import com.openai.models.responses.ResponseCustomToolCallOutputItem
+import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCallOutput
+import com.openai.models.responses.ResponseFunctionToolCallItem
+import com.openai.models.responses.ResponseFunctionToolCallOutputItem
+import com.openai.models.responses.ResponseFunctionWebSearch
+import com.openai.models.responses.ResponseInputMessageItem
+import com.openai.models.responses.ResponseItem
+import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseReasoningItem
+import com.openai.models.responses.ResponseToolSearchCall
+import com.openai.models.responses.ResponseToolSearchOutputItem
+import com.openai.services.blocking.responses.InputItemService
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/** @see InputItemService.list */
+class InputItemListPage
+private constructor(
+    private val service: InputItemService,
+    private val params: InputItemListParams,
+    private val response: ResponseItemList,
+) : Page<ResponseItem> {
+
+    /**
+     * Delegates to [ResponseItemList], but gracefully handles missing data.
+     *
+     * @see ResponseItemList.data
+     */
+    fun data(): List<ResponseItem> = response._data().getOptional("data").getOrNull() ?: emptyList()
+
+    /**
+     * Delegates to [ResponseItemList], but gracefully handles missing data.
+     *
+     * @see ResponseItemList.hasMore
+     */
+    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+
+    override fun items(): List<ResponseItem> = data()
+
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
+
+    fun nextPageParams(): InputItemListParams =
+        params
+            .toBuilder()
+            .after(
+                items()
+                    .last()
+                    .accept(
+                        object : ResponseItem.Visitor<Optional<String>> {
+                            override fun visitResponseInputMessageItem(
+                                responseInputMessageItem: ResponseInputMessageItem
+                            ): Optional<String> = responseInputMessageItem._id().getOptional("id")
+
+                            override fun visitResponseOutputMessage(
+                                responseOutputMessage: ResponseOutputMessage
+                            ): Optional<String> = responseOutputMessage._id().getOptional("id")
+
+                            override fun visitFileSearchCall(
+                                fileSearchCall: ResponseFileSearchToolCall
+                            ): Optional<String> = fileSearchCall._id().getOptional("id")
+
+                            override fun visitComputerCall(
+                                computerCall: ResponseComputerToolCall
+                            ): Optional<String> = computerCall._id().getOptional("id")
+
+                            override fun visitComputerCallOutput(
+                                computerCallOutput: ResponseComputerToolCallOutputItem
+                            ): Optional<String> = computerCallOutput._id().getOptional("id")
+
+                            override fun visitWebSearchCall(
+                                webSearchCall: ResponseFunctionWebSearch
+                            ): Optional<String> = webSearchCall._id().getOptional("id")
+
+                            override fun visitFunctionCall(
+                                functionCall: ResponseFunctionToolCallItem
+                            ): Optional<String> = functionCall._id().getOptional("id")
+
+                            override fun visitFunctionCallOutput(
+                                functionCallOutput: ResponseFunctionToolCallOutputItem
+                            ): Optional<String> = functionCallOutput._id().getOptional("id")
+
+                            override fun visitToolSearchCall(
+                                toolSearchCall: ResponseToolSearchCall
+                            ): Optional<String> = toolSearchCall._id().getOptional("id")
+
+                            override fun visitToolSearchOutput(
+                                toolSearchOutput: ResponseToolSearchOutputItem
+                            ): Optional<String> = toolSearchOutput._id().getOptional("id")
+
+                            override fun visitAdditionalTools(
+                                additionalTools: ResponseItem.AdditionalTools
+                            ): Optional<String> = additionalTools._id().getOptional("id")
+
+                            override fun visitReasoning(
+                                reasoning: ResponseReasoningItem
+                            ): Optional<String> = reasoning._id().getOptional("id")
+
+                            override fun visitProgram(
+                                program: ResponseItem.Program
+                            ): Optional<String> = program._id().getOptional("id")
+
+                            override fun visitProgramOutput(
+                                programOutput: ResponseItem.ProgramOutput
+                            ): Optional<String> = programOutput._id().getOptional("id")
+
+                            override fun visitCompaction(
+                                compaction: ResponseCompactionItem
+                            ): Optional<String> = compaction._id().getOptional("id")
+
+                            override fun visitImageGenerationCall(
+                                imageGenerationCall: ResponseItem.ImageGenerationCall
+                            ): Optional<String> = imageGenerationCall._id().getOptional("id")
+
+                            override fun visitCodeInterpreterCall(
+                                codeInterpreterCall: ResponseCodeInterpreterToolCall
+                            ): Optional<String> = codeInterpreterCall._id().getOptional("id")
+
+                            override fun visitLocalShellCall(
+                                localShellCall: ResponseItem.LocalShellCall
+                            ): Optional<String> = localShellCall._id().getOptional("id")
+
+                            override fun visitLocalShellCallOutput(
+                                localShellCallOutput: ResponseItem.LocalShellCallOutput
+                            ): Optional<String> = localShellCallOutput._id().getOptional("id")
+
+                            override fun visitShellCall(
+                                shellCall: ResponseFunctionShellToolCall
+                            ): Optional<String> = shellCall._id().getOptional("id")
+
+                            override fun visitShellCallOutput(
+                                shellCallOutput: ResponseFunctionShellToolCallOutput
+                            ): Optional<String> = shellCallOutput._id().getOptional("id")
+
+                            override fun visitApplyPatchCall(
+                                applyPatchCall: ResponseApplyPatchToolCall
+                            ): Optional<String> = applyPatchCall._id().getOptional("id")
+
+                            override fun visitApplyPatchCallOutput(
+                                applyPatchCallOutput: ResponseApplyPatchToolCallOutput
+                            ): Optional<String> = applyPatchCallOutput._id().getOptional("id")
+
+                            override fun visitMcpListTools(
+                                mcpListTools: ResponseItem.McpListTools
+                            ): Optional<String> = mcpListTools._id().getOptional("id")
+
+                            override fun visitMcpApprovalRequest(
+                                mcpApprovalRequest: ResponseItem.McpApprovalRequest
+                            ): Optional<String> = mcpApprovalRequest._id().getOptional("id")
+
+                            override fun visitMcpApprovalResponse(
+                                mcpApprovalResponse: ResponseItem.McpApprovalResponse
+                            ): Optional<String> = mcpApprovalResponse._id().getOptional("id")
+
+                            override fun visitMcpCall(
+                                mcpCall: ResponseItem.McpCall
+                            ): Optional<String> = mcpCall._id().getOptional("id")
+
+                            override fun visitCustomToolCall(
+                                customToolCall: ResponseCustomToolCallItem
+                            ): Optional<String> = customToolCall._id().getOptional("id")
+
+                            override fun visitCustomToolCallOutput(
+                                customToolCallOutput: ResponseCustomToolCallOutputItem
+                            ): Optional<String> = customToolCallOutput._id().getOptional("id")
+                        }
+                    )
+            )
+            .build()
+
+    override fun nextPage(): InputItemListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<ResponseItem> = AutoPager.from(this)
+
+    /** The parameters that were used to request this page. */
+    fun params(): InputItemListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): ResponseItemList = response
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [InputItemListPage].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [InputItemListPage]. */
+    class Builder internal constructor() {
+
+        private var service: InputItemService? = null
+        private var params: InputItemListParams? = null
+        private var response: ResponseItemList? = null
+
+        @JvmSynthetic
+        internal fun from(inputItemListPage: InputItemListPage) = apply {
+            service = inputItemListPage.service
+            params = inputItemListPage.params
+            response = inputItemListPage.response
+        }
+
+        fun service(service: InputItemService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: InputItemListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: ResponseItemList) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [InputItemListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): InputItemListPage =
+            InputItemListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is InputItemListPage &&
+            service == other.service &&
+            params == other.params &&
+            response == other.response
+    }
+
+    override fun hashCode(): Int = Objects.hash(service, params, response)
+
+    override fun toString() =
+        "InputItemListPage{service=$service, params=$params, response=$response}"
+}

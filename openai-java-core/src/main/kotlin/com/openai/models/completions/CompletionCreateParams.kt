@@ -1,0 +1,2915 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.completions
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
+import com.openai.core.Enum
+import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
+import com.openai.core.Params
+import com.openai.core.allMaxBy
+import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
+import com.openai.core.http.Headers
+import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.chat.completions.ChatCompletionStreamOptions
+import java.util.Collections
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/**
+ * Creates a completion for the provided prompt and parameters.
+ *
+ * Returns a completion object, or a sequence of completion objects if the request is streamed.
+ */
+class CompletionCreateParams
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
+
+    /**
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun model(): Model = body.model()
+
+    /**
+     * The prompt(s) to generate completions for, encoded as a string, array of strings, array of
+     * tokens, or array of token arrays.
+     *
+     * Note that <|endoftext|> is the document separator that the model sees during training, so if
+     * a prompt is not specified the model will generate as if from the beginning of a new document.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Optional<Prompt> = body.prompt()
+
+    /**
+     * Generates `best_of` completions server-side and returns the "best" (the one with the highest
+     * log probability per token). Results cannot be streamed.
+     *
+     * When used with `n`, `best_of` controls the number of candidate completions and `n` specifies
+     * how many to return – `best_of` must be greater than `n`.
+     *
+     * **Note:** Because this parameter generates many completions, it can quickly consume your
+     * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens` and
+     * `stop`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun bestOf(): Optional<Long> = body.bestOf()
+
+    /**
+     * Echo back the prompt in addition to the completion
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun echo(): Optional<Boolean> = body.echo()
+
+    /**
+     * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
+     * frequency in the text so far, decreasing the model's likelihood to repeat the same line
+     * verbatim.
+     *
+     * [See more information about frequency and presence
+     * penalties.](https://platform.openai.com/docs/guides/text-generation)
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun frequencyPenalty(): Optional<Double> = body.frequencyPenalty()
+
+    /**
+     * Modify the likelihood of specified tokens appearing in the completion.
+     *
+     * Accepts a JSON object that maps tokens (specified by their token ID in the GPT tokenizer) to
+     * an associated bias value from -100 to 100. You can use this
+     * [tokenizer tool](/tokenizer?view=bpe) to convert text to token IDs. Mathematically, the bias
+     * is added to the logits generated by the model prior to sampling. The exact effect will vary
+     * per model, but values between -1 and 1 should decrease or increase likelihood of selection;
+     * values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
+     *
+     * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from being
+     * generated.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun logitBias(): Optional<LogitBias> = body.logitBias()
+
+    /**
+     * Include the log probabilities on the `logprobs` most likely output tokens, as well the chosen
+     * tokens. For example, if `logprobs` is 5, the API will return a list of the 5 most likely
+     * tokens. The API will always return the `logprob` of the sampled token, so there may be up to
+     * `logprobs+1` elements in the response.
+     *
+     * The maximum value for `logprobs` is 5.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun logprobs(): Optional<Long> = body.logprobs()
+
+    /**
+     * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
+     *
+     * The token count of your prompt plus `max_tokens` cannot exceed the model's context length.
+     * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+     * for counting tokens.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun maxTokens(): Optional<Long> = body.maxTokens()
+
+    /**
+     * How many completions to generate for each prompt.
+     *
+     * **Note:** Because this parameter generates many completions, it can quickly consume your
+     * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens` and
+     * `stop`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun n(): Optional<Long> = body.n()
+
+    /**
+     * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear
+     * in the text so far, increasing the model's likelihood to talk about new topics.
+     *
+     * [See more information about frequency and presence
+     * penalties.](https://platform.openai.com/docs/guides/text-generation)
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun presencePenalty(): Optional<Double> = body.presencePenalty()
+
+    /**
+     * If specified, our system will make a best effort to sample deterministically, such that
+     * repeated requests with the same `seed` and parameters should return the same result.
+     *
+     * Determinism is not guaranteed, and you should refer to the `system_fingerprint` response
+     * parameter to monitor changes in the backend.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun seed(): Optional<Long> = body.seed()
+
+    /**
+     * Not supported with latest reasoning models `o3` and `o4-mini`.
+     *
+     * Up to 4 sequences where the API will stop generating further tokens. The returned text will
+     * not contain the stop sequence.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun stop(): Optional<Stop> = body.stop()
+
+    /**
+     * Options for streaming response. Only set this when you set `stream: true`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun streamOptions(): Optional<ChatCompletionStreamOptions> = body.streamOptions()
+
+    /**
+     * The suffix that comes after a completion of inserted text.
+     *
+     * This parameter is only supported for `gpt-3.5-turbo-instruct`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun suffix(): Optional<String> = body.suffix()
+
+    /**
+     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     *
+     * We generally recommend altering this or `top_p` but not both.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun temperature(): Optional<Double> = body.temperature()
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model
+     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
+     * comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or `temperature` but not both.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun topP(): Optional<Double> = body.topP()
+
+    /**
+     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
+     * abuse.
+     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun user(): Optional<String> = body.user()
+
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _model(): JsonField<Model> = body._model()
+
+    /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _prompt(): JsonField<Prompt> = body._prompt()
+
+    /**
+     * Returns the raw JSON value of [bestOf].
+     *
+     * Unlike [bestOf], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _bestOf(): JsonField<Long> = body._bestOf()
+
+    /**
+     * Returns the raw JSON value of [echo].
+     *
+     * Unlike [echo], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _echo(): JsonField<Boolean> = body._echo()
+
+    /**
+     * Returns the raw JSON value of [frequencyPenalty].
+     *
+     * Unlike [frequencyPenalty], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _frequencyPenalty(): JsonField<Double> = body._frequencyPenalty()
+
+    /**
+     * Returns the raw JSON value of [logitBias].
+     *
+     * Unlike [logitBias], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _logitBias(): JsonField<LogitBias> = body._logitBias()
+
+    /**
+     * Returns the raw JSON value of [logprobs].
+     *
+     * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _logprobs(): JsonField<Long> = body._logprobs()
+
+    /**
+     * Returns the raw JSON value of [maxTokens].
+     *
+     * Unlike [maxTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _maxTokens(): JsonField<Long> = body._maxTokens()
+
+    /**
+     * Returns the raw JSON value of [n].
+     *
+     * Unlike [n], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _n(): JsonField<Long> = body._n()
+
+    /**
+     * Returns the raw JSON value of [presencePenalty].
+     *
+     * Unlike [presencePenalty], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _presencePenalty(): JsonField<Double> = body._presencePenalty()
+
+    /**
+     * Returns the raw JSON value of [seed].
+     *
+     * Unlike [seed], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _seed(): JsonField<Long> = body._seed()
+
+    /**
+     * Returns the raw JSON value of [stop].
+     *
+     * Unlike [stop], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _stop(): JsonField<Stop> = body._stop()
+
+    /**
+     * Returns the raw JSON value of [streamOptions].
+     *
+     * Unlike [streamOptions], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _streamOptions(): JsonField<ChatCompletionStreamOptions> = body._streamOptions()
+
+    /**
+     * Returns the raw JSON value of [suffix].
+     *
+     * Unlike [suffix], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _suffix(): JsonField<String> = body._suffix()
+
+    /**
+     * Returns the raw JSON value of [temperature].
+     *
+     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _temperature(): JsonField<Double> = body._temperature()
+
+    /**
+     * Returns the raw JSON value of [topP].
+     *
+     * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _topP(): JsonField<Double> = body._topP()
+
+    /**
+     * Returns the raw JSON value of [user].
+     *
+     * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _user(): JsonField<String> = body._user()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [CompletionCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * .prompt()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [CompletionCreateParams]. */
+    class Builder internal constructor() {
+
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        @JvmSynthetic
+        internal fun from(completionCreateParams: CompletionCreateParams) = apply {
+            body = completionCreateParams.body.toBuilder()
+            additionalHeaders = completionCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = completionCreateParams.additionalQueryParams.toBuilder()
+        }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [model]
+         * - [prompt]
+         * - [bestOf]
+         * - [echo]
+         * - [frequencyPenalty]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         */
+        fun model(model: Model) = apply { body.model(model) }
+
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [Model] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(model: JsonField<Model>) = apply { body.model(model) }
+
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [Model] constant instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = apply { body.model(value) }
+
+        /**
+         * The prompt(s) to generate completions for, encoded as a string, array of strings, array
+         * of tokens, or array of token arrays.
+         *
+         * Note that <|endoftext|> is the document separator that the model sees during training, so
+         * if a prompt is not specified the model will generate as if from the beginning of a new
+         * document.
+         */
+        fun prompt(prompt: Prompt?) = apply { body.prompt(prompt) }
+
+        /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+        fun prompt(prompt: Optional<Prompt>) = prompt(prompt.getOrNull())
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [Prompt] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun prompt(prompt: JsonField<Prompt>) = apply { body.prompt(prompt) }
+
+        /** Alias for calling [prompt] with `Prompt.ofString(string)`. */
+        fun prompt(string: String) = apply { body.prompt(string) }
+
+        /** Alias for calling [prompt] with `Prompt.ofArrayOfStrings(arrayOfStrings)`. */
+        fun promptOfArrayOfStrings(arrayOfStrings: List<String>) = apply {
+            body.promptOfArrayOfStrings(arrayOfStrings)
+        }
+
+        /** Alias for calling [prompt] with `Prompt.ofArrayOfTokens(arrayOfTokens)`. */
+        fun promptOfArrayOfTokens(arrayOfTokens: List<Long>) = apply {
+            body.promptOfArrayOfTokens(arrayOfTokens)
+        }
+
+        /** Alias for calling [prompt] with `Prompt.ofArrayOfTokenArrays(arrayOfTokenArrays)`. */
+        fun promptOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) = apply {
+            body.promptOfArrayOfTokenArrays(arrayOfTokenArrays)
+        }
+
+        /**
+         * Generates `best_of` completions server-side and returns the "best" (the one with the
+         * highest log probability per token). Results cannot be streamed.
+         *
+         * When used with `n`, `best_of` controls the number of candidate completions and `n`
+         * specifies how many to return – `best_of` must be greater than `n`.
+         *
+         * **Note:** Because this parameter generates many completions, it can quickly consume your
+         * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
+         * and `stop`.
+         */
+        fun bestOf(bestOf: Long?) = apply { body.bestOf(bestOf) }
+
+        /**
+         * Alias for [Builder.bestOf].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun bestOf(bestOf: Long) = bestOf(bestOf as Long?)
+
+        /** Alias for calling [Builder.bestOf] with `bestOf.orElse(null)`. */
+        fun bestOf(bestOf: Optional<Long>) = bestOf(bestOf.getOrNull())
+
+        /**
+         * Sets [Builder.bestOf] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.bestOf] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun bestOf(bestOf: JsonField<Long>) = apply { body.bestOf(bestOf) }
+
+        /** Echo back the prompt in addition to the completion */
+        fun echo(echo: Boolean?) = apply { body.echo(echo) }
+
+        /**
+         * Alias for [Builder.echo].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun echo(echo: Boolean) = echo(echo as Boolean?)
+
+        /** Alias for calling [Builder.echo] with `echo.orElse(null)`. */
+        fun echo(echo: Optional<Boolean>) = echo(echo.getOrNull())
+
+        /**
+         * Sets [Builder.echo] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.echo] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun echo(echo: JsonField<Boolean>) = apply { body.echo(echo) }
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
+         * frequency in the text so far, decreasing the model's likelihood to repeat the same line
+         * verbatim.
+         *
+         * [See more information about frequency and presence
+         * penalties.](https://platform.openai.com/docs/guides/text-generation)
+         */
+        fun frequencyPenalty(frequencyPenalty: Double?) = apply {
+            body.frequencyPenalty(frequencyPenalty)
+        }
+
+        /**
+         * Alias for [Builder.frequencyPenalty].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun frequencyPenalty(frequencyPenalty: Double) =
+            frequencyPenalty(frequencyPenalty as Double?)
+
+        /** Alias for calling [Builder.frequencyPenalty] with `frequencyPenalty.orElse(null)`. */
+        fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
+            frequencyPenalty(frequencyPenalty.getOrNull())
+
+        /**
+         * Sets [Builder.frequencyPenalty] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.frequencyPenalty] with a well-typed [Double] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun frequencyPenalty(frequencyPenalty: JsonField<Double>) = apply {
+            body.frequencyPenalty(frequencyPenalty)
+        }
+
+        /**
+         * Modify the likelihood of specified tokens appearing in the completion.
+         *
+         * Accepts a JSON object that maps tokens (specified by their token ID in the GPT tokenizer)
+         * to an associated bias value from -100 to 100. You can use this
+         * [tokenizer tool](/tokenizer?view=bpe) to convert text to token IDs. Mathematically, the
+         * bias is added to the logits generated by the model prior to sampling. The exact effect
+         * will vary per model, but values between -1 and 1 should decrease or increase likelihood
+         * of selection; values like -100 or 100 should result in a ban or exclusive selection of
+         * the relevant token.
+         *
+         * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from
+         * being generated.
+         */
+        fun logitBias(logitBias: LogitBias?) = apply { body.logitBias(logitBias) }
+
+        /** Alias for calling [Builder.logitBias] with `logitBias.orElse(null)`. */
+        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
+
+        /**
+         * Sets [Builder.logitBias] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logitBias] with a well-typed [LogitBias] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun logitBias(logitBias: JsonField<LogitBias>) = apply { body.logitBias(logitBias) }
+
+        /**
+         * Include the log probabilities on the `logprobs` most likely output tokens, as well the
+         * chosen tokens. For example, if `logprobs` is 5, the API will return a list of the 5 most
+         * likely tokens. The API will always return the `logprob` of the sampled token, so there
+         * may be up to `logprobs+1` elements in the response.
+         *
+         * The maximum value for `logprobs` is 5.
+         */
+        fun logprobs(logprobs: Long?) = apply { body.logprobs(logprobs) }
+
+        /**
+         * Alias for [Builder.logprobs].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun logprobs(logprobs: Long) = logprobs(logprobs as Long?)
+
+        /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
+        fun logprobs(logprobs: Optional<Long>) = logprobs(logprobs.getOrNull())
+
+        /**
+         * Sets [Builder.logprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logprobs] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun logprobs(logprobs: JsonField<Long>) = apply { body.logprobs(logprobs) }
+
+        /**
+         * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
+         *
+         * The token count of your prompt plus `max_tokens` cannot exceed the model's context
+         * length.
+         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+         * for counting tokens.
+         */
+        fun maxTokens(maxTokens: Long?) = apply { body.maxTokens(maxTokens) }
+
+        /**
+         * Alias for [Builder.maxTokens].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+
+        /** Alias for calling [Builder.maxTokens] with `maxTokens.orElse(null)`. */
+        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
+
+        /**
+         * Sets [Builder.maxTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxTokens] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
+
+        /**
+         * How many completions to generate for each prompt.
+         *
+         * **Note:** Because this parameter generates many completions, it can quickly consume your
+         * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
+         * and `stop`.
+         */
+        fun n(n: Long?) = apply { body.n(n) }
+
+        /**
+         * Alias for [Builder.n].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun n(n: Long) = n(n as Long?)
+
+        /** Alias for calling [Builder.n] with `n.orElse(null)`. */
+        fun n(n: Optional<Long>) = n(n.getOrNull())
+
+        /**
+         * Sets [Builder.n] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.n] with a well-typed [Long] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun n(n: JsonField<Long>) = apply { body.n(n) }
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
+         * appear in the text so far, increasing the model's likelihood to talk about new topics.
+         *
+         * [See more information about frequency and presence
+         * penalties.](https://platform.openai.com/docs/guides/text-generation)
+         */
+        fun presencePenalty(presencePenalty: Double?) = apply {
+            body.presencePenalty(presencePenalty)
+        }
+
+        /**
+         * Alias for [Builder.presencePenalty].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun presencePenalty(presencePenalty: Double) = presencePenalty(presencePenalty as Double?)
+
+        /** Alias for calling [Builder.presencePenalty] with `presencePenalty.orElse(null)`. */
+        fun presencePenalty(presencePenalty: Optional<Double>) =
+            presencePenalty(presencePenalty.getOrNull())
+
+        /**
+         * Sets [Builder.presencePenalty] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.presencePenalty] with a well-typed [Double] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun presencePenalty(presencePenalty: JsonField<Double>) = apply {
+            body.presencePenalty(presencePenalty)
+        }
+
+        /**
+         * If specified, our system will make a best effort to sample deterministically, such that
+         * repeated requests with the same `seed` and parameters should return the same result.
+         *
+         * Determinism is not guaranteed, and you should refer to the `system_fingerprint` response
+         * parameter to monitor changes in the backend.
+         */
+        fun seed(seed: Long?) = apply { body.seed(seed) }
+
+        /**
+         * Alias for [Builder.seed].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun seed(seed: Long) = seed(seed as Long?)
+
+        /** Alias for calling [Builder.seed] with `seed.orElse(null)`. */
+        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
+
+        /**
+         * Sets [Builder.seed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.seed] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun seed(seed: JsonField<Long>) = apply { body.seed(seed) }
+
+        /**
+         * Not supported with latest reasoning models `o3` and `o4-mini`.
+         *
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
+        fun stop(stop: Stop?) = apply { body.stop(stop) }
+
+        /** Alias for calling [Builder.stop] with `stop.orElse(null)`. */
+        fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
+
+        /**
+         * Sets [Builder.stop] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stop] with a well-typed [Stop] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun stop(stop: JsonField<Stop>) = apply { body.stop(stop) }
+
+        /** Alias for calling [stop] with `Stop.ofString(string)`. */
+        fun stop(string: String) = apply { body.stop(string) }
+
+        /** Alias for calling [stop] with `Stop.ofStrings(strings)`. */
+        fun stopOfStrings(strings: List<String>) = apply { body.stopOfStrings(strings) }
+
+        /** Options for streaming response. Only set this when you set `stream: true`. */
+        fun streamOptions(streamOptions: ChatCompletionStreamOptions?) = apply {
+            body.streamOptions(streamOptions)
+        }
+
+        /** Alias for calling [Builder.streamOptions] with `streamOptions.orElse(null)`. */
+        fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
+            streamOptions(streamOptions.getOrNull())
+
+        /**
+         * Sets [Builder.streamOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.streamOptions] with a well-typed
+         * [ChatCompletionStreamOptions] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
+            body.streamOptions(streamOptions)
+        }
+
+        /**
+         * The suffix that comes after a completion of inserted text.
+         *
+         * This parameter is only supported for `gpt-3.5-turbo-instruct`.
+         */
+        fun suffix(suffix: String?) = apply { body.suffix(suffix) }
+
+        /** Alias for calling [Builder.suffix] with `suffix.orElse(null)`. */
+        fun suffix(suffix: Optional<String>) = suffix(suffix.getOrNull())
+
+        /**
+         * Sets [Builder.suffix] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.suffix] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun suffix(suffix: JsonField<String>) = apply { body.suffix(suffix) }
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         *
+         * We generally recommend altering this or `top_p` but not both.
+         */
+        fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
+
+        /**
+         * Alias for [Builder.temperature].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+        /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
+
+        /**
+         * Sets [Builder.temperature] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or `temperature` but not both.
+         */
+        fun topP(topP: Double?) = apply { body.topP(topP) }
+
+        /**
+         * Alias for [Builder.topP].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun topP(topP: Double) = topP(topP as Double?)
+
+        /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
+
+        /**
+         * Sets [Builder.topP] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        fun user(user: String) = apply { body.user(user) }
+
+        /**
+         * Sets [Builder.user] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.user] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun user(user: JsonField<String>) = apply { body.user(user) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [CompletionCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * .prompt()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): CompletionCreateParams =
+            CompletionCreateParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val model: JsonField<Model>,
+        private val prompt: JsonField<Prompt>,
+        private val bestOf: JsonField<Long>,
+        private val echo: JsonField<Boolean>,
+        private val frequencyPenalty: JsonField<Double>,
+        private val logitBias: JsonField<LogitBias>,
+        private val logprobs: JsonField<Long>,
+        private val maxTokens: JsonField<Long>,
+        private val n: JsonField<Long>,
+        private val presencePenalty: JsonField<Double>,
+        private val seed: JsonField<Long>,
+        private val stop: JsonField<Stop>,
+        private val streamOptions: JsonField<ChatCompletionStreamOptions>,
+        private val suffix: JsonField<String>,
+        private val temperature: JsonField<Double>,
+        private val topP: JsonField<Double>,
+        private val user: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
+            @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<Prompt> = JsonMissing.of(),
+            @JsonProperty("best_of") @ExcludeMissing bestOf: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("echo") @ExcludeMissing echo: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("frequency_penalty")
+            @ExcludeMissing
+            frequencyPenalty: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("logit_bias")
+            @ExcludeMissing
+            logitBias: JsonField<LogitBias> = JsonMissing.of(),
+            @JsonProperty("logprobs") @ExcludeMissing logprobs: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("max_tokens")
+            @ExcludeMissing
+            maxTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("n") @ExcludeMissing n: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("presence_penalty")
+            @ExcludeMissing
+            presencePenalty: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("seed") @ExcludeMissing seed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("stop") @ExcludeMissing stop: JsonField<Stop> = JsonMissing.of(),
+            @JsonProperty("stream_options")
+            @ExcludeMissing
+            streamOptions: JsonField<ChatCompletionStreamOptions> = JsonMissing.of(),
+            @JsonProperty("suffix") @ExcludeMissing suffix: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("temperature")
+            @ExcludeMissing
+            temperature: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
+        ) : this(
+            model,
+            prompt,
+            bestOf,
+            echo,
+            frequencyPenalty,
+            logitBias,
+            logprobs,
+            maxTokens,
+            n,
+            presencePenalty,
+            seed,
+            stop,
+            streamOptions,
+            suffix,
+            temperature,
+            topP,
+            user,
+            mutableMapOf(),
+        )
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun model(): Model = model.getRequired("model")
+
+        /**
+         * The prompt(s) to generate completions for, encoded as a string, array of strings, array
+         * of tokens, or array of token arrays.
+         *
+         * Note that <|endoftext|> is the document separator that the model sees during training, so
+         * if a prompt is not specified the model will generate as if from the beginning of a new
+         * document.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prompt(): Optional<Prompt> = prompt.getOptional("prompt")
+
+        /**
+         * Generates `best_of` completions server-side and returns the "best" (the one with the
+         * highest log probability per token). Results cannot be streamed.
+         *
+         * When used with `n`, `best_of` controls the number of candidate completions and `n`
+         * specifies how many to return – `best_of` must be greater than `n`.
+         *
+         * **Note:** Because this parameter generates many completions, it can quickly consume your
+         * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
+         * and `stop`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun bestOf(): Optional<Long> = bestOf.getOptional("best_of")
+
+        /**
+         * Echo back the prompt in addition to the completion
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun echo(): Optional<Boolean> = echo.getOptional("echo")
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
+         * frequency in the text so far, decreasing the model's likelihood to repeat the same line
+         * verbatim.
+         *
+         * [See more information about frequency and presence
+         * penalties.](https://platform.openai.com/docs/guides/text-generation)
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun frequencyPenalty(): Optional<Double> = frequencyPenalty.getOptional("frequency_penalty")
+
+        /**
+         * Modify the likelihood of specified tokens appearing in the completion.
+         *
+         * Accepts a JSON object that maps tokens (specified by their token ID in the GPT tokenizer)
+         * to an associated bias value from -100 to 100. You can use this
+         * [tokenizer tool](/tokenizer?view=bpe) to convert text to token IDs. Mathematically, the
+         * bias is added to the logits generated by the model prior to sampling. The exact effect
+         * will vary per model, but values between -1 and 1 should decrease or increase likelihood
+         * of selection; values like -100 or 100 should result in a ban or exclusive selection of
+         * the relevant token.
+         *
+         * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from
+         * being generated.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun logitBias(): Optional<LogitBias> = logitBias.getOptional("logit_bias")
+
+        /**
+         * Include the log probabilities on the `logprobs` most likely output tokens, as well the
+         * chosen tokens. For example, if `logprobs` is 5, the API will return a list of the 5 most
+         * likely tokens. The API will always return the `logprob` of the sampled token, so there
+         * may be up to `logprobs+1` elements in the response.
+         *
+         * The maximum value for `logprobs` is 5.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun logprobs(): Optional<Long> = logprobs.getOptional("logprobs")
+
+        /**
+         * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
+         *
+         * The token count of your prompt plus `max_tokens` cannot exceed the model's context
+         * length.
+         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+         * for counting tokens.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxTokens(): Optional<Long> = maxTokens.getOptional("max_tokens")
+
+        /**
+         * How many completions to generate for each prompt.
+         *
+         * **Note:** Because this parameter generates many completions, it can quickly consume your
+         * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
+         * and `stop`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun n(): Optional<Long> = n.getOptional("n")
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
+         * appear in the text so far, increasing the model's likelihood to talk about new topics.
+         *
+         * [See more information about frequency and presence
+         * penalties.](https://platform.openai.com/docs/guides/text-generation)
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun presencePenalty(): Optional<Double> = presencePenalty.getOptional("presence_penalty")
+
+        /**
+         * If specified, our system will make a best effort to sample deterministically, such that
+         * repeated requests with the same `seed` and parameters should return the same result.
+         *
+         * Determinism is not guaranteed, and you should refer to the `system_fingerprint` response
+         * parameter to monitor changes in the backend.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun seed(): Optional<Long> = seed.getOptional("seed")
+
+        /**
+         * Not supported with latest reasoning models `o3` and `o4-mini`.
+         *
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun stop(): Optional<Stop> = stop.getOptional("stop")
+
+        /**
+         * Options for streaming response. Only set this when you set `stream: true`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun streamOptions(): Optional<ChatCompletionStreamOptions> =
+            streamOptions.getOptional("stream_options")
+
+        /**
+         * The suffix that comes after a completion of inserted text.
+         *
+         * This parameter is only supported for `gpt-3.5-turbo-instruct`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun suffix(): Optional<String> = suffix.getOptional("suffix")
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         *
+         * We generally recommend altering this or `top_p` but not both.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun temperature(): Optional<Double> = temperature.getOptional("temperature")
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or `temperature` but not both.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun topP(): Optional<Double> = topP.getOptional("top_p")
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun user(): Optional<String> = user.getOptional("user")
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
+
+        /**
+         * Returns the raw JSON value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<Prompt> = prompt
+
+        /**
+         * Returns the raw JSON value of [bestOf].
+         *
+         * Unlike [bestOf], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("best_of") @ExcludeMissing fun _bestOf(): JsonField<Long> = bestOf
+
+        /**
+         * Returns the raw JSON value of [echo].
+         *
+         * Unlike [echo], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("echo") @ExcludeMissing fun _echo(): JsonField<Boolean> = echo
+
+        /**
+         * Returns the raw JSON value of [frequencyPenalty].
+         *
+         * Unlike [frequencyPenalty], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("frequency_penalty")
+        @ExcludeMissing
+        fun _frequencyPenalty(): JsonField<Double> = frequencyPenalty
+
+        /**
+         * Returns the raw JSON value of [logitBias].
+         *
+         * Unlike [logitBias], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("logit_bias")
+        @ExcludeMissing
+        fun _logitBias(): JsonField<LogitBias> = logitBias
+
+        /**
+         * Returns the raw JSON value of [logprobs].
+         *
+         * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Long> = logprobs
+
+        /**
+         * Returns the raw JSON value of [maxTokens].
+         *
+         * Unlike [maxTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("max_tokens") @ExcludeMissing fun _maxTokens(): JsonField<Long> = maxTokens
+
+        /**
+         * Returns the raw JSON value of [n].
+         *
+         * Unlike [n], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("n") @ExcludeMissing fun _n(): JsonField<Long> = n
+
+        /**
+         * Returns the raw JSON value of [presencePenalty].
+         *
+         * Unlike [presencePenalty], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("presence_penalty")
+        @ExcludeMissing
+        fun _presencePenalty(): JsonField<Double> = presencePenalty
+
+        /**
+         * Returns the raw JSON value of [seed].
+         *
+         * Unlike [seed], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("seed") @ExcludeMissing fun _seed(): JsonField<Long> = seed
+
+        /**
+         * Returns the raw JSON value of [stop].
+         *
+         * Unlike [stop], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("stop") @ExcludeMissing fun _stop(): JsonField<Stop> = stop
+
+        /**
+         * Returns the raw JSON value of [streamOptions].
+         *
+         * Unlike [streamOptions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("stream_options")
+        @ExcludeMissing
+        fun _streamOptions(): JsonField<ChatCompletionStreamOptions> = streamOptions
+
+        /**
+         * Returns the raw JSON value of [suffix].
+         *
+         * Unlike [suffix], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("suffix") @ExcludeMissing fun _suffix(): JsonField<String> = suffix
+
+        /**
+         * Returns the raw JSON value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        fun _temperature(): JsonField<Double> = temperature
+
+        /**
+         * Returns the raw JSON value of [topP].
+         *
+         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
+
+        /**
+         * Returns the raw JSON value of [user].
+         *
+         * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * .prompt()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var model: JsonField<Model>? = null
+            private var prompt: JsonField<Prompt>? = null
+            private var bestOf: JsonField<Long> = JsonMissing.of()
+            private var echo: JsonField<Boolean> = JsonMissing.of()
+            private var frequencyPenalty: JsonField<Double> = JsonMissing.of()
+            private var logitBias: JsonField<LogitBias> = JsonMissing.of()
+            private var logprobs: JsonField<Long> = JsonMissing.of()
+            private var maxTokens: JsonField<Long> = JsonMissing.of()
+            private var n: JsonField<Long> = JsonMissing.of()
+            private var presencePenalty: JsonField<Double> = JsonMissing.of()
+            private var seed: JsonField<Long> = JsonMissing.of()
+            private var stop: JsonField<Stop> = JsonMissing.of()
+            private var streamOptions: JsonField<ChatCompletionStreamOptions> = JsonMissing.of()
+            private var suffix: JsonField<String> = JsonMissing.of()
+            private var temperature: JsonField<Double> = JsonMissing.of()
+            private var topP: JsonField<Double> = JsonMissing.of()
+            private var user: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                model = body.model
+                prompt = body.prompt
+                bestOf = body.bestOf
+                echo = body.echo
+                frequencyPenalty = body.frequencyPenalty
+                logitBias = body.logitBias
+                logprobs = body.logprobs
+                maxTokens = body.maxTokens
+                n = body.n
+                presencePenalty = body.presencePenalty
+                seed = body.seed
+                stop = body.stop
+                streamOptions = body.streamOptions
+                suffix = body.suffix
+                temperature = body.temperature
+                topP = body.topP
+                user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * ID of the model to use. You can use the
+             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
+             * all of your available models, or see our
+             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             */
+            fun model(model: Model) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [Model] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(model: JsonField<Model>) = apply { this.model = model }
+
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [Model] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(value: String) = model(Model.of(value))
+
+            /**
+             * The prompt(s) to generate completions for, encoded as a string, array of strings,
+             * array of tokens, or array of token arrays.
+             *
+             * Note that <|endoftext|> is the document separator that the model sees during
+             * training, so if a prompt is not specified the model will generate as if from the
+             * beginning of a new document.
+             */
+            fun prompt(prompt: Prompt?) = prompt(JsonField.ofNullable(prompt))
+
+            /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+            fun prompt(prompt: Optional<Prompt>) = prompt(prompt.getOrNull())
+
+            /**
+             * Sets [Builder.prompt] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [Prompt] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prompt(prompt: JsonField<Prompt>) = apply { this.prompt = prompt }
+
+            /** Alias for calling [prompt] with `Prompt.ofString(string)`. */
+            fun prompt(string: String) = prompt(Prompt.ofString(string))
+
+            /** Alias for calling [prompt] with `Prompt.ofArrayOfStrings(arrayOfStrings)`. */
+            fun promptOfArrayOfStrings(arrayOfStrings: List<String>) =
+                prompt(Prompt.ofArrayOfStrings(arrayOfStrings))
+
+            /** Alias for calling [prompt] with `Prompt.ofArrayOfTokens(arrayOfTokens)`. */
+            fun promptOfArrayOfTokens(arrayOfTokens: List<Long>) =
+                prompt(Prompt.ofArrayOfTokens(arrayOfTokens))
+
+            /**
+             * Alias for calling [prompt] with `Prompt.ofArrayOfTokenArrays(arrayOfTokenArrays)`.
+             */
+            fun promptOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
+                prompt(Prompt.ofArrayOfTokenArrays(arrayOfTokenArrays))
+
+            /**
+             * Generates `best_of` completions server-side and returns the "best" (the one with the
+             * highest log probability per token). Results cannot be streamed.
+             *
+             * When used with `n`, `best_of` controls the number of candidate completions and `n`
+             * specifies how many to return – `best_of` must be greater than `n`.
+             *
+             * **Note:** Because this parameter generates many completions, it can quickly consume
+             * your token quota. Use carefully and ensure that you have reasonable settings for
+             * `max_tokens` and `stop`.
+             */
+            fun bestOf(bestOf: Long?) = bestOf(JsonField.ofNullable(bestOf))
+
+            /**
+             * Alias for [Builder.bestOf].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun bestOf(bestOf: Long) = bestOf(bestOf as Long?)
+
+            /** Alias for calling [Builder.bestOf] with `bestOf.orElse(null)`. */
+            fun bestOf(bestOf: Optional<Long>) = bestOf(bestOf.getOrNull())
+
+            /**
+             * Sets [Builder.bestOf] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.bestOf] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun bestOf(bestOf: JsonField<Long>) = apply { this.bestOf = bestOf }
+
+            /** Echo back the prompt in addition to the completion */
+            fun echo(echo: Boolean?) = echo(JsonField.ofNullable(echo))
+
+            /**
+             * Alias for [Builder.echo].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun echo(echo: Boolean) = echo(echo as Boolean?)
+
+            /** Alias for calling [Builder.echo] with `echo.orElse(null)`. */
+            fun echo(echo: Optional<Boolean>) = echo(echo.getOrNull())
+
+            /**
+             * Sets [Builder.echo] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.echo] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun echo(echo: JsonField<Boolean>) = apply { this.echo = echo }
+
+            /**
+             * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
+             * existing frequency in the text so far, decreasing the model's likelihood to repeat
+             * the same line verbatim.
+             *
+             * [See more information about frequency and presence
+             * penalties.](https://platform.openai.com/docs/guides/text-generation)
+             */
+            fun frequencyPenalty(frequencyPenalty: Double?) =
+                frequencyPenalty(JsonField.ofNullable(frequencyPenalty))
+
+            /**
+             * Alias for [Builder.frequencyPenalty].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun frequencyPenalty(frequencyPenalty: Double) =
+                frequencyPenalty(frequencyPenalty as Double?)
+
+            /**
+             * Alias for calling [Builder.frequencyPenalty] with `frequencyPenalty.orElse(null)`.
+             */
+            fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
+                frequencyPenalty(frequencyPenalty.getOrNull())
+
+            /**
+             * Sets [Builder.frequencyPenalty] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.frequencyPenalty] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun frequencyPenalty(frequencyPenalty: JsonField<Double>) = apply {
+                this.frequencyPenalty = frequencyPenalty
+            }
+
+            /**
+             * Modify the likelihood of specified tokens appearing in the completion.
+             *
+             * Accepts a JSON object that maps tokens (specified by their token ID in the GPT
+             * tokenizer) to an associated bias value from -100 to 100. You can use this
+             * [tokenizer tool](/tokenizer?view=bpe) to convert text to token IDs. Mathematically,
+             * the bias is added to the logits generated by the model prior to sampling. The exact
+             * effect will vary per model, but values between -1 and 1 should decrease or increase
+             * likelihood of selection; values like -100 or 100 should result in a ban or exclusive
+             * selection of the relevant token.
+             *
+             * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from
+             * being generated.
+             */
+            fun logitBias(logitBias: LogitBias?) = logitBias(JsonField.ofNullable(logitBias))
+
+            /** Alias for calling [Builder.logitBias] with `logitBias.orElse(null)`. */
+            fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
+
+            /**
+             * Sets [Builder.logitBias] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.logitBias] with a well-typed [LogitBias] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun logitBias(logitBias: JsonField<LogitBias>) = apply { this.logitBias = logitBias }
+
+            /**
+             * Include the log probabilities on the `logprobs` most likely output tokens, as well
+             * the chosen tokens. For example, if `logprobs` is 5, the API will return a list of the
+             * 5 most likely tokens. The API will always return the `logprob` of the sampled token,
+             * so there may be up to `logprobs+1` elements in the response.
+             *
+             * The maximum value for `logprobs` is 5.
+             */
+            fun logprobs(logprobs: Long?) = logprobs(JsonField.ofNullable(logprobs))
+
+            /**
+             * Alias for [Builder.logprobs].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun logprobs(logprobs: Long) = logprobs(logprobs as Long?)
+
+            /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
+            fun logprobs(logprobs: Optional<Long>) = logprobs(logprobs.getOrNull())
+
+            /**
+             * Sets [Builder.logprobs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.logprobs] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun logprobs(logprobs: JsonField<Long>) = apply { this.logprobs = logprobs }
+
+            /**
+             * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
+             *
+             * The token count of your prompt plus `max_tokens` cannot exceed the model's context
+             * length.
+             * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+             * for counting tokens.
+             */
+            fun maxTokens(maxTokens: Long?) = maxTokens(JsonField.ofNullable(maxTokens))
+
+            /**
+             * Alias for [Builder.maxTokens].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+
+            /** Alias for calling [Builder.maxTokens] with `maxTokens.orElse(null)`. */
+            fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
+
+            /**
+             * Sets [Builder.maxTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxTokens(maxTokens: JsonField<Long>) = apply { this.maxTokens = maxTokens }
+
+            /**
+             * How many completions to generate for each prompt.
+             *
+             * **Note:** Because this parameter generates many completions, it can quickly consume
+             * your token quota. Use carefully and ensure that you have reasonable settings for
+             * `max_tokens` and `stop`.
+             */
+            fun n(n: Long?) = n(JsonField.ofNullable(n))
+
+            /**
+             * Alias for [Builder.n].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun n(n: Long) = n(n as Long?)
+
+            /** Alias for calling [Builder.n] with `n.orElse(null)`. */
+            fun n(n: Optional<Long>) = n(n.getOrNull())
+
+            /**
+             * Sets [Builder.n] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.n] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun n(n: JsonField<Long>) = apply { this.n = n }
+
+            /**
+             * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
+             * they appear in the text so far, increasing the model's likelihood to talk about new
+             * topics.
+             *
+             * [See more information about frequency and presence
+             * penalties.](https://platform.openai.com/docs/guides/text-generation)
+             */
+            fun presencePenalty(presencePenalty: Double?) =
+                presencePenalty(JsonField.ofNullable(presencePenalty))
+
+            /**
+             * Alias for [Builder.presencePenalty].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun presencePenalty(presencePenalty: Double) =
+                presencePenalty(presencePenalty as Double?)
+
+            /** Alias for calling [Builder.presencePenalty] with `presencePenalty.orElse(null)`. */
+            fun presencePenalty(presencePenalty: Optional<Double>) =
+                presencePenalty(presencePenalty.getOrNull())
+
+            /**
+             * Sets [Builder.presencePenalty] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.presencePenalty] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun presencePenalty(presencePenalty: JsonField<Double>) = apply {
+                this.presencePenalty = presencePenalty
+            }
+
+            /**
+             * If specified, our system will make a best effort to sample deterministically, such
+             * that repeated requests with the same `seed` and parameters should return the same
+             * result.
+             *
+             * Determinism is not guaranteed, and you should refer to the `system_fingerprint`
+             * response parameter to monitor changes in the backend.
+             */
+            fun seed(seed: Long?) = seed(JsonField.ofNullable(seed))
+
+            /**
+             * Alias for [Builder.seed].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun seed(seed: Long) = seed(seed as Long?)
+
+            /** Alias for calling [Builder.seed] with `seed.orElse(null)`. */
+            fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
+
+            /**
+             * Sets [Builder.seed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.seed] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun seed(seed: JsonField<Long>) = apply { this.seed = seed }
+
+            /**
+             * Not supported with latest reasoning models `o3` and `o4-mini`.
+             *
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
+            fun stop(stop: Stop?) = stop(JsonField.ofNullable(stop))
+
+            /** Alias for calling [Builder.stop] with `stop.orElse(null)`. */
+            fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
+
+            /**
+             * Sets [Builder.stop] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.stop] with a well-typed [Stop] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun stop(stop: JsonField<Stop>) = apply { this.stop = stop }
+
+            /** Alias for calling [stop] with `Stop.ofString(string)`. */
+            fun stop(string: String) = stop(Stop.ofString(string))
+
+            /** Alias for calling [stop] with `Stop.ofStrings(strings)`. */
+            fun stopOfStrings(strings: List<String>) = stop(Stop.ofStrings(strings))
+
+            /** Options for streaming response. Only set this when you set `stream: true`. */
+            fun streamOptions(streamOptions: ChatCompletionStreamOptions?) =
+                streamOptions(JsonField.ofNullable(streamOptions))
+
+            /** Alias for calling [Builder.streamOptions] with `streamOptions.orElse(null)`. */
+            fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
+                streamOptions(streamOptions.getOrNull())
+
+            /**
+             * Sets [Builder.streamOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.streamOptions] with a well-typed
+             * [ChatCompletionStreamOptions] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
+            fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
+                this.streamOptions = streamOptions
+            }
+
+            /**
+             * The suffix that comes after a completion of inserted text.
+             *
+             * This parameter is only supported for `gpt-3.5-turbo-instruct`.
+             */
+            fun suffix(suffix: String?) = suffix(JsonField.ofNullable(suffix))
+
+            /** Alias for calling [Builder.suffix] with `suffix.orElse(null)`. */
+            fun suffix(suffix: Optional<String>) = suffix(suffix.getOrNull())
+
+            /**
+             * Sets [Builder.suffix] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.suffix] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun suffix(suffix: JsonField<String>) = apply { this.suffix = suffix }
+
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             *
+             * We generally recommend altering this or `top_p` but not both.
+             */
+            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
+
+            /**
+             * Alias for [Builder.temperature].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+            /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
+
+            /**
+             * Sets [Builder.temperature] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun temperature(temperature: JsonField<Double>) = apply {
+                this.temperature = temperature
+            }
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or `temperature` but not both.
+             */
+            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
+
+            /**
+             * Alias for [Builder.topP].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun topP(topP: Double) = topP(topP as Double?)
+
+            /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
+
+            /**
+             * Sets [Builder.topP] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
+            /**
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             */
+            fun user(user: String) = user(JsonField.of(user))
+
+            /**
+             * Sets [Builder.user] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.user] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun user(user: JsonField<String>) = apply { this.user = user }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * .prompt()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("model", model),
+                    checkRequired("prompt", prompt),
+                    bestOf,
+                    echo,
+                    frequencyPenalty,
+                    logitBias,
+                    logprobs,
+                    maxTokens,
+                    n,
+                    presencePenalty,
+                    seed,
+                    stop,
+                    streamOptions,
+                    suffix,
+                    temperature,
+                    topP,
+                    user,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            model()
+            prompt().ifPresent { it.validate() }
+            bestOf()
+            echo()
+            frequencyPenalty()
+            logitBias().ifPresent { it.validate() }
+            logprobs()
+            maxTokens()
+            n()
+            presencePenalty()
+            seed()
+            stop().ifPresent { it.validate() }
+            streamOptions().ifPresent { it.validate() }
+            suffix()
+            temperature()
+            topP()
+            user()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (model.asKnown().isPresent) 1 else 0) +
+                (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (bestOf.asKnown().isPresent) 1 else 0) +
+                (if (echo.asKnown().isPresent) 1 else 0) +
+                (if (frequencyPenalty.asKnown().isPresent) 1 else 0) +
+                (logitBias.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (logprobs.asKnown().isPresent) 1 else 0) +
+                (if (maxTokens.asKnown().isPresent) 1 else 0) +
+                (if (n.asKnown().isPresent) 1 else 0) +
+                (if (presencePenalty.asKnown().isPresent) 1 else 0) +
+                (if (seed.asKnown().isPresent) 1 else 0) +
+                (stop.asKnown().getOrNull()?.validity() ?: 0) +
+                (streamOptions.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (suffix.asKnown().isPresent) 1 else 0) +
+                (if (temperature.asKnown().isPresent) 1 else 0) +
+                (if (topP.asKnown().isPresent) 1 else 0) +
+                (if (user.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                model == other.model &&
+                prompt == other.prompt &&
+                bestOf == other.bestOf &&
+                echo == other.echo &&
+                frequencyPenalty == other.frequencyPenalty &&
+                logitBias == other.logitBias &&
+                logprobs == other.logprobs &&
+                maxTokens == other.maxTokens &&
+                n == other.n &&
+                presencePenalty == other.presencePenalty &&
+                seed == other.seed &&
+                stop == other.stop &&
+                streamOptions == other.streamOptions &&
+                suffix == other.suffix &&
+                temperature == other.temperature &&
+                topP == other.topP &&
+                user == other.user &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                model,
+                prompt,
+                bestOf,
+                echo,
+                frequencyPenalty,
+                logitBias,
+                logprobs,
+                maxTokens,
+                n,
+                presencePenalty,
+                seed,
+                stop,
+                streamOptions,
+                suffix,
+                temperature,
+                topP,
+                user,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
+     */
+    class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val GPT_3_5_TURBO_INSTRUCT = of("gpt-3.5-turbo-instruct")
+
+            @JvmField val DAVINCI_002 = of("davinci-002")
+
+            @JvmField val BABBAGE_002 = of("babbage-002")
+
+            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
+        }
+
+        /** An enum containing [Model]'s known values. */
+        enum class Known {
+            GPT_3_5_TURBO_INSTRUCT,
+            DAVINCI_002,
+            BABBAGE_002,
+        }
+
+        /**
+         * An enum containing [Model]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Model] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            GPT_3_5_TURBO_INSTRUCT,
+            DAVINCI_002,
+            BABBAGE_002,
+            /** An enum member indicating that [Model] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                GPT_3_5_TURBO_INSTRUCT -> Value.GPT_3_5_TURBO_INSTRUCT
+                DAVINCI_002 -> Value.DAVINCI_002
+                BABBAGE_002 -> Value.BABBAGE_002
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                GPT_3_5_TURBO_INSTRUCT -> Known.GPT_3_5_TURBO_INSTRUCT
+                DAVINCI_002 -> Known.DAVINCI_002
+                BABBAGE_002 -> Known.BABBAGE_002
+                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Model = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Model && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * The prompt(s) to generate completions for, encoded as a string, array of strings, array of
+     * tokens, or array of token arrays.
+     *
+     * Note that <|endoftext|> is the document separator that the model sees during training, so if
+     * a prompt is not specified the model will generate as if from the beginning of a new document.
+     */
+    @JsonDeserialize(using = Prompt.Deserializer::class)
+    @JsonSerialize(using = Prompt.Serializer::class)
+    class Prompt
+    private constructor(
+        private val string: String? = null,
+        private val arrayOfStrings: List<String>? = null,
+        private val arrayOfTokens: List<Long>? = null,
+        private val arrayOfTokenArrays: List<List<Long>>? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun string(): Optional<String> = Optional.ofNullable(string)
+
+        fun arrayOfStrings(): Optional<List<String>> = Optional.ofNullable(arrayOfStrings)
+
+        fun arrayOfTokens(): Optional<List<Long>> = Optional.ofNullable(arrayOfTokens)
+
+        fun arrayOfTokenArrays(): Optional<List<List<Long>>> =
+            Optional.ofNullable(arrayOfTokenArrays)
+
+        fun isString(): Boolean = string != null
+
+        fun isArrayOfStrings(): Boolean = arrayOfStrings != null
+
+        fun isArrayOfTokens(): Boolean = arrayOfTokens != null
+
+        fun isArrayOfTokenArrays(): Boolean = arrayOfTokenArrays != null
+
+        fun asString(): String = string.getOrThrow("string")
+
+        fun asArrayOfStrings(): List<String> = arrayOfStrings.getOrThrow("arrayOfStrings")
+
+        fun asArrayOfTokens(): List<Long> = arrayOfTokens.getOrThrow("arrayOfTokens")
+
+        fun asArrayOfTokenArrays(): List<List<Long>> =
+            arrayOfTokenArrays.getOrThrow("arrayOfTokenArrays")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = prompt.accept(new Prompt.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitString(String string) {
+         *         return Optional.of(string.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                string != null -> visitor.visitString(string)
+                arrayOfStrings != null -> visitor.visitArrayOfStrings(arrayOfStrings)
+                arrayOfTokens != null -> visitor.visitArrayOfTokens(arrayOfTokens)
+                arrayOfTokenArrays != null -> visitor.visitArrayOfTokenArrays(arrayOfTokenArrays)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Prompt = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitArrayOfStrings(arrayOfStrings: List<String>) {}
+
+                    override fun visitArrayOfTokens(arrayOfTokens: List<Long>) {}
+
+                    override fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) {}
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitString(string: String) = 1
+
+                    override fun visitArrayOfStrings(arrayOfStrings: List<String>) =
+                        arrayOfStrings.size
+
+                    override fun visitArrayOfTokens(arrayOfTokens: List<Long>) = arrayOfTokens.size
+
+                    override fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
+                        arrayOfTokenArrays.sumOf { it.size.toInt() }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Prompt &&
+                string == other.string &&
+                arrayOfStrings == other.arrayOfStrings &&
+                arrayOfTokens == other.arrayOfTokens &&
+                arrayOfTokenArrays == other.arrayOfTokenArrays
+        }
+
+        override fun hashCode(): Int =
+            Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays)
+
+        override fun toString(): String =
+            when {
+                string != null -> "Prompt{string=$string}"
+                arrayOfStrings != null -> "Prompt{arrayOfStrings=$arrayOfStrings}"
+                arrayOfTokens != null -> "Prompt{arrayOfTokens=$arrayOfTokens}"
+                arrayOfTokenArrays != null -> "Prompt{arrayOfTokenArrays=$arrayOfTokenArrays}"
+                _json != null -> "Prompt{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Prompt")
+            }
+
+        companion object {
+
+            @JvmStatic fun ofString(string: String) = Prompt(string = string)
+
+            @JvmStatic
+            fun ofArrayOfStrings(arrayOfStrings: List<String>) =
+                Prompt(arrayOfStrings = arrayOfStrings.toImmutable())
+
+            @JvmStatic
+            fun ofArrayOfTokens(arrayOfTokens: List<Long>) =
+                Prompt(arrayOfTokens = arrayOfTokens.toImmutable())
+
+            @JvmStatic
+            fun ofArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
+                Prompt(arrayOfTokenArrays = arrayOfTokenArrays.toImmutable())
+        }
+
+        /** An interface that defines how to map each variant of [Prompt] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitString(string: String): T
+
+            fun visitArrayOfStrings(arrayOfStrings: List<String>): T
+
+            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T
+
+            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T
+
+            /**
+             * Maps an unknown variant of [Prompt] to a value of type [T].
+             *
+             * An instance of [Prompt] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Prompt: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Prompt>(Prompt::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Prompt {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Prompt(string = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                                Prompt(arrayOfStrings = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<Long>>())?.let {
+                                Prompt(arrayOfTokens = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<List<Long>>>())?.let {
+                                Prompt(arrayOfTokenArrays = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Prompt(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Prompt>(Prompt::class) {
+
+            override fun serialize(
+                value: Prompt,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.arrayOfStrings != null -> generator.writeObject(value.arrayOfStrings)
+                    value.arrayOfTokens != null -> generator.writeObject(value.arrayOfTokens)
+                    value.arrayOfTokenArrays != null ->
+                        generator.writeObject(value.arrayOfTokenArrays)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Prompt")
+                }
+            }
+        }
+    }
+
+    /**
+     * Modify the likelihood of specified tokens appearing in the completion.
+     *
+     * Accepts a JSON object that maps tokens (specified by their token ID in the GPT tokenizer) to
+     * an associated bias value from -100 to 100. You can use this
+     * [tokenizer tool](/tokenizer?view=bpe) to convert text to token IDs. Mathematically, the bias
+     * is added to the logits generated by the model prior to sampling. The exact effect will vary
+     * per model, but values between -1 and 1 should decrease or increase likelihood of selection;
+     * values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
+     *
+     * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from being
+     * generated.
+     */
+    class LogitBias
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [LogitBias]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [LogitBias]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(logitBias: LogitBias) = apply {
+                additionalProperties = logitBias.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [LogitBias].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): LogitBias = LogitBias(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): LogitBias = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is LogitBias && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "LogitBias{additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Not supported with latest reasoning models `o3` and `o4-mini`.
+     *
+     * Up to 4 sequences where the API will stop generating further tokens. The returned text will
+     * not contain the stop sequence.
+     */
+    @JsonDeserialize(using = Stop.Deserializer::class)
+    @JsonSerialize(using = Stop.Serializer::class)
+    class Stop
+    private constructor(
+        private val string: String? = null,
+        private val strings: List<String>? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun string(): Optional<String> = Optional.ofNullable(string)
+
+        fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
+
+        fun isString(): Boolean = string != null
+
+        fun isStrings(): Boolean = strings != null
+
+        fun asString(): String = string.getOrThrow("string")
+
+        fun asStrings(): List<String> = strings.getOrThrow("strings")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = stop.accept(new Stop.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitString(String string) {
+         *         return Optional.of(string.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                string != null -> visitor.visitString(string)
+                strings != null -> visitor.visitStrings(strings)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Stop = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitStrings(strings: List<String>) {}
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitString(string: String) = 1
+
+                    override fun visitStrings(strings: List<String>) = strings.size
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Stop && string == other.string && strings == other.strings
+        }
+
+        override fun hashCode(): Int = Objects.hash(string, strings)
+
+        override fun toString(): String =
+            when {
+                string != null -> "Stop{string=$string}"
+                strings != null -> "Stop{strings=$strings}"
+                _json != null -> "Stop{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Stop")
+            }
+
+        companion object {
+
+            @JvmStatic fun ofString(string: String) = Stop(string = string)
+
+            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings.toImmutable())
+        }
+
+        /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitString(string: String): T
+
+            fun visitStrings(strings: List<String>): T
+
+            /**
+             * Maps an unknown variant of [Stop] to a value of type [T].
+             *
+             * An instance of [Stop] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Stop: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Stop>(Stop::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Stop {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Stop(string = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                                Stop(strings = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Stop(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Stop>(Stop::class) {
+
+            override fun serialize(
+                value: Stop,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.strings != null -> generator.writeObject(value.strings)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Stop")
+                }
+            }
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is CompletionCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() =
+        "CompletionCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+}

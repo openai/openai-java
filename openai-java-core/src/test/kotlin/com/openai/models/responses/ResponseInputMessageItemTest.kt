@@ -1,0 +1,72 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.responses
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class ResponseInputMessageItemTest {
+
+    @Test
+    fun create() {
+        val responseInputMessageItem =
+            ResponseInputMessageItem.builder()
+                .id("id")
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
+                .role(ResponseInputMessageItem.Role.USER)
+                .status(ResponseInputMessageItem.Status.IN_PROGRESS)
+                .build()
+
+        assertThat(responseInputMessageItem.id()).isEqualTo("id")
+        assertThat(responseInputMessageItem.content())
+            .containsExactly(
+                ResponseInputContent.ofInputText(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
+            )
+        assertThat(responseInputMessageItem.role()).isEqualTo(ResponseInputMessageItem.Role.USER)
+        assertThat(responseInputMessageItem.status())
+            .contains(ResponseInputMessageItem.Status.IN_PROGRESS)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputMessageItem =
+            ResponseInputMessageItem.builder()
+                .id("id")
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
+                .role(ResponseInputMessageItem.Role.USER)
+                .status(ResponseInputMessageItem.Status.IN_PROGRESS)
+                .build()
+
+        val roundtrippedResponseInputMessageItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputMessageItem),
+                jacksonTypeRef<ResponseInputMessageItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputMessageItem).isEqualTo(responseInputMessageItem)
+    }
+}
