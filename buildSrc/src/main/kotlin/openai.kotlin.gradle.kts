@@ -1,3 +1,4 @@
+import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.VersionSupportPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -13,7 +14,8 @@ repositories {
 
 val versionSupportPolicy =
     VersionSupportPolicy.load(rootProject.file("gradle/version-support.properties"))
-val runtimeFloor = versionSupportPolicy.runtimeFloor(project.name)
+val versionPolicyProject = CoreCompilationShards.versionPolicyProjectName(project.name)
+val runtimeFloor = versionSupportPolicy.runtimeFloor(versionPolicyProject)
 val kotlinJvmTarget = if (runtimeFloor == 8) "1.8" else runtimeFloor.toString()
 
 kotlin {

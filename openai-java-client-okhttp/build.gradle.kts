@@ -1,3 +1,5 @@
+import com.openai.gradle.CoreCompilationDependencies
+
 plugins {
     id("openai.kotlin")
     id("openai.wiremock-test")
@@ -5,6 +7,9 @@ plugins {
 }
 
 val jacksonPublishedVersion = "2.18.9"
+check(jacksonPublishedVersion == CoreCompilationDependencies.JACKSON_PUBLISHED_VERSION) {
+    "The OkHttp Jackson BOM must match the SDK's published Jackson version."
+}
 
 listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath).forEach {
     it.configure {

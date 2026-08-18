@@ -1,6 +1,17 @@
+import com.openai.gradle.CoreCompilationClaimedSourceIncludeSpec
+import com.openai.gradle.CoreCompilationClaimedSourceSpec
+import com.openai.gradle.CoreCompilationDependencies
+import com.openai.gradle.CoreCompilationShards
+import com.openai.gradle.CoreCompilationStagingOutputSpec
+import com.openai.gradle.VerifyCoreCompilationArtifactTask
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Sync
+import org.gradle.jvm.tasks.Jar
 import org.gradle.process.CommandLineArgumentProvider
+import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 abstract class JavaAgentArgumentProvider : CommandLineArgumentProvider {
     @get:Classpath abstract val classpath: ConfigurableFileCollection
@@ -16,13 +27,98 @@ plugins {
     id("openai.publish")
 }
 
-val jacksonCompatibilityVersion = "2.14.0"
-val jacksonPublishedVersion = "2.18.9"
+val jacksonCompatibilityVersion = CoreCompilationDependencies.JACKSON_COMPATIBILITY_VERSION
+val jacksonPublishedVersion = CoreCompilationDependencies.JACKSON_PUBLISHED_VERSION
 val mockitoVersion = "5.14.2"
 val mockitoAgent by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
     isVisible = false
+}
+
+val coreCompilationShardProjects =
+    CoreCompilationShards.projectNames.map { project(":$it") }
+val clientLayerClassesDirectory = layout.buildDirectory.dir("classes/kotlin/client-layer")
+val combinedClassesDirectory = layout.buildDirectory.dir("classes/kotlin/main")
+
+kotlin.sourceSets.named("main") {
+    kotlin.exclude(CoreCompilationClaimedSourceSpec())
+}
+
+val compileCoreClientLayer = tasks.named<KotlinCompile>("compileKotlin") {
+    destinationDirectory.set(clientLayerClassesDirectory)
+    friendPaths.from(
+        coreCompilationShardProjects.map {
+            it.layout.buildDirectory.dir("classes/kotlin/main")
+        }
+    )
+}
+
+val coreCompilationShardOutputs =
+    coreCompilationShardProjects.map {
+        it.layout.buildDirectory.dir("classes/kotlin/main")
+    }
+
+val assembleCoreClasses = tasks.register<Sync>("assembleCoreClasses") {
+    group = "build"
+    description = "Assembles the client layer and internal shards into the core class directory."
+    dependsOn(compileCoreClientLayer)
+    dependsOn(coreCompilationShardProjects.map { "${it.path}:classes" })
+    from(compileCoreClientLayer.flatMap { it.destinationDirectory })
+    from(coreCompilationShardOutputs)
+    into(combinedClassesDirectory)
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+// Keep one canonical classes directory for tests, detectors, downstream projects, and publishing.
+// The client layer and shards remain independently cacheable; this task only assembles their
+// outputs after compilation.
+val mainClassesDirectories =
+    sourceSets.main.get().output.classesDirs as ConfigurableFileCollection
+mainClassesDirectories.setFrom(combinedClassesDirectory)
+mainClassesDirectories.builtBy(assembleCoreClasses)
+tasks.named("classes") { dependsOn(assembleCoreClasses) }
+
+val coreJar = tasks.named<Jar>("jar") {
+    // The Kotlin plugin captures compileKotlin's destination before it is relocated above. Publish
+    // those client-layer classes through the canonical aggregate instead of the staging directory.
+    exclude(CoreCompilationStagingOutputSpec(clientLayerClassesDirectory.get().asFile))
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+val coreSourcesJar = tasks.named<Jar>("kotlinSourcesJar") {
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    from(
+        fileTree("src/main/kotlin").matching {
+            include(CoreCompilationClaimedSourceIncludeSpec())
+        }
+    ) {
+        into("main")
+    }
+}
+
+val verifyCoreCompilationArtifact =
+    tasks.register<VerifyCoreCompilationArtifactTask>("verifyCoreCompilationArtifact") {
+        group = "verification"
+        description = "Verifies that the assembled core classes and sources are published once."
+        classesDirectory.set(combinedClassesDirectory)
+        sourceDirectory.set(layout.projectDirectory.dir("src/main/kotlin"))
+        binaryJar.set(coreJar.flatMap { it.archiveFile })
+        sourcesJar.set(coreSourcesJar.flatMap { it.archiveFile })
+        publicApiManifest.set(
+            layout.projectDirectory.file(
+                "src/apiCompatibility/structured-output-public-api.txt"
+            )
+        )
+        dependsOn(coreJar, coreSourcesJar)
+    }
+
+tasks.named("check") { dependsOn(verifyCoreCompilationArtifact) }
+
+tasks.withType<AbstractDokkaLeafTask>().configureEach {
+    dokkaSourceSets.configureEach {
+        sourceRoots.from(layout.projectDirectory.dir("src/main/kotlin"))
+    }
 }
 
 // Runtime classpath for `testJacksonCompatibility`: the same dependencies as
@@ -76,18 +172,12 @@ configurations.matching {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.core:jackson-core:$jacksonPublishedVersion")
-    api("com.fasterxml.jackson.core:jackson-databind:$jacksonPublishedVersion")
-    api("com.google.errorprone:error_prone_annotations:2.33.0")
-    api("io.swagger.core.v3:swagger-annotations:2.2.31")
+    coreCompilationShardProjects.forEach { compileOnly(it) }
 
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonPublishedVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonPublishedVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonPublishedVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonPublishedVersion")
-    implementation("com.github.victools:jsonschema-generator:4.38.0")
-    implementation("com.github.victools:jsonschema-module-jackson:4.38.0")
-    implementation("com.github.victools:jsonschema-module-swagger-2:4.38.0")
+    CoreCompilationDependencies.publishedApiDependencies.forEach { api(it) }
+    CoreCompilationDependencies.publishedImplementationDependencies.forEach {
+        implementation(it)
+    }
 
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
