@@ -35,6 +35,15 @@ dependencies {
         testImplementation("com.github.jknack:handlebars:4.5.3") {
             because("WireMock's transitive 4.3.1 dependency is affected by CVE-2026-55760")
         }
+        testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.3") {
+            because("WireMock's transitive HTTP client is affected by CVE-2026-64607")
+        }
+        testImplementation("org.apache.httpcomponents.core5:httpcore5:5.4.3") {
+            because("WireMock's transitive HTTP core is affected by CVE-2026-54399")
+        }
+        testImplementation("org.apache.httpcomponents.core5:httpcore5-h2:5.4.3") {
+            because("WireMock's transitive HTTP/2 core is affected by CVE-2026-54428")
+        }
     }
 
     testImplementation(platform("org.eclipse.jetty:jetty-bom:12.0.36"))
