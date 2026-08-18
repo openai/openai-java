@@ -28,6 +28,7 @@ object CoreCompilationDependencies {
 
     val publishedImplementationDependencies =
         listOf(
+            "org.jetbrains.kotlin:kotlin-reflect:1.8.20",
             "com.fasterxml.jackson.core:jackson-annotations:$JACKSON_PUBLISHED_VERSION",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$JACKSON_PUBLISHED_VERSION",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$JACKSON_PUBLISHED_VERSION",
