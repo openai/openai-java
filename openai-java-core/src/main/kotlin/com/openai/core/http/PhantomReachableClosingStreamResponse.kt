@@ -11,11 +11,9 @@ import java.util.stream.Stream
 internal class PhantomReachableClosingStreamResponse<T>(
     private val streamResponse: StreamResponse<T>
 ) : StreamResponse<T> {
-    init {
-        closeWhenPhantomReachable(this, streamResponse)
-    }
+    private val closeHandle = closeWhenPhantomReachable(this, streamResponse)
 
     override fun stream(): Stream<T> = streamResponse.stream()
 
-    override fun close() = streamResponse.close()
+    override fun close() = closeHandle.close()
 }
