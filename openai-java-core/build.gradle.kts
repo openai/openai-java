@@ -77,6 +77,7 @@ dependencies {
     api("com.google.errorprone:error_prone_annotations:2.33.0")
     api("io.swagger.core.v3:swagger-annotations:2.2.31")
 
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonPublishedVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonPublishedVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonPublishedVersion")
