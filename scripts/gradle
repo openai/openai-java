@@ -10,4 +10,13 @@ if [ "${CI:-}" != "true" ] && [ "${OPENAI_JAVA_GRADLE_LOCAL:-true}" != "false" ]
   gradle_args+=(--daemon)
 fi
 
+if [ "${CI:-}" = "true" ]; then
+  profile_marker="$(mktemp)"
+  trap 'rm -f "$profile_marker"' EXIT
+  gradle_status=0
+  ./gradlew "${gradle_args[@]}" --profile "$@" || gradle_status=$?
+  bash ./scripts/report-ci-profile "$profile_marker"
+  exit "$gradle_status"
+fi
+
 ./gradlew "${gradle_args[@]}" "$@"

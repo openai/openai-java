@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+MARKER="${1:?profile start marker is required}"
+PROFILE_DIRECTORY="${2:-build/reports/profile}"
+shopt -s nullglob
+
+for REPORT in "$PROFILE_DIRECTORY"/*.html; do
+    [[ "$REPORT" -nt "$MARKER" ]] || continue
+    echo "CI_PROFILE report: ${REPORT##*/}"
+    awk '
+        /<tr[ >]/ { row = "" }
+        { row = row " " $0 }
+        /<\/tr>/ {
+            if (row ~ /Total Build Time|Startup|Settings and buildSrc|Loading Projects|Configuring Projects|Task Execution|:openai-java-core:compileKotlin<|:openai-java-core:compileTestKotlin<|:openai-java-core:compileExternalApiCompatibilityKotlin<|:openai-java-core:compileProposedApiCompatibilityKotlin<|:openai-java-core:test<|:openai-java-proguard-test:proguardJar<|:openai-java-proguard-test:r8Jar</) {
+                gsub(/<[^>]*>/, " ", row)
+                gsub(/[[:space:]]+/, " ", row)
+                print "CI_PROFILE" row
+            }
+            row = ""
+        }
+    ' "$REPORT"
+done
