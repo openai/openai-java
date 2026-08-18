@@ -1,3 +1,4 @@
+import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.GenerateVersionSupportMatrixTask
 import com.openai.gradle.VersionSupportPolicy
 import com.openai.gradle.VerifyVersionSupportPolicyTask
@@ -75,7 +76,9 @@ subprojects {
 }
 
 subprojects {
-    apply(plugin = "org.jetbrains.dokka")
+    if (!CoreCompilationShards.isShardProject(name)) {
+        apply(plugin = "org.jetbrains.dokka")
+    }
 }
 
 val versionSupportFile = layout.projectDirectory.file("gradle/version-support.properties")
@@ -128,7 +131,7 @@ subprojects {
                 sourceCompatibility.set(java.sourceCompatibility.majorVersion.toInt())
                 targetCompatibility.set(java.targetCompatibility.majorVersion.toInt())
                 javaRelease.set(compileJava.flatMap { it.options.release })
-                classFiles.from(mainSourceSet.output.classesDirs)
+                classFiles.from(mainSourceSet.output)
 
                 dependsOn(tasks.named("classes"))
             }
@@ -151,6 +154,10 @@ subprojects {
 // Avoid race conditions between `dokkaJavadocCollector` and `dokkaJavadocJar` tasks
 tasks.named("dokkaJavadocCollector").configure {
     subprojects.flatMap { it.tasks }
-        .filter { it.project.name != "openai-java" && it.name == "dokkaJavadocJar" }
+        .filter {
+            it.project.name != "openai-java" &&
+                !CoreCompilationShards.isShardProject(it.project.name) &&
+                it.name == "dokkaJavadocJar"
+        }
         .forEach { mustRunAfter(it) }
 }
