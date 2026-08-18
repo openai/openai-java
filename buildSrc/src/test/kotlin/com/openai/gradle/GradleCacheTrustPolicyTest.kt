@@ -1,14 +1,19 @@
 package com.openai.gradle
 
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.io.TempDir
 
 class GradleCacheTrustPolicyTest {
+    @TempDir lateinit var temporaryDirectory: Path
+
     @Test
     fun `all pull request Gradle jobs keep cross-run caches read-only`() {
         val workflow = Path.of("../.github/workflows/ci.yml").readText()
@@ -73,6 +78,43 @@ class GradleCacheTrustPolicyTest {
                 restoreStep.contains("run-id:"),
                 "Cache artifacts must never be restored from another workflow run.",
             )
+        }
+    }
+
+    @Test
+    fun `artifact ID restores keep cache entries at the Gradle lookup path`() {
+        val workflow = Path.of("../.github/workflows/ci.yml").readText()
+        val cacheKey = "0123456789abcdef0123456789abcdef"
+        val cacheEntry = temporaryDirectory.resolve(cacheKey).apply { writeText("cached classes") }
+        val restoreSteps =
+            workflow.split("\n      - name: Restore exact-run Gradle build cache\n").drop(1).map {
+                it.substringBefore("\n      - name:")
+            }
+
+        assertEquals(3, restoreSteps.size)
+        restoreSteps.forEachIndexed { index, restoreStep ->
+            val mergeMultiple = restoreStep.contains("merge-multiple: true")
+
+            listOf(1, 2).forEach { selectedArtifactCount ->
+                val cacheRoot =
+                    temporaryDirectory
+                        .resolve("consumer-$index-$selectedArtifactCount")
+                        .resolve("build-cache-1")
+                val extractionRoot =
+                    if (mergeMultiple || selectedArtifactCount == 1) {
+                        cacheRoot
+                    } else {
+                        cacheRoot.resolve("ci-gradle-build-cache")
+                    }
+
+                Files.createDirectories(extractionRoot)
+                Files.copy(cacheEntry, extractionRoot.resolve(cacheKey))
+
+                assertTrue(
+                    Files.isRegularFile(cacheRoot.resolve(cacheKey)),
+                    "Gradle must find ID-selected cache entries directly in build-cache-1.",
+                )
+            }
         }
     }
 
