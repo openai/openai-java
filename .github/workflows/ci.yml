@@ -39,6 +39,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Verify Maven Central credential transport
         run: |
@@ -78,6 +80,8 @@ jobs:
     name: CI / build + Jackson compatibility
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
+    outputs:
+      gradle-cache-artifact-id: ${{ steps.gradle-cache-artifact.outputs.artifact-id }}
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -94,6 +98,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Build SDK and run compatibility tests
         env:
@@ -107,16 +113,16 @@ jobs:
         run: ./scripts/collect-gradle-build-cache "$CACHE_ARTIFACT_PATH"
 
       # setup-gradle's cross-run cache is read-only on pull requests. Publish this run's local
-      # build cache explicitly so downstream jobs can restore the exact compilation that passed.
+      # build cache as an immutable artifact for downstream jobs with the same trust boundary.
       - name: Upload exact-run Gradle build cache
+        id: gradle-cache-artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          name: ci-gradle-build-cache-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ci-gradle-build-cache
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
-          overwrite: true
 
   test:
     name: CI / tests
@@ -146,7 +152,8 @@ jobs:
       - name: Restore exact-run Gradle build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          digest-mismatch: error
           path: ~/.gradle/caches/build-cache-1
 
       - name: Run tests
@@ -186,7 +193,8 @@ jobs:
       - name: Restore exact-run Gradle build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          digest-mismatch: error
           path: ~/.gradle/caches/build-cache-1
 
       - name: Compile previous tests against the proposed SDK
@@ -234,6 +242,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Read version support policy
         id: matrix
@@ -278,13 +288,14 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
         with:
-          cache-read-only: ${{ needs.build.result == 'success' }}
+          cache-read-only: true
 
       - name: Restore exact-run Gradle build cache
         if: needs.build.result == 'success'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          digest-mismatch: error
           path: ~/.gradle/caches/build-cache-1
 
       - name: Run consumer compatibility smoke test

@@ -34,3 +34,36 @@ Sonatype tokens, and private signing keys before submitting a report.
 Please give the maintainers a reasonable opportunity to investigate and address the issue before public disclosure.
 
 Thank you for helping us keep this SDK and the systems it interacts with secure.
+
+## Gradle Build Cache Trust
+
+The Kotlin Gradle plugin used to build this SDK is affected by
+[CVE-2026-53914](https://github.com/advisories/GHSA-r937-wjx7-w2jp), which can
+execute code when malicious Kotlin build-cache metadata is deserialized. This is
+a build-tooling vulnerability; the affected plugin is not published as an SDK
+runtime dependency.
+
+Pull-request CI explicitly treats cross-run Gradle caches as read-only. Its
+compilation outputs are shared only between jobs in the same unprivileged
+workflow run and attempt through an immutable artifact, identified by the
+producing job's artifact ID and rejected if its SHA-256 digest does not match.
+These artifacts must never be restored by release, signing, or other
+secret-bearing jobs.
+
+Maven Central publishing instead creates a new, private Gradle User Home for
+each workflow run and attempt, refuses an existing directory or symbolic link,
+and disables all cross-run Gradle cache restoration and saving. Gradle invocations
+within the publishing job still reuse the trusted cache created by that job.
+This boundary assumes an ephemeral GitHub-hosted runner or an equivalently
+isolated, trusted self-hosted runner; it cannot protect a runner that untrusted
+code has already compromised.
+
+The first upstream fix is Kotlin `2.4.20-Beta1`; while no stable patched release
+is available, the production compiler must not be upgraded to that beta solely to
+close this alert. Cache isolation reduces the exposure but does not fix the
+vulnerable plugin: malicious trusted inputs, compromised upstream dependencies,
+or a compromised runner remain risks. Once a stable Kotlin release at or above
+`2.4.20` is available, upgrade both Kotlin plugin declarations in `buildSrc`,
+review Gradle and embedded Kotlin compatibility, and rerun publishing, Jackson
+compatibility, and the Java 8 consumer/runtime compatibility matrix before
+removing the temporary risk acceptance.
