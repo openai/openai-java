@@ -467,6 +467,68 @@ internal class ClientOptionsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun x509HttpClient_preservesExplicitAdministratorUnauthorizedRetries(async: Boolean) {
+        val requests = AtomicInteger()
+        val authorizations = mutableListOf<String>()
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    authorizations.add(request.headers.values("Authorization").single())
+                    val rejected = requests.incrementAndGet() == 1
+                    return object : HttpResponse {
+                        override fun statusCode() = if (rejected) 401 else 200
+
+                        override fun headers() =
+                            com.openai.core.http.Headers.builder()
+                                .apply { if (rejected) put("X-Should-Retry", "true") }
+                                .build()
+
+                        override fun body() = ByteArrayInputStream("{}".toByteArray())
+
+                        override fun close() {}
+                    }
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+
+                override fun close() {}
+            }
+        val options =
+            ClientOptions.builder()
+                .httpClient(transport)
+                .adminApiKey("admin-secret")
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://mtls.api.openai.com/v1/organization/users")
+                .putHeader("Authorization", "Bearer admin-secret")
+                .build()
+
+        val response =
+            if (async) options.httpClient.executeAsync(request, RequestOptions.none()).join()
+            else options.httpClient.execute(request, RequestOptions.none())
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        assertThat(requests).hasValue(2)
+        assertThat(authorizations).containsExactly("Bearer admin-secret", "Bearer admin-secret")
+    }
+
+    @ParameterizedTest
     @ValueSource(
         strings =
             [

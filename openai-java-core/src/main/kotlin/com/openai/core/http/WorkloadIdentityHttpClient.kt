@@ -150,7 +150,12 @@ internal class WorkloadIdentityHttpClient(
         requireSafeX509Request(authenticatedRequest)
         val response =
             if (delegate is RetryingHttpClient) {
-                delegate.execute(authenticatedRequest, requestOptions, retries)
+                delegate.execute(
+                    authenticatedRequest,
+                    requestOptions,
+                    retries,
+                    terminalStatusCode = 401,
+                )
             } else {
                 delegate.execute(authenticatedRequest, requestOptions)
             }
@@ -168,7 +173,12 @@ internal class WorkloadIdentityHttpClient(
             requireSafeX509Request(authenticatedRequest)
             val response =
                 if (delegate is RetryingHttpClient) {
-                    delegate.executeAsync(authenticatedRequest, requestOptions, retries)
+                    delegate.executeAsync(
+                        authenticatedRequest,
+                        requestOptions,
+                        retries,
+                        terminalStatusCode = 401,
+                    )
                 } else {
                     delegate.executeAsync(authenticatedRequest, requestOptions)
                 }

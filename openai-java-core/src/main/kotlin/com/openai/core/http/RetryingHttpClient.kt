@@ -30,7 +30,6 @@ private constructor(
     private val maxRetries: Int,
     private val idempotencyHeader: String?,
     private val maxRetryAfter: Duration?,
-    private val terminalStatusCode: Int?,
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
@@ -41,6 +40,7 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
         retries: AtomicInteger,
+        terminalStatusCode: Int? = null,
     ): HttpResponse {
         var modifiedRequest = maybeAddIdempotencyHeader(request)
 
@@ -60,7 +60,7 @@ private constructor(
             val response =
                 try {
                     val response = httpClient.execute(modifiedRequest, requestOptions)
-                    if (retries.get() >= maxRetries || !shouldRetry(response)) {
+                    if (retries.get() >= maxRetries || !shouldRetry(response, terminalStatusCode)) {
                         return response
                     }
 
@@ -90,6 +90,7 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
         retries: AtomicInteger,
+        terminalStatusCode: Int? = null,
     ): CompletableFuture<HttpResponse> {
         val modifiedRequest = maybeAddIdempotencyHeader(request)
 
@@ -116,7 +117,10 @@ private constructor(
                         throwable: Throwable?,
                     ): CompletableFuture<HttpResponse> {
                         if (response != null) {
-                            if (retries.get() >= maxRetries || !shouldRetry(response)) {
+                            if (
+                                retries.get() >= maxRetries ||
+                                    !shouldRetry(response, terminalStatusCode)
+                            ) {
                                 return CompletableFuture.completedFuture(response)
                             }
                         } else {
@@ -172,7 +176,7 @@ private constructor(
             .build()
     }
 
-    private fun shouldRetry(response: HttpResponse): Boolean {
+    private fun shouldRetry(response: HttpResponse, terminalStatusCode: Int?): Boolean {
         // Note: this is not a standard header
         val shouldRetryHeader = response.headers().values("X-Should-Retry").getOrNull(0)
         val statusCode = response.statusCode()
@@ -270,7 +274,6 @@ private constructor(
         private var maxRetries: Int = 2
         private var idempotencyHeader: String? = null
         private var maxRetryAfter: Duration? = null
-        private var terminalStatusCode: Int? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
@@ -285,9 +288,6 @@ private constructor(
         @JvmSynthetic
         internal fun maxRetryAfter(duration: Duration) = apply { maxRetryAfter = duration }
 
-        @JvmSynthetic
-        internal fun stopRetryingOn(statusCode: Int) = apply { terminalStatusCode = statusCode }
-
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
@@ -296,7 +296,6 @@ private constructor(
                 maxRetries,
                 idempotencyHeader,
                 maxRetryAfter,
-                terminalStatusCode,
             )
     }
 }

@@ -25,6 +25,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -144,20 +145,34 @@ internal class RetryingHttpClientTest {
                 .willReturn(ok())
         )
         val sleeper = RecordingSleeper()
-        val retryingClient =
-            retryingHttpClientBuilder(sleeper)
-                .apply { if (terminalAuthenticationFailure) stopRetryingOn(401) }
+        val retryingClient = retryingHttpClientBuilder(sleeper).build()
+        check(retryingClient is RetryingHttpClient)
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl(baseUrl)
+                .addPathSegment("something")
                 .build()
+        val terminalStatusCode = if (terminalAuthenticationFailure) 401 else null
 
         val response =
-            retryingClient.execute(
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl(baseUrl)
-                    .addPathSegment("something")
-                    .build(),
-                async,
-            )
+            if (async) {
+                retryingClient
+                    .executeAsync(
+                        request,
+                        RequestOptions.none(),
+                        AtomicInteger(),
+                        terminalStatusCode,
+                    )
+                    .get()
+            } else {
+                retryingClient.execute(
+                    request,
+                    RequestOptions.none(),
+                    AtomicInteger(),
+                    terminalStatusCode,
+                )
+            }
 
         assertThat(response.statusCode()).isEqualTo(if (terminalAuthenticationFailure) 401 else 200)
         verify(

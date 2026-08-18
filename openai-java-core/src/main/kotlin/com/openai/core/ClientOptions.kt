@@ -851,11 +851,6 @@ private constructor(
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
-                    .apply {
-                        if (effectiveWorkloadIdentityAuth?.isX509 == true) {
-                            stopRetryingOn(401)
-                        }
-                    }
                     .build()
 
             val wrappedHttpClient =
