@@ -2,6 +2,8 @@ package com.openai.azure
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class AzureUrlCategoryTest {
 
@@ -9,7 +11,43 @@ internal class AzureUrlCategoryTest {
     fun isAzure() {
         assertThat(AzureUrlCategory.AZURE_LEGACY.isAzure()).isTrue()
         assertThat(AzureUrlCategory.AZURE_UNIFIED.isAzure()).isTrue()
+        assertThat(AzureUrlCategory.BEDROCK.isAzure()).isFalse()
         assertThat(AzureUrlCategory.NON_AZURE.isAzure()).isFalse()
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+            [
+                "bedrock-mantle.us-east-1.api.aws",
+                "BEDROCK-MANTLE.US-EAST-1.API.AWS.",
+                "bedrock-runtime.us-east-1.amazonaws.com",
+                "bedrock-runtime-fips.us-east-1.api.aws",
+                "bedrock-runtime.eusc-de-east-1.amazonaws.eu",
+                "bedrock-runtime-fips.eusc-de-east-1.api.amazonwebservices.eu",
+                "bedrock-runtime.cn-north-1.api.amazonwebservices.com.cn",
+                "bedrock-runtime.us-iso-east-1.c2s.ic.gov",
+                "bedrock-runtime.us-isob-east-1.sc2s.sgov.gov",
+                "bedrock-runtime.eu-isoe-west-1.cloud.adc-e.uk",
+                "bedrock-runtime.us-isof-south-1.csp.hci.ic.gov",
+            ]
+    )
+    fun categorizeBaseUrl_recognizesCanonicalBedrockEndpoints(host: String) {
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl("https://$host/openai/v1", AzureUrlPathMode.AUTO)
+            )
+            .isEqualTo(AzureUrlCategory.BEDROCK)
+    }
+
+    @Test
+    fun categorizeBaseUrl_preservesCustomBedrockNamedGateway() {
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://bedrock-runtime.us-east-1.customer.example/openai/v1",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
+            .isEqualTo(AzureUrlCategory.NON_AZURE)
     }
 
     @Test

@@ -749,7 +749,7 @@ private constructor(
             val azureUrlCategory =
                 effectiveBaseUrl?.let { AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode) }
             require(!x509WorkloadIdentity || azureUrlCategory == AzureUrlCategory.NON_AZURE) {
-                "X.509 workload identity cannot be used with Azure endpoints"
+                "X.509 workload identity cannot be used with ${azureUrlCategory?.providerName} endpoints"
             }
             val streamHandlerExecutor =
                 streamHandlerExecutor
@@ -798,6 +798,7 @@ private constructor(
                         azureServiceVersion?.let { version ->
                             replaceQueryParams("api-version", version.value)
                         }
+                    AzureUrlCategory.BEDROCK,
                     AzureUrlCategory.NON_AZURE -> {}
                 }
             }
