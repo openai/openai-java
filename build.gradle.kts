@@ -24,6 +24,7 @@ plugins {
 }
 
 val dokkaJacksonVersion = "2.18.9"
+val dokkaJsoupVersion = "1.23.1"
 
 repositories {
     mavenCentral()
@@ -33,9 +34,9 @@ allprojects {
     group = "com.openai"
     version = "4.52.0" // x-release-please-version
 
-    // Dokka 2.1.0 depends on Jackson 2.15.3. Keep its isolated build-tool classpaths on a
-    // secure, internally aligned Jackson release without changing the SDK's published or
-    // compatibility-test dependency versions.
+    // Dokka 2.1.0 depends on Jackson 2.15.3 and jsoup 1.16.1. Keep its isolated build-tool
+    // classpaths on secure versions without changing the SDK's published or compatibility-test
+    // dependencies, and keep Jackson internally aligned.
     configurations.matching { it.name.startsWith("dokka") }.configureEach {
         resolutionStrategy.eachDependency {
             if (
@@ -44,6 +45,9 @@ allprojects {
             ) {
                 useVersion(dokkaJacksonVersion)
                 because("Dokka's build-only Jackson classpath must use a secure aligned release")
+            } else if (requested.group == "org.jsoup" && requested.name == "jsoup") {
+                useVersion(dokkaJsoupVersion)
+                because("Dokka's build-only jsoup classpath must use a secure release")
             }
         }
     }
