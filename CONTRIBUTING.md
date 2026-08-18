@@ -250,13 +250,24 @@ to match the Central Portal token account.
 ```sh
 $ gh secret set OPENAI_SONATYPE_USERNAME --env publish --repo openai/openai-java
 $ gh secret set OPENAI_SONATYPE_PASSWORD --env publish --repo openai/openai-java
-$ gpg --armor --export-secret-keys KEY_ID \
-    | gh secret set OPENAI_SONATYPE_GPG_SIGNING_KEY --env publish --repo openai/openai-java
+$ (
+>   set -eu
+>   trap 'unset signing_key' EXIT
+>   signing_key="$(gpg --armor --export-secret-keys KEY_ID)"
+>   case "$signing_key" in
+>     "-----BEGIN PGP PRIVATE KEY BLOCK-----"*"-----END PGP PRIVATE KEY BLOCK-----") ;;
+>     *) echo "Refusing to store an empty or invalid private key" >&2; exit 1 ;;
+>   esac
+>   printf '%s\n' "$signing_key" |
+>     gh secret set OPENAI_SONATYPE_GPG_SIGNING_KEY --env publish --repo openai/openai-java
+>   unset signing_key
+> )
 $ gh secret set OPENAI_SONATYPE_GPG_SIGNING_PASSWORD --env publish --repo openai/openai-java
 ```
 
-Stream the private key directly into the protected `publish` environment. Never write it to the
-repository or another file, print it in logs, or run these commands with shell tracing enabled.
+Validate the armored private key in a short-lived shell variable before updating the protected
+`publish` environment. Never write it to the repository or another file, print it in logs, or run
+these commands with shell tracing enabled.
 
 After the rotated secrets work, revoke the old Central Portal token and remove any old repository-level copies of the
 `OPENAI_SONATYPE_*` secrets.

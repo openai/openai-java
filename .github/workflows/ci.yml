@@ -40,6 +40,37 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
+      - name: Verify Maven Central credential transport
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/create-releases.yml
+
+          for mapping in \
+            mavenCentralUsername:OPENAI_SONATYPE_USERNAME \
+            mavenCentralPassword:OPENAI_SONATYPE_PASSWORD; do
+            property="ORG_GRADLE_PROJECT_${mapping%%:*}"
+            secret="${mapping#*:}"
+
+            if ! awk -v property="$property" -v secret="$secret" '
+              $1 == property ":" {
+                if ($2 == ("$" "{{") && $3 == "secrets." secret && $4 == "}}" && NF == 4) {
+                  valid++
+                } else {
+                  invalid = 1
+                }
+              }
+              END { exit !(valid == 1 && !invalid) }
+            ' "$workflow"; then
+              echo "::error::Invalid or missing protected Maven mapping: $property"
+              exit 1
+            fi
+          done
+
+          if grep -Eq '(^|[[:space:]])-PmavenCentral(Username|Password)(=|[[:space:]]|$)' "$workflow"; then
+            echo '::error::Maven Central credentials must not appear in Gradle arguments.'
+            exit 1
+          fi
+
       - name: Run lints
         run: ./scripts/lint
 
