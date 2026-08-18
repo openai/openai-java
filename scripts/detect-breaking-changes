@@ -337,6 +337,11 @@ validate_public_api_signatures() {
     local extra
 
     classes_root="$(pwd)/openai-java-core/build/classes/kotlin/main"
+    for shard_classes in "$(pwd)"/openai-java-core-*/build/classes/kotlin/main; do
+        if [ -d "${shard_classes}" ]; then
+            classes_root="${classes_root}:${shard_classes}"
+        fi
+    done
     actual_signatures="$(mktemp)"
     classes="$(mktemp)"
     expected_signatures="$(mktemp)"
