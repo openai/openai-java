@@ -21,6 +21,9 @@ tasks.test {
     useJUnitPlatform()
     workingDir(layout.projectDirectory)
     inputs
+        .file(layout.projectDirectory.file("../scripts/gradle"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
         .files(
             fileTree(layout.projectDirectory.dir("../openai-java-core/src/main/kotlin")) {
                 include("**/*.kt")
