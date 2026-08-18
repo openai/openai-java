@@ -2,8 +2,12 @@ import com.openai.gradle.CoreCompilationClaimedSourceIncludeSpec
 import com.openai.gradle.CoreCompilationClaimedSourceSpec
 import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
+import com.openai.gradle.CoreCompilationStagingOutputSpec
+import com.openai.gradle.VerifyCoreCompilationArtifactTask
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Sync
 import org.gradle.jvm.tasks.Jar
 import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
@@ -34,12 +38,15 @@ val mockitoAgent by configurations.creating {
 
 val coreCompilationShardProjects =
     CoreCompilationShards.projectNames.map { project(":$it") }
+val clientLayerClassesDirectory = layout.buildDirectory.dir("classes/kotlin/client-layer")
+val combinedClassesDirectory = layout.buildDirectory.dir("classes/kotlin/main")
 
 kotlin.sourceSets.named("main") {
     kotlin.exclude(CoreCompilationClaimedSourceSpec())
 }
 
-tasks.named<KotlinCompile>("compileKotlin") {
+val compileCoreClientLayer = tasks.named<KotlinCompile>("compileKotlin") {
+    destinationDirectory.set(clientLayerClassesDirectory)
     friendPaths.from(
         coreCompilationShardProjects.map {
             it.layout.buildDirectory.dir("classes/kotlin/main")
@@ -52,13 +59,35 @@ val coreCompilationShardOutputs =
         it.layout.buildDirectory.dir("classes/kotlin/main")
     }
 
-// Add the embedded shard outputs to the main classes variant. Downstream project dependencies use
-// this variant, while the published jar still contains one cohesive openai-java-core artifact.
-(sourceSets.main.get().output.classesDirs as ConfigurableFileCollection).from(
-    coreCompilationShardOutputs
-)
+val assembleCoreClasses = tasks.register<Sync>("assembleCoreClasses") {
+    group = "build"
+    description = "Assembles the client layer and internal shards into the core class directory."
+    dependsOn(compileCoreClientLayer)
+    dependsOn(coreCompilationShardProjects.map { "${it.path}:classes" })
+    from(compileCoreClientLayer.flatMap { it.destinationDirectory })
+    from(coreCompilationShardOutputs)
+    into(combinedClassesDirectory)
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
 
-tasks.named<Jar>("kotlinSourcesJar") {
+// Keep one canonical classes directory for tests, detectors, downstream projects, and publishing.
+// The client layer and shards remain independently cacheable; this task only assembles their
+// outputs after compilation.
+val mainClassesDirectories =
+    sourceSets.main.get().output.classesDirs as ConfigurableFileCollection
+mainClassesDirectories.setFrom(combinedClassesDirectory)
+mainClassesDirectories.builtBy(assembleCoreClasses)
+tasks.named("classes") { dependsOn(assembleCoreClasses) }
+
+val coreJar = tasks.named<Jar>("jar") {
+    // The Kotlin plugin captures compileKotlin's destination before it is relocated above. Publish
+    // those client-layer classes through the canonical aggregate instead of the staging directory.
+    exclude(CoreCompilationStagingOutputSpec(clientLayerClassesDirectory.get().asFile))
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+val coreSourcesJar = tasks.named<Jar>("kotlinSourcesJar") {
+    duplicatesStrategy = DuplicatesStrategy.FAIL
     from(
         fileTree("src/main/kotlin").matching {
             include(CoreCompilationClaimedSourceIncludeSpec())
@@ -67,6 +96,24 @@ tasks.named<Jar>("kotlinSourcesJar") {
         into("main")
     }
 }
+
+val verifyCoreCompilationArtifact =
+    tasks.register<VerifyCoreCompilationArtifactTask>("verifyCoreCompilationArtifact") {
+        group = "verification"
+        description = "Verifies that the assembled core classes and sources are published once."
+        classesDirectory.set(combinedClassesDirectory)
+        sourceDirectory.set(layout.projectDirectory.dir("src/main/kotlin"))
+        binaryJar.set(coreJar.flatMap { it.archiveFile })
+        sourcesJar.set(coreSourcesJar.flatMap { it.archiveFile })
+        publicApiManifest.set(
+            layout.projectDirectory.file(
+                "src/apiCompatibility/structured-output-public-api.txt"
+            )
+        )
+        dependsOn(coreJar, coreSourcesJar)
+    }
+
+tasks.named("check") { dependsOn(verifyCoreCompilationArtifact) }
 
 tasks.withType<AbstractDokkaLeafTask>().configureEach {
     dokkaSourceSets.configureEach {

@@ -2,7 +2,9 @@ package com.openai.gradle
 
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class CoreCompilationShardsTest {
@@ -32,6 +34,24 @@ class CoreCompilationShardsTest {
                     ) == shard
                 },
                 "${shard.id} must own at least one source file",
+            )
+        }
+    }
+
+    @Test
+    fun `all structured-output public API classes have exactly one source owner`() {
+        val sourceRoot = File("../openai-java-core/src/main/kotlin")
+        val manifest =
+            File("../openai-java-core/src/apiCompatibility/" + "structured-output-public-api.txt")
+        val publicClasses = structuredOutputPublicApiClasses(manifest)
+
+        assertContains(publicClasses, "com.openai.models.chat.completions.StructuredChatCompletion")
+        publicClasses.forEach { className ->
+            val sourcePath = className.substringBefore('$').replace('.', '/') + ".kt"
+            assertTrue(File(sourceRoot, sourcePath).isFile, "$className has no source file")
+            assertNotNull(
+                CoreCompilationShards.shardFor(sourcePath),
+                "$className must belong to exactly one compilation shard",
             )
         }
     }
