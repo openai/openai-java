@@ -87,7 +87,7 @@ private constructor(
      */
     @get:JvmName("clock") val clock: Clock,
     private val baseUrl: String?,
-    private val dataResidencySelected: Boolean,
+    private val selectedDataResidency: DataResidency?,
     /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
     /** Query params to send with the request. */
@@ -156,12 +156,11 @@ private constructor(
      * workload identity.
      */
     fun baseUrl(): String =
-        baseUrl
-            ?: if ((credential as? WorkloadIdentityCredential)?.getAuth()?.isX509 == true) {
-                X509_PRODUCTION_URL
-            } else {
-                PRODUCTION_URL
-            }
+        if ((credential as? WorkloadIdentityCredential)?.getAuth()?.isX509 == true) {
+            selectedDataResidency?.mutualTlsBaseUrl ?: baseUrl ?: X509_PRODUCTION_URL
+        } else {
+            baseUrl ?: PRODUCTION_URL
+        }
 
     fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
 
@@ -210,8 +209,7 @@ private constructor(
         private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String? = null
-        // Retain only whether the resolved URL came from residency, not a competing URL value.
-        private var dataResidencySelected: Boolean = false
+        private var selectedDataResidency: DataResidency? = null
         private var explicitBaseUrl: Boolean = false
         private var explicitDataResidency: Boolean = false
         private var inheritedAzureEndpoint: Boolean = false
@@ -241,7 +239,7 @@ private constructor(
             sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
-            dataResidencySelected = clientOptions.dataResidencySelected
+            selectedDataResidency = clientOptions.selectedDataResidency
             inheritedAzureEndpoint =
                 clientOptions.baseUrl?.let {
                     AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
@@ -351,7 +349,7 @@ private constructor(
         fun baseUrl(baseUrl: String?) = apply {
             require(!explicitDataResidency) { "baseUrl and dataResidency are mutually exclusive" }
             this.baseUrl = baseUrl
-            dataResidencySelected = false
+            selectedDataResidency = null
             explicitBaseUrl = true
         }
 
@@ -369,7 +367,7 @@ private constructor(
             if (dataResidency != null) {
                 require(!explicitBaseUrl) { "baseUrl and dataResidency are mutually exclusive" }
                 baseUrl = dataResidency.baseUrl
-                dataResidencySelected = true
+                selectedDataResidency = dataResidency
                 explicitDataResidency = true
             }
         }
@@ -646,7 +644,7 @@ private constructor(
         fun fromEnv() = apply {
             logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
-                if (!dataResidencySelected) {
+                if (selectedDataResidency == null) {
                     inheritedAzureEndpoint =
                         AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
                     baseUrl = it
@@ -708,7 +706,7 @@ private constructor(
          */
         fun build(): ClientOptions {
             require(
-                !dataResidencySelected ||
+                selectedDataResidency == null ||
                     (!inheritedAzureEndpoint &&
                         httpRequestAuthenticator == null &&
                         credential !is AzureApiKeyCredential &&
@@ -722,7 +720,14 @@ private constructor(
                 workloadIdentity ?: (credential as? WorkloadIdentityCredential)?.getAuth()?.config
             val x509WorkloadIdentity = configuredWorkloadIdentity?.isX509() == true
             val effectiveBaseUrl =
-                baseUrl ?: if (x509WorkloadIdentity) X509_PRODUCTION_URL else null
+                when {
+                    x509WorkloadIdentity && selectedDataResidency != null ->
+                        requireNotNull(selectedDataResidency?.mutualTlsBaseUrl) {
+                            "X.509 workload identity does not support the selected data residency"
+                        }
+                    x509WorkloadIdentity -> baseUrl ?: X509_PRODUCTION_URL
+                    else -> baseUrl
+                }
             if (x509WorkloadIdentity) {
                 val parsedBaseUrl =
                     try {
@@ -846,6 +851,11 @@ private constructor(
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
+                    .apply {
+                        if (effectiveWorkloadIdentityAuth?.isX509 == true) {
+                            stopRetryingOn(401)
+                        }
+                    }
                     .build()
 
             val wrappedHttpClient =
@@ -870,7 +880,7 @@ private constructor(
                 sleeper,
                 clock,
                 baseUrl,
-                dataResidencySelected,
+                selectedDataResidency,
                 headers.build(),
                 queryParams.build(),
                 responseValidation,

@@ -33,6 +33,7 @@ import kotlin.math.min
 private const val TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange"
 private const val JWT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt"
 private const val ID_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:id_token"
+private const val ACCESS_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token"
 private const val X509_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"
 private const val DEFAULT_TOKEN_EXPIRY_SECONDS = 3600
 private const val SUBJECT_TOKEN_EXCHANGE_URL = "https://auth.openai.com/oauth/token"
@@ -456,6 +457,18 @@ internal class WorkloadIdentityAuth(
         ) {
             throw OpenAIInvalidDataException(
                 "X.509 token exchange returned a non-Bearer token type"
+            )
+        }
+
+        val issuedTokenType = tokenResponse.get("issued_token_type")
+        if (
+            isX509 &&
+                (issuedTokenType == null ||
+                    !issuedTokenType.isTextual ||
+                    issuedTokenType.asText() != ACCESS_TOKEN_TYPE)
+        ) {
+            throw OpenAIInvalidDataException(
+                "Token exchange returned an unsupported issued_token_type"
             )
         }
 

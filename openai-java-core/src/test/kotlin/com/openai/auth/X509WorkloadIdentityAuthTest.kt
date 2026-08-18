@@ -666,7 +666,7 @@ internal class X509WorkloadIdentityAuthTest {
                 synchronousHttpClient {
                     response(
                         200,
-                        """{"access_token":"token","token_type":"Bearer","expires_in":"3600"}""",
+                        """{"access_token":"token","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"Bearer","expires_in":"3600"}""",
                     )
                 }
             )
@@ -735,7 +735,7 @@ internal class X509WorkloadIdentityAuthTest {
                     synchronousHttpClient {
                         response(
                             200,
-                            """{"access_token":"safe-token","token_type":"$tokenType","expires_in":3600}""",
+                            """{"access_token":"safe-token","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"$tokenType","expires_in":3600}""",
                         )
                     }
                 )
@@ -743,6 +743,43 @@ internal class X509WorkloadIdentityAuthTest {
             val token = if (async) auth.getTokenAsync().join() else auth.getToken()
 
             assertThat(token).isEqualTo("safe-token")
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings =
+            [
+                "",
+                "null",
+                "\"refresh_token\"",
+                "\"urn:ietf:params:oauth:token-type:refresh_token\"",
+                "5",
+                "true",
+            ]
+    )
+    fun x509RejectsMissingOrUnsupportedIssuedTokenTypes(issuedTokenType: String) {
+        listOf(false, true).forEach { async ->
+            val issuedTokenTypeField =
+                if (issuedTokenType.isEmpty()) "" else ",\"issued_token_type\":$issuedTokenType"
+            val auth =
+                x509Auth(
+                    synchronousHttpClient {
+                        response(
+                            200,
+                            """{"access_token":"safe-token"$issuedTokenTypeField,"token_type":"Bearer","expires_in":3600}""",
+                        )
+                    }
+                )
+
+            val failure =
+                assertThrows<Throwable> {
+                    if (async) auth.getTokenAsync().join() else auth.getToken()
+                }
+            val cause = if (async) checkNotNull(failure.cause) else failure
+            assertThat(cause)
+                .isInstanceOf(OpenAIInvalidDataException::class.java)
+                .hasMessage("Token exchange returned an unsupported issued_token_type")
         }
     }
 

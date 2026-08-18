@@ -1,5 +1,6 @@
 package com.openai.client.okhttp
 
+import com.openai.auth.WorkloadIdentity
 import com.openai.client.OpenAIClient
 import com.openai.client.OpenAIClientAsync
 import com.openai.core.ClientOptions
@@ -53,6 +54,30 @@ internal class DataResidencyTest {
                 .dataResidency(DataResidency.EU)
                 .baseUrl("https://example.com")
         }
+    }
+
+    @Test
+    fun syncAndAsyncX509BuildersUseDocumentedMutualTlsResidency() {
+        val identity =
+            WorkloadIdentity.x509Builder()
+                .identityProviderId("idp_test")
+                .serviceAccountId("svc_acct_test")
+                .build()
+        val sync =
+            OpenAIOkHttpClient.builder()
+                .workloadIdentity(identity)
+                .dataResidency(DataResidency.EU)
+                .build()
+        val async =
+            OpenAIOkHttpClientAsync.builder()
+                .workloadIdentity(identity)
+                .dataResidency(DataResidency.GLOBAL)
+                .build()
+
+        assertThat(baseUrl(sync)).isEqualTo("https://mtls-eu.api.openai.com/v1")
+        assertThat(baseUrl(async)).isEqualTo("https://mtls.api.openai.com/v1")
+        sync.close()
+        async.close()
     }
 
     private fun baseUrl(client: OpenAIClient): String {

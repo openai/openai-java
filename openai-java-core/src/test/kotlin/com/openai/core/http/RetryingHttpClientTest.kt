@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.ok
@@ -28,6 +29,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 @WireMockTest
@@ -119,6 +121,50 @@ internal class RetryingHttpClientTest {
         assertThat(response.statusCode()).isEqualTo(200)
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
         assertThat(sleeper.durations).isEmpty()
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @CsvSource("false, false", "true, false", "false, true", "true, true")
+    fun execute_terminalStatusPolicyOverridesExplicitRetrySignal(
+        async: Boolean,
+        terminalAuthenticationFailure: Boolean,
+    ) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("unauthorized")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(aResponse().withStatus(401).withHeader("X-Should-Retry", "true"))
+                .willSetStateTo("REJECTED")
+        )
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("unauthorized")
+                .whenScenarioStateIs("REJECTED")
+                .willReturn(ok())
+        )
+        val sleeper = RecordingSleeper()
+        val retryingClient =
+            retryingHttpClientBuilder(sleeper)
+                .apply { if (terminalAuthenticationFailure) stopRetryingOn(401) }
+                .build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(if (terminalAuthenticationFailure) 401 else 200)
+        verify(
+            if (terminalAuthenticationFailure) 1 else 2,
+            postRequestedFor(urlPathEqualTo("/something")),
+        )
+        assertThat(sleeper.durations).hasSize(if (terminalAuthenticationFailure) 0 else 1)
         assertNoResponseLeaks()
     }
 

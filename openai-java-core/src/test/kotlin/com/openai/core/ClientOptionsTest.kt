@@ -348,6 +348,125 @@ internal class ClientOptionsTest {
     }
 
     @ParameterizedTest
+    @CsvSource(
+        value = ["GLOBAL|https://mtls.api.openai.com/v1", "EU|https://mtls-eu.api.openai.com/v1"],
+        delimiter = '|',
+    )
+    fun build_withX509WorkloadIdentity_usesDocumentedMutualTlsResidencyEndpoint(
+        residency: DataResidency,
+        expectedBaseUrl: String,
+    ) {
+        val options =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .dataResidency(residency)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+
+        assertThat(options.baseUrl()).isEqualTo(expectedBaseUrl)
+        assertThat(options.toBuilder().build().baseUrl()).isEqualTo(expectedBaseUrl)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["US", "AE"])
+    fun build_withX509WorkloadIdentity_rejectsResidencyWithoutDocumentedMutualTlsEndpoint(
+        residency: DataResidency
+    ) {
+        val thrown =
+            assertThrows<IllegalArgumentException> {
+                ClientOptions.builder()
+                    .httpClient(httpClient)
+                    .dataResidency(residency)
+                    .workloadIdentity(
+                        WorkloadIdentity.x509Builder()
+                            .identityProviderId("idp_test")
+                            .serviceAccountId("svc_acct_test")
+                            .build()
+                    )
+                    .build()
+            }
+
+        assertThat(thrown.message).contains("X.509 workload identity", "data residency")
+        verify(httpClient, never()).execute(any(), any())
+        verify(httpClient, never()).executeAsync(any(), any())
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun x509HttpClient_refreshesRejectedBearerBeforeGenericRetry(async: Boolean) {
+        val exchanges = AtomicInteger()
+        val apiAuthorizations = mutableListOf<String>()
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    val tokenExchange = request.url() == "https://mtls.auth.openai.com/oauth/token"
+                    val token = if (tokenExchange) "token-${exchanges.incrementAndGet()}" else null
+                    if (!tokenExchange) {
+                        apiAuthorizations.add(request.headers.values("Authorization").single())
+                    }
+                    val rejected = !tokenExchange && apiAuthorizations.size == 1
+                    val responseBody =
+                        if (tokenExchange) {
+                            """{"access_token":"$token","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"Bearer","expires_in":3600}"""
+                        } else {
+                            "{}"
+                        }
+                    return object : HttpResponse {
+                        override fun statusCode() = if (rejected) 401 else 200
+
+                        override fun headers() =
+                            com.openai.core.http.Headers.builder()
+                                .apply { if (rejected) put("X-Should-Retry", "true") }
+                                .build()
+
+                        override fun body() = ByteArrayInputStream(responseBody.toByteArray())
+
+                        override fun close() {}
+                    }
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+
+                override fun close() {}
+            }
+        val options =
+            ClientOptions.builder()
+                .httpClient(transport)
+                .workloadIdentity(
+                    WorkloadIdentity.x509Builder()
+                        .identityProviderId("idp_test")
+                        .serviceAccountId("svc_acct_test")
+                        .build()
+                )
+                .build()
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://mtls.api.openai.com/v1/models")
+                .build()
+
+        val response =
+            if (async) options.httpClient.executeAsync(request, RequestOptions.none()).join()
+            else options.httpClient.execute(request, RequestOptions.none())
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        assertThat(exchanges).hasValue(2)
+        assertThat(apiAuthorizations).containsExactly("Bearer token-1", "Bearer token-2")
+    }
+
+    @ParameterizedTest
     @ValueSource(
         strings =
             [
