@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - next
+  # GitHub's cache service confines this event's writes to refs/pull/<number>/merge,
+  # even when an untrusted PR changes this workflow or its cache policy tests.
   pull_request:
     branches:
       - main

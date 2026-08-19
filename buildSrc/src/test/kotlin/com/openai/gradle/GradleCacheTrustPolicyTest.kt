@@ -26,6 +26,27 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `untrusted CI cannot move outside GitHub enforced pull request cache scope`() {
+        val workflow = Path.of("../.github/workflows/ci.yml").readText()
+
+        listOf(
+                workflow.replaceFirst("\n  pull_request:\n", "\n  pull_request_target:\n"),
+                workflow.replaceFirst(
+                    "\n  workflow_dispatch:\n",
+                    "\n  workflow_run:\n" +
+                        "    workflows: [CI]\n" +
+                        "    types: [completed]\n" +
+                        "  workflow_dispatch:\n",
+                ),
+                "$workflow\n\"on\":\n  pull_request:\n",
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> { assertPullRequestCachePolicy(poisonedWorkflow) }
+            }
+    }
+
+    @Test
     fun `pull request cache policy rejects write-only overrides`() {
         val workflow = Path.of("../.github/workflows/ci.yml").readText()
 
@@ -177,6 +198,37 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing rejects untrusted pull request and completion triggers`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+
+        listOf(
+                "  pull_request:\n    branches: [main]\n",
+                "  pull_request_target:\n    branches: [main]\n",
+                "  workflow_run:\n    workflows: [CI]\n    types: [completed]\n",
+            )
+            .forEach { untrustedTrigger ->
+                val poisonedWorkflow = workflow.replaceFirst("on:\n", "on:\n$untrustedTrigger")
+
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> { assertPublishingCachePolicy(poisonedWorkflow) }
+            }
+    }
+
+    @Test
+    fun `documented cache trust boundary is enforced outside pull request code`() {
+        val securityPolicy = Path.of("../SECURITY.md").readText()
+
+        assertContains(securityPolicy, "`refs/pull/<number>/merge`")
+        assertContains(securityPolicy, "cannot write to the default-branch cache scope")
+        assertContains(securityPolicy, "not a security boundary")
+        assertContains(securityPolicy, "base branch's CODEOWNERS")
+        assertContains(
+            securityPolicy,
+            "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+        )
+    }
+
+    @Test
     fun `publishing rejects the complete GitHub cache action family`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val compilationStep = "      - name: Compile the openai-java-core project\n"
@@ -276,8 +328,17 @@ class GradleCacheTrustPolicyTest {
     }
 
     private fun assertPullRequestCachePolicy(workflow: String) {
+        val parsedWorkflow = parseWorkflow(workflow)
+        assertTrue(
+            "pull_request" in parsedWorkflow.events,
+            "Untrusted CI must use GitHub's server-enforced pull-request cache scope.",
+        )
+        assertTrue(
+            parsedWorkflow.events.all { it in setOf("push", "pull_request", "workflow_dispatch") },
+            "Untrusted CI must not run in a default-branch-context event such as pull_request_target.",
+        )
         val setupActions =
-            parseWorkflow(workflow).jobs.values.flatMap { job ->
+            parsedWorkflow.jobs.values.flatMap { job ->
                 val initializers = job.actions.filter { it.initializesGradle }
 
                 if (initializers.isNotEmpty()) {
@@ -314,7 +375,12 @@ class GradleCacheTrustPolicyTest {
     }
 
     private fun assertPublishingCachePolicy(workflow: String) {
-        val publishJob = parseWorkflow(workflow).job("publish")
+        val parsedWorkflow = parseWorkflow(workflow)
+        assertTrue(
+            parsedWorkflow.events.all { it in setOf("push", "schedule", "workflow_dispatch") },
+            "Privileged publishing must accept only trusted default-branch events.",
+        )
+        val publishJob = parsedWorkflow.job("publish")
         val isolation =
             publishJob.steps.indexOfFirst { it.name == "Create isolated release Gradle User Home" }
         val initializers =
@@ -376,8 +442,23 @@ class GradleCacheTrustPolicyTest {
                 ?: error("A GitHub Actions workflow must be a YAML mapping.")
         val jobs =
             document["jobs"] as? Map<*, *> ?: error("A GitHub Actions workflow must declare jobs.")
+        val eventDeclarations = document.entries.filter { (key, _) -> key == "on" || key == true }
+        assertEquals(
+            1,
+            eventDeclarations.size,
+            "A GitHub Actions workflow must have exactly one trigger declaration.",
+        )
+        val events =
+            eventDeclarations
+                .single()
+                .value
+                .workflowMapping("workflow events")
+                .keys
+                .map { it.workflowScalar("workflow event") }
+                .toSet()
 
         return Workflow(
+            events,
             jobs.entries.associate { (name, value) ->
                 val jobName = name.workflowScalar("job name")
                 val job = value.workflowMapping("job $jobName")
@@ -404,7 +485,7 @@ class GradleCacheTrustPolicyTest {
 
                 jobName to
                     WorkflowJob(jobName, job["outputs"].workflowScalars("job outputs"), steps)
-            }
+            },
         )
     }
 
@@ -443,7 +524,7 @@ class GradleCacheTrustPolicyTest {
             else -> error("$description must be a YAML scalar.")
         }
 
-    private data class Workflow(val jobs: Map<String, WorkflowJob>) {
+    private data class Workflow(val events: Set<String>, val jobs: Map<String, WorkflowJob>) {
         fun job(name: String): WorkflowJob =
             jobs[name] ?: error("GitHub Actions workflow is missing job $name.")
     }

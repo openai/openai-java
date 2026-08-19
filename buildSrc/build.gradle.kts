@@ -45,4 +45,7 @@ tasks.test {
     inputs
         .file(layout.projectDirectory.file("../.github/workflows/create-releases.yml"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../SECURITY.md"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
