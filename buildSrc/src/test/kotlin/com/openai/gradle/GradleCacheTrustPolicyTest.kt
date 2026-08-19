@@ -114,6 +114,36 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `pull request rejects every Gradle-owned initializer and writable cache override`() {
+        val workflow = Path.of("../.github/workflows/ci.yml").readText()
+        val protectedSetup = "      - name: Set up Gradle\n"
+        val actionRevision = "0723195856401067f7a2779048b490ace7a47d7c"
+
+        listOf(
+                "gradle/actions/dependency-submission@$actionRevision",
+                "GRADLE/Actions/Dependency-Submission@$actionRevision",
+                "\"gradle/actions/dependency-\\u0073ubmission@$actionRevision\"",
+                "gradle/actions/future-initializer@$actionRevision",
+                "gradle/future-gradle-action@$actionRevision",
+            )
+            .forEach { action ->
+                val poisonedWorkflow =
+                    workflow.replaceFirst(
+                        protectedSetup,
+                        "      - name: Initialize unprotected Gradle cache\n" +
+                            "        uses: $action\n" +
+                            "        with:\n" +
+                            "          cache-write-only: true\n" +
+                            "          gradle-home-cache-includes: init.d\n\n" +
+                            protectedSetup,
+                    )
+
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> { assertPullRequestCachePolicy(poisonedWorkflow) }
+            }
+    }
+
+    @Test
     fun `exact-run cache artifacts are immutable identified and digest-verified`() {
         val workflow = Path.of("../.github/workflows/ci.yml").readText()
         val buildJob = parseWorkflow(workflow).job("build")
@@ -309,6 +339,69 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing rejects Gradle-owned initializers before and after protected setup`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val protectedSetup = "      - name: Set up Gradle\n"
+        val compilationStep = "      - name: Compile the openai-java-core project\n"
+        val actionRevision = "0723195856401067f7a2779048b490ace7a47d7c"
+
+        listOf(protectedSetup, compilationStep).forEach { followingStep ->
+            listOf(
+                    "gradle/actions/dependency-submission@$actionRevision",
+                    "GRADLE/Actions/Dependency-Submission@$actionRevision",
+                    "\"gradle/actions/dependency-\\u0073ubmission@$actionRevision\"",
+                    "gradle/actions/future-initializer@$actionRevision",
+                    "gradle/future-gradle-action@$actionRevision",
+                )
+                .forEach { action ->
+                    val poisonedWorkflow =
+                        workflow.replaceFirst(
+                            followingStep,
+                            "      - name: Restore delegated Gradle cache\n" +
+                                "        uses: $action\n" +
+                                "        with:\n" +
+                                "          dependency-graph: download-and-submit\n" +
+                                "          dependency-graph-continue-on-failure: true\n" +
+                                "          gradle-home-cache-includes: init.d\n\n" +
+                                followingStep,
+                        )
+
+                    assertTrue(poisonedWorkflow != workflow)
+                    assertFailsWith<AssertionError> {
+                        assertPublishingCachePolicy(poisonedWorkflow)
+                    }
+                }
+        }
+    }
+
+    @Test
+    fun `publishing rejects unreviewed action capabilities and cache-enabled inputs`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val protectedSetup = "      - name: Set up Gradle\n"
+        val javaSetup = "          distribution: temurin\n          java-version: |\n"
+
+        listOf(
+                workflow.replaceFirst(
+                    protectedSetup,
+                    "      - name: Initialize third-party Gradle cache\n" +
+                        "        uses: third-party/gradle-cache@0123456789abcdef0123456789abcdef01234567\n" +
+                        "        with:\n" +
+                        "          cache: gradle\n\n" +
+                        protectedSetup,
+                ),
+                workflow.replaceFirst(javaSetup, "          cache: gradle\n$javaSetup"),
+                workflow.replaceFirst(
+                    "gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c",
+                    "gradle/actions/setup-gradle@v5",
+                ),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> { assertPublishingCachePolicy(poisonedWorkflow) }
+            }
+    }
+
+    @Test
     fun `publishing decodes YAML-escaped cache action references`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val compilationStep = "      - name: Compile the openai-java-core project\n"
@@ -381,6 +474,31 @@ class GradleCacheTrustPolicyTest {
             "Privileged publishing must accept only trusted default-branch events.",
         )
         val publishJob = parsedWorkflow.job("publish")
+        val reviewedActionInputs =
+            mapOf(
+                "actions/checkout" to setOf("persist-credentials", "ref"),
+                "actions/setup-java" to setOf("distribution", "java-version"),
+                "gradle/actions/setup-gradle" to setOf("cache-disabled"),
+                "graalvm/setup-graalvm" to setOf("distribution", "java-version"),
+            )
+
+        publishJob.actions.forEach { action ->
+            val approvedInputs = reviewedActionInputs[action.repository]
+
+            assertTrue(
+                approvedInputs != null,
+                "Privileged publishing must reject unreviewed action ${action.repository}.",
+            )
+            assertTrue(
+                action.reference.substringAfterLast('@', "").matches(Regex("[0-9a-fA-F]{40}")),
+                "Privileged publishing action ${action.repository} must remain SHA-pinned.",
+            )
+            assertTrue(
+                action.inputs.keys.all { it in approvedInputs },
+                "Privileged publishing action ${action.repository} has unreviewed inputs.",
+            )
+        }
+
         val isolation =
             publishJob.steps.indexOfFirst { it.name == "Create isolated release Gradle User Home" }
         val initializers =
@@ -552,9 +670,6 @@ class GradleCacheTrustPolicyTest {
         val inputs: Map<String, String>,
     ) {
         val repository: String = reference.substringBefore('@').lowercase(Locale.ROOT)
-        val initializesGradle: Boolean =
-            repository == "gradle/actions/setup-gradle" ||
-                repository == "gradle/gradle-build-action" ||
-                repository.startsWith("gradle/gradle-build-action/")
+        val initializesGradle: Boolean = repository.substringBefore('/') == "gradle"
     }
 }
