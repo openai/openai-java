@@ -250,6 +250,8 @@ jobs:
       needs.runtime_compatibility.result == 'success'
     permissions:
       contents: read
+      id-token: write
+      attestations: write
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 90
     environment: publish
@@ -316,6 +318,42 @@ jobs:
             exit 1
           fi
 
+      - name: Build Maven artifacts for provenance
+        id: maven-artifacts
+        env:
+          RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+
+          version="${RELEASE_TAG#v}"
+          tasks=()
+          subjects=()
+          for artifact in $MAVEN_ARTIFACTS; do
+            tasks+=(":$artifact:jar")
+            subjects+=("$artifact/build/libs/$artifact-$version.jar")
+          done
+
+          ./gradlew "${tasks[@]}" --no-configuration-cache
+
+          for subject in "${subjects[@]}"; do
+            if [[ ! -f "$subject" || -L "$subject" ]]; then
+              echo "::error::Missing or unsafe Maven artifact: $subject"
+              exit 1
+            fi
+          done
+
+          sha256sum "${subjects[@]}" > "$RUNNER_TEMP/maven-artifact-provenance.sha256"
+          {
+            echo 'subject_paths<<EOF'
+            printf '%s\n' "${subjects[@]}"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Attest Maven artifact provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: ${{ steps.maven-artifacts.outputs.subject_paths }}
+
       - name: Publish to Maven Central
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
@@ -352,6 +390,9 @@ jobs:
           ./gradlew publishAndReleaseToMavenCentral \
             --stacktrace \
             --no-configuration-cache
+
+      - name: Verify attested Maven artifacts
+        run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
 
       - name: Wait for Maven Central
         env:

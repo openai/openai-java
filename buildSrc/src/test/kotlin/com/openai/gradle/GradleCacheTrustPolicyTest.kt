@@ -228,6 +228,87 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing attests every released artifact before exposing signing secrets`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        assertPublishingProvenancePolicy(workflow)
+    }
+
+    @Test
+    fun `publishing rejects missing or excessive attestation permissions`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val permissions =
+            "    permissions:\n" +
+                "      contents: read\n" +
+                "      id-token: write\n" +
+                "      attestations: write\n"
+
+        listOf(
+                permissions.replace("      id-token: write\n", ""),
+                permissions.replace("      attestations: write\n", ""),
+                permissions.replace("      contents: read\n", "      contents: write\n"),
+                permissions + "      actions: write\n",
+            )
+            .forEach { unsafePermissions ->
+                val poisonedWorkflow = workflow.replaceFirst(permissions, unsafePermissions)
+
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> {
+                    assertPublishingProvenancePolicy(poisonedWorkflow)
+                }
+            }
+    }
+
+    @Test
+    fun `publishing rejects unreviewed provenance subjects action inputs and revisions`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val subject = "          subject-path: \${{ steps.maven-artifacts.outputs.subject_paths }}"
+
+        listOf(
+                workflow.replaceFirst(subject, "          subject-path: '**/*.jar'"),
+                workflow.replaceFirst(
+                    subject,
+                    "$subject\n          github-token: \${{ secrets.GITHUB_TOKEN }}",
+                ),
+                workflow.replaceFirst(
+                    "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6",
+                    "actions/attest@v4",
+                ),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> { assertPublishingCachePolicy(poisonedWorkflow) }
+            }
+    }
+
+    @Test
+    fun `publishing rejects provenance generation after signing secrets are exposed`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val attestationStart = workflow.indexOf("      - name: Attest Maven artifact provenance\n")
+        val signingStart = workflow.indexOf("      - name: Publish to Maven Central\n")
+        val attestation = workflow.substring(attestationStart, signingStart)
+        val verification = "      - name: Verify attested Maven artifacts\n"
+        val poisonedWorkflow =
+            workflow
+                .removeRange(attestationStart, signingStart)
+                .replaceFirst(verification, "$attestation$verification")
+
+        assertTrue(poisonedWorkflow != workflow)
+        assertFailsWith<AssertionError> { assertPublishingProvenancePolicy(poisonedWorkflow) }
+    }
+
+    @Test
+    fun `published Maven artifact provenance verification is documented`() {
+        val securityPolicy = Path.of("../SECURITY.md").readText()
+
+        assertContains(securityPolicy, "## Maven Artifact Provenance")
+        assertContains(
+            securityPolicy,
+            "gh attestation verify path/to/openai-java-VERSION.jar -R openai/openai-java",
+        )
+        assertContains(securityPolicy, "not exposed to the attestation action")
+    }
+
+    @Test
     fun `publishing rejects untrusted pull request and completion triggers`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
 
@@ -480,6 +561,7 @@ class GradleCacheTrustPolicyTest {
                 "actions/setup-java" to setOf("distribution", "java-version"),
                 "gradle/actions/setup-gradle" to setOf("cache-disabled"),
                 "graalvm/setup-graalvm" to setOf("distribution", "java-version"),
+                "actions/attest" to setOf("subject-path"),
             )
 
         publishJob.actions.forEach { action ->
@@ -544,6 +626,73 @@ class GradleCacheTrustPolicyTest {
             },
             "Privileged publishing must reject every cross-run artifact and GitHub cache action.",
         )
+
+        assertPublishingProvenancePolicy(workflow)
+    }
+
+    private fun assertPublishingProvenancePolicy(workflow: String) {
+        val parsedWorkflow = parseWorkflow(workflow)
+        val publishJob = parsedWorkflow.job("publish")
+
+        assertEquals(
+            mapOf("contents" to "read", "id-token" to "write", "attestations" to "write"),
+            publishJob.permissions,
+            "Publishing must have only the GitHub permissions required to attest release artifacts.",
+        )
+        assertEquals(
+            listOf(
+                "openai-java",
+                "openai-java-core",
+                "openai-java-client-okhttp",
+                "openai-java-bedrock",
+            ),
+            parsedWorkflow.environment.getValue("MAVEN_ARTIFACTS").split(" "),
+            "Every published Maven artifact must receive a provenance attestation.",
+        )
+
+        val preparation = publishJob.steps.single { it.id == "maven-artifacts" }
+        val preparationIndex = publishJob.steps.indexOf(preparation)
+        val preparationScript = requireNotNull(preparation.run)
+        val attestation = publishJob.steps.single { it.action?.repository == "actions/attest" }
+        val attestationIndex = publishJob.steps.indexOf(attestation)
+        val signingIndex = publishJob.steps.indexOfFirst { "GPG_SIGNING_KEY" in it.environment }
+        val verificationIndex =
+            publishJob.steps.indexOfFirst { it.name == "Verify attested Maven artifacts" }
+
+        assertEquals(
+            "\${{ needs.release.outputs.release_tag }}",
+            preparation.environment.getValue("RELEASE_TAG"),
+        )
+        assertContains(preparationScript, "for artifact in \$MAVEN_ARTIFACTS; do")
+        assertContains(preparationScript, "tasks+=(\":\$artifact:jar\")")
+        assertContains(
+            preparationScript,
+            "subjects+=(\"\$artifact/build/libs/\$artifact-\$version.jar\")",
+        )
+        assertContains(preparationScript, "./gradlew \"\${tasks[@]}\" --no-configuration-cache")
+        assertContains(preparationScript, "[[ ! -f \"\$subject\" || -L \"\$subject\" ]]")
+        assertContains(
+            preparationScript,
+            "sha256sum \"\${subjects[@]}\" > \"\$RUNNER_TEMP/maven-artifact-provenance.sha256\"",
+        )
+        assertEquals(
+            mapOf("subject-path" to "\${{ steps.maven-artifacts.outputs.subject_paths }}"),
+            requireNotNull(attestation.action).inputs,
+        )
+        assertTrue(
+            attestation.environment.isEmpty(),
+            "The provenance action must not receive Maven publishing or PGP credentials.",
+        )
+        assertTrue(preparationIndex < attestationIndex, "Build Maven artifacts before attesting.")
+        assertTrue(signingIndex > attestationIndex, "Attest artifacts before exposing PGP secrets.")
+        assertTrue(
+            verificationIndex > signingIndex,
+            "Verify attested artifact digests after the publishing Gradle invocation.",
+        )
+        assertEquals(
+            "sha256sum --check \"\$RUNNER_TEMP/maven-artifact-provenance.sha256\"",
+            publishJob.steps[verificationIndex].run,
+        )
     }
 
     private fun artifactRestoreActions(workflow: String): List<WorkflowAction> =
@@ -577,6 +726,7 @@ class GradleCacheTrustPolicyTest {
 
         return Workflow(
             events,
+            document["env"].workflowScalars("workflow environment"),
             jobs.entries.associate { (name, value) ->
                 val jobName = name.workflowScalar("job name")
                 val job = value.workflowMapping("job $jobName")
@@ -602,7 +752,12 @@ class GradleCacheTrustPolicyTest {
                     } ?: emptyList()
 
                 jobName to
-                    WorkflowJob(jobName, job["outputs"].workflowScalars("job outputs"), steps)
+                    WorkflowJob(
+                        jobName,
+                        job["outputs"].workflowScalars("job outputs"),
+                        job["permissions"].workflowScalars("job permissions"),
+                        steps,
+                    )
             },
         )
     }
@@ -642,7 +797,11 @@ class GradleCacheTrustPolicyTest {
             else -> error("$description must be a YAML scalar.")
         }
 
-    private data class Workflow(val events: Set<String>, val jobs: Map<String, WorkflowJob>) {
+    private data class Workflow(
+        val events: Set<String>,
+        val environment: Map<String, String>,
+        val jobs: Map<String, WorkflowJob>,
+    ) {
         fun job(name: String): WorkflowJob =
             jobs[name] ?: error("GitHub Actions workflow is missing job $name.")
     }
@@ -650,6 +809,7 @@ class GradleCacheTrustPolicyTest {
     private data class WorkflowJob(
         val name: String,
         val outputs: Map<String, String>,
+        val permissions: Map<String, String>,
         val steps: List<WorkflowStep>,
     ) {
         val actions: List<WorkflowAction>

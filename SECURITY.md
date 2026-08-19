@@ -35,6 +35,24 @@ Please give the maintainers a reasonable opportunity to investigate and address 
 
 Thank you for helping us keep this SDK and the systems it interacts with secure.
 
+## Maven Artifact Provenance
+
+Official Maven Central releases include GitHub artifact attestations for the
+`openai-java`, `openai-java-core`, `openai-java-client-okhttp`, and
+`openai-java-bedrock` binary JARs. Each attestation binds an artifact's digest to
+the trusted release workflow, source repository, and commit using short-lived
+GitHub OpenID Connect credentials.
+
+After downloading a published JAR from Maven Central, verify its provenance with:
+
+```sh
+gh attestation verify path/to/openai-java-VERSION.jar -R openai/openai-java
+```
+
+Maven Central separately requires a publisher token and PGP signatures. Those
+credentials remain restricted to the `main`-only publishing environment and are
+not exposed to the attestation action.
+
 ## Gradle Build Cache Trust
 
 The Kotlin Gradle plugin used to build this SDK is affected by
