@@ -35,18 +35,30 @@ dependencies {
         testImplementation("com.github.jknack:handlebars:4.5.3") {
             because("WireMock's transitive 4.3.1 dependency is affected by CVE-2026-55760")
         }
-        testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.3") {
-            because("WireMock's transitive HTTP client is affected by CVE-2026-64607")
-        }
-        testImplementation("org.apache.httpcomponents.core5:httpcore5:5.4.3") {
-            because("WireMock's transitive HTTP core is affected by CVE-2026-54399")
-        }
-        testImplementation("org.apache.httpcomponents.core5:httpcore5-h2:5.4.3") {
-            because("WireMock's transitive HTTP/2 core is affected by CVE-2026-54428")
-        }
     }
 
     testImplementation(platform("org.eclipse.jetty:jetty-bom:12.0.36"))
     testImplementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.36"))
     testImplementation("org.wiremock:wiremock-jetty12:3.13.2")
+}
+
+// API-compatibility source sets own their dependencies and do not extend testImplementation.
+configurations.matching {
+    it.name == "testImplementation" ||
+        it.name == "externalApiCompatibilityImplementation" ||
+        it.name == "proposedApiCompatibilityImplementation"
+}.configureEach {
+    val configurationName = name
+
+    project.dependencies.constraints {
+        add(configurationName, "org.apache.httpcomponents.client5:httpclient5:5.6.3") {
+            because("WireMock's transitive HTTP client is affected by CVE-2026-64607")
+        }
+        add(configurationName, "org.apache.httpcomponents.core5:httpcore5:5.4.3") {
+            because("WireMock's transitive HTTP core is affected by CVE-2026-54399")
+        }
+        add(configurationName, "org.apache.httpcomponents.core5:httpcore5-h2:5.4.3") {
+            because("WireMock's transitive HTTP/2 core is affected by CVE-2026-54428")
+        }
+    }
 }
