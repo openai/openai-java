@@ -1,0 +1,1837 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.containers
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
+import com.openai.core.Enum
+import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
+import com.openai.core.Params
+import com.openai.core.checkKnown
+import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
+import com.openai.core.http.Headers
+import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.responses.ContainerNetworkPolicyAllowlist
+import com.openai.models.responses.ContainerNetworkPolicyDisabled
+import com.openai.models.responses.InlineSkill
+import com.openai.models.responses.SkillReference
+import java.util.Collections
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/** Create Container */
+class ContainerCreateParams
+private constructor(
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
+
+    /**
+     * Name of the container to create.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun name(): String = body.name()
+
+    /**
+     * Container expiration time in seconds relative to the 'anchor' time.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
+
+    /**
+     * IDs of files to copy to the container.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun fileIds(): Optional<List<String>> = body.fileIds()
+
+    /**
+     * Optional memory limit for the container. Defaults to "1g".
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun memoryLimit(): Optional<MemoryLimit> = body.memoryLimit()
+
+    /**
+     * Network access policy for the container.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun networkPolicy(): Optional<NetworkPolicy> = body.networkPolicy()
+
+    /**
+     * An optional list of skills referenced by id or inline data.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun skills(): Optional<List<Skill>> = body.skills()
+
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Returns the raw JSON value of [expiresAfter].
+     *
+     * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _expiresAfter(): JsonField<ExpiresAfter> = body._expiresAfter()
+
+    /**
+     * Returns the raw JSON value of [fileIds].
+     *
+     * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _fileIds(): JsonField<List<String>> = body._fileIds()
+
+    /**
+     * Returns the raw JSON value of [memoryLimit].
+     *
+     * Unlike [memoryLimit], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _memoryLimit(): JsonField<MemoryLimit> = body._memoryLimit()
+
+    /**
+     * Returns the raw JSON value of [networkPolicy].
+     *
+     * Unlike [networkPolicy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _networkPolicy(): JsonField<NetworkPolicy> = body._networkPolicy()
+
+    /**
+     * Returns the raw JSON value of [skills].
+     *
+     * Unlike [skills], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _skills(): JsonField<List<Skill>> = body._skills()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ContainerCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .name()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [ContainerCreateParams]. */
+    class Builder internal constructor() {
+
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        @JvmSynthetic
+        internal fun from(containerCreateParams: ContainerCreateParams) = apply {
+            body = containerCreateParams.body.toBuilder()
+            additionalHeaders = containerCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = containerCreateParams.additionalQueryParams.toBuilder()
+        }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [name]
+         * - [expiresAfter]
+         * - [fileIds]
+         * - [memoryLimit]
+         * - [networkPolicy]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** Name of the container to create. */
+        fun name(name: String) = apply { body.name(name) }
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        /** Container expiration time in seconds relative to the 'anchor' time. */
+        fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }
+
+        /**
+         * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+            body.expiresAfter(expiresAfter)
+        }
+
+        /** IDs of files to copy to the container. */
+        fun fileIds(fileIds: List<String>) = apply { body.fileIds(fileIds) }
+
+        /**
+         * Sets [Builder.fileIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileIds] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun fileIds(fileIds: JsonField<List<String>>) = apply { body.fileIds(fileIds) }
+
+        /**
+         * Adds a single [String] to [fileIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addFileId(fileId: String) = apply { body.addFileId(fileId) }
+
+        /** Optional memory limit for the container. Defaults to "1g". */
+        fun memoryLimit(memoryLimit: MemoryLimit) = apply { body.memoryLimit(memoryLimit) }
+
+        /**
+         * Sets [Builder.memoryLimit] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.memoryLimit] with a well-typed [MemoryLimit] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun memoryLimit(memoryLimit: JsonField<MemoryLimit>) = apply {
+            body.memoryLimit(memoryLimit)
+        }
+
+        /** Network access policy for the container. */
+        fun networkPolicy(networkPolicy: NetworkPolicy) = apply {
+            body.networkPolicy(networkPolicy)
+        }
+
+        /**
+         * Sets [Builder.networkPolicy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.networkPolicy] with a well-typed [NetworkPolicy] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun networkPolicy(networkPolicy: JsonField<NetworkPolicy>) = apply {
+            body.networkPolicy(networkPolicy)
+        }
+
+        /** Alias for calling [networkPolicy] with `NetworkPolicy.ofDisabled(disabled)`. */
+        fun networkPolicy(disabled: ContainerNetworkPolicyDisabled) = apply {
+            body.networkPolicy(disabled)
+        }
+
+        /** Alias for calling [networkPolicy] with `NetworkPolicy.ofAllowlist(allowlist)`. */
+        fun networkPolicy(allowlist: ContainerNetworkPolicyAllowlist) = apply {
+            body.networkPolicy(allowlist)
+        }
+
+        /**
+         * Alias for calling [networkPolicy] with the following:
+         * ```java
+         * ContainerNetworkPolicyAllowlist.builder()
+         *     .allowedDomains(allowedDomains)
+         *     .build()
+         * ```
+         */
+        fun allowlistNetworkPolicy(allowedDomains: List<String>) = apply {
+            body.allowlistNetworkPolicy(allowedDomains)
+        }
+
+        /** An optional list of skills referenced by id or inline data. */
+        fun skills(skills: List<Skill>) = apply { body.skills(skills) }
+
+        /**
+         * Sets [Builder.skills] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.skills] with a well-typed `List<Skill>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun skills(skills: JsonField<List<Skill>>) = apply { body.skills(skills) }
+
+        /**
+         * Adds a single [Skill] to [skills].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addSkill(skill: Skill) = apply { body.addSkill(skill) }
+
+        /** Alias for calling [addSkill] with `Skill.ofReference(reference)`. */
+        fun addSkill(reference: SkillReference) = apply { body.addSkill(reference) }
+
+        /**
+         * Alias for calling [addSkill] with the following:
+         * ```java
+         * SkillReference.builder()
+         *     .skillId(skillId)
+         *     .build()
+         * ```
+         */
+        fun addReferenceSkill(skillId: String) = apply { body.addReferenceSkill(skillId) }
+
+        /** Alias for calling [addSkill] with `Skill.ofInline(inline)`. */
+        fun addSkill(inline: InlineSkill) = apply { body.addSkill(inline) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ContainerCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .name()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ContainerCreateParams =
+            ContainerCreateParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
+    fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val name: JsonField<String>,
+        private val expiresAfter: JsonField<ExpiresAfter>,
+        private val fileIds: JsonField<List<String>>,
+        private val memoryLimit: JsonField<MemoryLimit>,
+        private val networkPolicy: JsonField<NetworkPolicy>,
+        private val skills: JsonField<List<Skill>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("expires_after")
+            @ExcludeMissing
+            expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
+            @JsonProperty("file_ids")
+            @ExcludeMissing
+            fileIds: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("memory_limit")
+            @ExcludeMissing
+            memoryLimit: JsonField<MemoryLimit> = JsonMissing.of(),
+            @JsonProperty("network_policy")
+            @ExcludeMissing
+            networkPolicy: JsonField<NetworkPolicy> = JsonMissing.of(),
+            @JsonProperty("skills")
+            @ExcludeMissing
+            skills: JsonField<List<Skill>> = JsonMissing.of(),
+        ) : this(name, expiresAfter, fileIds, memoryLimit, networkPolicy, skills, mutableMapOf())
+
+        /**
+         * Name of the container to create.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun name(): String = name.getRequired("name")
+
+        /**
+         * Container expiration time in seconds relative to the 'anchor' time.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+
+        /**
+         * IDs of files to copy to the container.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
+
+        /**
+         * Optional memory limit for the container. Defaults to "1g".
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun memoryLimit(): Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
+
+        /**
+         * Network access policy for the container.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun networkPolicy(): Optional<NetworkPolicy> = networkPolicy.getOptional("network_policy")
+
+        /**
+         * An optional list of skills referenced by id or inline data.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun skills(): Optional<List<Skill>> = skills.getOptional("skills")
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [expiresAfter].
+         *
+         * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
+
+        /**
+         * Returns the raw JSON value of [fileIds].
+         *
+         * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("file_ids") @ExcludeMissing fun _fileIds(): JsonField<List<String>> = fileIds
+
+        /**
+         * Returns the raw JSON value of [memoryLimit].
+         *
+         * Unlike [memoryLimit], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("memory_limit")
+        @ExcludeMissing
+        fun _memoryLimit(): JsonField<MemoryLimit> = memoryLimit
+
+        /**
+         * Returns the raw JSON value of [networkPolicy].
+         *
+         * Unlike [networkPolicy], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("network_policy")
+        @ExcludeMissing
+        fun _networkPolicy(): JsonField<NetworkPolicy> = networkPolicy
+
+        /**
+         * Returns the raw JSON value of [skills].
+         *
+         * Unlike [skills], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("skills") @ExcludeMissing fun _skills(): JsonField<List<Skill>> = skills
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var name: JsonField<String>? = null
+            private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
+            private var fileIds: JsonField<MutableList<String>>? = null
+            private var memoryLimit: JsonField<MemoryLimit> = JsonMissing.of()
+            private var networkPolicy: JsonField<NetworkPolicy> = JsonMissing.of()
+            private var skills: JsonField<MutableList<Skill>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                name = body.name
+                expiresAfter = body.expiresAfter
+                fileIds = body.fileIds.map { it.toMutableList() }
+                memoryLimit = body.memoryLimit
+                networkPolicy = body.networkPolicy
+                skills = body.skills.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** Name of the container to create. */
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
+
+            /** Container expiration time in seconds relative to the 'anchor' time. */
+            fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
+
+            /**
+             * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+                this.expiresAfter = expiresAfter
+            }
+
+            /** IDs of files to copy to the container. */
+            fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
+
+            /**
+             * Sets [Builder.fileIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                this.fileIds = fileIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [fileIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addFileId(fileId: String) = apply {
+                fileIds =
+                    (fileIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("fileIds", it).add(fileId)
+                    }
+            }
+
+            /** Optional memory limit for the container. Defaults to "1g". */
+            fun memoryLimit(memoryLimit: MemoryLimit) = memoryLimit(JsonField.of(memoryLimit))
+
+            /**
+             * Sets [Builder.memoryLimit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.memoryLimit] with a well-typed [MemoryLimit] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun memoryLimit(memoryLimit: JsonField<MemoryLimit>) = apply {
+                this.memoryLimit = memoryLimit
+            }
+
+            /** Network access policy for the container. */
+            fun networkPolicy(networkPolicy: NetworkPolicy) =
+                networkPolicy(JsonField.of(networkPolicy))
+
+            /**
+             * Sets [Builder.networkPolicy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.networkPolicy] with a well-typed [NetworkPolicy]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun networkPolicy(networkPolicy: JsonField<NetworkPolicy>) = apply {
+                this.networkPolicy = networkPolicy
+            }
+
+            /** Alias for calling [networkPolicy] with `NetworkPolicy.ofDisabled(disabled)`. */
+            fun networkPolicy(disabled: ContainerNetworkPolicyDisabled) =
+                networkPolicy(NetworkPolicy.ofDisabled(disabled))
+
+            /** Alias for calling [networkPolicy] with `NetworkPolicy.ofAllowlist(allowlist)`. */
+            fun networkPolicy(allowlist: ContainerNetworkPolicyAllowlist) =
+                networkPolicy(NetworkPolicy.ofAllowlist(allowlist))
+
+            /**
+             * Alias for calling [networkPolicy] with the following:
+             * ```java
+             * ContainerNetworkPolicyAllowlist.builder()
+             *     .allowedDomains(allowedDomains)
+             *     .build()
+             * ```
+             */
+            fun allowlistNetworkPolicy(allowedDomains: List<String>) =
+                networkPolicy(
+                    ContainerNetworkPolicyAllowlist.builder().allowedDomains(allowedDomains).build()
+                )
+
+            /** An optional list of skills referenced by id or inline data. */
+            fun skills(skills: List<Skill>) = skills(JsonField.of(skills))
+
+            /**
+             * Sets [Builder.skills] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.skills] with a well-typed `List<Skill>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun skills(skills: JsonField<List<Skill>>) = apply {
+                this.skills = skills.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Skill] to [skills].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addSkill(skill: Skill) = apply {
+                skills =
+                    (skills ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("skills", it).add(skill)
+                    }
+            }
+
+            /** Alias for calling [addSkill] with `Skill.ofReference(reference)`. */
+            fun addSkill(reference: SkillReference) = addSkill(Skill.ofReference(reference))
+
+            /**
+             * Alias for calling [addSkill] with the following:
+             * ```java
+             * SkillReference.builder()
+             *     .skillId(skillId)
+             *     .build()
+             * ```
+             */
+            fun addReferenceSkill(skillId: String) =
+                addSkill(SkillReference.builder().skillId(skillId).build())
+
+            /** Alias for calling [addSkill] with `Skill.ofInline(inline)`. */
+            fun addSkill(inline: InlineSkill) = addSkill(Skill.ofInline(inline))
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("name", name),
+                    expiresAfter,
+                    (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
+                    memoryLimit,
+                    networkPolicy,
+                    (skills ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            name()
+            expiresAfter().ifPresent { it.validate() }
+            fileIds()
+            memoryLimit().ifPresent { it.validate() }
+            networkPolicy().ifPresent { it.validate() }
+            skills().ifPresent { it.forEach { it.validate() } }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (name.asKnown().isPresent) 1 else 0) +
+                (expiresAfter.asKnown().getOrNull()?.validity() ?: 0) +
+                (fileIds.asKnown().getOrNull()?.size ?: 0) +
+                (memoryLimit.asKnown().getOrNull()?.validity() ?: 0) +
+                (networkPolicy.asKnown().getOrNull()?.validity() ?: 0) +
+                (skills.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                name == other.name &&
+                expiresAfter == other.expiresAfter &&
+                fileIds == other.fileIds &&
+                memoryLimit == other.memoryLimit &&
+                networkPolicy == other.networkPolicy &&
+                skills == other.skills &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                name,
+                expiresAfter,
+                fileIds,
+                memoryLimit,
+                networkPolicy,
+                skills,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{name=$name, expiresAfter=$expiresAfter, fileIds=$fileIds, memoryLimit=$memoryLimit, networkPolicy=$networkPolicy, skills=$skills, additionalProperties=$additionalProperties}"
+    }
+
+    /** Container expiration time in seconds relative to the 'anchor' time. */
+    class ExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val anchor: JsonField<Anchor>,
+        private val minutes: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("anchor") @ExcludeMissing anchor: JsonField<Anchor> = JsonMissing.of(),
+            @JsonProperty("minutes") @ExcludeMissing minutes: JsonField<Long> = JsonMissing.of(),
+        ) : this(anchor, minutes, mutableMapOf())
+
+        /**
+         * Time anchor for the expiration time. Currently only 'last_active_at' is supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun anchor(): Anchor = anchor.getRequired("anchor")
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun minutes(): Long = minutes.getRequired("minutes")
+
+        /**
+         * Returns the raw JSON value of [anchor].
+         *
+         * Unlike [anchor], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
+
+        /**
+         * Returns the raw JSON value of [minutes].
+         *
+         * Unlike [minutes], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("minutes") @ExcludeMissing fun _minutes(): JsonField<Long> = minutes
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ExpiresAfter].
+             *
+             * The following fields are required:
+             * ```java
+             * .anchor()
+             * .minutes()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ExpiresAfter]. */
+        class Builder internal constructor() {
+
+            private var anchor: JsonField<Anchor>? = null
+            private var minutes: JsonField<Long>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(expiresAfter: ExpiresAfter) = apply {
+                anchor = expiresAfter.anchor
+                minutes = expiresAfter.minutes
+                additionalProperties = expiresAfter.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Time anchor for the expiration time. Currently only 'last_active_at' is supported.
+             */
+            fun anchor(anchor: Anchor) = anchor(JsonField.of(anchor))
+
+            /**
+             * Sets [Builder.anchor] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.anchor] with a well-typed [Anchor] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun anchor(anchor: JsonField<Anchor>) = apply { this.anchor = anchor }
+
+            fun minutes(minutes: Long) = minutes(JsonField.of(minutes))
+
+            /**
+             * Sets [Builder.minutes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.minutes] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun minutes(minutes: JsonField<Long>) = apply { this.minutes = minutes }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ExpiresAfter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .anchor()
+             * .minutes()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ExpiresAfter =
+                ExpiresAfter(
+                    checkRequired("anchor", anchor),
+                    checkRequired("minutes", minutes),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ExpiresAfter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            anchor().validate()
+            minutes()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (anchor.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (minutes.asKnown().isPresent) 1 else 0)
+
+        /** Time anchor for the expiration time. Currently only 'last_active_at' is supported. */
+        class Anchor @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LAST_ACTIVE_AT = of("last_active_at")
+
+                @JvmStatic fun of(value: String) = Anchor(JsonField.of(value))
+            }
+
+            /** An enum containing [Anchor]'s known values. */
+            enum class Known {
+                LAST_ACTIVE_AT
+            }
+
+            /**
+             * An enum containing [Anchor]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Anchor] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                LAST_ACTIVE_AT,
+                /**
+                 * An enum member indicating that [Anchor] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    LAST_ACTIVE_AT -> Value.LAST_ACTIVE_AT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    LAST_ACTIVE_AT -> Known.LAST_ACTIVE_AT
+                    else -> throw OpenAIInvalidDataException("Unknown Anchor: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Anchor = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Anchor && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ExpiresAfter &&
+                anchor == other.anchor &&
+                minutes == other.minutes &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(anchor, minutes, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ExpiresAfter{anchor=$anchor, minutes=$minutes, additionalProperties=$additionalProperties}"
+    }
+
+    /** Optional memory limit for the container. Defaults to "1g". */
+    class MemoryLimit @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val _1G = of("1g")
+
+            @JvmField val _4G = of("4g")
+
+            @JvmField val _16G = of("16g")
+
+            @JvmField val _64G = of("64g")
+
+            @JvmStatic fun of(value: String) = MemoryLimit(JsonField.of(value))
+        }
+
+        /** An enum containing [MemoryLimit]'s known values. */
+        enum class Known {
+            _1G,
+            _4G,
+            _16G,
+            _64G,
+        }
+
+        /**
+         * An enum containing [MemoryLimit]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [MemoryLimit] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            _1G,
+            _4G,
+            _16G,
+            _64G,
+            /**
+             * An enum member indicating that [MemoryLimit] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                _1G -> Value._1G
+                _4G -> Value._4G
+                _16G -> Value._16G
+                _64G -> Value._64G
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                _1G -> Known._1G
+                _4G -> Known._4G
+                _16G -> Known._16G
+                _64G -> Known._64G
+                else -> throw OpenAIInvalidDataException("Unknown MemoryLimit: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): MemoryLimit = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is MemoryLimit && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** Network access policy for the container. */
+    @JsonDeserialize(using = NetworkPolicy.Deserializer::class)
+    @JsonSerialize(using = NetworkPolicy.Serializer::class)
+    class NetworkPolicy
+    private constructor(
+        private val disabled: ContainerNetworkPolicyDisabled? = null,
+        private val allowlist: ContainerNetworkPolicyAllowlist? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun disabled(): Optional<ContainerNetworkPolicyDisabled> = Optional.ofNullable(disabled)
+
+        fun allowlist(): Optional<ContainerNetworkPolicyAllowlist> = Optional.ofNullable(allowlist)
+
+        fun isDisabled(): Boolean = disabled != null
+
+        fun isAllowlist(): Boolean = allowlist != null
+
+        fun asDisabled(): ContainerNetworkPolicyDisabled = disabled.getOrThrow("disabled")
+
+        fun asAllowlist(): ContainerNetworkPolicyAllowlist = allowlist.getOrThrow("allowlist")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = networkPolicy.accept(new NetworkPolicy.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitDisabled(ContainerNetworkPolicyDisabled disabled) {
+         *         return Optional.of(disabled.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                disabled != null -> visitor.visitDisabled(disabled)
+                allowlist != null -> visitor.visitAllowlist(allowlist)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): NetworkPolicy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitDisabled(disabled: ContainerNetworkPolicyDisabled) {
+                        disabled.validate()
+                    }
+
+                    override fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist) {
+                        allowlist.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitDisabled(disabled: ContainerNetworkPolicyDisabled) =
+                        disabled.validity()
+
+                    override fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist) =
+                        allowlist.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is NetworkPolicy &&
+                disabled == other.disabled &&
+                allowlist == other.allowlist
+        }
+
+        override fun hashCode(): Int = Objects.hash(disabled, allowlist)
+
+        override fun toString(): String =
+            when {
+                disabled != null -> "NetworkPolicy{disabled=$disabled}"
+                allowlist != null -> "NetworkPolicy{allowlist=$allowlist}"
+                _json != null -> "NetworkPolicy{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid NetworkPolicy")
+            }
+
+        companion object {
+
+            @JvmStatic
+            fun ofDisabled(disabled: ContainerNetworkPolicyDisabled) =
+                NetworkPolicy(disabled = disabled)
+
+            @JvmStatic
+            fun ofAllowlist(allowlist: ContainerNetworkPolicyAllowlist) =
+                NetworkPolicy(allowlist = allowlist)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [NetworkPolicy] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            fun visitDisabled(disabled: ContainerNetworkPolicyDisabled): T
+
+            fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist): T
+
+            /**
+             * Maps an unknown variant of [NetworkPolicy] to a value of type [T].
+             *
+             * An instance of [NetworkPolicy] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown NetworkPolicy: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<NetworkPolicy>(NetworkPolicy::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): NetworkPolicy {
+                val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                when (type) {
+                    "disabled" -> {
+                        return tryDeserialize(
+                                node,
+                                jacksonTypeRef<ContainerNetworkPolicyDisabled>(),
+                            )
+                            ?.let { NetworkPolicy(disabled = it, _json = json) }
+                            ?: NetworkPolicy(_json = json)
+                    }
+                    "allowlist" -> {
+                        return tryDeserialize(
+                                node,
+                                jacksonTypeRef<ContainerNetworkPolicyAllowlist>(),
+                            )
+                            ?.let { NetworkPolicy(allowlist = it, _json = json) }
+                            ?: NetworkPolicy(_json = json)
+                    }
+                }
+
+                return NetworkPolicy(_json = json)
+            }
+        }
+
+        internal class Serializer : BaseSerializer<NetworkPolicy>(NetworkPolicy::class) {
+
+            override fun serialize(
+                value: NetworkPolicy,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.disabled != null -> generator.writeObject(value.disabled)
+                    value.allowlist != null -> generator.writeObject(value.allowlist)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid NetworkPolicy")
+                }
+            }
+        }
+    }
+
+    @JsonDeserialize(using = Skill.Deserializer::class)
+    @JsonSerialize(using = Skill.Serializer::class)
+    class Skill
+    private constructor(
+        private val reference: SkillReference? = null,
+        private val inline: InlineSkill? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun reference(): Optional<SkillReference> = Optional.ofNullable(reference)
+
+        fun inline(): Optional<InlineSkill> = Optional.ofNullable(inline)
+
+        fun isReference(): Boolean = reference != null
+
+        fun isInline(): Boolean = inline != null
+
+        fun asReference(): SkillReference = reference.getOrThrow("reference")
+
+        fun asInline(): InlineSkill = inline.getOrThrow("inline")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = skill.accept(new Skill.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitReference(SkillReference reference) {
+         *         return Optional.of(reference.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                reference != null -> visitor.visitReference(reference)
+                inline != null -> visitor.visitInline(inline)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Skill = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitReference(reference: SkillReference) {
+                        reference.validate()
+                    }
+
+                    override fun visitInline(inline: InlineSkill) {
+                        inline.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitReference(reference: SkillReference) = reference.validity()
+
+                    override fun visitInline(inline: InlineSkill) = inline.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Skill && reference == other.reference && inline == other.inline
+        }
+
+        override fun hashCode(): Int = Objects.hash(reference, inline)
+
+        override fun toString(): String =
+            when {
+                reference != null -> "Skill{reference=$reference}"
+                inline != null -> "Skill{inline=$inline}"
+                _json != null -> "Skill{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Skill")
+            }
+
+        companion object {
+
+            @JvmStatic fun ofReference(reference: SkillReference) = Skill(reference = reference)
+
+            @JvmStatic fun ofInline(inline: InlineSkill) = Skill(inline = inline)
+        }
+
+        /** An interface that defines how to map each variant of [Skill] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitReference(reference: SkillReference): T
+
+            fun visitInline(inline: InlineSkill): T
+
+            /**
+             * Maps an unknown variant of [Skill] to a value of type [T].
+             *
+             * An instance of [Skill] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Skill: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Skill>(Skill::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Skill {
+                val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                when (type) {
+                    "skill_reference" -> {
+                        return tryDeserialize(node, jacksonTypeRef<SkillReference>())?.let {
+                            Skill(reference = it, _json = json)
+                        } ?: Skill(_json = json)
+                    }
+                    "inline" -> {
+                        return tryDeserialize(node, jacksonTypeRef<InlineSkill>())?.let {
+                            Skill(inline = it, _json = json)
+                        } ?: Skill(_json = json)
+                    }
+                }
+
+                return Skill(_json = json)
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Skill>(Skill::class) {
+
+            override fun serialize(
+                value: Skill,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.reference != null -> generator.writeObject(value.reference)
+                    value.inline != null -> generator.writeObject(value.inline)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Skill")
+                }
+            }
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is ContainerCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
+    }
+
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() =
+        "ContainerCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+}

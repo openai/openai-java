@@ -1,0 +1,444 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.realtime
+
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
+import com.openai.core.Enum
+import com.openai.core.JsonField
+import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
+import com.openai.core.getOrThrow
+import com.openai.errors.OpenAIInvalidDataException
+import java.util.Objects
+import java.util.Optional
+
+/**
+ * When the number of tokens in a conversation exceeds the model's input token limit, the
+ * conversation be truncated, meaning messages (starting from the oldest) will not be included in
+ * the model's context. A 32k context model with 4,096 max output tokens can only include 28,224
+ * tokens in the context before truncation occurs.
+ *
+ * Clients can configure truncation behavior to truncate with a lower max token limit, which is an
+ * effective way to control token usage and cost.
+ *
+ * Truncation will reduce the number of cached tokens on the next turn (busting the cache), since
+ * messages are dropped from the beginning of the context. However, clients can also configure
+ * truncation to retain messages up to a fraction of the maximum context size, which will reduce the
+ * need for future truncations and thus improve the cache rate.
+ *
+ * Truncation can be disabled entirely, which means the server will never truncate but would instead
+ * return an error if the conversation exceeds the model's input token limit.
+ */
+@JsonDeserialize(using = RealtimeTruncation.Deserializer::class)
+@JsonSerialize(using = RealtimeTruncation.Serializer::class)
+class RealtimeTruncation
+private constructor(
+    private val strategy: RealtimeTruncationStrategy? = null,
+    private val retentionRatio: RealtimeTruncationRetentionRatio? = null,
+    private val _json: JsonValue? = null,
+) {
+
+    /**
+     * The truncation strategy to use for the session. `auto` is the default truncation strategy.
+     * `disabled` will disable truncation and emit errors when the conversation exceeds the input
+     * token limit.
+     */
+    fun strategy(): Optional<RealtimeTruncationStrategy> = Optional.ofNullable(strategy)
+
+    /**
+     * Retain a fraction of the conversation tokens when the conversation exceeds the input token
+     * limit. This allows you to amortize truncations across multiple turns, which can help improve
+     * cached token usage.
+     */
+    fun retentionRatio(): Optional<RealtimeTruncationRetentionRatio> =
+        Optional.ofNullable(retentionRatio)
+
+    fun isStrategy(): Boolean = strategy != null
+
+    fun isRetentionRatio(): Boolean = retentionRatio != null
+
+    /**
+     * The truncation strategy to use for the session. `auto` is the default truncation strategy.
+     * `disabled` will disable truncation and emit errors when the conversation exceeds the input
+     * token limit.
+     */
+    fun asStrategy(): RealtimeTruncationStrategy = strategy.getOrThrow("strategy")
+
+    /**
+     * Retain a fraction of the conversation tokens when the conversation exceeds the input token
+     * limit. This allows you to amortize truncations across multiple turns, which can help improve
+     * cached token usage.
+     */
+    fun asRetentionRatio(): RealtimeTruncationRetentionRatio =
+        retentionRatio.getOrThrow("retentionRatio")
+
+    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+    /**
+     * Maps this instance's current variant to a value of type [T] using the given [visitor].
+     *
+     * Note that this method is _not_ forwards compatible with new variants from the API, unless
+     * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of the
+     * SDK gracefully, consider overriding [Visitor.unknown]:
+     * ```java
+     * import com.openai.core.JsonValue;
+     * import java.util.Optional;
+     *
+     * Optional<String> result = realtimeTruncation.accept(new RealtimeTruncation.Visitor<Optional<String>>() {
+     *     @Override
+     *     public Optional<String> visitStrategy(RealtimeTruncationStrategy strategy) {
+     *         return Optional.of(strategy.toString());
+     *     }
+     *
+     *     // ...
+     *
+     *     @Override
+     *     public Optional<String> unknown(JsonValue json) {
+     *         // Or inspect the `json`.
+     *         return Optional.empty();
+     *     }
+     * });
+     * ```
+     *
+     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
+     *   the current variant is unknown.
+     */
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
+            strategy != null -> visitor.visitStrategy(strategy)
+            retentionRatio != null -> visitor.visitRetentionRatio(retentionRatio)
+            else -> visitor.unknown(_json)
+        }
+
+    private var validated: Boolean = false
+
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
+    fun validate(): RealtimeTruncation = apply {
+        if (validated) {
+            return@apply
+        }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitStrategy(strategy: RealtimeTruncationStrategy) {
+                    strategy.validate()
+                }
+
+                override fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio) {
+                    retentionRatio.validate()
+                }
+            }
+        )
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitStrategy(strategy: RealtimeTruncationStrategy) =
+                    strategy.validity()
+
+                override fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio) =
+                    retentionRatio.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RealtimeTruncation &&
+            strategy == other.strategy &&
+            retentionRatio == other.retentionRatio
+    }
+
+    override fun hashCode(): Int = Objects.hash(strategy, retentionRatio)
+
+    override fun toString(): String =
+        when {
+            strategy != null -> "RealtimeTruncation{strategy=$strategy}"
+            retentionRatio != null -> "RealtimeTruncation{retentionRatio=$retentionRatio}"
+            _json != null -> "RealtimeTruncation{_unknown=$_json}"
+            else -> throw IllegalStateException("Invalid RealtimeTruncation")
+        }
+
+    companion object {
+
+        /**
+         * The truncation strategy to use for the session. `auto` is the default truncation
+         * strategy. `disabled` will disable truncation and emit errors when the conversation
+         * exceeds the input token limit.
+         */
+        @JvmStatic
+        fun ofStrategy(strategy: RealtimeTruncationStrategy) =
+            RealtimeTruncation(strategy = strategy)
+
+        /**
+         * Retain a fraction of the conversation tokens when the conversation exceeds the input
+         * token limit. This allows you to amortize truncations across multiple turns, which can
+         * help improve cached token usage.
+         */
+        @JvmStatic
+        fun ofRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio) =
+            RealtimeTruncation(retentionRatio = retentionRatio)
+    }
+
+    /**
+     * An interface that defines how to map each variant of [RealtimeTruncation] to a value of type
+     * [T].
+     */
+    interface Visitor<out T> {
+
+        /**
+         * The truncation strategy to use for the session. `auto` is the default truncation
+         * strategy. `disabled` will disable truncation and emit errors when the conversation
+         * exceeds the input token limit.
+         */
+        fun visitStrategy(strategy: RealtimeTruncationStrategy): T
+
+        /**
+         * Retain a fraction of the conversation tokens when the conversation exceeds the input
+         * token limit. This allows you to amortize truncations across multiple turns, which can
+         * help improve cached token usage.
+         */
+        fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio): T
+
+        /**
+         * Maps an unknown variant of [RealtimeTruncation] to a value of type [T].
+         *
+         * An instance of [RealtimeTruncation] can contain an unknown variant if it was deserialized
+         * from data that doesn't match any known variant. For example, if the SDK is on an older
+         * version than the API, then the API may respond with new variants that the SDK is unaware
+         * of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
+        fun unknown(json: JsonValue?): T {
+            throw OpenAIInvalidDataException("Unknown RealtimeTruncation: $json")
+        }
+    }
+
+    internal class Deserializer : BaseDeserializer<RealtimeTruncation>(RealtimeTruncation::class) {
+
+        override fun ObjectCodec.deserialize(node: JsonNode): RealtimeTruncation {
+            val json = JsonValue.fromJsonNode(node)
+
+            val bestMatches =
+                sequenceOf(
+                        tryDeserialize(node, jacksonTypeRef<RealtimeTruncationStrategy>())?.let {
+                            RealtimeTruncation(strategy = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<RealtimeTruncationRetentionRatio>())
+                            ?.let { RealtimeTruncation(retentionRatio = it, _json = json) },
+                    )
+                    .filterNotNull()
+                    .allMaxBy { it.validity() }
+                    .toList()
+            return when (bestMatches.size) {
+                // This can happen if what we're deserializing is completely incompatible with all
+                // the possible variants (e.g. deserializing from boolean).
+                0 -> RealtimeTruncation(_json = json)
+                1 -> bestMatches.single()
+                // If there's more than one match with the highest validity, then use the first
+                // completely valid match, or simply the first match if none are completely valid.
+                else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+            }
+        }
+    }
+
+    internal class Serializer : BaseSerializer<RealtimeTruncation>(RealtimeTruncation::class) {
+
+        override fun serialize(
+            value: RealtimeTruncation,
+            generator: JsonGenerator,
+            provider: SerializerProvider,
+        ) {
+            when {
+                value.strategy != null -> generator.writeObject(value.strategy)
+                value.retentionRatio != null -> generator.writeObject(value.retentionRatio)
+                value._json != null -> generator.writeObject(value._json)
+                else -> throw IllegalStateException("Invalid RealtimeTruncation")
+            }
+        }
+    }
+
+    /**
+     * The truncation strategy to use for the session. `auto` is the default truncation strategy.
+     * `disabled` will disable truncation and emit errors when the conversation exceeds the input
+     * token limit.
+     */
+    class RealtimeTruncationStrategy
+    @JsonCreator
+    private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val AUTO = of("auto")
+
+            @JvmField val DISABLED = of("disabled")
+
+            @JvmStatic fun of(value: String) = RealtimeTruncationStrategy(JsonField.of(value))
+        }
+
+        /** An enum containing [RealtimeTruncationStrategy]'s known values. */
+        enum class Known {
+            AUTO,
+            DISABLED,
+        }
+
+        /**
+         * An enum containing [RealtimeTruncationStrategy]'s known values, as well as an [_UNKNOWN]
+         * member.
+         *
+         * An instance of [RealtimeTruncationStrategy] can contain an unknown value in a couple of
+         * cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            AUTO,
+            DISABLED,
+            /**
+             * An enum member indicating that [RealtimeTruncationStrategy] was instantiated with an
+             * unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                AUTO -> Value.AUTO
+                DISABLED -> Value.DISABLED
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                AUTO -> Known.AUTO
+                DISABLED -> Known.DISABLED
+                else ->
+                    throw OpenAIInvalidDataException("Unknown RealtimeTruncationStrategy: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): RealtimeTruncationStrategy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is RealtimeTruncationStrategy && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+}

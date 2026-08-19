@@ -1,0 +1,217 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.services.blocking
+
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
+import com.github.tomakehurst.wiremock.junit5.WireMockTest
+import com.openai.TestServerExtension
+import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.models.videos.VideoCreateCharacterParams
+import com.openai.models.videos.VideoCreateParams
+import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
+import com.openai.models.videos.VideoModel
+import com.openai.models.videos.VideoRemixParams
+import com.openai.models.videos.VideoSeconds
+import com.openai.models.videos.VideoSize
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.parallel.ResourceLock
+
+@ExtendWith(TestServerExtension::class)
+@WireMockTest
+@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
+internal class VideoServiceTest {
+
+    @Test
+    fun create() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video =
+            videoService.create(
+                VideoCreateParams.builder()
+                    .prompt("x")
+                    .inputReference("Example data".byteInputStream())
+                    .model(VideoModel.SORA_2)
+                    .seconds(VideoSeconds._4)
+                    .size(VideoSize._720X1280)
+                    .build()
+            )
+
+        video.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video = videoService.retrieve("video_123")
+
+        video.validate()
+    }
+
+    @Test
+    fun list() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val page = videoService.list()
+
+        page.response().validate()
+    }
+
+    @Test
+    fun delete() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video = videoService.delete("video_123")
+
+        video.validate()
+    }
+
+    @Test
+    fun createCharacter() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val response =
+            videoService.createCharacter(
+                VideoCreateCharacterParams.builder()
+                    .name("x")
+                    .video("Example data".byteInputStream())
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
+    fun downloadContent(wmRuntimeInfo: WireMockRuntimeInfo) {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+        stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
+
+        val response =
+            videoService.downloadContent(
+                VideoDownloadContentParams.builder()
+                    .videoId("video_123")
+                    .variant(VideoDownloadContentParams.Variant.VIDEO)
+                    .build()
+            )
+
+        assertThat(response.body()).hasContent("abc")
+    }
+
+    @Test
+    fun edit() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video =
+            videoService.edit(
+                VideoEditParams.builder()
+                    .prompt("x")
+                    .video("Example data".byteInputStream())
+                    .build()
+            )
+
+        video.validate()
+    }
+
+    @Test
+    fun extend() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video =
+            videoService.extend(
+                VideoExtendParams.builder()
+                    .prompt("x")
+                    .seconds(VideoSeconds._4)
+                    .video("Example data".byteInputStream())
+                    .build()
+            )
+
+        video.validate()
+    }
+
+    @Test
+    fun getCharacter() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val response = videoService.getCharacter("char_123")
+
+        response.validate()
+    }
+
+    @Test
+    fun remix() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val videoService = client.videos()
+
+        val video =
+            videoService.remix(VideoRemixParams.builder().videoId("video_123").prompt("x").build())
+
+        video.validate()
+    }
+}

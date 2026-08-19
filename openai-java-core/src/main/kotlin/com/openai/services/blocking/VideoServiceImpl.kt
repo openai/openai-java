@@ -1,0 +1,462 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.services.blocking
+
+import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
+import com.openai.core.SecurityOptions
+import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
+import com.openai.core.handlers.errorHandler
+import com.openai.core.handlers.jsonHandler
+import com.openai.core.http.HttpMethod
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
+import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.multipartFormData
+import com.openai.core.http.parseable
+import com.openai.core.prepare
+import com.openai.models.videos.Video
+import com.openai.models.videos.VideoCreateCharacterParams
+import com.openai.models.videos.VideoCreateCharacterResponse
+import com.openai.models.videos.VideoCreateParams
+import com.openai.models.videos.VideoDeleteParams
+import com.openai.models.videos.VideoDeleteResponse
+import com.openai.models.videos.VideoDownloadContentParams
+import com.openai.models.videos.VideoEditParams
+import com.openai.models.videos.VideoExtendParams
+import com.openai.models.videos.VideoGetCharacterParams
+import com.openai.models.videos.VideoGetCharacterResponse
+import com.openai.models.videos.VideoListPage
+import com.openai.models.videos.VideoListPageResponse
+import com.openai.models.videos.VideoListParams
+import com.openai.models.videos.VideoRemixParams
+import com.openai.models.videos.VideoRetrieveParams
+import java.util.function.Consumer
+import kotlin.jvm.optionals.getOrNull
+
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+class VideoServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    VideoService {
+
+    private val withRawResponse: VideoService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
+
+    override fun withRawResponse(): VideoService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoService =
+        VideoServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun create(params: VideoCreateParams, requestOptions: RequestOptions): Video =
+        // post /videos
+        withRawResponse().create(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun retrieve(params: VideoRetrieveParams, requestOptions: RequestOptions): Video =
+        // get /videos/{video_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun list(params: VideoListParams, requestOptions: RequestOptions): VideoListPage =
+        // get /videos
+        withRawResponse().list(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun delete(
+        params: VideoDeleteParams,
+        requestOptions: RequestOptions,
+    ): VideoDeleteResponse =
+        // delete /videos/{video_id}
+        withRawResponse().delete(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun createCharacter(
+        params: VideoCreateCharacterParams,
+        requestOptions: RequestOptions,
+    ): VideoCreateCharacterResponse =
+        // post /videos/characters
+        withRawResponse().createCharacter(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun downloadContent(
+        params: VideoDownloadContentParams,
+        requestOptions: RequestOptions,
+    ): HttpResponse =
+        // get /videos/{video_id}/content
+        withRawResponse().downloadContent(params, requestOptions)
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun edit(params: VideoEditParams, requestOptions: RequestOptions): Video =
+        // post /videos/edits
+        withRawResponse().edit(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun extend(params: VideoExtendParams, requestOptions: RequestOptions): Video =
+        // post /videos/extensions
+        withRawResponse().extend(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun getCharacter(
+        params: VideoGetCharacterParams,
+        requestOptions: RequestOptions,
+    ): VideoGetCharacterResponse =
+        // get /videos/characters/{character_id}
+        withRawResponse().getCharacter(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    override fun remix(params: VideoRemixParams, requestOptions: RequestOptions): Video =
+        // post /videos/{video_id}/remix
+        withRawResponse().remix(params, requestOptions).parse()
+
+    @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        VideoService.WithRawResponse {
+
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): VideoService.WithRawResponse =
+            VideoServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
+        private val createHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun create(
+            params: VideoCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun retrieve(
+            params: VideoRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("videoId", params.videoId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", params._pathParam(0))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<VideoListPageResponse> =
+            jsonHandler<VideoListPageResponse>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun list(
+            params: VideoListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VideoListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos")
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        VideoListPage.builder()
+                            .service(VideoServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<VideoDeleteResponse> =
+            jsonHandler<VideoDeleteResponse>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun delete(
+            params: VideoDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VideoDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("videoId", params.videoId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val createCharacterHandler: Handler<VideoCreateCharacterResponse> =
+            jsonHandler<VideoCreateCharacterResponse>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun createCharacter(
+            params: VideoCreateCharacterParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VideoCreateCharacterResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "characters")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createCharacterHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun downloadContent(
+            params: VideoDownloadContentParams,
+            requestOptions: RequestOptions,
+        ): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("videoId", params.videoId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", params._pathParam(0), "content")
+                    .putHeader("Accept", "application/binary")
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response)
+        }
+
+        private val editHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun edit(
+            params: VideoEditParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "edits")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { editHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val extendHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun extend(
+            params: VideoExtendParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "extensions")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { extendHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val getCharacterHandler: Handler<VideoGetCharacterResponse> =
+            jsonHandler<VideoGetCharacterResponse>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun getCharacter(
+            params: VideoGetCharacterParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VideoGetCharacterResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("characterId", params.characterId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", "characters", params._pathParam(0))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { getCharacterHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val remixHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
+
+        @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
+        override fun remix(
+            params: VideoRemixParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Video> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("videoId", params.videoId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("videos", params._pathParam(0), "remix")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { remixHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+    }
+}

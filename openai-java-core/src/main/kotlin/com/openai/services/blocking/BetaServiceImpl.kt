@@ -1,0 +1,83 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.services.blocking
+
+import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AssistantService
+import com.openai.services.blocking.beta.AssistantServiceImpl
+import com.openai.services.blocking.beta.ChatKitService
+import com.openai.services.blocking.beta.ChatKitServiceImpl
+import com.openai.services.blocking.beta.ResponseService
+import com.openai.services.blocking.beta.ResponseServiceImpl
+import com.openai.services.blocking.beta.ThreadService
+import com.openai.services.blocking.beta.ThreadServiceImpl
+import java.util.function.Consumer
+
+class BetaServiceImpl internal constructor(private val clientOptions: ClientOptions) : BetaService {
+
+    private val withRawResponse: BetaService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
+
+    private val responses: ResponseService by lazy { ResponseServiceImpl(clientOptions) }
+
+    private val chatkit: ChatKitService by lazy { ChatKitServiceImpl(clientOptions) }
+
+    private val assistants: AssistantService by lazy { AssistantServiceImpl(clientOptions) }
+
+    private val threads: ThreadService by lazy { ThreadServiceImpl(clientOptions) }
+
+    override fun withRawResponse(): BetaService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
+        BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun responses(): ResponseService = responses
+
+    override fun chatkit(): ChatKitService = chatkit
+
+    /** Build Assistants that can call models and use tools. */
+    override fun assistants(): AssistantService = assistants
+
+    /** Build Assistants that can call models and use tools. */
+    @Deprecated("The Assistants API is deprecated in favor of the Responses API")
+    override fun threads(): ThreadService = threads
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        BetaService.WithRawResponse {
+
+        private val responses: ResponseService.WithRawResponse by lazy {
+            ResponseServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val chatkit: ChatKitService.WithRawResponse by lazy {
+            ChatKitServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val assistants: AssistantService.WithRawResponse by lazy {
+            AssistantServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val threads: ThreadService.WithRawResponse by lazy {
+            ThreadServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BetaService.WithRawResponse =
+            BetaServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
+        override fun responses(): ResponseService.WithRawResponse = responses
+
+        override fun chatkit(): ChatKitService.WithRawResponse = chatkit
+
+        /** Build Assistants that can call models and use tools. */
+        override fun assistants(): AssistantService.WithRawResponse = assistants
+
+        /** Build Assistants that can call models and use tools. */
+        @Deprecated("The Assistants API is deprecated in favor of the Responses API")
+        override fun threads(): ThreadService.WithRawResponse = threads
+    }
+}

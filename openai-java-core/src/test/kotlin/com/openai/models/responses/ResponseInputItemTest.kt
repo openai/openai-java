@@ -1,0 +1,2570 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.responses
+
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
+
+internal class ResponseInputItemTest {
+
+    @Test
+    fun ofEasyInputMessage() {
+        val easyInputMessage =
+            EasyInputMessage.builder()
+                .content("string")
+                .role(EasyInputMessage.Role.USER)
+                .phase(EasyInputMessage.Phase.COMMENTARY)
+                .type(EasyInputMessage.Type.MESSAGE)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofEasyInputMessage(easyInputMessage)
+
+        assertThat(responseInputItem.easyInputMessage()).contains(easyInputMessage)
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofEasyInputMessageRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofEasyInputMessage(
+                EasyInputMessage.builder()
+                    .content("string")
+                    .role(EasyInputMessage.Role.USER)
+                    .phase(EasyInputMessage.Phase.COMMENTARY)
+                    .type(EasyInputMessage.Type.MESSAGE)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMessage() {
+        val message =
+            ResponseInputItem.Message.builder()
+                .addContent(
+                    ResponseInputText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
+                .role(ResponseInputItem.Message.Role.USER)
+                .status(ResponseInputItem.Message.Status.IN_PROGRESS)
+                .type(ResponseInputItem.Message.Type.MESSAGE)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMessage(message)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).contains(message)
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofMessageRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMessage(
+                ResponseInputItem.Message.builder()
+                    .addContent(
+                        ResponseInputText.builder()
+                            .text("text")
+                            .promptCacheBreakpoint(
+                                ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            )
+                            .build()
+                    )
+                    .role(ResponseInputItem.Message.Role.USER)
+                    .status(ResponseInputItem.Message.Status.IN_PROGRESS)
+                    .type(ResponseInputItem.Message.Type.MESSAGE)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofResponseOutputMessage() {
+        val responseOutputMessage =
+            ResponseOutputMessage.builder()
+                .id("id")
+                .addContent(
+                    ResponseOutputText.builder()
+                        .addAnnotation(
+                            ResponseOutputText.Annotation.FileCitation.builder()
+                                .fileId("file_id")
+                                .filename("filename")
+                                .index(0L)
+                                .build()
+                        )
+                        .text("text")
+                        .addLogprob(
+                            ResponseOutputText.Logprob.builder()
+                                .token("token")
+                                .addByte(0L)
+                                .logprob(0.0)
+                                .addTopLogprob(
+                                    ResponseOutputText.Logprob.TopLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                .phase(ResponseOutputMessage.Phase.COMMENTARY)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofResponseOutputMessage(responseOutputMessage)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).contains(responseOutputMessage)
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofResponseOutputMessageRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofResponseOutputMessage(
+                ResponseOutputMessage.builder()
+                    .id("id")
+                    .addContent(
+                        ResponseOutputText.builder()
+                            .addAnnotation(
+                                ResponseOutputText.Annotation.FileCitation.builder()
+                                    .fileId("file_id")
+                                    .filename("filename")
+                                    .index(0L)
+                                    .build()
+                            )
+                            .text("text")
+                            .addLogprob(
+                                ResponseOutputText.Logprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .addTopLogprob(
+                                        ResponseOutputText.Logprob.TopLogprob.builder()
+                                            .token("token")
+                                            .addByte(0L)
+                                            .logprob(0.0)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                    .phase(ResponseOutputMessage.Phase.COMMENTARY)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofFileSearchCall() {
+        val fileSearchCall =
+            ResponseFileSearchToolCall.builder()
+                .id("id")
+                .addQuery("string")
+                .status(ResponseFileSearchToolCall.Status.IN_PROGRESS)
+                .addResult(
+                    ResponseFileSearchToolCall.Result.builder()
+                        .attributes(
+                            ResponseFileSearchToolCall.Result.Attributes.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .fileId("file_id")
+                        .filename("filename")
+                        .score(0.0f)
+                        .text("text")
+                        .build()
+                )
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofFileSearchCall(fileSearchCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).contains(fileSearchCall)
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofFileSearchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofFileSearchCall(
+                ResponseFileSearchToolCall.builder()
+                    .id("id")
+                    .addQuery("string")
+                    .status(ResponseFileSearchToolCall.Status.IN_PROGRESS)
+                    .addResult(
+                        ResponseFileSearchToolCall.Result.builder()
+                            .attributes(
+                                ResponseFileSearchToolCall.Result.Attributes.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .fileId("file_id")
+                            .filename("filename")
+                            .score(0.0f)
+                            .text("text")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofComputerCall() {
+        val computerCall =
+            ResponseComputerToolCall.builder()
+                .id("id")
+                .callId("call_id")
+                .addPendingSafetyCheck(
+                    ResponseComputerToolCall.PendingSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .status(ResponseComputerToolCall.Status.IN_PROGRESS)
+                .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
+                .action(
+                    ResponseComputerToolCall.Action.Click.builder()
+                        .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
+                        .x(0L)
+                        .y(0L)
+                        .addKey("string")
+                        .build()
+                )
+                .addAction(
+                    ComputerAction.Click.builder()
+                        .button(ComputerAction.Click.Button.LEFT)
+                        .x(0L)
+                        .y(0L)
+                        .addKey("string")
+                        .build()
+                )
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofComputerCall(computerCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).contains(computerCall)
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofComputerCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofComputerCall(
+                ResponseComputerToolCall.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .addPendingSafetyCheck(
+                        ResponseComputerToolCall.PendingSafetyCheck.builder()
+                            .id("id")
+                            .code("code")
+                            .message("message")
+                            .build()
+                    )
+                    .status(ResponseComputerToolCall.Status.IN_PROGRESS)
+                    .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
+                    .action(
+                        ResponseComputerToolCall.Action.Click.builder()
+                            .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
+                            .x(0L)
+                            .y(0L)
+                            .addKey("string")
+                            .build()
+                    )
+                    .addAction(
+                        ComputerAction.Click.builder()
+                            .button(ComputerAction.Click.Button.LEFT)
+                            .x(0L)
+                            .y(0L)
+                            .addKey("string")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofComputerCallOutput() {
+        val computerCallOutput =
+            ResponseInputItem.ComputerCallOutput.builder()
+                .callId("x")
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId("file_id")
+                        .imageUrl("https://example.com")
+                        .build()
+                )
+                .id("cuo_123")
+                .addAcknowledgedSafetyCheck(
+                    ResponseInputItem.ComputerCallOutput.AcknowledgedSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .status(ResponseInputItem.ComputerCallOutput.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofComputerCallOutput(computerCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).contains(computerCallOutput)
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofComputerCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofComputerCallOutput(
+                ResponseInputItem.ComputerCallOutput.builder()
+                    .callId("x")
+                    .output(
+                        ResponseComputerToolCallOutputScreenshot.builder()
+                            .fileId("file_id")
+                            .imageUrl("https://example.com")
+                            .build()
+                    )
+                    .id("cuo_123")
+                    .addAcknowledgedSafetyCheck(
+                        ResponseInputItem.ComputerCallOutput.AcknowledgedSafetyCheck.builder()
+                            .id("id")
+                            .code("code")
+                            .message("message")
+                            .build()
+                    )
+                    .status(ResponseInputItem.ComputerCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofWebSearchCall() {
+        val webSearchCall =
+            ResponseFunctionWebSearch.builder()
+                .id("id")
+                .action(
+                    ResponseFunctionWebSearch.Action.Search.builder()
+                        .addQuery("string")
+                        .query("query")
+                        .addSource(
+                            ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                .url("https://example.com")
+                                .build()
+                        )
+                        .build()
+                )
+                .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofWebSearchCall(webSearchCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).contains(webSearchCall)
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofWebSearchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofWebSearchCall(
+                ResponseFunctionWebSearch.builder()
+                    .id("id")
+                    .action(
+                        ResponseFunctionWebSearch.Action.Search.builder()
+                            .addQuery("string")
+                            .query("query")
+                            .addSource(
+                                ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                    .url("https://example.com")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofFunctionCall() {
+        val functionCall =
+            ResponseFunctionToolCall.builder()
+                .arguments("arguments")
+                .callId("call_id")
+                .name("name")
+                .id("id")
+                .callerDirect()
+                .namespace("namespace")
+                .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofFunctionCall(functionCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).contains(functionCall)
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofFunctionCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofFunctionCall(
+                ResponseFunctionToolCall.builder()
+                    .arguments("arguments")
+                    .callId("call_id")
+                    .name("name")
+                    .id("id")
+                    .callerDirect()
+                    .namespace("namespace")
+                    .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofFunctionCallOutput() {
+        val functionCallOutput =
+            ResponseInputItem.FunctionCallOutput.builder()
+                .callId("x")
+                .output("string")
+                .id("fc_123")
+                .callerDirect()
+                .name("x")
+                .namespace("namespace")
+                .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofFunctionCallOutput(functionCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).contains(functionCallOutput)
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofFunctionCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofFunctionCallOutput(
+                ResponseInputItem.FunctionCallOutput.builder()
+                    .callId("x")
+                    .output("string")
+                    .id("fc_123")
+                    .callerDirect()
+                    .name("x")
+                    .namespace("namespace")
+                    .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofToolSearchCall() {
+        val toolSearchCall =
+            ResponseInputItem.ToolSearchCall.builder()
+                .arguments(JsonValue.from(mapOf<String, Any>()))
+                .id("tsc_123")
+                .callId("x")
+                .execution(ResponseInputItem.ToolSearchCall.Execution.SERVER)
+                .status(ResponseInputItem.ToolSearchCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofToolSearchCall(toolSearchCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).contains(toolSearchCall)
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofToolSearchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofToolSearchCall(
+                ResponseInputItem.ToolSearchCall.builder()
+                    .arguments(JsonValue.from(mapOf<String, Any>()))
+                    .id("tsc_123")
+                    .callId("x")
+                    .execution(ResponseInputItem.ToolSearchCall.Execution.SERVER)
+                    .status(ResponseInputItem.ToolSearchCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofToolSearchOutput() {
+        val toolSearchOutput =
+            ResponseToolSearchOutputItemParam.builder()
+                .addTool(
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .deferLoading(true)
+                        .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .build()
+                )
+                .id("tso_123")
+                .callId("x")
+                .execution(ResponseToolSearchOutputItemParam.Execution.SERVER)
+                .status(ResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofToolSearchOutput(toolSearchOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).contains(toolSearchOutput)
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofToolSearchOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofToolSearchOutput(
+                ResponseToolSearchOutputItemParam.builder()
+                    .addTool(
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .deferLoading(true)
+                            .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .id("tso_123")
+                    .callId("x")
+                    .execution(ResponseToolSearchOutputItemParam.Execution.SERVER)
+                    .status(ResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofAdditionalTools() {
+        val additionalTools =
+            ResponseInputItem.AdditionalTools.builder()
+                .addTool(
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .deferLoading(true)
+                        .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .build()
+                )
+                .id("at_123")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofAdditionalTools(additionalTools)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).contains(additionalTools)
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofAdditionalToolsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofAdditionalTools(
+                ResponseInputItem.AdditionalTools.builder()
+                    .addTool(
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .deferLoading(true)
+                            .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .id("at_123")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofReasoning() {
+        val reasoning =
+            ResponseReasoningItem.builder()
+                .id("id")
+                .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                .addContent(ResponseReasoningItem.Content.builder().text("text").build())
+                .encryptedContent("encrypted_content")
+                .status(ResponseReasoningItem.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofReasoning(reasoning)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).contains(reasoning)
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofReasoningRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofReasoning(
+                ResponseReasoningItem.builder()
+                    .id("id")
+                    .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                    .addContent(ResponseReasoningItem.Content.builder().text("text").build())
+                    .encryptedContent("encrypted_content")
+                    .status(ResponseReasoningItem.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofCompaction() {
+        val compaction =
+            ResponseCompactionItemParam.builder()
+                .encryptedContent("encrypted_content")
+                .id("cmp_123")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofCompaction(compaction)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).contains(compaction)
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofCompactionRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofCompaction(
+                ResponseCompactionItemParam.builder()
+                    .encryptedContent("encrypted_content")
+                    .id("cmp_123")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofImageGenerationCall() {
+        val imageGenerationCall =
+            ResponseInputItem.ImageGenerationCall.builder()
+                .id("id")
+                .result("result")
+                .status(ResponseInputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofImageGenerationCall(imageGenerationCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).contains(imageGenerationCall)
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofImageGenerationCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofImageGenerationCall(
+                ResponseInputItem.ImageGenerationCall.builder()
+                    .id("id")
+                    .result("result")
+                    .status(ResponseInputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofCodeInterpreterCall() {
+        val codeInterpreterCall =
+            ResponseCodeInterpreterToolCall.builder()
+                .id("id")
+                .code("code")
+                .containerId("container_id")
+                .addLogsOutput("logs")
+                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofCodeInterpreterCall(codeInterpreterCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).contains(codeInterpreterCall)
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofCodeInterpreterCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofCodeInterpreterCall(
+                ResponseCodeInterpreterToolCall.builder()
+                    .id("id")
+                    .code("code")
+                    .containerId("container_id")
+                    .addLogsOutput("logs")
+                    .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofLocalShellCall() {
+        val localShellCall =
+            ResponseInputItem.LocalShellCall.builder()
+                .id("id")
+                .action(
+                    ResponseInputItem.LocalShellCall.Action.builder()
+                        .addCommand("string")
+                        .env(
+                            ResponseInputItem.LocalShellCall.Action.Env.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .timeoutMs(0L)
+                        .user("user")
+                        .workingDirectory("working_directory")
+                        .build()
+                )
+                .callId("call_id")
+                .status(ResponseInputItem.LocalShellCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofLocalShellCall(localShellCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).contains(localShellCall)
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofLocalShellCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofLocalShellCall(
+                ResponseInputItem.LocalShellCall.builder()
+                    .id("id")
+                    .action(
+                        ResponseInputItem.LocalShellCall.Action.builder()
+                            .addCommand("string")
+                            .env(
+                                ResponseInputItem.LocalShellCall.Action.Env.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .timeoutMs(0L)
+                            .user("user")
+                            .workingDirectory("working_directory")
+                            .build()
+                    )
+                    .callId("call_id")
+                    .status(ResponseInputItem.LocalShellCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofLocalShellCallOutput() {
+        val localShellCallOutput =
+            ResponseInputItem.LocalShellCallOutput.builder()
+                .id("id")
+                .output("output")
+                .status(ResponseInputItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofLocalShellCallOutput(localShellCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).contains(localShellCallOutput)
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofLocalShellCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofLocalShellCallOutput(
+                ResponseInputItem.LocalShellCallOutput.builder()
+                    .id("id")
+                    .output("output")
+                    .status(ResponseInputItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofShellCall() {
+        val shellCall =
+            ResponseInputItem.ShellCall.builder()
+                .action(
+                    ResponseInputItem.ShellCall.Action.builder()
+                        .addCommand("string")
+                        .maxOutputLength(0L)
+                        .timeoutMs(0L)
+                        .build()
+                )
+                .callId("x")
+                .id("sh_123")
+                .callerDirect()
+                .environment(
+                    LocalEnvironment.builder()
+                        .addSkill(
+                            LocalSkill.builder()
+                                .description("description")
+                                .name("name")
+                                .path("path")
+                                .build()
+                        )
+                        .build()
+                )
+                .status(ResponseInputItem.ShellCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofShellCall(shellCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).contains(shellCall)
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofShellCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofShellCall(
+                ResponseInputItem.ShellCall.builder()
+                    .action(
+                        ResponseInputItem.ShellCall.Action.builder()
+                            .addCommand("string")
+                            .maxOutputLength(0L)
+                            .timeoutMs(0L)
+                            .build()
+                    )
+                    .callId("x")
+                    .id("sh_123")
+                    .callerDirect()
+                    .environment(
+                        LocalEnvironment.builder()
+                            .addSkill(
+                                LocalSkill.builder()
+                                    .description("description")
+                                    .name("name")
+                                    .path("path")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .status(ResponseInputItem.ShellCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofShellCallOutput() {
+        val shellCallOutput =
+            ResponseInputItem.ShellCallOutput.builder()
+                .callId("x")
+                .addOutput(
+                    ResponseFunctionShellCallOutputContent.builder()
+                        .outcomeTimeout()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .build()
+                )
+                .id("sho_123")
+                .callerDirect()
+                .maxOutputLength(0L)
+                .status(ResponseInputItem.ShellCallOutput.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofShellCallOutput(shellCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).contains(shellCallOutput)
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofShellCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofShellCallOutput(
+                ResponseInputItem.ShellCallOutput.builder()
+                    .callId("x")
+                    .addOutput(
+                        ResponseFunctionShellCallOutputContent.builder()
+                            .outcomeTimeout()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .build()
+                    )
+                    .id("sho_123")
+                    .callerDirect()
+                    .maxOutputLength(0L)
+                    .status(ResponseInputItem.ShellCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofApplyPatchCall() {
+        val applyPatchCall =
+            ResponseInputItem.ApplyPatchCall.builder()
+                .callId("x")
+                .operation(
+                    ResponseInputItem.ApplyPatchCall.Operation.CreateFile.builder()
+                        .diff("diff")
+                        .path("x")
+                        .build()
+                )
+                .status(ResponseInputItem.ApplyPatchCall.Status.IN_PROGRESS)
+                .id("apc_123")
+                .callerDirect()
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofApplyPatchCall(applyPatchCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).contains(applyPatchCall)
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofApplyPatchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofApplyPatchCall(
+                ResponseInputItem.ApplyPatchCall.builder()
+                    .callId("x")
+                    .operation(
+                        ResponseInputItem.ApplyPatchCall.Operation.CreateFile.builder()
+                            .diff("diff")
+                            .path("x")
+                            .build()
+                    )
+                    .status(ResponseInputItem.ApplyPatchCall.Status.IN_PROGRESS)
+                    .id("apc_123")
+                    .callerDirect()
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofApplyPatchCallOutput() {
+        val applyPatchCallOutput =
+            ResponseInputItem.ApplyPatchCallOutput.builder()
+                .callId("x")
+                .status(ResponseInputItem.ApplyPatchCallOutput.Status.COMPLETED)
+                .id("apco_123")
+                .callerDirect()
+                .output("output")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofApplyPatchCallOutput(applyPatchCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).contains(applyPatchCallOutput)
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofApplyPatchCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofApplyPatchCallOutput(
+                ResponseInputItem.ApplyPatchCallOutput.builder()
+                    .callId("x")
+                    .status(ResponseInputItem.ApplyPatchCallOutput.Status.COMPLETED)
+                    .id("apco_123")
+                    .callerDirect()
+                    .output("output")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpListTools() {
+        val mcpListTools =
+            ResponseInputItem.McpListTools.builder()
+                .id("id")
+                .serverLabel("server_label")
+                .addTool(
+                    ResponseInputItem.McpListTools.Tool.builder()
+                        .inputSchema(JsonValue.from(mapOf<String, Any>()))
+                        .name("name")
+                        .annotations(JsonValue.from(mapOf<String, Any>()))
+                        .description("description")
+                        .build()
+                )
+                .error("error")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpListTools(mcpListTools)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).contains(mcpListTools)
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofMcpListToolsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpListTools(
+                ResponseInputItem.McpListTools.builder()
+                    .id("id")
+                    .serverLabel("server_label")
+                    .addTool(
+                        ResponseInputItem.McpListTools.Tool.builder()
+                            .inputSchema(JsonValue.from(mapOf<String, Any>()))
+                            .name("name")
+                            .annotations(JsonValue.from(mapOf<String, Any>()))
+                            .description("description")
+                            .build()
+                    )
+                    .error("error")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpApprovalRequest() {
+        val mcpApprovalRequest =
+            ResponseInputItem.McpApprovalRequest.builder()
+                .id("id")
+                .arguments("arguments")
+                .name("name")
+                .serverLabel("server_label")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpApprovalRequest(mcpApprovalRequest)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).contains(mcpApprovalRequest)
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofMcpApprovalRequestRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpApprovalRequest(
+                ResponseInputItem.McpApprovalRequest.builder()
+                    .id("id")
+                    .arguments("arguments")
+                    .name("name")
+                    .serverLabel("server_label")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpApprovalResponse() {
+        val mcpApprovalResponse =
+            ResponseInputItem.McpApprovalResponse.builder()
+                .approvalRequestId("approval_request_id")
+                .approve(true)
+                .id("id")
+                .reason("reason")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpApprovalResponse(mcpApprovalResponse)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).contains(mcpApprovalResponse)
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofMcpApprovalResponseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpApprovalResponse(
+                ResponseInputItem.McpApprovalResponse.builder()
+                    .approvalRequestId("approval_request_id")
+                    .approve(true)
+                    .id("id")
+                    .reason("reason")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpCall() {
+        val mcpCall =
+            ResponseInputItem.McpCall.builder()
+                .id("id")
+                .arguments("arguments")
+                .name("name")
+                .serverLabel("server_label")
+                .approvalRequestId("approval_request_id")
+                .error(
+                    McpToolCallError.McpProtocolError.builder().code(0L).message("message").build()
+                )
+                .output("output")
+                .status(ResponseInputItem.McpCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpCall(mcpCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).contains(mcpCall)
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofMcpCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpCall(
+                ResponseInputItem.McpCall.builder()
+                    .id("id")
+                    .arguments("arguments")
+                    .name("name")
+                    .serverLabel("server_label")
+                    .approvalRequestId("approval_request_id")
+                    .error(
+                        McpToolCallError.McpProtocolError.builder()
+                            .code(0L)
+                            .message("message")
+                            .build()
+                    )
+                    .output("output")
+                    .status(ResponseInputItem.McpCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofCustomToolCallOutput() {
+        val customToolCallOutput =
+            ResponseCustomToolCallOutput.builder()
+                .callId("call_id")
+                .output("string")
+                .id("id")
+                .callerDirect()
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofCustomToolCallOutput(customToolCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).contains(customToolCallOutput)
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofCustomToolCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofCustomToolCallOutput(
+                ResponseCustomToolCallOutput.builder()
+                    .callId("call_id")
+                    .output("string")
+                    .id("id")
+                    .callerDirect()
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofCustomToolCall() {
+        val customToolCall =
+            ResponseCustomToolCall.builder()
+                .callId("call_id")
+                .input("input")
+                .name("name")
+                .id("id")
+                .callerDirect()
+                .namespace("namespace")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofCustomToolCall(customToolCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).contains(customToolCall)
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofCustomToolCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofCustomToolCall(
+                ResponseCustomToolCall.builder()
+                    .callId("call_id")
+                    .input("input")
+                    .name("name")
+                    .id("id")
+                    .callerDirect()
+                    .namespace("namespace")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofCompactionTrigger() {
+        val responseInputItem = ResponseInputItem.ofCompactionTrigger()
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger())
+            .contains(JsonValue.from(mapOf("type" to "compaction_trigger")))
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofCompactionTriggerRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem = ResponseInputItem.ofCompactionTrigger()
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofItemReference() {
+        val itemReference =
+            ResponseInputItem.ItemReference.builder()
+                .id("id")
+                .type(ResponseInputItem.ItemReference.Type.ITEM_REFERENCE)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofItemReference(itemReference)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).contains(itemReference)
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofItemReferenceRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofItemReference(
+                ResponseInputItem.ItemReference.builder()
+                    .id("id")
+                    .type(ResponseInputItem.ItemReference.Type.ITEM_REFERENCE)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofProgram() {
+        val program =
+            ResponseInputItem.Program.builder()
+                .id("cm_123")
+                .callId("x")
+                .code("code")
+                .fingerprint("fingerprint")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofProgram(program)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).contains(program)
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofProgramRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofProgram(
+                ResponseInputItem.Program.builder()
+                    .id("cm_123")
+                    .callId("x")
+                    .code("code")
+                    .fingerprint("fingerprint")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofProgramOutput() {
+        val programOutput =
+            ResponseInputItem.ProgramOutput.builder()
+                .id("cmo_123")
+                .callId("x")
+                .result("result")
+                .status(ResponseInputItem.ProgramOutput.Status.COMPLETED)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofProgramOutput(programOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).contains(programOutput)
+    }
+
+    @Test
+    fun ofProgramOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofProgramOutput(
+                ResponseInputItem.ProgramOutput.builder()
+                    .id("cmo_123")
+                    .callId("x")
+                    .result("result")
+                    .status(ResponseInputItem.ProgramOutput.Status.COMPLETED)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val responseInputItem =
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<ResponseInputItem>())
+
+        val e = assertThrows<OpenAIInvalidDataException> { responseInputItem.validate() }
+        assertThat(e).hasMessageStartingWith("Unknown ")
+    }
+}
