@@ -152,8 +152,22 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The File object (not file name) to be uploaded. */
-        fun file(file: InputStream) = apply { body.file(file) }
+        /**
+         * Sets the file to upload from an InputStream with a purpose-appropriate default filename.
+         * Default determined by [FileNameMapper] based on purpose. Use [file(InputStream, String)]
+         * for explicit control.
+         */
+        fun file(file: InputStream) = apply {
+            val purpose = body._purposeIfSet()
+            if (purpose == null) {
+                body.file(file)
+            } else {
+                body.file(file, FileNameMapper.getDefaultFilename(purpose))
+            }
+        }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: InputStream, filename: String) = apply { body.file(file, filename) }
 
         /**
          * Sets [Builder.file] to an arbitrary multipart value.
@@ -164,8 +178,22 @@ private constructor(
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
-        /** The File object (not file name) to be uploaded. */
-        fun file(file: ByteArray) = apply { body.file(file) }
+        /**
+         * Sets the file to upload from a byte array with a purpose-appropriate default filename.
+         * Default determined by [FileNameMapper] based on purpose. Use [file(ByteArray, String)]
+         * for explicit control.
+         */
+        fun file(file: ByteArray) = apply {
+            val purpose = body._purposeIfSet()
+            if (purpose == null) {
+                body.file(file)
+            } else {
+                body.file(file, FileNameMapper.getDefaultFilename(purpose))
+            }
+        }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: ByteArray, filename: String) = apply { body.file(file, filename) }
 
         /** The File object (not file name) to be uploaded. */
         fun file(path: Path) = apply { body.file(path) }
@@ -335,10 +363,38 @@ private constructor(
          * .purpose()
          * ```
          *
+         * @throws IllegalArgumentException if filename is not appropriate for purpose based on
+         *   [FileNameMapper.isValidForPurpose]
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): FileCreateParams =
-            FileCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
+        fun build(): FileCreateParams {
+            val builtBody = body.build()
+            val purpose =
+                try {
+                    builtBody.purpose()
+                } catch (e: Exception) {
+                    null
+                }
+            val filename =
+                try {
+                    builtBody._file().filename().orElse(null)
+                } catch (e: Exception) {
+                    null
+                }
+
+            if (purpose != null && filename != null) {
+                require(FileNameMapper.isValidForPurpose(filename, purpose)) {
+                    "Filename '$filename' is not valid for purpose $purpose. " +
+                        "Use file(InputStream, String) or file(ByteArray, String) to set an appropriate filename."
+                }
+            }
+
+            return FileCreateParams(
+                builtBody,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+        }
     }
 
     fun _body(): Map<String, MultipartField<*>> =
@@ -458,8 +514,29 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: InputStream) = file(MultipartField.of(file))
+            /** Returns the current purpose if set, or null. */
+            @JvmSynthetic
+            internal fun _purposeIfSet(): FilePurpose? {
+                return try {
+                    purpose?.let { it.value.getOptional("purpose").orElse(null) }
+                } catch (e: Exception) {
+                    null
+                }
+            }
+
+            /**
+             * Sets the file to upload from an InputStream with a purpose-appropriate default
+             * filename. Default determined by [FileNameMapper] based on purpose. Use
+             * [file(InputStream, String)] for explicit control.
+             */
+            fun file(file: InputStream) =
+                _purposeIfSet()?.let { purpose ->
+                    file(file, FileNameMapper.getDefaultFilename(purpose))
+                } ?: file(MultipartField.builder<InputStream>().value(file).build())
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: InputStream, filename: String) =
+                file(MultipartField.builder<InputStream>().value(file).filename(filename).build())
 
             /**
              * Sets [Builder.file] to an arbitrary multipart value.
@@ -470,8 +547,18 @@ private constructor(
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(file.inputStream())
+            /**
+             * Sets the file to upload from a byte array with a purpose-appropriate default
+             * filename. Default determined by [FileNameMapper] based on purpose. Use
+             * [file(ByteArray, String)] for explicit control.
+             */
+            fun file(file: ByteArray) =
+                _purposeIfSet()?.let { purpose ->
+                    file(file, FileNameMapper.getDefaultFilename(purpose))
+                } ?: file(file.inputStream())
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: ByteArray, filename: String) = file(file.inputStream(), filename)
 
             /** The File object (not file name) to be uploaded. */
             fun file(path: Path) =
@@ -552,13 +639,32 @@ private constructor(
              *
              * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body =
-                Body(
-                    checkRequired("file", file),
+            fun build(): Body {
+                val resolvedFile =
+                    file?.let { multipart ->
+                        val filename = multipart.filename().orElse(null)
+                        if (filename != null || purpose == null) {
+                            multipart
+                        } else {
+                            MultipartField.builder<InputStream>()
+                                .value(multipart.value)
+                                .contentType(multipart.contentType)
+                                .filename(
+                                    FileNameMapper.getDefaultFilename(
+                                        purpose!!.value.getRequired("purpose")
+                                    )
+                                )
+                                .build()
+                        }
+                    }
+
+                return Body(
+                    checkRequired("file", resolvedFile),
                     checkRequired("purpose", purpose),
                     expiresAfter,
                     additionalProperties.toMutableMap(),
                 )
+            }
         }
 
         private var validated: Boolean = false
