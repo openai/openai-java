@@ -1,3 +1,4 @@
+import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.GenerateVersionSupportMatrixTask
 import com.openai.gradle.VersionSupportPolicy
 import com.openai.gradle.VerifyVersionSupportPolicyTask
@@ -23,6 +24,7 @@ plugins {
 }
 
 val dokkaJacksonVersion = "2.18.9"
+val dokkaJsoupVersion = "1.23.1"
 
 repositories {
     mavenCentral()
@@ -32,9 +34,9 @@ allprojects {
     group = "com.openai"
     version = "4.52.0" // x-release-please-version
 
-    // Dokka 2.1.0 depends on Jackson 2.15.3. Keep its isolated build-tool classpaths on a
-    // secure, internally aligned Jackson release without changing the SDK's published or
-    // compatibility-test dependency versions.
+    // Dokka 2.1.0 depends on Jackson 2.15.3 and jsoup 1.16.1. Keep its isolated build-tool
+    // classpaths on secure versions without changing the SDK's published or compatibility-test
+    // dependencies, and keep Jackson internally aligned.
     configurations.matching { it.name.startsWith("dokka") }.configureEach {
         resolutionStrategy.eachDependency {
             if (
@@ -43,6 +45,9 @@ allprojects {
             ) {
                 useVersion(dokkaJacksonVersion)
                 because("Dokka's build-only Jackson classpath must use a secure aligned release")
+            } else if (requested.group == "org.jsoup" && requested.name == "jsoup") {
+                useVersion(dokkaJsoupVersion)
+                because("Dokka's build-only jsoup classpath must use a secure release")
             }
         }
     }
@@ -75,7 +80,9 @@ subprojects {
 }
 
 subprojects {
-    apply(plugin = "org.jetbrains.dokka")
+    if (!CoreCompilationShards.isShardProject(name)) {
+        apply(plugin = "org.jetbrains.dokka")
+    }
 }
 
 val versionSupportFile = layout.projectDirectory.file("gradle/version-support.properties")
@@ -128,7 +135,7 @@ subprojects {
                 sourceCompatibility.set(java.sourceCompatibility.majorVersion.toInt())
                 targetCompatibility.set(java.targetCompatibility.majorVersion.toInt())
                 javaRelease.set(compileJava.flatMap { it.options.release })
-                classFiles.from(mainSourceSet.output.classesDirs)
+                classFiles.from(mainSourceSet.output)
 
                 dependsOn(tasks.named("classes"))
             }
@@ -151,6 +158,10 @@ subprojects {
 // Avoid race conditions between `dokkaJavadocCollector` and `dokkaJavadocJar` tasks
 tasks.named("dokkaJavadocCollector").configure {
     subprojects.flatMap { it.tasks }
-        .filter { it.project.name != "openai-java" && it.name == "dokkaJavadocJar" }
+        .filter {
+            it.project.name != "openai-java" &&
+                !CoreCompilationShards.isShardProject(it.project.name) &&
+                it.name == "dokkaJavadocJar"
+        }
         .forEach { mustRunAfter(it) }
 }

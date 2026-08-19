@@ -7,6 +7,7 @@ import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClientAsync
 import com.openai.client.OpenAIClientAsyncImpl
 import com.openai.core.ClientOptions
+import com.openai.core.DataResidency
 import com.openai.core.LogLevel
 import com.openai.core.Sleeper
 import com.openai.core.Timeout
@@ -255,6 +256,19 @@ class OpenAIOkHttpClientAsync private constructor() {
 
         /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        /**
+         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         *
+         * @see ClientOptions.Builder.dataResidency
+         */
+        fun dataResidency(dataResidency: DataResidency?) = apply {
+            clientOptions.dataResidency(dataResidency)
+        }
+
+        /** Alias for calling [dataResidency] with `dataResidency.orElse(null)`. */
+        fun dataResidency(dataResidency: Optional<DataResidency>) =
+            dataResidency(dataResidency.getOrNull())
 
         /**
          * Whether to call `validate` on every response before returning it.

@@ -15,15 +15,37 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation("org.yaml:snakeyaml:2.6")
 }
 
 tasks.test {
     useJUnitPlatform()
     workingDir(layout.projectDirectory)
     inputs
+        .files(
+            fileTree(layout.projectDirectory.dir("../openai-java-core/src/main/kotlin")) {
+                include("**/*.kt")
+            }
+        )
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
         .file(layout.projectDirectory.file("../scripts/detect-breaking-changes"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
+        .file(
+            layout.projectDirectory.file(
+                "../openai-java-core/src/apiCompatibility/" +
+                    "structured-output-public-api.txt"
+            )
+        )
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
         .file(layout.projectDirectory.file("../.github/workflows/ci.yml"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../.github/workflows/create-releases.yml"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../SECURITY.md"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
 }

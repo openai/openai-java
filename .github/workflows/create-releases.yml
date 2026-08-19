@@ -268,8 +268,24 @@ jobs:
             8
             21
 
+      - name: Create isolated release Gradle User Home
+        env:
+          TRUSTED_GRADLE_USER_HOME: ${{ runner.temp }}/trusted-release-gradle-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+
+          if [[ -e "$TRUSTED_GRADLE_USER_HOME" || -L "$TRUSTED_GRADLE_USER_HOME" ]]; then
+            echo "::error::Release Gradle User Home already exists"
+            exit 1
+          fi
+
+          mkdir -m 700 "$TRUSTED_GRADLE_USER_HOME"
+          printf 'GRADLE_USER_HOME=%s\n' "$TRUSTED_GRADLE_USER_HOME" >> "$GITHUB_ENV"
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-disabled: true
 
       - name: Compile the openai-java-core project
         run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
@@ -302,14 +318,18 @@ jobs:
 
       - name: Publish to Maven Central
         env:
-          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
         run: |
           set -euo pipefail
 
-          for variable in SONATYPE_USERNAME SONATYPE_PASSWORD GPG_SIGNING_KEY GPG_SIGNING_PASSWORD; do
+          for variable in \
+            ORG_GRADLE_PROJECT_mavenCentralUsername \
+            ORG_GRADLE_PROJECT_mavenCentralPassword \
+            GPG_SIGNING_KEY \
+            GPG_SIGNING_PASSWORD; do
             if [[ -z "${!variable}" ]]; then
               echo "::error::$variable is empty"
               exit 1
@@ -331,8 +351,6 @@ jobs:
 
           ./gradlew publishAndReleaseToMavenCentral \
             --stacktrace \
-            -PmavenCentralUsername="$SONATYPE_USERNAME" \
-            -PmavenCentralPassword="$SONATYPE_PASSWORD" \
             --no-configuration-cache
 
       - name: Wait for Maven Central
