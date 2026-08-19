@@ -15,6 +15,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation("org.yaml:snakeyaml:2.6")
 }
 
 tasks.test {
