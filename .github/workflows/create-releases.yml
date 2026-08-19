@@ -387,7 +387,14 @@ jobs:
           fi
           export GPG_SIGNING_KEY_ID
 
+          publish_exclusions=()
+          for artifact in $MAVEN_ARTIFACTS; do
+            publish_exclusions+=("--exclude-task" ":$artifact:jar")
+          done
+
+          sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
           ./gradlew publishAndReleaseToMavenCentral \
+            "${publish_exclusions[@]}" \
             --stacktrace \
             --no-configuration-cache
 

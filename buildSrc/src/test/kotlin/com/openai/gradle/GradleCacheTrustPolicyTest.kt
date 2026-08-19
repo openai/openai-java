@@ -234,6 +234,144 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing rejects missing or late prepublication digest verification`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val verification =
+            "          sha256sum --check \"\$RUNNER_TEMP/maven-artifact-provenance.sha256\"\n"
+
+        listOf(
+                workflow.replaceFirst(verification, ""),
+                workflow.replaceFirst(
+                    verification,
+                    "          ./gradlew publishAndReleaseToMavenCentral\n$verification",
+                ),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> {
+                    assertPublishingProvenancePolicy(poisonedWorkflow)
+                }
+            }
+    }
+
+    @Test
+    fun `publishing rejects missing or misdirected attested jar producer exclusions`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val producer = "          publish_exclusions+=(\"--exclude-task\" \":\$artifact:jar\")"
+        val invocation = "            \"\${publish_exclusions[@]}\""
+
+        listOf(
+                workflow.replaceFirst(producer, ""),
+                workflow.replaceFirst(producer, producer.replace(":jar", ":sourcesJar")),
+                workflow.replaceFirst(producer, producer.replace("\$artifact", "openai-java")),
+                workflow.replaceFirst(invocation, "            --no-daemon"),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> {
+                    assertPublishingProvenancePolicy(poisonedWorkflow)
+                }
+            }
+    }
+
+    @Test
+    fun `tampered provenance subjects abort before irreversible Maven publication`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val parsedWorkflow = parseWorkflow(workflow)
+        val artifacts = parsedWorkflow.environment.getValue("MAVEN_ARTIFACTS").split(" ")
+        val publishScript =
+            requireNotNull(
+                parsedWorkflow
+                    .job("publish")
+                    .steps
+                    .single { it.name == "Publish to Maven Central" }
+                    .run
+            )
+        val guardedPublication = publishScript.substringAfter("export GPG_SIGNING_KEY_ID\n")
+        val runnerTemp = temporaryDirectory.resolve("runner").also(Files::createDirectories)
+        val subjects =
+            artifacts.map { artifact ->
+                temporaryDirectory.resolve("$artifact/build/libs/$artifact-test.jar").apply {
+                    Files.createDirectories(parent)
+                    writeText("attested-$artifact")
+                }
+            }
+        val manifest = runnerTemp.resolve("maven-artifact-provenance.sha256")
+        val digest =
+            ProcessBuilder(
+                    listOf("sha256sum") +
+                        subjects.map { temporaryDirectory.relativize(it).toString() }
+                )
+                .directory(temporaryDirectory.toFile())
+                .redirectOutput(manifest.toFile())
+                .start()
+        assertEquals(0, digest.waitFor())
+
+        val wrapper = temporaryDirectory.resolve("gradlew")
+        wrapper.writeText(
+            listOf(
+                    "#!/usr/bin/env bash",
+                    "set -euo pipefail",
+                    "touch \"\$RUNNER_TEMP/publication-started\"",
+                    "printf '%s\\n' \"\$@\" > \"\$RUNNER_TEMP/publication-arguments\"",
+                    "exclusions=' '",
+                    "while [[ \$# -gt 0 ]]; do",
+                    "  if [[ \$1 == --exclude-task ]]; then",
+                    "    exclusions=\"\$exclusions\$2 \"",
+                    "    shift 2",
+                    "  else",
+                    "    shift",
+                    "  fi",
+                    "done",
+                    "for artifact in \$MAVEN_ARTIFACTS; do",
+                    "  if [[ \"\$exclusions\" != *\" :\$artifact:jar \"* ]]; then",
+                    "    printf 'regenerated' > \"\$artifact/build/libs/\$artifact-test.jar\"",
+                    "  fi",
+                    "done",
+                )
+                .joinToString("\n", postfix = "\n")
+        )
+        assertTrue(wrapper.toFile().setExecutable(true, true))
+
+        fun publish(): Pair<Int, String> {
+            val process =
+                ProcessBuilder("bash", "-euo", "pipefail", "-c", guardedPublication)
+                    .directory(temporaryDirectory.toFile())
+                    .redirectErrorStream(true)
+                    .apply {
+                        environment()["RUNNER_TEMP"] = runnerTemp.toString()
+                        environment()["MAVEN_ARTIFACTS"] = artifacts.joinToString(" ")
+                    }
+                    .start()
+            val output = process.inputStream.bufferedReader().readText()
+            return process.waitFor() to output
+        }
+
+        val altered = subjects[1]
+        val original = altered.readText()
+        altered.writeText("tampered-after-attestation")
+        val rejected = publish()
+        assertTrue(rejected.first != 0, rejected.second)
+        assertFalse(
+            Files.exists(runnerTemp.resolve("publication-started")),
+            "Tampered artifacts must never reach the irreversible publication invocation.",
+        )
+
+        altered.writeText(original)
+        val accepted = publish()
+        assertEquals(0, accepted.first, accepted.second)
+        assertTrue(Files.exists(runnerTemp.resolve("publication-started")))
+        subjects.forEachIndexed { index, subject ->
+            assertEquals("attested-" + artifacts[index], subject.readText())
+        }
+        val arguments = runnerTemp.resolve("publication-arguments").readText().lines()
+        artifacts.forEach { artifact ->
+            val index = arguments.indexOf(":$artifact:jar")
+            assertTrue(index > 0 && arguments[index - 1] == "--exclude-task")
+        }
+    }
+
+    @Test
     fun `publishing rejects missing or excessive attestation permissions`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val permissions =
@@ -685,6 +823,42 @@ class GradleCacheTrustPolicyTest {
         )
         assertTrue(preparationIndex < attestationIndex, "Build Maven artifacts before attesting.")
         assertTrue(signingIndex > attestationIndex, "Attest artifacts before exposing PGP secrets.")
+        val publicationScript = requireNotNull(publishJob.steps[signingIndex].run)
+        val verification = "sha256sum --check \"\$RUNNER_TEMP/maven-artifact-provenance.sha256\""
+        val verificationStart = publicationScript.indexOf(verification)
+        val publicationStart =
+            publicationScript.indexOf("./gradlew publishAndReleaseToMavenCentral")
+        assertTrue(
+            verificationStart >= 0 && publicationStart > verificationStart,
+            "Verify attested artifact digests before irreversible Maven Central publication.",
+        )
+        assertTrue(
+            publicationScript
+                .substring(verificationStart + verification.length, publicationStart)
+                .isBlank(),
+            "Verify attested artifact digests immediately before the publishing invocation.",
+        )
+
+        val exclusionsStart = publicationScript.indexOf("publish_exclusions=()")
+        val artifactLoop =
+            publicationScript.indexOf("for artifact in \$MAVEN_ARTIFACTS; do", exclusionsStart)
+        val producerExclusion =
+            publicationScript.indexOf(
+                "publish_exclusions+=(\"--exclude-task\" \":\$artifact:jar\")",
+                artifactLoop,
+            )
+        assertTrue(
+            exclusionsStart >= 0 &&
+                artifactLoop > exclusionsStart &&
+                producerExclusion > artifactLoop &&
+                verificationStart > producerExclusion,
+            "Exclude the exact JAR producer for every attested Maven artifact before publishing.",
+        )
+        assertTrue(
+            publicationScript.substring(publicationStart).contains("\"\${publish_exclusions[@]}\""),
+            "The publishing invocation must receive every attested JAR producer exclusion.",
+        )
+
         assertTrue(
             verificationIndex > signingIndex,
             "Verify attested artifact digests after the publishing Gradle invocation.",
