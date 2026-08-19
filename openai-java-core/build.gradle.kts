@@ -28,7 +28,7 @@ plugins {
 }
 
 val jacksonCompatibilityVersion = CoreCompilationDependencies.JACKSON_COMPATIBILITY_VERSION
-val jacksonPublishedVersion = CoreCompilationDependencies.JACKSON_PUBLISHED_VERSION
+val jacksonPublishedVersion = libs.versions.jacksonPublished.get()
 val mockitoVersion = "5.14.2"
 val mockitoAgent by configurations.creating {
     isCanBeConsumed = false
@@ -174,8 +174,8 @@ configurations.matching {
 dependencies {
     coreCompilationShardProjects.forEach { compileOnly(it) }
 
-    CoreCompilationDependencies.publishedApiDependencies.forEach { api(it) }
-    CoreCompilationDependencies.publishedImplementationDependencies.forEach {
+    CoreCompilationDependencies.publishedApiDependencies(jacksonPublishedVersion).forEach { api(it) }
+    CoreCompilationDependencies.publishedImplementationDependencies(jacksonPublishedVersion).forEach {
         implementation(it)
     }
 

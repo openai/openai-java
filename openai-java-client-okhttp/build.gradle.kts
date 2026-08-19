@@ -1,15 +1,10 @@
-import com.openai.gradle.CoreCompilationDependencies
-
 plugins {
     id("openai.kotlin")
     id("openai.wiremock-test")
     id("openai.publish")
 }
 
-val jacksonPublishedVersion = "2.18.9"
-check(jacksonPublishedVersion == CoreCompilationDependencies.JACKSON_PUBLISHED_VERSION) {
-    "The OkHttp Jackson BOM must match the SDK's published Jackson version."
-}
+val jacksonPublishedVersion = libs.versions.jacksonPublished.get()
 
 listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath).forEach {
     it.configure {
@@ -32,7 +27,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:$jacksonPublishedVersion"))
+    testImplementation(platform(libs.jackson.bom))
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
 }
