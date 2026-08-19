@@ -10,7 +10,9 @@ class CoreCompilationDependenciesTest {
         val jacksonPublishedVersion = "2.21.5"
         val publishedDependencies =
             CoreCompilationDependencies.publishedApiDependencies(jacksonPublishedVersion) +
-                CoreCompilationDependencies.publishedImplementationDependencies(jacksonPublishedVersion)
+                CoreCompilationDependencies.publishedImplementationDependencies(
+                    jacksonPublishedVersion
+                )
         val jacksonDependencies =
             publishedDependencies.filter { it.startsWith("com.fasterxml.jackson.") }
 
