@@ -322,8 +322,19 @@ jobs:
         id: maven-artifacts
         env:
           RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+          SOURCE_SHA: ${{ needs.release.outputs.source_sha }}
         run: |
           set -euo pipefail
+
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ||
+                "$SOURCE_SHA" != "$(git rev-parse HEAD)" ]]; then
+            echo "::error::The checked-out source does not match the verified release SHA"
+            exit 1
+          fi
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Invalid verified release tag"
+            exit 1
+          fi
 
           version="${RELEASE_TAG#v}"
           tasks=()
@@ -343,16 +354,66 @@ jobs:
           done
 
           sha256sum "${subjects[@]}" > "$RUNNER_TEMP/maven-artifact-provenance.sha256"
+
+          workflow_path="${GITHUB_WORKFLOW_REF#"$GITHUB_REPOSITORY/"}"
+          workflow_path="${workflow_path%@*}"
+          jq -n \
+            --arg repository "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --arg workflow_ref "$GITHUB_REF" \
+            --arg workflow_path "$workflow_path" \
+            --arg workflow_identity "$GITHUB_SERVER_URL/$GITHUB_WORKFLOW_REF" \
+            --arg event_name "$GITHUB_EVENT_NAME" \
+            --arg repository_id "$GITHUB_REPOSITORY_ID" \
+            --arg repository_owner_id "$GITHUB_REPOSITORY_OWNER_ID" \
+            --arg runner_environment "$RUNNER_ENVIRONMENT" \
+            --arg source_sha "$SOURCE_SHA" \
+            --arg release_tag "$RELEASE_TAG" \
+            --arg invocation_id \
+              "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT" \
+            '{
+              buildDefinition: {
+                buildType: "https://actions.github.io/buildtypes/workflow/v1",
+                externalParameters: {
+                  workflow: {
+                    ref: $workflow_ref,
+                    repository: $repository,
+                    path: $workflow_path
+                  }
+                },
+                internalParameters: {
+                  github: {
+                    event_name: $event_name,
+                    repository_id: $repository_id,
+                    repository_owner_id: $repository_owner_id,
+                    runner_environment: $runner_environment
+                  }
+                },
+                resolvedDependencies: [
+                  {
+                    uri: ("git+" + $repository + "@refs/tags/" + $release_tag),
+                    digest: { gitCommit: $source_sha }
+                  }
+                ]
+              },
+              runDetails: {
+                builder: { id: $workflow_identity },
+                metadata: { invocationId: $invocation_id }
+              }
+            }' > "$RUNNER_TEMP/maven-release-provenance.json"
+
           {
             echo 'subject_paths<<EOF'
             printf '%s\n' "${subjects[@]}"
             echo EOF
+            echo "predicate_path=$RUNNER_TEMP/maven-release-provenance.json"
           } >> "$GITHUB_OUTPUT"
 
       - name: Attest Maven artifact provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: ${{ steps.maven-artifacts.outputs.subject_paths }}
+          predicate-type: https://slsa.dev/provenance/v1
+          predicate-path: ${{ steps.maven-artifacts.outputs.predicate_path }}
 
       - name: Publish to Maven Central
         env:

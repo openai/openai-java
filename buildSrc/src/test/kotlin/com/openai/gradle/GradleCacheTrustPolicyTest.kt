@@ -372,6 +372,162 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `retry provenance resolves the checked out historical tag not the newer workflow SHA`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val parsedWorkflow = parseWorkflow(workflow)
+        val preparation =
+            requireNotNull(
+                parsedWorkflow.job("publish").steps.single { it.id == "maven-artifacts" }.run
+            )
+        val artifacts = parsedWorkflow.environment.getValue("MAVEN_ARTIFACTS").split(" ")
+        val checkout = temporaryDirectory.resolve("checkout").also(Files::createDirectories)
+
+        fun git(vararg arguments: String): String {
+            val process =
+                ProcessBuilder(listOf("git", "-C", checkout.toString()) + arguments)
+                    .redirectErrorStream(true)
+                    .start()
+            val output = process.inputStream.bufferedReader().readText()
+            assertEquals(0, process.waitFor(), output)
+            return output.trim()
+        }
+
+        git("init", "--quiet", "--initial-branch=main")
+        git("config", "user.name", "Release provenance fixture")
+        git("config", "user.email", "release-fixture@example.invalid")
+        val tracked = checkout.resolve("tracked.txt")
+        tracked.writeText("historical release")
+        git("add", "tracked.txt")
+        git("commit", "--quiet", "-m", "historical release")
+        val sourceSha = git("rev-parse", "HEAD")
+        git("tag", "v1.2.3")
+        tracked.writeText("newer main")
+        git("add", "tracked.txt")
+        git("commit", "--quiet", "-m", "advance main")
+        val workflowSha = git("rev-parse", "HEAD")
+        assertTrue(sourceSha != workflowSha)
+        git("checkout", "--quiet", sourceSha)
+
+        val runnerTemp = temporaryDirectory.resolve("runner").also(Files::createDirectories)
+        val wrapper = checkout.resolve("gradlew")
+        wrapper.writeText(
+            listOf(
+                    "#!/usr/bin/env bash",
+                    "set -euo pipefail",
+                    "touch \"\$RUNNER_TEMP/build-started\"",
+                    "for task in \"\$@\"; do",
+                    "  if [[ \"\$task\" == :*:jar ]]; then",
+                    "    artifact=\"\${task#:}\"",
+                    "    artifact=\"\${artifact%:jar}\"",
+                    "    mkdir -p \"\$artifact/build/libs\"",
+                    "    printf 'attested-%s' \"\$artifact\" > \"\$artifact/build/libs/\$artifact-1.2.3.jar\"",
+                    "  fi",
+                    "done",
+                )
+                .joinToString("\n", postfix = "\n")
+        )
+        assertTrue(wrapper.toFile().setExecutable(true, true))
+
+        fun prepare(source: String, tag: String): Pair<Int, String> {
+            val process =
+                ProcessBuilder("bash", "-euo", "pipefail", "-c", preparation)
+                    .directory(checkout.toFile())
+                    .redirectErrorStream(true)
+                    .apply {
+                        val values = environment()
+                        values["MAVEN_ARTIFACTS"] = artifacts.joinToString(" ")
+                        values["RELEASE_TAG"] = tag
+                        values["SOURCE_SHA"] = source
+                        values["RUNNER_TEMP"] = runnerTemp.toString()
+                        values["GITHUB_OUTPUT"] = runnerTemp.resolve("step-output").toString()
+                        values["GITHUB_SERVER_URL"] = "https://github.com"
+                        values["GITHUB_REPOSITORY"] = "openai/openai-java"
+                        values["GITHUB_REPOSITORY_ID"] = "100"
+                        values["GITHUB_REPOSITORY_OWNER_ID"] = "200"
+                        values["GITHUB_REF"] = "refs/heads/main"
+                        values["GITHUB_SHA"] = workflowSha
+                        values["GITHUB_WORKFLOW_REF"] =
+                            "openai/openai-java/.github/workflows/create-releases.yml@refs/heads/main"
+                        values["GITHUB_EVENT_NAME"] = "workflow_dispatch"
+                        values["GITHUB_RUN_ID"] = "12345"
+                        values["GITHUB_RUN_ATTEMPT"] = "2"
+                        values["RUNNER_ENVIRONMENT"] = "github-hosted"
+                    }
+                    .start()
+            val output = process.inputStream.bufferedReader().readText()
+            return process.waitFor() to output
+        }
+
+        val accepted = prepare(sourceSha, "v1.2.3")
+        assertEquals(0, accepted.first, accepted.second)
+        val predicate =
+            Yaml(SafeConstructor(LoaderOptions()))
+                .load<Map<*, *>>(runnerTemp.resolve("maven-release-provenance.json").readText())
+        val definition = predicate["buildDefinition"] as Map<*, *>
+        assertEquals("https://actions.github.io/buildtypes/workflow/v1", definition["buildType"])
+        val external = definition["externalParameters"] as Map<*, *>
+        val workflowSource = external["workflow"] as Map<*, *>
+        assertEquals("refs/heads/main", workflowSource["ref"])
+        assertEquals(".github/workflows/create-releases.yml", workflowSource["path"])
+        val dependency = (definition["resolvedDependencies"] as List<*>).single() as Map<*, *>
+        assertEquals(
+            "git+https://github.com/openai/openai-java@refs/tags/v1.2.3",
+            dependency["uri"],
+        )
+        val digest = dependency["digest"] as Map<*, *>
+        assertEquals(sourceSha, digest["gitCommit"])
+        assertTrue(digest["gitCommit"] != workflowSha)
+        val details = predicate["runDetails"] as Map<*, *>
+        val builder = details["builder"] as Map<*, *>
+        assertEquals(
+            "https://github.com/openai/openai-java/.github/workflows/create-releases.yml@refs/heads/main",
+            builder["id"],
+        )
+
+        listOf(
+                workflowSha to "v1.2.3",
+                "invalid-source" to "v1.2.3",
+                sourceSha to "v1.2.3;touch-injected",
+            )
+            .forEach { (source, tag) ->
+                Files.deleteIfExists(runnerTemp.resolve("build-started"))
+                val rejected = prepare(source, tag)
+                assertTrue(rejected.first != 0, rejected.second)
+                assertFalse(
+                    Files.exists(runnerTemp.resolve("build-started")),
+                    "Invalid source or tag must fail before artifact creation.",
+                )
+            }
+    }
+
+    @Test
+    fun `publishing rejects run-SHA provenance and unreviewed custom predicate inputs`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val source = "          SOURCE_SHA: \${{ needs.release.outputs.source_sha }}"
+        val argument = "            --arg source_sha \"\$SOURCE_SHA\""
+        val checkout = "\"\$SOURCE_SHA\" != \"\$(git rev-parse HEAD)\""
+        val predicateType = "          predicate-type: https://slsa.dev/provenance/v1"
+        val predicatePath =
+            "          predicate-path: \${{ steps.maven-artifacts.outputs.predicate_path }}"
+
+        listOf(
+                workflow.replaceFirst(source, "          SOURCE_SHA: \${{ github.sha }}"),
+                workflow.replaceFirst(argument, argument.replace("\$SOURCE_SHA", "\$GITHUB_SHA")),
+                workflow.replaceFirst(checkout, checkout.replace("HEAD", "refs/heads/main")),
+                workflow.replaceFirst(
+                    predicateType,
+                    predicateType.replace("slsa.dev", "example.invalid"),
+                ),
+                workflow.replaceFirst(predicatePath, ""),
+                workflow.replaceFirst(predicatePath, "$predicatePath\n          predicate: '{}'"),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> { assertPublishingCachePolicy(poisonedWorkflow) }
+            }
+    }
+
+    @Test
     fun `publishing rejects missing or excessive attestation permissions`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val permissions =
@@ -699,7 +855,7 @@ class GradleCacheTrustPolicyTest {
                 "actions/setup-java" to setOf("distribution", "java-version"),
                 "gradle/actions/setup-gradle" to setOf("cache-disabled"),
                 "graalvm/setup-graalvm" to setOf("distribution", "java-version"),
-                "actions/attest" to setOf("subject-path"),
+                "actions/attest" to setOf("subject-path", "predicate-type", "predicate-path"),
             )
 
         publishJob.actions.forEach { action ->
@@ -801,6 +957,23 @@ class GradleCacheTrustPolicyTest {
             "\${{ needs.release.outputs.release_tag }}",
             preparation.environment.getValue("RELEASE_TAG"),
         )
+        assertEquals(
+            "\${{ needs.release.outputs.source_sha }}",
+            preparation.environment.getValue("SOURCE_SHA"),
+        )
+        assertContains(preparationScript, "\"\$SOURCE_SHA\" != \"\$(git rev-parse HEAD)\"")
+        assertContains(preparationScript, "--arg source_sha \"\$SOURCE_SHA\"")
+        assertContains(preparationScript, "--arg workflow_ref \"\$GITHUB_REF\"")
+        assertContains(
+            preparationScript,
+            "uri: (\"git+\" + \$repository + \"@refs/tags/\" + \$release_tag)",
+        )
+        assertContains(preparationScript, "digest: { gitCommit: \$source_sha }")
+        assertContains(preparationScript, "builder: { id: \$workflow_identity }")
+        assertContains(
+            preparationScript,
+            "predicate_path=\$RUNNER_TEMP/maven-release-provenance.json",
+        )
         assertContains(preparationScript, "for artifact in \$MAVEN_ARTIFACTS; do")
         assertContains(preparationScript, "tasks+=(\":\$artifact:jar\")")
         assertContains(
@@ -814,7 +987,11 @@ class GradleCacheTrustPolicyTest {
             "sha256sum \"\${subjects[@]}\" > \"\$RUNNER_TEMP/maven-artifact-provenance.sha256\"",
         )
         assertEquals(
-            mapOf("subject-path" to "\${{ steps.maven-artifacts.outputs.subject_paths }}"),
+            mapOf(
+                "subject-path" to "\${{ steps.maven-artifacts.outputs.subject_paths }}",
+                "predicate-type" to "https://slsa.dev/provenance/v1",
+                "predicate-path" to "\${{ steps.maven-artifacts.outputs.predicate_path }}",
+            ),
             requireNotNull(attestation.action).inputs,
         )
         assertTrue(
