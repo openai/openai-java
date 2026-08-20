@@ -54,9 +54,3 @@ updates:
     cooldown:
       default-days: 8
     open-pull-requests-limit: 3
-    groups:
-      # CodeQL init/analyze actions share versioned state. Keep every other
-      # pinned action update separate so its replacement SHA can be reviewed.
-      codeql:
-        patterns:
-          - github/codeql-action/*
