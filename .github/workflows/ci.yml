@@ -11,6 +11,9 @@ on:
     branches:
       - main
       - next
+  merge_group:
+    types:
+      - checks_requested
   workflow_dispatch:
 
 permissions:
@@ -114,7 +117,7 @@ jobs:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: ./scripts/collect-gradle-build-cache "$CACHE_ARTIFACT_PATH"
 
-      # setup-gradle's cross-run cache is read-only on pull requests. Publish this run's local
+      # Cross-run caches are read-only on pull requests and merge groups. Publish this run's local
       # build cache as an immutable artifact for downstream jobs with the same trust boundary.
       - name: Upload exact-run Gradle build cache
         id: gradle-cache-artifact
@@ -167,7 +170,7 @@ jobs:
     needs: build
     if: >-
       needs.build.result == 'success' &&
-      github.event_name == 'pull_request'
+      (github.event_name == 'pull_request' || github.event_name == 'merge_group')
     permissions:
       contents: read
       pull-requests: read
@@ -203,7 +206,7 @@ jobs:
 
       - name: Compile previous tests against the proposed SDK
         env:
-          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+          BASE_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: |
           set -euo pipefail
@@ -340,7 +343,7 @@ jobs:
           [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
           [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
 
-          if [[ "$EVENT_NAME" == "pull_request" &&
+          if [[ ( "$EVENT_NAME" == "pull_request" || "$EVENT_NAME" == "merge_group" ) &&
                 "$API_COMPATIBILITY_RESULT" != "success" ]]; then
             failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
           fi
