@@ -68,17 +68,13 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
-     * Allows to set transparency for the background of the generated image(s). This parameter is
-     * only supported for GPT image models that support transparent backgrounds. Must be one of
+     * Allows to set transparency for the background of the generated image(s). Must be one of
      * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
      * automatically determine the best background for the image.
      *
-     * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds. Requests
-     * with `background` set to `transparent` will return an error for these models; use `opaque` or
-     * `auto` instead.
-     *
-     * If `transparent`, the output format needs to support transparency, so it should be set to
-     * either `png` (default value) or `webp`.
+     * Transparent backgrounds are available for supported GPT Image models. For `gpt-image-2` and
+     * `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set the
+     * output format to `png` or `webp`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -423,17 +419,13 @@ private constructor(
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * Transparent backgrounds are available for supported GPT Image models. For `gpt-image-2`
+         * and `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set
+         * the output format to `png` or `webp`.
          */
         fun background(background: Background?) = apply { body.background(background) }
 
@@ -930,17 +922,13 @@ private constructor(
         fun prompt(): String = prompt.value.getRequired("prompt")
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * Transparent backgrounds are available for supported GPT Image models. For `gpt-image-2`
+         * and `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set
+         * the output format to `png` or `webp`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1332,18 +1320,13 @@ private constructor(
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
             /**
-             * Allows to set transparency for the background of the generated image(s). This
-             * parameter is only supported for GPT image models that support transparent
-             * backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value). When
-             * `auto` is used, the model will automatically determine the best background for the
-             * image.
+             * Allows to set transparency for the background of the generated image(s). Must be one
+             * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+             * will automatically determine the best background for the image.
              *
-             * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-             * Requests with `background` set to `transparent` will return an error for these
-             * models; use `opaque` or `auto` instead.
-             *
-             * If `transparent`, the output format needs to support transparency, so it should be
-             * set to either `png` (default value) or `webp`.
+             * Transparent backgrounds are available for supported GPT Image models. For
+             * `gpt-image-2` and `gpt-image-2-2026-04-21`, this support is in preview. When using
+             * `transparent`, set the output format to `png` or `webp`.
              */
             fun background(background: Background?) = background(MultipartField.of(background))
 
@@ -1969,17 +1952,13 @@ private constructor(
     }
 
     /**
-     * Allows to set transparency for the background of the generated image(s). This parameter is
-     * only supported for GPT image models that support transparent backgrounds. Must be one of
+     * Allows to set transparency for the background of the generated image(s). Must be one of
      * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
      * automatically determine the best background for the image.
      *
-     * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds. Requests
-     * with `background` set to `transparent` will return an error for these models; use `opaque` or
-     * `auto` instead.
-     *
-     * If `transparent`, the output format needs to support transparency, so it should be set to
-     * either `png` (default value) or `webp`.
+     * Transparent backgrounds are available for supported GPT Image models. For `gpt-image-2` and
+     * `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set the
+     * output format to `png` or `webp`.
      */
     class Background @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
