@@ -296,7 +296,7 @@ jobs:
         run: ./scripts/mock --daemon
 
       - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@03e8abf916fd0e281b2efe7b2da3378bb0a1d085 # v1
+        uses: graalvm/setup-graalvm@5298d94fb55a4f185c602eeac5de1b553882abe2 # v1
         with:
           java-version: 21
           distribution: graalvm-community
