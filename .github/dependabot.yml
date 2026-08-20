@@ -54,9 +54,12 @@ updates:
     cooldown:
       default-days: 8
     open-pull-requests-limit: 3
-    groups:
-      # CodeQL init/analyze actions share versioned state. Keep every other
-      # pinned action update separate so its replacement SHA can be reviewed.
-      codeql:
-        patterns:
-          - github/codeql-action/*
+    # Intentionally inactive with the Java CodeQL workflow. See the rationale
+    # and restoration criteria in .github/workflows/codeql.yml and PR #916.
+    # Keep other pinned action updates separate for SHA review.
+    # groups:
+    #   # CodeQL init/analyze actions share versioned state. Keep every other
+    #   # pinned action update separate so its replacement SHA can be reviewed.
+    #   codeql:
+    #     patterns:
+    #       - github/codeql-action/*
