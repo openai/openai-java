@@ -236,11 +236,15 @@ internal class WorkloadIdentityAuth(
     }
 
     private fun refreshTokenAsync(): CompletableFuture<String> {
-        return config.provider.getTokenAsync(httpClient, jsonMapper).thenCompose { subjectToken ->
-            val request = buildTokenExchangeRequest(subjectToken)
-            httpClient.executeAsync(request).thenApply { response ->
-                response.use { processTokenExchangeResponse(it) }
+        return try {
+            config.provider.getTokenAsync(httpClient, jsonMapper).thenCompose { subjectToken ->
+                val request = buildTokenExchangeRequest(subjectToken)
+                httpClient.executeAsync(request).thenApply { response ->
+                    response.use { processTokenExchangeResponse(it) }
+                }
             }
+        } catch (e: Exception) {
+            CompletableFuture<String>().also { it.completeExceptionally(e) }
         }
     }
 

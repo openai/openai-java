@@ -28,8 +28,58 @@ import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.jvm.optionals.getOrNull
+
+private class ClientOptionsResource(private val close: () -> Unit) {
+    private var references = 1
+    private var closed = false
+
+    @Synchronized
+    fun retain() {
+        check(!closed) { "Cannot retain a closed client resource" }
+        references++
+    }
+
+    fun release() {
+        val shouldClose =
+            synchronized(this) {
+                check(references > 0) { "Client resource released too many times" }
+                references--
+                if (references == 0) {
+                    closed = true
+                    true
+                } else false
+            }
+
+        if (shouldClose) close()
+    }
+}
+
+private class ClientOptionsResources(
+    val httpClient: ClientOptionsResource,
+    val httpRequestAuthenticator: ClientOptionsResource?,
+    val workloadIdentityAuth: ClientOptionsResource?,
+    val streamHandlerExecutor: ClientOptionsResource,
+    val sleeper: ClientOptionsResource,
+) {
+    fun release() {
+        httpRequestAuthenticator?.release()
+        workloadIdentityAuth?.release()
+        httpClient.release()
+        streamHandlerExecutor.release()
+        sleeper.release()
+    }
+}
+
+private class ClientOptionsCloseAction(private val resources: ClientOptionsResources) : () -> Unit {
+    private val closed = AtomicBoolean(false)
+
+    override fun invoke() {
+        if (closed.compareAndSet(false, true)) resources.release()
+    }
+}
 
 /** A class representing the SDK client configuration. */
 class ClientOptions
@@ -140,12 +190,16 @@ private constructor(
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
+    private val resources: ClientOptionsResources,
 ) {
+
+    private val closeAction = ClientOptionsCloseAction(resources)
 
     init {
         if (checkJacksonVersionCompatibility) {
             checkJacksonVersionCompatibility()
         }
+        closeWhenPhantomReachable(this, closeAction)
     }
 
     /**
@@ -221,6 +275,11 @@ private constructor(
         private var project: String? = null
         private var webhookSecret: String? = null
         private var workloadIdentity: WorkloadIdentity? = null
+        private var httpClientResource: ClientOptionsResource? = null
+        private var httpRequestAuthenticatorResource: ClientOptionsResource? = null
+        private var workloadIdentityAuthResource: ClientOptionsResource? = null
+        private var streamHandlerExecutorResource: ClientOptionsResource? = null
+        private var sleeperResource: ClientOptionsResource? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -230,6 +289,11 @@ private constructor(
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
             sleeper = clientOptions.sleeper
+            httpClientResource = clientOptions.resources.httpClient
+            httpRequestAuthenticatorResource = clientOptions.resources.httpRequestAuthenticator
+            workloadIdentityAuthResource = clientOptions.resources.workloadIdentityAuth
+            streamHandlerExecutorResource = clientOptions.resources.streamHandlerExecutor
+            sleeperResource = clientOptions.resources.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
             dataResidencySelected = clientOptions.dataResidencySelected
@@ -265,6 +329,7 @@ private constructor(
          */
         fun httpClient(httpClient: HttpClient) = apply {
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+            this.httpClientResource = null
         }
 
         /**
@@ -278,6 +343,7 @@ private constructor(
             this.httpRequestAuthenticator =
                 if (httpRequestAuthenticator == null) null
                 else PhantomReachableClosingHttpRequestAuthenticator(httpRequestAuthenticator)
+            this.httpRequestAuthenticatorResource = null
         }
 
         /**
@@ -311,6 +377,7 @@ private constructor(
                 if (streamHandlerExecutor is ExecutorService)
                     PhantomReachableExecutorService(streamHandlerExecutor)
                 else streamHandlerExecutor
+            this.streamHandlerExecutorResource = null
         }
 
         /**
@@ -322,7 +389,10 @@ private constructor(
          *
          * This class takes ownership of the sleeper and closes it when closed.
          */
-        fun sleeper(sleeper: Sleeper) = apply { this.sleeper = PhantomReachableSleeper(sleeper) }
+        fun sleeper(sleeper: Sleeper) = apply {
+            this.sleeper = PhantomReachableSleeper(sleeper)
+            this.sleeperResource = null
+        }
 
         /**
          * The clock to use for operations that require timing, like retries.
@@ -427,6 +497,7 @@ private constructor(
         fun apiKey(apiKey: String?) = apply {
             this.apiKey = apiKey
             this.credential = apiKey?.let { BearerTokenCredential.create(it) }
+            this.workloadIdentityAuthResource = null
         }
 
         /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
@@ -440,6 +511,7 @@ private constructor(
         fun credential(credential: Credential) = apply {
             this.apiKey = null
             this.credential = credential
+            this.workloadIdentityAuthResource = null
         }
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
@@ -468,6 +540,7 @@ private constructor(
 
         fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
             this.workloadIdentity = workloadIdentity
+            this.workloadIdentityAuthResource = null
         }
 
         /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
@@ -749,6 +822,31 @@ private constructor(
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
 
+            val resources =
+                ClientOptionsResources(
+                    httpClient =
+                        httpClientResource?.also { it.retain() }
+                            ?: ClientOptionsResource { httpClient.close() },
+                    httpRequestAuthenticator =
+                        httpRequestAuthenticatorResource?.also { it.retain() }
+                            ?: httpRequestAuthenticator?.let {
+                                ClientOptionsResource { it.close() }
+                            },
+                    workloadIdentityAuth =
+                        workloadIdentityAuthResource?.also { it.retain() }
+                            ?: effectiveWorkloadIdentityAuth?.let {
+                                ClientOptionsResource { it.close() }
+                            },
+                    streamHandlerExecutor =
+                        streamHandlerExecutorResource?.also { it.retain() }
+                            ?: ClientOptionsResource {
+                                (streamHandlerExecutor as? ExecutorService)?.shutdown()
+                            },
+                    sleeper =
+                        sleeperResource?.also { it.retain() }
+                            ?: ClientOptionsResource { sleeper.close() },
+                )
+
             val loggingDelegate =
                 if (httpRequestAuthenticator != null) httpClient
                 else
@@ -805,6 +903,7 @@ private constructor(
                 organization,
                 project,
                 webhookSecret,
+                resources,
             )
         }
     }
@@ -819,11 +918,7 @@ private constructor(
      * releases threads and connections if they remain idle, but if you are writing an application
      * that needs to aggressively release unused resources, then you may call this method.
      */
-    fun close() {
-        httpClient.close()
-        (streamHandlerExecutor as? ExecutorService)?.shutdown()
-        sleeper.close()
-    }
+    fun close() = closeAction()
 
     @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {

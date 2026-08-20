@@ -9,7 +9,9 @@ import com.openai.errors.BadRequestException
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -65,6 +67,135 @@ internal class WorkloadIdentityAuthTest {
 
         org.assertj.core.api.Assertions.assertThat(thrown).isSameAs(failure)
         verifyNoInteractions(httpClient)
+    }
+
+    @Test
+    fun getTokenAsync_clearsRefreshStateAfterProviderThrowsSynchronously() {
+        val failure = IllegalStateException("provider failed")
+        val subjectToken = "subject-token"
+        val accessToken = "test-access-token"
+        val providerCalls = AtomicInteger()
+        val provider =
+            object : SubjectTokenProvider {
+                override fun tokenType() = SubjectTokenType.JWT
+
+                override fun getToken(httpClient: HttpClient, jsonMapper: JsonMapper): String =
+                    subjectToken
+
+                override fun getTokenAsync(
+                    httpClient: HttpClient,
+                    jsonMapper: JsonMapper,
+                ): CompletableFuture<String> {
+                    if (providerCalls.getAndIncrement() == 0) throw failure
+                    return CompletableFuture.completedFuture(subjectToken)
+                }
+            }
+
+        val response =
+            mockResponse(
+                200,
+                """
+                {
+                    "access_token": "$accessToken",
+                    "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                    "token_type": "Bearer",
+                    "expires_in": 3600
+                }
+                """.trimIndent(),
+            )
+        whenever(httpClient.executeAsync(any<HttpRequest>()))
+            .thenReturn(CompletableFuture.completedFuture(response))
+
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .clientId("client-id")
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+            )
+
+        val first = auth.getTokenAsync()
+        assertThatThrownBy { first.join() }.hasCauseSameAs(failure)
+
+        assertThat(auth.getTokenAsync().join()).isEqualTo(accessToken)
+        assertThat(providerCalls.get()).isEqualTo(2)
+    }
+
+    @Test
+    fun getTokenAsync_clearsBackgroundRefreshStateAfterProviderThrowsSynchronously() {
+        val failure = IllegalStateException("provider failed")
+        val subjectToken = "subject-token"
+        val initialAccessToken = "initial-access-token"
+        val refreshedAccessToken = "refreshed-access-token"
+        val providerCalls = AtomicInteger()
+        val provider =
+            object : SubjectTokenProvider {
+                override fun tokenType() = SubjectTokenType.JWT
+
+                override fun getToken(httpClient: HttpClient, jsonMapper: JsonMapper): String =
+                    subjectToken
+
+                override fun getTokenAsync(
+                    httpClient: HttpClient,
+                    jsonMapper: JsonMapper,
+                ): CompletableFuture<String> {
+                    if (providerCalls.getAndIncrement() == 0) throw failure
+                    return CompletableFuture.completedFuture(subjectToken)
+                }
+            }
+
+        val initialResponse =
+            mockResponse(
+                200,
+                """
+                {
+                    "access_token": "$initialAccessToken",
+                    "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                    "token_type": "Bearer",
+                    "expires_in": 1
+                }
+                """.trimIndent(),
+            )
+        val refreshedResponse =
+            mockResponse(
+                200,
+                """
+                {
+                    "access_token": "$refreshedAccessToken",
+                    "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+                    "token_type": "Bearer",
+                    "expires_in": 3600
+                }
+                """.trimIndent(),
+            )
+        whenever(httpClient.execute(any<HttpRequest>())).thenReturn(initialResponse)
+        whenever(httpClient.executeAsync(any<HttpRequest>()))
+            .thenReturn(CompletableFuture.completedFuture(refreshedResponse))
+
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .clientId("client-id")
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .refreshBufferSeconds(2)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = JsonMapper(),
+            )
+
+        assertThat(auth.getToken()).isEqualTo(initialAccessToken)
+        assertThat(auth.getTokenAsync().join()).isEqualTo(initialAccessToken)
+        assertThat(auth.getTokenAsync().join()).isEqualTo(initialAccessToken)
+        assertThat(auth.getTokenAsync().join()).isEqualTo(refreshedAccessToken)
+        assertThat(providerCalls.get()).isEqualTo(2)
     }
 
     @Test
