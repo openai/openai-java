@@ -44,6 +44,7 @@ private constructor(
     private val model: JsonField<String>,
     private val object_: JsonValue,
     private val moderation: JsonField<Moderation>,
+    private val obfuscation: JsonField<String>,
     private val serviceTier: JsonField<ServiceTier>,
     private val systemFingerprint: JsonField<String>,
     private val usage: JsonField<CompletionUsage>,
@@ -62,6 +63,9 @@ private constructor(
         @JsonProperty("moderation")
         @ExcludeMissing
         moderation: JsonField<Moderation> = JsonMissing.of(),
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
         @JsonProperty("service_tier")
         @ExcludeMissing
         serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
@@ -76,6 +80,7 @@ private constructor(
         model,
         object_,
         moderation,
+        obfuscation,
         serviceTier,
         systemFingerprint,
         usage,
@@ -138,6 +143,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
+
+    /**
+     * An obfuscation string added to normalize the size of streamed chunks as a mitigation to
+     * certain side-channel attacks. The field is included by default and omitted when
+     * `stream_options.include_obfuscation` is `false`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun obfuscation(): Optional<String> = obfuscation.getOptional("obfuscation")
 
     /**
      * Specifies the processing type used for serving the request.
@@ -224,6 +239,13 @@ private constructor(
     fun _moderation(): JsonField<Moderation> = moderation
 
     /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
+
+    /**
      * Returns the raw JSON value of [serviceTier].
      *
      * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
@@ -287,6 +309,7 @@ private constructor(
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("chat.completion.chunk")
         private var moderation: JsonField<Moderation> = JsonMissing.of()
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
@@ -300,6 +323,7 @@ private constructor(
             model = chatCompletionChunk.model
             object_ = chatCompletionChunk.object_
             moderation = chatCompletionChunk.moderation
+            obfuscation = chatCompletionChunk.obfuscation
             serviceTier = chatCompletionChunk.serviceTier
             systemFingerprint = chatCompletionChunk.systemFingerprint
             usage = chatCompletionChunk.usage
@@ -403,6 +427,22 @@ private constructor(
          * supported value.
          */
         fun moderation(moderation: JsonField<Moderation>) = apply { this.moderation = moderation }
+
+        /**
+         * An obfuscation string added to normalize the size of streamed chunks as a mitigation to
+         * certain side-channel attacks. The field is included by default and omitted when
+         * `stream_options.include_obfuscation` is `false`.
+         */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
 
         /**
          * Specifies the processing type used for serving the request.
@@ -523,6 +563,7 @@ private constructor(
                 checkRequired("model", model),
                 object_,
                 moderation,
+                obfuscation,
                 serviceTier,
                 systemFingerprint,
                 usage,
@@ -555,6 +596,7 @@ private constructor(
             }
         }
         moderation().ifPresent { it.validate() }
+        obfuscation()
         serviceTier().ifPresent { it.validate() }
         systemFingerprint()
         usage().ifPresent { it.validate() }
@@ -582,6 +624,7 @@ private constructor(
             (if (model.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("chat.completion.chunk")) 1 else 0 } +
             (moderation.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (obfuscation.asKnown().isPresent) 1 else 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (if (systemFingerprint.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
@@ -6239,6 +6282,7 @@ private constructor(
             model == other.model &&
             object_ == other.object_ &&
             moderation == other.moderation &&
+            obfuscation == other.obfuscation &&
             serviceTier == other.serviceTier &&
             systemFingerprint == other.systemFingerprint &&
             usage == other.usage &&
@@ -6253,6 +6297,7 @@ private constructor(
             model,
             object_,
             moderation,
+            obfuscation,
             serviceTier,
             systemFingerprint,
             usage,
@@ -6263,5 +6308,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, moderation=$moderation, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
+        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, moderation=$moderation, obfuscation=$obfuscation, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
 }

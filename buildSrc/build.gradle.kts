@@ -15,6 +15,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation("org.yaml:snakeyaml:2.6")
 }
 
 tasks.test {
@@ -43,5 +44,11 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .file(layout.projectDirectory.file("../.github/workflows/ci.yml"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../.github/workflows/create-releases.yml"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../SECURITY.md"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
 }
