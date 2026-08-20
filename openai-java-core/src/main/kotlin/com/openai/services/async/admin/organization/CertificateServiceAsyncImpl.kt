@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.certificates.Certificate
 import com.openai.models.admin.organization.certificates.CertificateActivatePageAsync
 import com.openai.models.admin.organization.certificates.CertificateActivatePageResponse
@@ -53,49 +55,63 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
         requestOptions: RequestOptions,
     ): CompletableFuture<Certificate> =
         // post /organization/certificates
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieve(
         params: CertificateRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Certificate> =
         // get /organization/certificates/{certificate_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: CertificateUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Certificate> =
         // post /organization/certificates/{certificate_id}
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: CertificateListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateListPageAsync> =
         // get /organization/certificates
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: CertificateDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateDeleteResponse> =
         // delete /organization/certificates/{certificate_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun activate(
         params: CertificateActivateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateActivatePageAsync> =
         // post /organization/certificates/activate
-        withRawResponse().activate(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().activate(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun deactivate(
         params: CertificateDeactivateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateDeactivatePageAsync> =
         // post /organization/certificates/deactivate
-        withRawResponse().deactivate(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().deactivate(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CertificateServiceAsync.WithRawResponse {
@@ -131,8 +147,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -168,8 +186,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -206,8 +226,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -240,8 +262,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -286,8 +310,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
@@ -321,8 +347,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { activateHandler.handle(it) }
@@ -364,8 +392,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deactivateHandler.handle(it) }

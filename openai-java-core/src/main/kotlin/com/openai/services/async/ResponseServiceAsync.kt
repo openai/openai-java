@@ -9,6 +9,7 @@ import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
+import com.openai.core.thenApplyPropagatingCancellation
 import com.openai.models.responses.CompactedResponse
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCancelParams
@@ -90,7 +91,7 @@ interface ResponseServiceAsync {
         params: StructuredResponseCreateParams<T>,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<StructuredResponse<T>> =
-        create(params.rawParams, requestOptions).thenApply {
+        create(params.rawParams, requestOptions).thenApplyPropagatingCancellation {
             StructuredResponse<T>(params.responseType, it)
         }
 

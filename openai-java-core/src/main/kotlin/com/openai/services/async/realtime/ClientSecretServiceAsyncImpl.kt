@@ -16,6 +16,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.realtime.clientsecrets.ClientSecretCreateParams
 import com.openai.models.realtime.clientsecrets.ClientSecretCreateResponse
 import java.util.concurrent.CompletableFuture
@@ -38,7 +40,9 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
         requestOptions: RequestOptions,
     ): CompletableFuture<ClientSecretCreateResponse> =
         // post /realtime/client_secrets
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ClientSecretServiceAsync.WithRawResponse {
@@ -74,8 +78,10 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }

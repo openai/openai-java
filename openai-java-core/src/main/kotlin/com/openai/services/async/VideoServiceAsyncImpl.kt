@@ -18,6 +18,8 @@ import com.openai.core.http.json
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.videos.Video
 import com.openai.models.videos.VideoCreateCharacterParams
 import com.openai.models.videos.VideoCreateCharacterResponse
@@ -57,7 +59,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun retrieve(
@@ -65,7 +69,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // get /videos/{video_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun list(
@@ -73,7 +79,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoListPageAsync> =
         // get /videos
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun delete(
@@ -81,7 +89,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoDeleteResponse> =
         // delete /videos/{video_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun createCharacter(
@@ -89,7 +99,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoCreateCharacterResponse> =
         // post /videos/characters
-        withRawResponse().createCharacter(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().createCharacter(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun downloadContent(
@@ -105,7 +117,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos/edits
-        withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().edit(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun extend(
@@ -113,7 +127,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos/extensions
-        withRawResponse().extend(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().extend(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun getCharacter(
@@ -121,7 +137,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoGetCharacterResponse> =
         // get /videos/characters/{character_id}
-        withRawResponse().getCharacter(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().getCharacter(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun remix(
@@ -129,7 +147,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos/{video_id}/remix
-        withRawResponse().remix(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().remix(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -166,8 +186,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -203,8 +225,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -238,8 +262,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -285,8 +311,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
@@ -321,8 +349,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createCharacterHandler.handle(it) }
@@ -357,8 +387,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response -> errorHandler.handle(response) }
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response -> errorHandler.handle(response) }
         }
 
         private val editHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
@@ -382,8 +414,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { editHandler.handle(it) }
@@ -417,8 +451,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { extendHandler.handle(it) }
@@ -455,8 +491,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { getCharacterHandler.handle(it) }
@@ -493,8 +531,10 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { remixHandler.handle(it) }
