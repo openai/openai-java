@@ -5141,7 +5141,9 @@ private constructor(
             inputImageMask.getOptional("input_image_mask")
 
         /**
-         * The image generation model to use. Default: `gpt-image-1`.
+         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+         * Default: `gpt-image-1`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5450,7 +5452,11 @@ private constructor(
                 this.inputImageMask = inputImageMask
             }
 
-            /** The image generation model to use. Default: `gpt-image-1`. */
+            /**
+             * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+             * Default: `gpt-image-1`.
+             */
             fun model(model: Model) = model(JsonField.of(model))
 
             /**
@@ -6340,7 +6346,11 @@ private constructor(
                 "InputImageMask{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
         }
 
-        /** The image generation model to use. Default: `gpt-image-1`. */
+        /**
+         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+         * Default: `gpt-image-1`.
+         */
         class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
