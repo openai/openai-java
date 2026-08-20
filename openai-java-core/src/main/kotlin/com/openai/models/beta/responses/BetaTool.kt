@@ -5150,7 +5150,8 @@ private constructor(
 
         /**
          * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, or `gpt-image-2-2026-04-21`. Default: `gpt-image-1`.
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+         * Default: `gpt-image-1`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5461,7 +5462,8 @@ private constructor(
 
             /**
              * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
-             * `gpt-image-1.5`, `gpt-image-2`, or `gpt-image-2-2026-04-21`. Default: `gpt-image-1`.
+             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+             * Default: `gpt-image-1`.
              */
             fun model(model: Model) = model(JsonField.of(model))
 
@@ -6354,7 +6356,8 @@ private constructor(
 
         /**
          * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, or `gpt-image-2-2026-04-21`. Default: `gpt-image-1`.
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+         * Default: `gpt-image-1`.
          */
         class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
