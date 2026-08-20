@@ -10,11 +10,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 buildscript {
     dependencies {
         constraints {
-            classpath("com.fasterxml.jackson.core:jackson-annotations:2.18.9")
-            classpath("com.fasterxml.jackson.core:jackson-core:2.18.9")
-            classpath("com.fasterxml.jackson.core:jackson-databind:2.18.9")
-            classpath("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.9")
-            classpath("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.9")
+            val dokkaJacksonVersion =
+                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.18.9"))
+                    .versionConstraint
+                    .requiredVersion
+
+            listOf(
+                    "com.fasterxml.jackson.core:jackson-annotations",
+                    "com.fasterxml.jackson.core:jackson-core",
+                    "com.fasterxml.jackson.dataformat:jackson-dataformat-xml",
+                    "com.fasterxml.jackson.module:jackson-module-kotlin",
+                )
+                .forEach { module -> classpath("$module:$dokkaJacksonVersion") }
         }
     }
 }
@@ -23,7 +30,15 @@ plugins {
     id("org.jetbrains.dokka") version "2.1.0"
 }
 
-val dokkaJacksonVersion = "2.18.9"
+val dokkaJacksonVersion =
+    buildscript.configurations
+        .getByName("classpath")
+        .dependencyConstraints
+        .first {
+            it.group == "com.fasterxml.jackson.core" && it.name == "jackson-databind"
+        }
+        .versionConstraint
+        .requiredVersion
 val dokkaJsoupVersion = "1.23.1"
 
 repositories {
