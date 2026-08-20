@@ -7104,7 +7104,26 @@ private constructor(
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun value(): Optional<Double> = value.getOptional("value")
+                    fun value(): Optional<Double> {
+                        if (value.isMissing() || value.isNull()) return Optional.empty()
+                        val known = value.asKnown()
+                        if (known.isPresent) return known
+                        // The live API returns this field as a quoted numeric string despite the
+                        // schema declaring type:number. Accept valid finite numeric strings for
+                        // compat.
+                        val str =
+                            value.asString().orElseThrow {
+                                OpenAIInvalidDataException("`value` is invalid, received $value")
+                            }
+                        val d =
+                            str.toBigDecimalOrNull()?.toDouble()
+                                ?: throw OpenAIInvalidDataException(
+                                    "`value` is invalid, received $value"
+                                )
+                        if (!d.isFinite())
+                            throw OpenAIInvalidDataException("`value` is invalid, received $value")
+                        return Optional.of(d)
+                    }
 
                     /**
                      * Returns the raw JSON value of [currency].
