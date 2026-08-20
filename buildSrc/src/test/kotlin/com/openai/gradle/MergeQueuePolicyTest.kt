@@ -12,18 +12,16 @@ import org.yaml.snakeyaml.constructor.SafeConstructor
 
 class MergeQueuePolicyTest {
     @Test
-    fun `both required workflows run on merge groups`() {
-        for (name in listOf("ci", "codeql")) {
-            val workflow = workflow(name)
-            // SnakeYAML's YAML 1.1 resolver may interpret the key `on` as true.
-            val events = (workflow["on"] ?: workflow[true]) as Map<*, *>
-            val mergeGroup = events["merge_group"] as Map<*, *>
-            assertEquals(listOf("checks_requested"), mergeGroup["types"])
-            assertFalse(events.containsKey("pull_request_target"))
-        }
-        assertEquals("CI / required", job(workflow("ci"), "required")["name"])
-        assertEquals("Analyze Java and Kotlin", job(workflow("codeql"), "analyze")["name"])
-        assertEquals(mapOf("contents" to "read"), workflow("ci")["permissions"])
+    fun `required CI workflow runs on merge groups`() {
+        // CodeQL is intentionally not a merge requirement; see PR #916 and codeql.yml.
+        val workflow = workflow("ci")
+        // SnakeYAML's YAML 1.1 resolver may interpret the key `on` as true.
+        val events = (workflow["on"] ?: workflow[true]) as Map<*, *>
+        val mergeGroup = events["merge_group"] as Map<*, *>
+        assertEquals(listOf("checks_requested"), mergeGroup["types"])
+        assertFalse(events.containsKey("pull_request_target"))
+        assertEquals("CI / required", job(workflow, "required")["name"])
+        assertEquals(mapOf("contents" to "read"), workflow["permissions"])
     }
 
     @Test
