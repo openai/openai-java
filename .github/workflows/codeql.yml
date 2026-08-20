@@ -1,23 +1,43 @@
-# CodeQL is intentionally disabled for Java (maintainer decision, 2026-08-20).
+# CodeQL is intentionally disabled repository-wide (maintainer decision, 2026-08-20).
 # This SDK has a large generated Java/Kotlin surface. CodeQL's instrumented
 # Gradle build and analysis have repeatedly been slow (roughly 10-15+ minutes)
 # and unreliable, blocking unrelated changes while maintainers debug the scanner.
 # Example: https://github.com/openai/openai-java/actions/runs/32377826339
 # Decision: https://github.com/openai/openai-java/pull/916
+# Repository-wide follow-up: https://github.com/openai/openai-java/pull/913
+#
+# GitHub-managed Code Quality also invokes CodeQL. Commenting out this workflow
+# alone does not stop that separate service. Both code-scanning default setup and
+# Code Quality setup are disabled in repository settings, this Actions workflow
+# is disabled, and neither code_scanning nor code_quality is a merge requirement.
+# Keep all of these entry points disabled; do not restore one via a ruleset,
+# merge-queue rollout, default setup, or SDK-parity change.
 #
 # This is a conscious security-tooling tradeoff, not an accidental omission or
 # evidence of a known SDK vulnerability. We accept reduced automated static-
-# analysis coverage rather than require this unreliable check. Required CI,
-# code-owner review, code-quality checks, dependency updates, and private
+# analysis coverage rather than require these unreliable checks. Required CI,
+# code-owner review, dependency updates, secret scanning, and private
 # vulnerability reporting remain in place. Codex Security has provided useful
 # findings, but is not claimed to be an equivalent or required CI replacement.
 #
-# Do not automatically restore CodeQL or its ruleset requirement for SDK parity
-# or to "fix" a missing security check. Revisit with maintainers after a reliable,
+# Do not automatically restore CodeQL, Code Quality, or their merge requirements
+# for SDK parity or to "fix" a missing security check. Revisit after a reliable,
 # acceptably fast Java analysis path or a suitable replacement is demonstrated.
 # Before restoring it, review/update the archived action SHAs and permissions,
 # validate a real scan, restore the Dependabot group, and separately agree on
 # whether any scanning result should block merges.
+#
+# Archived GitHub-managed Code Quality settings (reference only, not active YAML):
+# PATCH /repos/openai/openai-java/code-quality/setup
+#   state: configured
+#   languages: [java-kotlin, python]
+#   runner_type: standard
+#   ai_findings_option: disabled
+# Former main-ruleset rule:
+#   type: code_quality
+#   parameters:
+#     severity: errors
+# Re-enabling this service or its rule requires a new maintainer decision.
 #
 # Keep a valid, manual-only workflow with an always-skipped placeholder. The
 # original configuration below is commented out for reference; this placeholder
