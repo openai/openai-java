@@ -81,6 +81,10 @@ producing job's artifact ID and rejected if its SHA-256 digest does not match.
 These artifacts must never be restored by release, signing, or other
 secret-bearing jobs.
 
+Merge-queue CI uses the same read-only cross-run Gradle cache policy and
+exact-run artifact handoff. Queue runs do not receive release credentials or
+change the isolated publishing-cache policy.
+
 Maven Central publishing instead creates a new, private Gradle User Home for
 each workflow run and attempt, refuses an existing directory or symbolic link,
 and disables all cross-run Gradle cache restoration and saving. Gradle invocations

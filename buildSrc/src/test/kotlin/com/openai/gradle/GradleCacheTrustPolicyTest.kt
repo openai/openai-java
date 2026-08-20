@@ -802,7 +802,9 @@ class GradleCacheTrustPolicyTest {
             "Untrusted CI must use GitHub's server-enforced pull-request cache scope.",
         )
         assertTrue(
-            parsedWorkflow.events.all { it in setOf("push", "pull_request", "workflow_dispatch") },
+            parsedWorkflow.events.all {
+                it in setOf("push", "pull_request", "merge_group", "workflow_dispatch")
+            },
             "Untrusted CI must not run in a default-branch-context event such as pull_request_target.",
         )
         val setupActions =
@@ -837,7 +839,7 @@ class GradleCacheTrustPolicyTest {
 
             assertTrue(
                 effectivelyReadOnly,
-                "Gradle cache for job ${action.job} must remain effectively read-only on pull requests.",
+                "Gradle cache for job ${action.job} must remain effectively read-only on pull requests and merge groups.",
             )
         }
     }
