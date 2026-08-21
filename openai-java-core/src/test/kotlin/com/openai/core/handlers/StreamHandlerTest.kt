@@ -43,12 +43,15 @@ internal class StreamHandlerTest {
 
     @Test
     fun streamHandler_whenReaderThrowsIOException_wrapsException() {
+        val headers = Headers.builder().put("x-request-id", "req_123").build()
         val handler = streamHandler<String> { _, lines -> lines.forEach {} }
-        val streamResponse = handler.handle(httpResponse("a\nb\nc\n".byteInputStream().throwing()))
+        val streamResponse =
+            handler.handle(httpResponse("a\nb\nc\n".byteInputStream().throwing(), headers))
 
         val e = assertThrows<OpenAIIoException> { streamResponse.stream().forEach {} }
         assertThat(e).hasMessage("Stream failed")
         assertThat(e).hasCauseInstanceOf(IOException::class.java)
+        assertThat(e.headers()).contains(headers)
     }
 
     @Test
@@ -68,12 +71,15 @@ internal class StreamHandlerTest {
         assertThat(e).isSameAs(ioException)
     }
 
-    private fun httpResponse(body: InputStream): HttpResponse =
+    private fun httpResponse(
+        body: InputStream,
+        headers: Headers = Headers.builder().build(),
+    ): HttpResponse =
         object : HttpResponse {
 
             override fun statusCode(): Int = 0
 
-            override fun headers(): Headers = Headers.builder().build()
+            override fun headers(): Headers = headers
 
             override fun body(): InputStream = body
 
