@@ -282,7 +282,8 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .method(HttpMethod.GET)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
-                    .putAllQueryParams(mapOf("beta" to "true", "stream" to "true"))
+                    .putQueryParam("beta", "true")
+                    .putQueryParam("stream", "true")
                     .putHeader("Accept", "text/event-stream")
                     .build()
                     .prepareAsync(

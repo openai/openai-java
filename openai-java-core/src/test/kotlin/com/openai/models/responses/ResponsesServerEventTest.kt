@@ -6,6 +6,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.ChatModel
+import com.openai.models.Reasoning
+import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -17,11 +21,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseAudioDelta() {
         val responseAudioDelta =
-            ResponsesServerEvent.ResponseAudioWsDelta.builder()
-                .delta("delta")
-                .sequenceNumber(0L)
-                .streamId("stream_id")
-                .build()
+            ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseAudioDelta(responseAudioDelta)
 
@@ -90,11 +90,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseAudioDelta(
-                ResponsesServerEvent.ResponseAudioWsDelta.builder()
-                    .delta("delta")
-                    .sequenceNumber(0L)
-                    .streamId("stream_id")
-                    .build()
+                ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
             )
 
         val roundtrippedResponsesServerEvent =
@@ -107,12 +103,57 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
+    fun ofResponseAudioDeltaStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofResponseAudioDelta(
+                ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofResponseAudioDelta(
+                    mapper.readValue(json, original.asResponseAudioDelta().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseAudioDelta()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
     fun ofResponseAudioDone() {
-        val responseAudioDone =
-            ResponsesServerEvent.ResponseAudioWsDone.builder()
-                .sequenceNumber(0L)
-                .streamId("stream_id")
-                .build()
+        val responseAudioDone = ResponseAudioDoneEvent.builder().sequenceNumber(0L).build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseAudioDone(responseAudioDone)
 
@@ -181,10 +222,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseAudioDone(
-                ResponsesServerEvent.ResponseAudioWsDone.builder()
-                    .sequenceNumber(0L)
-                    .streamId("stream_id")
-                    .build()
+                ResponseAudioDoneEvent.builder().sequenceNumber(0L).build()
             )
 
         val roundtrippedResponsesServerEvent =
@@ -199,11 +237,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseAudioTranscriptDelta() {
         val responseAudioTranscriptDelta =
-            ResponsesServerEvent.ResponseAudioTranscriptWsDelta.builder()
-                .delta("delta")
-                .sequenceNumber(0L)
-                .streamId("stream_id")
-                .build()
+            ResponseAudioTranscriptDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseAudioTranscriptDelta(responseAudioTranscriptDelta)
@@ -274,10 +308,9 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseAudioTranscriptDelta(
-                ResponsesServerEvent.ResponseAudioTranscriptWsDelta.builder()
+                ResponseAudioTranscriptDeltaEvent.builder()
                     .delta("delta")
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -293,10 +326,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseAudioTranscriptDone() {
         val responseAudioTranscriptDone =
-            ResponsesServerEvent.ResponseAudioTranscriptWsDone.builder()
-                .sequenceNumber(0L)
-                .streamId("stream_id")
-                .build()
+            ResponseAudioTranscriptDoneEvent.builder().sequenceNumber(0L).build()
 
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseAudioTranscriptDone(responseAudioTranscriptDone)
@@ -367,10 +397,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseAudioTranscriptDone(
-                ResponsesServerEvent.ResponseAudioTranscriptWsDone.builder()
-                    .sequenceNumber(0L)
-                    .streamId("stream_id")
-                    .build()
+                ResponseAudioTranscriptDoneEvent.builder().sequenceNumber(0L).build()
             )
 
         val roundtrippedResponsesServerEvent =
@@ -385,12 +412,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallCodeDelta() {
         val responseCodeInterpreterCallCodeDelta =
-            ResponsesServerEvent.ResponseCodeInterpreterCallCodeWsDelta.builder()
+            ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -464,12 +490,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCodeInterpreterCallCodeDelta(
-                ResponsesServerEvent.ResponseCodeInterpreterCallCodeWsDelta.builder()
+                ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -485,12 +510,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallCodeDone() {
         val responseCodeInterpreterCallCodeDone =
-            ResponsesServerEvent.ResponseCodeInterpreterCallCodeWsDone.builder()
+            ResponseCodeInterpreterCallCodeDoneEvent.builder()
                 .code("code")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -564,12 +588,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCodeInterpreterCallCodeDone(
-                ResponsesServerEvent.ResponseCodeInterpreterCallCodeWsDone.builder()
+                ResponseCodeInterpreterCallCodeDoneEvent.builder()
                     .code("code")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -585,11 +608,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallCompleted() {
         val responseCodeInterpreterCallCompleted =
-            ResponsesServerEvent.ResponseCodeInterpreterCallWsCompleted.builder()
+            ResponseCodeInterpreterCallCompletedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -663,11 +685,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCodeInterpreterCallCompleted(
-                ResponsesServerEvent.ResponseCodeInterpreterCallWsCompleted.builder()
+                ResponseCodeInterpreterCallCompletedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -683,11 +704,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallInProgress() {
         val responseCodeInterpreterCallInProgress =
-            ResponsesServerEvent.ResponseCodeInterpreterCallInWsProgress.builder()
+            ResponseCodeInterpreterCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -761,11 +781,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCodeInterpreterCallInProgress(
-                ResponsesServerEvent.ResponseCodeInterpreterCallInWsProgress.builder()
+                ResponseCodeInterpreterCallInProgressEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -781,11 +800,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCodeInterpreterCallInterpreting() {
         val responseCodeInterpreterCallInterpreting =
-            ResponsesServerEvent.ResponseCodeInterpreterCallWsInterpreting.builder()
+            ResponseCodeInterpreterCallInterpretingEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -859,11 +877,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCodeInterpreterCallInterpreting(
-                ResponsesServerEvent.ResponseCodeInterpreterCallWsInterpreting.builder()
+                ResponseCodeInterpreterCallInterpretingEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -879,7 +896,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCompleted() {
         val responseCompleted =
-            ResponsesServerEvent.ResponseWsCompleted.builder()
+            ResponseCompletedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
@@ -1087,7 +1104,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseCompleted(responseCompleted)
@@ -1157,7 +1173,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCompleted(
-                ResponsesServerEvent.ResponseWsCompleted.builder()
+                ResponseCompletedEvent.builder()
                     .response(
                         Response.builder()
                             .id("id")
@@ -1374,7 +1390,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -1390,7 +1405,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseContentPartAdded() {
         val responseContentPartAdded =
-            ResponsesServerEvent.ResponseContentPartWsAdded.builder()
+            ResponseContentPartAddedEvent.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -1421,7 +1436,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -1493,7 +1507,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseContentPartAdded(
-                ResponsesServerEvent.ResponseContentPartWsAdded.builder()
+                ResponseContentPartAddedEvent.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -1524,7 +1538,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -1540,7 +1553,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseContentPartDone() {
         val responseContentPartDone =
-            ResponsesServerEvent.ResponseContentPartWsDone.builder()
+            ResponseContentPartDoneEvent.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
@@ -1571,7 +1584,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -1642,7 +1654,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseContentPartDone(
-                ResponsesServerEvent.ResponseContentPartWsDone.builder()
+                ResponseContentPartDoneEvent.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
@@ -1673,7 +1685,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -1689,7 +1700,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCreated() {
         val responseCreated =
-            ResponsesServerEvent.ResponseWsCreated.builder()
+            ResponseCreatedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
@@ -1897,7 +1908,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseCreated(responseCreated)
@@ -1967,7 +1977,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCreated(
-                ResponsesServerEvent.ResponseWsCreated.builder()
+                ResponseCreatedEvent.builder()
                     .response(
                         Response.builder()
                             .id("id")
@@ -2184,7 +2194,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2200,11 +2209,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseFileSearchCallCompleted() {
         val responseFileSearchCallCompleted =
-            ResponsesServerEvent.ResponseFileSearchCallWsCompleted.builder()
+            ResponseFileSearchCallCompletedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2276,11 +2284,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseFileSearchCallCompleted(
-                ResponsesServerEvent.ResponseFileSearchCallWsCompleted.builder()
+                ResponseFileSearchCallCompletedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2296,11 +2303,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseFileSearchCallInProgress() {
         val responseFileSearchCallInProgress =
-            ResponsesServerEvent.ResponseFileSearchCallInWsProgress.builder()
+            ResponseFileSearchCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2374,11 +2380,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseFileSearchCallInProgress(
-                ResponsesServerEvent.ResponseFileSearchCallInWsProgress.builder()
+                ResponseFileSearchCallInProgressEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2394,11 +2399,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseFileSearchCallSearching() {
         val responseFileSearchCallSearching =
-            ResponsesServerEvent.ResponseFileSearchCallWsSearching.builder()
+            ResponseFileSearchCallSearchingEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2470,11 +2474,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseFileSearchCallSearching(
-                ResponsesServerEvent.ResponseFileSearchCallWsSearching.builder()
+                ResponseFileSearchCallSearchingEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2490,12 +2493,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseFunctionCallArgumentsDelta() {
         val responseFunctionCallArgumentsDelta =
-            ResponsesServerEvent.ResponseFunctionCallArgumentsWsDelta.builder()
+            ResponseFunctionCallArgumentsDeltaEvent.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2569,12 +2571,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseFunctionCallArgumentsDelta(
-                ResponsesServerEvent.ResponseFunctionCallArgumentsWsDelta.builder()
+                ResponseFunctionCallArgumentsDeltaEvent.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2590,13 +2591,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseFunctionCallArgumentsDone() {
         val responseFunctionCallArgumentsDone =
-            ResponsesServerEvent.ResponseFunctionCallArgumentsWsDone.builder()
+            ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
                 .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2670,13 +2670,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseFunctionCallArgumentsDone(
-                ResponsesServerEvent.ResponseFunctionCallArgumentsWsDone.builder()
+                ResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
                     .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2692,12 +2691,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseShellCallCommandAdded() {
         val responseShellCallCommandAdded =
-            ResponsesServerEvent.ResponseShellCallCommandWsAdded.builder()
+            ResponseShellCallCommandAddedEvent.builder()
                 .command("command")
                 .commandIndex(0L)
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2769,12 +2767,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseShellCallCommandAdded(
-                ResponsesServerEvent.ResponseShellCallCommandWsAdded.builder()
+                ResponseShellCallCommandAddedEvent.builder()
                     .command("command")
                     .commandIndex(0L)
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2790,13 +2787,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseShellCallCommandDelta() {
         val responseShellCallCommandDelta =
-            ResponsesServerEvent.ResponseShellCallCommandWsDelta.builder()
+            ResponseShellCallCommandDeltaEvent.builder()
                 .commandIndex(0L)
                 .delta("delta")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .obfuscation("obfuscation")
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2868,13 +2864,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseShellCallCommandDelta(
-                ResponsesServerEvent.ResponseShellCallCommandWsDelta.builder()
+                ResponseShellCallCommandDeltaEvent.builder()
                     .commandIndex(0L)
                     .delta("delta")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .obfuscation("obfuscation")
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2890,12 +2885,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseShellCallCommandDone() {
         val responseShellCallCommandDone =
-            ResponsesServerEvent.ResponseShellCallCommandWsDone.builder()
+            ResponseShellCallCommandDoneEvent.builder()
                 .command("command")
                 .commandIndex(0L)
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -2967,12 +2961,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseShellCallCommandDone(
-                ResponsesServerEvent.ResponseShellCallCommandWsDone.builder()
+                ResponseShellCallCommandDoneEvent.builder()
                     .command("command")
                     .commandIndex(0L)
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -2988,7 +2981,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseShellCallOutputContentDelta() {
         val responseShellCallOutputContentDelta =
-            ResponsesServerEvent.ResponseShellCallOutputContentWsDelta.builder()
+            ResponseShellCallOutputContentDeltaEvent.builder()
                 .commandIndex(0L)
                 .delta(
                     ResponseShellCallOutputContentDeltaEvent.Delta.builder()
@@ -2999,7 +2992,6 @@ internal class ResponsesServerEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -3073,7 +3065,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseShellCallOutputContentDelta(
-                ResponsesServerEvent.ResponseShellCallOutputContentWsDelta.builder()
+                ResponseShellCallOutputContentDeltaEvent.builder()
                     .commandIndex(0L)
                     .delta(
                         ResponseShellCallOutputContentDeltaEvent.Delta.builder()
@@ -3084,7 +3076,6 @@ internal class ResponsesServerEventTest {
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -3100,7 +3091,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseShellCallOutputContentDone() {
         val responseShellCallOutputContentDone =
-            ResponsesServerEvent.ResponseShellCallOutputContentWsDone.builder()
+            ResponseShellCallOutputContentDoneEvent.builder()
                 .commandIndex(0L)
                 .itemId("item_id")
                 .addOutput(
@@ -3113,7 +3104,6 @@ internal class ResponsesServerEventTest {
                 )
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -3187,7 +3177,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseShellCallOutputContentDone(
-                ResponsesServerEvent.ResponseShellCallOutputContentWsDone.builder()
+                ResponseShellCallOutputContentDoneEvent.builder()
                     .commandIndex(0L)
                     .itemId("item_id")
                     .addOutput(
@@ -3200,7 +3190,6 @@ internal class ResponsesServerEventTest {
                     )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -3216,7 +3205,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseInProgress() {
         val responseInProgress =
-            ResponsesServerEvent.ResponseInWsProgress.builder()
+            ResponseInProgressEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
@@ -3424,7 +3413,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseInProgress(responseInProgress)
@@ -3494,7 +3482,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseInProgress(
-                ResponsesServerEvent.ResponseInWsProgress.builder()
+                ResponseInProgressEvent.builder()
                     .response(
                         Response.builder()
                             .id("id")
@@ -3711,7 +3699,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -3727,7 +3714,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseFailed() {
         val responseFailed =
-            ResponsesServerEvent.ResponseWsFailed.builder()
+            ResponseFailedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
@@ -3935,7 +3922,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseFailed(responseFailed)
@@ -4005,7 +3991,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseFailed(
-                ResponsesServerEvent.ResponseWsFailed.builder()
+                ResponseFailedEvent.builder()
                     .response(
                         Response.builder()
                             .id("id")
@@ -4222,7 +4208,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -4238,7 +4223,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseIncomplete() {
         val responseIncomplete =
-            ResponsesServerEvent.ResponseWsIncomplete.builder()
+            ResponseIncompleteEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
@@ -4446,7 +4431,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseIncomplete(responseIncomplete)
@@ -4516,7 +4500,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseIncomplete(
-                ResponsesServerEvent.ResponseWsIncomplete.builder()
+                ResponseIncompleteEvent.builder()
                     .response(
                         Response.builder()
                             .id("id")
@@ -4733,7 +4717,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -4749,7 +4732,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseOutputItemAdded() {
         val responseOutputItemAdded =
-            ResponsesServerEvent.ResponseOutputItemWsAdded.builder()
+            ResponseOutputItemAddedEvent.builder()
                 .item(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -4785,7 +4768,6 @@ internal class ResponsesServerEventTest {
                 )
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -4856,7 +4838,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseOutputItemAdded(
-                ResponsesServerEvent.ResponseOutputItemWsAdded.builder()
+                ResponseOutputItemAddedEvent.builder()
                     .item(
                         ResponseOutputMessage.builder()
                             .id("id")
@@ -4892,7 +4874,6 @@ internal class ResponsesServerEventTest {
                     )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -4908,7 +4889,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseOutputItemDone() {
         val responseOutputItemDone =
-            ResponsesServerEvent.ResponseOutputItemWsDone.builder()
+            ResponseOutputItemDoneEvent.builder()
                 .item(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -4944,7 +4925,6 @@ internal class ResponsesServerEventTest {
                 )
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5015,7 +4995,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseOutputItemDone(
-                ResponsesServerEvent.ResponseOutputItemWsDone.builder()
+                ResponseOutputItemDoneEvent.builder()
                     .item(
                         ResponseOutputMessage.builder()
                             .id("id")
@@ -5051,7 +5031,6 @@ internal class ResponsesServerEventTest {
                     )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5067,13 +5046,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryPartAdded() {
         val responseReasoningSummaryPartAdded =
-            ResponsesServerEvent.ResponseReasoningSummaryPartWsAdded.builder()
+            ResponseReasoningSummaryPartAddedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .part(ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build())
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5147,7 +5125,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseReasoningSummaryPartAdded(
-                ResponsesServerEvent.ResponseReasoningSummaryPartWsAdded.builder()
+                ResponseReasoningSummaryPartAddedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .part(
@@ -5155,7 +5133,6 @@ internal class ResponsesServerEventTest {
                     )
                     .sequenceNumber(0L)
                     .summaryIndex(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5171,14 +5148,13 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryPartDone() {
         val responseReasoningSummaryPartDone =
-            ResponsesServerEvent.ResponseReasoningSummaryPartWsDone.builder()
+            ResponseReasoningSummaryPartDoneEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5252,14 +5228,13 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseReasoningSummaryPartDone(
-                ResponsesServerEvent.ResponseReasoningSummaryPartWsDone.builder()
+                ResponseReasoningSummaryPartDoneEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
                     .sequenceNumber(0L)
                     .summaryIndex(0L)
                     .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5275,13 +5250,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryTextDelta() {
         val responseReasoningSummaryTextDelta =
-            ResponsesServerEvent.ResponseReasoningSummaryTextWsDelta.builder()
+            ResponseReasoningSummaryTextDeltaEvent.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5355,13 +5329,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseReasoningSummaryTextDelta(
-                ResponsesServerEvent.ResponseReasoningSummaryTextWsDelta.builder()
+                ResponseReasoningSummaryTextDeltaEvent.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .summaryIndex(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5377,13 +5350,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseReasoningSummaryTextDone() {
         val responseReasoningSummaryTextDone =
-            ResponsesServerEvent.ResponseReasoningSummaryTextWsDone.builder()
+            ResponseReasoningSummaryTextDoneEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .text("text")
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5457,13 +5429,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseReasoningSummaryTextDone(
-                ResponsesServerEvent.ResponseReasoningSummaryTextWsDone.builder()
+                ResponseReasoningSummaryTextDoneEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .summaryIndex(0L)
                     .text("text")
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5479,13 +5450,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseReasoningTextDelta() {
         val responseReasoningTextDelta =
-            ResponsesServerEvent.ResponseReasoningTextWsDelta.builder()
+            ResponseReasoningTextDeltaEvent.builder()
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5557,13 +5527,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseReasoningTextDelta(
-                ResponsesServerEvent.ResponseReasoningTextWsDelta.builder()
+                ResponseReasoningTextDeltaEvent.builder()
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5579,13 +5548,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseReasoningTextDone() {
         val responseReasoningTextDone =
-            ResponsesServerEvent.ResponseReasoningTextWsDone.builder()
+            ResponseReasoningTextDoneEvent.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .text("text")
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5657,13 +5625,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseReasoningTextDone(
-                ResponsesServerEvent.ResponseReasoningTextWsDone.builder()
+                ResponseReasoningTextDoneEvent.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .text("text")
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5679,13 +5646,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseRefusalDelta() {
         val responseRefusalDelta =
-            ResponsesServerEvent.ResponseRefusalWsDelta.builder()
+            ResponseRefusalDeltaEvent.builder()
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseRefusalDelta(responseRefusalDelta)
@@ -5755,13 +5721,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseRefusalDelta(
-                ResponsesServerEvent.ResponseRefusalWsDelta.builder()
+                ResponseRefusalDeltaEvent.builder()
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5777,13 +5742,12 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseRefusalDone() {
         val responseRefusalDone =
-            ResponsesServerEvent.ResponseRefusalWsDone.builder()
+            ResponseRefusalDoneEvent.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .outputIndex(0L)
                 .refusal("refusal")
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseRefusalDone(responseRefusalDone)
@@ -5853,13 +5817,12 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseRefusalDone(
-                ResponsesServerEvent.ResponseRefusalWsDone.builder()
+                ResponseRefusalDoneEvent.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .outputIndex(0L)
                     .refusal("refusal")
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5875,7 +5838,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseOutputTextDelta() {
         val responseOutputTextDelta =
-            ResponsesServerEvent.ResponseTextWsDelta.builder()
+            ResponseTextDeltaEvent.builder()
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
@@ -5893,7 +5856,6 @@ internal class ResponsesServerEventTest {
                 )
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -5964,7 +5926,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseOutputTextDelta(
-                ResponsesServerEvent.ResponseTextWsDelta.builder()
+                ResponseTextDeltaEvent.builder()
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
@@ -5982,7 +5944,6 @@ internal class ResponsesServerEventTest {
                     )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -5998,7 +5959,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseOutputTextDone() {
         val responseOutputTextDone =
-            ResponsesServerEvent.ResponseTextWsDone.builder()
+            ResponseTextDoneEvent.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
                 .addLogprob(
@@ -6016,7 +5977,6 @@ internal class ResponsesServerEventTest {
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .text("text")
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6087,7 +6047,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseOutputTextDone(
-                ResponsesServerEvent.ResponseTextWsDone.builder()
+                ResponseTextDoneEvent.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
                     .addLogprob(
@@ -6105,7 +6065,6 @@ internal class ResponsesServerEventTest {
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .text("text")
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6121,11 +6080,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseWebSearchCallCompleted() {
         val responseWebSearchCallCompleted =
-            ResponsesServerEvent.ResponseWebSearchCallWsCompleted.builder()
+            ResponseWebSearchCallCompletedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6197,11 +6155,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseWebSearchCallCompleted(
-                ResponsesServerEvent.ResponseWebSearchCallWsCompleted.builder()
+                ResponseWebSearchCallCompletedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6217,11 +6174,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseWebSearchCallInProgress() {
         val responseWebSearchCallInProgress =
-            ResponsesServerEvent.ResponseWebSearchCallInWsProgress.builder()
+            ResponseWebSearchCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6293,11 +6249,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseWebSearchCallInProgress(
-                ResponsesServerEvent.ResponseWebSearchCallInWsProgress.builder()
+                ResponseWebSearchCallInProgressEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6313,11 +6268,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseWebSearchCallSearching() {
         val responseWebSearchCallSearching =
-            ResponsesServerEvent.ResponseWebSearchCallWsSearching.builder()
+            ResponseWebSearchCallSearchingEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6389,11 +6343,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseWebSearchCallSearching(
-                ResponsesServerEvent.ResponseWebSearchCallWsSearching.builder()
+                ResponseWebSearchCallSearchingEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6409,11 +6362,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallCompleted() {
         val responseImageGenerationCallCompleted =
-            ResponsesServerEvent.ResponseImageGenCallWsCompleted.builder()
+            ResponseImageGenCallCompletedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6487,11 +6439,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseImageGenerationCallCompleted(
-                ResponsesServerEvent.ResponseImageGenCallWsCompleted.builder()
+                ResponseImageGenCallCompletedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6507,11 +6458,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallGenerating() {
         val responseImageGenerationCallGenerating =
-            ResponsesServerEvent.ResponseImageGenCallWsGenerating.builder()
+            ResponseImageGenCallGeneratingEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6585,11 +6535,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseImageGenerationCallGenerating(
-                ResponsesServerEvent.ResponseImageGenCallWsGenerating.builder()
+                ResponseImageGenCallGeneratingEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6605,11 +6554,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallInProgress() {
         val responseImageGenerationCallInProgress =
-            ResponsesServerEvent.ResponseImageGenCallInWsProgress.builder()
+            ResponseImageGenCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6683,11 +6631,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseImageGenerationCallInProgress(
-                ResponsesServerEvent.ResponseImageGenCallInWsProgress.builder()
+                ResponseImageGenCallInProgressEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6703,7 +6650,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseImageGenerationCallPartialImage() {
         val responseImageGenerationCallPartialImage =
-            ResponsesServerEvent.ResponseImageGenCallPartialWsImage.builder()
+            ResponseImageGenCallPartialImageEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .partialImageB64("partial_image_b64")
@@ -6713,7 +6660,6 @@ internal class ResponsesServerEventTest {
                 .outputFormat("output_format")
                 .quality("quality")
                 .size("size")
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6787,7 +6733,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseImageGenerationCallPartialImage(
-                ResponsesServerEvent.ResponseImageGenCallPartialWsImage.builder()
+                ResponseImageGenCallPartialImageEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .partialImageB64("partial_image_b64")
@@ -6797,7 +6743,6 @@ internal class ResponsesServerEventTest {
                     .outputFormat("output_format")
                     .quality("quality")
                     .size("size")
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6813,12 +6758,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallArgumentsDelta() {
         val responseMcpCallArgumentsDelta =
-            ResponsesServerEvent.ResponseMcpCallArgumentsWsDelta.builder()
+            ResponseMcpCallArgumentsDeltaEvent.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6890,12 +6834,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpCallArgumentsDelta(
-                ResponsesServerEvent.ResponseMcpCallArgumentsWsDelta.builder()
+                ResponseMcpCallArgumentsDeltaEvent.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -6911,12 +6854,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallArgumentsDone() {
         val responseMcpCallArgumentsDone =
-            ResponsesServerEvent.ResponseMcpCallArgumentsWsDone.builder()
+            ResponseMcpCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -6988,12 +6930,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpCallArgumentsDone(
-                ResponsesServerEvent.ResponseMcpCallArgumentsWsDone.builder()
+                ResponseMcpCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7009,11 +6950,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallCompleted() {
         val responseMcpCallCompleted =
-            ResponsesServerEvent.ResponseMcpCallWsCompleted.builder()
+            ResponseMcpCallCompletedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7085,11 +7025,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpCallCompleted(
-                ResponsesServerEvent.ResponseMcpCallWsCompleted.builder()
+                ResponseMcpCallCompletedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7105,11 +7044,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallFailed() {
         val responseMcpCallFailed =
-            ResponsesServerEvent.ResponseMcpCallWsFailed.builder()
+            ResponseMcpCallFailedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7180,11 +7118,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpCallFailed(
-                ResponsesServerEvent.ResponseMcpCallWsFailed.builder()
+                ResponseMcpCallFailedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7200,11 +7137,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpCallInProgress() {
         val responseMcpCallInProgress =
-            ResponsesServerEvent.ResponseMcpCallInWsProgress.builder()
+            ResponseMcpCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7276,11 +7212,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpCallInProgress(
-                ResponsesServerEvent.ResponseMcpCallInWsProgress.builder()
+                ResponseMcpCallInProgressEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7296,11 +7231,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpListToolsCompleted() {
         val responseMcpListToolsCompleted =
-            ResponsesServerEvent.ResponseMcpListToolsWsCompleted.builder()
+            ResponseMcpListToolsCompletedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7372,11 +7306,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpListToolsCompleted(
-                ResponsesServerEvent.ResponseMcpListToolsWsCompleted.builder()
+                ResponseMcpListToolsCompletedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7392,11 +7325,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpListToolsFailed() {
         val responseMcpListToolsFailed =
-            ResponsesServerEvent.ResponseMcpListToolsWsFailed.builder()
+            ResponseMcpListToolsFailedEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7468,11 +7400,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpListToolsFailed(
-                ResponsesServerEvent.ResponseMcpListToolsWsFailed.builder()
+                ResponseMcpListToolsFailedEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7488,11 +7419,10 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseMcpListToolsInProgress() {
         val responseMcpListToolsInProgress =
-            ResponsesServerEvent.ResponseMcpListToolsInWsProgress.builder()
+            ResponseMcpListToolsInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7564,11 +7494,10 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseMcpListToolsInProgress(
-                ResponsesServerEvent.ResponseMcpListToolsInWsProgress.builder()
+                ResponseMcpListToolsInProgressEvent.builder()
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7584,13 +7513,9 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseOutputTextAnnotationAdded() {
         val responseOutputTextAnnotationAdded =
-            ResponsesServerEvent.ResponseOutputTextAnnotationWsAdded.builder()
+            ResponseOutputTextAnnotationAddedEvent.builder()
                 .annotation(
-                    ResponsesServerEvent.ResponseOutputTextAnnotationWsAdded
-                        .ResponseOutputTextAnnotationAddedEvent
-                        .Annotation
-                        .FileCitation
-                        .builder()
+                    ResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
                         .fileId("file_id")
                         .filename("filename")
                         .index(0L)
@@ -7601,7 +7526,6 @@ internal class ResponsesServerEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -7675,13 +7599,9 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseOutputTextAnnotationAdded(
-                ResponsesServerEvent.ResponseOutputTextAnnotationWsAdded.builder()
+                ResponseOutputTextAnnotationAddedEvent.builder()
                     .annotation(
-                        ResponsesServerEvent.ResponseOutputTextAnnotationWsAdded
-                            .ResponseOutputTextAnnotationAddedEvent
-                            .Annotation
-                            .FileCitation
-                            .builder()
+                        ResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
                             .fileId("file_id")
                             .filename("filename")
                             .index(0L)
@@ -7692,7 +7612,6 @@ internal class ResponsesServerEventTest {
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -7708,7 +7627,7 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseQueued() {
         val responseQueued =
-            ResponsesServerEvent.ResponseWsQueued.builder()
+            ResponseQueuedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
@@ -7916,7 +7835,6 @@ internal class ResponsesServerEventTest {
                         .build()
                 )
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseQueued(responseQueued)
@@ -7986,7 +7904,7 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseQueued(
-                ResponsesServerEvent.ResponseWsQueued.builder()
+                ResponseQueuedEvent.builder()
                     .response(
                         Response.builder()
                             .id("id")
@@ -8203,7 +8121,6 @@ internal class ResponsesServerEventTest {
                             .build()
                     )
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -8219,12 +8136,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCustomToolCallInputDelta() {
         val responseCustomToolCallInputDelta =
-            ResponsesServerEvent.ResponseCustomToolCallInputWsDelta.builder()
+            ResponseCustomToolCallInputDeltaEvent.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -8298,12 +8214,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCustomToolCallInputDelta(
-                ResponsesServerEvent.ResponseCustomToolCallInputWsDelta.builder()
+                ResponseCustomToolCallInputDeltaEvent.builder()
                     .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -8319,12 +8234,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseCustomToolCallInputDone() {
         val responseCustomToolCallInputDone =
-            ResponsesServerEvent.ResponseCustomToolCallInputWsDone.builder()
+            ResponseCustomToolCallInputDoneEvent.builder()
                 .input("input")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
-                .streamId("stream_id")
                 .build()
 
         val responsesServerEvent =
@@ -8396,12 +8310,11 @@ internal class ResponsesServerEventTest {
         val jsonMapper = jsonMapper()
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseCustomToolCallInputDone(
-                ResponsesServerEvent.ResponseCustomToolCallInputWsDone.builder()
+                ResponseCustomToolCallInputDoneEvent.builder()
                     .input("input")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
-                    .streamId("stream_id")
                     .build()
             )
 
@@ -8530,6 +8443,70 @@ internal class ResponsesServerEventTest {
             )
 
         assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofErrorStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofError(
+                ResponsesServerEvent.ResponseWsError.builder()
+                    .error(
+                        ResponsesServerEvent.ResponseWsError.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .headers(
+                                ResponsesServerEvent.ResponseWsError.Error.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .status(0L)
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofError(mapper.readValue(json, original.asError().javaClass))
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isError()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
     }
 
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
