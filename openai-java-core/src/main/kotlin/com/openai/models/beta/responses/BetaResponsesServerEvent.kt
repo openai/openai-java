@@ -28,12 +28,6 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-private fun Map<String, JsonValue>.streamId(): JsonField<String> =
-    get("stream_id") ?: JsonMissing.of()
-
-private fun JsonField<String>.asStreamId(): Optional<String> =
-    if (isMissing() || isNull()) Optional.empty() else Optional.of(asStringOrThrow())
-
 /** Server events emitted by the Responses WebSocket server. */
 @JsonDeserialize(using = BetaResponsesServerEvent.Deserializer::class)
 @JsonSerialize(using = BetaResponsesServerEvent.Serializer::class)
@@ -382,120 +376,233 @@ private constructor(
      * The WebSocket lane that emitted this event. This field is present when the originating
      * `response.create` event supplied a `stream_id`.
      */
-    fun streamId(): Optional<String> = streamIdField().asStreamId()
+    fun streamId(): Optional<String> {
+        val value = streamIdField()
+        return if (value.isMissing() || value.isNull()) Optional.empty()
+        else Optional.of(value.asStringOrThrow())
+    }
 
     private fun streamIdField(): JsonField<String> =
         _json?.asObject()?.getOrNull()?.get("stream_id")
             ?: when {
-                responseAudioDelta != null -> responseAudioDelta._additionalProperties().streamId()
-                responseAudioDone != null -> responseAudioDone._additionalProperties().streamId()
+                responseAudioDelta != null ->
+                    responseAudioDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseAudioDone != null ->
+                    responseAudioDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
                 responseAudioTranscriptDelta != null ->
-                    responseAudioTranscriptDelta._additionalProperties().streamId()
+                    responseAudioTranscriptDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseAudioTranscriptDone != null ->
-                    responseAudioTranscriptDone._additionalProperties().streamId()
+                    responseAudioTranscriptDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallCodeDelta != null ->
-                    responseCodeInterpreterCallCodeDelta._additionalProperties().streamId()
+                    responseCodeInterpreterCallCodeDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallCodeDone != null ->
-                    responseCodeInterpreterCallCodeDone._additionalProperties().streamId()
+                    responseCodeInterpreterCallCodeDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallCompleted != null ->
-                    responseCodeInterpreterCallCompleted._additionalProperties().streamId()
+                    responseCodeInterpreterCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallInProgress != null ->
-                    responseCodeInterpreterCallInProgress._additionalProperties().streamId()
+                    responseCodeInterpreterCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallInterpreting != null ->
-                    responseCodeInterpreterCallInterpreting._additionalProperties().streamId()
-                responseCompleted != null -> responseCompleted._additionalProperties().streamId()
+                    responseCodeInterpreterCallInterpreting._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseCompleted != null ->
+                    responseCompleted._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
                 responseContentPartAdded != null ->
-                    responseContentPartAdded._additionalProperties().streamId()
+                    responseContentPartAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseContentPartDone != null ->
-                    responseContentPartDone._additionalProperties().streamId()
-                responseCreated != null -> responseCreated._additionalProperties().streamId()
-                error != null -> error._additionalProperties().streamId()
+                    responseContentPartDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseCreated != null ->
+                    responseCreated._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
                 responseFileSearchCallCompleted != null ->
-                    responseFileSearchCallCompleted._additionalProperties().streamId()
+                    responseFileSearchCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFileSearchCallInProgress != null ->
-                    responseFileSearchCallInProgress._additionalProperties().streamId()
+                    responseFileSearchCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFileSearchCallSearching != null ->
-                    responseFileSearchCallSearching._additionalProperties().streamId()
+                    responseFileSearchCallSearching._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFunctionCallArgumentsDelta != null ->
-                    responseFunctionCallArgumentsDelta._additionalProperties().streamId()
+                    responseFunctionCallArgumentsDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFunctionCallArgumentsDone != null ->
-                    responseFunctionCallArgumentsDone._additionalProperties().streamId()
-                responseInProgress != null -> responseInProgress._additionalProperties().streamId()
-                responseFailed != null -> responseFailed._additionalProperties().streamId()
-                responseIncomplete != null -> responseIncomplete._additionalProperties().streamId()
-                responseOutputItemAdded != null ->
-                    responseOutputItemAdded._additionalProperties().streamId()
-                responseOutputItemDone != null ->
-                    responseOutputItemDone._additionalProperties().streamId()
-                responseReasoningSummaryPartAdded != null ->
-                    responseReasoningSummaryPartAdded._additionalProperties().streamId()
-                responseReasoningSummaryPartDone != null ->
-                    responseReasoningSummaryPartDone._additionalProperties().streamId()
-                responseReasoningSummaryTextDelta != null ->
-                    responseReasoningSummaryTextDelta._additionalProperties().streamId()
-                responseReasoningSummaryTextDone != null ->
-                    responseReasoningSummaryTextDone._additionalProperties().streamId()
-                responseReasoningTextDelta != null ->
-                    responseReasoningTextDelta._additionalProperties().streamId()
-                responseReasoningTextDone != null ->
-                    responseReasoningTextDone._additionalProperties().streamId()
-                responseRefusalDelta != null ->
-                    responseRefusalDelta._additionalProperties().streamId()
-                responseRefusalDone != null ->
-                    responseRefusalDone._additionalProperties().streamId()
-                responseOutputTextDelta != null ->
-                    responseOutputTextDelta._additionalProperties().streamId()
-                responseOutputTextDone != null ->
-                    responseOutputTextDone._additionalProperties().streamId()
-                responseWebSearchCallCompleted != null ->
-                    responseWebSearchCallCompleted._additionalProperties().streamId()
-                responseWebSearchCallInProgress != null ->
-                    responseWebSearchCallInProgress._additionalProperties().streamId()
-                responseWebSearchCallSearching != null ->
-                    responseWebSearchCallSearching._additionalProperties().streamId()
-                responseImageGenerationCallCompleted != null ->
-                    responseImageGenerationCallCompleted._additionalProperties().streamId()
-                responseImageGenerationCallGenerating != null ->
-                    responseImageGenerationCallGenerating._additionalProperties().streamId()
-                responseImageGenerationCallInProgress != null ->
-                    responseImageGenerationCallInProgress._additionalProperties().streamId()
-                responseImageGenerationCallPartialImage != null ->
-                    responseImageGenerationCallPartialImage._additionalProperties().streamId()
-                responseMcpCallArgumentsDelta != null ->
-                    responseMcpCallArgumentsDelta._additionalProperties().streamId()
-                responseMcpCallArgumentsDone != null ->
-                    responseMcpCallArgumentsDone._additionalProperties().streamId()
-                responseMcpCallCompleted != null ->
-                    responseMcpCallCompleted._additionalProperties().streamId()
-                responseMcpCallFailed != null ->
-                    responseMcpCallFailed._additionalProperties().streamId()
-                responseMcpCallInProgress != null ->
-                    responseMcpCallInProgress._additionalProperties().streamId()
-                responseMcpListToolsCompleted != null ->
-                    responseMcpListToolsCompleted._additionalProperties().streamId()
-                responseMcpListToolsFailed != null ->
-                    responseMcpListToolsFailed._additionalProperties().streamId()
-                responseMcpListToolsInProgress != null ->
-                    responseMcpListToolsInProgress._additionalProperties().streamId()
-                responseOutputTextAnnotationAdded != null ->
-                    responseOutputTextAnnotationAdded._additionalProperties().streamId()
-                responseQueued != null -> responseQueued._additionalProperties().streamId()
-                responseCustomToolCallInputDelta != null ->
-                    responseCustomToolCallInputDelta._additionalProperties().streamId()
-                responseCustomToolCallInputDone != null ->
-                    responseCustomToolCallInputDone._additionalProperties().streamId()
-                responseInjectCreated != null -> responseInjectCreated._streamId()
-                responseInjectFailed != null -> responseInjectFailed._streamId()
+                    responseFunctionCallArgumentsDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallCommandAdded != null ->
-                    responseShellCallCommandAdded._additionalProperties().streamId()
+                    responseShellCallCommandAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallCommandDelta != null ->
-                    responseShellCallCommandDelta._additionalProperties().streamId()
+                    responseShellCallCommandDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallCommandDone != null ->
-                    responseShellCallCommandDone._additionalProperties().streamId()
+                    responseShellCallCommandDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallOutputContentDelta != null ->
-                    responseShellCallOutputContentDelta._additionalProperties().streamId()
+                    responseShellCallOutputContentDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallOutputContentDone != null ->
-                    responseShellCallOutputContentDone._additionalProperties().streamId()
+                    responseShellCallOutputContentDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseInProgress != null ->
+                    responseInProgress._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseFailed != null ->
+                    responseFailed._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseIncomplete != null ->
+                    responseIncomplete._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputItemAdded != null ->
+                    responseOutputItemAdded._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputItemDone != null ->
+                    responseOutputItemDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseReasoningSummaryPartAdded != null ->
+                    responseReasoningSummaryPartAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningSummaryPartDone != null ->
+                    responseReasoningSummaryPartDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningSummaryTextDelta != null ->
+                    responseReasoningSummaryTextDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningSummaryTextDone != null ->
+                    responseReasoningSummaryTextDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningTextDelta != null ->
+                    responseReasoningTextDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningTextDone != null ->
+                    responseReasoningTextDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseRefusalDelta != null ->
+                    responseRefusalDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseRefusalDone != null ->
+                    responseRefusalDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputTextDelta != null ->
+                    responseOutputTextDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputTextDone != null ->
+                    responseOutputTextDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseWebSearchCallCompleted != null ->
+                    responseWebSearchCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseWebSearchCallInProgress != null ->
+                    responseWebSearchCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseWebSearchCallSearching != null ->
+                    responseWebSearchCallSearching._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallCompleted != null ->
+                    responseImageGenerationCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallGenerating != null ->
+                    responseImageGenerationCallGenerating._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallInProgress != null ->
+                    responseImageGenerationCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallPartialImage != null ->
+                    responseImageGenerationCallPartialImage._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallArgumentsDelta != null ->
+                    responseMcpCallArgumentsDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallArgumentsDone != null ->
+                    responseMcpCallArgumentsDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallCompleted != null ->
+                    responseMcpCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallFailed != null ->
+                    responseMcpCallFailed._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseMcpCallInProgress != null ->
+                    responseMcpCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpListToolsCompleted != null ->
+                    responseMcpListToolsCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpListToolsFailed != null ->
+                    responseMcpListToolsFailed._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpListToolsInProgress != null ->
+                    responseMcpListToolsInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseOutputTextAnnotationAdded != null ->
+                    responseOutputTextAnnotationAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseQueued != null ->
+                    responseQueued._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseCustomToolCallInputDelta != null ->
+                    responseCustomToolCallInputDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseCustomToolCallInputDone != null ->
+                    responseCustomToolCallInputDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                error != null -> error._streamId()
+
+                responseInjectCreated != null -> responseInjectCreated._streamId()
+
+                responseInjectFailed != null -> responseInjectFailed._streamId()
+
                 else -> JsonMissing.of()
             }
 

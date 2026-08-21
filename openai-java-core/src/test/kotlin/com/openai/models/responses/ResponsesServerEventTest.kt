@@ -21,16 +21,11 @@ internal class ResponsesServerEventTest {
     @Test
     fun ofResponseAudioDelta() {
         val responseAudioDelta =
-            ResponseAudioDeltaEvent.builder()
-                .delta("delta")
-                .sequenceNumber(0L)
-                .putAdditionalProperty("stream_id", JsonValue.from("stream_id"))
-                .build()
+            ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         val responsesServerEvent = ResponsesServerEvent.ofResponseAudioDelta(responseAudioDelta)
 
         assertThat(responsesServerEvent.responseAudioDelta()).contains(responseAudioDelta)
-        assertThat(responsesServerEvent.streamId()).contains("stream_id")
         assertThat(responsesServerEvent.responseAudioDone()).isEmpty
         assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
         assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
@@ -48,6 +43,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -103,6 +103,55 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
+    fun ofResponseAudioDeltaStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofResponseAudioDelta(
+                ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofResponseAudioDelta(
+                    mapper.readValue(json, original.asResponseAudioDelta().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseAudioDelta()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
     fun ofResponseAudioDone() {
         val responseAudioDone = ResponseAudioDoneEvent.builder().sequenceNumber(0L).build()
 
@@ -126,6 +175,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -207,6 +261,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -291,6 +350,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -379,6 +443,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -472,6 +541,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -564,6 +638,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -655,6 +734,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -746,6 +830,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1037,6 +1126,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1366,6 +1460,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1508,6 +1607,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1826,6 +1930,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2128,6 +2237,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2219,6 +2333,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2308,6 +2427,11 @@ internal class ResponsesServerEventTest {
             .contains(responseFileSearchCallSearching)
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2400,6 +2524,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta())
             .contains(responseFunctionCallArgumentsDelta)
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2494,6 +2623,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone())
             .contains(responseFunctionCallArgumentsDone)
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2540,6 +2674,520 @@ internal class ResponsesServerEventTest {
                     .arguments("arguments")
                     .itemId("item_id")
                     .name("name")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandAdded() {
+        val responseShellCallCommandAdded =
+            ResponseShellCallCommandAddedEvent.builder()
+                .command("command")
+                .commandIndex(0L)
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandAdded(responseShellCallCommandAdded)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded())
+            .contains(responseShellCallCommandAdded)
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandAdded(
+                ResponseShellCallCommandAddedEvent.builder()
+                    .command("command")
+                    .commandIndex(0L)
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDelta() {
+        val responseShellCallCommandDelta =
+            ResponseShellCallCommandDeltaEvent.builder()
+                .commandIndex(0L)
+                .delta("delta")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .obfuscation("obfuscation")
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDelta(responseShellCallCommandDelta)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta())
+            .contains(responseShellCallCommandDelta)
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDelta(
+                ResponseShellCallCommandDeltaEvent.builder()
+                    .commandIndex(0L)
+                    .delta("delta")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .obfuscation("obfuscation")
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDone() {
+        val responseShellCallCommandDone =
+            ResponseShellCallCommandDoneEvent.builder()
+                .command("command")
+                .commandIndex(0L)
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDone(responseShellCallCommandDone)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone())
+            .contains(responseShellCallCommandDone)
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDone(
+                ResponseShellCallCommandDoneEvent.builder()
+                    .command("command")
+                    .commandIndex(0L)
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDelta() {
+        val responseShellCallOutputContentDelta =
+            ResponseShellCallOutputContentDeltaEvent.builder()
+                .commandIndex(0L)
+                .delta(
+                    ResponseShellCallOutputContentDeltaEvent.Delta.builder()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .build()
+                )
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDelta(
+                responseShellCallOutputContentDelta
+            )
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta())
+            .contains(responseShellCallOutputContentDelta)
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDelta(
+                ResponseShellCallOutputContentDeltaEvent.builder()
+                    .commandIndex(0L)
+                    .delta(
+                        ResponseShellCallOutputContentDeltaEvent.Delta.builder()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .build()
+                    )
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDone() {
+        val responseShellCallOutputContentDone =
+            ResponseShellCallOutputContentDoneEvent.builder()
+                .commandIndex(0L)
+                .itemId("item_id")
+                .addOutput(
+                    ResponseShellCallOutputContentDoneEvent.Output.builder()
+                        .outcomeTimeout()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .createdBy("created_by")
+                        .build()
+                )
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDone(
+                responseShellCallOutputContentDone
+            )
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone())
+            .contains(responseShellCallOutputContentDone)
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDone(
+                ResponseShellCallOutputContentDoneEvent.builder()
+                    .commandIndex(0L)
+                    .itemId("item_id")
+                    .addOutput(
+                        ResponseShellCallOutputContentDoneEvent.Output.builder()
+                            .outcomeTimeout()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .createdBy("created_by")
+                            .build()
+                    )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -2787,6 +3435,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).contains(responseInProgress)
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -3291,6 +3944,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).contains(responseFailed)
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -3795,6 +4453,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).contains(responseIncomplete)
@@ -4128,6 +4791,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4280,6 +4948,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4404,6 +5077,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4502,6 +5180,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4598,6 +5281,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4693,6 +5381,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4786,6 +5479,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4879,6 +5577,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4971,6 +5674,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5062,6 +5770,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5166,6 +5879,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5282,6 +6000,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5384,6 +6107,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5473,6 +6201,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5562,6 +6295,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5653,6 +6391,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5744,6 +6487,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5835,6 +6583,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5903,6 +6656,10 @@ internal class ResponsesServerEventTest {
                 .partialImageB64("partial_image_b64")
                 .partialImageIndex(0L)
                 .sequenceNumber(0L)
+                .background("background")
+                .outputFormat("output_format")
+                .quality("quality")
+                .size("size")
                 .build()
 
         val responsesServerEvent =
@@ -5928,6 +6685,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5977,6 +6739,10 @@ internal class ResponsesServerEventTest {
                     .partialImageB64("partial_image_b64")
                     .partialImageIndex(0L)
                     .sequenceNumber(0L)
+                    .background("background")
+                    .outputFormat("output_format")
+                    .quality("quality")
+                    .size("size")
                     .build()
             )
 
@@ -6020,6 +6786,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6111,6 +6882,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6201,6 +6977,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6290,6 +7071,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6378,6 +7164,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6467,6 +7258,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6556,6 +7352,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6645,6 +7446,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6745,6 +7551,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7046,6 +7857,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7350,6 +8166,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7441,6 +8262,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7502,37 +8328,6 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
-    fun websocketStreamId() {
-        val responsesServerEvent =
-            jsonMapper()
-                .readValue(
-                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":"stream_id"}""",
-                    jacksonTypeRef<ResponsesServerEvent>(),
-                )
-
-        assertThat(responsesServerEvent.streamId()).contains("stream_id")
-        assertThat(responsesServerEvent.responseAudioDelta()).isPresent
-        assertThat(responsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
-        assertThat(jsonMapper().writeValueAsString(responsesServerEvent)).contains("stream_id")
-        assertThat(responsesServerEvent.validate()).isSameAs(responsesServerEvent)
-        assertThat(responsesServerEvent.isValid()).isTrue()
-    }
-
-    @Test
-    fun websocketStreamIdRejectsMalformedValue() {
-        val responsesServerEvent =
-            jsonMapper()
-                .readValue(
-                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
-                    jacksonTypeRef<ResponsesServerEvent>(),
-                )
-
-        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.streamId() }
-        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.validate() }
-        assertThat(responsesServerEvent.isValid()).isFalse()
-    }
-
-    @Test
     fun ofError() {
         val error =
             ResponsesServerEvent.ResponseWsError.builder()
@@ -7574,6 +8369,11 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7645,6 +8445,70 @@ internal class ResponsesServerEventTest {
         assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
     }
 
+    @Test
+    fun ofErrorStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofError(
+                ResponsesServerEvent.ResponseWsError.builder()
+                    .error(
+                        ResponsesServerEvent.ResponseWsError.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .headers(
+                                ResponsesServerEvent.ResponseWsError.Error.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .status(0L)
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofError(mapper.readValue(json, original.asError().javaClass))
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isError()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
         BOOLEAN(JsonValue.from(false)),
         STRING(JsonValue.from("invalid")),
@@ -7661,6 +8525,37 @@ internal class ResponsesServerEventTest {
 
         val e = assertThrows<OpenAIInvalidDataException> { responsesServerEvent.validate() }
         assertThat(e).hasMessageStartingWith("Unknown ")
+    }
+
+    @Test
+    fun websocketStreamId() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":"stream_id"}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThat(responsesServerEvent.streamId()).contains("stream_id")
+        assertThat(responsesServerEvent.responseAudioDelta()).isPresent
+        assertThat(responsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
+        assertThat(jsonMapper().writeValueAsString(responsesServerEvent)).contains("stream_id")
+        assertThat(responsesServerEvent.validate()).isSameAs(responsesServerEvent)
+        assertThat(responsesServerEvent.isValid()).isTrue()
+    }
+
+    @Test
+    fun websocketStreamIdRejectsMalformedValue() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.streamId() }
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.validate() }
+        assertThat(responsesServerEvent.isValid()).isFalse()
     }
 
     @Test
