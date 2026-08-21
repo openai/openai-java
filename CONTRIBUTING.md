@@ -7,6 +7,23 @@ management. The framework-neutral SDK requires Java 8, while development require
 Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
 artifact-level runtime, framework, lifecycle, and release rules.
 
+## Custom-code budget
+
+The custom-code budget counts additions plus deletions in the remaining patch
+against verified generated output. `.castiron-ratchet.json` defines this repository's
+ceiling. CI uses the checker and budget on main, not the PR's proposed versions.
+
+Budget changes must be in a separate PR modifying **only `.castiron-ratchet.json`**.
+Justify the current usage, proposed ceiling, and why fixing generation is not
+appropriate in the PR description. Increases require a **human approving review**
+and must merge before an SDK change relies on them. Agents may draft proposals,
+but must not approve increases or bypass the gate. Keep default CODEOWNERS.
+Lower the ceiling after cleanup while retaining headroom; decreases must still
+fit the measured usage.
+
+See [custom-code technical details](scripts/castiron/CUSTOM_CODE.md) for accounting,
+local checks, trusted CI, and activation instructions.
+
 ## Security expectations
 
 - Never commit API keys, bearer tokens, AWS/Bedrock credentials, Maven Central/Sonatype tokens, GPG
