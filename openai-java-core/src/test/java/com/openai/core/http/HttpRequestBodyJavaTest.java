@@ -45,7 +45,10 @@ final class HttpRequestBodyJavaTest {
                 };
 
         try (InputStream content = body.content()) {
-            assertThat(content.readAllBytes()).isEqualTo("body".getBytes(StandardCharsets.UTF_8));
+            byte[] bytes = new byte[4];
+            assertThat(content.read(bytes)).isEqualTo(bytes.length);
+            assertThat(bytes).isEqualTo("body".getBytes(StandardCharsets.UTF_8));
+            assertThat(content.read()).isEqualTo(-1);
         }
     }
 }
