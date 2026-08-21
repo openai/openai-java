@@ -7,6 +7,16 @@ generator owns the code you are changing, preserve existing generated behavior, 
 authoritative source when it is available. The `openai-java-example/` directory is not modified by
 the generator.
 
+## Custom-code budget
+
+Follow [the custom-code guidance](scripts/castiron/CUSTOM_CODE.md). Budget changes
+belong in a separate PR containing only `.castiron-ratchet.json`, with an explicit justification
+in the PR description. Increases require a **human approving review** before merging.
+Agents may investigate and draft proposals, but must not approve budget increases
+(including through a human's credentials) or bypass the gate. Do not weaken
+counting, broaden exclusions, or alter generation metadata to make a change pass.
+The checker and effective budget come from main, not the PR. Keep default CODEOWNERS.
+
 ## Security requirements
 
 - Never commit OpenAI API keys, bearer tokens, AWS/Bedrock credentials, Sonatype tokens, GPG private
