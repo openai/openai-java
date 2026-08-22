@@ -10,9 +10,7 @@ import java.util.concurrent.CompletableFuture
  * This class ensures the `HttpClient` is closed even if the user forgets to close it.
  */
 internal class PhantomReachableClosingHttpClient(private val httpClient: HttpClient) : HttpClient {
-    init {
-        closeWhenPhantomReachable(this, httpClient)
-    }
+    private val closeHandle = closeWhenPhantomReachable(this, httpClient)
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
         httpClient.execute(request, requestOptions)
@@ -22,5 +20,5 @@ internal class PhantomReachableClosingHttpClient(private val httpClient: HttpCli
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> = httpClient.executeAsync(request, requestOptions)
 
-    override fun close() = httpClient.close()
+    override fun close() = closeHandle.close()
 }

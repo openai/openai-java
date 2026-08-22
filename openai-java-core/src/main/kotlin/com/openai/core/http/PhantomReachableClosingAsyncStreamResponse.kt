@@ -21,9 +21,8 @@ internal class PhantomReachableClosingAsyncStreamResponse<T>(
      */
     private val reachabilityTracker = Object()
 
-    init {
+    private val closeHandle =
         closeWhenPhantomReachable(reachabilityTracker, asyncStreamResponse::close)
-    }
 
     override fun subscribe(handler: Handler<T>): AsyncStreamResponse<T> = apply {
         asyncStreamResponse.subscribe(TrackedHandler(handler, reachabilityTracker))
@@ -37,7 +36,7 @@ internal class PhantomReachableClosingAsyncStreamResponse<T>(
     override fun onCompleteFuture(): CompletableFuture<Void?> =
         asyncStreamResponse.onCompleteFuture()
 
-    override fun close() = asyncStreamResponse.close()
+    override fun close() = closeHandle.close()
 }
 
 /**
