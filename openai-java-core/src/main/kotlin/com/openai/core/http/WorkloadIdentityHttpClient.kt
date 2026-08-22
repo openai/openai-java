@@ -55,7 +55,18 @@ internal class WorkloadIdentityHttpClient(
     }
 
     override fun close() {
-        workloadIdentityAuth?.close()
+        try {
+            workloadIdentityAuth?.close()
+        } catch (authFailure: Throwable) {
+            try {
+                delegate.close()
+            } catch (delegateFailure: Throwable) {
+                if (delegateFailure !== authFailure) {
+                    authFailure.addSuppressed(delegateFailure)
+                }
+            }
+            throw authFailure
+        }
         delegate.close()
     }
 }
