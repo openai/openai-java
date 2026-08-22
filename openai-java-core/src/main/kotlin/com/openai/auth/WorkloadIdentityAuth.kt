@@ -155,7 +155,7 @@ internal class WorkloadIdentityAuth(
         return when (action) {
             is TokenAction.ReturnCached -> CompletableFuture.completedFuture(action.token)
             is TokenAction.BackgroundRefresh -> {
-                performRefreshAndComplete(action.future)
+                startAsyncRefresh(action.future)
                 CompletableFuture.completedFuture(action.token)
             }
             is TokenAction.WaitForRefresh ->
@@ -165,20 +165,25 @@ internal class WorkloadIdentityAuth(
                         is TokenRefreshResult.Failure -> throw result.error
                     }
                 }
-            is TokenAction.ForegroundRefresh -> {
-                val refresh = refreshTokenAsync()
-                refresh.whenComplete { token, error ->
-                    finishRefresh(action.future, token, unwrapCompletionException(error))
-                }
-                refresh
-            }
+            is TokenAction.ForegroundRefresh -> startAsyncRefresh(action.future)
         }
     }
 
-    private fun performRefreshAndComplete(future: CompletableFuture<TokenRefreshResult>) {
-        refreshTokenAsync().whenComplete { token, error ->
+    private fun startAsyncRefresh(
+        future: CompletableFuture<TokenRefreshResult>
+    ): CompletableFuture<String> {
+        val refresh =
+            try {
+                refreshTokenAsync()
+            } catch (error: Throwable) {
+                finishRefresh(future, null, error)
+                return CompletableFuture<String>().also { it.completeExceptionally(error) }
+            }
+
+        refresh.whenComplete { token, error ->
             finishRefresh(future, token, unwrapCompletionException(error))
         }
+        return refresh
     }
 
     private fun finishRefresh(
