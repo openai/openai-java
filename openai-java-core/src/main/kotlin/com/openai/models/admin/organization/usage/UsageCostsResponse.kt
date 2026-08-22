@@ -7104,7 +7104,28 @@ private constructor(
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
-                    fun value(): Optional<Double> = value.getOptional("value")
+                    fun value(): Optional<Double> {
+                        val knownValue = value.asKnown()
+                        if (knownValue.isPresent || value.isMissing() || value.isNull()) {
+                            return knownValue
+                        }
+
+                        val stringValue = value.asString()
+                        if (stringValue.isPresent) {
+                            val rawValue = stringValue.get()
+                            val parsedValue =
+                                if (DECIMAL_NUMBER_PATTERN.matches(rawValue)) {
+                                    rawValue.toDoubleOrNull()
+                                } else {
+                                    null
+                                }
+                            if (parsedValue?.isFinite() == true) {
+                                return Optional.of(parsedValue)
+                            }
+                        }
+
+                        throw OpenAIInvalidDataException("`value` is invalid, received $value")
+                    }
 
                     /**
                      * Returns the raw JSON value of [currency].
@@ -7137,6 +7158,9 @@ private constructor(
                     fun toBuilder() = Builder().from(this)
 
                     companion object {
+
+                        private val DECIMAL_NUMBER_PATTERN =
+                            Regex("""-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?""")
 
                         /** Returns a mutable builder for constructing an instance of [Amount]. */
                         @JvmStatic fun builder() = Builder()
