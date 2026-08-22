@@ -45,3 +45,22 @@ The checker and effective budget come from main, not the PR. Keep default CODEOW
   SDK behavior and workflow, Gradle, or shell checks for signing, release, and publication logic.
 - Report suspected vulnerabilities privately through [SECURITY.md](SECURITY.md). Do not open public
   issues, discussions, or pull requests containing vulnerability details or secrets.
+
+## Large-payload compatibility
+
+Treat large payloads as a normal API contract, not evidence of malformed or
+hostile input. Responses, Chat Completions, and other APIs can legitimately
+return large `application/json` bodies and streaming events. Do not introduce
+new arbitrary fixed limits on bodies, events, or lines as a security or efficiency fix.
+Prefer incremental processing, amortized-linear buffering, timely cleanup, and
+caller cancellation. Any new rejection limit needs an explicit, owner-approved
+API contract and a review of existing supported payloads and transports.
+Preserve longstanding dependency limits unless changing them is explicitly in scope;
+regression fixtures should exercise payloads supported by recent SDK releases.
+
+Protect this behavior with focused, deterministic public-entrypoint tests using
+large synthetic payloads generated in memory, not committed captures or live
+image generation. Their high memory use is intentional: do not shrink the
+payloads or raise client limits to make the tests pass. Keep coverage to the main
+JSON and streaming categories, and run large cases sequentially to keep peak
+memory reasonable. The fixture size is a regression probe, not a new API maximum.
