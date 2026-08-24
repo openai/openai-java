@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -6700,6 +6701,7 @@ private constructor(
                 private val lineItem: JsonField<String>,
                 private val projectId: JsonField<String>,
                 private val quantity: JsonField<Double>,
+                private val quantityUnit: JsonField<QuantityUnit>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -6721,7 +6723,19 @@ private constructor(
                     @JsonProperty("quantity")
                     @ExcludeMissing
                     quantity: JsonField<Double> = JsonMissing.of(),
-                ) : this(object_, amount, apiKeyId, lineItem, projectId, quantity, mutableMapOf())
+                    @JsonProperty("quantity_unit")
+                    @ExcludeMissing
+                    quantityUnit: JsonField<QuantityUnit> = JsonMissing.of(),
+                ) : this(
+                    object_,
+                    amount,
+                    apiKeyId,
+                    lineItem,
+                    projectId,
+                    quantity,
+                    quantityUnit,
+                    mutableMapOf(),
+                )
 
                 /**
                  * Expected to always return the following:
@@ -6779,6 +6793,16 @@ private constructor(
                 fun quantity(): Optional<Double> = quantity.getOptional("quantity")
 
                 /**
+                 * The unit of the `quantity` value. If no single supported unit applies to the
+                 * result, this field is `null`.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun quantityUnit(): Optional<QuantityUnit> =
+                    quantityUnit.getOptional("quantity_unit")
+
+                /**
                  * Returns the raw JSON value of [amount].
                  *
                  * Unlike [amount], this method doesn't throw if the JSON field has an unexpected
@@ -6826,6 +6850,16 @@ private constructor(
                 @ExcludeMissing
                 fun _quantity(): JsonField<Double> = quantity
 
+                /**
+                 * Returns the raw JSON value of [quantityUnit].
+                 *
+                 * Unlike [quantityUnit], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("quantity_unit")
+                @ExcludeMissing
+                fun _quantityUnit(): JsonField<QuantityUnit> = quantityUnit
+
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                     additionalProperties.put(key, value)
@@ -6856,6 +6890,7 @@ private constructor(
                     private var lineItem: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var quantity: JsonField<Double> = JsonMissing.of()
+                    private var quantityUnit: JsonField<QuantityUnit> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -6866,6 +6901,7 @@ private constructor(
                         lineItem = organizationCostsResult.lineItem
                         projectId = organizationCostsResult.projectId
                         quantity = organizationCostsResult.quantity
+                        quantityUnit = organizationCostsResult.quantityUnit
                         additionalProperties =
                             organizationCostsResult.additionalProperties.toMutableMap()
                     }
@@ -6977,6 +7013,39 @@ private constructor(
                      */
                     fun quantity(quantity: JsonField<Double>) = apply { this.quantity = quantity }
 
+                    /**
+                     * The unit of the `quantity` value. If no single supported unit applies to the
+                     * result, this field is `null`.
+                     */
+                    fun quantityUnit(quantityUnit: QuantityUnit?) =
+                        quantityUnit(JsonField.ofNullable(quantityUnit))
+
+                    /**
+                     * Alias for calling [Builder.quantityUnit] with `quantityUnit.orElse(null)`.
+                     */
+                    fun quantityUnit(quantityUnit: Optional<QuantityUnit>) =
+                        quantityUnit(quantityUnit.getOrNull())
+
+                    /**
+                     * Sets [Builder.quantityUnit] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.quantityUnit] with a well-typed
+                     * [QuantityUnit] value instead. This method is primarily for setting the field
+                     * to an undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(quantityUnit: JsonField<QuantityUnit>) = apply {
+                        this.quantityUnit = quantityUnit
+                    }
+
+                    /**
+                     * Sets [quantityUnit] to an arbitrary [String].
+                     *
+                     * You should usually call [quantityUnit] with a well-typed [QuantityUnit]
+                     * constant instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(value: String) = quantityUnit(QuantityUnit.of(value))
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -7012,6 +7081,7 @@ private constructor(
                             lineItem,
                             projectId,
                             quantity,
+                            quantityUnit,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -7043,6 +7113,7 @@ private constructor(
                     lineItem()
                     projectId()
                     quantity()
+                    quantityUnit()
                     validated = true
                 }
 
@@ -7069,7 +7140,8 @@ private constructor(
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (lineItem.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
-                        (if (quantity.asKnown().isPresent) 1 else 0)
+                        (if (quantity.asKnown().isPresent) 1 else 0) +
+                        (if (quantityUnit.asKnown().isPresent) 1 else 0)
 
                 /** The monetary value in its associated currency. */
                 class Amount
@@ -7276,6 +7348,192 @@ private constructor(
                         "Amount{currency=$currency, value=$value, additionalProperties=$additionalProperties}"
                 }
 
+                /**
+                 * The unit of the `quantity` value. If no single supported unit applies to the
+                 * result, this field is `null`.
+                 */
+                class QuantityUnit
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val TOKENS = of("tokens")
+
+                        @JvmField val _1000_TOKENS = of("1000_tokens")
+
+                        @JvmField val DURATION_SECONDS = of("duration_seconds")
+
+                        @JvmField val DURATION_MINUTES = of("duration_minutes")
+
+                        @JvmField val DURATION_HOURS = of("duration_hours")
+
+                        @JvmField val GIBIBYTE_HOURS = of("gibibyte_hours")
+
+                        @JvmField val IMAGES = of("images")
+
+                        @JvmField val CHARACTERS = of("characters")
+
+                        @JvmStatic fun of(value: String) = QuantityUnit(JsonField.of(value))
+                    }
+
+                    /** An enum containing [QuantityUnit]'s known values. */
+                    enum class Known {
+                        TOKENS,
+                        _1000_TOKENS,
+                        DURATION_SECONDS,
+                        DURATION_MINUTES,
+                        DURATION_HOURS,
+                        GIBIBYTE_HOURS,
+                        IMAGES,
+                        CHARACTERS,
+                    }
+
+                    /**
+                     * An enum containing [QuantityUnit]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [QuantityUnit] can contain an unknown value in a couple of
+                     * cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        TOKENS,
+                        _1000_TOKENS,
+                        DURATION_SECONDS,
+                        DURATION_MINUTES,
+                        DURATION_HOURS,
+                        GIBIBYTE_HOURS,
+                        IMAGES,
+                        CHARACTERS,
+                        /**
+                         * An enum member indicating that [QuantityUnit] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            TOKENS -> Value.TOKENS
+                            _1000_TOKENS -> Value._1000_TOKENS
+                            DURATION_SECONDS -> Value.DURATION_SECONDS
+                            DURATION_MINUTES -> Value.DURATION_MINUTES
+                            DURATION_HOURS -> Value.DURATION_HOURS
+                            GIBIBYTE_HOURS -> Value.GIBIBYTE_HOURS
+                            IMAGES -> Value.IMAGES
+                            CHARACTERS -> Value.CHARACTERS
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            TOKENS -> Known.TOKENS
+                            _1000_TOKENS -> Known._1000_TOKENS
+                            DURATION_SECONDS -> Known.DURATION_SECONDS
+                            DURATION_MINUTES -> Known.DURATION_MINUTES
+                            DURATION_HOURS -> Known.DURATION_HOURS
+                            GIBIBYTE_HOURS -> Known.GIBIBYTE_HOURS
+                            IMAGES -> Known.IMAGES
+                            CHARACTERS -> Known.CHARACTERS
+                            else -> throw OpenAIInvalidDataException("Unknown QuantityUnit: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): QuantityUnit = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is QuantityUnit && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -7288,6 +7546,7 @@ private constructor(
                         lineItem == other.lineItem &&
                         projectId == other.projectId &&
                         quantity == other.quantity &&
+                        quantityUnit == other.quantityUnit &&
                         additionalProperties == other.additionalProperties
                 }
 
@@ -7299,6 +7558,7 @@ private constructor(
                         lineItem,
                         projectId,
                         quantity,
+                        quantityUnit,
                         additionalProperties,
                     )
                 }
@@ -7306,7 +7566,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, additionalProperties=$additionalProperties}"
+                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, quantityUnit=$quantityUnit, additionalProperties=$additionalProperties}"
             }
         }
 

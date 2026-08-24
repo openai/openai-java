@@ -13,6 +13,7 @@ internal class ProjectCreateParamsTest {
             .name("name")
             .externalKeyId("external_key_id")
             .geography("geography")
+            .residency(ProjectCreateParams.Residency.GLOBAL)
             .build()
     }
 
@@ -23,6 +24,7 @@ internal class ProjectCreateParamsTest {
                 .name("name")
                 .externalKeyId("external_key_id")
                 .geography("geography")
+                .residency(ProjectCreateParams.Residency.GLOBAL)
                 .build()
 
         val body = params._body()
@@ -30,6 +32,7 @@ internal class ProjectCreateParamsTest {
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.externalKeyId()).contains("external_key_id")
         assertThat(body.geography()).contains("geography")
+        assertThat(body.residency()).contains(ProjectCreateParams.Residency.GLOBAL)
     }
 
     @Test

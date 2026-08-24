@@ -28,6 +28,7 @@ internal class ProjectServiceTest {
                     .name("name")
                     .externalKeyId("external_key_id")
                     .geography("geography")
+                    .residency(ProjectCreateParams.Residency.GLOBAL)
                     .build()
             )
 

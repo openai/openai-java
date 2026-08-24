@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -27,6 +28,7 @@ private constructor(
     private val archivedAt: JsonField<Long>,
     private val externalKeyId: JsonField<String>,
     private val name: JsonField<String>,
+    private val residency: JsonField<Residency>,
     private val status: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -41,8 +43,21 @@ private constructor(
         @ExcludeMissing
         externalKeyId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("residency")
+        @ExcludeMissing
+        residency: JsonField<Residency> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, object_, archivedAt, externalKeyId, name, status, mutableMapOf())
+    ) : this(
+        id,
+        createdAt,
+        object_,
+        archivedAt,
+        externalKeyId,
+        name,
+        residency,
+        status,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints
@@ -98,6 +113,14 @@ private constructor(
     fun name(): Optional<String> = name.getOptional("name")
 
     /**
+     * The residency configuration for the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun residency(): Optional<Residency> = residency.getOptional("residency")
+
+    /**
      * `active` or `archived`
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -143,6 +166,13 @@ private constructor(
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
+     * Returns the raw JSON value of [residency].
+     *
+     * Unlike [residency], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("residency") @ExcludeMissing fun _residency(): JsonField<Residency> = residency
+
+    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
@@ -184,6 +214,7 @@ private constructor(
         private var archivedAt: JsonField<Long> = JsonMissing.of()
         private var externalKeyId: JsonField<String> = JsonMissing.of()
         private var name: JsonField<String> = JsonMissing.of()
+        private var residency: JsonField<Residency> = JsonMissing.of()
         private var status: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -195,6 +226,7 @@ private constructor(
             archivedAt = project.archivedAt
             externalKeyId = project.externalKeyId
             name = project.name
+            residency = project.residency
             status = project.status
             additionalProperties = project.additionalProperties.toMutableMap()
         }
@@ -289,6 +321,18 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
+        /** The residency configuration for the project. */
+        fun residency(residency: Residency) = residency(JsonField.of(residency))
+
+        /**
+         * Sets [Builder.residency] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.residency] with a well-typed [Residency] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun residency(residency: JsonField<Residency>) = apply { this.residency = residency }
+
         /** `active` or `archived` */
         fun status(status: String?) = status(JsonField.ofNullable(status))
 
@@ -343,6 +387,7 @@ private constructor(
                 archivedAt,
                 externalKeyId,
                 name,
+                residency,
                 status,
                 additionalProperties.toMutableMap(),
             )
@@ -373,6 +418,7 @@ private constructor(
         archivedAt()
         externalKeyId()
         name()
+        residency().ifPresent { it.validate() }
         status()
         validated = true
     }
@@ -398,7 +444,205 @@ private constructor(
             (if (archivedAt.asKnown().isPresent) 1 else 0) +
             (if (externalKeyId.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
+            (residency.asKnown().getOrNull()?.validity() ?: 0) +
             (if (status.asKnown().isPresent) 1 else 0)
+
+    /** The residency configuration for the project. */
+    class Residency @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val GLOBAL = of("GLOBAL")
+
+            @JvmField val US_STORAGE_PROCESSING = of("US_STORAGE_PROCESSING")
+
+            @JvmField val EU_STORAGE_PROCESSING = of("EU_STORAGE_PROCESSING")
+
+            @JvmField val JP_STORAGE = of("JP_STORAGE")
+
+            @JvmField val KR_STORAGE = of("KR_STORAGE")
+
+            @JvmField val CA_STORAGE = of("CA_STORAGE")
+
+            @JvmField val SG_STORAGE = of("SG_STORAGE")
+
+            @JvmField val IN_STORAGE = of("IN_STORAGE")
+
+            @JvmField val AU_STORAGE = of("AU_STORAGE")
+
+            @JvmField val GB_STORAGE = of("GB_STORAGE")
+
+            @JvmField val AE_STORAGE = of("AE_STORAGE")
+
+            @JvmField val AE_STORAGE_PROCESSING = of("AE_STORAGE_PROCESSING")
+
+            @JvmStatic fun of(value: String) = Residency(JsonField.of(value))
+        }
+
+        /** An enum containing [Residency]'s known values. */
+        enum class Known {
+            GLOBAL,
+            US_STORAGE_PROCESSING,
+            EU_STORAGE_PROCESSING,
+            JP_STORAGE,
+            KR_STORAGE,
+            CA_STORAGE,
+            SG_STORAGE,
+            IN_STORAGE,
+            AU_STORAGE,
+            GB_STORAGE,
+            AE_STORAGE,
+            AE_STORAGE_PROCESSING,
+        }
+
+        /**
+         * An enum containing [Residency]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Residency] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            GLOBAL,
+            US_STORAGE_PROCESSING,
+            EU_STORAGE_PROCESSING,
+            JP_STORAGE,
+            KR_STORAGE,
+            CA_STORAGE,
+            SG_STORAGE,
+            IN_STORAGE,
+            AU_STORAGE,
+            GB_STORAGE,
+            AE_STORAGE,
+            AE_STORAGE_PROCESSING,
+            /**
+             * An enum member indicating that [Residency] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                GLOBAL -> Value.GLOBAL
+                US_STORAGE_PROCESSING -> Value.US_STORAGE_PROCESSING
+                EU_STORAGE_PROCESSING -> Value.EU_STORAGE_PROCESSING
+                JP_STORAGE -> Value.JP_STORAGE
+                KR_STORAGE -> Value.KR_STORAGE
+                CA_STORAGE -> Value.CA_STORAGE
+                SG_STORAGE -> Value.SG_STORAGE
+                IN_STORAGE -> Value.IN_STORAGE
+                AU_STORAGE -> Value.AU_STORAGE
+                GB_STORAGE -> Value.GB_STORAGE
+                AE_STORAGE -> Value.AE_STORAGE
+                AE_STORAGE_PROCESSING -> Value.AE_STORAGE_PROCESSING
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                GLOBAL -> Known.GLOBAL
+                US_STORAGE_PROCESSING -> Known.US_STORAGE_PROCESSING
+                EU_STORAGE_PROCESSING -> Known.EU_STORAGE_PROCESSING
+                JP_STORAGE -> Known.JP_STORAGE
+                KR_STORAGE -> Known.KR_STORAGE
+                CA_STORAGE -> Known.CA_STORAGE
+                SG_STORAGE -> Known.SG_STORAGE
+                IN_STORAGE -> Known.IN_STORAGE
+                AU_STORAGE -> Known.AU_STORAGE
+                GB_STORAGE -> Known.GB_STORAGE
+                AE_STORAGE -> Known.AE_STORAGE
+                AE_STORAGE_PROCESSING -> Known.AE_STORAGE_PROCESSING
+                else -> throw OpenAIInvalidDataException("Unknown Residency: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Residency = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Residency && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -412,6 +656,7 @@ private constructor(
             archivedAt == other.archivedAt &&
             externalKeyId == other.externalKeyId &&
             name == other.name &&
+            residency == other.residency &&
             status == other.status &&
             additionalProperties == other.additionalProperties
     }
@@ -424,6 +669,7 @@ private constructor(
             archivedAt,
             externalKeyId,
             name,
+            residency,
             status,
             additionalProperties,
         )
@@ -432,5 +678,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Project{id=$id, createdAt=$createdAt, object_=$object_, archivedAt=$archivedAt, externalKeyId=$externalKeyId, name=$name, status=$status, additionalProperties=$additionalProperties}"
+        "Project{id=$id, createdAt=$createdAt, object_=$object_, archivedAt=$archivedAt, externalKeyId=$externalKeyId, name=$name, residency=$residency, status=$status, additionalProperties=$additionalProperties}"
 }
