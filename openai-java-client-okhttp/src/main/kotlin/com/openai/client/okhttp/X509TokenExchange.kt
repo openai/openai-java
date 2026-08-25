@@ -1,8 +1,10 @@
 package com.openai.client.okhttp
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.openai.auth.X509WorkloadIdentity
+import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
@@ -10,7 +12,9 @@ import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.errors.OpenAIIoException
 import com.openai.errors.UnexpectedStatusCodeException
+import java.io.IOException
 import java.io.OutputStream
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
@@ -36,7 +40,7 @@ internal class X509TokenExchange(
         val responseFuture = httpClient.executeAsync(request())
         val result = CompletableFuture<X509AccessToken>()
         val activeResponse = AtomicReference<ResponseLease?>()
-        responseFuture.whenComplete { response, error ->
+        responseFuture.whenCompleteAsync { response, error ->
             if (error != null) {
                 result.completeExceptionally(error)
             } else if (response == null) {
@@ -113,15 +117,19 @@ internal class X509TokenExchange(
         if (response.statusCode() != 200) {
             throw UnexpectedStatusCodeException.builder()
                 .statusCode(response.statusCode())
-                .headers(response.headers())
+                .headers(safeDiagnosticHeaders(response.headers()))
                 .build()
         }
 
         val node: JsonNode =
             try {
                 responseReader.readTree(response.body())
-            } catch (_: Exception) {
+            } catch (error: JsonProcessingException) {
+                val transportFailure = transportFailure(error)
+                if (transportFailure != null) throw readFailure(transportFailure)
                 throw invalidResponse()
+            } catch (error: IOException) {
+                throw readFailure(error)
             } ?: throw invalidResponse()
 
         val accessToken =
@@ -153,6 +161,23 @@ internal class X509TokenExchange(
             else "Invalid X.509 token exchange response field: $field"
         )
 
+    private fun readFailure(cause: IOException): OpenAIIoException =
+        OpenAIIoException("Failed to read X.509 token exchange response", cause)
+
+    private fun transportFailure(error: JsonProcessingException): IOException? {
+        var cause = error.cause
+        while (cause != null && cause !== error) {
+            if (cause is IOException && cause !is JsonProcessingException) return cause
+            cause = cause.cause
+        }
+        return null
+    }
+
+    private fun safeDiagnosticHeaders(headers: Headers): Headers =
+        Headers.builder()
+            .apply { SAFE_DIAGNOSTIC_HEADERS.forEach { name -> put(name, headers.values(name)) } }
+            .build()
+
     private companion object {
         const val TOKEN_EXCHANGE_URL = "https://mtls.auth.openai.com/oauth/token"
         const val TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange"
@@ -160,5 +185,19 @@ internal class X509TokenExchange(
         const val ACCESS_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token"
         const val MAX_TOKEN_LIFETIME_SECONDS = 3600L
         val BEARER_TOKEN_PATTERN = Regex("[A-Za-z0-9._~+/-]+=*")
+        val SAFE_DIAGNOSTIC_HEADERS =
+            setOf(
+                "Content-Length",
+                "Content-Type",
+                "Date",
+                "OpenAI-Request-ID",
+                "Request-ID",
+                "Retry-After",
+                "Retry-After-Ms",
+                "Traceparent",
+                "Tracestate",
+                "X-Request-ID",
+                "X-Should-Retry",
+            )
     }
 }

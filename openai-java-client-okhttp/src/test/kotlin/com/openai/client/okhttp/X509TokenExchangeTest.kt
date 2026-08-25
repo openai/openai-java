@@ -10,14 +10,17 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.errors.OpenAIIoException
 import com.openai.errors.UnexpectedStatusCodeException
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.net.SocketTimeoutException
 import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -140,7 +143,7 @@ internal class X509TokenExchangeTest {
         assertThat(responseFuture.complete(response)).isTrue()
 
         assertThat(result.isCancelled).isTrue()
-        assertThat(response.closed).isTrue()
+        assertThat(response.awaitClosed(5, TimeUnit.SECONDS)).isTrue()
         assertThat(response.bodyRead).isFalse()
     }
 
@@ -164,6 +167,26 @@ internal class X509TokenExchangeTest {
             assertThat(response.closeCount).hasValue(1)
         } finally {
             executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun completedAsyncResponseReturnsCancellationHandleBeforeParsingStarts() {
+        val response = BlockingResponse()
+        val invocationExecutor = Executors.newSingleThreadExecutor()
+
+        try {
+            val invocation =
+                invocationExecutor.submit<CompletableFuture<X509AccessToken>> {
+                    X509TokenExchange(identity, SingleResponseClient(response)).executeAsync()
+                }
+            val result = invocation.get(5, TimeUnit.SECONDS)
+            assertThat(response.bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+        } finally {
+            response.close()
+            invocationExecutor.shutdownNow()
         }
     }
 
@@ -201,6 +224,77 @@ internal class X509TokenExchangeTest {
             .hasMessageContaining("201")
         assertThat(response.bodyRead).isFalse()
         assertThat(response.closed).isTrue()
+    }
+
+    @Test
+    fun redactsCredentialHeadersFromSynchronousExchangeErrors() {
+        redactsCredentialHeadersFromExchangeErrors(async = false)
+    }
+
+    @Test
+    fun redactsCredentialHeadersFromAsynchronousExchangeErrors() {
+        redactsCredentialHeadersFromExchangeErrors(async = true)
+    }
+
+    private fun redactsCredentialHeadersFromExchangeErrors(async: Boolean) {
+        val response =
+            TestResponse(
+                503,
+                "not read",
+                Headers.builder()
+                    .put("Set-Cookie", "session=secret-cookie")
+                    .put("Authorization", "Bearer secret-token")
+                    .put("X-Api-Key", "secret-api-key")
+                    .put("X-Request-ID", "req_safe")
+                    .put("Retry-After", "1")
+                    .build(),
+            )
+
+        val failure = exchangeFailure(response, async)
+
+        assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
+        val statusError = failure as UnexpectedStatusCodeException
+        assertThat(statusError.headers().values("Set-Cookie")).isEmpty()
+        assertThat(statusError.headers().values("Authorization")).isEmpty()
+        assertThat(statusError.headers().values("X-Api-Key")).isEmpty()
+        assertThat(statusError.headers().values("X-Request-ID")).containsExactly("req_safe")
+        assertThat(statusError.headers().values("Retry-After")).containsExactly("1")
+        assertThat(statusError.toString())
+            .doesNotContain("secret-cookie", "secret-token", "secret-api-key")
+        assertThat(response.bodyRead).isFalse()
+        assertThat(response.closed).isTrue()
+    }
+
+    @Test
+    fun preservesSynchronousIssuerBodyTimeoutAsRetryableIo() {
+        preservesIssuerBodyTimeoutAsRetryableIo(async = false)
+    }
+
+    @Test
+    fun preservesAsynchronousIssuerBodyTimeoutAsRetryableIo() {
+        preservesIssuerBodyTimeoutAsRetryableIo(async = true)
+    }
+
+    private fun preservesIssuerBodyTimeoutAsRetryableIo(async: Boolean) {
+        val response = FailingBodyResponse(SocketTimeoutException("issuer body stalled"))
+
+        val failure = exchangeFailure(response, async)
+
+        assertThat(failure).isInstanceOf(OpenAIIoException::class.java)
+        assertThat(failure).hasMessage("Failed to read X.509 token exchange response")
+        assertThat(failure.cause).isInstanceOf(SocketTimeoutException::class.java)
+        assertThat(response.closed).isTrue()
+    }
+
+    private fun exchangeFailure(response: HttpResponse, async: Boolean): Throwable {
+        val result =
+            runCatching {
+                    val exchange = X509TokenExchange(identity, SingleResponseClient(response))
+                    if (async) exchange.executeAsync().get(5, TimeUnit.SECONDS)
+                    else exchange.execute()
+                }
+                .exceptionOrNull() ?: error("Expected X.509 exchange to fail")
+        return if (result is ExecutionException) result.cause ?: result else result
     }
 
     private fun transport(
@@ -325,22 +419,49 @@ private class BlockingResponse : HttpResponse {
     }
 }
 
-private class TestResponse(private val statusCode: Int, body: String) : HttpResponse {
+private class TestResponse(
+    private val statusCode: Int,
+    body: String,
+    private val responseHeaders: Headers = Headers.builder().build(),
+) : HttpResponse {
     private val bytes = body.toByteArray()
+    private val closedSignal = CountDownLatch(1)
     var bodyRead = false
         private set
 
+    @Volatile
     var closed = false
         private set
 
+    fun awaitClosed(timeout: Long, unit: TimeUnit): Boolean = closedSignal.await(timeout, unit)
+
     override fun statusCode(): Int = statusCode
 
-    override fun headers(): Headers = Headers.builder().build()
+    override fun headers(): Headers = responseHeaders
 
     override fun body(): ByteArrayInputStream {
         bodyRead = true
         return ByteArrayInputStream(bytes)
     }
+
+    override fun close() {
+        closed = true
+        closedSignal.countDown()
+    }
+}
+
+private class FailingBodyResponse(private val failure: IOException) : HttpResponse {
+    var closed = false
+        private set
+
+    override fun statusCode(): Int = 200
+
+    override fun headers(): Headers = Headers.builder().build()
+
+    override fun body(): InputStream =
+        object : InputStream() {
+            override fun read(): Int = throw failure
+        }
 
     override fun close() {
         closed = true
