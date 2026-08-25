@@ -18,7 +18,7 @@ internal class ProjectTest {
                 .archivedAt(0L)
                 .externalKeyId("external_key_id")
                 .name("name")
-                .residency(Project.Residency.GLOBAL)
+                .residency(ProjectResidency.GLOBAL)
                 .status("status")
                 .build()
 
@@ -27,7 +27,7 @@ internal class ProjectTest {
         assertThat(project.archivedAt()).contains(0L)
         assertThat(project.externalKeyId()).contains("external_key_id")
         assertThat(project.name()).contains("name")
-        assertThat(project.residency()).contains(Project.Residency.GLOBAL)
+        assertThat(project.residency()).contains(ProjectResidency.GLOBAL)
         assertThat(project.status()).contains("status")
     }
 
@@ -41,7 +41,7 @@ internal class ProjectTest {
                 .archivedAt(0L)
                 .externalKeyId("external_key_id")
                 .name("name")
-                .residency(Project.Residency.GLOBAL)
+                .residency(ProjectResidency.GLOBAL)
                 .status("status")
                 .build()
 
