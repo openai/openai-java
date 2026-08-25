@@ -5,6 +5,7 @@ package com.openai.services.blocking.admin.organization
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.projects.ProjectCreateParams
+import com.openai.models.admin.organization.projects.ProjectResidency
 import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -28,6 +29,7 @@ internal class ProjectServiceTest {
                     .name("name")
                     .externalKeyId("external_key_id")
                     .geography("geography")
+                    .residency(ProjectResidency.GLOBAL)
                     .build()
             )
 
