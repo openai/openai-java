@@ -114,7 +114,7 @@ private constructor(
 
         val exchangeClient = client(exchangeProxy)
         return try {
-            BoundX509Transport(exchangeClient, client(apiProxy))
+            BoundX509Transport.create(exchangeClient, client(apiProxy))
         } catch (error: Throwable) {
             try {
                 exchangeClient.close()
@@ -128,8 +128,14 @@ private constructor(
     }
 }
 
-internal class BoundX509Transport(val exchangeClient: OkHttpClient, val apiClient: OkHttpClient) :
-    AutoCloseable {
+internal class BoundX509Transport
+private constructor(val exchangeClient: OkHttpClient, val apiClient: OkHttpClient) : AutoCloseable {
+
+    companion object {
+        @JvmSynthetic
+        internal fun create(exchangeClient: OkHttpClient, apiClient: OkHttpClient) =
+            BoundX509Transport(exchangeClient, apiClient)
+    }
 
     override fun close() {
         apiClient.use { exchangeClient.close() }

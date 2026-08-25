@@ -17,8 +17,10 @@ import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
@@ -27,6 +29,7 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
+import okhttp3.EventListener
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
@@ -40,11 +43,13 @@ import okio.buffer
 import okio.sink
 
 class OkHttpClient
-internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) : HttpClient {
+private constructor(
+    @get:JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient,
+    private val callTracker: CallTracker,
+) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
-
         return try {
             call.execute().toHttpResponse()
         } catch (e: IOException) {
@@ -73,7 +78,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
             }
         )
 
-        future.whenComplete { _, e ->
+        future.whenComplete { response, e ->
             if (e is CancellationException) {
                 call.cancel()
             }
@@ -84,12 +89,15 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     }
 
     override fun close() {
-        okHttpClient.dispatcher.executorService.shutdown()
-        okHttpClient.connectionPool.evictAll()
-        okHttpClient.cache?.close()
+        if (callTracker.close()) {
+            okHttpClient.dispatcher.executorService.shutdown()
+            okHttpClient.connectionPool.evictAll()
+            okHttpClient.cache?.close()
+        }
     }
 
     private fun newCall(request: HttpRequest, requestOptions: RequestOptions): Call {
+        callTracker.ensureOpen()
         val clientBuilder = okHttpClient.newBuilder()
 
         requestOptions.timeout?.let {
@@ -174,11 +182,13 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
             this.hostnameVerifier = hostnameVerifier
         }
 
-        fun build(): OkHttpClient =
-            OkHttpClient(
+        fun build(): OkHttpClient {
+            val callTracker = CallTracker()
+            return OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
                     // `RetryingHttpClient` handles retries if the user enabled them.
                     .retryOnConnectionFailure(false)
+                    .eventListenerFactory(callTracker.eventListenerFactory)
                     .followRedirects(followRedirects)
                     .followSslRedirects(followRedirects)
                     .connectTimeout(timeout.connect())
@@ -235,8 +245,47 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                         // We usually make all our requests to the same host so it makes sense to
                         // raise the per-host limit to the overall limit.
                         dispatcher.maxRequestsPerHost = dispatcher.maxRequests
-                    }
+                    },
+                callTracker,
             )
+        }
+    }
+}
+
+private class CallTracker {
+    private val closed = AtomicBoolean()
+    private val activeCalls = ConcurrentHashMap.newKeySet<Call>()
+
+    val eventListenerFactory =
+        EventListener.Factory {
+            object : EventListener() {
+                override fun callStart(call: Call) {
+                    activeCalls.add(call)
+                    if (closed.get()) {
+                        call.cancel()
+                    }
+                }
+
+                override fun callEnd(call: Call) {
+                    activeCalls.remove(call)
+                }
+
+                override fun callFailed(call: Call, ioe: IOException) {
+                    activeCalls.remove(call)
+                }
+            }
+        }
+
+    fun ensureOpen() {
+        check(!closed.get()) { "HTTP client is closed" }
+    }
+
+    fun close(): Boolean {
+        if (!closed.compareAndSet(false, true)) {
+            return false
+        }
+        activeCalls.forEach(Call::cancel)
+        return true
     }
 }
 

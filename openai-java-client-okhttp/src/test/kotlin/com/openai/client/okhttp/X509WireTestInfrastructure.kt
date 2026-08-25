@@ -5,7 +5,9 @@ import java.net.Socket
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.ExtendedSSLSession
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SNIHostName
@@ -97,7 +99,10 @@ internal class X509TestPeer(val authority: String, trustedClientRoot: X509Certif
         server.enqueue(response)
     }
 
-    fun takeRequest(): RecordedRequest = server.takeRequest()
+    fun takeRequest(timeout: Duration = Duration.ofSeconds(5)): RecordedRequest =
+        requireNotNull(server.takeRequest(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+            "No request received by $authority within $timeout"
+        }
 
     override fun close() {
         server.close()
