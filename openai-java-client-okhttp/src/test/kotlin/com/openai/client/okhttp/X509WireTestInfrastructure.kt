@@ -2,14 +2,17 @@ package com.openai.client.okhttp
 
 import java.net.Proxy
 import java.net.Socket
+import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.net.ssl.ExtendedSSLSession
+import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SNIHostName
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.SSLSocket
+import javax.net.ssl.X509ExtendedKeyManager
 import javax.net.ssl.X509ExtendedTrustManager
 import javax.net.ssl.X509TrustManager
 import okhttp3.OkHttpClient
@@ -109,6 +112,27 @@ internal inline fun <T> OkHttpClient.useTestClient(block: (OkHttpClient) -> T): 
         dispatcher.executorService.shutdownNow()
         cache?.close()
     }
+
+internal fun x509TestKeyManager(identities: Map<String, X509TestIdentity>): X509ExtendedKeyManager {
+    val password = "test password".toCharArray()
+    val keyStore =
+        KeyStore.getInstance("PKCS12").apply {
+            load(null, null)
+            identities.forEach { (alias, identity) ->
+                setKeyEntry(
+                    alias,
+                    identity.leaf.keyPair.private,
+                    password,
+                    arrayOf(identity.leaf.certificate, identity.root.certificate),
+                )
+            }
+        }
+    val keyManagerFactory =
+        KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply {
+            init(keyStore, password)
+        }
+    return keyManagerFactory.keyManagers.filterIsInstance<X509ExtendedKeyManager>().single()
+}
 
 private class RecordingClientTrustManager(private val delegate: X509TrustManager) :
     X509ExtendedTrustManager() {

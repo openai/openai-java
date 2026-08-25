@@ -64,7 +64,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         call.enqueue(
             object : Callback {
                 override fun onResponse(call: Call, response: Response) {
-                    future.complete(response.toHttpResponse())
+                    completeOrCloseResponse(future, response.toHttpResponse())
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
@@ -354,6 +354,15 @@ private fun Response.toHttpResponse(): HttpResponse {
         override fun body(): InputStream = body!!.byteStream()
 
         override fun close() = body!!.close()
+    }
+}
+
+internal fun completeOrCloseResponse(
+    future: CompletableFuture<HttpResponse>,
+    response: HttpResponse,
+) {
+    if (!future.complete(response)) {
+        response.close()
     }
 }
 

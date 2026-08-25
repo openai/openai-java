@@ -3,8 +3,12 @@ package com.openai.client.okhttp
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
+import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
+import java.io.ByteArrayInputStream
+import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,5 +44,43 @@ internal class OkHttpClientTest {
 
         // Should have cancelled the underlying call
         assertThat(call.isCanceled()).isTrue()
+    }
+
+    @Test
+    fun completeOrCloseResponse_whenCancellationWins_closesTheDroppedResponse() {
+        val future = CompletableFuture<HttpResponse>()
+        val response = TrackingHttpResponse()
+        assertThat(future.cancel(true)).isTrue()
+
+        completeOrCloseResponse(future, response)
+
+        assertThat(future.isCancelled).isTrue()
+        assertThat(response.closed).isTrue()
+    }
+
+    @Test
+    fun completeOrCloseResponse_whenCompletionWins_transfersResponseOwnership() {
+        val future = CompletableFuture<HttpResponse>()
+        val response = TrackingHttpResponse()
+
+        completeOrCloseResponse(future, response)
+
+        assertThat(future.get()).isSameAs(response)
+        assertThat(response.closed).isFalse()
+    }
+}
+
+private class TrackingHttpResponse : HttpResponse {
+    var closed = false
+        private set
+
+    override fun statusCode(): Int = 200
+
+    override fun headers(): Headers = Headers.builder().build()
+
+    override fun body(): ByteArrayInputStream = ByteArrayInputStream(byteArrayOf())
+
+    override fun close() {
+        closed = true
     }
 }

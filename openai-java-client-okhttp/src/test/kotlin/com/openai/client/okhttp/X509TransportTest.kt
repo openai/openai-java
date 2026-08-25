@@ -4,11 +4,9 @@ import com.openai.core.Timeout
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import java.net.Socket
-import java.security.KeyStore
 import java.security.Principal
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
-import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.X509ExtendedKeyManager
 import okhttp3.mockwebserver.MockResponse
@@ -139,7 +137,7 @@ internal class X509TransportTest {
     @Test
     fun rejectsMissingOrBlankAliasBeforeNetworking() {
         val identity = X509TestIdentity.create("builder identity")
-        val keyManager = keyManager(mapOf(PINNED_ALIAS to identity))
+        val keyManager = x509TestKeyManager(mapOf(PINNED_ALIAS to identity))
         val trustManager = HandshakeCertificates.Builder().build().trustManager
 
         assertThatThrownBy {
@@ -169,7 +167,7 @@ internal class X509TransportTest {
     ): X509Transport =
         transport(
             SelectingKeyManager(
-                keyManager(mapOf(PINNED_ALIAS to pinned, ALTERNATE_ALIAS to alternate)),
+                x509TestKeyManager(mapOf(PINNED_ALIAS to pinned, ALTERNATE_ALIAS to alternate)),
                 ALTERNATE_ALIAS,
             ),
             trustedServerRoots,
@@ -178,7 +176,8 @@ internal class X509TransportTest {
     private fun transport(
         identity: X509TestIdentity,
         trustedServerRoots: Iterable<X509Certificate>,
-    ): X509Transport = transport(keyManager(mapOf(PINNED_ALIAS to identity)), trustedServerRoots)
+    ): X509Transport =
+        transport(x509TestKeyManager(mapOf(PINNED_ALIAS to identity)), trustedServerRoots)
 
     private fun transport(
         keyManager: X509ExtendedKeyManager,
@@ -196,27 +195,6 @@ internal class X509TransportTest {
             .certificateAlias(PINNED_ALIAS)
             .trustManager(trustManager)
             .build()
-    }
-
-    private fun keyManager(identities: Map<String, X509TestIdentity>): X509ExtendedKeyManager {
-        val password = "test password".toCharArray()
-        val keyStore =
-            KeyStore.getInstance("PKCS12").apply {
-                load(null, null)
-                identities.forEach { (alias, identity) ->
-                    setKeyEntry(
-                        alias,
-                        identity.leaf.keyPair.private,
-                        password,
-                        arrayOf(identity.leaf.certificate, identity.root.certificate),
-                    )
-                }
-            }
-        val keyManagerFactory =
-            KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply {
-                init(keyStore, password)
-            }
-        return keyManagerFactory.keyManagers.filterIsInstance<X509ExtendedKeyManager>().single()
     }
 
     private fun request(url: String): HttpRequest =
