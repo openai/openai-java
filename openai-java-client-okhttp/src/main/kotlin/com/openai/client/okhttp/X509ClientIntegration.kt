@@ -2,10 +2,12 @@ package com.openai.client.okhttp
 
 import com.openai.auth.X509WorkloadIdentity
 import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
 import com.openai.core.Timeout
 import com.openai.core.http.AuthenticatedHttpRequest
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAttemptAuthenticator
+import com.openai.core.http.HttpRequestAttemptTimeouts
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import com.openai.errors.UnexpectedStatusCodeException
@@ -20,6 +22,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
 
 internal const val X509_API_BASE_URL = "https://mtls.api.openai.com/v1"
 
@@ -27,13 +30,28 @@ internal class X509ClientConfiguration
 private constructor(
     private val identity: X509WorkloadIdentity,
     private val bindTransport: (Timeout) -> BoundX509Transport,
+    private val installTransport:
+        (ClientOptions.Builder, OkHttpClient, HttpRequestAttemptAuthenticator) -> ClientOptions,
 ) {
     companion object {
         @JvmSynthetic
         internal fun create(
             identity: X509WorkloadIdentity,
             bindTransport: (Timeout) -> BoundX509Transport,
-        ) = X509ClientConfiguration(identity, bindTransport)
+        ) =
+            X509ClientConfiguration(identity, bindTransport) { options, client, authenticator ->
+                options.buildWithFixedBearerTransport(client, authenticator)
+            }
+
+        @JvmSynthetic
+        internal fun createForTest(
+            identity: X509WorkloadIdentity,
+            bindTransport: (Timeout) -> BoundX509Transport,
+            installTransport:
+                (
+                    ClientOptions.Builder, OkHttpClient, HttpRequestAttemptAuthenticator,
+                ) -> ClientOptions,
+        ) = X509ClientConfiguration(identity, bindTransport, installTransport)
     }
 
     @JvmSynthetic
@@ -44,29 +62,34 @@ private constructor(
     @JvmSynthetic
     fun buildClientOptions(clientOptions: ClientOptions.Builder): ClientOptions {
         val transport = bindTransport(clientOptions.timeout())
-        return try {
-            clientOptions
-                .fixedBearerTransport(
-                    transport.apiClient,
-                    X509AttemptAuthenticator(identity, transport.exchangeClient),
-                )
-                .build()
-        } catch (error: Throwable) {
+        val authenticator =
             try {
-                transport.close()
-            } catch (closeError: Throwable) {
-                if (closeError !== error) {
-                    error.addSuppressed(closeError)
-                }
+                X509AttemptAuthenticator(identity, transport.exchangeClient)
+            } catch (error: Throwable) {
+                closeAfterFailure(error, transport::close)
+                throw error
             }
+        return try {
+            installTransport(clientOptions, transport.apiClient, authenticator)
+        } catch (error: Throwable) {
+            closeAfterFailure(error, authenticator::close)
+            closeAfterFailure(error, transport.apiClient::close)
             throw error
         }
     }
 }
 
+private fun closeAfterFailure(error: Throwable, close: () -> Unit) {
+    try {
+        close()
+    } catch (closeError: Throwable) {
+        if (closeError !== error) error.addSuppressed(closeError)
+    }
+}
+
 /** Owns the exchange client and installs one exact, generation-scoped bearer per API attempt. */
 private class X509AttemptAuthenticator(
-    private val exchange: () -> CompletableFuture<X509AccessToken>,
+    private val exchange: (RequestOptions) -> CompletableFuture<X509AccessToken>,
     private val closeExchange: () -> Unit,
     private val nanoTime: () -> Long,
     private val beforeTokenPublication: () -> Unit,
@@ -95,8 +118,16 @@ private class X509AttemptAuthenticator(
     private val closed = AtomicBoolean()
 
     override fun authenticate(request: HttpRequest, timeout: Duration?): AuthenticatedHttpRequest {
+        return authenticate(request, requestTimeouts(timeout))
+    }
+
+    override fun authenticate(
+        request: HttpRequest,
+        timeouts: HttpRequestAttemptTimeouts,
+    ): AuthenticatedHttpRequest {
+        val requestOptions = requestOptions(timeouts)
         validateRequest(request)
-        val waiter = token(timeout)
+        val waiter = token(requestOptions)
         val token =
             try {
                 waiter.get()
@@ -114,6 +145,14 @@ private class X509AttemptAuthenticator(
         request: HttpRequest,
         timeout: Duration?,
     ): CompletableFuture<AuthenticatedHttpRequest> {
+        return authenticateAsync(request, requestTimeouts(timeout))
+    }
+
+    override fun authenticateAsync(
+        request: HttpRequest,
+        timeouts: HttpRequestAttemptTimeouts,
+    ): CompletableFuture<AuthenticatedHttpRequest> {
+        val requestOptions = requestOptions(timeouts)
         try {
             validateRequest(request)
         } catch (error: Throwable) {
@@ -121,7 +160,7 @@ private class X509AttemptAuthenticator(
                 it.completeExceptionally(error)
             }
         }
-        val token = token(timeout)
+        val token = token(requestOptions)
         val result = CompletableFuture<AuthenticatedHttpRequest>()
         token.whenComplete { value, error ->
             if (error == null) result.complete(authenticated(request, value))
@@ -131,22 +170,36 @@ private class X509AttemptAuthenticator(
         return result
     }
 
-    private fun token(timeout: Duration?): CompletableFuture<CachedToken> {
-        val now = nanoTime()
-        val state =
-            synchronized(lock) {
-                check(!closed.get()) { "X.509 authenticator is closed" }
-                cached
-                    ?.takeIf { it.isBeforeRefresh(now) && !it.isExpired(now) }
-                    ?.let {
-                        return CompletableFuture.completedFuture(it)
-                    }
-                (refresh?.takeUnless { it.result.isDone } ?: startRefresh()).also { it.waiters++ }
-            }
+    private fun requestOptions(timeouts: HttpRequestAttemptTimeouts): RequestOptions {
+        if (
+            timeouts.connect() == null &&
+                timeouts.read() == null &&
+                timeouts.write() == null &&
+                timeouts.request() == null
+        ) {
+            return RequestOptions.none()
+        }
+        val timeout =
+            Timeout.builder()
+                .connect(timeouts.connect())
+                .read(timeouts.read())
+                .write(timeouts.write())
+                .request(timeouts.request())
+                .build()
+        return RequestOptions.builder().timeout(timeout).build()
+    }
+
+    private fun requestTimeouts(timeout: Duration?): HttpRequestAttemptTimeouts =
+        HttpRequestAttemptTimeouts.create(null, null, null, timeout)
+
+    private fun token(requestOptions: RequestOptions): CompletableFuture<CachedToken> {
+        val timeout = requestOptions.timeout?.request()?.takeUnless(Duration::isZero)
+        val started = nanoTime()
         val waiter = CompletableFuture<CachedToken>()
-        val detached = AtomicBoolean()
-        fun detach() {
-            if (!detached.compareAndSet(false, true)) return
+        val attached = AtomicReference<Refresh?>()
+
+        fun detach(state: Refresh) {
+            if (!attached.compareAndSet(state, null)) return
             val cancel =
                 synchronized(lock) {
                     state.waiters--
@@ -160,17 +213,9 @@ private class X509AttemptAuthenticator(
                 state.result.cancel(true)
             }
         }
-        state.result.whenComplete { value, error ->
-            if (error == null) waiter.complete(value)
-            else waiter.completeExceptionally(unwrap(error))
-        }
-        timeout?.let {
-            if (it.isZero) {
-                waiter.completeExceptionally(OpenAIIoException("X.509 request deadline exceeded"))
-                detach()
-                return waiter
-            }
-            val timeoutTask =
+
+        val timeoutTask =
+            timeout?.let {
                 try {
                     beforeWaiterTimeoutSchedule()
                     scheduler.schedule(
@@ -187,20 +232,124 @@ private class X509AttemptAuthenticator(
                         if (closed.get()) OpenAIIoException("HTTP client is closed", error)
                         else error
                     )
-                    detach()
-                    return waiter
+                    null
                 }
-            waiter.whenComplete { _, _ -> timeoutTask.cancel(false) }
+            }
+        waiter.whenComplete { _, _ ->
+            timeoutTask?.cancel(false)
+            attached.get()?.let(::detach)
         }
-        waiter.whenComplete { _, _ -> detach() }
+        if (waiter.isDone) return waiter
+
+        val waitedForIncompatibleRefresh = AtomicBoolean()
+        lateinit var acquire: () -> Unit
+        acquire = acquire@{
+            if (waiter.isDone) return@acquire
+            val effectiveOptions =
+                try {
+                    if (waitedForIncompatibleRefresh.get()) {
+                        remainingRequestOptions(requestOptions, started, timeout)
+                    } else {
+                        requestOptions
+                    }
+                } catch (error: Throwable) {
+                    waiter.completeExceptionally(error)
+                    return@acquire
+                }
+            val requested = ExchangeTimeouts.from(effectiveOptions)
+            var immediate: CachedToken? = null
+            var joined: Refresh? = null
+            var awaiting: Refresh? = null
+            try {
+                synchronized(lock) {
+                    if (closed.get()) throw OpenAIIoException("HTTP client is closed")
+                    if (waiter.isDone) return@synchronized
+                    val now = nanoTime()
+                    immediate = cached?.takeIf { it.isBeforeRefresh(now) && !it.isExpired(now) }
+                    if (immediate == null) {
+                        val active = refresh?.takeUnless { it.result.isDone }
+                        if (active == null || active.canServe(requested, now)) {
+                            val selected = active ?: startRefresh(effectiveOptions, requested)
+                            selected.waiters++
+                            check(attached.compareAndSet(null, selected))
+                            joined = selected
+                        } else {
+                            awaiting = active
+                        }
+                    }
+                }
+            } catch (error: Throwable) {
+                waiter.completeExceptionally(error)
+                return@acquire
+            }
+            if (waiter.isDone) {
+                joined?.let(::detach)
+                return@acquire
+            }
+            immediate?.let {
+                waiter.complete(it)
+                return@acquire
+            }
+            joined?.let { state ->
+                state.result.whenComplete { value, error ->
+                    detach(state)
+                    if (error == null) waiter.complete(value)
+                    else waiter.completeExceptionally(unwrap(error))
+                }
+                return@acquire
+            }
+            val active = requireNotNull(awaiting)
+            active.result.whenComplete { value, error ->
+                when {
+                    waiter.isDone -> {}
+                    error == null -> waiter.complete(value)
+                    closed.get() ->
+                        waiter.completeExceptionally(OpenAIIoException("HTTP client is closed"))
+                    active.result.isCancelled || isTransient(error) -> {
+                        waitedForIncompatibleRefresh.set(true)
+                        acquire()
+                    }
+                    else -> waiter.completeExceptionally(unwrap(error))
+                }
+            }
+        }
+        acquire()
         return waiter
     }
 
-    private fun startRefresh(): Refresh {
+    private fun remainingRequestOptions(
+        requestOptions: RequestOptions,
+        started: Long,
+        timeout: Duration?,
+    ): RequestOptions {
+        if (timeout == null) return requestOptions
+        val elapsed = elapsedSince(started, nanoTime())
+        val total = timeout.toNanos()
+        if (elapsed < 0 || elapsed >= total) {
+            throw OpenAIIoException("X.509 request deadline exceeded")
+        }
+        val adjustedTimeout =
+            requireNotNull(requestOptions.timeout)
+                .toBuilder()
+                .request(Duration.ofNanos(total - elapsed))
+                .build()
+        return RequestOptions.builder()
+            .apply {
+                requestOptions.responseValidation?.let { responseValidation(it) }
+                timeout(adjustedTimeout)
+            }
+            .build()
+    }
+
+    private fun startRefresh(
+        requestOptions: RequestOptions,
+        exchangeTimeouts: ExchangeTimeouts,
+    ): Refresh {
         val exchangeStarted = nanoTime()
-        val raw = exchange()
+        val raw = exchange(requestOptions)
         val result = CompletableFuture<CachedToken>()
-        val state = Refresh(raw, result, cached, invalidationEpoch)
+        val state =
+            Refresh(raw, result, cached, invalidationEpoch, exchangeStarted, exchangeTimeouts)
         refresh = state
         raw.whenComplete { exchanged, rawError ->
             var value: CachedToken? = null
@@ -283,8 +432,61 @@ private class X509AttemptAuthenticator(
         val result: CompletableFuture<CachedToken>,
         val fallback: CachedToken?,
         val invalidationEpoch: Long,
+        val startedAt: Long,
+        val exchangeTimeouts: ExchangeTimeouts,
         var waiters: Int = 0,
-    )
+    ) {
+        fun canServe(requested: ExchangeTimeouts, now: Long): Boolean =
+            !result.isDone && exchangeTimeouts.canServe(requested, elapsedSince(startedAt, now))
+    }
+
+    private data class ExchangeTimeouts(
+        val connect: Duration?,
+        val read: Duration?,
+        val write: Duration?,
+        val request: Duration?,
+    ) {
+        fun canServe(requested: ExchangeTimeouts, elapsed: Long): Boolean =
+            connect == requested.connect &&
+                phaseCompatible(read, request, requested.read, requested.request) &&
+                phaseCompatible(write, request, requested.write, requested.request) &&
+                covers(remaining(request, elapsed), requested.request)
+
+        companion object {
+            fun from(options: RequestOptions): ExchangeTimeouts =
+                options.timeout?.let {
+                    ExchangeTimeouts(it.connect(), it.read(), it.write(), it.request())
+                } ?: ExchangeTimeouts(null, null, null, null)
+
+            private fun covers(available: Duration?, requested: Duration?): Boolean =
+                when {
+                    available == null || available.isZero -> true
+                    requested == null || requested.isZero -> false
+                    else -> available >= requested
+                }
+
+            private fun remaining(timeout: Duration?, elapsed: Long): Duration? {
+                if (timeout == null || timeout.isZero) return timeout
+                val total =
+                    try {
+                        timeout.toNanos()
+                    } catch (_: ArithmeticException) {
+                        Long.MAX_VALUE
+                    }
+                return if (elapsed < 0 || elapsed >= total) Duration.ZERO
+                else Duration.ofNanos(total - elapsed)
+            }
+
+            private fun phaseCompatible(
+                available: Duration?,
+                availableRequest: Duration?,
+                requested: Duration?,
+                requestedRequest: Duration?,
+            ): Boolean =
+                available == requested ||
+                    (available == availableRequest && requested == requestedRequest)
+        }
+    }
 
     private class CachedToken(
         val value: String,
@@ -376,12 +578,16 @@ internal fun x509AttemptAuthenticatorForTest(
     beforeTokenPublication: () -> Unit = {},
     beforeRefreshCleared: () -> Unit = {},
     beforeWaiterTimeoutSchedule: () -> Unit = {},
+    exchangeOptionsObserver: (RequestOptions) -> Unit = {},
     schedulerObserver: (ScheduledThreadPoolExecutor) -> Unit = {},
     exchange: () -> CompletableFuture<X509AccessToken>,
 ): HttpRequestAttemptAuthenticator {
     val scheduler = tokenWaitScheduler().also(schedulerObserver)
     return X509AttemptAuthenticator(
-        exchange,
+        { options ->
+            exchangeOptionsObserver(options)
+            exchange()
+        },
         closeExchange,
         nanoTime,
         beforeTokenPublication,

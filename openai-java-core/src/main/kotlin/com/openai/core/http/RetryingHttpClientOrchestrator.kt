@@ -34,6 +34,7 @@ internal class RetryingHttpClientOrchestrator(
     private val idempotencyHeader: String?,
     private val attemptAuthenticator: HttpRequestAttemptAuthenticator?,
     private val nanoTime: () -> Long = System::nanoTime,
+    private val beforeAsyncApiDispatch: () -> Unit = {},
 ) : HttpClient {
     private val closed = AtomicBoolean()
     private val activeAuthenticatedRequests = ConcurrentHashMap.newKeySet<CompletableFuture<*>>()
@@ -127,7 +128,9 @@ internal class RetryingHttpClientOrchestrator(
                 }
                 val authenticated =
                     try {
-                        authenticator.authenticate(current, remainingOrThrow(deadline))
+                        val authenticationOptions =
+                            deadline?.let { remainingOptions(requestOptions, it) } ?: requestOptions
+                        authenticator.authenticate(current, attemptTimeouts(authenticationOptions))
                     } catch (error: Throwable) {
                         if (retries >= maxRetries || !shouldRetryAttempt(error)) {
                             throw error
@@ -221,7 +224,28 @@ internal class RetryingHttpClientOrchestrator(
         authenticator: HttpRequestAttemptAuthenticator,
     ): CompletableFuture<HttpResponse> {
         val pipelineRequest = request.withPipelineOwnedBody()
-        val result = CompletableFuture<HttpResponse>()
+        val stageLock = Any()
+        var terminalReserved = false
+        val result =
+            object : CompletableFuture<HttpResponse>() {
+                private fun reserveTerminal(): Boolean =
+                    synchronized(stageLock) {
+                        if (terminalReserved || isDone) false
+                        else {
+                            terminalReserved = true
+                            true
+                        }
+                    }
+
+                override fun cancel(mayInterruptIfRunning: Boolean): Boolean =
+                    reserveTerminal() && super.cancel(mayInterruptIfRunning)
+
+                override fun complete(value: HttpResponse): Boolean =
+                    reserveTerminal() && super.complete(value)
+
+                override fun completeExceptionally(error: Throwable): Boolean =
+                    reserveTerminal() && super.completeExceptionally(error)
+            }
         val active = AtomicReference<CompletableFuture<*>?>()
         result.whenComplete { _, _ ->
             if (result.isCancelled || closed.get()) active.getAndSet(null)?.cancel(true)
@@ -241,10 +265,10 @@ internal class RetryingHttpClientOrchestrator(
         var retries = 0
         var replayed = false
 
-        fun activate(future: CompletableFuture<*>) {
-            active.set(future)
-            if (result.isDone) future.cancel(true)
-        }
+        fun <T> startStage(start: () -> CompletableFuture<T>): CompletableFuture<T>? =
+            synchronized(stageLock) {
+                if (terminalReserved || result.isDone) null else start().also { active.set(it) }
+            }
 
         fun closeDiscarded(response: HttpResponse?) {
             try {
@@ -320,12 +344,11 @@ internal class RetryingHttpClientOrchestrator(
                 }
                 val sleep =
                     try {
-                        sleeper.sleepAsync(delay)
+                        startStage { sleeper.sleepAsync(delay) } ?: return
                     } catch (sleepError: Throwable) {
                         result.completeExceptionally(sleepError)
                         return
                     }
-                activate(sleep)
                 sleep.whenComplete { _, sleepError ->
                     try {
                         if (sleepError == null) run()
@@ -343,14 +366,14 @@ internal class RetryingHttpClientOrchestrator(
 
         fun dispatch(authenticated: AuthenticatedHttpRequest, options: RequestOptions) {
             val authenticatedRequest = authenticated.request()
+            beforeAsyncApiDispatch()
             val call =
                 try {
-                    httpClient.executeAsync(authenticatedRequest, options)
+                    startStage { httpClient.executeAsync(authenticatedRequest, options) } ?: return
                 } catch (error: Throwable) {
                     retry(error = error, requestRetryable = isRetryable(authenticatedRequest))
                     return
                 }
-            activate(call)
             call.whenComplete callComplete@{ response, callError ->
                 var ownedResponse = response
                 try {
@@ -388,9 +411,9 @@ internal class RetryingHttpClientOrchestrator(
 
         run = run@{
             if (result.isDone) return@run
-            val timeout =
+            val authenticationOptions =
                 try {
-                    remainingOrThrow(deadline)
+                    deadline?.let { remainingOptions(requestOptions, it) } ?: requestOptions
                 } catch (error: Throwable) {
                     result.completeExceptionally(error)
                     return@run
@@ -398,12 +421,16 @@ internal class RetryingHttpClientOrchestrator(
             val current = if (sendRetryCount) setRetryCountHeader(modified, retries) else modified
             val authentication =
                 try {
-                    authenticator.authenticateAsync(current, timeout)
+                    startStage {
+                        authenticator.authenticateAsync(
+                            current,
+                            attemptTimeouts(authenticationOptions),
+                        )
+                    } ?: return@run
                 } catch (error: Throwable) {
                     retry(error = error, authenticationFailure = true)
                     return@run
                 }
-            activate(authentication)
             authentication.whenComplete authenticationComplete@{ authenticated, authError ->
                 try {
                     if (result.isDone) return@authenticationComplete
@@ -497,14 +524,21 @@ internal class RetryingHttpClientOrchestrator(
         return Duration.ofNanos(nanos)
     }
 
-    private fun remainingOrThrow(deadline: Deadline?): Duration? =
-        deadline?.let(::remaining)?.also { if (it.isZero) throw timedOut() }
-
     private fun remainingOptions(options: RequestOptions, deadline: Deadline): RequestOptions {
         val remaining = remaining(deadline)
         if (remaining.isZero) throw timedOut()
         return options.withTimeout(
             (options.timeout ?: Timeout.default()).toBuilder().request(remaining).build()
+        )
+    }
+
+    private fun attemptTimeouts(options: RequestOptions): HttpRequestAttemptTimeouts {
+        val timeout = options.timeout
+        return HttpRequestAttemptTimeouts.create(
+            timeout?.connect(),
+            timeout?.read(),
+            timeout?.write(),
+            timeout?.request(),
         )
     }
 

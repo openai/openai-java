@@ -377,9 +377,8 @@ internal class CancellationPropagatingFutureTest {
             OpenAIClientAsyncImpl(
                 ClientOptions.builder()
                     .fixedBearerAuthentication("https://example.test/v1")
-                    .fixedBearerTransport(transport, authenticator)
                     .maxRetries(0)
-                    .build()
+                    .buildWithFixedBearerTransport(transport, authenticator)
             )
 
         try {
@@ -442,9 +441,8 @@ internal class CancellationPropagatingFutureTest {
             OpenAIClientImpl(
                 ClientOptions.builder()
                     .fixedBearerAuthentication("https://example.test/v1")
-                    .fixedBearerTransport(transport, authenticator)
                     .maxRetries(0)
-                    .build()
+                    .buildWithFixedBearerTransport(transport, authenticator)
             )
 
         try {
@@ -500,9 +498,8 @@ internal class CancellationPropagatingFutureTest {
             OpenAIClientAsyncImpl(
                 ClientOptions.builder()
                     .fixedBearerAuthentication("https://example.test/v1")
-                    .fixedBearerTransport(transport, authenticator)
                     .maxRetries(0)
-                    .build()
+                    .buildWithFixedBearerTransport(transport, authenticator)
             )
 
         try {
@@ -601,9 +598,8 @@ internal class CancellationPropagatingFutureTest {
             OpenAIClientAsyncImpl(
                 ClientOptions.builder()
                     .fixedBearerAuthentication("https://example.test/v1")
-                    .fixedBearerTransport(transport, authenticator)
                     .maxRetries(0)
-                    .build()
+                    .buildWithFixedBearerTransport(transport, authenticator)
             )
 
         try {
@@ -656,9 +652,8 @@ internal class CancellationPropagatingFutureTest {
             OpenAIClientAsyncImpl(
                 ClientOptions.builder()
                     .fixedBearerAuthentication("https://example.test/v1")
-                    .fixedBearerTransport(transport, authenticator)
                     .maxRetries(0)
-                    .build()
+                    .buildWithFixedBearerTransport(transport, authenticator)
             )
 
         try {
@@ -694,9 +689,8 @@ internal class CancellationPropagatingFutureTest {
         return OpenAIClientAsyncImpl(
             ClientOptions.builder()
                 .fixedBearerAuthentication("https://example.test/v1")
-                .fixedBearerTransport(transport, authenticator)
                 .maxRetries(0)
-                .build()
+                .buildWithFixedBearerTransport(transport, authenticator)
         )
     }
 

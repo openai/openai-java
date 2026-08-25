@@ -318,26 +318,30 @@ private constructor(
             explicitBaseUrl = true
         }
 
-        /** Installs the transport owned by a previously reserved fixed-bearer integration. */
+        /**
+         * Builds with a scoped transport owned by a previously reserved fixed-bearer integration.
+         */
         @JvmSynthetic
-        fun fixedBearerTransport(
+        fun buildWithFixedBearerTransport(
             httpClient: HttpClient,
             httpRequestAuthenticator: HttpRequestAttemptAuthenticator,
-        ) = apply {
-            val fixedBaseUrl =
-                when (val authentication = requestAuthentication) {
-                    is RequestAuthentication.FixedBearerReserved ->
-                        authentication.fixedBearerBaseUrl
-                    is RequestAuthentication.FixedBearerInstalled ->
-                        authentication.fixedBearerBaseUrl
-                    else -> error("Fixed bearer authentication must be set first")
-                }
-            this.httpClient = PhantomReachableClosingHttpClient(httpClient)
-            requestAuthentication =
-                RequestAuthentication.FixedBearerInstalled.create(
-                    fixedBaseUrl,
-                    httpRequestAuthenticator,
-                )
+        ): ClientOptions {
+            val originalAuthentication = requestAuthentication
+            val reserved = originalAuthentication as? RequestAuthentication.FixedBearerReserved
+            checkNotNull(reserved) { "Fixed bearer authentication must be set first" }
+            val originalHttpClient = this.httpClient
+            return try {
+                this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+                requestAuthentication =
+                    RequestAuthentication.FixedBearerInstalled.create(
+                        reserved.fixedBearerBaseUrl,
+                        httpRequestAuthenticator,
+                    )
+                build()
+            } finally {
+                this.httpClient = originalHttpClient
+                requestAuthentication = originalAuthentication
+            }
         }
 
         /**

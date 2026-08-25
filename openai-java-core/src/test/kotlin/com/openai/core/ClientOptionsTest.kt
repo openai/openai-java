@@ -193,8 +193,7 @@ internal class ClientOptionsTest {
         val clientOptions =
             ClientOptions.builder()
                 .fixedBearerAuthentication("https://mtls.example.test/v1")
-                .fixedBearerTransport(httpClient, authenticator)
-                .build()
+                .buildWithFixedBearerTransport(httpClient, authenticator)
                 .toBuilder()
                 .build()
 

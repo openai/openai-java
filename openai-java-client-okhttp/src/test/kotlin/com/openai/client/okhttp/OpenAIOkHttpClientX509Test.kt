@@ -2,7 +2,10 @@ package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.openai.auth.X509WorkloadIdentity
+import com.openai.core.RequestOptions
+import com.openai.core.Timeout
 import com.openai.credential.BearerTokenCredential
+import com.openai.errors.OpenAIIoException
 import com.openai.models.files.FileListParams
 import java.net.Proxy
 import java.security.cert.X509Certificate
@@ -431,7 +434,12 @@ internal class OpenAIOkHttpClientX509Test {
     @Test
     fun cancellingPublicAsyncFutureCancelsBlockedExchange() {
         Fixture().use { fixture ->
-            fixture.authPeer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+            fixture.authPeer.enqueue(
+                MockResponse()
+                    .setHeader("Content-Type", "application/json")
+                    .setBody(TOKEN_RESPONSE)
+                    .setBodyDelay(250, TimeUnit.MILLISECONDS)
+            )
             val client = fixture.asyncBuilder().timeout(Duration.ofSeconds(30)).build()
             val cancelled = client.files().list()
 
@@ -441,6 +449,104 @@ internal class OpenAIOkHttpClientX509Test {
 
             try {
                 assertThat(cancelled.isCancelled).isTrue()
+                assertThat(fixture.apiPeer.server.takeRequest(1, TimeUnit.SECONDS)).isNull()
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
+    fun synchronousRequestTimeoutBoundsIssuerAndPreventsApiDispatch() {
+        Fixture().use { fixture ->
+            fixture.authPeer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+            val client = fixture.syncBuilder().build()
+            val options = RequestOptions.builder().timeout(Duration.ofMillis(250)).build()
+            val started = System.nanoTime()
+
+            try {
+                assertThatThrownBy { client.files().list(options) }
+                    .isInstanceOf(OpenAIIoException::class.java)
+                    .hasMessageContaining("deadline")
+                assertThat(Duration.ofNanos(System.nanoTime() - started))
+                    .isLessThan(Duration.ofSeconds(3))
+                assertThat(fixture.apiPeer.server.requestCount).isZero()
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
+    fun asynchronousRequestTimeoutBoundsIssuerAndPreventsApiDispatch() {
+        Fixture().use { fixture ->
+            fixture.authPeer.enqueue(
+                MockResponse()
+                    .setHeader("Content-Type", "application/json")
+                    .setBody(TOKEN_RESPONSE)
+                    .setBodyDelay(5, TimeUnit.SECONDS)
+            )
+            val client = fixture.asyncBuilder().build()
+            val options = RequestOptions.builder().timeout(Duration.ofMillis(250)).build()
+            val started = System.nanoTime()
+
+            try {
+                assertThatThrownBy { client.files().list(options).get(3, TimeUnit.SECONDS) }
+                    .isInstanceOf(ExecutionException::class.java)
+                    .hasCauseInstanceOf(OpenAIIoException::class.java)
+                assertThat(Duration.ofNanos(System.nanoTime() - started))
+                    .isLessThan(Duration.ofSeconds(3))
+                assertThat(fixture.apiPeer.server.requestCount).isZero()
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
+    fun synchronousReadTimeoutReachesIssuerThroughProductionWrapper() {
+        Fixture().use { fixture ->
+            fixture.authPeer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+            val client = fixture.syncBuilder().maxRetries(0).build()
+            val timeout =
+                Timeout.builder()
+                    .read(Duration.ofMillis(250))
+                    .request(Duration.ofSeconds(10))
+                    .build()
+            val options = RequestOptions.builder().timeout(timeout).build()
+            val started = System.nanoTime()
+
+            try {
+                assertThatThrownBy { client.files().list(options) }
+                    .isInstanceOf(OpenAIIoException::class.java)
+                assertThat(Duration.ofNanos(System.nanoTime() - started))
+                    .isLessThan(Duration.ofSeconds(5))
+                assertThat(fixture.apiPeer.server.requestCount).isZero()
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
+    fun asynchronousReadTimeoutReachesIssuerThroughProductionWrapper() {
+        Fixture().use { fixture ->
+            fixture.authPeer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+            val client = fixture.asyncBuilder().maxRetries(0).build()
+            val timeout =
+                Timeout.builder()
+                    .read(Duration.ofMillis(250))
+                    .request(Duration.ofSeconds(10))
+                    .build()
+            val options = RequestOptions.builder().timeout(timeout).build()
+            val started = System.nanoTime()
+
+            try {
+                assertThatThrownBy { client.files().list(options).get(5, TimeUnit.SECONDS) }
+                    .isInstanceOf(ExecutionException::class.java)
+                    .hasCauseInstanceOf(OpenAIIoException::class.java)
+                assertThat(Duration.ofNanos(System.nanoTime() - started))
+                    .isLessThan(Duration.ofSeconds(5))
                 assertThat(fixture.apiPeer.server.requestCount).isZero()
             } finally {
                 client.close()

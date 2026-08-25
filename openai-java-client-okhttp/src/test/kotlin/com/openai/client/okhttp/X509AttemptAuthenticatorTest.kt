@@ -1,12 +1,16 @@
 package com.openai.client.okhttp
 
 import com.openai.core.RequestOptions
+import com.openai.core.Timeout
+import com.openai.core.http.AuthenticatedHttpRequest
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAttemptTimeouts
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.RetryingHttpClient
+import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import java.io.ByteArrayInputStream
 import java.time.Duration
@@ -18,17 +22,51 @@ import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class X509AttemptAuthenticatorTest {
     @Test
+    fun forwardsEffectiveRequestOptionsToIssuerExchange() {
+        val observed = CompletableFuture<RequestOptions>()
+        val authenticator =
+            x509AttemptAuthenticatorForTest(exchangeOptionsObserver = { observed.complete(it) }) {
+                CompletableFuture.completedFuture(
+                    X509AccessToken("optionstoken", Duration.ofMinutes(1))
+                )
+            }
+        val timeout =
+            Timeout.builder()
+                .connect(Duration.ofMillis(11))
+                .read(Duration.ofMillis(22))
+                .write(Duration.ofMillis(33))
+                .request(Duration.ofMillis(250))
+                .build()
+        val timeouts =
+            HttpRequestAttemptTimeouts.create(
+                timeout.connect(),
+                timeout.read(),
+                timeout.write(),
+                timeout.request(),
+            )
+
+        val authenticated = authenticator.authenticateAsync(request(), timeouts)
+
+        assertThat(authorization(authenticated.get(5, TimeUnit.SECONDS)))
+            .isEqualTo("Bearer optionstoken")
+        val issuerOptions = observed.get(5, TimeUnit.SECONDS)
+        assertThat(issuerOptions.timeout).isEqualTo(timeout)
+        authenticator.close()
+    }
+
+    @Test
     fun oneCancelledWaiterDoesNotCancelSharedExchange() {
         val exchange = CancellationFuture<X509AccessToken>()
         val authenticator = x509AttemptAuthenticatorForTest { exchange }
-        val cancelled = authenticator.authenticateAsync(request(), Duration.ofSeconds(5))
-        val surviving = authenticator.authenticateAsync(request(), Duration.ofSeconds(5))
+        val cancelled = authenticator.authenticateAsync(request(), null)
+        val surviving = authenticator.authenticateAsync(request(), null)
 
         cancelled.cancel(true)
         exchange.complete(X509AccessToken("survivingtoken", Duration.ofMinutes(1)))
@@ -73,6 +111,261 @@ internal class X509AttemptAuthenticatorTest {
         assertThat(authorization(surviving.get(5, TimeUnit.SECONDS)))
             .isEqualTo("Bearer survivingtoken")
         authenticator.close()
+    }
+
+    @Test
+    fun shortFirstAsyncWaiterCannotTruncateLongerRefreshGeneration() {
+        val shortExchange = CancellationFuture<X509AccessToken>()
+        val longExchange = CancellationFuture<X509AccessToken>()
+        val exchanges = ArrayDeque(listOf(shortExchange, longExchange))
+        val authenticator = x509AttemptAuthenticatorForTest { exchanges.removeFirst() }
+
+        val short = authenticator.authenticateAsync(request(), Duration.ofMillis(200))
+        val long = authenticator.authenticateAsync(request(), Duration.ofSeconds(5))
+
+        assertThatThrownBy { short.get(5, TimeUnit.SECONDS) }
+            .isInstanceOf(ExecutionException::class.java)
+            .hasMessageContaining("deadline")
+        assertThat(shortExchange.cancelled.await(5, TimeUnit.SECONDS)).isTrue()
+        longExchange.complete(X509AccessToken("longtoken", Duration.ofMinutes(1)))
+        assertThat(authorization(long.get(5, TimeUnit.SECONDS))).isEqualTo("Bearer longtoken")
+        authenticator.close()
+    }
+
+    @Test
+    fun delayedAsyncWaiterUsesActiveRefreshRemainingBudget() {
+        val now = AtomicLong()
+        val firstExchange = CompletableFuture<X509AccessToken>()
+        val secondExchange = CompletableFuture<X509AccessToken>()
+        val exchanges = ArrayDeque(listOf(firstExchange, secondExchange))
+        val exchangeOptions = mutableListOf<RequestOptions>()
+        val authenticator =
+            x509AttemptAuthenticatorForTest(
+                nanoTime = now::get,
+                exchangeOptionsObserver = exchangeOptions::add,
+            ) {
+                exchanges.removeFirst()
+            }
+        val first = authenticator.authenticateAsync(request(), Duration.ofSeconds(5))
+        now.set(Duration.ofSeconds(3).toNanos())
+        val delayed = authenticator.authenticateAsync(request(), Duration.ofSeconds(4))
+
+        now.set(Duration.ofSeconds(4).toNanos())
+        firstExchange.completeExceptionally(OpenAIIoException("first exchange timed out"))
+        assertThatThrownBy { first.get(5, TimeUnit.SECONDS) }
+            .isInstanceOf(ExecutionException::class.java)
+            .hasCauseInstanceOf(OpenAIIoException::class.java)
+        secondExchange.complete(X509AccessToken("delayedtoken", Duration.ofMinutes(1)))
+
+        assertThat(authorization(delayed.get(5, TimeUnit.SECONDS))).isEqualTo("Bearer delayedtoken")
+        assertThat(exchangeOptions.map { it.timeout?.request() })
+            .containsExactly(Duration.ofSeconds(5), Duration.ofSeconds(3))
+        assertThat(exchanges).isEmpty()
+        authenticator.close()
+    }
+
+    @Test
+    fun exhaustedDelayedAsyncWaiterDoesNotStartAnotherRefresh() {
+        val now = AtomicLong()
+        val firstExchange = CompletableFuture<X509AccessToken>()
+        val exchangeCalls = AtomicInteger()
+        val authenticator =
+            x509AttemptAuthenticatorForTest(
+                nanoTime = now::get,
+                exchangeOptionsObserver = { exchangeCalls.incrementAndGet() },
+            ) {
+                firstExchange
+            }
+        val first = authenticator.authenticateAsync(request(), Duration.ofSeconds(5))
+        now.set(Duration.ofSeconds(3).toNanos())
+        val exhausted = authenticator.authenticateAsync(request(), Duration.ofSeconds(4))
+
+        now.set(Duration.ofSeconds(7).toNanos())
+        firstExchange.completeExceptionally(OpenAIIoException("first exchange timed out"))
+
+        assertThatThrownBy { first.get(5, TimeUnit.SECONDS) }
+            .isInstanceOf(ExecutionException::class.java)
+            .hasCauseInstanceOf(OpenAIIoException::class.java)
+        assertThatThrownBy { exhausted.get(5, TimeUnit.SECONDS) }
+            .isInstanceOf(ExecutionException::class.java)
+            .hasCauseInstanceOf(OpenAIIoException::class.java)
+            .hasMessageContaining("deadline")
+        assertThat(exchangeCalls).hasValue(1)
+        authenticator.close()
+    }
+
+    @Test
+    fun shortFirstSyncWaiterCannotTruncateLongerRefreshGeneration() {
+        val shortExchange = CancellationFuture<X509AccessToken>()
+        val longExchange = CancellationFuture<X509AccessToken>()
+        val firstStarted = CountDownLatch(1)
+        val secondStarted = CountDownLatch(1)
+        val exchanges = ArrayDeque(listOf(shortExchange, longExchange))
+        val exchangeCount = AtomicInteger()
+        val authenticator = x509AttemptAuthenticatorForTest {
+            if (exchangeCount.getAndIncrement() == 0) firstStarted.countDown()
+            else secondStarted.countDown()
+            exchanges.removeFirst()
+        }
+        val executor = Executors.newFixedThreadPool(2)
+
+        try {
+            val short =
+                executor.submit { authenticator.authenticate(request(), Duration.ofMillis(200)) }
+            assertThat(firstStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            val long: java.util.concurrent.Future<AuthenticatedHttpRequest> =
+                executor.submit(
+                    java.util.concurrent.Callable {
+                        authenticator.authenticate(request(), Duration.ofSeconds(5))
+                    }
+                )
+            assertThat(secondStarted.await(5, TimeUnit.SECONDS)).isTrue()
+
+            assertThatThrownBy { short.get(5, TimeUnit.SECONDS) }
+                .isInstanceOf(ExecutionException::class.java)
+                .hasCauseInstanceOf(OpenAIIoException::class.java)
+                .hasMessageContaining("deadline")
+            assertThat(shortExchange.cancelled.await(5, TimeUnit.SECONDS)).isTrue()
+            longExchange.complete(X509AccessToken("longtoken", Duration.ofMinutes(1)))
+            assertThat(authorization(long.get(5, TimeUnit.SECONDS))).isEqualTo("Bearer longtoken")
+        } finally {
+            authenticator.close()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun delayedSyncWaiterUsesActiveRefreshRemainingBudget() {
+        val now = AtomicLong()
+        val firstExchange = CompletableFuture<X509AccessToken>()
+        val secondExchange = CompletableFuture<X509AccessToken>()
+        val exchanges = ArrayDeque(listOf(firstExchange, secondExchange))
+        val exchangeOptions = mutableListOf<RequestOptions>()
+        val firstStarted = CountDownLatch(1)
+        val incompatibleRefreshInspected = CountDownLatch(1)
+        val delayedThread = AtomicReference<Thread?>()
+        val delayedClockReads = AtomicInteger()
+        val authenticator =
+            x509AttemptAuthenticatorForTest(
+                nanoTime = {
+                    if (
+                        Thread.currentThread() === delayedThread.get() &&
+                            delayedClockReads.incrementAndGet() == 2
+                    ) {
+                        incompatibleRefreshInspected.countDown()
+                    }
+                    now.get()
+                },
+                exchangeOptionsObserver = exchangeOptions::add,
+            ) {
+                firstStarted.countDown()
+                exchanges.removeFirst()
+            }
+        val executor = Executors.newFixedThreadPool(2)
+
+        try {
+            val first =
+                executor.submit(
+                    java.util.concurrent.Callable {
+                        authenticator.authenticate(request(), Duration.ofSeconds(5))
+                    }
+                )
+            assertThat(firstStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            now.set(Duration.ofSeconds(3).toNanos())
+            val delayed =
+                executor.submit(
+                    java.util.concurrent.Callable {
+                        delayedThread.set(Thread.currentThread())
+                        authenticator.authenticate(request(), Duration.ofSeconds(4))
+                    }
+                )
+            assertThat(incompatibleRefreshInspected.await(5, TimeUnit.SECONDS)).isTrue()
+
+            now.set(Duration.ofSeconds(4).toNanos())
+            firstExchange.completeExceptionally(OpenAIIoException("first exchange timed out"))
+            assertThatThrownBy { first.get(5, TimeUnit.SECONDS) }
+                .isInstanceOf(ExecutionException::class.java)
+                .hasCauseInstanceOf(OpenAIIoException::class.java)
+            secondExchange.complete(X509AccessToken("delayedtoken", Duration.ofMinutes(1)))
+
+            assertThat(authorization(delayed.get(5, TimeUnit.SECONDS)))
+                .isEqualTo("Bearer delayedtoken")
+            assertThat(exchangeOptions.map { it.timeout?.request() })
+                .containsExactly(Duration.ofSeconds(5), Duration.ofSeconds(3))
+            assertThat(exchanges).isEmpty()
+        } finally {
+            authenticator.close()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun closeFailsAttachedAndIncompatibleAsyncWaitersAsIo() {
+        val exchange = CancellationFuture<X509AccessToken>()
+        val exchanges = AtomicInteger()
+        val authenticator = x509AttemptAuthenticatorForTest {
+            exchanges.incrementAndGet()
+            exchange
+        }
+        val attached = authenticator.authenticateAsync(request(), Duration.ofSeconds(1))
+        val awaiting = authenticator.authenticateAsync(request(), Duration.ofSeconds(5))
+
+        authenticator.close()
+
+        listOf(attached, awaiting).forEach { waiter ->
+            assertThatThrownBy { waiter.get(5, TimeUnit.SECONDS) }
+                .isInstanceOf(ExecutionException::class.java)
+                .hasCauseInstanceOf(OpenAIIoException::class.java)
+                .hasMessageContaining("closed")
+        }
+        assertThat(exchanges).hasValue(1)
+    }
+
+    @Test
+    fun closeFailsAttachedAndIncompatibleSyncWaitersAsIo() {
+        val exchange = CancellationFuture<X509AccessToken>()
+        val scheduled = CountDownLatch(2)
+        val exchangeStarted = CountDownLatch(1)
+        val exchanges = AtomicInteger()
+        val authenticator =
+            x509AttemptAuthenticatorForTest(
+                beforeWaiterTimeoutSchedule = { scheduled.countDown() }
+            ) {
+                exchanges.incrementAndGet()
+                exchangeStarted.countDown()
+                exchange
+            }
+        val executor = Executors.newFixedThreadPool(2)
+
+        try {
+            val attached =
+                executor.submit(
+                    java.util.concurrent.Callable {
+                        authenticator.authenticate(request(), Duration.ofSeconds(1))
+                    }
+                )
+            assertThat(exchangeStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            val awaiting =
+                executor.submit(
+                    java.util.concurrent.Callable {
+                        authenticator.authenticate(request(), Duration.ofSeconds(5))
+                    }
+                )
+            assertThat(scheduled.await(5, TimeUnit.SECONDS)).isTrue()
+
+            authenticator.close()
+
+            listOf(attached, awaiting).forEach { waiter ->
+                assertThatThrownBy { waiter.get(5, TimeUnit.SECONDS) }
+                    .isInstanceOf(ExecutionException::class.java)
+                    .hasCauseInstanceOf(OpenAIIoException::class.java)
+                    .hasMessageContaining("closed")
+            }
+            assertThat(exchanges).hasValue(1)
+        } finally {
+            authenticator.close()
+            executor.shutdownNow()
+        }
     }
 
     @Test
@@ -188,11 +481,13 @@ internal class X509AttemptAuthenticatorTest {
     @Test
     fun closeBeforeTimeoutSchedulingDoesNotExposeSchedulerRejection() {
         val exchange = CancellationFuture<X509AccessToken>()
+        val exchangeStarts = AtomicInteger()
         lateinit var authenticator: com.openai.core.http.HttpRequestAttemptAuthenticator
         authenticator =
             x509AttemptAuthenticatorForTest(
                 beforeWaiterTimeoutSchedule = { authenticator.close() }
             ) {
+                exchangeStarts.incrementAndGet()
                 exchange
             }
 
@@ -201,7 +496,8 @@ internal class X509AttemptAuthenticatorTest {
         assertThatThrownBy { authentication.get(5, TimeUnit.SECONDS) }
             .isInstanceOf(ExecutionException::class.java)
             .hasMessageContaining("HTTP client is closed")
-        assertThat(exchange.isCancelled).isTrue()
+        assertThat(exchangeStarts).hasValue(0)
+        assertThat(exchange.isCancelled).isFalse()
     }
 
     @Test

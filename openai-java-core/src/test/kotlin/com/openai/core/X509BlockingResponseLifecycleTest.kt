@@ -87,9 +87,8 @@ internal class X509BlockingResponseLifecycleTest {
                     }
                 ClientOptions.builder()
                     .fixedBearerAuthentication("https://example.test/v1")
-                    .fixedBearerTransport(transport, authenticator)
                     .maxRetries(0)
-                    .build()
+                    .buildWithFixedBearerTransport(transport, authenticator)
             } else {
                 ClientOptions.builder()
                     .apiKey("test-api-key")

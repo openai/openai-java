@@ -15,11 +15,22 @@ internal class PhantomReachableClosingHttpRequestAttemptAuthenticator(
     override fun authenticate(request: HttpRequest, timeout: Duration?): AuthenticatedHttpRequest =
         authenticator.authenticate(request, timeout)
 
+    override fun authenticate(
+        request: HttpRequest,
+        timeouts: HttpRequestAttemptTimeouts,
+    ): AuthenticatedHttpRequest = authenticator.authenticate(request, timeouts)
+
     override fun authenticateAsync(
         request: HttpRequest,
         timeout: Duration?,
     ): CompletableFuture<AuthenticatedHttpRequest> =
         authenticator.authenticateAsync(request, timeout)
+
+    override fun authenticateAsync(
+        request: HttpRequest,
+        timeouts: HttpRequestAttemptTimeouts,
+    ): CompletableFuture<AuthenticatedHttpRequest> =
+        authenticator.authenticateAsync(request, timeouts)
 
     override fun close() = authenticator.close()
 }

@@ -133,9 +133,8 @@ internal class X509AsyncStreamCancellationTest {
         OpenAIClientAsyncImpl(
             ClientOptions.builder()
                 .fixedBearerAuthentication("https://example.test/v1")
-                .fixedBearerTransport(transport, authenticator)
                 .maxRetries(0)
-                .build()
+                .buildWithFixedBearerTransport(transport, authenticator)
         )
 
     private fun params() =
