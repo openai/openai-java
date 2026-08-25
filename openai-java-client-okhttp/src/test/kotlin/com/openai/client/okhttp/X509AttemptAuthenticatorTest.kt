@@ -13,6 +13,9 @@ import com.openai.core.http.RetryingHttpClient
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import java.io.ByteArrayInputStream
+import java.io.IOException
+import java.security.cert.CertPathBuilderException
+import java.security.cert.CertificateException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
@@ -23,6 +26,10 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
+import javax.net.ssl.SSLException
+import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.SSLPeerUnverifiedException
+import javax.net.ssl.SSLProtocolException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -443,6 +450,75 @@ internal class X509AttemptAuthenticatorTest {
         assertThat(authorization(afterExpiry.get(5, TimeUnit.SECONDS)))
             .isEqualTo("Bearer replacementtoken")
         authenticator.close()
+    }
+
+    @Test
+    fun syncAndAsyncPermanentTlsRefreshFailureCannotFallbackToCachedBearer() {
+        val tlsFailures =
+            listOf<() -> Throwable>(
+                {
+                    SSLHandshakeException("untrusted issuer certificate").apply {
+                        initCause(CertificateException("certificate path rejected"))
+                    }
+                },
+                { CertPathBuilderException("issuer certificate path could not be built") },
+                { SSLPeerUnverifiedException("issuer hostname mismatch") },
+                { SSLProtocolException("issuer TLS protocol failure") },
+                { SSLException("issuer TLS failure") },
+            )
+
+        tlsFailures.forEach { tlsFailure ->
+            listOf(false, true).forEach { async ->
+                val now = AtomicLong()
+                val permanentFailure =
+                    OpenAIIoException(
+                        "issuer exchange failed",
+                        IOException("transport wrapper", tlsFailure()),
+                    )
+                val exchanges =
+                    ArrayDeque(
+                        listOf(
+                            CompletableFuture.completedFuture(
+                                X509AccessToken("cachedtoken", Duration.ofMillis(500))
+                            ),
+                            CompletableFuture<X509AccessToken>().apply {
+                                completeExceptionally(permanentFailure)
+                            },
+                        )
+                    )
+                val authenticator =
+                    x509AttemptAuthenticatorForTest(nanoTime = now::get) { exchanges.removeFirst() }
+
+                try {
+                    if (async) {
+                        authenticator
+                            .authenticateAsync(request(), Duration.ofSeconds(5))
+                            .get(5, TimeUnit.SECONDS)
+                    } else {
+                        authenticator.authenticate(request(), Duration.ofSeconds(5))
+                    }
+                    now.set(Duration.ofMillis(425).toNanos())
+
+                    if (async) {
+                        assertThatThrownBy {
+                                authenticator
+                                    .authenticateAsync(request(), Duration.ofSeconds(5))
+                                    .get(5, TimeUnit.SECONDS)
+                            }
+                            .isInstanceOf(ExecutionException::class.java)
+                            .hasCause(permanentFailure)
+                    } else {
+                        assertThatThrownBy {
+                                authenticator.authenticate(request(), Duration.ofSeconds(5))
+                            }
+                            .isSameAs(permanentFailure)
+                    }
+                    assertThat(exchanges).isEmpty()
+                } finally {
+                    authenticator.close()
+                }
+            }
+        }
     }
 
     @Test

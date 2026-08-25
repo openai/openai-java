@@ -14,6 +14,13 @@ internal fun HttpRequest.withPipelineOwnedBody(): HttpRequest {
     return toBuilder().body(CloseOncePipelineRequestBody(current)).build()
 }
 
+/** Gives one transport attempt a close-isolated view of the pipeline-owned request body. */
+@JvmSynthetic
+internal fun HttpRequest.forPipelineAttempt(): HttpRequest {
+    val current = body as? PipelineOwnedRequestBody ?: return this
+    return toBuilder().body(PipelineAttemptRequestBody(current)).build()
+}
+
 /** Best-effort terminal cleanup for an authenticated request body. */
 @JvmSynthetic
 internal fun HttpRequest.closePipelineBody(failure: Throwable? = null) {
@@ -49,4 +56,17 @@ private class CloseOncePipelineRequestBody(private val delegate: HttpRequestBody
     override fun close() {
         if (closed.compareAndSet(false, true)) delegate.close()
     }
+}
+
+private class PipelineAttemptRequestBody(private val delegate: PipelineOwnedRequestBody) :
+    HttpRequestBody {
+    override fun writeTo(outputStream: OutputStream) = delegate.writeTo(outputStream)
+
+    override fun contentType(): String? = delegate.contentType()
+
+    override fun contentLength(): Long = delegate.contentLength()
+
+    override fun repeatable(): Boolean = delegate.repeatable()
+
+    override fun close() = Unit
 }

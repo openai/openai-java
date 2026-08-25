@@ -8,11 +8,14 @@ import com.openai.credential.BearerTokenCredential
 import com.openai.errors.OpenAIIoException
 import com.openai.models.files.FileListParams
 import java.net.Proxy
+import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
+import javax.net.ssl.SSLException
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.mockwebserver.SocketPolicy
@@ -249,6 +252,54 @@ internal class OpenAIOkHttpClientX509Test {
             assertThat(apiRequests.map { it.getHeader("X-Stainless-Retry-Count") })
                 .containsExactly("0", "1", "1", "2")
             assertThat(fixture.apiPeer.server.requestCount).isEqualTo(5)
+        }
+    }
+
+    @Test
+    fun publicSyncAndAsyncClientsRejectCachedBearerAfterIssuerTlsFailure() {
+        listOf(false, true).forEach { async ->
+            Fixture().use { fixture ->
+                val now = AtomicLong()
+                fixture.authPeer.enqueue(
+                    fixture
+                        .exchangeResponse("cachedtoken")
+                        .setSocketPolicy(SocketPolicy.DISCONNECT_AT_END)
+                )
+                fixture.enqueueApiSuccess()
+                fixture.enqueueApiSuccess()
+
+                if (async) {
+                    val client = fixture.asyncBuilder(now::get).maxRetries(0).build()
+                    try {
+                        client.files().list().get(10, TimeUnit.SECONDS)
+                        now.set(Duration.ofSeconds(3_000).toNanos())
+                        fixture.replaceIssuerWithUntrustedCertificate()
+
+                        val failure =
+                            runCatching { client.files().list().get(10, TimeUnit.SECONDS) }
+                                .exceptionOrNull()
+                        assertThat(failure).isInstanceOf(ExecutionException::class.java)
+                        assertTlsFailure(requireNotNull(failure))
+                    } finally {
+                        client.close()
+                    }
+                } else {
+                    val client = fixture.syncBuilder(now::get).maxRetries(0).build()
+                    try {
+                        client.files().list()
+                        now.set(Duration.ofSeconds(3_000).toNanos())
+                        fixture.replaceIssuerWithUntrustedCertificate()
+
+                        val failure = runCatching { client.files().list() }.exceptionOrNull()
+                        assertThat(failure).isInstanceOf(OpenAIIoException::class.java)
+                        assertTlsFailure(requireNotNull(failure))
+                    } finally {
+                        client.close()
+                    }
+                }
+
+                assertThat(fixture.apiPeer.server.requestCount).isEqualTo(2)
+            }
         }
     }
 
@@ -644,6 +695,12 @@ internal class OpenAIOkHttpClientX509Test {
         assertThat(requireNotNull(request.handshake).peerCertificates.first()).isEqualTo(expected)
     }
 
+    private fun assertTlsFailure(failure: Throwable) {
+        assertThat(generateSequence(failure) { it.cause }.toList()).anyMatch {
+            it is SSLException || it is CertificateException
+        }
+    }
+
     private class Fixture : AutoCloseable {
         val identity = X509TestIdentity.create("SDK X.509 identity")
         val authPeer = X509TestPeer(AUTH_HOST, identity.root.certificate)
@@ -680,6 +737,24 @@ internal class OpenAIOkHttpClientX509Test {
                 transport,
                 authPeer.proxy,
                 apiPeer.proxy,
+            )
+
+        fun syncBuilder(nanoTime: () -> Long): OpenAIOkHttpClient.Builder =
+            OpenAIOkHttpClient.Builder.x509(configuration(nanoTime))
+
+        fun asyncBuilder(nanoTime: () -> Long): OpenAIOkHttpClientAsync.Builder =
+            OpenAIOkHttpClientAsync.Builder.x509(configuration(nanoTime))
+
+        fun replaceIssuerWithUntrustedCertificate() {
+            authPeer.replaceWithUntrustedCertificate()
+            authPeer.enqueue(exchangeResponse(ACCESS_TOKEN))
+        }
+
+        private fun configuration(nanoTime: () -> Long) =
+            X509ClientConfiguration.createWithNanoTimeForTest(
+                workloadIdentity,
+                { timeout -> transport.bindForTest(timeout, authPeer.proxy, apiPeer.proxy) },
+                nanoTime,
             )
 
         fun enqueueSuccess() {

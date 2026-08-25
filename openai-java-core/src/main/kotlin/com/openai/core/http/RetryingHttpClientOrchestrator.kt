@@ -145,9 +145,10 @@ internal class RetryingHttpClientOrchestrator(
                 val options =
                     deadline?.let { remainingOptions(requestOptions, it) } ?: requestOptions
                 val authenticatedRequest = authenticated.request()
+                val attemptRequest = authenticatedRequest.forPipelineAttempt()
                 val response =
                     try {
-                        httpClient.execute(authenticatedRequest, options)
+                        httpClient.execute(attemptRequest, options)
                     } catch (error: Throwable) {
                         if (
                             !isRetryable(authenticatedRequest) ||
@@ -366,10 +367,11 @@ internal class RetryingHttpClientOrchestrator(
 
         fun dispatch(authenticated: AuthenticatedHttpRequest, options: RequestOptions) {
             val authenticatedRequest = authenticated.request()
+            val attemptRequest = authenticatedRequest.forPipelineAttempt()
             beforeAsyncApiDispatch()
             val call =
                 try {
-                    startStage { httpClient.executeAsync(authenticatedRequest, options) } ?: return
+                    startStage { httpClient.executeAsync(attemptRequest, options) } ?: return
                 } catch (error: Throwable) {
                     retry(error = error, requestRetryable = isRetryable(authenticatedRequest))
                     return
