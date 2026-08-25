@@ -11,6 +11,7 @@ import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.AuthenticatingHttpClient
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequestAttemptAuthenticator
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
@@ -154,6 +155,10 @@ private constructor(
      */
     fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
 
+    @JvmSynthetic
+    internal fun propagatesAsyncCancellation(): Boolean =
+        requestAuthentication.attemptAuthenticator != null
+
     fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
 
     fun adminApiKey(): Optional<String> = Optional.ofNullable(adminApiKey)
@@ -220,6 +225,7 @@ private constructor(
         private var project: String? = null
         private var webhookSecret: String? = null
         private var workloadIdentity: WorkloadIdentity? = null
+        private var sharedHttpPipeline: HttpClient? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -253,6 +259,11 @@ private constructor(
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
+        }
+
+        @JvmSynthetic
+        internal fun shareHttpPipeline(httpClient: HttpClient) = apply {
+            sharedHttpPipeline = httpClient
         }
 
         /**
@@ -311,14 +322,20 @@ private constructor(
         @JvmSynthetic
         fun fixedBearerTransport(
             httpClient: HttpClient,
-            httpRequestAuthenticator: HttpRequestAuthenticator,
+            httpRequestAuthenticator: HttpRequestAttemptAuthenticator,
         ) = apply {
-            val reserved = requestAuthentication as? RequestAuthentication.FixedBearerReserved
-            checkNotNull(reserved) { "Fixed bearer authentication must be set first" }
+            val fixedBaseUrl =
+                when (val authentication = requestAuthentication) {
+                    is RequestAuthentication.FixedBearerReserved ->
+                        authentication.fixedBearerBaseUrl
+                    is RequestAuthentication.FixedBearerInstalled ->
+                        authentication.fixedBearerBaseUrl
+                    else -> error("Fixed bearer authentication must be set first")
+                }
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
             requestAuthentication =
                 RequestAuthentication.FixedBearerInstalled.create(
-                    reserved.fixedBearerBaseUrl,
+                    fixedBaseUrl,
                     httpRequestAuthenticator,
                 )
         }
@@ -834,36 +851,44 @@ private constructor(
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
 
-            val loggingDelegate =
-                if (requestAuthentication.authenticator != null) httpClient
-                else
-                    WorkloadIdentityHttpClient(
-                        delegate = httpClient,
-                        workloadIdentityAuth = effectiveWorkloadIdentityAuth,
-                    )
-
-            val loggingHttpClient =
-                LoggingHttpClient.builder()
-                    .httpClient(loggingDelegate)
-                    .clock(clock)
-                    .level(logLevel)
-                    .build()
-
-            val perAttemptHttpClient =
-                requestAuthentication.authenticator?.let { authenticator ->
-                    AuthenticatingHttpClient(
-                        delegate = loggingHttpClient,
-                        authenticator = authenticator,
-                    )
-                } ?: loggingHttpClient
-
             val wrappedHttpClient =
-                RetryingHttpClient.builder()
-                    .httpClient(perAttemptHttpClient)
-                    .sleeper(sleeper)
-                    .clock(clock)
-                    .maxRetries(maxRetries)
-                    .build()
+                sharedHttpPipeline
+                    ?: run {
+                        val loggingDelegate =
+                            if (
+                                requestAuthentication.authenticator != null ||
+                                    requestAuthentication.attemptAuthenticator != null
+                            )
+                                httpClient
+                            else
+                                WorkloadIdentityHttpClient(
+                                    delegate = httpClient,
+                                    workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                                )
+                        val loggingHttpClient =
+                            LoggingHttpClient.builder()
+                                .httpClient(loggingDelegate)
+                                .clock(clock)
+                                .level(logLevel)
+                                .propagateAsyncCancellation(
+                                    requestAuthentication.attemptAuthenticator != null
+                                )
+                                .build()
+                        val perAttemptHttpClient =
+                            requestAuthentication.authenticator?.let { authenticator ->
+                                AuthenticatingHttpClient(
+                                    delegate = loggingHttpClient,
+                                    authenticator = authenticator,
+                                )
+                            } ?: loggingHttpClient
+                        RetryingHttpClient.builder()
+                            .httpClient(perAttemptHttpClient)
+                            .sleeper(sleeper)
+                            .clock(clock)
+                            .maxRetries(maxRetries)
+                            .attemptAuthenticator(requestAuthentication.attemptAuthenticator)
+                            .build()
+                    }
 
             return ClientOptions(
                 httpClient,

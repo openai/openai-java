@@ -19,6 +19,7 @@ import java.time.OffsetDateTime
 import java.util.SortedSet
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.toKotlinDuration
 
 /** A wrapper [HttpClient] around [httpClient] that logs request and response information. */
@@ -46,6 +47,7 @@ private constructor(
      * Pass [LogLevel.fromEnv] to read from environment variables.
      */
     @get:JvmName("level") val level: LogLevel,
+    private val propagateAsyncCancellation: Boolean,
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
@@ -60,8 +62,18 @@ private constructor(
                 throw e
             }
 
-        val took = Duration.between(before, OffsetDateTime.now(clock))
-        return logResponse(response, took)
+        if (!propagateAsyncCancellation) {
+            val took = Duration.between(before, OffsetDateTime.now(clock))
+            return logResponse(response, took)
+        }
+        val lease = PipelineResponseLease()
+        return try {
+            val took = Duration.between(before, OffsetDateTime.now(clock))
+            logResponse(lease.acquire(response), took)
+        } catch (failure: Throwable) {
+            lease.close(response, failure)
+            throw failure
+        }
     }
 
     override fun executeAsync(
@@ -78,6 +90,9 @@ private constructor(
                 logFailure(e, Duration.between(before, OffsetDateTime.now(clock)))
                 throw e
             }
+        if (propagateAsyncCancellation) {
+            return loggingFutureWithCancellationPropagation(future, before)
+        }
         return future.handle { response, error ->
             val took = Duration.between(before, OffsetDateTime.now(clock))
             if (error != null) {
@@ -86,6 +101,44 @@ private constructor(
             }
             logResponse(response, took)
         }
+    }
+
+    private fun loggingFutureWithCancellationPropagation(
+        source: CompletableFuture<HttpResponse>,
+        before: OffsetDateTime,
+    ): CompletableFuture<HttpResponse> {
+        val lease = PipelineResponseLease()
+        val result = CompletableFuture<HttpResponse>()
+
+        fun discard(response: HttpResponse, failure: Throwable? = null) {
+            if (failure == null) lease.discard(response) else lease.close(response, failure)
+        }
+
+        source.whenComplete { response, error ->
+            try {
+                if (result.isCancelled) {
+                    if (error == null) discard(response)
+                    return@whenComplete
+                }
+                val took = Duration.between(before, OffsetDateTime.now(clock))
+                if (error != null) {
+                    logFailure(unwrapCompletionException(error), took)
+                    result.completeExceptionally(error)
+                    return@whenComplete
+                }
+                val logged = logResponse(lease.acquire(response), took)
+                if (!result.complete(logged)) discard(logged)
+            } catch (failure: Throwable) {
+                if (response != null) discard(response, failure)
+                result.completeExceptionally(failure)
+            }
+        }
+        result.whenComplete { _, _ ->
+            if (result.isCancelled && !source.cancel(true)) {
+                source.whenComplete { response, error -> if (error == null) discard(response) }
+            }
+        }
+        return result
     }
 
     private fun logRequest(request: HttpRequest): HttpRequest {
@@ -139,7 +192,11 @@ private constructor(
         }
 
         logHeaders(response.headers())
-        return LoggingHttpResponse(response)
+        return if (response is PipelineOwnedResource) {
+            PipelineOwnedLoggingHttpResponse(response)
+        } else {
+            LoggingHttpResponse(response)
+        }
     }
 
     private fun logFailure(error: Throwable, took: Duration) {
@@ -199,6 +256,7 @@ private constructor(
             )
         private var clock: Clock = Clock.systemUTC()
         private var level: LogLevel? = null
+        private var propagateAsyncCancellation: Boolean = false
 
         @JvmSynthetic
         internal fun from(loggingHttpClient: LoggingHttpClient) = apply {
@@ -206,6 +264,7 @@ private constructor(
             redactedHeaders = loggingHttpClient.redactedHeaders
             clock = loggingHttpClient.clock
             level = loggingHttpClient.level
+            propagateAsyncCancellation = loggingHttpClient.propagateAsyncCancellation
         }
 
         /** The underlying [HttpClient] for making requests. */
@@ -237,6 +296,11 @@ private constructor(
          */
         fun level(level: LogLevel) = apply { this.level = level }
 
+        @JvmSynthetic
+        internal fun propagateAsyncCancellation(propagate: Boolean) = apply {
+            propagateAsyncCancellation = propagate
+        }
+
         /**
          * Returns an immutable instance of [LoggingHttpClient].
          *
@@ -256,6 +320,7 @@ private constructor(
                 redactedHeaders.toSortedSet(String.CASE_INSENSITIVE_ORDER).toImmutable(),
                 clock,
                 checkRequired("level", level),
+                propagateAsyncCancellation,
             )
     }
 }
@@ -332,7 +397,7 @@ private class LoggingOutputStream(private val outputStream: OutputStream, charse
  *
  * The logging occurs in a streaming manner with minimal buffering.
  */
-private class LoggingHttpResponse(private val response: HttpResponse) : HttpResponse {
+private open class LoggingHttpResponse(private val response: HttpResponse) : HttpResponse {
 
     private val loggingBody: Lazy<InputStream> = lazy {
         LoggingInputStream(
@@ -347,11 +412,29 @@ private class LoggingHttpResponse(private val response: HttpResponse) : HttpResp
 
     override fun body(): InputStream = loggingBody.value
 
-    override fun close() {
-        if (loggingBody.isInitialized()) {
-            loggingBody.value.close()
+    open override fun close() {
+        var failure: Throwable? = null
+        try {
+            if (loggingBody.isInitialized()) loggingBody.value.close()
+        } catch (error: Throwable) {
+            failure = error
         }
-        response.close()
+        try {
+            response.close()
+        } catch (error: Throwable) {
+            if (failure == null) failure = error
+            else if (failure !== error) failure.addSuppressed(error)
+        }
+        failure?.let { throw it }
+    }
+}
+
+private class PipelineOwnedLoggingHttpResponse(response: HttpResponse) :
+    LoggingHttpResponse(response), PipelineOwnedResource {
+    private val closed = AtomicBoolean()
+
+    override fun close() {
+        if (closed.compareAndSet(false, true)) super.close()
     }
 }
 

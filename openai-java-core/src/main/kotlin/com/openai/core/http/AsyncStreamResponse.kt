@@ -6,6 +6,9 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicReference
 
+/** Marker for futures whose cancellation is guaranteed to reach active upstream work. */
+internal interface PropagatesCancellationToUpstream
+
 /**
  * A class providing access to an API response as an asynchronous stream of chunks of type [T],
  * where each chunk can be individually processed as soon as it arrives instead of waiting on the
@@ -74,7 +77,9 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                 this@toAsync.whenComplete { _, error ->
                     // If an error occurs from the original future, then we should resolve the
                     // `onCompleteFuture` even if `subscribe` has not been called.
-                    error?.let(onCompleteFuture::completeExceptionally)
+                    if (state.get() != State.CLOSED) {
+                        error?.let(onCompleteFuture::completeExceptionally)
+                    }
                 }
             }
 
@@ -142,6 +147,9 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                 }
 
                 this@toAsync.whenComplete { streamResponse, error -> streamResponse?.close() }
+                if (this@toAsync is PropagatesCancellationToUpstream) {
+                    this@toAsync.cancel(true)
+                }
                 // When the stream is closed, we should always consider it closed. If it closed due
                 // to an error, then we will have already completed the future earlier, and this
                 // will be a no-op.

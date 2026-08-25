@@ -19,6 +19,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
+import com.openai.core.http.closeIfPipelineOwned
 import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
@@ -86,7 +87,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
 
     override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
         // delete /responses/{response_id}
-        withRawResponse().delete(params, requestOptions)
+        withRawResponse().delete(params, requestOptions).closeIfPipelineOwned()
     }
 
     override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions): Response =

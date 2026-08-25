@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.openai.auth.X509WorkloadIdentity
+import com.openai.core.RequestOptions
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
@@ -33,11 +34,13 @@ internal class X509TokenExchange(
     private val responseReader =
         jsonMapper.reader().with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
 
-    fun execute(): X509AccessToken =
-        httpClient.execute(request()).use { response -> parse(response) }
+    fun execute(requestOptions: RequestOptions = RequestOptions.none()): X509AccessToken =
+        httpClient.execute(request(), requestOptions).use { response -> parse(response) }
 
-    fun executeAsync(): CompletableFuture<X509AccessToken> {
-        val responseFuture = httpClient.executeAsync(request())
+    fun executeAsync(
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<X509AccessToken> {
+        val responseFuture = httpClient.executeAsync(request(), requestOptions)
         val result = CompletableFuture<X509AccessToken>()
         val activeResponse = AtomicReference<ResponseLease?>()
         responseFuture.whenCompleteAsync { response, error ->

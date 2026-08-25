@@ -109,15 +109,19 @@ object CoreCompilationShards {
 
     private val clientBaseSources =
         setOf(
+            "com/openai/core/CancellationPropagatingFuture.kt",
             "com/openai/core/ClientOptions.kt",
+            "com/openai/core/ClientOptionsView.kt",
             "com/openai/core/PrepareRequest.kt",
             "com/openai/core/Properties.kt",
             "com/openai/core/RequestOptions.kt",
             "com/openai/core/http/AuthenticatingHttpClient.kt",
             "com/openai/core/http/HttpClient.kt",
             "com/openai/core/http/LoggingHttpClient.kt",
+            "com/openai/core/http/PipelineRequestBody.kt",
             "com/openai/core/http/PhantomReachableClosingHttpClient.kt",
             "com/openai/core/http/RetryingHttpClient.kt",
+            "com/openai/core/http/RetryingHttpClientOrchestrator.kt",
             "com/openai/core/http/WorkloadIdentityHttpClient.kt",
         )
 

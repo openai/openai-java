@@ -15,6 +15,7 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.closeIfPipelineOwned
 import com.openai.core.http.json
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
@@ -67,7 +68,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun delete(params: FileDeleteParams, requestOptions: RequestOptions) {
         // delete /containers/{container_id}/files/{file_id}
-        withRawResponse().delete(params, requestOptions)
+        withRawResponse().delete(params, requestOptions).closeIfPipelineOwned()
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :

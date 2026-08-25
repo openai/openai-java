@@ -5,8 +5,10 @@ import com.openai.auth.SubjectTokenProvider
 import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
 import com.openai.azure.credential.AzureApiKeyCredential
+import com.openai.core.http.AuthenticatedHttpRequest
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAttemptAuthenticator
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
@@ -182,8 +184,11 @@ internal class ClientOptionsTest {
     @Test
     fun build_withFixedBearerAuthentication_satisfiesOnlyBearerAndSurvivesCloning() {
         val authenticator =
-            object : HttpRequestAuthenticator {
-                override fun authenticate(request: HttpRequest): HttpRequest = request
+            object : HttpRequestAttemptAuthenticator {
+                override fun authenticate(
+                    request: HttpRequest,
+                    timeout: java.time.Duration?,
+                ): AuthenticatedHttpRequest = AuthenticatedHttpRequest.create(request) {}
             }
         val clientOptions =
             ClientOptions.builder()
@@ -197,6 +202,8 @@ internal class ClientOptionsTest {
         assertThat(
                 clientOptions.securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
             )
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+        assertThat(clientOptions.securityHeaders(SecurityOptions.all()))
             .isEqualTo(com.openai.core.http.Headers.builder().build())
         val thrown =
             assertThrows<IllegalStateException> {

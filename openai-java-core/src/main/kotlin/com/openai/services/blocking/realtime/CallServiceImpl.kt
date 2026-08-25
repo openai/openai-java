@@ -13,6 +13,7 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.closeIfPipelineOwned
 import com.openai.core.http.encodeMultipartFields
 import com.openai.core.http.json
 import com.openai.core.http.multipartFormData
@@ -43,22 +44,22 @@ class CallServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun accept(params: CallAcceptParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/accept
-        withRawResponse().accept(params, requestOptions)
+        withRawResponse().accept(params, requestOptions).closeIfPipelineOwned()
     }
 
     override fun hangup(params: CallHangupParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/hangup
-        withRawResponse().hangup(params, requestOptions)
+        withRawResponse().hangup(params, requestOptions).closeIfPipelineOwned()
     }
 
     override fun refer(params: CallReferParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/refer
-        withRawResponse().refer(params, requestOptions)
+        withRawResponse().refer(params, requestOptions).closeIfPipelineOwned()
     }
 
     override fun reject(params: CallRejectParams, requestOptions: RequestOptions) {
         // post /realtime/calls/{call_id}/reject
-        withRawResponse().reject(params, requestOptions)
+        withRawResponse().reject(params, requestOptions).closeIfPipelineOwned()
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :

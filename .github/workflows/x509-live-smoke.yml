@@ -1,0 +1,69 @@
+name: X.509 live smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_x509:
+        description: Confirm the protected production X.509 smoke test
+        required: true
+        default: false
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: x509-live-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    if: >-
+      github.repository == 'openai/openai-java' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.run_x509
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # Configure this environment with an independent SDK-team required reviewer and no bypass.
+    environment: x509-live-smoke
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Run certificate-only production smoke
+        shell: bash
+        env:
+          OPENAI_X509_KEYSTORE_P12_BASE64: ${{ secrets.OPENAI_X509_KEYSTORE_P12_BASE64 }}
+          OPENAI_X509_KEYSTORE_PASSWORD: ${{ secrets.OPENAI_X509_KEYSTORE_PASSWORD }}
+          OPENAI_X509_CERTIFICATE_ALIAS: ${{ secrets.OPENAI_X509_CERTIFICATE_ALIAS }}
+          OPENAI_X509_IDENTITY_PROVIDER_ID: ${{ secrets.OPENAI_X509_IDENTITY_PROVIDER_ID }}
+          OPENAI_X509_SERVICE_ACCOUNT_ID: ${{ secrets.OPENAI_X509_SERVICE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          umask 077
+          for name in \
+            OPENAI_X509_KEYSTORE_P12_BASE64 \
+            OPENAI_X509_KEYSTORE_PASSWORD \
+            OPENAI_X509_CERTIFICATE_ALIAS \
+            OPENAI_X509_IDENTITY_PROVIDER_ID \
+            OPENAI_X509_SERVICE_ACCOUNT_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing required X.509 smoke-test configuration: $name" >&2
+              exit 1
+            fi
+          done
+          x509_tmp_dir="$(mktemp -d "$RUNNER_TEMP/openai-x509-live.XXXXXX")"
+          trap 'rm -rf -- "$x509_tmp_dir"' EXIT
+          export OPENAI_X509_KEYSTORE_PATH="$x509_tmp_dir/identity.p12"
+          printf '%s' "$OPENAI_X509_KEYSTORE_P12_BASE64" | base64 --decode > "$OPENAI_X509_KEYSTORE_PATH"
+          chmod 600 "$OPENAI_X509_KEYSTORE_PATH"
+          ./gradlew :openai-java-example:run -Pexample=X509WorkloadIdentity --no-daemon

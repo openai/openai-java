@@ -13,6 +13,7 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.closeIfPipelineOwned
 import com.openai.core.http.encodeMultipartFields
 import com.openai.core.http.json
 import com.openai.core.http.multipartFormData
@@ -51,28 +52,28 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/accept
-        withRawResponse().accept(params, requestOptions).thenAccept {}
+        withRawResponse().accept(params, requestOptions).thenAccept { it.closeIfPipelineOwned() }
 
     override fun hangup(
         params: CallHangupParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/hangup
-        withRawResponse().hangup(params, requestOptions).thenAccept {}
+        withRawResponse().hangup(params, requestOptions).thenAccept { it.closeIfPipelineOwned() }
 
     override fun refer(
         params: CallReferParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/refer
-        withRawResponse().refer(params, requestOptions).thenAccept {}
+        withRawResponse().refer(params, requestOptions).thenAccept { it.closeIfPipelineOwned() }
 
     override fun reject(
         params: CallRejectParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/reject
-        withRawResponse().reject(params, requestOptions).thenAccept {}
+        withRawResponse().reject(params, requestOptions).thenAccept { it.closeIfPipelineOwned() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CallServiceAsync.WithRawResponse {

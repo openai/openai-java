@@ -1,11 +1,16 @@
 package com.openai.core
 
+import com.openai.core.http.HttpRequestAttemptAuthenticator
 import com.openai.core.http.HttpRequestAuthenticator
+import com.openai.core.http.PhantomReachableClosingHttpRequestAttemptAuthenticator
 import com.openai.core.http.PhantomReachableClosingHttpRequestAuthenticator
 
 /** Authentication that is applied to the final HTTP request rather than represented by a key. */
 internal sealed interface RequestAuthentication {
     val authenticator: HttpRequestAuthenticator?
+
+    val attemptAuthenticator: HttpRequestAttemptAuthenticator?
+        get() = null
 
     val fixedBearerBaseUrl: String?
         get() = null
@@ -39,20 +44,21 @@ internal sealed interface RequestAuthentication {
     class FixedBearerInstalled
     private constructor(
         override val fixedBearerBaseUrl: String,
-        override val authenticator: HttpRequestAuthenticator,
+        override val attemptAuthenticator: HttpRequestAttemptAuthenticator,
     ) : RequestAuthentication {
 
-        override fun satisfies(security: SecurityOptions): Boolean =
-            security.bearerAuth && !security.adminApiKeyAuth
+        override val authenticator: HttpRequestAuthenticator? = null
+
+        override fun satisfies(security: SecurityOptions): Boolean = security.bearerAuth
 
         companion object {
             fun create(
                 fixedBearerBaseUrl: String,
-                authenticator: HttpRequestAuthenticator,
+                authenticator: HttpRequestAttemptAuthenticator,
             ): FixedBearerInstalled =
                 FixedBearerInstalled(
                     fixedBearerBaseUrl,
-                    PhantomReachableClosingHttpRequestAuthenticator(authenticator),
+                    PhantomReachableClosingHttpRequestAttemptAuthenticator(authenticator),
                 )
         }
     }

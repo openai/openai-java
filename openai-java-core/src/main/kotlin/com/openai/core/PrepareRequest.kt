@@ -5,6 +5,7 @@ package com.openai.core
 import com.openai.azure.addPathSegmentsForAzure
 import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.withPipelineOwnedBody
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.full.declaredFunctions
@@ -33,10 +34,16 @@ internal fun HttpRequest.prepareAsync(
     clientOptions: ClientOptions,
     params: Params,
     security: SecurityOptions = SecurityOptions.all(),
-): CompletableFuture<HttpRequest> =
+): CompletableFuture<HttpRequest> {
     // This async version exists to make it easier to add async specific preparation logic in the
     // future.
-    CompletableFuture.completedFuture(prepare(clientOptions, params, security))
+    val prepared = prepare(clientOptions, params, security)
+    return if (clientOptions.propagatesAsyncCancellation()) {
+        CancellationPropagatingFuture.completed(prepared.withPipelineOwnedBody())
+    } else {
+        CompletableFuture.completedFuture(prepared)
+    }
+}
 
 @JvmSynthetic
 internal fun Params.modelNameOrNull(): String? {

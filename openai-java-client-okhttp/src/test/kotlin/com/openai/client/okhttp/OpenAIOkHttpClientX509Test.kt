@@ -29,7 +29,7 @@ internal class OpenAIOkHttpClientX509Test {
                     .syncBuilder()
                     .putHeader("X-Application-Test", "api-only")
                     .build()
-                    .withOptions { options -> options.timeout(Duration.ofSeconds(5)) }
+                    .withOptions { options -> options.timeout(Duration.ofSeconds(30)) }
 
             try {
                 assertThat(client.files().list().data()).isEmpty()
@@ -58,6 +58,194 @@ internal class OpenAIOkHttpClientX509Test {
             }
 
             assertSuccessfulWireContract(fixture, expectedUserAgent = "OpenAIClientAsyncImpl/Java")
+        }
+    }
+
+    @Test
+    fun syncClientAsyncViewUsesAsyncUserAgentAndSharedLifecycle() {
+        Fixture().use { fixture ->
+            fixture.enqueueSuccess()
+            val client = fixture.syncBuilder().build().async()
+
+            try {
+                assertThat(client.files().list().get(10, TimeUnit.SECONDS).data()).isEmpty()
+            } finally {
+                client.close()
+            }
+
+            assertSuccessfulWireContract(fixture, expectedUserAgent = "OpenAIClientAsyncImpl/Java")
+        }
+    }
+
+    @Test
+    fun asyncClientSyncViewUsesSyncUserAgentAndSharedLifecycle() {
+        Fixture().use { fixture ->
+            fixture.enqueueSuccess()
+            val client = fixture.asyncBuilder().build().sync()
+
+            try {
+                assertThat(client.files().list().data()).isEmpty()
+            } finally {
+                client.close()
+            }
+
+            assertSuccessfulWireContract(fixture, expectedUserAgent = "OpenAIClientImpl/Java")
+        }
+    }
+
+    @Test
+    fun syncBuilderCanBuildIndependentClients() {
+        Fixture().use { fixture ->
+            fixture.enqueueSuccess()
+            fixture.enqueueSuccess()
+            val builder = fixture.syncBuilder()
+            val first = builder.build()
+            val second = builder.build()
+
+            assertThat(first).isNotSameAs(second)
+            try {
+                assertThat(first.files().list().data()).isEmpty()
+            } finally {
+                first.close()
+            }
+            try {
+                assertThat(second.files().list().data()).isEmpty()
+            } finally {
+                second.close()
+            }
+        }
+    }
+
+    @Test
+    fun asyncBuilderCanBuildIndependentClients() {
+        Fixture().use { fixture ->
+            fixture.enqueueSuccess()
+            fixture.enqueueSuccess()
+            val builder = fixture.asyncBuilder()
+            val first = builder.build()
+            val second = builder.build()
+
+            assertThat(first).isNotSameAs(second)
+            try {
+                assertThat(first.files().list().get(10, TimeUnit.SECONDS).data()).isEmpty()
+            } finally {
+                first.close()
+            }
+            try {
+                assertThat(second.files().list().get(10, TimeUnit.SECONDS).data()).isEmpty()
+            } finally {
+                second.close()
+            }
+        }
+    }
+
+    @Test
+    fun reusableBuilderDoesNotPersistDefaultUserAgent() {
+        Fixture().use { fixture ->
+            fixture.enqueueSuccess()
+            fixture.enqueueSuccess()
+            val builder = fixture.syncBuilder()
+            val first = builder.build()
+            val second = builder.putHeader("User-Agent", "caller-agent").build()
+
+            try {
+                assertThat(first.files().list().data()).isEmpty()
+            } finally {
+                first.close()
+            }
+            assertSuccessfulWireContract(fixture, expectedUserAgent = "OpenAIClientImpl/Java")
+
+            try {
+                assertThat(second.files().list().data()).isEmpty()
+            } finally {
+                second.close()
+            }
+            assertSuccessfulWireContract(fixture, expectedUserAgent = "caller-agent")
+        }
+    }
+
+    @Test
+    fun reusesCachedTokenAcrossSequentialApiRequests() {
+        Fixture().use { fixture ->
+            fixture.enqueueExchange(ACCESS_TOKEN, closeConnection = false)
+            fixture.enqueueApiSuccess(closeConnection = false)
+            fixture.apiPeer.server.enqueue(fixture.apiSuccess())
+            val client = fixture.syncBuilder().build()
+
+            try {
+                assertThat(client.files().list().data()).isEmpty()
+                assertThat(client.files().list().data()).isEmpty()
+            } finally {
+                client.close()
+            }
+
+            assertThat(fixture.authPeer.server.requestCount).isEqualTo(2)
+            fixture.authPeer.takeRequest()
+            fixture.authPeer.takeRequest()
+            fixture.apiPeer.takeRequest()
+            val apiRequests = listOf(fixture.apiPeer.takeRequest(), fixture.apiPeer.takeRequest())
+            assertThat(apiRequests.map { it.getHeader("Authorization") })
+                .containsExactly("Bearer $ACCESS_TOKEN", "Bearer $ACCESS_TOKEN")
+        }
+    }
+
+    @Test
+    fun unauthorizedResponseInvalidatesExactTokenAndReplaysOnceWithRetriesDisabled() {
+        Fixture().use { fixture ->
+            fixture.enqueueExchange("tokenone", closeConnection = false)
+            fixture.apiPeer.enqueue(MockResponse().setResponseCode(401))
+            fixture.authPeer.server.enqueue(fixture.exchangeResponse("tokentwo"))
+            fixture.apiPeer.server.enqueue(fixture.apiSuccess())
+            val client = fixture.asyncBuilder().maxRetries(0).build()
+
+            try {
+                assertThat(client.files().list().get(10, TimeUnit.SECONDS).data()).isEmpty()
+            } finally {
+                client.close()
+            }
+
+            fixture.authPeer.takeRequest()
+            val exchangeRequests = List(2) { fixture.authPeer.takeRequest() }
+            fixture.apiPeer.takeRequest()
+            val apiRequests = List(2) { fixture.apiPeer.takeRequest() }
+            assertThat(exchangeRequests).allMatch { it.path == "/oauth/token" }
+            assertThat(apiRequests.map { it.getHeader("Authorization") })
+                .containsExactly("Bearer tokenone", "Bearer tokentwo")
+            assertThat(apiRequests.map { it.getHeader("X-Stainless-Retry-Count") })
+                .containsExactly("0", "0")
+        }
+    }
+
+    @Test
+    fun transientFailuresBeforeAndAfterUnauthorizedShareRetryBudget() {
+        Fixture().use { fixture ->
+            fixture.enqueueExchange("tokenone", closeConnection = false)
+            fixture.apiPeer.enqueue(fixture.apiFailure(500))
+            fixture.apiPeer.server.enqueue(MockResponse().setResponseCode(401))
+            fixture.authPeer.server.enqueue(fixture.exchangeResponse("tokentwo"))
+            fixture.apiPeer.server.enqueue(fixture.apiFailure(500))
+            fixture.apiPeer.server.enqueue(fixture.apiFailure(500))
+            val client = fixture.syncBuilder().maxRetries(2).sleeper(NoDelaySleeper).build()
+
+            try {
+                assertThatThrownBy { client.files().list() }
+                    .isInstanceOf(RuntimeException::class.java)
+            } finally {
+                client.close()
+            }
+
+            fixture.apiPeer.takeRequest()
+            val apiRequests = List(4) { fixture.apiPeer.takeRequest() }
+            assertThat(apiRequests.map { it.getHeader("Authorization") })
+                .containsExactly(
+                    "Bearer tokenone",
+                    "Bearer tokenone",
+                    "Bearer tokentwo",
+                    "Bearer tokentwo",
+                )
+            assertThat(apiRequests.map { it.getHeader("X-Stainless-Retry-Count") })
+                .containsExactly("0", "1", "1", "2")
+            assertThat(fixture.apiPeer.server.requestCount).isEqualTo(5)
         }
     }
 
@@ -241,6 +429,26 @@ internal class OpenAIOkHttpClientX509Test {
     }
 
     @Test
+    fun cancellingPublicAsyncFutureCancelsBlockedExchange() {
+        Fixture().use { fixture ->
+            fixture.authPeer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+            val client = fixture.asyncBuilder().timeout(Duration.ofSeconds(30)).build()
+            val cancelled = client.files().list()
+
+            assertConnectAuthority(fixture.authPeer.takeRequest(), AUTH_AUTHORITY)
+            assertThat(fixture.authPeer.takeRequest().path).isEqualTo("/oauth/token")
+            cancelled.cancel(true)
+
+            try {
+                assertThat(cancelled.isCancelled).isTrue()
+                assertThat(fixture.apiPeer.server.requestCount).isZero()
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
     fun closingSyncClientCancelsBlockedExchangeBeforeApiDispatch() {
         Fixture().use { fixture ->
             fixture.authPeer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
@@ -377,6 +585,41 @@ internal class OpenAIOkHttpClientX509Test {
             )
         }
 
+        fun enqueueExchange(token: String, closeConnection: Boolean = true) {
+            authPeer.enqueue(
+                exchangeResponse(token).apply {
+                    if (closeConnection) setHeader("Connection", "close")
+                }
+            )
+        }
+
+        fun exchangeResponse(token: String): MockResponse =
+            MockResponse()
+                .setHeader("Content-Type", "application/json")
+                .setBody(tokenResponse(token))
+
+        fun enqueueApiSuccess(closeConnection: Boolean = true) {
+            val response = apiSuccess()
+            if (closeConnection) enqueueApi(response)
+            else apiPeer.enqueue(response.removeHeader("Connection"))
+        }
+
+        fun enqueueApi(response: MockResponse) {
+            apiPeer.enqueue(response.setHeader("Connection", "close"))
+        }
+
+        fun apiSuccess(): MockResponse =
+            MockResponse()
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Connection", "close")
+                .setBody(FILES_RESPONSE)
+
+        fun apiFailure(status: Int): MockResponse =
+            MockResponse()
+                .setResponseCode(status)
+                .setHeader("Content-Type", "application/json")
+                .setBody("""{"error":{"message":"test","type":"server_error"}}""")
+
         override fun close() {
             apiPeer.use { authPeer.close() }
         }
@@ -411,5 +654,16 @@ internal class OpenAIOkHttpClientX509Test {
             }
             """
                 .trimIndent()
+
+        fun tokenResponse(token: String): String = TOKEN_RESPONSE.replace(ACCESS_TOKEN, token)
+
+        private object NoDelaySleeper : com.openai.core.Sleeper {
+            override fun sleep(duration: Duration) {}
+
+            override fun sleepAsync(duration: Duration) =
+                java.util.concurrent.CompletableFuture.completedFuture<Void>(null)
+
+            override fun close() {}
+        }
     }
 }
