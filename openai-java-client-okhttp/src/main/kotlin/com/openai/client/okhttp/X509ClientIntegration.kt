@@ -12,7 +12,11 @@ import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import com.openai.errors.UnexpectedStatusCodeException
 import java.io.IOException
+import java.security.cert.CertPathBuilderException
+import java.security.cert.CertPathValidatorException
+import java.security.cert.CertificateException
 import java.time.Duration
+import java.util.IdentityHashMap
 import java.util.Locale
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
@@ -23,6 +27,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
+import javax.net.ssl.SSLException
 
 internal const val X509_API_BASE_URL = "https://mtls.api.openai.com/v1"
 
@@ -30,6 +35,7 @@ internal class X509ClientConfiguration
 private constructor(
     private val identity: X509WorkloadIdentity,
     private val bindTransport: (Timeout) -> BoundX509Transport,
+    private val authenticatorNanoTime: () -> Long,
     private val installTransport:
         (ClientOptions.Builder, OkHttpClient, HttpRequestAttemptAuthenticator) -> ClientOptions,
 ) {
@@ -39,9 +45,12 @@ private constructor(
             identity: X509WorkloadIdentity,
             bindTransport: (Timeout) -> BoundX509Transport,
         ) =
-            X509ClientConfiguration(identity, bindTransport) { options, client, authenticator ->
-                options.buildWithFixedBearerTransport(client, authenticator)
-            }
+            X509ClientConfiguration(
+                identity,
+                bindTransport,
+                System::nanoTime,
+                ClientOptions.Builder::buildWithFixedBearerTransport,
+            )
 
         @JvmSynthetic
         internal fun createForTest(
@@ -51,7 +60,20 @@ private constructor(
                 (
                     ClientOptions.Builder, OkHttpClient, HttpRequestAttemptAuthenticator,
                 ) -> ClientOptions,
-        ) = X509ClientConfiguration(identity, bindTransport, installTransport)
+        ) = X509ClientConfiguration(identity, bindTransport, System::nanoTime, installTransport)
+
+        @JvmSynthetic
+        internal fun createWithNanoTimeForTest(
+            identity: X509WorkloadIdentity,
+            bindTransport: (Timeout) -> BoundX509Transport,
+            nanoTime: () -> Long,
+        ) =
+            X509ClientConfiguration(
+                identity,
+                bindTransport,
+                nanoTime,
+                ClientOptions.Builder::buildWithFixedBearerTransport,
+            )
     }
 
     @JvmSynthetic
@@ -64,7 +86,7 @@ private constructor(
         val transport = bindTransport(clientOptions.timeout())
         val authenticator =
             try {
-                X509AttemptAuthenticator(identity, transport.exchangeClient)
+                X509AttemptAuthenticator(identity, transport.exchangeClient, authenticatorNanoTime)
             } catch (error: Throwable) {
                 closeAfterFailure(error, transport::close)
                 throw error
@@ -100,10 +122,11 @@ private class X509AttemptAuthenticator(
     constructor(
         identity: X509WorkloadIdentity,
         exchangeClient: OkHttpClient,
+        nanoTime: () -> Long = System::nanoTime,
     ) : this(
         X509TokenExchange(identity, exchangeClient)::executeAsync,
         exchangeClient::close,
-        System::nanoTime,
+        nanoTime,
         {},
         {},
         {},
@@ -541,8 +564,9 @@ private class X509AttemptAuthenticator(
         fun unchecked(error: Throwable): RuntimeException =
             unwrap(error).let { if (it is RuntimeException) it else OpenAIIoException(cause = it) }
 
-        fun isTransient(error: Throwable?): Boolean =
-            when (val cause = unwrap(error)) {
+        fun isTransient(error: Throwable?): Boolean {
+            if (hasPermanentTlsFailure(error)) return false
+            return when (val cause = unwrap(error)) {
                 is IOException,
                 is OpenAIIoException,
                 is OpenAIRetryableException -> true
@@ -555,6 +579,24 @@ private class X509AttemptAuthenticator(
                     }
                 else -> false
             }
+        }
+
+        fun hasPermanentTlsFailure(error: Throwable?): Boolean {
+            val seen = IdentityHashMap<Throwable, Unit>()
+            var cause = error
+            while (cause != null && seen.put(cause, Unit) == null) {
+                if (
+                    cause is SSLException ||
+                        cause is CertificateException ||
+                        cause is CertPathBuilderException ||
+                        cause is CertPathValidatorException
+                ) {
+                    return true
+                }
+                cause = cause.cause
+            }
+            return false
+        }
 
         val FORBIDDEN_HEADERS =
             setOf(

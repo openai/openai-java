@@ -78,12 +78,13 @@ internal class X509TestPeer(val authority: String, trustedClientRoot: X509Certif
             init(arrayOf(serverIdentity.keyManager), arrayOf(recordingTrustManager), SecureRandom())
         }
 
-    val server =
+    var server =
         MockWebServer().apply {
             useHttps(sslContext.socketFactory, true)
             requireClientAuth()
             start()
         }
+        private set
 
     val proxy: Proxy
         get() = server.toProxyAddress()
@@ -103,6 +104,38 @@ internal class X509TestPeer(val authority: String, trustedClientRoot: X509Certif
         requireNotNull(server.takeRequest(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
             "No request received by $authority within $timeout"
         }
+
+    fun replaceWithUntrustedCertificate() {
+        val port = server.port
+        server.close()
+        val untrustedRoot =
+            HeldCertificate.Builder()
+                .commonName("$authority untrusted root")
+                .certificateAuthority(1)
+                .build()
+        val untrustedLeaf =
+            HeldCertificate.Builder()
+                .commonName(authority)
+                .addSubjectAlternativeName(authority)
+                .signedBy(untrustedRoot)
+                .build()
+        val untrustedIdentity =
+            HandshakeCertificates.Builder().heldCertificate(untrustedLeaf).build()
+        val untrustedContext =
+            SSLContext.getInstance("TLS").apply {
+                init(
+                    arrayOf(untrustedIdentity.keyManager),
+                    arrayOf(recordingTrustManager),
+                    SecureRandom(),
+                )
+            }
+        server =
+            MockWebServer().apply {
+                useHttps(untrustedContext.socketFactory, true)
+                requireClientAuth()
+                start(port)
+            }
+    }
 
     override fun close() {
         server.close()
