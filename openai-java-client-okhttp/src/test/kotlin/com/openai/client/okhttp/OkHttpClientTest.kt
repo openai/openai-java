@@ -8,6 +8,7 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
+import com.openai.errors.OpenAIIoException
 import java.io.ByteArrayInputStream
 import java.io.OutputStream
 import java.util.concurrent.CompletableFuture
@@ -83,6 +84,27 @@ internal class OkHttpClientTest {
     }
 
     @Test
+    fun execute_transportFailureSuppressesRequestBodyCloseFailure() {
+        val server = MockWebServer()
+        val closeFailure = IllegalStateException("request body close failed")
+        val body = CountingRequestBody(closeFailure)
+        try {
+            server.start()
+            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+            val failure =
+                runCatching { httpClient.execute(request(body, server.url("/").toString())) }
+                    .exceptionOrNull()
+
+            assertThat(failure).isInstanceOf(OpenAIIoException::class.java)
+            assertThat(failure!!.suppressed).containsExactly(closeFailure)
+            assertThat(body.closes).isEqualTo(1)
+        } finally {
+            server.close()
+        }
+    }
+
+    @Test
     fun completeOrCloseResponse_whenCancellationWins_closesTheDroppedResponse() {
         val future = CompletableFuture<HttpResponse>()
         val response = TrackingHttpResponse()
@@ -153,10 +175,10 @@ internal class OkHttpClientTest {
         }
     }
 
-    private fun request(body: HttpRequestBody): HttpRequest =
+    private fun request(body: HttpRequestBody, requestBaseUrl: String = baseUrl): HttpRequest =
         HttpRequest.builder()
             .method(HttpMethod.POST)
-            .baseUrl(baseUrl)
+            .baseUrl(requestBaseUrl)
             .addPathSegment("something")
             .body(body)
             .build()

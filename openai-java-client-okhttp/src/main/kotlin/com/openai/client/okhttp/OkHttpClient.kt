@@ -50,12 +50,23 @@ private constructor(
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
+        var failure: Throwable? = null
         return try {
             call.execute().toHttpResponse()
         } catch (e: IOException) {
-            throw OpenAIIoException("Request failed", e)
+            val ioFailure = OpenAIIoException("Request failed", e)
+            failure = ioFailure
+            throw ioFailure
+        } catch (t: Throwable) {
+            failure = t
+            throw t
         } finally {
-            request.body?.close()
+            val primaryFailure = failure
+            if (primaryFailure == null) {
+                request.body?.close()
+            } else {
+                request.body.closeSuppressing(primaryFailure)
+            }
         }
     }
 
