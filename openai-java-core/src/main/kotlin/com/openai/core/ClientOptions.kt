@@ -11,10 +11,10 @@ import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.AuthenticatingHttpClient
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequestAttemptAuthenticator
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
-import com.openai.core.http.PhantomReachableClosingHttpRequestAuthenticator
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
 import com.openai.core.http.WorkloadIdentityHttpClient
@@ -43,7 +43,7 @@ private constructor(
      * This class takes ownership of the client and closes it when closed.
      */
     @get:JvmName("httpClient") val httpClient: HttpClient,
-    private val httpRequestAuthenticator: HttpRequestAuthenticator?,
+    private val requestAuthentication: RequestAuthentication,
     /**
      * Whether to throw an exception if any of the Jackson versions detected at runtime are
      * incompatible with the SDK's minimum supported Jackson version (2.13.4).
@@ -155,6 +155,10 @@ private constructor(
      */
     fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
 
+    @JvmSynthetic
+    internal fun propagatesAsyncCancellation(): Boolean =
+        requestAuthentication.attemptAuthenticator != null
+
     fun apiKey(): Optional<String> = Optional.ofNullable(apiKey)
 
     fun adminApiKey(): Optional<String> = Optional.ofNullable(adminApiKey)
@@ -194,7 +198,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
-        private var httpRequestAuthenticator: HttpRequestAuthenticator? = null
+        private var requestAuthentication: RequestAuthentication = RequestAuthentication.None
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
@@ -221,11 +225,12 @@ private constructor(
         private var project: String? = null
         private var webhookSecret: String? = null
         private var workloadIdentity: WorkloadIdentity? = null
+        private var sharedHttpPipeline: HttpClient? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
-            httpRequestAuthenticator = clientOptions.httpRequestAuthenticator
+            requestAuthentication = clientOptions.requestAuthentication
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
@@ -256,6 +261,11 @@ private constructor(
             webhookSecret = clientOptions.webhookSecret
         }
 
+        @JvmSynthetic
+        internal fun shareHttpPipeline(httpClient: HttpClient) = apply {
+            sharedHttpPipeline = httpClient
+        }
+
         /**
          * The HTTP client to use in the SDK.
          *
@@ -264,6 +274,7 @@ private constructor(
          * This class takes ownership of the client and closes it when closed.
          */
         fun httpClient(httpClient: HttpClient) = apply {
+            requireNoFixedBearerAuthentication("httpClient")
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
         }
 
@@ -275,9 +286,62 @@ private constructor(
          */
         @JvmSynthetic
         fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator?) = apply {
-            this.httpRequestAuthenticator =
-                if (httpRequestAuthenticator == null) null
-                else PhantomReachableClosingHttpRequestAuthenticator(httpRequestAuthenticator)
+            requireNoFixedBearerAuthentication("httpRequestAuthenticator")
+            requestAuthentication =
+                httpRequestAuthenticator?.let(RequestAuthentication.Provider::create)
+                    ?: RequestAuthentication.None
+        }
+
+        /** Reserves a fixed-origin, bearer-only authentication mode for an SDK integration. */
+        @JvmSynthetic
+        fun fixedBearerAuthentication(fixedBaseUrl: String) = apply {
+            require(requestAuthentication === RequestAuthentication.None) {
+                "Fixed bearer authentication is already set"
+            }
+            require(
+                httpClient == null &&
+                    baseUrl == null &&
+                    !dataResidencySelected &&
+                    credential == null &&
+                    adminApiKey.isNullOrEmpty() &&
+                    workloadIdentity == null &&
+                    azureServiceVersion == null &&
+                    azureUrlPathMode == AzureUrlPathMode.AUTO &&
+                    organization == null &&
+                    project == null
+            ) {
+                "Fixed bearer authentication cannot be combined with existing client, endpoint, credential, provider, organization, or project configuration"
+            }
+            require(fixedBaseUrl.isNotBlank()) { "fixedBaseUrl must not be blank" }
+            requestAuthentication = RequestAuthentication.FixedBearerReserved(fixedBaseUrl)
+            baseUrl = fixedBaseUrl
+            explicitBaseUrl = true
+        }
+
+        /**
+         * Builds with a scoped transport owned by a previously reserved fixed-bearer integration.
+         */
+        @JvmSynthetic
+        fun buildWithFixedBearerTransport(
+            httpClient: HttpClient,
+            httpRequestAuthenticator: HttpRequestAttemptAuthenticator,
+        ): ClientOptions {
+            val originalAuthentication = requestAuthentication
+            val reserved = originalAuthentication as? RequestAuthentication.FixedBearerReserved
+            checkNotNull(reserved) { "Fixed bearer authentication must be set first" }
+            val originalHttpClient = this.httpClient
+            return try {
+                this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+                requestAuthentication =
+                    RequestAuthentication.FixedBearerInstalled.create(
+                        reserved.fixedBearerBaseUrl,
+                        httpRequestAuthenticator,
+                    )
+                build()
+            } finally {
+                this.httpClient = originalHttpClient
+                requestAuthentication = originalAuthentication
+            }
         }
 
         /**
@@ -339,6 +403,7 @@ private constructor(
          * Defaults to the production environment: `https://api.openai.com/v1`.
          */
         fun baseUrl(baseUrl: String?) = apply {
+            requireNoFixedBearerAuthentication("baseUrl")
             require(!explicitDataResidency) { "baseUrl and dataResidency are mutually exclusive" }
             this.baseUrl = baseUrl
             dataResidencySelected = false
@@ -356,6 +421,7 @@ private constructor(
          * leaves the endpoint unchanged. Availability is determined by the API.
          */
         fun dataResidency(dataResidency: DataResidency?) = apply {
+            requireNoFixedBearerAuthentication("dataResidency")
             if (dataResidency != null) {
                 require(!explicitBaseUrl) { "baseUrl and dataResidency are mutually exclusive" }
                 baseUrl = dataResidency.baseUrl
@@ -425,6 +491,7 @@ private constructor(
         fun logLevel(logLevel: LogLevel) = apply { this.logLevel = logLevel }
 
         fun apiKey(apiKey: String?) = apply {
+            requireNoFixedBearerAuthentication("apiKey")
             this.apiKey = apiKey
             this.credential = apiKey?.let { BearerTokenCredential.create(it) }
         }
@@ -432,30 +499,42 @@ private constructor(
         /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
         fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
 
-        fun adminApiKey(adminApiKey: String?) = apply { this.adminApiKey = adminApiKey }
+        fun adminApiKey(adminApiKey: String?) = apply {
+            requireNoFixedBearerAuthentication("adminApiKey")
+            this.adminApiKey = adminApiKey
+        }
 
         /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
         fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
 
         fun credential(credential: Credential) = apply {
+            requireNoFixedBearerAuthentication("credential")
             this.apiKey = null
             this.credential = credential
         }
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
+            requireNoFixedBearerAuthentication("azureServiceVersion")
             this.azureServiceVersion = azureServiceVersion
         }
 
         fun azureUrlPathMode(azureUrlPathMode: AzureUrlPathMode) = apply {
+            requireNoFixedBearerAuthentication("azureUrlPathMode")
             this.azureUrlPathMode = azureUrlPathMode
         }
 
-        fun organization(organization: String?) = apply { this.organization = organization }
+        fun organization(organization: String?) = apply {
+            requireNoFixedBearerAuthentication("organization")
+            this.organization = organization
+        }
 
         /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
         fun organization(organization: Optional<String>) = organization(organization.getOrNull())
 
-        fun project(project: String?) = apply { this.project = project }
+        fun project(project: String?) = apply {
+            requireNoFixedBearerAuthentication("project")
+            this.project = project
+        }
 
         /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
@@ -467,6 +546,7 @@ private constructor(
             webhookSecret(webhookSecret.getOrNull())
 
         fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
+            requireNoFixedBearerAuthentication("workloadIdentity")
             this.workloadIdentity = workloadIdentity
         }
 
@@ -556,11 +636,30 @@ private constructor(
 
         fun timeout(): Timeout = timeout
 
+        private fun requireNoFixedBearerAuthentication(option: String) {
+            require(requestAuthentication.fixedBearerBaseUrl == null) {
+                "$option cannot be configured with fixed bearer authentication"
+            }
+        }
+
         private fun effectiveCredential(
             httpClient: HttpClient,
             jsonMapper: JsonMapper,
         ): Credential {
-            if (httpRequestAuthenticator != null) {
+            if (requestAuthentication is RequestAuthentication.FixedBearerReserved) {
+                throw IllegalStateException(
+                    "Fixed bearer authentication transport is not configured"
+                )
+            }
+            if (requestAuthentication is RequestAuthentication.FixedBearerInstalled) {
+                check(
+                    credential == null && workloadIdentity == null && adminApiKey.isNullOrEmpty()
+                ) {
+                    "Fixed bearer authentication cannot be combined with other credentials"
+                }
+                return HttpRequestAuthenticatorCredential
+            }
+            if (requestAuthentication is RequestAuthentication.Provider) {
                 if (
                     credential != null || workloadIdentity != null || !adminApiKey.isNullOrEmpty()
                 ) {
@@ -615,6 +714,7 @@ private constructor(
          * System properties take precedence over environment variables.
          */
         fun fromEnv() = apply {
+            requireNoFixedBearerAuthentication("fromEnv")
             logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
                 if (!dataResidencySelected) {
@@ -679,9 +779,15 @@ private constructor(
          */
         fun build(): ClientOptions {
             require(
+                requestAuthentication.fixedBearerBaseUrl == null ||
+                    baseUrl == requestAuthentication.fixedBearerBaseUrl
+            ) {
+                "Fixed bearer authentication base URL cannot be changed"
+            }
+            require(
                 !dataResidencySelected ||
                     (!inheritedAzureEndpoint &&
-                        httpRequestAuthenticator == null &&
+                        requestAuthentication === RequestAuthentication.None &&
                         credential !is AzureApiKeyCredential &&
                         azureServiceVersion == null &&
                         azureUrlPathMode == AzureUrlPathMode.AUTO)
@@ -749,41 +855,49 @@ private constructor(
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
 
-            val loggingDelegate =
-                if (httpRequestAuthenticator != null) httpClient
-                else
-                    WorkloadIdentityHttpClient(
-                        delegate = httpClient,
-                        workloadIdentityAuth = effectiveWorkloadIdentityAuth,
-                    )
-
-            val loggingHttpClient =
-                LoggingHttpClient.builder()
-                    .httpClient(loggingDelegate)
-                    .clock(clock)
-                    .level(logLevel)
-                    .build()
-
-            val perAttemptHttpClient =
-                httpRequestAuthenticator?.let { authenticator ->
-                    AuthenticatingHttpClient(
-                        delegate = loggingHttpClient,
-                        authenticator = authenticator,
-                    )
-                } ?: loggingHttpClient
-
             val wrappedHttpClient =
-                RetryingHttpClient.builder()
-                    .httpClient(perAttemptHttpClient)
-                    .sleeper(sleeper)
-                    .clock(clock)
-                    .maxRetries(maxRetries)
-                    .build()
+                sharedHttpPipeline
+                    ?: run {
+                        val loggingDelegate =
+                            if (
+                                requestAuthentication.authenticator != null ||
+                                    requestAuthentication.attemptAuthenticator != null
+                            )
+                                httpClient
+                            else
+                                WorkloadIdentityHttpClient(
+                                    delegate = httpClient,
+                                    workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                                )
+                        val loggingHttpClient =
+                            LoggingHttpClient.builder()
+                                .httpClient(loggingDelegate)
+                                .clock(clock)
+                                .level(logLevel)
+                                .propagateAsyncCancellation(
+                                    requestAuthentication.attemptAuthenticator != null
+                                )
+                                .build()
+                        val perAttemptHttpClient =
+                            requestAuthentication.authenticator?.let { authenticator ->
+                                AuthenticatingHttpClient(
+                                    delegate = loggingHttpClient,
+                                    authenticator = authenticator,
+                                )
+                            } ?: loggingHttpClient
+                        RetryingHttpClient.builder()
+                            .httpClient(perAttemptHttpClient)
+                            .sleeper(sleeper)
+                            .clock(clock)
+                            .maxRetries(maxRetries)
+                            .attemptAuthenticator(requestAuthentication.attemptAuthenticator)
+                            .build()
+                    }
 
             return ClientOptions(
                 httpClient,
                 wrappedHttpClient,
-                httpRequestAuthenticator,
+                requestAuthentication,
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor,
@@ -828,9 +942,7 @@ private constructor(
     @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {
         val headers = Headers.builder()
-        var isSatisfied =
-            credential === HttpRequestAuthenticatorCredential &&
-                (security.bearerAuth || security.adminApiKeyAuth)
+        var isSatisfied = requestAuthentication.satisfies(security)
 
         if (security.bearerAuth) {
             when {
@@ -846,9 +958,6 @@ private constructor(
                     isSatisfied = true
                 }
                 credential is WorkloadIdentityCredential -> {
-                    isSatisfied = true
-                }
-                credential === HttpRequestAuthenticatorCredential -> {
                     isSatisfied = true
                 }
             }

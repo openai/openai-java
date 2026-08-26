@@ -20,6 +20,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
+import com.openai.core.http.closeIfPipelineOwned
 import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
@@ -105,7 +106,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // delete /responses/{response_id}
-        withRawResponse().delete(params, requestOptions).thenAccept {}
+        withRawResponse().delete(params, requestOptions).thenAccept { it.closeIfPipelineOwned() }
 
     override fun cancel(
         params: ResponseCancelParams,

@@ -203,6 +203,45 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+#### X.509 workload identity federation (preview)
+
+X.509 workload identity exchanges a client certificate for a short-lived bearer token and then
+presents the same certificate to the OpenAI mTLS API. It does not use an API key:
+
+```java
+X509WorkloadIdentity identity = X509WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .build();
+
+X509Transport transport = X509Transport.builder()
+    .keyManager(keyManager)
+    .certificateAlias("workload-certificate")
+    .trustManager(trustManager)
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.x509Builder(identity, transport).build();
+```
+
+`keyManager` must contain the private key and certificate chain for the selected alias;
+`trustManager` verifies OpenAI's servers. See
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java)
+for a complete PKCS#12 example.
+
+This mode deliberately fixes both network destinations: token exchange goes directly to
+`https://mtls.auth.openai.com/oauth/token`, and API requests go directly to
+`https://mtls.api.openai.com/v1`. It rejects API keys, admin keys, `fromEnv()`, custom base URLs,
+organization/project headers, proxies, redirects, and custom transports. A client owns one
+generation-scoped token cache; concurrent requests share exchanges, and transient exchange and API
+failures share one retry budget and total deadline. Separately, one `401` can invalidate the exact
+rejected token and replay a repeatable request once.
+
+The bearer token is not cryptographically certificate-bound unless the service includes and
+enforces a confirmation (`cnf`) claim. Treat the token as a credential: never log it, and do not
+forward it outside the fixed mTLS client. To rotate a certificate, build a new key manager,
+transport, and client, atomically direct new work to that client, then drain and close the old
+client. Mutating a key store behind a live client is unsupported.
+
 #### Kubernetes service account token provider
 
 ```java

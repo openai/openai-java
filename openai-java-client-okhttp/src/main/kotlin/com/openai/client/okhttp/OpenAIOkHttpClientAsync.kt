@@ -2,6 +2,7 @@ package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.auth.WorkloadIdentity
+import com.openai.auth.X509WorkloadIdentity
 import com.openai.azure.AzureOpenAIServiceVersion
 import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClientAsync
@@ -41,6 +42,30 @@ class OpenAIOkHttpClientAsync private constructor() {
         @JvmStatic fun builder() = Builder()
 
         /**
+         * Preview: returns a builder for direct-only X.509 workload identity federation.
+         *
+         * The token issuer and API base URL are fixed OpenAI mTLS endpoints. Each built client owns
+         * a newly bound session from [transport] and presents its fixed certificate alias on both
+         * network legs.
+         */
+        @JvmStatic
+        fun x509Builder(identity: X509WorkloadIdentity, transport: X509Transport) =
+            Builder.x509(X509ClientConfiguration.create(identity, transport::bind))
+
+        @JvmSynthetic
+        internal fun x509BuilderForTest(
+            identity: X509WorkloadIdentity,
+            transport: X509Transport,
+            exchangeProxy: Proxy,
+            apiProxy: Proxy,
+        ) =
+            Builder.x509(
+                X509ClientConfiguration.create(identity) { timeout ->
+                    transport.bindForTest(timeout, exchangeProxy, apiProxy)
+                }
+            )
+
+        /**
          * Returns a client configured using system properties and environment variables.
          *
          * @see ClientOptions.Builder.fromEnv
@@ -51,7 +76,13 @@ class OpenAIOkHttpClientAsync private constructor() {
     /** A builder for [OpenAIOkHttpClientAsync]. */
     class Builder internal constructor() {
 
+        companion object {
+            @JvmSynthetic
+            internal fun x509(configuration: X509ClientConfiguration) = Builder(configuration)
+        }
+
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
+        private var x509Configuration: X509ClientConfiguration? = null
         private var dispatcherExecutorService: ExecutorService? = null
         private var followRedirects: Boolean = true
         private var proxy: Proxy? = null
@@ -62,6 +93,11 @@ class OpenAIOkHttpClientAsync private constructor() {
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
 
+        private constructor(x509Configuration: X509ClientConfiguration) : this() {
+            this.x509Configuration = x509Configuration
+            x509Configuration.reserve(clientOptions)
+        }
+
         /**
          * The executor service to use for running HTTP requests.
          *
@@ -71,6 +107,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * This class takes ownership of the executor service and shuts it down when closed.
          */
         fun dispatcherExecutorService(dispatcherExecutorService: ExecutorService?) = apply {
+            requireGenericTransport("dispatcherExecutorService")
             this.dispatcherExecutorService = dispatcherExecutorService
         }
 
@@ -80,6 +117,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * Defaults to true.
          */
         fun followRedirects(followRedirects: Boolean) = apply {
+            requireGenericTransport("followRedirects")
             this.followRedirects = followRedirects
         }
 
@@ -90,7 +128,10 @@ class OpenAIOkHttpClientAsync private constructor() {
         fun dispatcherExecutorService(dispatcherExecutorService: Optional<ExecutorService>) =
             dispatcherExecutorService(dispatcherExecutorService.getOrNull())
 
-        fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
+        fun proxy(proxy: Proxy?) = apply {
+            requireGenericTransport("proxy")
+            this.proxy = proxy
+        }
 
         /** Alias for calling [Builder.proxy] with `proxy.orElse(null)`. */
         fun proxy(proxy: Optional<Proxy>) = proxy(proxy.getOrNull())
@@ -100,6 +141,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * Required`.
          */
         fun proxyAuthenticator(proxyAuthenticator: ProxyAuthenticator?) = apply {
+            requireGenericTransport("proxyAuthenticator")
             this.proxyAuthenticator = proxyAuthenticator
         }
 
@@ -117,6 +159,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * If unset, then OkHttp's default is used.
          */
         fun maxIdleConnections(maxIdleConnections: Int?) = apply {
+            requireGenericTransport("maxIdleConnections")
             this.maxIdleConnections = maxIdleConnections
         }
 
@@ -142,6 +185,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * If unset, then OkHttp's default is used.
          */
         fun keepAliveDuration(keepAliveDuration: Duration?) = apply {
+            requireGenericTransport("keepAliveDuration")
             this.keepAliveDuration = keepAliveDuration
         }
 
@@ -159,6 +203,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * lost if the implementation is modified.
          */
         fun sslSocketFactory(sslSocketFactory: SSLSocketFactory?) = apply {
+            requireGenericTransport("sslSocketFactory")
             this.sslSocketFactory = sslSocketFactory
         }
 
@@ -176,6 +221,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * lost if the implementation is modified.
          */
         fun trustManager(trustManager: X509TrustManager?) = apply {
+            requireGenericTransport("trustManager")
             this.trustManager = trustManager
         }
 
@@ -190,6 +236,7 @@ class OpenAIOkHttpClientAsync private constructor() {
          * If unset, then a default hostname verifier is used.
          */
         fun hostnameVerifier(hostnameVerifier: HostnameVerifier?) = apply {
+            requireGenericTransport("hostnameVerifier")
             this.hostnameVerifier = hostnameVerifier
         }
 
@@ -472,22 +519,29 @@ class OpenAIOkHttpClientAsync private constructor() {
          */
         fun build(): OpenAIClientAsync =
             OpenAIClientAsyncImpl(
-                clientOptions
-                    .httpClient(
-                        OkHttpClient.builder()
-                            .timeout(clientOptions.timeout())
-                            .followRedirects(followRedirects)
-                            .proxy(proxy)
-                            .proxyAuthenticator(proxyAuthenticator)
-                            .maxIdleConnections(maxIdleConnections)
-                            .keepAliveDuration(keepAliveDuration)
-                            .dispatcherExecutorService(dispatcherExecutorService)
-                            .sslSocketFactory(sslSocketFactory)
-                            .trustManager(trustManager)
-                            .hostnameVerifier(hostnameVerifier)
-                            .build()
-                    )
-                    .build()
+                x509Configuration?.buildClientOptions(clientOptions)
+                    ?: clientOptions
+                        .httpClient(
+                            OkHttpClient.builder()
+                                .timeout(clientOptions.timeout())
+                                .followRedirects(followRedirects)
+                                .proxy(proxy)
+                                .proxyAuthenticator(proxyAuthenticator)
+                                .maxIdleConnections(maxIdleConnections)
+                                .keepAliveDuration(keepAliveDuration)
+                                .dispatcherExecutorService(dispatcherExecutorService)
+                                .sslSocketFactory(sslSocketFactory)
+                                .trustManager(trustManager)
+                                .hostnameVerifier(hostnameVerifier)
+                                .build()
+                        )
+                        .build()
             )
+
+        private fun requireGenericTransport(option: String) {
+            require(x509Configuration == null) {
+                "$option cannot be configured on an X.509 client builder"
+            }
+        }
     }
 }

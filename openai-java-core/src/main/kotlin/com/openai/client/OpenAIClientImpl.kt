@@ -4,6 +4,7 @@ package com.openai.client
 
 import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
+import com.openai.core.withDefaultUserAgent
 import com.openai.services.blocking.AdminService
 import com.openai.services.blocking.AdminServiceImpl
 import com.openai.services.blocking.AudioService
@@ -59,10 +60,9 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     private val clientOptionsWithUserAgent =
         if (clientOptions.headers.names().contains("User-Agent")) clientOptions
         else
-            clientOptions
-                .toBuilder()
-                .putHeader("User-Agent", "${javaClass.simpleName}/Java ${getPackageVersion()}")
-                .build()
+            clientOptions.withDefaultUserAgent(
+                "${javaClass.simpleName}/Java ${getPackageVersion()}"
+            )
 
     // Pass the original clientOptions so that this client sets its own User-Agent.
     private val async: OpenAIClientAsync by lazy { OpenAIClientAsyncImpl(clientOptions) }

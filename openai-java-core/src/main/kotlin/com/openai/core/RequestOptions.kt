@@ -4,6 +4,10 @@ import java.time.Duration
 
 class RequestOptions private constructor(val responseValidation: Boolean?, val timeout: Timeout?) {
 
+    @JvmSynthetic
+    internal fun withTimeout(timeout: Timeout): RequestOptions =
+        RequestOptions(responseValidation, timeout)
+
     companion object {
 
         private val NONE = builder().build()

@@ -5,8 +5,10 @@ import com.openai.auth.SubjectTokenProvider
 import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
 import com.openai.azure.credential.AzureApiKeyCredential
+import com.openai.core.http.AuthenticatedHttpRequest
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAttemptAuthenticator
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.WorkloadIdentityCredential
@@ -177,6 +179,77 @@ internal class ClientOptionsTest {
             }
 
         assertThat(thrown.message).contains("Provider authentication cannot be combined")
+    }
+
+    @Test
+    fun build_withFixedBearerAuthentication_satisfiesOnlyBearerAndSurvivesCloning() {
+        val authenticator =
+            object : HttpRequestAttemptAuthenticator {
+                override fun authenticate(
+                    request: HttpRequest,
+                    timeout: java.time.Duration?,
+                ): AuthenticatedHttpRequest = AuthenticatedHttpRequest.create(request) {}
+            }
+        val clientOptions =
+            ClientOptions.builder()
+                .fixedBearerAuthentication("https://mtls.example.test/v1")
+                .buildWithFixedBearerTransport(httpClient, authenticator)
+                .toBuilder()
+                .build()
+
+        assertThat(clientOptions.baseUrl()).isEqualTo("https://mtls.example.test/v1")
+        assertThat(
+                clientOptions.securityHeaders(SecurityOptions.builder().bearerAuth(true).build())
+            )
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+        assertThat(clientOptions.securityHeaders(SecurityOptions.all()))
+            .isEqualTo(com.openai.core.http.Headers.builder().build())
+        val thrown =
+            assertThrows<IllegalStateException> {
+                clientOptions.securityHeaders(
+                    SecurityOptions.builder().adminApiKeyAuth(true).build()
+                )
+            }
+        assertThat(thrown.message).contains("requires adminApiKey")
+    }
+
+    @Test
+    fun fixedBearerAuthentication_rejectsCompetingConfigurationInEitherOrder() {
+        val mutations =
+            listOf<Pair<String, (ClientOptions.Builder) -> Unit>>(
+                "httpClient" to { it.httpClient(httpClient) },
+                "httpRequestAuthenticator" to
+                    {
+                        it.httpRequestAuthenticator(
+                            object : HttpRequestAuthenticator {
+                                override fun authenticate(request: HttpRequest): HttpRequest =
+                                    request
+                            }
+                        )
+                    },
+                "baseUrl" to { it.baseUrl("https://example.test/v1") },
+                "apiKey" to { it.apiKey("test-api-key") },
+                "adminApiKey" to { it.adminApiKey("test-admin-key") },
+                "credential" to { it.credential(BearerTokenCredential.create("test-token")) },
+                "organization" to { it.organization("org_test") },
+                "project" to { it.project("proj_test") },
+                "fromEnv" to { it.fromEnv() },
+            )
+
+        mutations.forEach { (name, mutate) ->
+            val builder =
+                ClientOptions.builder().fixedBearerAuthentication("https://mtls.example.test/v1")
+            val thrown = assertThrows<IllegalArgumentException> { mutate(builder) }
+            assertThat(thrown.message).contains(name)
+        }
+
+        val thrown =
+            assertThrows<IllegalArgumentException> {
+                ClientOptions.builder()
+                    .apiKey("test-api-key")
+                    .fixedBearerAuthentication("https://mtls.example.test/v1")
+            }
+        assertThat(thrown.message).contains("cannot be combined")
     }
 
     @Test
