@@ -97,19 +97,24 @@ private constructor(
     }
 
     private fun newCall(request: HttpRequest, requestOptions: RequestOptions): Call {
-        callTracker.ensureOpen()
-        val clientBuilder = okHttpClient.newBuilder()
+        return try {
+            callTracker.ensureOpen()
+            val clientBuilder = okHttpClient.newBuilder()
 
-        requestOptions.timeout?.let {
-            clientBuilder
-                .connectTimeout(it.connect())
-                .readTimeout(it.read())
-                .writeTimeout(it.write())
-                .callTimeout(it.request())
+            requestOptions.timeout?.let {
+                clientBuilder
+                    .connectTimeout(it.connect())
+                    .readTimeout(it.read())
+                    .writeTimeout(it.write())
+                    .callTimeout(it.request())
+            }
+
+            val client = clientBuilder.build()
+            client.newCall(request.toRequest(client))
+        } catch (failure: Throwable) {
+            request.body.closeSuppressing(failure)
+            throw failure
         }
-
-        val client = clientBuilder.build()
-        return client.newCall(request.toRequest(client))
     }
 
     companion object {
@@ -248,6 +253,16 @@ private constructor(
                     },
                 callTracker,
             )
+        }
+    }
+}
+
+private fun HttpRequestBody?.closeSuppressing(failure: Throwable) {
+    try {
+        this?.close()
+    } catch (closeFailure: Throwable) {
+        if (closeFailure !== failure) {
+            failure.addSuppressed(closeFailure)
         }
     }
 }

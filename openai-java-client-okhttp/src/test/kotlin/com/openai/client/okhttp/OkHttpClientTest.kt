@@ -6,8 +6,10 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
 import java.io.ByteArrayInputStream
+import java.io.OutputStream
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
@@ -17,6 +19,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -51,6 +54,32 @@ internal class OkHttpClientTest {
 
         // Should have cancelled the underlying call
         assertThat(call.isCanceled()).isTrue()
+    }
+
+    @Test
+    fun execute_afterClientClose_closesRequestBodyOnce() {
+        val closeFailure = IllegalStateException("request body close failed")
+        val body = CountingRequestBody(closeFailure)
+        httpClient.close()
+
+        val failure = runCatching { httpClient.execute(request(body)) }.exceptionOrNull()
+
+        assertThat(failure)
+            .isInstanceOf(IllegalStateException::class.java)
+            .hasMessage("HTTP client is closed")
+        assertThat(failure!!.suppressed).containsExactly(closeFailure)
+        assertThat(body.closes).isEqualTo(1)
+    }
+
+    @Test
+    fun executeAsync_afterClientClose_closesRequestBodyOnce() {
+        val body = CountingRequestBody()
+        httpClient.close()
+
+        assertThatThrownBy { httpClient.executeAsync(request(body)) }
+            .isInstanceOf(IllegalStateException::class.java)
+            .hasMessage("HTTP client is closed")
+        assertThat(body.closes).isEqualTo(1)
     }
 
     @Test
@@ -122,6 +151,31 @@ internal class OkHttpClientTest {
                 server.close()
             }
         }
+    }
+
+    private fun request(body: HttpRequestBody): HttpRequest =
+        HttpRequest.builder()
+            .method(HttpMethod.POST)
+            .baseUrl(baseUrl)
+            .addPathSegment("something")
+            .body(body)
+            .build()
+}
+
+private class CountingRequestBody(private val closeFailure: Throwable? = null) : HttpRequestBody {
+    var closes = 0
+
+    override fun writeTo(outputStream: OutputStream) {}
+
+    override fun contentType(): String? = null
+
+    override fun contentLength(): Long = 0
+
+    override fun repeatable(): Boolean = true
+
+    override fun close() {
+        closes++
+        closeFailure?.let { throw it }
     }
 }
 
