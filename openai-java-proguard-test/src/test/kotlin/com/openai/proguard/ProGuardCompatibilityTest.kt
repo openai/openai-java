@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.beta.responses.BetaResponseUsage
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionAudio
 import com.openai.models.chat.completions.ChatCompletionContentPart
@@ -13,6 +14,7 @@ import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall
 import com.openai.models.chat.completions.ChatCompletionModality
 import com.openai.models.chat.completions.ChatCompletionTokenLogprob
 import com.openai.models.completions.CompletionUsage
+import com.openai.models.responses.ResponseUsage
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaMethod
 import org.assertj.core.api.Assertions.assertThat
@@ -288,6 +290,35 @@ internal class ProGuardCompatibilityTest {
             )
 
         assertThat(roundtrippedChatCompletion).isEqualTo(chatCompletion)
+    }
+
+    @Test
+    fun usageComputeUnitsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val models =
+            listOf(
+                CompletionUsage::class.java,
+                ResponseUsage::class.java,
+                BetaResponseUsage::class.java,
+            )
+        val payloads =
+            listOf(
+                "{}",
+                """{"compute_units":null}""",
+                """{"compute_units":0}""",
+                """{"compute_units":42}""",
+            )
+
+        for (model in models) {
+            for (payload in payloads) {
+                val usage = jsonMapper.readValue(payload, model)
+                val serialized = jsonMapper.writeValueAsString(usage)
+                assertThat(jsonMapper.readTree(serialized))
+                    .describedAs("%s preserves %s", model.simpleName, payload)
+                    .isEqualTo(jsonMapper.readTree(payload))
+                assertThat(jsonMapper.readValue(serialized, model)).isEqualTo(usage)
+            }
+        }
     }
 
     @Test
