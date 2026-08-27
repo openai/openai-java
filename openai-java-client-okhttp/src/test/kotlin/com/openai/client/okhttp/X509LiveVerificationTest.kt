@@ -1,15 +1,15 @@
 package com.openai.client.okhttp
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.core.RequestOptions
 import com.openai.core.Timeout
 import com.openai.core.http.Headers
+import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
-import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
+import com.openai.errors.UnexpectedStatusCodeException
 import java.io.ByteArrayInputStream
-import java.io.OutputStream
+import java.io.IOException
 import java.net.Socket
 import java.security.KeyStore
 import java.security.Principal
@@ -18,6 +18,7 @@ import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.Arrays
 import java.util.Base64
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLEngine
@@ -31,14 +32,12 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 /**
  * Explicitly opt-in verification against the enrolled production issuer and mTLS API.
  *
- * This deliberately uses the raw, fixed-origin transport capability so the live gate remains useful
- * before higher-level X.509 client integration exists. It never logs response bodies, tokens,
- * certificate material, aliases, or enrollment identifiers.
+ * This uses the production token exchange over the fixed-origin transport capability so the live
+ * gate remains useful before higher-level X.509 client integration exists. It never logs response
+ * bodies, tokens, certificate material, aliases, or enrollment identifiers.
  */
 @EnabledIfEnvironmentVariable(named = "OPENAI_X509_LIVE_TEST", matches = "1")
 internal class X509LiveVerificationTest {
-    private val jsonMapper = JsonMapper()
-
     @Test
     fun enrolledCertificateCompletesIssuerAndApiLegs() {
         LiveConfiguration.fromEnvironment().use { configuration ->
@@ -68,7 +67,15 @@ internal class X509LiveVerificationTest {
                     .build()
 
             transport.bind(LIVE_TIMEOUT).use { bound ->
-                val accessToken = exchangeToken(bound.exchangeClient, configuration)
+                val accessToken =
+                    X509LiveDiagnostics.issuerExchange(bound.exchangeClient) { issuerClient ->
+                        X509TokenExchange(
+                                configuration.identityProviderId,
+                                configuration.serviceAccountId,
+                                issuerClient,
+                            )
+                            .use { exchange -> exchange.execute().value }
+                    }
                 recordingKeyManager.requireClientAliasSelection("issuer exchange")
                 verifyApi(bound.apiClient, accessToken)
                 recordingKeyManager.requireClientAliasSelection("mTLS API")
@@ -78,44 +85,10 @@ internal class X509LiveVerificationTest {
         println("X.509 live verification passed: issuer exchange and mTLS API request completed.")
     }
 
-    private fun exchangeToken(client: OkHttpClient, configuration: LiveConfiguration): String {
-        val exchange =
-            X509LiveRequests.exchange(
-                jsonMapper,
-                configuration.identityProviderId,
-                configuration.serviceAccountId,
-            )
-
-        return execute(client, exchange.request, "issuer exchange").use { response ->
-            requireSuccessful(response, "issuer exchange")
-            val body = readJson(response, "issuer exchange")
-            validateTokenResponse(body)
-        }
-    }
-
     private fun verifyApi(client: OkHttpClient, accessToken: String) {
         execute(client, X509LiveRequests.api(accessToken), "mTLS API").use { response ->
             requireSuccessful(response, "mTLS API")
         }
-    }
-
-    private fun validateTokenResponse(body: JsonNode): String {
-        check(body.isObject) { "The issuer exchange returned an invalid response shape." }
-        check(body.path("token_type").asText() == "Bearer") {
-            "The issuer exchange returned an unexpected token type."
-        }
-        check(body.path("issued_token_type").asText() == ACCESS_TOKEN_TYPE) {
-            "The issuer exchange returned an unexpected issued token type."
-        }
-        val expiresIn = body.path("expires_in")
-        check(expiresIn.isIntegralNumber && expiresIn.asLong() in 1..MAX_TOKEN_TTL_SECONDS) {
-            "The issuer exchange returned an invalid token lifetime."
-        }
-        val accessToken = body.path("access_token")
-        check(accessToken.isTextual && BEARER_TOKEN.matches(accessToken.asText())) {
-            "The issuer exchange returned an invalid bearer token."
-        }
-        return accessToken.asText()
     }
 
     private fun requireSuccessful(response: HttpResponse, stage: String) =
@@ -128,9 +101,6 @@ internal class X509LiveVerificationTest {
             throw IllegalStateException("$stage failed before receiving an HTTP response.")
         }
 
-    private fun readJson(response: HttpResponse, stage: String): JsonNode =
-        X509LiveDiagnostics.readJson(jsonMapper, response, stage)
-
     private fun defaultTrustManager(): X509TrustManager =
         TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
             .apply { init(null as KeyStore?) }
@@ -140,9 +110,6 @@ internal class X509LiveVerificationTest {
             ?: error("The JVM default trust store did not provide an X.509 trust manager.")
 
     private companion object {
-        const val ACCESS_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token"
-        const val MAX_TOKEN_TTL_SECONDS = 3600L
-        val BEARER_TOKEN = Regex("^[A-Za-z0-9\\-._~+/]+=*$")
         val LIVE_TIMEOUT =
             Timeout.builder()
                 .connect(Duration.ofSeconds(20))
@@ -154,32 +121,7 @@ internal class X509LiveVerificationTest {
 }
 
 internal object X509LiveRequests {
-    private const val EXCHANGE_URL = "https://mtls.auth.openai.com/oauth/token"
     private const val API_ORIGIN = "https://mtls.api.openai.com"
-    private const val TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange"
-    private const val X509_SUBJECT_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"
-
-    fun exchange(
-        jsonMapper: JsonMapper,
-        identityProviderId: String,
-        serviceAccountId: String,
-    ): X509LiveExchangeRequest {
-        val body =
-            ZeroizingJsonBody(
-                jsonMapper.writeValueAsBytes(
-                    linkedMapOf(
-                        "grant_type" to TOKEN_EXCHANGE_GRANT_TYPE,
-                        "subject_token_type" to X509_SUBJECT_TOKEN_TYPE,
-                        "identity_provider_id" to identityProviderId,
-                        "service_account_id" to serviceAccountId,
-                    )
-                )
-            )
-        return X509LiveExchangeRequest(
-            HttpRequest.builder().method(HttpMethod.POST).baseUrl(EXCHANGE_URL).body(body).build(),
-            body,
-        )
-    }
 
     fun api(accessToken: String): HttpRequest =
         HttpRequest.builder()
@@ -189,8 +131,6 @@ internal object X509LiveRequests {
             .putHeader("Authorization", "Bearer $accessToken")
             .build()
 }
-
-internal data class X509LiveExchangeRequest(val request: HttpRequest, val body: ZeroizingJsonBody)
 
 internal class HandshakeRecordingKeyManager(
     private val delegate: X509ExtendedKeyManager,
@@ -247,19 +187,42 @@ internal class HandshakeRecordingKeyManager(
 internal object X509LiveDiagnostics {
     private val safeRequestId = Regex("^[A-Za-z0-9._:-]{1,128}$")
 
+    fun <T> issuerExchange(client: HttpClient, action: (HttpClient) -> T): T {
+        var requestId: String? = null
+        val capturingClient =
+            object : HttpClient by client {
+                override fun execute(request: HttpRequest): HttpResponse =
+                    client.execute(request).also { response ->
+                        requestId =
+                            response.requestId().orElse(null)?.takeIf(safeRequestId::matches)
+                    }
+            }
+
+        return issuerExchange({ requestId }) { action(capturingClient) }
+    }
+
+    fun <T> issuerExchange(action: () -> T): T = issuerExchange({ null }, action)
+
+    private fun <T> issuerExchange(requestId: () -> String?, action: () -> T): T =
+        try {
+            action()
+        } catch (error: UnexpectedStatusCodeException) {
+            val requestIdSuffix = requestId()?.let { " (request_id=$it)" }.orEmpty()
+            throw IllegalStateException(
+                "issuer exchange failed with HTTP ${error.statusCode()}$requestIdSuffix."
+            )
+        } catch (_: Exception) {
+            val requestIdSuffix = requestId()?.let { " (request_id=$it)" }.orEmpty()
+            throw IllegalStateException(
+                "issuer exchange failed before receiving a valid response$requestIdSuffix."
+            )
+        }
+
     fun requireSuccessful(response: HttpResponse, stage: String) {
         check(response.statusCode() in 200..299) {
             "$stage failed with HTTP ${response.statusCode()}${requestIdSuffix(response)}."
         }
     }
-
-    fun readJson(jsonMapper: JsonMapper, response: HttpResponse, stage: String): JsonNode =
-        try {
-            jsonMapper.readTree(response.body())
-                ?: throw IllegalStateException("$stage returned an empty JSON response.")
-        } catch (_: Exception) {
-            throw IllegalStateException("$stage returned invalid JSON${requestIdSuffix(response)}.")
-        }
 
     private fun requestIdSuffix(response: HttpResponse): String =
         response
@@ -271,6 +234,109 @@ internal object X509LiveDiagnostics {
 }
 
 internal class X509LiveVerificationDiagnosticsTest {
+    @Test
+    fun malformedIssuerResponsesPreserveOnlySafeRequestIdsFromProductionExchange() {
+        mapOf(
+                "req_123-abc:456" to " (request_id=req_123-abc:456)",
+                "request id containing sensitive text" to "",
+                "x".repeat(129) to "",
+            )
+            .forEach { (requestId, expectedSuffix) ->
+                val response =
+                    StubLiveResponse(
+                        200,
+                        requestId,
+                        "customer-data secret-token",
+                        mapOf("Authorization" to "Bearer secret-token"),
+                    )
+                val client = StubLiveClient(response)
+
+                assertThatThrownBy {
+                        X509LiveDiagnostics.issuerExchange(client) { issuerClient ->
+                            X509TokenExchange("idp_test", "svc_acct_test", issuerClient).use {
+                                exchange ->
+                                exchange.execute()
+                            }
+                        }
+                    }
+                    .isInstanceOf(IllegalStateException::class.java)
+                    .hasMessage(
+                        "issuer exchange failed before receiving a valid response$expectedSuffix."
+                    )
+                    .hasNoCause()
+                    .hasMessageNotContaining("sensitive")
+                    .hasMessageNotContaining("customer-data")
+                    .hasMessageNotContaining("secret-token")
+            }
+    }
+
+    @Test
+    fun issuerFailuresPreserveOnlySafeRequestIdsFromProductionExchange() {
+        mapOf(
+                "req_123-abc:456" to " (request_id=req_123-abc:456)",
+                "request id containing sensitive text" to "",
+                "x".repeat(129) to "",
+            )
+            .forEach { (requestId, expectedSuffix) ->
+                val response =
+                    StubLiveResponse(
+                        403,
+                        requestId,
+                        """{"error":"invalid_grant","error_description":"customer-data"}""",
+                        mapOf(
+                            "Authorization" to "Bearer secret-token",
+                            "X-Customer" to "customer-data",
+                        ),
+                    )
+                val client = StubLiveClient(response)
+
+                assertThatThrownBy {
+                        X509LiveDiagnostics.issuerExchange(client) { issuerClient ->
+                            X509TokenExchange("idp_test", "svc_acct_test", issuerClient).use {
+                                exchange ->
+                                exchange.execute()
+                            }
+                        }
+                    }
+                    .isInstanceOf(IllegalStateException::class.java)
+                    .hasMessage("issuer exchange failed with HTTP 403$expectedSuffix.")
+                    .hasNoCause()
+                    .hasMessageNotContaining("sensitive")
+                    .hasMessageNotContaining("customer-data")
+                    .hasMessageNotContaining("secret-token")
+            }
+    }
+
+    @Test
+    fun issuerExchangeFailuresNeverIncludeUnderlyingCauses() {
+        assertThatThrownBy {
+                X509LiveDiagnostics.issuerExchange {
+                    throw IOException("customer-data enrollment-id secret-token")
+                }
+            }
+            .isInstanceOf(IllegalStateException::class.java)
+            .hasMessage("issuer exchange failed before receiving a valid response.")
+            .hasNoCause()
+            .hasMessageNotContaining("customer-data")
+            .hasMessageNotContaining("enrollment-id")
+            .hasMessageNotContaining("secret-token")
+
+        val statusFailure =
+            UnexpectedStatusCodeException.builder()
+                .statusCode(403)
+                .headers(Headers.builder().put("x-request-id", "sensitive enrollment-id").build())
+                .cause(IOException("customer-data secret-token"))
+                .build()
+
+        assertThatThrownBy { X509LiveDiagnostics.issuerExchange { throw statusFailure } }
+            .isInstanceOf(IllegalStateException::class.java)
+            .hasMessage("issuer exchange failed with HTTP 403.")
+            .hasNoCause()
+            .hasMessageNotContaining("customer-data")
+            .hasMessageNotContaining("enrollment-id")
+            .hasMessageNotContaining("secret-token")
+    }
+
     @Test
     fun diagnosticsIncludeOnlySanitizedRequestIds() {
         val safeResponse = StubLiveResponse(403, "req_123-abc:456", "unused")
@@ -286,27 +352,20 @@ internal class X509LiveVerificationDiagnosticsTest {
             .hasMessageNotContaining("sensitive")
             .hasMessageNotContaining("customer-data")
     }
-
-    @Test
-    fun invalidIssuerBodiesAreNeverIncludedInDiagnostics() {
-        val response =
-            StubLiveResponse(200, "request id containing sensitive text", "customer-data")
-
-        response.use {
-            assertThatThrownBy {
-                    X509LiveDiagnostics.readJson(JsonMapper(), response, "issuer exchange")
-                }
-                .isInstanceOf(IllegalStateException::class.java)
-                .hasMessage("issuer exchange returned invalid JSON.")
-                .hasMessageNotContaining("sensitive")
-                .hasMessageNotContaining("customer-data")
-        }
-    }
 }
 
-private class StubLiveResponse(statusCode: Int, requestId: String, body: String) : HttpResponse {
+private class StubLiveResponse(
+    statusCode: Int,
+    requestId: String,
+    body: String,
+    additionalHeaders: Map<String, String> = emptyMap(),
+) : HttpResponse {
     private val statusCode = statusCode
-    private val headers = Headers.builder().put("x-request-id", requestId).build()
+    private val headers =
+        Headers.builder()
+            .put("x-request-id", requestId)
+            .apply { additionalHeaders.forEach { (name, value) -> put(name, value) } }
+            .build()
     private val body = ByteArrayInputStream(body.toByteArray(Charsets.UTF_8))
 
     override fun statusCode(): Int = statusCode
@@ -316,6 +375,18 @@ private class StubLiveResponse(statusCode: Int, requestId: String, body: String)
     override fun body(): ByteArrayInputStream = body
 
     override fun close() = body.close()
+}
+
+private class StubLiveClient(private val response: HttpResponse) : HttpClient {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        response
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> = CompletableFuture.completedFuture(response)
+
+    override fun close() = Unit
 }
 
 private class LiveConfiguration
@@ -357,25 +428,5 @@ private constructor(
             requiredEnvironment(name).also {
                 check(it.isNotBlank()) { "$name must not be blank for X.509 live verification." }
             }
-    }
-}
-
-internal class ZeroizingJsonBody(private val bytes: ByteArray) : HttpRequestBody {
-    private val contentLength = bytes.size.toLong()
-
-    var closed = false
-        private set
-
-    override fun writeTo(outputStream: OutputStream) = outputStream.write(bytes)
-
-    override fun contentType(): String = "application/json"
-
-    override fun contentLength(): Long = contentLength
-
-    override fun repeatable(): Boolean = false
-
-    override fun close() {
-        Arrays.fill(bytes, 0)
-        closed = true
     }
 }

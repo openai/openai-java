@@ -2,14 +2,16 @@
 
 The Java SDK has two separate X.509 verification layers:
 
-- `X509TransportTest` runs in ordinary CI with an ephemeral PKI and real TLS. It verifies one fixed
-  certificate alias on the issuer and API legs, exact SNI and authorities, the token-exchange wire
-  shape, bearer placement, redirect refusal, hostname verification, server trust, and response
+- `X509TransportTest` runs in ordinary CI with an ephemeral PKI and real TLS. It verifies the
+  production `X509TokenExchange`, including issuer-provided token lifetimes above one hour, one
+  fixed certificate alias on the issuer and API legs, exact SNI and authorities, the token-exchange
+  wire shape, bearer placement, redirect refusal, hostname verification, server trust, and response
   cleanup.
 - `X509LiveVerificationTest` is an explicitly enabled production probe. It performs the exact
-  issuer exchange and then calls `GET https://mtls.api.openai.com/v1/models` with both the returned
-  bearer and the enrolled client certificate. It uses the existing raw transport capability, so it
-  remains useful before higher-level X.509 client integration lands.
+  issuer exchange through the production `X509TokenExchange` and then calls
+  `GET https://mtls.api.openai.com/v1/models` with both the returned bearer and the enrolled client
+  certificate. It uses the existing fixed-origin transport capability, so it remains useful before
+  higher-level X.509 client integration lands.
 
 Ordinary tests never use live credentials. A skipped live test is **not** production evidence.
 
@@ -66,8 +68,8 @@ hard-coded HTTPS origins, both clients are direct and non-redirecting, and every
 - **REQUESTED**: the canonical `main` run passed the non-secret guard and awaits or entered the
   protected job. A deployment blocked or cancelled before environment approval remains requested
   and is not a pass; GitHub cannot run a later summary step while approval is pending.
-- **PASSED**: exactly one enabled live test obtained a valid short-lived bearer from the issuer and
-  completed the approved mTLS model-list request. Only the protected job writes this result.
+- **PASSED**: exactly one enabled live test obtained a valid bearer from the issuer and completed
+  the approved mTLS model-list request. Only the protected job writes this result.
 - Any other conclusion is a failure or infrastructure interruption and must not be reported as
   production verification.
 
@@ -118,9 +120,10 @@ the enrolled client certificate is not end-to-end evidence.
 ## Safe teardown
 
 For a one-off fixture, first disable the exact provider subject mapping or its dedicated service
-account so that it cannot mint new bearers. Allow already issued credentials to expire within their
-one-hour maximum, or follow the environment owner's approved revocation procedure. Then remove the
-five secrets from `x509-live-smoke` and delete the environment if it has no continuing owner.
+account so that it cannot mint new bearers. Allow already issued credentials to expire according to
+their issuer-provided lifetimes, which may exceed one hour, or follow the environment owner's
+approved revocation procedure. Then remove the five secrets from `x509-live-smoke` and delete the
+environment if it has no continuing owner.
 
 Deactivate or remove the public trust root only after the environment owner confirms that no other
 mapping, SDK, or test fixture depends on it; never tear down a shared root as part of this runbook.
