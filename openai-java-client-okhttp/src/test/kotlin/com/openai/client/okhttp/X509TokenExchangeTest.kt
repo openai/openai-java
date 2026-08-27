@@ -104,7 +104,6 @@ internal class X509TokenExchangeTest {
                 "missing expires_in" to validResponseWithout("expires_in"),
                 "zero expires_in" to validResponse(expiresIn = "0"),
                 "fractional expires_in" to validResponse(expiresIn = "1.5"),
-                "expires_in above maximum" to validResponse(expiresIn = "3601"),
                 "overflow expires_in" to validResponse(expiresIn = "9223372036854775808"),
             )
 
@@ -124,9 +123,22 @@ internal class X509TokenExchangeTest {
 
     @Test
     fun acceptsLargeForwardCompatibleResponsesWithoutAnArbitraryLimit() {
-        val node = ObjectMapper().readTree(validResponse())
-        (node as ObjectNode).put("forward_compatible_field", "x".repeat(2 * 1024 * 1024))
-        val response = TestResponse(200, node.toString())
+        val response =
+            TestResponse(
+                200,
+                """
+                {
+                  "forward_compatible_field": {
+                    "nested": [{"value": "${"x".repeat(2 * 1024 * 1024)}"}]
+                  },
+                  "access_token": "$ACCESS_TOKEN",
+                  "issued_token_type": "$ACCESS_TOKEN_TYPE",
+                  "token_type": "Bearer",
+                  "expires_in": 3600
+                }
+                """
+                    .trimIndent(),
+            )
 
         val token =
             X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, SingleResponseClient(response)).use {
@@ -138,12 +150,35 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
-    fun failureStatusDoesNotReadBodyAndRetainsOnlySafeDiagnosticHeaders() {
+    fun acceptsPositiveTokenLifetimesAboveOneHour() {
+        listOf(false, true).forEach { async ->
+            val response = TestResponse(200, validResponse(expiresIn = "86400"))
+
+            val token =
+                X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, SingleResponseClient(response)).use {
+                    exchange ->
+                    if (async) exchange.executeAsync().get(5, TimeUnit.SECONDS)
+                    else exchange.execute()
+                }
+
+            assertThat(token.expiresIn).isEqualTo(Duration.ofDays(1))
+            assertThat(response.closed).isTrue()
+        }
+    }
+
+    @Test
+    fun failureStatusPreservesRedactedOAuthDiagnosticsAndSafeHeaders() {
         listOf(false, true).forEach { async ->
             val response =
                 TestResponse(
                     503,
-                    """{"error_description":"secret diagnostic"}""",
+                    """
+                    {
+                      "error": "invalid_grant",
+                      "error_description": "Certificate is not authorized; Authorization: Bearer secret-body-token; Cookie: session=secret-body-cookie; access_token=secret-body-api-key"
+                    }
+                    """
+                        .trimIndent(),
                     Headers.builder()
                         .put("Set-Cookie", "session=secret-cookie")
                         .put("Authorization", "Bearer secret-token")
@@ -163,25 +198,66 @@ internal class X509TokenExchangeTest {
             assertThat(statusError.headers().values("X-Api-Key")).isEmpty()
             assertThat(statusError.headers().values("X-Request-ID")).containsExactly("req_safe")
             assertThat(statusError.headers().values("Retry-After")).containsExactly("1")
+            assertThat(statusError.code()).contains("invalid_grant")
+            assertThat(statusError.message).contains("Certificate is not authorized")
             assertThat(statusError.toString())
-                .doesNotContain("secret-cookie", "secret-token", "secret-api-key")
-            assertThat(response.bodyRead).isFalse()
+                .doesNotContain(
+                    "secret-cookie",
+                    "secret-token",
+                    "secret-api-key",
+                    "secret-body-token",
+                    "secret-body-cookie",
+                    "secret-body-api-key",
+                )
+            assertThat(statusError.body().toString())
+                .doesNotContain("secret-body-token", "secret-body-cookie", "secret-body-api-key")
+            assertThat(response.bodyRead).isTrue()
             assertThat(response.closed).isTrue()
         }
     }
 
     @Test
-    fun rejectsNon200SuccessWithoutReadingTheBody() {
+    fun rejectsNon200SuccessWithoutRetainingCredentialFields() {
         listOf(false, true).forEach { async ->
-            val response = TestResponse(201, validResponse())
+            val response =
+                TestResponse(201, validResponse(accessToken = "secret-token-must-not-leak"))
 
             val failure = exchangeFailure(response, async)
 
             assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
             assertThat((failure as UnexpectedStatusCodeException).statusCode()).isEqualTo(201)
-            assertThat(response.bodyRead).isFalse()
+            assertThat(failure.toString()).doesNotContain("secret-token-must-not-leak")
+            assertThat(response.bodyRead).isTrue()
             assertThat(response.closed).isTrue()
         }
+    }
+
+    @Test
+    fun redactsCompleteHeaderLikeValuesFromOAuthDiagnostics() {
+        mapOf(
+                "Authorization: Digest username=alice, response=secret-digest-value" to
+                    "secret-digest-value",
+                "Cookie: first=secret-first-cookie; second=secret-second-cookie" to
+                    "secret-second-cookie",
+            )
+            .forEach { (diagnostic, secret) ->
+                listOf(false, true).forEach { async ->
+                    val response =
+                        TestResponse(
+                            400,
+                            """{"error":"invalid_grant","error_description":"Safe prefix; $diagnostic"}""",
+                        )
+
+                    val failure = exchangeFailure(response, async)
+
+                    assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
+                    assertThat(failure.message).contains("Safe prefix", "<redacted>")
+                    assertThat(failure.toString()).doesNotContain(secret)
+                    assertThat((failure as UnexpectedStatusCodeException).body().toString())
+                        .doesNotContain(secret)
+                    assertThat(response.closed).isTrue()
+                }
+            }
     }
 
     @Test
@@ -191,15 +267,18 @@ internal class X509TokenExchangeTest {
                 IOException("issuer body disconnected"),
             )
             .forEach { cause ->
-                listOf(false, true).forEach { async ->
-                    val response = FailingBodyResponse(cause)
+                listOf(200, 503).forEach { statusCode ->
+                    listOf(false, true).forEach { async ->
+                        val response = FailingBodyResponse(cause, statusCode)
 
-                    val failure = exchangeFailure(response, async)
+                        val failure = exchangeFailure(response, async)
 
-                    assertThat(failure).isInstanceOf(OpenAIIoException::class.java)
-                    assertThat(failure).hasMessage("Failed to read X.509 token exchange response")
-                    assertThat(failure.cause).isSameAs(cause)
-                    assertThat(response.closed).isTrue()
+                        assertThat(failure).isInstanceOf(OpenAIIoException::class.java)
+                        assertThat(failure)
+                            .hasMessage("Failed to read X.509 token exchange response")
+                        assertThat(failure.cause).isSameAs(cause)
+                        assertThat(response.closed).isTrue()
+                    }
                 }
             }
     }
@@ -475,11 +554,12 @@ private class TestResponse(
     }
 }
 
-private class FailingBodyResponse(private val failure: IOException) : HttpResponse {
+private class FailingBodyResponse(private val failure: IOException, private val statusCode: Int) :
+    HttpResponse {
     var closed = false
         private set
 
-    override fun statusCode(): Int = 200
+    override fun statusCode(): Int = statusCode
 
     override fun headers(): Headers = Headers.builder().build()
 

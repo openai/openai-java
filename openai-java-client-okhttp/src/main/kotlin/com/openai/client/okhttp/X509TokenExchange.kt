@@ -1,9 +1,9 @@
 package com.openai.client.okhttp
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.StreamReadFeature
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
@@ -14,8 +14,10 @@ import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.UnexpectedStatusCodeException
+import com.openai.models.ErrorObject
 import java.io.IOException
 import java.io.OutputStream
+import java.io.Writer
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -40,10 +42,7 @@ internal class X509TokenExchange(
 ) : AutoCloseable {
     private val jsonMapper = jsonMapper()
     private val responseReader =
-        jsonMapper
-            .reader()
-            .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
-            .with(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+        jsonMapper.reader().with(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
     private val responseExecutor =
         ThreadPoolExecutor(
             0,
@@ -200,43 +199,161 @@ internal class X509TokenExchange(
     private fun parse(response: HttpResponse): X509AccessToken {
         val statusCode = response.statusCode()
         if (statusCode != 200) {
-            throw UnexpectedStatusCodeException.builder()
-                .statusCode(statusCode)
-                .headers(safeDiagnosticHeaders(response.headers()))
-                .build()
+            val builder =
+                UnexpectedStatusCodeException.builder()
+                    .statusCode(statusCode)
+                    .headers(safeDiagnosticHeaders(response.headers()))
+            readOAuthError(response)?.let(builder::error)
+            throw builder.build()
         }
 
-        val node: JsonNode =
-            try {
-                responseReader.readTree(response.body())
-            } catch (error: JsonProcessingException) {
-                transportFailure(error)?.let { throw readFailure(it) }
-                throw invalidResponse()
-            } catch (error: IOException) {
-                throw readFailure(error)
-            } ?: throw invalidResponse()
-
-        val accessToken =
-            node.text("access_token")?.takeIf(BEARER_TOKEN_PATTERN::matches)
-                ?: throw invalidResponse("access_token")
-        if (!node.text("token_type").equals("Bearer", ignoreCase = true)) {
-            throw invalidResponse("token_type")
+        return try {
+            responseReader.createParser(response.body()).use(::parseSuccessResponse)
+        } catch (error: JsonProcessingException) {
+            transportFailure(error)?.let { throw readFailure(it) }
+            throw invalidResponse()
+        } catch (error: IOException) {
+            throw readFailure(error)
         }
-        if (node.text("issued_token_type") != ACCESS_TOKEN_TYPE) {
-            throw invalidResponse("issued_token_type")
-        }
-        val expiresIn =
-            node
-                .get("expires_in")
-                ?.takeIf { it.isIntegralNumber && it.canConvertToLong() }
-                ?.longValue()
-                ?.takeIf { it in 1..MAX_TOKEN_LIFETIME_SECONDS }
-                ?: throw invalidResponse("expires_in")
-        return X509AccessToken(accessToken, Duration.ofSeconds(expiresIn))
     }
 
-    private fun JsonNode.text(name: String): String? =
-        get(name)?.takeIf(JsonNode::isTextual)?.asText()?.takeIf(String::isNotBlank)
+    private fun parseSuccessResponse(parser: JsonParser): X509AccessToken {
+        if (parser.nextToken() != JsonToken.START_OBJECT) throw invalidResponse()
+
+        var accessToken: String? = null
+        var tokenType: BoundedText? = null
+        var issuedTokenType: BoundedText? = null
+        var expiresIn: Long? = null
+        while (parser.nextToken() != JsonToken.END_OBJECT) {
+            if (parser.currentToken() != JsonToken.FIELD_NAME) throw invalidResponse()
+            val field = parser.currentName()
+            val valueToken = parser.nextToken() ?: throw invalidResponse()
+            when (field) {
+                "access_token" ->
+                    accessToken =
+                        parser
+                            .takeIf { valueToken == JsonToken.VALUE_STRING }
+                            ?.text
+                            ?.takeIf(String::isNotBlank)
+                "token_type" ->
+                    tokenType =
+                        parser
+                            .takeIf { valueToken == JsonToken.VALUE_STRING }
+                            ?.boundedText(MAX_TOKEN_TYPE_CHARS)
+                "issued_token_type" ->
+                    issuedTokenType =
+                        parser
+                            .takeIf { valueToken == JsonToken.VALUE_STRING }
+                            ?.boundedText(MAX_ISSUED_TOKEN_TYPE_CHARS)
+                "expires_in" ->
+                    expiresIn =
+                        parser
+                            .takeIf { valueToken == JsonToken.VALUE_NUMBER_INT }
+                            ?.longValue
+                            ?.takeIf { it > 0 }
+                else -> parser.skipChildren()
+            }
+        }
+        if (parser.nextToken() != null) throw invalidResponse()
+
+        val validatedAccessToken =
+            accessToken?.takeIf(BEARER_TOKEN_PATTERN::matches)
+                ?: throw invalidResponse("access_token")
+        if (
+            tokenType?.takeUnless(BoundedText::truncated)?.value?.let {
+                it.equals("Bearer", ignoreCase = true)
+            } != true
+        ) {
+            throw invalidResponse("token_type")
+        }
+        if (issuedTokenType?.takeUnless(BoundedText::truncated)?.value != ACCESS_TOKEN_TYPE) {
+            throw invalidResponse("issued_token_type")
+        }
+        return X509AccessToken(
+            validatedAccessToken,
+            Duration.ofSeconds(expiresIn ?: throw invalidResponse("expires_in")),
+        )
+    }
+
+    private fun readOAuthError(response: HttpResponse): ErrorObject? =
+        try {
+            responseReader.createParser(response.body()).use(::parseOAuthError)
+        } catch (error: JsonProcessingException) {
+            transportFailure(error)?.let { throw readFailure(it) }
+            null
+        } catch (error: IOException) {
+            throw readFailure(error)
+        } catch (_: RuntimeException) {
+            null
+        }
+
+    private fun parseOAuthError(parser: JsonParser): ErrorObject? {
+        if (parser.nextToken() != JsonToken.START_OBJECT) return null
+
+        var errorCode: BoundedText? = null
+        var errorDescription: BoundedText? = null
+        while (parser.nextToken() != JsonToken.END_OBJECT) {
+            if (parser.currentToken() != JsonToken.FIELD_NAME) return null
+            val field = parser.currentName()
+            val valueToken = parser.nextToken() ?: return null
+            when (field) {
+                "error" ->
+                    errorCode =
+                        parser
+                            .takeIf { valueToken == JsonToken.VALUE_STRING }
+                            ?.boundedText(MAX_OAUTH_ERROR_CODE_CHARS)
+                "error_description" ->
+                    errorDescription =
+                        parser
+                            .takeIf { valueToken == JsonToken.VALUE_STRING }
+                            ?.boundedText(MAX_OAUTH_ERROR_DESCRIPTION_CHARS)
+                else -> parser.skipChildren()
+            }
+        }
+        if (parser.nextToken() != null) return null
+
+        val safeCode =
+            errorCode
+                ?.takeUnless(BoundedText::truncated)
+                ?.value
+                ?.takeIf(OAUTH_ERROR_CODE_PATTERN::matches)
+                ?.takeUnless(SENSITIVE_DIAGNOSTIC_NAME_PATTERN::containsMatchIn)
+        val safeDescription = errorDescription?.value?.let(::sanitizeOAuthErrorDescription)
+        val message = safeDescription ?: safeCode ?: return null
+        return ErrorObject.builder()
+            .code(safeCode)
+            .message(message)
+            .param(null)
+            .type("oauth_error")
+            .build()
+    }
+
+    private fun JsonParser.boundedText(maxChars: Int): BoundedText {
+        val writer = BoundedTextWriter(maxChars)
+        getText(writer)
+        return writer.result()
+    }
+
+    private fun sanitizeOAuthErrorDescription(value: String): String? {
+        var sanitized =
+            value
+                .map { character -> if (character.code in 0x20..0x7E) character else ' ' }
+                .joinToString("")
+        HEADER_CREDENTIAL_PATTERN.find(sanitized)?.let { match ->
+            sanitized = "${sanitized.substring(0, match.range.first).trimEnd()} <redacted>"
+        }
+        sanitized =
+            AUTH_SCHEME_CREDENTIAL_PATTERN.replace(sanitized) { match ->
+                "${match.groupValues[1]} <redacted>"
+            }
+        sanitized =
+            NAMED_CREDENTIAL_PATTERN.replace(sanitized) { match ->
+                "${match.groupValues[1]}=<redacted>"
+            }
+        sanitized = JWT_CREDENTIAL_PATTERN.replace(sanitized, "<redacted>")
+        sanitized = LONG_CREDENTIAL_CANDIDATE_PATTERN.replace(sanitized, "<redacted>")
+        return sanitized.trim().takeIf(String::isNotEmpty)
+    }
 
     private fun invalidResponse(field: String? = null): OpenAIInvalidDataException =
         OpenAIInvalidDataException(
@@ -266,10 +383,31 @@ internal class X509TokenExchange(
         const val TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange"
         const val X509_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"
         const val ACCESS_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token"
-        const val MAX_TOKEN_LIFETIME_SECONDS = 3600L
         const val MAX_RESPONSE_THREADS = 4
         const val RESPONSE_THREAD_IDLE_SECONDS = 30L
+        const val MAX_TOKEN_TYPE_CHARS = 32
+        const val MAX_ISSUED_TOKEN_TYPE_CHARS = 128
+        const val MAX_OAUTH_ERROR_CODE_CHARS = 128
+        const val MAX_OAUTH_ERROR_DESCRIPTION_CHARS = 1024
         val BEARER_TOKEN_PATTERN = Regex("[A-Za-z0-9._~+/-]+=*")
+        val OAUTH_ERROR_CODE_PATTERN = Regex("[A-Za-z0-9._~-]+")
+        val SENSITIVE_DIAGNOSTIC_NAME_PATTERN =
+            Regex(
+                "(?i)(?:authorization|cookie|session|api[-_]?key|access[-_]?token|" +
+                    "refresh[-_]?token|subject[-_]?token|client[-_]?secret|password)"
+            )
+        val HEADER_CREDENTIAL_PATTERN =
+            Regex("(?i)\\b(?:authorization|cookie|set-cookie)\\b\\s*[:=]")
+        val NAMED_CREDENTIAL_PATTERN =
+            Regex(
+                "(?i)\\b(authorization|cookie|set-cookie|session|api[-_ ]?key|" +
+                    "access[-_ ]?token|refresh[-_ ]?token|subject[-_ ]?token|" +
+                    "client[-_ ]?secret|password)\\b\\s*[:=]\\s*[^\\s,;]+"
+            )
+        val AUTH_SCHEME_CREDENTIAL_PATTERN = Regex("(?i)\\b(Bearer|Basic)\\s+[^\\s,;]+")
+        val JWT_CREDENTIAL_PATTERN =
+            Regex("\\b[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}\\b")
+        val LONG_CREDENTIAL_CANDIDATE_PATTERN = Regex("[A-Za-z0-9._~+/=-]{24,}")
         val SAFE_DIAGNOSTIC_HEADERS =
             setOf(
                 "Content-Length",
@@ -285,6 +423,26 @@ internal class X509TokenExchange(
                 "X-Should-Retry",
             )
     }
+}
+
+private data class BoundedText(val value: String, val truncated: Boolean)
+
+private class BoundedTextWriter(private val maxChars: Int) : Writer() {
+    private val value = StringBuilder(maxChars)
+    private var truncated = false
+
+    override fun write(characters: CharArray, offset: Int, length: Int) {
+        val retained = minOf(length, maxChars - value.length)
+        if (retained > 0) value.append(characters, offset, retained)
+        if (retained < length) truncated = true
+    }
+
+    override fun flush() {}
+
+    override fun close() {}
+
+    fun result(): BoundedText =
+        BoundedText(value.toString() + if (truncated) "..." else "", truncated)
 }
 
 private object ResponseThreadFactory : ThreadFactory {
