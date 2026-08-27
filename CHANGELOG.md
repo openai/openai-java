@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.54.0](https://github.com/openai/openai-java/compare/v4.53.0...v4.54.0) (2026-08-27)
+
+
+### Features
+
+* **api:** make function call output call IDs optional ([#939](https://github.com/openai/openai-java/issues/939)) ([36e6e4c](https://github.com/openai/openai-java/commit/36e6e4caafc8b717bfc9c8c6f67e0e6724bca73d))
+
 ## [4.53.0](https://github.com/openai/openai-java/compare/v4.52.0...v4.53.0) (2026-08-26)
 
 
