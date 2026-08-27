@@ -1,8 +1,10 @@
 package com.openai.client.okhttp
 
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.core.Timeout
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.errors.OpenAIIoException
 import java.net.Socket
 import java.security.KeyStore
 import java.security.Principal
@@ -10,6 +12,7 @@ import java.security.PrivateKey
 import java.security.cert.X509Certificate
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLEngine
+import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.X509ExtendedKeyManager
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.tls.HandshakeCertificates
@@ -18,16 +21,17 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class X509TransportTest {
+    private val jsonMapper = JsonMapper()
 
     @Test
     fun productionBindingIsDirectNonRetryingAndIsolated() {
         val pinned = X509TestIdentity.create("production binding identity")
         val transport = transport(pinned, emptyList())
+        val bound = transport.bind(Timeout.default())
+        val exchange = bound.exchangeClient.okHttpClient
+        val api = bound.apiClient.okHttpClient
 
-        transport.bind(Timeout.default()).use { bound ->
-            val exchange = bound.exchangeClient.okHttpClient
-            val api = bound.apiClient.okHttpClient
-
+        bound.use {
             assertThat(exchange.proxy).isEqualTo(java.net.Proxy.NO_PROXY)
             assertThat(api.proxy).isEqualTo(java.net.Proxy.NO_PROXY)
             assertThat(exchange.followRedirects).isFalse()
@@ -41,6 +45,11 @@ internal class X509TransportTest {
             assertThat(exchange.dispatcher.executorService)
                 .isNotSameAs(api.dispatcher.executorService)
         }
+
+        assertThat(exchange.dispatcher.executorService.isShutdown).isTrue()
+        assertThat(api.dispatcher.executorService.isShutdown).isTrue()
+        assertThat(exchange.connectionPool.connectionCount()).isZero()
+        assertThat(api.connectionPool.connectionCount()).isZero()
     }
 
     @Test
@@ -49,25 +58,45 @@ internal class X509TransportTest {
         val alternate = X509TestIdentity.create("alternate identity")
         X509TestPeer(AUTH_HOST, pinned.root.certificate).use { authPeer ->
             X509TestPeer(API_HOST, pinned.root.certificate).use { apiPeer ->
-                authPeer.enqueue(MockResponse().setBody("auth"))
-                apiPeer.enqueue(MockResponse().setBody("api"))
+                authPeer.enqueue(
+                    MockResponse()
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(TOKEN_RESPONSE)
+                )
+                apiPeer.enqueue(
+                    MockResponse()
+                        .setHeader("Content-Type", "application/json")
+                        .setBody("""{"object":"list","data":[]}""")
+                )
+                val recordingKeyManager =
+                    HandshakeRecordingKeyManager(
+                        SelectingKeyManager(
+                            keyManager(mapOf(PINNED_ALIAS to pinned, ALTERNATE_ALIAS to alternate)),
+                            ALTERNATE_ALIAS,
+                        ),
+                        PINNED_ALIAS,
+                    )
                 val transport =
-                    adversarialTransport(
-                        pinned,
-                        alternate,
+                    transport(
+                        recordingKeyManager,
                         listOf(authPeer.serverRootCertificate, apiPeer.serverRootCertificate),
                     )
+                val exchange = X509LiveRequests.exchange(jsonMapper, "idp_test", "svc_acct_test")
 
                 transport.bindForTest(Timeout.default(), authPeer.proxy, apiPeer.proxy).use { bound
                     ->
-                    bound.exchangeClient.execute(request(AUTH_URL)).use { response ->
-                        assertThat(response.statusCode()).isEqualTo(200)
-                    }
+                    val accessToken =
+                        bound.exchangeClient.execute(exchange.request).use { response ->
+                            assertThat(response.statusCode()).isEqualTo(200)
+                            jsonMapper.readTree(response.body()).path("access_token").asText()
+                        }
+                    recordingKeyManager.requireClientAliasSelection("issuer exchange")
                     // Closing one path must not drain the other path's pool or dispatcher.
                     bound.exchangeClient.close()
-                    bound.apiClient.execute(request("$API_URL/v1/files")).use { response ->
+                    bound.apiClient.execute(X509LiveRequests.api(accessToken)).use { response ->
                         assertThat(response.statusCode()).isEqualTo(200)
                     }
+                    recordingKeyManager.requireClientAliasSelection("mTLS API")
                 }
 
                 val authConnect = authPeer.takeRequest()
@@ -76,8 +105,16 @@ internal class X509TransportTest {
                 val apiRequest = apiPeer.takeRequest()
                 assertThat(authConnect.requestLine).isEqualTo("CONNECT $AUTH_HOST:443 HTTP/1.1")
                 assertThat(apiConnect.requestLine).isEqualTo("CONNECT $API_HOST:443 HTTP/1.1")
+                assertThat(authRequest.method).isEqualTo("POST")
                 assertThat(authRequest.path).isEqualTo("/oauth/token")
-                assertThat(apiRequest.path).isEqualTo("/v1/files")
+                assertThat(authRequest.getHeader("Authorization")).isNull()
+                assertThat(authRequest.getHeader("Content-Type")).isEqualTo("application/json")
+                assertThat(authRequest.body.readUtf8()).isEqualTo(TOKEN_REQUEST)
+                assertThat(apiRequest.method).isEqualTo("GET")
+                assertThat(apiRequest.path).isEqualTo("/v1/models")
+                assertThat(apiRequest.getHeader("Authorization")).isEqualTo("Bearer $ACCESS_TOKEN")
+                assertThat(apiRequest.getHeader("api-key")).isNull()
+                assertThat(apiRequest.getHeader("x-api-key")).isNull()
                 assertThat(requireNotNull(authRequest.handshake).peerCertificates.first())
                     .isEqualTo(pinned.leaf.certificate)
                 assertThat(requireNotNull(apiRequest.handshake).peerCertificates.first())
@@ -88,6 +125,7 @@ internal class X509TransportTest {
                     .doesNotContain(alternate.leaf.certificate)
                 assertThat(authPeer.requestedServerNames).containsExactly(AUTH_HOST)
                 assertThat(apiPeer.requestedServerNames).containsExactly(API_HOST)
+                assertThat(exchange.body.closed).isTrue()
             }
         }
     }
@@ -133,6 +171,35 @@ internal class X509TransportTest {
 
             assertThat(authPeer.takeRequest().requestLine)
                 .isEqualTo("CONNECT $API_HOST:443 HTTP/1.1")
+            assertThat(authPeer.requestedServerNames).containsExactly(API_HOST)
+        }
+    }
+
+    @Test
+    fun productionTransportRejectsUntrustedServersOnBothLegs() {
+        val identity = X509TestIdentity.create("untrusted server identity")
+        val unrelatedRoot = X509TestIdentity.create("unrelated server identity").root.certificate
+        X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+            X509TestPeer(API_HOST, identity.root.certificate).use { apiPeer ->
+                authPeer.enqueue(MockResponse())
+                apiPeer.enqueue(MockResponse())
+                val transport = transport(identity, listOf(unrelatedRoot))
+
+                transport.bindForTest(Timeout.default(), authPeer.proxy, apiPeer.proxy).use { bound
+                    ->
+                    assertThatThrownBy { bound.exchangeClient.execute(request(AUTH_URL)).close() }
+                        .isInstanceOf(OpenAIIoException::class.java)
+                        .hasCauseInstanceOf(SSLHandshakeException::class.java)
+                    assertThatThrownBy {
+                            bound.apiClient.execute(request("$API_URL/v1/files")).close()
+                        }
+                        .isInstanceOf(OpenAIIoException::class.java)
+                        .hasCauseInstanceOf(SSLHandshakeException::class.java)
+                }
+
+                assertThat(authPeer.server.requestCount).isEqualTo(1)
+                assertThat(apiPeer.server.requestCount).isEqualTo(1)
+            }
         }
     }
 
@@ -161,19 +228,6 @@ internal class X509TransportTest {
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("certificateAlias does not identify a private key")
     }
-
-    private fun adversarialTransport(
-        pinned: X509TestIdentity,
-        alternate: X509TestIdentity,
-        trustedServerRoots: Iterable<X509Certificate>,
-    ): X509Transport =
-        transport(
-            SelectingKeyManager(
-                keyManager(mapOf(PINNED_ALIAS to pinned, ALTERNATE_ALIAS to alternate)),
-                ALTERNATE_ALIAS,
-            ),
-            trustedServerRoots,
-        )
 
     private fun transport(
         identity: X509TestIdentity,
@@ -229,6 +283,19 @@ internal class X509TransportTest {
         const val API_URL = "https://$API_HOST"
         const val PINNED_ALIAS = "pinned"
         const val ALTERNATE_ALIAS = "alternate"
+        const val ACCESS_TOKEN = "test-x509-access-token"
+        val TOKEN_REQUEST =
+            """{"grant_type":"urn:ietf:params:oauth:grant-type:token-exchange","subject_token_type":"urn:openai:params:oauth:token-type:x509","identity_provider_id":"idp_test","service_account_id":"svc_acct_test"}"""
+        val TOKEN_RESPONSE =
+            """
+            {
+              "access_token": "$ACCESS_TOKEN",
+              "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+              "token_type": "Bearer",
+              "expires_in": 3600
+            }
+            """
+                .trimIndent()
     }
 }
 
