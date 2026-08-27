@@ -1,6 +1,5 @@
 package com.openai.client.okhttp
 
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.core.Timeout
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
@@ -10,6 +9,7 @@ import java.security.KeyStore
 import java.security.Principal
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
+import java.time.Duration
 import java.util.concurrent.CompletionException
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLEngine
@@ -22,8 +22,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class X509TransportTest {
-    private val jsonMapper = JsonMapper()
-
     @Test
     fun productionBindingIsDirectNonRetryingAndIsolated() {
         val pinned = X509TestIdentity.create("production binding identity")
@@ -82,19 +80,18 @@ internal class X509TransportTest {
                         recordingKeyManager,
                         listOf(authPeer.serverRootCertificate, apiPeer.serverRootCertificate),
                     )
-                val exchange = X509LiveRequests.exchange(jsonMapper, "idp_test", "svc_acct_test")
-
                 transport.bindForTest(Timeout.default(), authPeer.proxy, apiPeer.proxy).use { bound
                     ->
-                    val accessToken =
-                        bound.exchangeClient.execute(exchange.request).use { response ->
-                            assertThat(response.statusCode()).isEqualTo(200)
-                            jsonMapper.readTree(response.body()).path("access_token").asText()
+                    val token =
+                        X509TokenExchange("idp_test", "svc_acct_test", bound.exchangeClient).use {
+                            exchange ->
+                            exchange.execute()
                         }
+                    assertThat(token.expiresIn).isEqualTo(Duration.ofDays(1))
                     recordingKeyManager.requireClientAliasSelection("issuer exchange")
                     // Closing one path must not drain the other path's pool or dispatcher.
                     bound.exchangeClient.close()
-                    bound.apiClient.execute(X509LiveRequests.api(accessToken)).use { response ->
+                    bound.apiClient.execute(X509LiveRequests.api(token.value)).use { response ->
                         assertThat(response.statusCode()).isEqualTo(200)
                     }
                     recordingKeyManager.requireClientAliasSelection("mTLS API")
@@ -126,7 +123,6 @@ internal class X509TransportTest {
                     .doesNotContain(alternate.leaf.certificate)
                 assertThat(authPeer.requestedServerNames).containsExactly(AUTH_HOST)
                 assertThat(apiPeer.requestedServerNames).containsExactly(API_HOST)
-                assertThat(exchange.body.closed).isTrue()
             }
         }
     }
@@ -398,7 +394,7 @@ internal class X509TransportTest {
               "access_token": "$ACCESS_TOKEN",
               "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
               "token_type": "Bearer",
-              "expires_in": 3600
+              "expires_in": 86400
             }
             """
                 .trimIndent()
