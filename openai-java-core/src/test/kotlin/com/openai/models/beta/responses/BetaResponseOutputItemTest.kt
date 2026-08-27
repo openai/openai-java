@@ -316,7 +316,6 @@ internal class BetaResponseOutputItemTest {
         val functionCallOutput =
             BetaResponseFunctionToolCallOutputItem.builder()
                 .id("id")
-                .callId("call_id")
                 .output("string")
                 .status(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .agent(
@@ -324,6 +323,7 @@ internal class BetaResponseOutputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .callId("call_id")
                 .callerDirect()
                 .createdBy("created_by")
                 .name("name")
@@ -372,7 +372,6 @@ internal class BetaResponseOutputItemTest {
             BetaResponseOutputItem.ofFunctionCallOutput(
                 BetaResponseFunctionToolCallOutputItem.builder()
                     .id("id")
-                    .callId("call_id")
                     .output("string")
                     .status(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                     .agent(
@@ -380,6 +379,7 @@ internal class BetaResponseOutputItemTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .callId("call_id")
                     .callerDirect()
                     .createdBy("created_by")
                     .name("name")
