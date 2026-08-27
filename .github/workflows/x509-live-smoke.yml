@@ -119,7 +119,7 @@ jobs:
           if [[ "$missing_configuration" == true ]]; then
             echo '## X.509 live verification: NOT RUN' >> "$GITHUB_STEP_SUMMARY"
             echo 'Required protected-environment configuration was unavailable.' >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+            exit 1
           fi
 
           ./gradlew :openai-java-client-okhttp:test \

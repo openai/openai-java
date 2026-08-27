@@ -61,8 +61,8 @@ hard-coded HTTPS origins, both clients are direct and non-redirecting, and every
 
 ## Result meanings
 
-- **NOT RUN**: the dispatch input was false, or the protected job started but required enrolled
-  credentials were unavailable. This is not a pass.
+- **NOT RUN**: a disabled dispatch completes successfully without running the protected job. If a
+  requested protected run lacks required enrolled credentials, the job fails. Neither is a pass.
 - **REQUESTED**: the canonical `main` run passed the non-secret guard and awaits or entered the
   protected job. A deployment blocked or cancelled before environment approval remains requested
   and is not a pass; GitHub cannot run a later summary step while approval is pending.
