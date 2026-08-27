@@ -7,12 +7,14 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.HttpResponse
+import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import java.time.DateTimeException
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /** Connects the existing X.509 exchange to the SDK's owned provider-authentication pipeline. */
 internal class X509WorkloadIdentityAuthenticator(
@@ -29,13 +31,32 @@ internal class X509WorkloadIdentityAuthenticator(
 
     override fun authenticate(request: HttpRequest): HttpRequest =
         try {
+            requireAuthorizedOrigin(request)
             authenticated(request, token(async = false).join())
         } catch (failure: CompletionException) {
             throw failure.cause ?: failure
         }
 
     override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
-        token(async = true).thenApply { value -> authenticated(request, value) }
+        try {
+            requireAuthorizedOrigin(request)
+            token(async = true).thenApply { value -> authenticated(request, value) }
+        } catch (failure: Throwable) {
+            CompletableFuture<HttpRequest>().apply { completeExceptionally(failure) }
+        }
+
+    private fun requireAuthorizedOrigin(request: HttpRequest) {
+        val url = request.url().toHttpUrl()
+        if (
+            url.scheme != "https" ||
+                (url.host != "mtls.api.openai.com" && url.host != "mtls-eu.api.openai.com") ||
+                url.port != 443 ||
+                url.encodedUsername.isNotEmpty() ||
+                url.encodedPassword.isNotEmpty()
+        ) {
+            throw OpenAIException("X.509 request destination is not authorized")
+        }
+    }
 
     private fun authenticated(request: HttpRequest, token: String): HttpRequest =
         request.toBuilder().replaceHeaders("Authorization", "Bearer $token").build()

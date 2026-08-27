@@ -1,6 +1,7 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -8,6 +9,7 @@ import java.time.Duration
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import okhttp3.tls.HandshakeCertificates
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -48,6 +50,16 @@ internal class X509WorkloadIdentityIntegrationTest {
     @Test
     fun asynchronousPublicClientPreservesTheEnvironmentConfiguredEuMutualTlsEndpoint() {
         verifyEnvironmentConfiguredPublicClient(async = true)
+    }
+
+    @Test
+    fun synchronousClonedPublicClientCannotSendBearerToAnUnauthorizedOrigin() {
+        verifyClonedPublicClientRejectsUnauthorizedOrigin(async = false)
+    }
+
+    @Test
+    fun asynchronousClonedPublicClientCannotSendBearerToAnUnauthorizedOrigin() {
+        verifyClonedPublicClientRejectsUnauthorizedOrigin(async = true)
     }
 
     @Test
@@ -269,6 +281,82 @@ internal class X509WorkloadIdentityIntegrationTest {
             assertThatThrownBy { client.files().list() }
                 .isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("authentication is closed")
+        }
+    }
+
+    private fun verifyClonedPublicClientRejectsUnauthorizedOrigin(async: Boolean) {
+        val identity = X509TestIdentity.create("origin-bound certificate identity")
+        X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+            X509TestPeer(API_HOST, identity.root.certificate).use { apiPeer ->
+                MockWebServer().use { unauthorizedPeer ->
+                    authPeer.enqueue(tokenResponse(ACCESS_TOKEN))
+                    apiPeer.enqueue(filesResponse())
+                    unauthorizedPeer.enqueue(filesResponse())
+                    val configuration =
+                        configuration(
+                                identity,
+                                listOf(
+                                    authPeer.serverRootCertificate,
+                                    apiPeer.serverRootCertificate,
+                                ),
+                            )
+                            .withTestProxies(authPeer.proxy, apiPeer.proxy)
+
+                    if (async) {
+                        val client =
+                            OpenAIOkHttpClientAsync.builder()
+                                .x509WorkloadIdentity(configuration)
+                                .maxRetries(0)
+                                .build()
+                        try {
+                            client.files().list().get(5, TimeUnit.SECONDS)
+                            val cloned =
+                                client.withOptions {
+                                    it.baseUrl(unauthorizedPeer.url("/v1").toString())
+                                    it.httpClient(OkHttpClient.builder().build())
+                                }
+                            try {
+                                assertThatThrownBy {
+                                        cloned.files().list().get(5, TimeUnit.SECONDS)
+                                    }
+                                    .isInstanceOf(ExecutionException::class.java)
+                                    .hasRootCauseInstanceOf(OpenAIException::class.java)
+                                    .hasMessageContaining("destination is not authorized")
+                            } finally {
+                                cloned.close()
+                            }
+                        } finally {
+                            client.close()
+                        }
+                    } else {
+                        val client =
+                            OpenAIOkHttpClient.builder()
+                                .x509WorkloadIdentity(configuration)
+                                .maxRetries(0)
+                                .build()
+                        try {
+                            client.files().list()
+                            val cloned =
+                                client.withOptions {
+                                    it.baseUrl(unauthorizedPeer.url("/v1").toString())
+                                    it.httpClient(OkHttpClient.builder().build())
+                                }
+                            try {
+                                assertThatThrownBy { cloned.files().list() }
+                                    .isInstanceOf(OpenAIException::class.java)
+                                    .hasMessageContaining("destination is not authorized")
+                            } finally {
+                                cloned.close()
+                            }
+                        } finally {
+                            client.close()
+                        }
+                    }
+
+                    assertThat(unauthorizedPeer.requestCount).isZero()
+                    assertThat(authPeer.server.requestCount).isEqualTo(2)
+                }
+            }
         }
     }
 
