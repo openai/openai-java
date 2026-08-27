@@ -18,10 +18,12 @@ import java.net.SocketTimeoutException
 import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.BiConsumer
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.tls.HandshakeCertificates
 import org.assertj.core.api.Assertions.assertThat
@@ -191,6 +193,24 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
+    fun rejectsNestedRecognizedSuccessFieldsBeforeReadingLargeNestedStrings() {
+        listOf("access_token", "token_type", "issued_token_type", "expires_in").forEach { field ->
+            val body =
+                validResponseWithRawValue(field, """{"$field":"$OVERSIZED_RECOGNIZED_VALUE"}""")
+            listOf(false, true).forEach { async ->
+                val response = TestResponse(200, body)
+
+                assertThat(exchangeFailure(response, async))
+                    .describedAs("$field (async=$async)")
+                    .isInstanceOf(OpenAIInvalidDataException::class.java)
+                    .hasMessage("Invalid X.509 token exchange response field: $field")
+                assertThat(response.bytesRead.get()).isLessThan(body.toByteArray().size)
+                assertThat(response.closed).isTrue()
+            }
+        }
+    }
+
+    @Test
     fun acceptsPositiveTokenLifetimesAboveOneHour() {
         listOf(false, true).forEach { async ->
             val response = TestResponse(200, validResponse(expiresIn = "86400"))
@@ -208,7 +228,7 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
-    fun failureStatusPreservesRedactedOAuthDiagnosticsAndSafeHeaders() {
+    fun failureStatusPreservesSafeOAuthCodeAndHeadersWithoutFreeFormDescription() {
         listOf(false, true).forEach { async ->
             val response =
                 TestResponse(
@@ -239,14 +259,15 @@ internal class X509TokenExchangeTest {
             assertThat(statusError.headers().values("Set-Cookie")).isEmpty()
             assertThat(statusError.headers().values("Authorization")).isEmpty()
             assertThat(statusError.headers().values("X-Api-Key")).isEmpty()
-            assertThat(statusError.headers().values("X-Request-ID")).containsExactly("req_safe")
+            assertThat(statusError.headers().values("X-Request-ID")).containsExactly("<redacted>")
             assertThat(statusError.headers().values("Retry-After")).containsExactly("1")
             assertThat(statusError.headers().values("Traceparent")).containsExactly("<redacted>")
             assertThat(statusError.headers().values("Tracestate")).containsExactly("<redacted>")
             assertThat(statusError.code()).contains("invalid_grant")
-            assertThat(statusError.message).contains("Certificate is not authorized")
+            assertThat(statusError.message).contains("invalid_grant")
             assertThat(statusError.toString())
                 .doesNotContain(
+                    "Certificate is not authorized",
                     "secret-cookie",
                     "secret-token",
                     "secret-api-key",
@@ -269,6 +290,47 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
+    fun doesNotExposeShortOpaqueSecretsFromDiagnosticHeaders() {
+        listOf(false, true).forEach { async ->
+            val response =
+                TestResponse(
+                    400,
+                    """{"error":"invalid_request"}""",
+                    Headers.builder()
+                        .put("X-Request-ID", "short-request-secret")
+                        .put("Tracestate", "short-trace-secret")
+                        .put("Retry-After", "short-retry-secret")
+                        .put("Content-Type", "short-content-secret")
+                        .build(),
+                )
+
+            val failure = exchangeFailure(response, async)
+
+            assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
+            val statusError = failure as UnexpectedStatusCodeException
+            assertThat(statusError.headers().values("X-Request-ID")).containsExactly("<redacted>")
+            assertThat(statusError.headers().values("Tracestate")).containsExactly("<redacted>")
+            assertThat(statusError.headers().values("Retry-After")).isEmpty()
+            assertThat(statusError.headers().values("Content-Type")).isEmpty()
+            assertThat(statusError.headers().toString())
+                .doesNotContain(
+                    "short-request-secret",
+                    "short-trace-secret",
+                    "short-retry-secret",
+                    "short-content-secret",
+                )
+            assertThat(failure.toString())
+                .doesNotContain(
+                    "short-request-secret",
+                    "short-trace-secret",
+                    "short-retry-secret",
+                    "short-content-secret",
+                )
+            assertThat(response.closed).isTrue()
+        }
+    }
+
+    @Test
     fun rejectsNon200SuccessWithoutRetainingCredentialFields() {
         listOf(false, true).forEach { async ->
             val response =
@@ -285,8 +347,9 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
-    fun redactsCompleteHeaderLikeValuesFromOAuthDiagnostics() {
+    fun doesNotExposeFreeFormOAuthErrorDescriptions() {
         mapOf(
+                "short-unlabeled-secret" to "short-unlabeled-secret",
                 "Authorization: Digest username=alice, response=secret-digest-value" to
                     "secret-digest-value",
                 "Cookie: first=secret-first-cookie; second=secret-second-cookie" to
@@ -313,10 +376,11 @@ internal class X509TokenExchangeTest {
                     val failure = exchangeFailure(response, async)
 
                     assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
-                    assertThat(failure.message).contains("Safe prefix", "<redacted>")
+                    val statusError = failure as UnexpectedStatusCodeException
+                    assertThat(statusError.code()).contains("invalid_grant")
+                    assertThat(failure.message).doesNotContain("Safe prefix", diagnostic, secret)
                     assertThat(failure.toString()).doesNotContain(secret)
-                    assertThat((failure as UnexpectedStatusCodeException).body().toString())
-                        .doesNotContain(secret)
+                    assertThat(statusError.body().toString()).doesNotContain(diagnostic, secret)
                     assertThat(response.closed).isTrue()
                 }
             }
@@ -324,27 +388,31 @@ internal class X509TokenExchangeTest {
 
     @Test
     fun rejectsCredentialLikeOAuthErrorCodesFromDiagnostics() {
-        listOf("sk-test-not-a-real-credential-00000000", "aaaaaaaa.bbbbbbbb.cccccccc").forEach {
-            credential ->
-            listOf(false, true).forEach { async ->
-                val response =
-                    TestResponse(
-                        400,
-                        """{"error":"$credential","error_description":"Issuer rejected certificate"}""",
-                    )
+        listOf(
+                "short-unlabeled-secret",
+                "sk-test-not-a-real-credential-00000000",
+                "aaaaaaaa.bbbbbbbb.cccccccc",
+            )
+            .forEach { credential ->
+                listOf(false, true).forEach { async ->
+                    val response =
+                        TestResponse(
+                            400,
+                            """{"error":"$credential","error_description":"Issuer rejected certificate"}""",
+                        )
 
-                val failure = exchangeFailure(response, async)
+                    val failure = exchangeFailure(response, async)
 
-                assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
-                val statusError = failure as UnexpectedStatusCodeException
-                assertThat(statusError.code()).isEmpty()
-                assertThat(statusError.message).contains("Issuer rejected certificate")
-                assertThat(statusError.message).doesNotContain(credential)
-                assertThat(statusError.body().toString()).doesNotContain(credential)
-                assertThat(statusError.toString()).doesNotContain(credential)
-                assertThat(response.closed).isTrue()
+                    assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
+                    val statusError = failure as UnexpectedStatusCodeException
+                    assertThat(statusError.code()).isEmpty()
+                    assertThat(statusError.message).doesNotContain("Issuer rejected certificate")
+                    assertThat(statusError.message).doesNotContain(credential)
+                    assertThat(statusError.body().toString()).doesNotContain(credential)
+                    assertThat(statusError.toString()).doesNotContain(credential)
+                    assertThat(response.closed).isTrue()
+                }
             }
-        }
     }
 
     @Test
@@ -356,6 +424,32 @@ internal class X509TokenExchangeTest {
                 "error\\u005fdescription" to
                     "{\"error\":\"invalid_grant\",\"error\\u005fdescription\":" +
                         "\"$OVERSIZED_RECOGNIZED_VALUE\"}",
+            )
+            .forEach { (field, body) ->
+                listOf(false, true).forEach { async ->
+                    val response = TestResponse(503, body)
+
+                    val failure = exchangeFailure(response, async)
+
+                    assertThat(failure)
+                        .describedAs("$field (async=$async)")
+                        .isInstanceOf(UnexpectedStatusCodeException::class.java)
+                    val statusError = failure as UnexpectedStatusCodeException
+                    assertThat(statusError.statusCode()).isEqualTo(503)
+                    assertThat(statusError.code()).isEmpty()
+                    assertThat(response.bytesRead.get()).isLessThan(body.toByteArray().size)
+                    assertThat(response.closed).isTrue()
+                }
+            }
+    }
+
+    @Test
+    fun ignoresNestedOAuthDiagnosticsBeforeReadingLargeNestedStrings() {
+        mapOf(
+                "error" to
+                    """{"error":{"error":"$OVERSIZED_RECOGNIZED_VALUE"},"error_description":"safe"}""",
+                "error_description" to
+                    """{"error":"invalid_grant","error_description":{"error_description":"$OVERSIZED_RECOGNIZED_VALUE"}}""",
             )
             .forEach { (field, body) ->
                 listOf(false, true).forEach { async ->
@@ -420,6 +514,7 @@ internal class X509TokenExchangeTest {
         val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
 
         val result = exchange.executeAsync()
+        assertThat(client.started.await(5, TimeUnit.SECONDS)).isTrue()
         assertThat(result.cancel(true)).isTrue()
 
         assertThat(responseFuture.isCancelled).isTrue()
@@ -429,24 +524,184 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
+    fun cancellationWaitsForInFlightRequestEnrollmentBeforePublishing() {
+        val responseFuture = CompletableFuture<HttpResponse>()
+        val client = BlockingStartClient(responseFuture)
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
+        val result = exchange.executeAsync()
+        val cancellationPublished = CountDownLatch(1)
+        val cancellationFinished = CountDownLatch(1)
+        result.whenComplete { _, _ -> cancellationPublished.countDown() }
+
+        assertThat(client.started.await(5, TimeUnit.SECONDS)).isTrue()
+        Thread {
+                result.cancel(true)
+                cancellationFinished.countDown()
+            }
+            .start()
+
+        try {
+            assertThat(cancellationFinished.await(200, TimeUnit.MILLISECONDS)).isFalse()
+            assertThat(cancellationPublished.count).isEqualTo(1)
+
+            client.release.countDown()
+
+            assertThat(cancellationFinished.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(cancellationPublished.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.isCancelled).isTrue()
+            assertThat(responseFuture.isCancelled).isTrue()
+        } finally {
+            client.release.countDown()
+            exchange.close()
+        }
+    }
+
+    @Test
+    fun cancellationWaitsForCompletedResponseHandoffBeforePublishing() {
+        val response = BlockingResponse()
+        val responseFuture = BlockingHandoffFuture<HttpResponse>(response)
+        val client = DeferredResponseClient(responseFuture)
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
+        val result = exchange.executeAsync()
+        val cancellationPublished = CountDownLatch(1)
+        val cancellationFinished = CountDownLatch(1)
+        result.whenComplete { _, _ -> cancellationPublished.countDown() }
+
+        assertThat(responseFuture.handoffStarted.await(5, TimeUnit.SECONDS)).isTrue()
+        Thread {
+                result.cancel(true)
+                cancellationFinished.countDown()
+            }
+            .start()
+
+        try {
+            assertThat(cancellationFinished.await(200, TimeUnit.MILLISECONDS)).isFalse()
+            assertThat(cancellationPublished.count).isEqualTo(1)
+
+            responseFuture.releaseHandoff.countDown()
+
+            assertThat(cancellationFinished.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(cancellationPublished.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(response.bodyStarted.count).isEqualTo(1)
+            assertThat(response.closeCount).hasValue(1)
+        } finally {
+            responseFuture.releaseHandoff.countDown()
+            exchange.close()
+        }
+    }
+
+    @Test
     fun cancelingClosesALateResponseWhenUnderlyingCancellationLosesTheRace() {
         val responseFuture = NonCancellableFuture<HttpResponse>()
-        val exchange =
-            X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, DeferredResponseClient(responseFuture))
+        val client = DeferredResponseClient(responseFuture)
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
         val result = exchange.executeAsync()
-        val response = TestResponse(200, validResponse())
+        val response = BlockingResponse()
 
+        assertThat(client.started.await(5, TimeUnit.SECONDS)).isTrue()
         assertThat(result.cancel(true)).isTrue()
         assertThat(responseFuture.complete(response)).isTrue()
 
         assertThat(result.isCancelled).isTrue()
-        assertThat(response.bodyRead).isFalse()
+        assertThat(response.bodyStarted.count).isEqualTo(1)
+        assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
         assertThat(response.closeCount).hasValue(1)
         exchange.close()
     }
 
     @Test
-    fun responseExecutorQueuesValidResponsesBeyondItsOwnedThreadCount() {
+    fun cancellationClosesActiveResponseBeforeRunningCallerCallbacks() {
+        val response = BlockingResponse()
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, SingleResponseClient(response))
+        val result = exchange.executeAsync()
+        val callbackStarted = CountDownLatch(1)
+        val releaseCallback = CountDownLatch(1)
+        val cancellationFinished = CountDownLatch(1)
+
+        assertThat(response.bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
+        result.whenComplete { _, _ ->
+            callbackStarted.countDown()
+            releaseCallback.await()
+        }
+        Thread {
+                result.cancel(true)
+                cancellationFinished.countDown()
+            }
+            .start()
+
+        try {
+            assertThat(callbackStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(response.closeCount).hasValue(1)
+        } finally {
+            releaseCallback.countDown()
+            assertThat(cancellationFinished.await(5, TimeUnit.SECONDS)).isTrue()
+            exchange.close()
+        }
+    }
+
+    @Test
+    fun closeClosesALateResponseWhenUnderlyingCancellationLosesTheRace() {
+        val responseFuture = NonCancellableFuture<HttpResponse>()
+        val client = DeferredResponseClient(responseFuture)
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
+        val result = exchange.executeAsync()
+        val response = BlockingResponse()
+
+        assertThat(client.started.await(5, TimeUnit.SECONDS)).isTrue()
+        exchange.close()
+        assertThat(responseFuture.complete(response)).isTrue()
+
+        assertThat(result.isCancelled).isTrue()
+        assertThat(response.bodyStarted.count).isEqualTo(1)
+        assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+        assertThat(response.closeCount).hasValue(1)
+    }
+
+    @Test
+    fun closeCleansAllAdmittedOperationsBeforeRunningCallerCallbacks() {
+        val responses = List(4) { BlockingResponse() }
+        val client = SequenceResponseClient(responses)
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
+        val activeResults = responses.map { exchange.executeAsync() }
+        val queuedResult = exchange.executeAsync()
+        val results = activeResults + queuedResult
+        val callbackStarted = CountDownLatch(1)
+        val releaseCallbacks = CountDownLatch(1)
+        val closeFinished = CountDownLatch(1)
+
+        responses.forEach { response ->
+            assertThat(response.bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
+        }
+        assertThat(client.executeCount).hasValue(4)
+        results.forEach { result ->
+            result.whenComplete { _, _ ->
+                callbackStarted.countDown()
+                releaseCallbacks.await()
+            }
+        }
+        Thread {
+                exchange.close()
+                closeFinished.countDown()
+            }
+            .start()
+
+        try {
+            assertThat(callbackStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            responses.forEach { response ->
+                assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+                assertThat(response.closeCount).hasValue(1)
+            }
+            assertThat(client.executeCount).hasValue(4)
+        } finally {
+            releaseCallbacks.countDown()
+            assertThat(closeFinished.await(5, TimeUnit.SECONDS)).isTrue()
+        }
+    }
+
+    @Test
+    fun asyncExecutorQueuesWholeExchangesBeforeIssuingAdditionalRequests() {
         val release = CountDownLatch(1)
         val activeResponses = List(4) { GatedResponse(validResponse(), release) }
         val queuedResponse = TestResponse(200, validResponse())
@@ -459,6 +714,7 @@ internal class X509TokenExchangeTest {
             activeResponses.forEach { response ->
                 assertThat(response.bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
             }
+            assertThat(client.executeCount).hasValue(4)
             assertThat(queuedResponse.bodyRead).isFalse()
             assertThat(results.last().isDone).isFalse()
 
@@ -473,6 +729,51 @@ internal class X509TokenExchangeTest {
             exchange.close()
         }
         assertThat(client.closed).isFalse()
+    }
+
+    @Test
+    fun asyncExecutorBoundsAndRemovesCanceledQueuedExchanges() {
+        val release = CountDownLatch(1)
+        val activeResponses = List(4) { GatedResponse(validResponse(), release) }
+        val admittedResponses = List(4) { TestResponse(200, validResponse()) }
+        val client = SequenceResponseClient(activeResponses + admittedResponses)
+        val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
+        try {
+            val activeResults = List(4) { exchange.executeAsync() }
+            val queuedResults = List(4) { exchange.executeAsync() }
+
+            activeResponses.forEach { response ->
+                assertThat(response.bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            }
+            assertThat(client.executeCount).hasValue(4)
+
+            val overflow = exchange.executeAsync()
+            val overflowFailure =
+                runCatching { overflow.get(5, TimeUnit.SECONDS) }.exceptionOrNull()
+                    ?: error("Expected bounded X.509 executor rejection")
+            assertThat(overflowFailure).isInstanceOf(ExecutionException::class.java)
+            assertThat(overflowFailure.cause).isInstanceOf(OpenAIIoException::class.java)
+            assertThat(overflowFailure.cause)
+                .hasMessage("X.509 token exchange processing unavailable")
+
+            assertThat(queuedResults.first().cancel(true)).isTrue()
+            val replacement = exchange.executeAsync()
+            assertThat(replacement.isDone).isFalse()
+            assertThat(client.executeCount).hasValue(4)
+
+            release.countDown()
+
+            val successful = activeResults + queuedResults.drop(1) + replacement
+            assertThat(successful.map { it.get(5, TimeUnit.SECONDS).value })
+                .containsExactlyElementsOf(List(8) { ACCESS_TOKEN })
+            assertThat(queuedResults.first().isCancelled).isTrue()
+            assertThat(client.executeCount).hasValue(8)
+            assertThat(activeResponses).allMatch { it.closed }
+            assertThat(admittedResponses).allMatch { it.closed }
+        } finally {
+            release.countDown()
+            exchange.close()
+        }
     }
 
     private fun exchangeFailure(response: HttpResponse, async: Boolean): Throwable {
@@ -514,6 +815,10 @@ internal class X509TokenExchangeTest {
 
     private fun validResponseWithDuplicate(field: String, firstValue: String): String =
         validResponse().replaceFirst("\"$field\":", "\"$field\": $firstValue,\n  \"$field\":")
+
+    private fun validResponseWithRawValue(field: String, value: String): String =
+        validResponse()
+            .replaceFirst(Regex("\"$field\"\\s*:\\s*(?:\"[^\"]*\"|[0-9]+)"), "\"$field\": $value")
 
     private fun validResponse(
         accessToken: String = ACCESS_TOKEN,
@@ -582,6 +887,7 @@ private open class SingleResponseClient(private val response: HttpResponse) : Ht
 
 private class DeferredResponseClient(private val responseFuture: CompletableFuture<HttpResponse>) :
     HttpClient {
+    val started = CountDownLatch(1)
     var closed = false
         private set
 
@@ -591,19 +897,55 @@ private class DeferredResponseClient(private val responseFuture: CompletableFutu
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
-    ): CompletableFuture<HttpResponse> = responseFuture
+    ): CompletableFuture<HttpResponse> = responseFuture.also { started.countDown() }
 
     override fun close() {
         closed = true
     }
 }
 
+private class BlockingStartClient(private val responseFuture: CompletableFuture<HttpResponse>) :
+    HttpClient {
+    val started = CountDownLatch(1)
+    val release = CountDownLatch(1)
+
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        error("Unexpected synchronous call")
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> {
+        started.countDown()
+        release.await()
+        return responseFuture
+    }
+
+    override fun close() {}
+}
+
 private class NonCancellableFuture<T> : CompletableFuture<T>() {
     override fun cancel(mayInterruptIfRunning: Boolean): Boolean = false
 }
 
+private class BlockingHandoffFuture<T>(value: T) : CompletableFuture<T>() {
+    val handoffStarted = CountDownLatch(1)
+    val releaseHandoff = CountDownLatch(1)
+
+    init {
+        complete(value)
+    }
+
+    override fun whenComplete(action: BiConsumer<in T, in Throwable?>): CompletableFuture<T> {
+        handoffStarted.countDown()
+        releaseHandoff.await()
+        return super.whenComplete(action)
+    }
+}
+
 private class SequenceResponseClient(responses: List<HttpResponse>) : HttpClient {
-    private val responses = ArrayDeque(responses)
+    private val responses = ConcurrentLinkedQueue(responses)
+    val executeCount = AtomicInteger()
     var closed = false
         private set
 
@@ -613,7 +955,12 @@ private class SequenceResponseClient(responses: List<HttpResponse>) : HttpClient
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
-    ): CompletableFuture<HttpResponse> = CompletableFuture.completedFuture(responses.removeFirst())
+    ): CompletableFuture<HttpResponse> {
+        executeCount.incrementAndGet()
+        return CompletableFuture.completedFuture(
+            responses.poll() ?: error("No X.509 test response remains")
+        )
+    }
 
     override fun close() {
         closed = true

@@ -23,9 +23,10 @@ import java.nio.charset.CharacterCodingException
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 import java.time.Duration
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -53,10 +54,11 @@ internal class X509TokenExchange(
                 MAX_RESPONSE_THREADS,
                 RESPONSE_THREAD_IDLE_SECONDS,
                 TimeUnit.SECONDS,
-                LinkedBlockingQueue(),
+                ArrayBlockingQueue(MAX_QUEUED_EXCHANGES),
                 ResponseThreadFactory,
             )
             .apply { allowCoreThreadTimeOut(true) }
+    private val lifecycleLock = Any()
     private val operations = ConcurrentHashMap.newKeySet<AsyncOperation>()
     private val closed = AtomicBoolean()
 
@@ -71,59 +73,87 @@ internal class X509TokenExchange(
     }
 
     fun executeAsync(): CompletableFuture<X509AccessToken> {
-        checkOpen()
-        val operation = AsyncOperation()
-        operations.add(operation)
-        operation.result.whenComplete { _, _ -> operations.remove(operation) }
-
-        val responseFuture =
-            try {
-                httpClient.executeAsync(request())
-            } catch (error: Throwable) {
-                operations.remove(operation)
-                throw error
+        val operation =
+            synchronized(lifecycleLock) {
+                checkOpen()
+                AsyncOperation().also { operation ->
+                    operations.add(operation)
+                    try {
+                        responseExecutor.execute(operation)
+                    } catch (_: java.util.concurrent.RejectedExecutionException) {
+                        operation.result.completeExceptionally(
+                            OpenAIIoException("X.509 token exchange processing unavailable")
+                        )
+                    }
+                }
             }
-        operation.responseFuture.set(responseFuture)
-        responseFuture.whenComplete(operation::accept)
-        if (closed.get() || operation.result.isCancelled) {
-            operation.result.cancel(true)
-            responseFuture.cancel(true)
-        }
         return operation.result
     }
 
     override fun close() {
-        if (closed.compareAndSet(false, true)) {
-            operations.toTypedArray().forEach { operation -> operation.result.cancel(true) }
-            responseExecutor.shutdownNow()
-        }
+        val cancellations =
+            synchronized(lifecycleLock) {
+                if (closed.compareAndSet(false, true)) {
+                    operations
+                        .toTypedArray()
+                        .filter { operation -> operation.prepareCancellation(true) }
+                        .also { responseExecutor.shutdown() }
+                } else {
+                    emptyList()
+                }
+            }
+        cancellations.forEach { operation -> operation.publishCancellation(true) }
     }
 
     private fun checkOpen() {
         check(!closed.get()) { "X.509 token exchange is closed" }
     }
 
-    private inner class AsyncOperation {
-        val result = CompletableFuture<X509AccessToken>()
+    private inner class AsyncOperation : Runnable {
+        private val terminal = AtomicBoolean()
+        private val cancellationRequested = AtomicBoolean()
+        private val enrollmentLock = Any()
         val responseFuture = AtomicReference<CompletableFuture<HttpResponse>?>()
+        private val responseLeaseFuture = CompletableFuture<ResponseLease>()
         private val activeResponse = AtomicReference<ResponseLease?>()
+        val result = OperationResult(this)
 
-        init {
-            result.whenComplete { _, _ ->
-                if (result.isCancelled) {
-                    responseFuture.get()?.cancel(true)
-                    activeResponse.getAndSet(null)?.close()
-                }
+        override fun run() {
+            try {
+                if (!initiateRequest()) return
+                val lease =
+                    try {
+                        responseLeaseFuture.get()
+                    } catch (error: ExecutionException) {
+                        throw error.cause ?: error
+                    }
+                val token = lease.use { if (terminal.get()) null else parse(lease.response) }
+                if (token != null) result.complete(token)
+            } catch (error: Throwable) {
+                if (!closed.get() && !terminal.get()) result.completeExceptionally(error)
+            } finally {
+                activeResponse.getAndSet(null)?.close()
             }
         }
 
-        fun accept(response: HttpResponse?, error: Throwable?) {
+        private fun initiateRequest(): Boolean =
+            synchronized(enrollmentLock) {
+                if (terminal.get() || closed.get()) return@synchronized false
+
+                val future = httpClient.executeAsync(request())
+                future.whenComplete(::acceptResponse)
+                responseFuture.set(future)
+                if (terminal.get() || closed.get()) future.cancel(true)
+                true
+            }
+
+        private fun acceptResponse(response: HttpResponse?, error: Throwable?) {
             if (error != null) {
-                if (!result.isDone) result.completeExceptionally(error)
+                responseLeaseFuture.completeExceptionally(error)
                 return
             }
             if (response == null) {
-                result.completeExceptionally(
+                responseLeaseFuture.completeExceptionally(
                     IllegalStateException("X.509 token exchange completed without a response")
                 )
                 return
@@ -131,37 +161,72 @@ internal class X509TokenExchange(
 
             val lease = ResponseLease(response)
             activeResponse.set(lease)
-            if (result.isDone) {
-                close(lease)
-                return
-            }
-            try {
-                responseExecutor.execute { process(lease) }
-            } catch (_: java.util.concurrent.RejectedExecutionException) {
-                close(lease)
-                if (!result.isDone) {
-                    result.completeExceptionally(
-                        OpenAIIoException("X.509 token exchange response processing unavailable")
-                    )
+            if (terminal.get() && activeResponse.compareAndSet(lease, null)) lease.close()
+            responseLeaseFuture.complete(lease)
+        }
+
+        private fun cancelResources(mayInterruptIfRunning: Boolean) {
+            val completedFuture =
+                synchronized(enrollmentLock) {
+                    val future = responseFuture.get()
+                    val canceled = future?.cancel(mayInterruptIfRunning) == true
+                    activeResponse.getAndSet(null)?.close()
+                    future?.takeIf { !canceled && it.isDone }
                 }
+            if (completedFuture != null) {
+                responseLeaseFuture.handle { _, _ -> Unit }.join()
+                activeResponse.getAndSet(null)?.close()
             }
         }
 
-        private fun process(lease: ResponseLease) {
-            try {
-                val token = lease.use { if (result.isDone) null else parse(lease.response) }
-                if (token != null && !result.isDone) result.complete(token)
-            } catch (error: Throwable) {
-                if (!result.isDone) result.completeExceptionally(error)
-            } finally {
-                activeResponse.compareAndSet(lease, null)
-            }
+        fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+            if (!prepareCancellation(mayInterruptIfRunning)) return false
+            return publishCancellation(mayInterruptIfRunning)
         }
 
-        private fun close(lease: ResponseLease) {
-            activeResponse.compareAndSet(lease, null)
-            lease.close()
+        fun prepareCancellation(mayInterruptIfRunning: Boolean): Boolean {
+            val firstCompletion = terminal.compareAndSet(false, true)
+            if (firstCompletion) cancellationRequested.set(true)
+            if (cancellationRequested.get()) cancelResources(mayInterruptIfRunning)
+            if (!firstCompletion) return false
+
+            responseExecutor.remove(this)
+            operations.remove(this)
+            return true
         }
+
+        fun publishCancellation(mayInterruptIfRunning: Boolean): Boolean =
+            result.publishCancellation(mayInterruptIfRunning)
+
+        fun complete(value: X509AccessToken): Boolean {
+            if (!terminal.compareAndSet(false, true)) return false
+            operations.remove(this)
+            return result.publishValue(value)
+        }
+
+        fun completeExceptionally(error: Throwable): Boolean {
+            if (!terminal.compareAndSet(false, true)) return false
+            operations.remove(this)
+            return result.publishException(error)
+        }
+    }
+
+    private inner class OperationResult(private val operation: AsyncOperation) :
+        CompletableFuture<X509AccessToken>() {
+        override fun cancel(mayInterruptIfRunning: Boolean): Boolean =
+            operation.cancel(mayInterruptIfRunning)
+
+        override fun complete(value: X509AccessToken): Boolean = operation.complete(value)
+
+        override fun completeExceptionally(error: Throwable): Boolean =
+            operation.completeExceptionally(error)
+
+        fun publishCancellation(mayInterruptIfRunning: Boolean): Boolean =
+            super.cancel(mayInterruptIfRunning)
+
+        fun publishValue(value: X509AccessToken): Boolean = super.complete(value)
+
+        fun publishException(error: Throwable): Boolean = super.completeExceptionally(error)
     }
 
     private class ResponseLease(val response: HttpResponse) : AutoCloseable {
@@ -239,22 +304,28 @@ internal class X509TokenExchange(
             val field = parser.currentName()
             val valueToken = parser.nextToken() ?: throw invalidResponse()
             when (field) {
-                "access_token" ->
-                    accessToken =
-                        parser
-                            .takeIf { valueToken == JsonToken.VALUE_STRING }
-                            ?.text
-                            ?.takeIf(String::isNotBlank)
-                "token_type" ->
-                    tokenType = parser.takeIf { valueToken == JsonToken.VALUE_STRING }?.text
-                "issued_token_type" ->
-                    issuedTokenType = parser.takeIf { valueToken == JsonToken.VALUE_STRING }?.text
-                "expires_in" ->
-                    expiresIn =
-                        parser
-                            .takeIf { valueToken == JsonToken.VALUE_NUMBER_INT }
-                            ?.longValue
-                            ?.takeIf { it > 0 }
+                "access_token" -> {
+                    if (valueToken != JsonToken.VALUE_STRING) {
+                        throw invalidResponse("access_token")
+                    }
+                    accessToken = parser.text.takeIf(String::isNotBlank)
+                }
+                "token_type" -> {
+                    if (valueToken != JsonToken.VALUE_STRING) throw invalidResponse("token_type")
+                    tokenType = parser.text
+                }
+                "issued_token_type" -> {
+                    if (valueToken != JsonToken.VALUE_STRING) {
+                        throw invalidResponse("issued_token_type")
+                    }
+                    issuedTokenType = parser.text
+                }
+                "expires_in" -> {
+                    if (valueToken != JsonToken.VALUE_NUMBER_INT) {
+                        throw invalidResponse("expires_in")
+                    }
+                    expiresIn = parser.longValue.takeIf { it > 0 }
+                }
                 else -> parser.skipChildren()
             }
         }
@@ -297,28 +368,23 @@ internal class X509TokenExchange(
         if (parser.nextToken() != JsonToken.START_OBJECT) return null
 
         var errorCode: String? = null
-        var errorDescription: String? = null
         while (parser.nextToken() != JsonToken.END_OBJECT) {
             if (parser.currentToken() != JsonToken.FIELD_NAME) return null
             val field = parser.currentName()
             val valueToken = parser.nextToken() ?: return null
             when (field) {
-                "error" -> errorCode = parser.takeIf { valueToken == JsonToken.VALUE_STRING }?.text
-                "error_description" ->
-                    errorDescription = parser.takeIf { valueToken == JsonToken.VALUE_STRING }?.text
+                "error" -> {
+                    if (valueToken != JsonToken.VALUE_STRING) return null
+                    errorCode = parser.text
+                }
+                "error_description" -> if (valueToken != JsonToken.VALUE_STRING) return null
                 else -> parser.skipChildren()
             }
         }
         if (parser.nextToken() != null) return null
 
-        val safeCode =
-            errorCode
-                ?.takeIf(OAUTH_ERROR_CODE_PATTERN::matches)
-                ?.takeUnless(SENSITIVE_DIAGNOSTIC_NAME_PATTERN::containsMatchIn)
-                ?.takeUnless(JWT_CREDENTIAL_PATTERN::containsMatchIn)
-                ?.takeUnless(LONG_CREDENTIAL_CANDIDATE_PATTERN::containsMatchIn)
-        val safeDescription = errorDescription?.let(::sanitizeOAuthErrorDescription)
-        val message = safeDescription ?: safeCode ?: return null
+        val safeCode = errorCode?.takeIf(SAFE_OAUTH_ERROR_CODES::contains)
+        val message = safeCode ?: return null
         return ErrorObject.builder()
             .code(safeCode)
             .message(message)
@@ -334,23 +400,6 @@ internal class X509TokenExchange(
                 .onUnmappableCharacter(CodingErrorAction.REPORT)
         val reader = BoundedFieldReader(InputStreamReader(response.body(), decoder), stringLimits)
         return responseReader.createParser(reader)
-    }
-
-    private fun sanitizeOAuthErrorDescription(value: String): String? {
-        var sanitized =
-            value
-                .map { character -> if (character.code in 0x20..0x7E) character else ' ' }
-                .joinToString("")
-        NAMED_CREDENTIAL_ASSIGNMENT_PATTERN.find(sanitized)?.let { match ->
-            sanitized = "${sanitized.substring(0, match.range.first).trimEnd()} <redacted>"
-        }
-        AUTH_SCHEME_CREDENTIAL_PATTERN.find(sanitized)?.let { match ->
-            sanitized =
-                sanitized.substring(0, match.range.first) + "${match.groupValues[1]} <redacted>"
-        }
-        sanitized = JWT_CREDENTIAL_PATTERN.replace(sanitized, "<redacted>")
-        sanitized = LONG_CREDENTIAL_CANDIDATE_PATTERN.replace(sanitized, "<redacted>")
-        return sanitized.trim().takeIf(String::isNotEmpty)
     }
 
     private fun invalidResponse(field: String? = null): OpenAIInvalidDataException =
@@ -386,10 +435,32 @@ internal class X509TokenExchange(
         Headers.builder()
             .apply {
                 SAFE_DIAGNOSTIC_HEADERS.forEach { name ->
-                    put(name, headers.values(name).mapNotNull(::sanitizeOAuthErrorDescription))
+                    put(
+                        name,
+                        headers.values(name).mapNotNull { value ->
+                            safeDiagnosticHeaderValue(name, value)
+                        },
+                    )
                 }
             }
             .build()
+
+    private fun safeDiagnosticHeaderValue(name: String, value: String): String? {
+        if (name in OPAQUE_DIAGNOSTIC_HEADERS) {
+            return if (value.isEmpty()) null else "<redacted>"
+        }
+        if (value.length > MAX_DIAGNOSTIC_HEADER_CHARS) return null
+
+        return when (name) {
+            "Content-Length",
+            "Retry-After",
+            "Retry-After-Ms" -> value.takeIf { it.isNotEmpty() && it.all { it in '0'..'9' } }
+            "Content-Type" ->
+                value.trim().lowercase().takeIf(SAFE_DIAGNOSTIC_CONTENT_TYPES::contains)
+            "X-Should-Retry" -> value.lowercase().takeIf { it == "true" || it == "false" }
+            else -> null
+        }
+    }
 
     private companion object {
         const val TOKEN_EXCHANGE_URL = "https://mtls.auth.openai.com/oauth/token"
@@ -397,7 +468,9 @@ internal class X509TokenExchange(
         const val X509_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"
         const val ACCESS_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token"
         const val MAX_RESPONSE_THREADS = 4
+        const val MAX_QUEUED_EXCHANGES = MAX_RESPONSE_THREADS
         const val RESPONSE_THREAD_IDLE_SECONDS = 30L
+        const val MAX_DIAGNOSTIC_HEADER_CHARS = 64
         const val MAX_TOKEN_TYPE_CHARS = 32
         const val MAX_ISSUED_TOKEN_TYPE_CHARS = 128
         const val MAX_OAUTH_ERROR_CODE_CHARS = 128
@@ -413,27 +486,20 @@ internal class X509TokenExchange(
                 "error_description" to MAX_OAUTH_ERROR_DESCRIPTION_CHARS,
             )
         val BEARER_TOKEN_PATTERN = Regex("[A-Za-z0-9._~+/-]+=*")
-        val OAUTH_ERROR_CODE_PATTERN = Regex("[A-Za-z0-9._~-]+")
-        val SENSITIVE_DIAGNOSTIC_NAME_PATTERN =
-            Regex(
-                "(?i)(?:authorization|cookie|session|api[-_]?key|access[-_]?token|" +
-                    "refresh[-_]?token|subject[-_]?token|client[-_]?secret|password)"
+        val SAFE_OAUTH_ERROR_CODES =
+            setOf(
+                "invalid_client",
+                "invalid_grant",
+                "invalid_request",
+                "invalid_scope",
+                "invalid_target",
+                "unauthorized_client",
+                "unsupported_grant_type",
             )
-        val NAMED_CREDENTIAL_ASSIGNMENT_PATTERN =
-            Regex(
-                "(?i)\\b(?:authorization|cookie|set-cookie|session|api[-_ ]?key|" +
-                    "access[-_ ]?token|refresh[-_ ]?token|subject[-_ ]?token|" +
-                    "client[-_ ]?secret|password)\\b\\s*[:=]"
-            )
-        val AUTH_SCHEME_CREDENTIAL_PATTERN = Regex("(?i)\\b(Bearer|Basic)\\s+")
-        val JWT_CREDENTIAL_PATTERN =
-            Regex("\\b[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}\\b")
-        val LONG_CREDENTIAL_CANDIDATE_PATTERN = Regex("[A-Za-z0-9._~+/=-]{24,}")
         val SAFE_DIAGNOSTIC_HEADERS =
             setOf(
                 "Content-Length",
                 "Content-Type",
-                "Date",
                 "OpenAI-Request-ID",
                 "Request-ID",
                 "Retry-After",
@@ -442,6 +508,15 @@ internal class X509TokenExchange(
                 "Tracestate",
                 "X-Request-ID",
                 "X-Should-Retry",
+            )
+        val OPAQUE_DIAGNOSTIC_HEADERS =
+            setOf("OpenAI-Request-ID", "Request-ID", "Traceparent", "Tracestate", "X-Request-ID")
+        val SAFE_DIAGNOSTIC_CONTENT_TYPES =
+            setOf(
+                "application/json",
+                "application/json; charset=utf-8",
+                "application/problem+json",
+                "application/problem+json; charset=utf-8",
             )
     }
 }
