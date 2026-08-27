@@ -74,8 +74,24 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Create isolated X.509 Gradle User Home
+        env:
+          TRUSTED_GRADLE_USER_HOME: ${{ runner.temp }}/trusted-x509-gradle-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+
+          if [[ -e "$TRUSTED_GRADLE_USER_HOME" || -L "$TRUSTED_GRADLE_USER_HOME" ]]; then
+            echo "::error::X.509 Gradle User Home already exists"
+            exit 1
+          fi
+
+          mkdir -m 700 "$TRUSTED_GRADLE_USER_HOME"
+          printf 'GRADLE_USER_HOME=%s\n' "$TRUSTED_GRADLE_USER_HOME" >> "$GITHUB_ENV"
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-disabled: true
 
       - name: Verify enrolled X.509 identity
         shell: bash
