@@ -10,6 +10,7 @@ import java.security.KeyStore
 import java.security.Principal
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
+import java.util.concurrent.CompletionException
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.SSLHandshakeException
@@ -158,6 +159,109 @@ internal class X509TransportTest {
     }
 
     @Test
+    fun productionTransportRejectsUnauthorizedOriginsBeforeNetworking() {
+        val identity = X509TestIdentity.create("origin-bound identity")
+        X509TestPeer(ATTACKER_HOST, identity.root.certificate).use { attackerPeer ->
+            attackerPeer.enqueue(MockResponse())
+            val transport = transport(identity, listOf(attackerPeer.serverRootCertificate))
+
+            transport.bindForTest(Timeout.default(), attackerPeer.proxy, attackerPeer.proxy).use {
+                bound ->
+                val unauthorizedOrigins =
+                    mapOf(
+                        bound.exchangeClient to
+                            listOf(
+                                "https://$ATTACKER_HOST/oauth/token",
+                                API_URL,
+                                "https://$EU_API_HOST/v1/models",
+                                "http://$AUTH_HOST/oauth/token",
+                                "https://$AUTH_HOST:8443/oauth/token",
+                                "https://user:password@$AUTH_HOST/oauth/token",
+                                "https://$AUTH_HOST.attacker.example/oauth/token",
+                            ),
+                        bound.apiClient to
+                            listOf(
+                                "https://$ATTACKER_HOST/v1/models",
+                                AUTH_URL,
+                                "http://$API_HOST/v1/models",
+                                "https://$API_HOST:8443/v1/models",
+                                "https://user:password@$API_HOST/v1/models",
+                                "https://$API_HOST.attacker.example/v1/models",
+                                "https://$API_HOST./v1/models",
+                            ),
+                    )
+
+                unauthorizedOrigins.forEach { (client, origins) ->
+                    origins.forEach { origin ->
+                        val request =
+                            request(origin)
+                                .toBuilder()
+                                .putHeader("Authorization", "Bearer $ACCESS_TOKEN")
+                                .build()
+                        assertThatThrownBy { client.execute(request).close() }
+                            .isInstanceOf(OpenAIIoException::class.java)
+                            .hasRootCauseMessage("X.509 request destination is not authorized")
+                    }
+
+                    val request =
+                        request("https://$ATTACKER_HOST/v1/models")
+                            .toBuilder()
+                            .putHeader("Authorization", "Bearer $ACCESS_TOKEN")
+                            .build()
+                    assertThatThrownBy { client.executeAsync(request).join() }
+                        .isInstanceOf(CompletionException::class.java)
+                        .hasCauseInstanceOf(OpenAIIoException::class.java)
+                        .hasRootCauseMessage("X.509 request destination is not authorized")
+                }
+            }
+
+            assertThat(attackerPeer.server.requestCount).isZero()
+            assertThat(attackerPeer.requestedServerNames).isEmpty()
+        }
+    }
+
+    @Test
+    fun productionTransportAcceptsCanonicalAuthoritiesAndEuResidency() {
+        val identity = X509TestIdentity.create("canonical origin identity")
+        X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+            X509TestPeer(EU_API_HOST, identity.root.certificate).use { apiPeer ->
+                authPeer.enqueue(MockResponse())
+                apiPeer.enqueue(MockResponse())
+                val transport =
+                    transport(
+                        identity,
+                        listOf(authPeer.serverRootCertificate, apiPeer.serverRootCertificate),
+                    )
+
+                transport.bindForTest(Timeout.default(), authPeer.proxy, apiPeer.proxy).use { bound
+                    ->
+                    bound.exchangeClient
+                        .execute(request("https://MTLS.AUTH.OPENAI.COM:443/oauth/token"))
+                        .close()
+                    bound.apiClient
+                        .execute(
+                            request("https://MTLS-EU.API.OPENAI.COM:443/v1/models")
+                                .toBuilder()
+                                .putHeader("Authorization", "Bearer $ACCESS_TOKEN")
+                                .build()
+                        )
+                        .close()
+                }
+
+                assertThat(authPeer.takeRequest().requestLine)
+                    .isEqualTo("CONNECT $AUTH_HOST:443 HTTP/1.1")
+                authPeer.takeRequest()
+                assertThat(apiPeer.takeRequest().requestLine)
+                    .isEqualTo("CONNECT $EU_API_HOST:443 HTTP/1.1")
+                val apiRequest = apiPeer.takeRequest()
+                assertThat(apiRequest.getHeader("Authorization")).isEqualTo("Bearer $ACCESS_TOKEN")
+                assertThat(requireNotNull(apiRequest.handshake).peerCertificates.first())
+                    .isEqualTo(identity.leaf.certificate)
+            }
+        }
+    }
+
+    @Test
     fun productionTransportRetainsNativeHostnameVerification() {
         val identity = X509TestIdentity.create("hostname identity")
         X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
@@ -165,7 +269,7 @@ internal class X509TransportTest {
             val transport = transport(identity, listOf(authPeer.serverRootCertificate))
 
             transport.bindForTest(Timeout.default(), authPeer.proxy, authPeer.proxy).use { bound ->
-                assertThatThrownBy { bound.exchangeClient.execute(request(API_URL)).close() }
+                assertThatThrownBy { bound.apiClient.execute(request(API_URL)).close() }
                     .hasRootCauseInstanceOf(javax.net.ssl.SSLPeerUnverifiedException::class.java)
             }
 
@@ -279,6 +383,8 @@ internal class X509TransportTest {
     private companion object {
         const val AUTH_HOST = "mtls.auth.openai.com"
         const val API_HOST = "mtls.api.openai.com"
+        const val EU_API_HOST = "mtls-eu.api.openai.com"
+        const val ATTACKER_HOST = "review.attacker.example"
         const val AUTH_URL = "https://$AUTH_HOST/oauth/token"
         const val API_URL = "https://$API_HOST"
         const val PINNED_ALIAS = "pinned"
