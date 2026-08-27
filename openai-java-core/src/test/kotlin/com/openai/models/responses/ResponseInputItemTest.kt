@@ -744,9 +744,9 @@ internal class ResponseInputItemTest {
     fun ofFunctionCallOutput() {
         val functionCallOutput =
             ResponseInputItem.FunctionCallOutput.builder()
-                .callId("x")
                 .output("string")
                 .id("fc_123")
+                .callId("x")
                 .callerDirect()
                 .name("x")
                 .namespace("namespace")
@@ -795,9 +795,9 @@ internal class ResponseInputItemTest {
         val responseInputItem =
             ResponseInputItem.ofFunctionCallOutput(
                 ResponseInputItem.FunctionCallOutput.builder()
-                    .callId("x")
                     .output("string")
                     .id("fc_123")
+                    .callId("x")
                     .callerDirect()
                     .name("x")
                     .namespace("namespace")
