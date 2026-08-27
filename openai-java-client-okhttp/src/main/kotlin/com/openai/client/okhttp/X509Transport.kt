@@ -2,6 +2,7 @@ package com.openai.client.okhttp
 
 import com.openai.core.Timeout
 import com.openai.core.checkRequired
+import java.io.IOException
 import java.net.Proxy
 import java.net.Socket
 import java.security.Principal
@@ -33,6 +34,10 @@ private constructor(
 
     companion object {
         @JvmStatic fun builder() = Builder()
+
+        private const val ISSUER_HOST = "mtls.auth.openai.com"
+        private val API_HOSTS = setOf("mtls.api.openai.com", "mtls-eu.api.openai.com")
+        private const val HTTPS_PORT = 443
     }
 
     /** A builder for [X509Transport]. */
@@ -103,18 +108,40 @@ private constructor(
     ): BoundX509Transport = bind(timeout, exchangeProxy, apiProxy)
 
     private fun bind(timeout: Timeout, exchangeProxy: Proxy, apiProxy: Proxy): BoundX509Transport {
-        fun client(proxy: Proxy): OkHttpClient =
-            OkHttpClient.builder()
-                .timeout(timeout)
-                .followRedirects(false)
-                .proxy(proxy)
-                .sslSocketFactory(sslContext.socketFactory)
-                .trustManager(trustManager)
-                .build()
+        fun client(proxy: Proxy, allowedHosts: Set<String>): OkHttpClient {
+            val client =
+                OkHttpClient.builder()
+                    .timeout(timeout)
+                    .followRedirects(false)
+                    .proxy(proxy)
+                    .sslSocketFactory(sslContext.socketFactory)
+                    .trustManager(trustManager)
+                    .build()
 
-        val exchangeClient = client(exchangeProxy)
+            return OkHttpClient(
+                client.okHttpClient
+                    .newBuilder()
+                    .addInterceptor { chain ->
+                        val request = chain.request()
+                        val url = request.url
+                        if (
+                            url.scheme != "https" ||
+                                url.host !in allowedHosts ||
+                                url.port != HTTPS_PORT ||
+                                url.encodedUsername.isNotEmpty() ||
+                                url.encodedPassword.isNotEmpty()
+                        ) {
+                            throw IOException("X.509 request destination is not authorized")
+                        }
+                        chain.proceed(request)
+                    }
+                    .build()
+            )
+        }
+
+        val exchangeClient = client(exchangeProxy, setOf(ISSUER_HOST))
         return try {
-            BoundX509Transport(exchangeClient, client(apiProxy))
+            BoundX509Transport(exchangeClient, client(apiProxy, API_HOSTS))
         } catch (error: Throwable) {
             try {
                 exchangeClient.close()
