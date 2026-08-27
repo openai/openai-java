@@ -203,6 +203,48 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+#### X.509 client certificate authentication
+
+Applications with a client certificate can exchange that certificate directly for short-lived
+OpenAI access tokens without providing a JWT or implementing `SubjectTokenProvider`:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.client.okhttp.X509Transport;
+import com.openai.client.okhttp.X509WorkloadIdentity;
+import java.time.Duration;
+import javax.net.ssl.X509ExtendedKeyManager;
+import javax.net.ssl.X509TrustManager;
+
+X509ExtendedKeyManager keyManager = /* load your PKCS#12 key manager */;
+X509TrustManager trustManager = /* load your trusted server roots */;
+
+X509Transport transport = X509Transport.builder()
+    .keyManager(keyManager)
+    .certificateAlias("client-certificate")
+    .trustManager(trustManager)
+    .build();
+
+X509WorkloadIdentity identity = X509WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .transport(transport)
+    .refreshBuffer(Duration.ofMinutes(10)) // Optional; defaults to 20 minutes.
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .x509WorkloadIdentity(identity)
+    .build();
+```
+
+`OpenAIOkHttpClientAsync.builder()` supports the same `x509WorkloadIdentity` option. Tokens are
+obtained lazily, cached, and refreshed before expiration. Both the token exchange and API requests
+use the configured fixed certificate alias, isolated direct mutual-TLS connections, and native
+hostname verification; redirects and custom transport settings are not supported. Close the SDK
+client to release both connection pools. For a complete compilable PKCS#12 setup, see
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java).
+
 #### Kubernetes service account token provider
 
 ```java
