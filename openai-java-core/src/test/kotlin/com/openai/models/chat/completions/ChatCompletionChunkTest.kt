@@ -184,6 +184,7 @@ internal class ChatCompletionChunkTest {
                                 .textTokens(0L)
                                 .build()
                         )
+                        .computeUnits(0L)
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
                                 .audioTokens(0L)
@@ -366,6 +367,7 @@ internal class ChatCompletionChunkTest {
                             .textTokens(0L)
                             .build()
                     )
+                    .computeUnits(0L)
                     .promptTokensDetails(
                         CompletionUsage.PromptTokensDetails.builder()
                             .audioTokens(0L)
@@ -553,6 +555,7 @@ internal class ChatCompletionChunkTest {
                                 .textTokens(0L)
                                 .build()
                         )
+                        .computeUnits(0L)
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
                                 .audioTokens(0L)
