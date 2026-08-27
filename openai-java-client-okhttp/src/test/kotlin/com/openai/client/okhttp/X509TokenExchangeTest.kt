@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.tls.HandshakeCertificates
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class X509TokenExchangeTest {
@@ -150,6 +149,48 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
+    fun acceptsAccessTokensAboveMetadataDiagnosticLimits() {
+        val largeAccessToken = "a".repeat(2 * 1024)
+
+        listOf(false, true).forEach { async ->
+            val response = TestResponse(200, validResponse(accessToken = largeAccessToken))
+
+            val token =
+                X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, SingleResponseClient(response)).use {
+                    exchange ->
+                    if (async) exchange.executeAsync().get(5, TimeUnit.SECONDS)
+                    else exchange.execute()
+                }
+
+            assertThat(token.value).isEqualTo(largeAccessToken)
+            assertThat(response.closed).isTrue()
+        }
+    }
+
+    @Test
+    fun rejectsOversizedRecognizedSuccessStringsBeforeReadingTheCompleteValue() {
+        mapOf(
+                "token_type" to validResponse(tokenType = OVERSIZED_RECOGNIZED_VALUE),
+                "issued_token_type" to validResponse(issuedTokenType = OVERSIZED_RECOGNIZED_VALUE),
+                "token\\u005ftype" to
+                    validResponse(tokenType = OVERSIZED_RECOGNIZED_VALUE)
+                        .replaceFirst("token_type", "token\\u005ftype"),
+            )
+            .forEach { (field, body) ->
+                listOf(false, true).forEach { async ->
+                    val response = TestResponse(200, body)
+
+                    assertThat(exchangeFailure(response, async))
+                        .describedAs("$field (async=$async)")
+                        .isInstanceOf(OpenAIInvalidDataException::class.java)
+                        .hasMessage("Invalid X.509 token exchange response")
+                    assertThat(response.bytesRead.get()).isLessThan(body.toByteArray().size)
+                    assertThat(response.closed).isTrue()
+                }
+            }
+    }
+
+    @Test
     fun acceptsPositiveTokenLifetimesAboveOneHour() {
         listOf(false, true).forEach { async ->
             val response = TestResponse(200, validResponse(expiresIn = "86400"))
@@ -185,6 +226,8 @@ internal class X509TokenExchangeTest {
                         .put("X-Api-Key", "secret-api-key")
                         .put("X-Request-ID", "req_safe")
                         .put("Retry-After", "1")
+                        .put("Traceparent", "aaaaaaaa.bbbbbbbb.cccccccc")
+                        .put("Tracestate", "vendor=sk-test-not-a-real-credential-00000000")
                         .build(),
                 )
 
@@ -198,6 +241,8 @@ internal class X509TokenExchangeTest {
             assertThat(statusError.headers().values("X-Api-Key")).isEmpty()
             assertThat(statusError.headers().values("X-Request-ID")).containsExactly("req_safe")
             assertThat(statusError.headers().values("Retry-After")).containsExactly("1")
+            assertThat(statusError.headers().values("Traceparent")).containsExactly("<redacted>")
+            assertThat(statusError.headers().values("Tracestate")).containsExactly("<redacted>")
             assertThat(statusError.code()).contains("invalid_grant")
             assertThat(statusError.message).contains("Certificate is not authorized")
             assertThat(statusError.toString())
@@ -208,6 +253,13 @@ internal class X509TokenExchangeTest {
                     "secret-body-token",
                     "secret-body-cookie",
                     "secret-body-api-key",
+                    "aaaaaaaa.bbbbbbbb.cccccccc",
+                    "sk-test-not-a-real-credential-00000000",
+                )
+            assertThat(statusError.headers().toString())
+                .doesNotContain(
+                    "aaaaaaaa.bbbbbbbb.cccccccc",
+                    "sk-test-not-a-real-credential-00000000",
                 )
             assertThat(statusError.body().toString())
                 .doesNotContain("secret-body-token", "secret-body-cookie", "secret-body-api-key")
@@ -239,13 +291,23 @@ internal class X509TokenExchangeTest {
                     "secret-digest-value",
                 "Cookie: first=secret-first-cookie; second=secret-second-cookie" to
                     "secret-second-cookie",
+                "client_secret=\"part-one,part-two\"" to "part-two",
+                "password=\"part-one;part-two\"" to "part-two",
+                "api_key=\"part-one part-two\"" to "part-two",
+                "Bearer \"part-one,part-two\"" to "part-two",
             )
             .forEach { (diagnostic, secret) ->
                 listOf(false, true).forEach { async ->
                     val response =
                         TestResponse(
                             400,
-                            """{"error":"invalid_grant","error_description":"Safe prefix; $diagnostic"}""",
+                            ObjectMapper()
+                                .writeValueAsString(
+                                    mapOf(
+                                        "error" to "invalid_grant",
+                                        "error_description" to "Safe prefix; $diagnostic",
+                                    )
+                                ),
                         )
 
                     val failure = exchangeFailure(response, async)
@@ -255,6 +317,59 @@ internal class X509TokenExchangeTest {
                     assertThat(failure.toString()).doesNotContain(secret)
                     assertThat((failure as UnexpectedStatusCodeException).body().toString())
                         .doesNotContain(secret)
+                    assertThat(response.closed).isTrue()
+                }
+            }
+    }
+
+    @Test
+    fun rejectsCredentialLikeOAuthErrorCodesFromDiagnostics() {
+        listOf("sk-test-not-a-real-credential-00000000", "aaaaaaaa.bbbbbbbb.cccccccc").forEach {
+            credential ->
+            listOf(false, true).forEach { async ->
+                val response =
+                    TestResponse(
+                        400,
+                        """{"error":"$credential","error_description":"Issuer rejected certificate"}""",
+                    )
+
+                val failure = exchangeFailure(response, async)
+
+                assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
+                val statusError = failure as UnexpectedStatusCodeException
+                assertThat(statusError.code()).isEmpty()
+                assertThat(statusError.message).contains("Issuer rejected certificate")
+                assertThat(statusError.message).doesNotContain(credential)
+                assertThat(statusError.body().toString()).doesNotContain(credential)
+                assertThat(statusError.toString()).doesNotContain(credential)
+                assertThat(response.closed).isTrue()
+            }
+        }
+    }
+
+    @Test
+    fun ignoresOversizedOAuthDiagnosticsBeforeReadingTheCompleteValue() {
+        mapOf(
+                "error" to """{"error":"$OVERSIZED_RECOGNIZED_VALUE","error_description":"safe"}""",
+                "error_description" to
+                    """{"error":"invalid_grant","error_description":"$OVERSIZED_RECOGNIZED_VALUE"}""",
+                "error\\u005fdescription" to
+                    "{\"error\":\"invalid_grant\",\"error\\u005fdescription\":" +
+                        "\"$OVERSIZED_RECOGNIZED_VALUE\"}",
+            )
+            .forEach { (field, body) ->
+                listOf(false, true).forEach { async ->
+                    val response = TestResponse(503, body)
+
+                    val failure = exchangeFailure(response, async)
+
+                    assertThat(failure)
+                        .describedAs("$field (async=$async)")
+                        .isInstanceOf(UnexpectedStatusCodeException::class.java)
+                    val statusError = failure as UnexpectedStatusCodeException
+                    assertThat(statusError.statusCode()).isEqualTo(503)
+                    assertThat(statusError.code()).isEmpty()
+                    assertThat(response.bytesRead.get()).isLessThan(body.toByteArray().size)
                     assertThat(response.closed).isTrue()
                 }
             }
@@ -331,27 +446,32 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
-    fun responseExecutorIsBoundedAndClosesRejectedResponses() {
-        val responses = List(5) { BlockingResponse() }
+    fun responseExecutorQueuesValidResponsesBeyondItsOwnedThreadCount() {
+        val release = CountDownLatch(1)
+        val activeResponses = List(4) { GatedResponse(validResponse(), release) }
+        val queuedResponse = TestResponse(200, validResponse())
+        val responses = activeResponses + queuedResponse
         val client = SequenceResponseClient(responses)
         val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client)
-        val results = mutableListOf<CompletableFuture<X509AccessToken>>()
+        try {
+            val results = responses.map { exchange.executeAsync() }
 
-        repeat(4) { index ->
-            results += exchange.executeAsync()
-            assertThat(responses[index].bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            activeResponses.forEach { response ->
+                assertThat(response.bodyStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            }
+            assertThat(queuedResponse.bodyRead).isFalse()
+            assertThat(results.last().isDone).isFalse()
+
+            release.countDown()
+
+            assertThat(results.map { it.get(5, TimeUnit.SECONDS).value })
+                .containsExactlyElementsOf(List(5) { ACCESS_TOKEN })
+            assertThat(activeResponses).allMatch { it.closed }
+            assertThat(queuedResponse.closed).isTrue()
+        } finally {
+            release.countDown()
+            exchange.close()
         }
-        results += exchange.executeAsync()
-
-        assertThatThrownBy { results.last().get(5, TimeUnit.SECONDS) }
-            .isInstanceOf(ExecutionException::class.java)
-            .hasCauseInstanceOf(OpenAIIoException::class.java)
-        assertThat(responses.last().closed.await(5, TimeUnit.SECONDS)).isTrue()
-        assertThat(responses.last().bodyStarted.count).isEqualTo(1)
-
-        exchange.close()
-        assertThat(results.take(4)).allMatch(CompletableFuture<*>::isCancelled)
-        assertThat(responses.take(4)).allMatch { it.closed.await(5, TimeUnit.SECONDS) }
         assertThat(client.closed).isFalse()
     }
 
@@ -418,6 +538,7 @@ internal class X509TokenExchangeTest {
         const val SERVICE_ACCOUNT_ID = "svc_acct_test"
         const val ACCESS_TOKEN = "test-x509-access-token"
         const val ACCESS_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token"
+        val OVERSIZED_RECOGNIZED_VALUE = "x".repeat(256 * 1024)
         val TOKEN_REQUEST =
             """
             {
@@ -526,12 +647,51 @@ private class BlockingResponse : HttpResponse {
     }
 }
 
+private class GatedResponse(body: String, private val release: CountDownLatch) : HttpResponse {
+    private val bytes = body.toByteArray()
+    val bodyStarted = CountDownLatch(1)
+    var closed = false
+        private set
+
+    override fun statusCode(): Int = 200
+
+    override fun headers(): Headers = Headers.builder().build()
+
+    override fun body(): InputStream =
+        object : ByteArrayInputStream(bytes) {
+            override fun read(): Int {
+                awaitRelease()
+                return super.read()
+            }
+
+            override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+                awaitRelease()
+                return super.read(buffer, offset, length)
+            }
+
+            private fun awaitRelease() {
+                bodyStarted.countDown()
+                try {
+                    release.await()
+                } catch (error: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    throw IOException("Interrupted while waiting to read test response", error)
+                }
+            }
+        }
+
+    override fun close() {
+        closed = true
+    }
+}
+
 private class TestResponse(
     private val statusCode: Int,
     body: String,
     private val responseHeaders: Headers = Headers.builder().build(),
 ) : HttpResponse {
     private val bytes = body.toByteArray()
+    val bytesRead = AtomicInteger()
     val closeCount = AtomicInteger()
     var bodyRead = false
         private set
@@ -543,9 +703,15 @@ private class TestResponse(
 
     override fun headers(): Headers = responseHeaders
 
-    override fun body(): ByteArrayInputStream {
+    override fun body(): InputStream {
         bodyRead = true
-        return ByteArrayInputStream(bytes)
+        return object : ByteArrayInputStream(bytes) {
+            override fun read(): Int =
+                super.read().also { if (it >= 0) bytesRead.incrementAndGet() }
+
+            override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
+                super.read(buffer, offset, length).also { if (it > 0) bytesRead.addAndGet(it) }
+        }
     }
 
     override fun close() {
