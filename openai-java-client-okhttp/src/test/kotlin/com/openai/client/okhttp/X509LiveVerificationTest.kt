@@ -1,7 +1,9 @@
 package com.openai.client.okhttp
 
+import com.openai.core.RequestOptions
 import com.openai.core.Timeout
 import com.openai.core.http.Headers
+import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
@@ -16,6 +18,7 @@ import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.Arrays
 import java.util.Base64
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLEngine
@@ -65,11 +68,11 @@ internal class X509LiveVerificationTest {
 
             transport.bind(LIVE_TIMEOUT).use { bound ->
                 val accessToken =
-                    X509LiveDiagnostics.issuerExchange {
+                    X509LiveDiagnostics.issuerExchange(bound.exchangeClient) { issuerClient ->
                         X509TokenExchange(
                                 configuration.identityProviderId,
                                 configuration.serviceAccountId,
-                                bound.exchangeClient,
+                                issuerClient,
                             )
                             .use { exchange -> exchange.execute().value }
                     }
@@ -184,11 +187,30 @@ internal class HandshakeRecordingKeyManager(
 internal object X509LiveDiagnostics {
     private val safeRequestId = Regex("^[A-Za-z0-9._:-]{1,128}$")
 
-    fun <T> issuerExchange(action: () -> T): T =
+    fun <T> issuerExchange(client: HttpClient, action: (HttpClient) -> T): T {
+        var requestId: String? = null
+        val capturingClient =
+            object : HttpClient by client {
+                override fun execute(request: HttpRequest): HttpResponse =
+                    client.execute(request).also { response ->
+                        requestId =
+                            response.requestId().orElse(null)?.takeIf(safeRequestId::matches)
+                    }
+            }
+
+        return issuerExchange({ requestId }) { action(capturingClient) }
+    }
+
+    fun <T> issuerExchange(action: () -> T): T = issuerExchange({ null }, action)
+
+    private fun <T> issuerExchange(requestId: () -> String?, action: () -> T): T =
         try {
             action()
         } catch (error: UnexpectedStatusCodeException) {
-            throw IllegalStateException("issuer exchange failed with HTTP ${error.statusCode()}.")
+            val requestIdSuffix = requestId()?.let { " (request_id=$it)" }.orEmpty()
+            throw IllegalStateException(
+                "issuer exchange failed with HTTP ${error.statusCode()}$requestIdSuffix."
+            )
         } catch (_: Exception) {
             throw IllegalStateException("issuer exchange failed before receiving a valid response.")
         }
@@ -209,6 +231,43 @@ internal object X509LiveDiagnostics {
 }
 
 internal class X509LiveVerificationDiagnosticsTest {
+    @Test
+    fun issuerFailuresPreserveOnlySafeRequestIdsFromProductionExchange() {
+        mapOf(
+                "req_123-abc:456" to " (request_id=req_123-abc:456)",
+                "request id containing sensitive text" to "",
+                "x".repeat(129) to "",
+            )
+            .forEach { (requestId, expectedSuffix) ->
+                val response =
+                    StubLiveResponse(
+                        403,
+                        requestId,
+                        """{"error":"invalid_grant","error_description":"customer-data"}""",
+                        mapOf(
+                            "Authorization" to "Bearer secret-token",
+                            "X-Customer" to "customer-data",
+                        ),
+                    )
+                val client = StubLiveClient(response)
+
+                assertThatThrownBy {
+                        X509LiveDiagnostics.issuerExchange(client) { issuerClient ->
+                            X509TokenExchange("idp_test", "svc_acct_test", issuerClient).use {
+                                exchange ->
+                                exchange.execute()
+                            }
+                        }
+                    }
+                    .isInstanceOf(IllegalStateException::class.java)
+                    .hasMessage("issuer exchange failed with HTTP 403$expectedSuffix.")
+                    .hasNoCause()
+                    .hasMessageNotContaining("sensitive")
+                    .hasMessageNotContaining("customer-data")
+                    .hasMessageNotContaining("secret-token")
+            }
+    }
+
     @Test
     fun issuerExchangeFailuresNeverIncludeUnderlyingCauses() {
         assertThatThrownBy {
@@ -256,9 +315,18 @@ internal class X509LiveVerificationDiagnosticsTest {
     }
 }
 
-private class StubLiveResponse(statusCode: Int, requestId: String, body: String) : HttpResponse {
+private class StubLiveResponse(
+    statusCode: Int,
+    requestId: String,
+    body: String,
+    additionalHeaders: Map<String, String> = emptyMap(),
+) : HttpResponse {
     private val statusCode = statusCode
-    private val headers = Headers.builder().put("x-request-id", requestId).build()
+    private val headers =
+        Headers.builder()
+            .put("x-request-id", requestId)
+            .apply { additionalHeaders.forEach { (name, value) -> put(name, value) } }
+            .build()
     private val body = ByteArrayInputStream(body.toByteArray(Charsets.UTF_8))
 
     override fun statusCode(): Int = statusCode
@@ -268,6 +336,18 @@ private class StubLiveResponse(statusCode: Int, requestId: String, body: String)
     override fun body(): ByteArrayInputStream = body
 
     override fun close() = body.close()
+}
+
+private class StubLiveClient(private val response: HttpResponse) : HttpClient {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        response
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> = CompletableFuture.completedFuture(response)
+
+    override fun close() = Unit
 }
 
 private class LiveConfiguration
