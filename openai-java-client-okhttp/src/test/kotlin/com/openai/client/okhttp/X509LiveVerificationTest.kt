@@ -212,7 +212,10 @@ internal object X509LiveDiagnostics {
                 "issuer exchange failed with HTTP ${error.statusCode()}$requestIdSuffix."
             )
         } catch (_: Exception) {
-            throw IllegalStateException("issuer exchange failed before receiving a valid response.")
+            val requestIdSuffix = requestId()?.let { " (request_id=$it)" }.orEmpty()
+            throw IllegalStateException(
+                "issuer exchange failed before receiving a valid response$requestIdSuffix."
+            )
         }
 
     fun requireSuccessful(response: HttpResponse, stage: String) {
@@ -231,6 +234,42 @@ internal object X509LiveDiagnostics {
 }
 
 internal class X509LiveVerificationDiagnosticsTest {
+    @Test
+    fun malformedIssuerResponsesPreserveOnlySafeRequestIdsFromProductionExchange() {
+        mapOf(
+                "req_123-abc:456" to " (request_id=req_123-abc:456)",
+                "request id containing sensitive text" to "",
+                "x".repeat(129) to "",
+            )
+            .forEach { (requestId, expectedSuffix) ->
+                val response =
+                    StubLiveResponse(
+                        200,
+                        requestId,
+                        "customer-data secret-token",
+                        mapOf("Authorization" to "Bearer secret-token"),
+                    )
+                val client = StubLiveClient(response)
+
+                assertThatThrownBy {
+                        X509LiveDiagnostics.issuerExchange(client) { issuerClient ->
+                            X509TokenExchange("idp_test", "svc_acct_test", issuerClient).use {
+                                exchange ->
+                                exchange.execute()
+                            }
+                        }
+                    }
+                    .isInstanceOf(IllegalStateException::class.java)
+                    .hasMessage(
+                        "issuer exchange failed before receiving a valid response$expectedSuffix."
+                    )
+                    .hasNoCause()
+                    .hasMessageNotContaining("sensitive")
+                    .hasMessageNotContaining("customer-data")
+                    .hasMessageNotContaining("secret-token")
+            }
+    }
+
     @Test
     fun issuerFailuresPreserveOnlySafeRequestIdsFromProductionExchange() {
         mapOf(
