@@ -228,6 +228,27 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing releases obsolete daemons and serializes documentation generation`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        assertPublishingRunnerStabilityPolicy(workflow)
+
+        listOf(
+                workflow.replaceFirst(
+                    "      - name: Stop pre-GraalVM Gradle daemon\n" +
+                        "        run: ./gradlew --stop\n\n",
+                    "",
+                ),
+                workflow.replaceFirst("            --no-parallel \\\n", ""),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> {
+                    assertPublishingRunnerStabilityPolicy(poisonedWorkflow)
+                }
+            }
+    }
+
+    @Test
     fun `publishing attests every released artifact before exposing signing secrets`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         assertPublishingProvenancePolicy(workflow)
@@ -933,6 +954,33 @@ class GradleCacheTrustPolicyTest {
         )
 
         assertPublishingProvenancePolicy(workflow)
+    }
+
+    private fun assertPublishingRunnerStabilityPolicy(workflow: String) {
+        val publishSteps = parseWorkflow(workflow).job("publish").steps
+        val compilation =
+            publishSteps.indexOfFirst { it.name == "Compile the openai-java-core project" }
+        val daemonStop = publishSteps.indexOfFirst { it.name == "Stop pre-GraalVM Gradle daemon" }
+        val graalVm = publishSteps.indexOfFirst { it.name == "Set up GraalVM" }
+
+        assertTrue(
+            compilation >= 0 && daemonStop > compilation && graalVm > daemonStop,
+            "Stop the build-JDK Gradle daemon before switching to GraalVM.",
+        )
+        assertEquals("./gradlew --stop", publishSteps[daemonStop].run)
+
+        val publication =
+            requireNotNull(publishSteps.single { it.name == "Publish to Maven Central" }.run)
+        val serializedInvocation =
+            "./gradlew publishAndReleaseToMavenCentral \\\n" +
+                "  \"\${publish_exclusions[@]}\" \\\n" +
+                "  --stacktrace \\\n" +
+                "  --no-parallel \\\n" +
+                "  --no-configuration-cache"
+        assertTrue(
+            publication.contains(serializedInvocation),
+            "Serialize Dokka publication tasks to keep the standard runner within memory limits.",
+        )
     }
 
     private fun assertPublishingProvenancePolicy(workflow: String) {
