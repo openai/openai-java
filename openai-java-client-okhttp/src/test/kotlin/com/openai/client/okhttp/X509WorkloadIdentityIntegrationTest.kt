@@ -1,11 +1,18 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.openai.core.RequestOptions
+import com.openai.core.http.Headers
+import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.ByteArrayInputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import okhttp3.mockwebserver.MockResponse
@@ -60,6 +67,16 @@ internal class X509WorkloadIdentityIntegrationTest {
     @Test
     fun asynchronousClonedPublicClientCannotSendBearerToAnUnauthorizedOrigin() {
         verifyClonedPublicClientRejectsUnauthorizedOrigin(async = true)
+    }
+
+    @Test
+    fun synchronousClonedPublicClientCannotExposeBearerToAReplacementTransport() {
+        verifyClonedPublicClientDoesNotExposeBearerToReplacementTransport(async = false)
+    }
+
+    @Test
+    fun asynchronousClonedPublicClientCannotExposeBearerToAReplacementTransport() {
+        verifyClonedPublicClientDoesNotExposeBearerToReplacementTransport(async = true)
     }
 
     @Test
@@ -360,6 +377,92 @@ internal class X509WorkloadIdentityIntegrationTest {
         }
     }
 
+    private fun verifyClonedPublicClientDoesNotExposeBearerToReplacementTransport(async: Boolean) {
+        val identity = X509TestIdentity.create("transport-bound certificate identity")
+        X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+            X509TestPeer(API_HOST, identity.root.certificate).use { apiPeer ->
+                authPeer.enqueue(tokenResponse(ACCESS_TOKEN))
+                apiPeer.enqueue(filesResponse())
+                apiPeer.server.enqueue(filesResponse())
+                val configuration =
+                    configuration(
+                            identity,
+                            listOf(authPeer.serverRootCertificate, apiPeer.serverRootCertificate),
+                        )
+                        .withTestProxies(authPeer.proxy, apiPeer.proxy)
+                val replacement = RecordingReplacementHttpClient()
+
+                if (async) {
+                    val original =
+                        OpenAIOkHttpClientAsync.builder()
+                            .x509WorkloadIdentity(configuration)
+                            .maxRetries(0)
+                            .build()
+                    try {
+                        val cloned = original.withOptions { it.httpClient(replacement) }
+                        try {
+                            cloned.files().list().get(5, TimeUnit.SECONDS)
+                            assertThat(replacement.authorizationHeaders)
+                                .containsExactly(emptyList())
+                            assertThat(authPeer.server.requestCount).isZero()
+
+                            original.files().list().get(5, TimeUnit.SECONDS)
+                            cloned.files().list().get(5, TimeUnit.SECONDS)
+                            original.files().list().get(5, TimeUnit.SECONDS)
+
+                            original.close()
+                            assertThatThrownBy { cloned.files().list().get(5, TimeUnit.SECONDS) }
+                                .isInstanceOf(ExecutionException::class.java)
+                                .hasRootCauseInstanceOf(IllegalStateException::class.java)
+                                .hasMessageContaining("authentication is closed")
+                        } finally {
+                            cloned.close()
+                        }
+                    } finally {
+                        original.close()
+                    }
+                } else {
+                    val original =
+                        OpenAIOkHttpClient.builder()
+                            .x509WorkloadIdentity(configuration)
+                            .maxRetries(0)
+                            .build()
+                    try {
+                        val cloned = original.withOptions { it.httpClient(replacement) }
+                        try {
+                            cloned.files().list()
+                            assertThat(replacement.authorizationHeaders)
+                                .containsExactly(emptyList())
+                            assertThat(authPeer.server.requestCount).isZero()
+
+                            original.files().list()
+                            cloned.files().list()
+                            original.files().list()
+
+                            original.close()
+                            assertThatThrownBy { cloned.files().list() }
+                                .isInstanceOf(IllegalStateException::class.java)
+                                .hasMessageContaining("authentication is closed")
+                        } finally {
+                            cloned.close()
+                        }
+                    } finally {
+                        original.close()
+                    }
+                }
+
+                assertThat(replacement.authorizationHeaders)
+                    .containsExactly(emptyList(), emptyList())
+                assertThat(authPeer.server.requestCount).isEqualTo(2)
+                apiPeer.takeRequest()
+                repeat(2) {
+                    assertThat(apiPeer.takeRequest().getHeader("Authorization"))
+                        .isEqualTo("Bearer $ACCESS_TOKEN")
+                }
+            }
+        }
+    }
+
     private fun verifyRefresh(async: Boolean) {
         val identity = X509TestIdentity.create("refresh certificate identity")
         X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
@@ -546,6 +649,33 @@ internal class X509WorkloadIdentityIntegrationTest {
         MockResponse()
             .setHeader("Content-Type", "application/json")
             .setBody("""{"object":"list","data":[]}""")
+
+    private class RecordingReplacementHttpClient : HttpClient {
+        val authorizationHeaders = mutableListOf<List<String>>()
+
+        override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+            authorizationHeaders.add(request.headers.values("Authorization"))
+            return object : HttpResponse {
+                override fun statusCode(): Int = 200
+
+                override fun headers(): Headers =
+                    Headers.builder().put("Content-Type", "application/json").build()
+
+                override fun body() =
+                    ByteArrayInputStream("""{"object":"list","data":[]}""".toByteArray())
+
+                override fun close() = Unit
+            }
+        }
+
+        override fun executeAsync(
+            request: HttpRequest,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> =
+            CompletableFuture.completedFuture(execute(request, requestOptions))
+
+        override fun close() = Unit
+    }
 
     private companion object {
         const val AUTH_HOST = "mtls.auth.openai.com"

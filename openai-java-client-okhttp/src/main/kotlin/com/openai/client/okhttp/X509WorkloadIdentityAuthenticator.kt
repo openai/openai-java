@@ -30,16 +30,29 @@ internal class X509WorkloadIdentityAuthenticator(
     private var closed = false
 
     override fun authenticate(request: HttpRequest): HttpRequest =
+        request.also {
+            requireAuthorizedOrigin(it)
+            synchronized(lock) {
+                check(!closed) { "X.509 workload identity authentication is closed" }
+            }
+        }
+
+    override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
         try {
-            requireAuthorizedOrigin(request)
+            CompletableFuture.completedFuture(authenticate(request))
+        } catch (failure: Throwable) {
+            CompletableFuture<HttpRequest>().apply { completeExceptionally(failure) }
+        }
+
+    fun authenticateForBoundTransport(request: HttpRequest): HttpRequest =
+        try {
             authenticated(request, token(async = false).join())
         } catch (failure: CompletionException) {
             throw failure.cause ?: failure
         }
 
-    override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
+    fun authenticateForBoundTransportAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
         try {
-            requireAuthorizedOrigin(request)
             token(async = true).thenApply { value -> authenticated(request, value) }
         } catch (failure: Throwable) {
             CompletableFuture<HttpRequest>().apply { completeExceptionally(failure) }
@@ -171,15 +184,19 @@ private class X509RefreshingHttpClient(
     private val authenticator: X509WorkloadIdentityAuthenticator,
 ) : HttpClient {
 
-    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
-        checkResponse(request, delegate.execute(request, requestOptions))
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+        val authenticated = authenticator.authenticateForBoundTransport(request)
+        return checkResponse(authenticated, delegate.execute(authenticated, requestOptions))
+    }
 
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
-        delegate.executeAsync(request, requestOptions).thenApply { response ->
-            checkResponse(request, response)
+        authenticator.authenticateForBoundTransportAsync(request).thenCompose { authenticated ->
+            delegate.executeAsync(authenticated, requestOptions).thenApply { response ->
+                checkResponse(authenticated, response)
+            }
         }
 
     private fun checkResponse(request: HttpRequest, response: HttpResponse): HttpResponse {
