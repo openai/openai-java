@@ -366,6 +366,7 @@ jobs:
             --arg repository_id "$GITHUB_REPOSITORY_ID" \
             --arg repository_owner_id "$GITHUB_REPOSITORY_OWNER_ID" \
             --arg runner_environment "$RUNNER_ENVIRONMENT" \
+            --arg workflow_sha "$GITHUB_SHA" \
             --arg source_sha "$SOURCE_SHA" \
             --arg release_tag "$RELEASE_TAG" \
             --arg invocation_id \
@@ -389,6 +390,10 @@ jobs:
                   }
                 },
                 resolvedDependencies: [
+                  {
+                    uri: ("git+" + $repository + "@" + $workflow_ref),
+                    digest: { gitCommit: $workflow_sha }
+                  },
                   {
                     uri: ("git+" + $repository + "@refs/tags/" + $release_tag),
                     digest: { gitCommit: $source_sha }
