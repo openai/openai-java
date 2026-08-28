@@ -372,7 +372,7 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
-    fun `retry provenance resolves the checked out historical tag not the newer workflow SHA`() {
+    fun `retry provenance records historical release source beside canonical workflow source`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val parsedWorkflow = parseWorkflow(workflow)
         val preparation =
@@ -469,14 +469,23 @@ class GradleCacheTrustPolicyTest {
         val workflowSource = external["workflow"] as Map<*, *>
         assertEquals("refs/heads/main", workflowSource["ref"])
         assertEquals(".github/workflows/create-releases.yml", workflowSource["path"])
-        val dependency = (definition["resolvedDependencies"] as List<*>).single() as Map<*, *>
+        val dependencies = definition["resolvedDependencies"] as List<*>
+        assertEquals(2, dependencies.size)
+        val workflowDependency = dependencies[0] as Map<*, *>
+        assertEquals(
+            "git+https://github.com/openai/openai-java@refs/heads/main",
+            workflowDependency["uri"],
+        )
+        val workflowDigest = workflowDependency["digest"] as Map<*, *>
+        assertEquals(workflowSha, workflowDigest["gitCommit"])
+        val releaseDependency = dependencies[1] as Map<*, *>
         assertEquals(
             "git+https://github.com/openai/openai-java@refs/tags/v1.2.3",
-            dependency["uri"],
+            releaseDependency["uri"],
         )
-        val digest = dependency["digest"] as Map<*, *>
-        assertEquals(sourceSha, digest["gitCommit"])
-        assertTrue(digest["gitCommit"] != workflowSha)
+        val releaseDigest = releaseDependency["digest"] as Map<*, *>
+        assertEquals(sourceSha, releaseDigest["gitCommit"])
+        assertTrue(releaseDigest["gitCommit"] != workflowSha)
         val details = predicate["runDetails"] as Map<*, *>
         val builder = details["builder"] as Map<*, *>
         assertEquals(
@@ -964,8 +973,11 @@ class GradleCacheTrustPolicyTest {
             preparation.environment.getValue("SOURCE_SHA"),
         )
         assertContains(preparationScript, "\"\$SOURCE_SHA\" != \"\$(git rev-parse HEAD)\"")
+        assertContains(preparationScript, "--arg workflow_sha \"\$GITHUB_SHA\"")
         assertContains(preparationScript, "--arg source_sha \"\$SOURCE_SHA\"")
         assertContains(preparationScript, "--arg workflow_ref \"\$GITHUB_REF\"")
+        assertContains(preparationScript, "uri: (\"git+\" + \$repository + \"@\" + \$workflow_ref)")
+        assertContains(preparationScript, "digest: { gitCommit: \$workflow_sha }")
         assertContains(
             preparationScript,
             "uri: (\"git+\" + \$repository + \"@refs/tags/\" + \$release_tag)",
