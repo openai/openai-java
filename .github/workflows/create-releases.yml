@@ -292,6 +292,9 @@ jobs:
       - name: Compile the openai-java-core project
         run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
 
+      - name: Stop pre-GraalVM Gradle daemon
+        run: ./gradlew --stop
+
       - name: Run the mock server
         run: ./scripts/mock --daemon
 
@@ -462,6 +465,7 @@ jobs:
           ./gradlew publishAndReleaseToMavenCentral \
             "${publish_exclusions[@]}" \
             --stacktrace \
+            --no-parallel \
             --no-configuration-cache
 
       - name: Verify attested Maven artifacts
