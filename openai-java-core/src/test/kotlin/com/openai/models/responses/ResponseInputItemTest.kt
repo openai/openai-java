@@ -83,6 +83,26 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofEasyInputMessageRoundtripWithoutExplicitType() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofEasyInputMessage(
+                EasyInputMessage.builder()
+                    .content("string")
+                    .role(EasyInputMessage.Role.USER)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofMessage() {
         val message =
             ResponseInputItem.Message.builder()
@@ -162,6 +182,78 @@ internal class ResponseInputItemTest {
             )
 
         assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMessageRoundtripWithoutExplicitType() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMessage(
+                ResponseInputItem.Message.builder()
+                    .addInputTextContent("Test")
+                    .role(ResponseInputItem.Message.Role.USER)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofStructuredAssistantEasyInputMessageRoundtripWithoutPhase() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofEasyInputMessage(
+                EasyInputMessage.builder()
+                    .contentOfResponseInputMessageContentList(
+                        listOf(
+                            ResponseInputContent.ofInputText(
+                                ResponseInputText.builder().text("text").build()
+                            )
+                        )
+                    )
+                    .role(EasyInputMessage.Role.ASSISTANT)
+                    .type(EasyInputMessage.Type.MESSAGE)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun deserializesStructuredNonAssistantMessagePayloadAsMessage() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            jsonMapper.readValue(
+                """
+                {
+                  "type": "message",
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "input_text",
+                      "text": "text"
+                    }
+                  ]
+                }
+                """
+                    .trimIndent(),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(responseInputItem.message()).isPresent
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
     }
 
     @Test
