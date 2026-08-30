@@ -19,8 +19,10 @@ class DefaultSleeper : Sleeper {
         val task =
             object : TimerTask() {
                 override fun run() {
-                    if (synchronized(lock) { pending.remove(future) }) {
-                        future.complete(null)
+                    synchronized(lock) {
+                        if (pending.contains(future)) {
+                            future.complete(null)
+                        }
                     }
                 }
             }
