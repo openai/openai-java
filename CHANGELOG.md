@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.55.0](https://github.com/openai/openai-java/compare/v4.54.0...v4.55.0) (2026-08-31)
+
+
+### Features
+
+* **api:** add compute_units to Responses and Chat Completions usage ([#944](https://github.com/openai/openai-java/issues/944)) ([3e45ffb](https://github.com/openai/openai-java/commit/3e45ffb67e910495efb35f5452417b6efdc53015))
+* **auth:** add X.509 token exchange ([#940](https://github.com/openai/openai-java/issues/940)) ([df0c88d](https://github.com/openai/openai-java/commit/df0c88d923de5626ad9deb1ae667717b80bbe9f7))
+* integrate X.509 workload identity with OkHttp clients ([#948](https://github.com/openai/openai-java/issues/948)) ([9684d52](https://github.com/openai/openai-java/commit/9684d5255f5a6b52234ad4dee461300ac2bc9e5a))
+
+
+### Bug Fixes
+
+* **auth:** bind X.509 bearer attachment to its mTLS transport ([#949](https://github.com/openai/openai-java/issues/949)) ([5f3ab4a](https://github.com/openai/openai-java/commit/5f3ab4a3e839b30f0d22d4b036223c4f6f6fce4e))
+* bind X.509 transport clients to trusted origins ([#946](https://github.com/openai/openai-java/issues/946)) ([bccb100](https://github.com/openai/openai-java/commit/bccb1003c239ead5e815d01bf8ac99c0b8062c40))
+* **ci:** preserve release source in Maven provenance ([#951](https://github.com/openai/openai-java/issues/951)) ([0382c7c](https://github.com/openai/openai-java/commit/0382c7cfacf028de3f7b942ef6840edb9fa0cbfb)), closes [#950](https://github.com/openai/openai-java/issues/950)
+* **ci:** reduce Maven publish runner pressure ([#953](https://github.com/openai/openai-java/issues/953)) ([02b2d0d](https://github.com/openai/openai-java/commit/02b2d0dd1b8d2b9b2b80ab7fa36808fb639b9116))
+* fail closed when protected X.509 verification cannot run ([#945](https://github.com/openai/openai-java/issues/945)) ([24089bd](https://github.com/openai/openai-java/commit/24089bd23b830aeee724472a60f8927493c1fd6b))
+
 ## [4.54.0](https://github.com/openai/openai-java/compare/v4.53.0...v4.54.0) (2026-08-27)
 
 
