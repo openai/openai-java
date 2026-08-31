@@ -1814,7 +1814,7 @@ The SDK consists of three artifacts:
 
 This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
 
-#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/5.x/okhttp/okhttp3/-ok-http-client/)
+#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/4.x/okhttp/okhttp3/-ok-http-client/)
 
 > [!TIP]
 > Try the available [network options](#network-options) before replacing the default client.
