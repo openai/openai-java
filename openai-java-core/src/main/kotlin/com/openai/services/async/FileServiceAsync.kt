@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -149,7 +149,7 @@ interface FileServiceAsync {
     fun delete(fileId: String, requestOptions: RequestOptions): CompletableFuture<FileDeleted> =
         delete(fileId, FileDeleteParams.none(), requestOptions)
 
-    /** Returns the contents of the specified file. */
+    /** Returns a response containing the contents of the specified file. */
     fun content(fileId: String): CompletableFuture<HttpResponse> =
         content(fileId, FileContentParams.none())
 

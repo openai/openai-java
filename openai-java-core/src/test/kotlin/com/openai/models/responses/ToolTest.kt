@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -256,6 +256,7 @@ internal class ToolTest {
         val webSearch =
             WebSearchTool.builder()
                 .type(WebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(
@@ -296,6 +297,7 @@ internal class ToolTest {
             Tool.ofWebSearch(
                 WebSearchTool.builder()
                     .type(WebSearchTool.Type.WEB_SEARCH)
+                    .externalWebAccess(true)
                     .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                     .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                     .userLocation(
@@ -688,7 +690,7 @@ internal class ToolTest {
     fun ofNamespace() {
         val namespace =
             NamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     NamespaceTool.Tool.Function.builder()
@@ -733,7 +735,7 @@ internal class ToolTest {
         val tool =
             Tool.ofNamespace(
                 NamespaceTool.builder()
-                    .description("x")
+                    .description("description")
                     .name("x")
                     .addTool(
                         NamespaceTool.Tool.Function.builder()

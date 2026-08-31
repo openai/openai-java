@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -88,6 +86,7 @@ private constructor(
      */
     @get:JvmName("clock") val clock: Clock,
     private val baseUrl: String?,
+    private val dataResidencySelected: Boolean,
     /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
     /** Query params to send with the request. */
@@ -202,6 +201,11 @@ private constructor(
         private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String? = null
+        // Retain only whether the resolved URL came from residency, not a competing URL value.
+        private var dataResidencySelected: Boolean = false
+        private var explicitBaseUrl: Boolean = false
+        private var explicitDataResidency: Boolean = false
+        private var inheritedAzureEndpoint: Boolean = false
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
@@ -228,6 +232,11 @@ private constructor(
             sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
+            dataResidencySelected = clientOptions.dataResidencySelected
+            inheritedAzureEndpoint =
+                clientOptions.baseUrl?.let {
+                    AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
+                } ?: false
             headers = clientOptions.headers.toBuilder()
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
@@ -329,10 +338,35 @@ private constructor(
          *
          * Defaults to the production environment: `https://api.openai.com/v1`.
          */
-        fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String?) = apply {
+            require(!explicitDataResidency) { "baseUrl and dataResidency are mutually exclusive" }
+            this.baseUrl = baseUrl
+            dataResidencySelected = false
+            explicitBaseUrl = true
+        }
 
         /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        /**
+         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         *
+         * Cannot be combined with [baseUrl] on the same builder or with third-party provider
+         * configuration. An inherited or environment-derived URL may be replaced. A null value
+         * leaves the endpoint unchanged. Availability is determined by the API.
+         */
+        fun dataResidency(dataResidency: DataResidency?) = apply {
+            if (dataResidency != null) {
+                require(!explicitBaseUrl) { "baseUrl and dataResidency are mutually exclusive" }
+                baseUrl = dataResidency.baseUrl
+                dataResidencySelected = true
+                explicitDataResidency = true
+            }
+        }
+
+        /** Alias for calling [dataResidency] with `dataResidency.orElse(null)`. */
+        fun dataResidency(dataResidency: Optional<DataResidency>) =
+            dataResidency(dataResidency.getOrNull())
 
         /**
          * Whether to call `validate` on every response before returning it.
@@ -583,7 +617,11 @@ private constructor(
         fun fromEnv() = apply {
             logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
-                baseUrl(it)
+                if (!dataResidencySelected) {
+                    inheritedAzureEndpoint =
+                        AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
+                    baseUrl = it
+                }
             }
 
             val openAIKey = System.getProperty("openai.apiKey") ?: System.getenv("OPENAI_API_KEY")
@@ -640,6 +678,16 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ClientOptions {
+            require(
+                !dataResidencySelected ||
+                    (!inheritedAzureEndpoint &&
+                        httpRequestAuthenticator == null &&
+                        credential !is AzureApiKeyCredential &&
+                        azureServiceVersion == null &&
+                        azureUrlPathMode == AzureUrlPathMode.AUTO)
+            ) {
+                "dataResidency cannot be combined with third-party provider configuration"
+            }
             val httpClient = checkRequired("httpClient", httpClient)
             val streamHandlerExecutor =
                 streamHandlerExecutor
@@ -742,6 +790,7 @@ private constructor(
                 sleeper,
                 clock,
                 baseUrl,
+                dataResidencySelected,
                 headers.build(),
                 queryParams.build(),
                 responseValidation,

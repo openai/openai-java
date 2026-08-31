@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations
 
@@ -23,6 +23,7 @@ import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionCallOutputItem
 import com.openai.models.responses.ResponseFunctionToolCall
 import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputItem
@@ -194,6 +195,38 @@ private constructor(
          */
         fun addItem(functionCallOutput: ResponseInputItem.FunctionCallOutput) = apply {
             body.addItem(functionCallOutput)
+        }
+
+        /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseInputItem.FunctionCallOutput.builder()
+         *     .output(output)
+         *     .build()
+         * ```
+         */
+        fun addFunctionCallOutputItem(output: ResponseInputItem.FunctionCallOutput.Output) = apply {
+            body.addFunctionCallOutputItem(output)
+        }
+
+        /**
+         * Alias for calling [addFunctionCallOutputItem] with
+         * `ResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+         */
+        fun addFunctionCallOutputItem(string: String) = apply {
+            body.addFunctionCallOutputItem(string)
+        }
+
+        /**
+         * Alias for calling [addFunctionCallOutputItem] with
+         * `ResponseInputItem.FunctionCallOutput.Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+         */
+        fun addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+            responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+        ) = apply {
+            body.addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList
+            )
         }
 
         /**
@@ -724,6 +757,38 @@ private constructor(
              */
             fun addItem(functionCallOutput: ResponseInputItem.FunctionCallOutput) =
                 addItem(ResponseInputItem.ofFunctionCallOutput(functionCallOutput))
+
+            /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseInputItem.FunctionCallOutput.builder()
+             *     .output(output)
+             *     .build()
+             * ```
+             */
+            fun addFunctionCallOutputItem(output: ResponseInputItem.FunctionCallOutput.Output) =
+                addItem(ResponseInputItem.FunctionCallOutput.builder().output(output).build())
+
+            /**
+             * Alias for calling [addFunctionCallOutputItem] with
+             * `ResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+             */
+            fun addFunctionCallOutputItem(string: String) =
+                addFunctionCallOutputItem(
+                    ResponseInputItem.FunctionCallOutput.Output.ofString(string)
+                )
+
+            /**
+             * Alias for calling [addFunctionCallOutputItem] with
+             * `ResponseInputItem.FunctionCallOutput.Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+             */
+            fun addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+            ) =
+                addFunctionCallOutputItem(
+                    ResponseInputItem.FunctionCallOutput.Output
+                        .ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)
+                )
 
             /**
              * Alias for calling [addItem] with

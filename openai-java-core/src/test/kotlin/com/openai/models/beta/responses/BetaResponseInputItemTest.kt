@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -817,7 +817,6 @@ internal class BetaResponseInputItemTest {
     fun ofFunctionCallOutput() {
         val functionCallOutput =
             BetaResponseInputItem.FunctionCallOutput.builder()
-                .callId("x")
                 .output("string")
                 .id("fc_123")
                 .agent(
@@ -825,6 +824,7 @@ internal class BetaResponseInputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .callId("x")
                 .callerDirect()
                 .name("x")
                 .namespace("namespace")
@@ -876,7 +876,6 @@ internal class BetaResponseInputItemTest {
         val betaResponseInputItem =
             BetaResponseInputItem.ofFunctionCallOutput(
                 BetaResponseInputItem.FunctionCallOutput.builder()
-                    .callId("x")
                     .output("string")
                     .id("fc_123")
                     .agent(
@@ -884,6 +883,7 @@ internal class BetaResponseInputItemTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .callId("x")
                     .callerDirect()
                     .name("x")
                     .namespace("namespace")
@@ -2656,7 +2656,12 @@ internal class BetaResponseInputItemTest {
                     BetaResponseInputItem.McpCall.Agent.builder().agentName("agent_name").build()
                 )
                 .approvalRequestId("approval_request_id")
-                .error("error")
+                .error(
+                    BetaMcpToolCallError.McpProtocolError.builder()
+                        .code(0L)
+                        .message("message")
+                        .build()
+                )
                 .output("output")
                 .status(BetaResponseInputItem.McpCall.Status.IN_PROGRESS)
                 .build()
@@ -2716,7 +2721,12 @@ internal class BetaResponseInputItemTest {
                             .build()
                     )
                     .approvalRequestId("approval_request_id")
-                    .error("error")
+                    .error(
+                        BetaMcpToolCallError.McpProtocolError.builder()
+                            .code(0L)
+                            .message("message")
+                            .build()
+                    )
                     .output("output")
                     .status(BetaResponseInputItem.McpCall.Status.IN_PROGRESS)
                     .build()

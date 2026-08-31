@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.completions
 
@@ -25,6 +25,7 @@ private constructor(
     private val promptTokens: JsonField<Long>,
     private val totalTokens: JsonField<Long>,
     private val completionTokensDetails: JsonField<CompletionTokensDetails>,
+    private val computeUnits: JsonField<Long>,
     private val promptTokensDetails: JsonField<PromptTokensDetails>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -43,6 +44,9 @@ private constructor(
         @JsonProperty("completion_tokens_details")
         @ExcludeMissing
         completionTokensDetails: JsonField<CompletionTokensDetails> = JsonMissing.of(),
+        @JsonProperty("compute_units")
+        @ExcludeMissing
+        computeUnits: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("prompt_tokens_details")
         @ExcludeMissing
         promptTokensDetails: JsonField<PromptTokensDetails> = JsonMissing.of(),
@@ -51,6 +55,7 @@ private constructor(
         promptTokens,
         totalTokens,
         completionTokensDetails,
+        computeUnits,
         promptTokensDetails,
         mutableMapOf(),
     )
@@ -87,6 +92,14 @@ private constructor(
      */
     fun completionTokensDetails(): Optional<CompletionTokensDetails> =
         completionTokensDetails.getOptional("completion_tokens_details")
+
+    /**
+     * Compute units for the request. Currently null when available.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun computeUnits(): Optional<Long> = computeUnits.getOptional("compute_units")
 
     /**
      * Breakdown of tokens used in the prompt.
@@ -134,6 +147,15 @@ private constructor(
     fun _completionTokensDetails(): JsonField<CompletionTokensDetails> = completionTokensDetails
 
     /**
+     * Returns the raw JSON value of [computeUnits].
+     *
+     * Unlike [computeUnits], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("compute_units")
+    @ExcludeMissing
+    fun _computeUnits(): JsonField<Long> = computeUnits
+
+    /**
      * Returns the raw JSON value of [promptTokensDetails].
      *
      * Unlike [promptTokensDetails], this method doesn't throw if the JSON field has an unexpected
@@ -177,6 +199,7 @@ private constructor(
         private var promptTokens: JsonField<Long>? = null
         private var totalTokens: JsonField<Long>? = null
         private var completionTokensDetails: JsonField<CompletionTokensDetails> = JsonMissing.of()
+        private var computeUnits: JsonField<Long> = JsonMissing.of()
         private var promptTokensDetails: JsonField<PromptTokensDetails> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -186,6 +209,7 @@ private constructor(
             promptTokens = completionUsage.promptTokens
             totalTokens = completionUsage.totalTokens
             completionTokensDetails = completionUsage.completionTokensDetails
+            computeUnits = completionUsage.computeUnits
             promptTokensDetails = completionUsage.promptTokensDetails
             additionalProperties = completionUsage.additionalProperties.toMutableMap()
         }
@@ -245,6 +269,28 @@ private constructor(
                 this.completionTokensDetails = completionTokensDetails
             }
 
+        /** Compute units for the request. Currently null when available. */
+        fun computeUnits(computeUnits: Long?) = computeUnits(JsonField.ofNullable(computeUnits))
+
+        /**
+         * Alias for [Builder.computeUnits].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun computeUnits(computeUnits: Long) = computeUnits(computeUnits as Long?)
+
+        /** Alias for calling [Builder.computeUnits] with `computeUnits.orElse(null)`. */
+        fun computeUnits(computeUnits: Optional<Long>) = computeUnits(computeUnits.getOrNull())
+
+        /**
+         * Sets [Builder.computeUnits] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.computeUnits] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun computeUnits(computeUnits: JsonField<Long>) = apply { this.computeUnits = computeUnits }
+
         /** Breakdown of tokens used in the prompt. */
         fun promptTokensDetails(promptTokensDetails: PromptTokensDetails) =
             promptTokensDetails(JsonField.of(promptTokensDetails))
@@ -299,6 +345,7 @@ private constructor(
                 checkRequired("promptTokens", promptTokens),
                 checkRequired("totalTokens", totalTokens),
                 completionTokensDetails,
+                computeUnits,
                 promptTokensDetails,
                 additionalProperties.toMutableMap(),
             )
@@ -323,6 +370,7 @@ private constructor(
         promptTokens()
         totalTokens()
         completionTokensDetails().ifPresent { it.validate() }
+        computeUnits()
         promptTokensDetails().ifPresent { it.validate() }
         validated = true
     }
@@ -346,6 +394,7 @@ private constructor(
             (if (promptTokens.asKnown().isPresent) 1 else 0) +
             (if (totalTokens.asKnown().isPresent) 1 else 0) +
             (completionTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (computeUnits.asKnown().isPresent) 1 else 0) +
             (promptTokensDetails.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Breakdown of tokens used in a completion. */
@@ -356,6 +405,7 @@ private constructor(
         private val audioTokens: JsonField<Long>,
         private val reasoningTokens: JsonField<Long>,
         private val rejectedPredictionTokens: JsonField<Long>,
+        private val textTokens: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -373,11 +423,15 @@ private constructor(
             @JsonProperty("rejected_prediction_tokens")
             @ExcludeMissing
             rejectedPredictionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("text_tokens")
+            @ExcludeMissing
+            textTokens: JsonField<Long> = JsonMissing.of(),
         ) : this(
             acceptedPredictionTokens,
             audioTokens,
             reasoningTokens,
             rejectedPredictionTokens,
+            textTokens,
             mutableMapOf(),
         )
 
@@ -419,6 +473,14 @@ private constructor(
             rejectedPredictionTokens.getOptional("rejected_prediction_tokens")
 
         /**
+         * Text output tokens generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+
+        /**
          * Returns the raw JSON value of [acceptedPredictionTokens].
          *
          * Unlike [acceptedPredictionTokens], this method doesn't throw if the JSON field has an
@@ -457,6 +519,13 @@ private constructor(
         @ExcludeMissing
         fun _rejectedPredictionTokens(): JsonField<Long> = rejectedPredictionTokens
 
+        /**
+         * Returns the raw JSON value of [textTokens].
+         *
+         * Unlike [textTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("text_tokens") @ExcludeMissing fun _textTokens(): JsonField<Long> = textTokens
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -484,6 +553,7 @@ private constructor(
             private var audioTokens: JsonField<Long> = JsonMissing.of()
             private var reasoningTokens: JsonField<Long> = JsonMissing.of()
             private var rejectedPredictionTokens: JsonField<Long> = JsonMissing.of()
+            private var textTokens: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -492,6 +562,7 @@ private constructor(
                 audioTokens = completionTokensDetails.audioTokens
                 reasoningTokens = completionTokensDetails.reasoningTokens
                 rejectedPredictionTokens = completionTokensDetails.rejectedPredictionTokens
+                textTokens = completionTokensDetails.textTokens
                 additionalProperties = completionTokensDetails.additionalProperties.toMutableMap()
             }
 
@@ -560,6 +631,18 @@ private constructor(
                 this.rejectedPredictionTokens = rejectedPredictionTokens
             }
 
+            /** Text output tokens generated by the model. */
+            fun textTokens(textTokens: Long) = textTokens(JsonField.of(textTokens))
+
+            /**
+             * Sets [Builder.textTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.textTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun textTokens(textTokens: JsonField<Long>) = apply { this.textTokens = textTokens }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -590,6 +673,7 @@ private constructor(
                     audioTokens,
                     reasoningTokens,
                     rejectedPredictionTokens,
+                    textTokens,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -614,6 +698,7 @@ private constructor(
             audioTokens()
             reasoningTokens()
             rejectedPredictionTokens()
+            textTokens()
             validated = true
         }
 
@@ -636,7 +721,8 @@ private constructor(
             (if (acceptedPredictionTokens.asKnown().isPresent) 1 else 0) +
                 (if (audioTokens.asKnown().isPresent) 1 else 0) +
                 (if (reasoningTokens.asKnown().isPresent) 1 else 0) +
-                (if (rejectedPredictionTokens.asKnown().isPresent) 1 else 0)
+                (if (rejectedPredictionTokens.asKnown().isPresent) 1 else 0) +
+                (if (textTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -648,6 +734,7 @@ private constructor(
                 audioTokens == other.audioTokens &&
                 reasoningTokens == other.reasoningTokens &&
                 rejectedPredictionTokens == other.rejectedPredictionTokens &&
+                textTokens == other.textTokens &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -657,6 +744,7 @@ private constructor(
                 audioTokens,
                 reasoningTokens,
                 rejectedPredictionTokens,
+                textTokens,
                 additionalProperties,
             )
         }
@@ -664,7 +752,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "CompletionTokensDetails{acceptedPredictionTokens=$acceptedPredictionTokens, audioTokens=$audioTokens, reasoningTokens=$reasoningTokens, rejectedPredictionTokens=$rejectedPredictionTokens, additionalProperties=$additionalProperties}"
+            "CompletionTokensDetails{acceptedPredictionTokens=$acceptedPredictionTokens, audioTokens=$audioTokens, reasoningTokens=$reasoningTokens, rejectedPredictionTokens=$rejectedPredictionTokens, textTokens=$textTokens, additionalProperties=$additionalProperties}"
     }
 
     /** Breakdown of tokens used in the prompt. */
@@ -674,6 +762,8 @@ private constructor(
         private val audioTokens: JsonField<Long>,
         private val cacheWriteTokens: JsonField<Long>,
         private val cachedTokens: JsonField<Long>,
+        private val imageTokens: JsonField<Long>,
+        private val textTokens: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -688,7 +778,20 @@ private constructor(
             @JsonProperty("cached_tokens")
             @ExcludeMissing
             cachedTokens: JsonField<Long> = JsonMissing.of(),
-        ) : this(audioTokens, cacheWriteTokens, cachedTokens, mutableMapOf())
+            @JsonProperty("image_tokens")
+            @ExcludeMissing
+            imageTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("text_tokens")
+            @ExcludeMissing
+            textTokens: JsonField<Long> = JsonMissing.of(),
+        ) : this(
+            audioTokens,
+            cacheWriteTokens,
+            cachedTokens,
+            imageTokens,
+            textTokens,
+            mutableMapOf(),
+        )
 
         /**
          * Audio input tokens present in the prompt.
@@ -713,6 +816,22 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun cachedTokens(): Optional<Long> = cachedTokens.getOptional("cached_tokens")
+
+        /**
+         * Image input tokens present in the prompt.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun imageTokens(): Optional<Long> = imageTokens.getOptional("image_tokens")
+
+        /**
+         * Text input tokens present in the prompt.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
 
         /**
          * Returns the raw JSON value of [audioTokens].
@@ -743,6 +862,22 @@ private constructor(
         @ExcludeMissing
         fun _cachedTokens(): JsonField<Long> = cachedTokens
 
+        /**
+         * Returns the raw JSON value of [imageTokens].
+         *
+         * Unlike [imageTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("image_tokens")
+        @ExcludeMissing
+        fun _imageTokens(): JsonField<Long> = imageTokens
+
+        /**
+         * Returns the raw JSON value of [textTokens].
+         *
+         * Unlike [textTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("text_tokens") @ExcludeMissing fun _textTokens(): JsonField<Long> = textTokens
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -767,6 +902,8 @@ private constructor(
             private var audioTokens: JsonField<Long> = JsonMissing.of()
             private var cacheWriteTokens: JsonField<Long> = JsonMissing.of()
             private var cachedTokens: JsonField<Long> = JsonMissing.of()
+            private var imageTokens: JsonField<Long> = JsonMissing.of()
+            private var textTokens: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -774,6 +911,8 @@ private constructor(
                 audioTokens = promptTokensDetails.audioTokens
                 cacheWriteTokens = promptTokensDetails.cacheWriteTokens
                 cachedTokens = promptTokensDetails.cachedTokens
+                imageTokens = promptTokensDetails.imageTokens
+                textTokens = promptTokensDetails.textTokens
                 additionalProperties = promptTokensDetails.additionalProperties.toMutableMap()
             }
 
@@ -818,6 +957,30 @@ private constructor(
                 this.cachedTokens = cachedTokens
             }
 
+            /** Image input tokens present in the prompt. */
+            fun imageTokens(imageTokens: Long) = imageTokens(JsonField.of(imageTokens))
+
+            /**
+             * Sets [Builder.imageTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.imageTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun imageTokens(imageTokens: JsonField<Long>) = apply { this.imageTokens = imageTokens }
+
+            /** Text input tokens present in the prompt. */
+            fun textTokens(textTokens: Long) = textTokens(JsonField.of(textTokens))
+
+            /**
+             * Sets [Builder.textTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.textTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun textTokens(textTokens: JsonField<Long>) = apply { this.textTokens = textTokens }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -847,6 +1010,8 @@ private constructor(
                     audioTokens,
                     cacheWriteTokens,
                     cachedTokens,
+                    imageTokens,
+                    textTokens,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -870,6 +1035,8 @@ private constructor(
             audioTokens()
             cacheWriteTokens()
             cachedTokens()
+            imageTokens()
+            textTokens()
             validated = true
         }
 
@@ -891,7 +1058,9 @@ private constructor(
         internal fun validity(): Int =
             (if (audioTokens.asKnown().isPresent) 1 else 0) +
                 (if (cacheWriteTokens.asKnown().isPresent) 1 else 0) +
-                (if (cachedTokens.asKnown().isPresent) 1 else 0)
+                (if (cachedTokens.asKnown().isPresent) 1 else 0) +
+                (if (imageTokens.asKnown().isPresent) 1 else 0) +
+                (if (textTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -902,17 +1071,26 @@ private constructor(
                 audioTokens == other.audioTokens &&
                 cacheWriteTokens == other.cacheWriteTokens &&
                 cachedTokens == other.cachedTokens &&
+                imageTokens == other.imageTokens &&
+                textTokens == other.textTokens &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(audioTokens, cacheWriteTokens, cachedTokens, additionalProperties)
+            Objects.hash(
+                audioTokens,
+                cacheWriteTokens,
+                cachedTokens,
+                imageTokens,
+                textTokens,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptTokensDetails{audioTokens=$audioTokens, cacheWriteTokens=$cacheWriteTokens, cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
+            "PromptTokensDetails{audioTokens=$audioTokens, cacheWriteTokens=$cacheWriteTokens, cachedTokens=$cachedTokens, imageTokens=$imageTokens, textTokens=$textTokens, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -925,6 +1103,7 @@ private constructor(
             promptTokens == other.promptTokens &&
             totalTokens == other.totalTokens &&
             completionTokensDetails == other.completionTokensDetails &&
+            computeUnits == other.computeUnits &&
             promptTokensDetails == other.promptTokensDetails &&
             additionalProperties == other.additionalProperties
     }
@@ -935,6 +1114,7 @@ private constructor(
             promptTokens,
             totalTokens,
             completionTokensDetails,
+            computeUnits,
             promptTokensDetails,
             additionalProperties,
         )
@@ -943,5 +1123,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CompletionUsage{completionTokens=$completionTokens, promptTokens=$promptTokens, totalTokens=$totalTokens, completionTokensDetails=$completionTokensDetails, promptTokensDetails=$promptTokensDetails, additionalProperties=$additionalProperties}"
+        "CompletionUsage{completionTokens=$completionTokens, promptTokens=$promptTokens, totalTokens=$totalTokens, completionTokensDetails=$completionTokensDetails, computeUnits=$computeUnits, promptTokensDetails=$promptTokensDetails, additionalProperties=$additionalProperties}"
 }

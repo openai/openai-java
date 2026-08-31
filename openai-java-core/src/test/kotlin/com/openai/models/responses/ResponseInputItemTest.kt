@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -744,9 +744,9 @@ internal class ResponseInputItemTest {
     fun ofFunctionCallOutput() {
         val functionCallOutput =
             ResponseInputItem.FunctionCallOutput.builder()
-                .callId("x")
                 .output("string")
                 .id("fc_123")
+                .callId("x")
                 .callerDirect()
                 .name("x")
                 .namespace("namespace")
@@ -795,9 +795,9 @@ internal class ResponseInputItemTest {
         val responseInputItem =
             ResponseInputItem.ofFunctionCallOutput(
                 ResponseInputItem.FunctionCallOutput.builder()
-                    .callId("x")
                     .output("string")
                     .id("fc_123")
+                    .callId("x")
                     .callerDirect()
                     .name("x")
                     .namespace("namespace")
@@ -2083,7 +2083,9 @@ internal class ResponseInputItemTest {
                 .name("name")
                 .serverLabel("server_label")
                 .approvalRequestId("approval_request_id")
-                .error("error")
+                .error(
+                    McpToolCallError.McpProtocolError.builder().code(0L).message("message").build()
+                )
                 .output("output")
                 .status(ResponseInputItem.McpCall.Status.IN_PROGRESS)
                 .build()
@@ -2135,7 +2137,12 @@ internal class ResponseInputItemTest {
                     .name("name")
                     .serverLabel("server_label")
                     .approvalRequestId("approval_request_id")
-                    .error("error")
+                    .error(
+                        McpToolCallError.McpProtocolError.builder()
+                            .code(0L)
+                            .message("message")
+                            .build()
+                    )
                     .output("output")
                     .status(ResponseInputItem.McpCall.Status.IN_PROGRESS)
                     .build()

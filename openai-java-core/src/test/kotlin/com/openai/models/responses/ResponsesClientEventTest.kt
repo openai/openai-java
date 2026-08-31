@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -96,6 +96,7 @@ internal class ResponsesClientEventTest {
                 .serviceTier(ResponsesClientEvent.ServiceTier.AUTO)
                 .store(true)
                 .stream(true)
+                .streamId("stream_id")
                 .streamOptions(
                     ResponsesClientEvent.StreamOptions.builder().includeObfuscation(true).build()
                 )
@@ -215,6 +216,7 @@ internal class ResponsesClientEventTest {
             .contains(ResponsesClientEvent.ServiceTier.AUTO)
         assertThat(responsesClientEvent.store()).contains(true)
         assertThat(responsesClientEvent.stream()).contains(true)
+        assertThat(responsesClientEvent.streamId()).contains("stream_id")
         assertThat(responsesClientEvent.streamOptions())
             .contains(ResponsesClientEvent.StreamOptions.builder().includeObfuscation(true).build())
         assertThat(responsesClientEvent.temperature()).contains(1.0)
@@ -336,6 +338,7 @@ internal class ResponsesClientEventTest {
                 .serviceTier(ResponsesClientEvent.ServiceTier.AUTO)
                 .store(true)
                 .stream(true)
+                .streamId("stream_id")
                 .streamOptions(
                     ResponsesClientEvent.StreamOptions.builder().includeObfuscation(true).build()
                 )

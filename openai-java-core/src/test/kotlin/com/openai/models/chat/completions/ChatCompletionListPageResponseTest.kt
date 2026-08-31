@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -103,6 +103,11 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
+                        .metadata(
+                            ChatCompletion.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .moderation(
                             ChatCompletion.Moderation.builder()
                                 .input(
@@ -217,13 +222,17 @@ internal class ChatCompletionListPageResponseTest {
                                         .audioTokens(0L)
                                         .reasoningTokens(0L)
                                         .rejectedPredictionTokens(0L)
+                                        .textTokens(0L)
                                         .build()
                                 )
+                                .computeUnits(0L)
                                 .promptTokensDetails(
                                     CompletionUsage.PromptTokensDetails.builder()
                                         .audioTokens(0L)
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .imageTokens(0L)
+                                        .textTokens(0L)
                                         .build()
                                 )
                                 .build()
@@ -324,6 +333,11 @@ internal class ChatCompletionListPageResponseTest {
                     )
                     .created(0L)
                     .model("model")
+                    .metadata(
+                        ChatCompletion.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .moderation(
                         ChatCompletion.Moderation.builder()
                             .input(
@@ -425,13 +439,17 @@ internal class ChatCompletionListPageResponseTest {
                                     .audioTokens(0L)
                                     .reasoningTokens(0L)
                                     .rejectedPredictionTokens(0L)
+                                    .textTokens(0L)
                                     .build()
                             )
+                            .computeUnits(0L)
                             .promptTokensDetails(
                                 CompletionUsage.PromptTokensDetails.builder()
                                     .audioTokens(0L)
                                     .cacheWriteTokens(0L)
                                     .cachedTokens(0L)
+                                    .imageTokens(0L)
+                                    .textTokens(0L)
                                     .build()
                             )
                             .build()
@@ -536,6 +554,11 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
+                        .metadata(
+                            ChatCompletion.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .moderation(
                             ChatCompletion.Moderation.builder()
                                 .input(
@@ -650,13 +673,17 @@ internal class ChatCompletionListPageResponseTest {
                                         .audioTokens(0L)
                                         .reasoningTokens(0L)
                                         .rejectedPredictionTokens(0L)
+                                        .textTokens(0L)
                                         .build()
                                 )
+                                .computeUnits(0L)
                                 .promptTokensDetails(
                                     CompletionUsage.PromptTokensDetails.builder()
                                         .audioTokens(0L)
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .imageTokens(0L)
+                                        .textTokens(0L)
                                         .build()
                                 )
                                 .build()

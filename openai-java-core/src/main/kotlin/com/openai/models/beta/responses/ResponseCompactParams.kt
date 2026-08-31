@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -1276,6 +1276,8 @@ private constructor(
 
             @JvmField val GPT_5_5 = of("gpt-5.5")
 
+            @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
+
             @JvmField val GPT_5_4 = of("gpt-5.4")
 
             @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
@@ -1454,6 +1456,10 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
+            @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
+
+            @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
+
             @JvmField val GPT_5_CODEX = of("gpt-5-codex")
 
             @JvmField val GPT_5_PRO = of("gpt-5-pro")
@@ -1461,6 +1467,12 @@ private constructor(
             @JvmField val GPT_5_PRO_2025_10_06 = of("gpt-5-pro-2025-10-06")
 
             @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
+
+            @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+            @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+            @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
@@ -1471,6 +1483,7 @@ private constructor(
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -1559,10 +1572,15 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
         }
 
         /**
@@ -1579,6 +1597,7 @@ private constructor(
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -1667,10 +1686,15 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1688,6 +1712,7 @@ private constructor(
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
                 GPT_5_5 -> Value.GPT_5_5
+                GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
                 GPT_5_4 -> Value.GPT_5_4
                 GPT_5_4_MINI -> Value.GPT_5_4_MINI
                 GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -1776,10 +1801,15 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Value.GPT_5_CODEX
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
                 else -> Value._UNKNOWN
             }
 
@@ -1798,6 +1828,7 @@ private constructor(
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
                 GPT_5_5 -> Known.GPT_5_5
+                GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
                 GPT_5_4 -> Known.GPT_5_4
                 GPT_5_4_MINI -> Known.GPT_5_4_MINI
                 GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -1886,10 +1917,15 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Known.GPT_5_CODEX
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 

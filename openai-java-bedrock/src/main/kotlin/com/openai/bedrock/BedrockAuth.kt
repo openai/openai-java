@@ -29,19 +29,24 @@ import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner
 import software.amazon.awssdk.http.auth.spi.signer.HttpSigner
 import software.amazon.awssdk.http.auth.spi.signer.SignRequest
 import software.amazon.awssdk.identity.spi.AwsCredentialsIdentity
+import software.amazon.awssdk.regions.EndpointTag
+import software.amazon.awssdk.regions.PartitionEndpointKey
+import software.amazon.awssdk.regions.PartitionMetadata
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain
 
-internal const val BEDROCK_SERVICE = "bedrock-mantle"
 internal const val ENV_BEARER_TOKEN = "AWS_BEARER_TOKEN_BEDROCK"
 internal const val ENV_BASE_URL = "AWS_BEDROCK_BASE_URL"
+private val AWS_REGION_PATTERN = Regex("^[a-z]{2,8}(?:-[a-z0-9]+)+-\\d+$")
 
 internal data class BedrockConfiguration(
+    val endpoint: BedrockEndpoint,
     val baseUrl: String,
     val authenticator: HttpRequestAuthenticator,
 )
 
 internal data class BedrockAuthOptions(
+    val endpoint: BedrockEndpoint?,
     val awsRegion: String?,
     val baseUrl: String?,
     val apiKey: String?,
@@ -106,21 +111,38 @@ internal fun BedrockAuthOptions.resolve(
         )
     }
 
-    val environmentBaseUrl = normalizeEnvironment(getenv(ENV_BASE_URL))
-    val resolvedRegion by lazy {
+    val configuredRegion by lazy {
         normalizedRegion
             ?: normalizeEnvironment(getenv("AWS_REGION"))
             ?: normalizeEnvironment(getenv("AWS_DEFAULT_REGION"))
-            ?: regionProvider()?.id()
     }
-    val resolvedBaseUrl =
-        normalizedBaseUrl
-            ?: environmentBaseUrl
-            ?: resolvedRegion?.let { "https://bedrock-mantle.$it.api.aws/openai/v1" }
-            ?: throw OpenAIException(
-                "Bedrock requires an AWS region. Pass `awsRegion` to the builder, or set `AWS_REGION` or `AWS_DEFAULT_REGION`."
-            )
-    val normalizedResolvedBaseUrl = normalizeBaseUrl(resolvedBaseUrl)
+    val resolvedRegion by lazy {
+        (configuredRegion ?: regionProvider()?.id()).also(::validateRegion)
+    }
+    val configuredBaseUrl = normalizedBaseUrl ?: normalizeEnvironment(getenv(ENV_BASE_URL))
+    val normalizedResolvedBaseUrl =
+        if (configuredBaseUrl != null) {
+            normalizeBaseUrl(configuredBaseUrl)
+        } else {
+            val region =
+                resolvedRegion
+                    ?: throw OpenAIException(
+                        "Bedrock requires an AWS region. Pass `awsRegion` to the builder, or set `AWS_REGION` or `AWS_DEFAULT_REGION`."
+                    )
+            val selectedEndpoint = endpoint ?: BedrockEndpoint.MANTLE
+            val hostname =
+                when (selectedEndpoint) {
+                    BedrockEndpoint.MANTLE -> "bedrock-mantle.$region.api.aws"
+                    BedrockEndpoint.RUNTIME ->
+                        "bedrock-runtime.$region.${runtimeDnsSuffixes(region).first}"
+                }
+            "https://$hostname/openai/v1"
+        }
+    val parsedEndpoint = parseBedrockEndpointHostname(normalizedResolvedBaseUrl.toHttpUrl().host)
+    val resolvedEndpoint = endpoint ?: parsedEndpoint?.endpoint ?: BedrockEndpoint.MANTLE
+    val canonicalRegion =
+        if (parsedEndpoint != null) normalizedRegion?.also(::validateRegion) else null
+    validateCanonicalEndpoint(normalizedResolvedBaseUrl, resolvedEndpoint, canonicalRegion)
     val resolvedAuthenticationExecutor by lazy {
         authenticationExecutor ?: newAuthenticationExecutor()
     }
@@ -128,6 +150,7 @@ internal fun BedrockAuthOptions.resolve(
 
     if (skipAuth) {
         return BedrockConfiguration(
+            resolvedEndpoint,
             normalizedResolvedBaseUrl,
             NoAuthAuthenticator(normalizedResolvedBaseUrl),
         )
@@ -149,6 +172,7 @@ internal fun BedrockAuthOptions.resolve(
 
     if (bearerSupplier != null) {
         return BedrockConfiguration(
+            resolvedEndpoint,
             normalizedResolvedBaseUrl,
             BearerAuthenticator(
                 normalizedResolvedBaseUrl,
@@ -164,6 +188,7 @@ internal fun BedrockAuthOptions.resolve(
             ?: throw OpenAIException(
                 "Bedrock requires an AWS region. Pass `awsRegion` to the builder, or set `AWS_REGION` or `AWS_DEFAULT_REGION`."
             )
+    validateCanonicalEndpoint(normalizedResolvedBaseUrl, resolvedEndpoint, region)
     val (credentialsProvider, ownsCredentialsProvider) =
         when {
             staticCredentials != null -> AwsCredentialsProvider { staticCredentials } to false
@@ -174,9 +199,11 @@ internal fun BedrockAuthOptions.resolve(
         }
 
     return BedrockConfiguration(
+        resolvedEndpoint,
         normalizedResolvedBaseUrl,
         SigV4Authenticator(
             baseUrl = normalizedResolvedBaseUrl,
+            endpoint = resolvedEndpoint,
             region = Region.of(region),
             credentialsProvider = credentialsProvider,
             ownsCredentialsProvider = ownsCredentialsProvider,
@@ -237,6 +264,59 @@ private fun normalize(name: String, value: String?): String? {
 
 private fun normalizeEnvironment(value: String?): String? =
     value?.trim()?.takeIf { it.isNotEmpty() }
+
+private fun validateRegion(region: String?) {
+    if (region != null && !AWS_REGION_PATTERN.matches(region)) {
+        throw OpenAIException(
+            "The Bedrock AWS region is invalid. Use a standard AWS region such as `us-east-1`."
+        )
+    }
+}
+
+private fun runtimeDnsSuffixes(region: String): Pair<String, String?> =
+    PartitionMetadata.of(Region.of(region)).let { partition ->
+        val dualStackEndpoint = PartitionEndpointKey.builder().tags(EndpointTag.DUALSTACK).build()
+        partition.dnsSuffix() to partition.dnsSuffix(dualStackEndpoint)
+    }
+
+private data class CanonicalBedrockEndpoint(val endpoint: BedrockEndpoint, val region: String)
+
+private fun parseBedrockEndpointHostname(hostname: String): CanonicalBedrockEndpoint? {
+    val parts = hostname.removeSuffix(".").lowercase().split('.')
+    if (parts.size < 3) return null
+
+    val service = parts[0]
+    val region = parts[1]
+    val suffix = parts.drop(2).joinToString(".")
+    if (service == "bedrock-mantle" && suffix == "api.aws") {
+        return CanonicalBedrockEndpoint(BedrockEndpoint.MANTLE, region)
+    }
+    if (service == "bedrock-runtime" || service == "bedrock-runtime-fips") {
+        val (standardSuffix, dualStackSuffix) = runtimeDnsSuffixes(region)
+        if (suffix == standardSuffix || suffix == dualStackSuffix) {
+            return CanonicalBedrockEndpoint(BedrockEndpoint.RUNTIME, region)
+        }
+    }
+    return null
+}
+
+private fun validateCanonicalEndpoint(baseUrl: String, endpoint: BedrockEndpoint, region: String?) {
+    val parsedUrl = baseUrl.toHttpUrl()
+    val canonical = parseBedrockEndpointHostname(parsedUrl.host) ?: return
+    if (parsedUrl.scheme != "https") {
+        throw OpenAIException("Canonical Amazon Bedrock endpoints require HTTPS.")
+    }
+    if (canonical.endpoint != endpoint) {
+        throw OpenAIException(
+            "The Bedrock ${canonical.endpoint.name.lowercase()} hostname does not match the selected `${endpoint.name.lowercase()}` endpoint."
+        )
+    }
+    if (region != null && canonical.region != region) {
+        throw OpenAIException(
+            "The Bedrock endpoint region `${canonical.region}` does not match the configured AWS region `$region`."
+        )
+    }
+}
 
 private fun normalizeBaseUrl(value: String): String =
     try {
@@ -309,6 +389,7 @@ private class BearerAuthenticator(
 
 private class SigV4Authenticator(
     baseUrl: String,
+    private val endpoint: BedrockEndpoint,
     private val region: Region,
     private val credentialsProvider: AwsCredentialsProvider,
     private val ownsCredentialsProvider: Boolean,
@@ -367,7 +448,7 @@ private class SigV4Authenticator(
                             payload(ContentStreamProvider.fromByteArray(bodyBytes))
                         }
                     }
-                    .putProperty(AwsV4HttpSigner.SERVICE_SIGNING_NAME, BEDROCK_SERVICE)
+                    .putProperty(AwsV4HttpSigner.SERVICE_SIGNING_NAME, endpoint.signingService)
                     .putProperty(AwsV4HttpSigner.REGION_NAME, region.id())
                     .putProperty(HttpSigner.SIGNING_CLOCK, clock)
             }
@@ -422,14 +503,15 @@ private class SigV4Authenticator(
     }
 
     private fun validateCanonicalRegion(url: HttpUrl) {
-        val canonicalRegion =
-            Regex("^bedrock-mantle\\.([a-z0-9-]+)\\.api\\.aws$", RegexOption.IGNORE_CASE)
-                .matchEntire(url.host)
-                ?.groupValues
-                ?.get(1)
-        if (canonicalRegion != null && canonicalRegion != region.id()) {
+        val canonical = parseBedrockEndpointHostname(url.host) ?: return
+        if (canonical.endpoint != endpoint) {
             throw OpenAIException(
-                "The Bedrock endpoint region `$canonicalRegion` does not match the SigV4 region `${region.id()}`."
+                "The Bedrock ${canonical.endpoint.name.lowercase()} hostname does not match the selected `${endpoint.name.lowercase()}` endpoint."
+            )
+        }
+        if (canonical.region != region.id()) {
+            throw OpenAIException(
+                "The Bedrock endpoint region `${canonical.region}` does not match the SigV4 region `${region.id()}`."
             )
         }
     }

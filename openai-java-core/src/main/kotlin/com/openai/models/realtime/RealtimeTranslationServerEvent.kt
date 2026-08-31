@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -79,8 +79,9 @@ private constructor(
         Optional.ofNullable(sessionOutputTranscriptDelta)
 
     /**
-     * Returned when translated output audio is available. Output audio deltas are 200 ms frames of
-     * PCM16 audio.
+     * Returned when translated output audio is available. The `delta` contains a PCM16 audio chunk
+     * whose length can vary. Clients should decode and queue the complete delta instead of assuming
+     * a fixed byte or sample count.
      */
     fun sessionOutputAudioDelta(): Optional<RealtimeTranslationOutputAudioDeltaEvent> =
         Optional.ofNullable(sessionOutputAudioDelta)
@@ -145,8 +146,9 @@ private constructor(
         sessionOutputTranscriptDelta.getOrThrow("sessionOutputTranscriptDelta")
 
     /**
-     * Returned when translated output audio is available. Output audio deltas are 200 ms frames of
-     * PCM16 audio.
+     * Returned when translated output audio is available. The `delta` contains a PCM16 audio chunk
+     * whose length can vary. Clients should decode and queue the complete delta instead of assuming
+     * a fixed byte or sample count.
      */
     fun asSessionOutputAudioDelta(): RealtimeTranslationOutputAudioDeltaEvent =
         sessionOutputAudioDelta.getOrThrow("sessionOutputAudioDelta")
@@ -411,8 +413,9 @@ private constructor(
             )
 
         /**
-         * Returned when translated output audio is available. Output audio deltas are 200 ms frames
-         * of PCM16 audio.
+         * Returned when translated output audio is available. The `delta` contains a PCM16 audio
+         * chunk whose length can vary. Clients should decode and queue the complete delta instead
+         * of assuming a fixed byte or sample count.
          */
         @JvmStatic
         fun ofSessionOutputAudioDelta(
@@ -471,8 +474,9 @@ private constructor(
         ): T
 
         /**
-         * Returned when translated output audio is available. Output audio deltas are 200 ms frames
-         * of PCM16 audio.
+         * Returned when translated output audio is available. The `delta` contains a PCM16 audio
+         * chunk whose length can vary. Clients should decode and queue the complete delta instead
+         * of assuming a fixed byte or sample count.
          */
         fun visitSessionOutputAudioDelta(
             sessionOutputAudioDelta: RealtimeTranslationOutputAudioDeltaEvent

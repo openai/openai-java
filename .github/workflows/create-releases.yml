@@ -36,23 +36,29 @@ jobs:
       github.event_name != 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
       github.repository == 'openai/openai-java'
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+    environment: release
+    permissions: {}
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
     outputs:
-      prs_created: ${{ steps.release.outputs.prs_created }}
-      release_pr: ${{ steps.release.outputs.pr }}
       releases_created: ${{ steps.release.outputs.releases_created }}
       source_sha: ${{ steps.release.outputs.sha }}
       release_tag: ${{ steps.release.outputs.tag_name }}
 
     steps:
+      - name: Create release app token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.OPENAI_SDKS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OPENAI_SDKS_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+
       - name: Check for a legacy release PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           LEGACY_RELEASE_BRANCH: release-please--branches--main--changes--next
         run: |
           set -euo pipefail
@@ -76,39 +82,10 @@ jobs:
         id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-
-  release_pr_ci:
-    name: Release / run release PR CI
-    needs: automatic_release
-    if: needs.automatic_release.outputs.prs_created == 'true'
-    permissions:
-      actions: write
-    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
-    timeout-minutes: 5
-
-    steps:
-      # Events created by GITHUB_TOKEN do not recursively trigger pull_request workflows.
-      # workflow_dispatch is an explicit exception, so dispatch CI for the generated PR head.
-      - name: Run CI for the release PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ needs.automatic_release.outputs.release_pr }}
-        run: |
-          set -euo pipefail
-
-          release_branch="$(jq -r '.headBranchName // empty' <<< "$RELEASE_PR")"
-          if [[ "$release_branch" != "release-please--branches--main" ]]; then
-            echo "::error::Unexpected release PR branch: $release_branch"
-            exit 1
-          fi
-
-          gh workflow run ci.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref "$release_branch"
 
   retry_release:
     name: Release / select retry source
@@ -140,7 +117,7 @@ jobs:
           fi
 
       - name: Check out retry source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -273,35 +250,56 @@ jobs:
       needs.runtime_compatibility.result == 'success'
     permissions:
       contents: read
+      id-token: write
+      attestations: write
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 90
     environment: publish
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
           ref: ${{ needs.release.outputs.source_sha }}
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
             8
             21
 
+      - name: Create isolated release Gradle User Home
+        env:
+          TRUSTED_GRADLE_USER_HOME: ${{ runner.temp }}/trusted-release-gradle-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+
+          if [[ -e "$TRUSTED_GRADLE_USER_HOME" || -L "$TRUSTED_GRADLE_USER_HOME" ]]; then
+            echo "::error::Release Gradle User Home already exists"
+            exit 1
+          fi
+
+          mkdir -m 700 "$TRUSTED_GRADLE_USER_HOME"
+          printf 'GRADLE_USER_HOME=%s\n' "$TRUSTED_GRADLE_USER_HOME" >> "$GITHUB_ENV"
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-disabled: true
 
       - name: Compile the openai-java-core project
         run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
+
+      - name: Stop pre-GraalVM Gradle daemon
+        run: ./gradlew --stop
 
       - name: Run the mock server
         run: ./scripts/mock --daemon
 
       - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@03e8abf916fd0e281b2efe7b2da3378bb0a1d085 # v1
+        uses: graalvm/setup-graalvm@5298d94fb55a4f185c602eeac5de1b553882abe2 # v1
         with:
           java-version: 21
           distribution: graalvm-community
@@ -323,16 +321,122 @@ jobs:
             exit 1
           fi
 
+      - name: Build Maven artifacts for provenance
+        id: maven-artifacts
+        env:
+          RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+          SOURCE_SHA: ${{ needs.release.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ||
+                "$SOURCE_SHA" != "$(git rev-parse HEAD)" ]]; then
+            echo "::error::The checked-out source does not match the verified release SHA"
+            exit 1
+          fi
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Invalid verified release tag"
+            exit 1
+          fi
+
+          version="${RELEASE_TAG#v}"
+          tasks=()
+          subjects=()
+          for artifact in $MAVEN_ARTIFACTS; do
+            tasks+=(":$artifact:jar")
+            subjects+=("$artifact/build/libs/$artifact-$version.jar")
+          done
+
+          ./gradlew "${tasks[@]}" --no-configuration-cache
+
+          for subject in "${subjects[@]}"; do
+            if [[ ! -f "$subject" || -L "$subject" ]]; then
+              echo "::error::Missing or unsafe Maven artifact: $subject"
+              exit 1
+            fi
+          done
+
+          sha256sum "${subjects[@]}" > "$RUNNER_TEMP/maven-artifact-provenance.sha256"
+
+          workflow_path="${GITHUB_WORKFLOW_REF#"$GITHUB_REPOSITORY/"}"
+          workflow_path="${workflow_path%@*}"
+          jq -n \
+            --arg repository "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --arg workflow_ref "$GITHUB_REF" \
+            --arg workflow_path "$workflow_path" \
+            --arg workflow_identity "$GITHUB_SERVER_URL/$GITHUB_WORKFLOW_REF" \
+            --arg event_name "$GITHUB_EVENT_NAME" \
+            --arg repository_id "$GITHUB_REPOSITORY_ID" \
+            --arg repository_owner_id "$GITHUB_REPOSITORY_OWNER_ID" \
+            --arg runner_environment "$RUNNER_ENVIRONMENT" \
+            --arg workflow_sha "$GITHUB_SHA" \
+            --arg source_sha "$SOURCE_SHA" \
+            --arg release_tag "$RELEASE_TAG" \
+            --arg invocation_id \
+              "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT" \
+            '{
+              buildDefinition: {
+                buildType: "https://actions.github.io/buildtypes/workflow/v1",
+                externalParameters: {
+                  workflow: {
+                    ref: $workflow_ref,
+                    repository: $repository,
+                    path: $workflow_path
+                  }
+                },
+                internalParameters: {
+                  github: {
+                    event_name: $event_name,
+                    repository_id: $repository_id,
+                    repository_owner_id: $repository_owner_id,
+                    runner_environment: $runner_environment
+                  }
+                },
+                resolvedDependencies: [
+                  {
+                    uri: ("git+" + $repository + "@" + $workflow_ref),
+                    digest: { gitCommit: $workflow_sha }
+                  },
+                  {
+                    uri: ("git+" + $repository + "@refs/tags/" + $release_tag),
+                    digest: { gitCommit: $source_sha }
+                  }
+                ]
+              },
+              runDetails: {
+                builder: { id: $workflow_identity },
+                metadata: { invocationId: $invocation_id }
+              }
+            }' > "$RUNNER_TEMP/maven-release-provenance.json"
+
+          {
+            echo 'subject_paths<<EOF'
+            printf '%s\n' "${subjects[@]}"
+            echo EOF
+            echo "predicate_path=$RUNNER_TEMP/maven-release-provenance.json"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Attest Maven artifact provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: ${{ steps.maven-artifacts.outputs.subject_paths }}
+          predicate-type: https://slsa.dev/provenance/v1
+          predicate-path: ${{ steps.maven-artifacts.outputs.predicate_path }}
+
       - name: Publish to Maven Central
         env:
-          SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
         run: |
           set -euo pipefail
 
-          for variable in SONATYPE_USERNAME SONATYPE_PASSWORD GPG_SIGNING_KEY GPG_SIGNING_PASSWORD; do
+          for variable in \
+            ORG_GRADLE_PROJECT_mavenCentralUsername \
+            ORG_GRADLE_PROJECT_mavenCentralPassword \
+            GPG_SIGNING_KEY \
+            GPG_SIGNING_PASSWORD; do
             if [[ -z "${!variable}" ]]; then
               echo "::error::$variable is empty"
               exit 1
@@ -352,11 +456,20 @@ jobs:
           fi
           export GPG_SIGNING_KEY_ID
 
+          publish_exclusions=()
+          for artifact in $MAVEN_ARTIFACTS; do
+            publish_exclusions+=("--exclude-task" ":$artifact:jar")
+          done
+
+          sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
           ./gradlew publishAndReleaseToMavenCentral \
+            "${publish_exclusions[@]}" \
             --stacktrace \
-            -PmavenCentralUsername="$SONATYPE_USERNAME" \
-            -PmavenCentralPassword="$SONATYPE_PASSWORD" \
+            --no-parallel \
             --no-configuration-cache
+
+      - name: Verify attested Maven artifacts
+        run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
 
       - name: Wait for Maven Central
         env:
@@ -396,7 +509,6 @@ jobs:
     name: Release / verify outcome
     needs:
       - automatic_release
-      - release_pr_ci
       - retry_release
       - release
       - runtime_compatibility
@@ -413,8 +525,6 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           AUTOMATIC_RESULT: ${{ needs.automatic_release.result }}
-          AUTOMATIC_PRS_CREATED: ${{ needs.automatic_release.outputs.prs_created }}
-          RELEASE_PR_CI_RESULT: ${{ needs.release_pr_ci.result }}
           RETRY_RESULT: ${{ needs.retry_release.result }}
           RELEASE_RESULT: ${{ needs.release.result }}
           SHOULD_PUBLISH: ${{ needs.release.outputs.should_publish }}
@@ -441,9 +551,6 @@ jobs:
               if [[ "$RETRY_RESULT" != "success" ]]; then
                 fail "Manual retry source selection concluded $RETRY_RESULT"
               fi
-              if [[ "$RELEASE_PR_CI_RESULT" != "skipped" ]]; then
-                fail "Manual retry expected release PR CI to be skipped, got $RELEASE_PR_CI_RESULT"
-              fi
               if [[ "$SHOULD_PUBLISH" != "true" ]]; then
                 fail "Manual retry did not select a release to publish"
               fi
@@ -455,21 +562,6 @@ jobs:
               if [[ "$RETRY_RESULT" != "skipped" ]]; then
                 fail "Automatic release expected retry selection to be skipped, got $RETRY_RESULT"
               fi
-              case "$AUTOMATIC_PRS_CREATED" in
-                true)
-                  if [[ "$RELEASE_PR_CI_RESULT" != "success" ]]; then
-                    fail "Release PR CI concluded $RELEASE_PR_CI_RESULT"
-                  fi
-                  ;;
-                false)
-                  if [[ "$RELEASE_PR_CI_RESULT" != "skipped" ]]; then
-                    fail "No-PR run expected release PR CI to be skipped, got $RELEASE_PR_CI_RESULT"
-                  fi
-                  ;;
-                *)
-                  fail "Invalid prs_created output: $AUTOMATIC_PRS_CREATED"
-                  ;;
-              esac
               ;;
             *)
               fail "Unexpected release event: $EVENT_NAME"

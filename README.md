@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.50.0")
+implementation("com.openai:openai-java:4.54.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.50.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.50.0</version>
+  <version>4.54.0</version>
 </dependency>
 ```
 
@@ -87,7 +87,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.50.0")
+implementation("com.openai:openai-java-bedrock:4.54.0")
 ```
 
 <!-- x-release-please-end -->
@@ -202,6 +202,48 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .workloadIdentity(workloadIdentity)
     .build();
 ```
+
+#### X.509 client certificate authentication
+
+Applications with a client certificate can exchange that certificate directly for short-lived
+OpenAI access tokens without providing a JWT or implementing `SubjectTokenProvider`:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.client.okhttp.X509Transport;
+import com.openai.client.okhttp.X509WorkloadIdentity;
+import java.time.Duration;
+import javax.net.ssl.X509ExtendedKeyManager;
+import javax.net.ssl.X509TrustManager;
+
+X509ExtendedKeyManager keyManager = /* load your PKCS#12 key manager */;
+X509TrustManager trustManager = /* load your trusted server roots */;
+
+X509Transport transport = X509Transport.builder()
+    .keyManager(keyManager)
+    .certificateAlias("client-certificate")
+    .trustManager(trustManager)
+    .build();
+
+X509WorkloadIdentity identity = X509WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .transport(transport)
+    .refreshBuffer(Duration.ofMinutes(10)) // Optional; defaults to 20 minutes.
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .x509WorkloadIdentity(identity)
+    .build();
+```
+
+`OpenAIOkHttpClientAsync.builder()` supports the same `x509WorkloadIdentity` option. Tokens are
+obtained lazily, cached, and refreshed before expiration. Both the token exchange and API requests
+use the configured fixed certificate alias, isolated direct mutual-TLS connections, and native
+hostname verification; redirects and custom transport settings are not supported. Close the SDK
+client to release both connection pools. For a complete compilable PKCS#12 setup, see
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java).
 
 #### Kubernetes service account token provider
 
@@ -1460,7 +1502,7 @@ for the final legacy configuration and usage instructions.
 
 ## Jackson
 
-The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.9 by default.
+The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, and its default dependency is the [published Jackson version](gradle/libs.versions.toml).
 
 The SDK throws an exception if it detects an incompatible Jackson version at runtime (e.g. if the default version was overridden in your Maven or Gradle config).
 
@@ -1991,7 +2033,7 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 ### Why don't you use plain `enum` classes?
 
-Java `enum` classes are not trivially [forwards compatible](https://www.stainless.com/blog/making-java-enums-forwards-compatible). Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
+Java `enum` classes are not trivially forwards compatible. Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
 
 ### Why do you represent fields using `JsonField<T>` instead of just plain `T`?
 

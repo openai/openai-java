@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations.items
 
@@ -9,6 +9,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.conversations.Message
 import com.openai.models.responses.ComputerAction
 import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.McpToolCallError
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
@@ -195,9 +196,9 @@ internal class ConversationItemTest {
         val functionCallOutput =
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
-                .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callId("call_id")
                 .callerDirect()
                 .createdBy("created_by")
                 .name("name")
@@ -243,9 +244,9 @@ internal class ConversationItemTest {
             ConversationItem.ofFunctionCallOutput(
                 ResponseFunctionToolCallOutputItem.builder()
                     .id("id")
-                    .callId("call_id")
                     .output("string")
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                    .callId("call_id")
                     .callerDirect()
                     .createdBy("created_by")
                     .name("name")
@@ -1963,7 +1964,9 @@ internal class ConversationItemTest {
                 .name("name")
                 .serverLabel("server_label")
                 .approvalRequestId("approval_request_id")
-                .error("error")
+                .error(
+                    McpToolCallError.McpProtocolError.builder().code(0L).message("message").build()
+                )
                 .output("output")
                 .status(ConversationItem.McpCall.Status.IN_PROGRESS)
                 .build()
@@ -2011,7 +2014,12 @@ internal class ConversationItemTest {
                     .name("name")
                     .serverLabel("server_label")
                     .approvalRequestId("approval_request_id")
-                    .error("error")
+                    .error(
+                        McpToolCallError.McpProtocolError.builder()
+                            .code(0L)
+                            .message("message")
+                            .build()
+                    )
                     .output("output")
                     .status(ConversationItem.McpCall.Status.IN_PROGRESS)
                     .build()

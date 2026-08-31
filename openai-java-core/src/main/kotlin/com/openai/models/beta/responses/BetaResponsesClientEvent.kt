@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -43,11 +43,13 @@ private constructor(
 
     /**
      * Client event for creating a response over a persistent WebSocket connection. This payload
-     * uses the same top-level fields as `POST /v1/responses`.
+     * uses the same top-level fields as `POST /v1/responses`, plus WebSocket-only envelope
+     * metadata.
      *
      * Notes:
      * - `stream` is implicit over WebSocket and should not be sent.
      * - `background` is not supported over WebSocket.
+     * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
      */
     fun responseCreate(): Optional<ResponseCreate> = Optional.ofNullable(responseCreate)
 
@@ -64,11 +66,13 @@ private constructor(
 
     /**
      * Client event for creating a response over a persistent WebSocket connection. This payload
-     * uses the same top-level fields as `POST /v1/responses`.
+     * uses the same top-level fields as `POST /v1/responses`, plus WebSocket-only envelope
+     * metadata.
      *
      * Notes:
      * - `stream` is implicit over WebSocket and should not be sent.
      * - `background` is not supported over WebSocket.
+     * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
      */
     fun asResponseCreate(): ResponseCreate = responseCreate.getOrThrow("responseCreate")
 
@@ -197,11 +201,13 @@ private constructor(
 
         /**
          * Client event for creating a response over a persistent WebSocket connection. This payload
-         * uses the same top-level fields as `POST /v1/responses`.
+         * uses the same top-level fields as `POST /v1/responses`, plus WebSocket-only envelope
+         * metadata.
          *
          * Notes:
          * - `stream` is implicit over WebSocket and should not be sent.
          * - `background` is not supported over WebSocket.
+         * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
          */
         @JvmStatic
         fun ofResponseCreate(responseCreate: ResponseCreate) =
@@ -225,11 +231,13 @@ private constructor(
 
         /**
          * Client event for creating a response over a persistent WebSocket connection. This payload
-         * uses the same top-level fields as `POST /v1/responses`.
+         * uses the same top-level fields as `POST /v1/responses`, plus WebSocket-only envelope
+         * metadata.
          *
          * Notes:
          * - `stream` is implicit over WebSocket and should not be sent.
          * - `background` is not supported over WebSocket.
+         * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
          */
         fun visitResponseCreate(responseCreate: ResponseCreate): T
 
@@ -298,11 +306,13 @@ private constructor(
 
     /**
      * Client event for creating a response over a persistent WebSocket connection. This payload
-     * uses the same top-level fields as `POST /v1/responses`.
+     * uses the same top-level fields as `POST /v1/responses`, plus WebSocket-only envelope
+     * metadata.
      *
      * Notes:
      * - `stream` is implicit over WebSocket and should not be sent.
      * - `background` is not supported over WebSocket.
+     * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
      */
     class ResponseCreate
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -331,6 +341,7 @@ private constructor(
         private val serviceTier: JsonField<ServiceTier>,
         private val store: JsonField<Boolean>,
         private val stream: JsonField<Boolean>,
+        private val streamId: JsonField<String>,
         private val streamOptions: JsonField<StreamOptions>,
         private val temperature: JsonField<Double>,
         private val text: JsonField<BetaResponseTextConfig>,
@@ -407,6 +418,9 @@ private constructor(
             serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
             @JsonProperty("store") @ExcludeMissing store: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("stream") @ExcludeMissing stream: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("stream_id")
+            @ExcludeMissing
+            streamId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("stream_options")
             @ExcludeMissing
             streamOptions: JsonField<StreamOptions> = JsonMissing.of(),
@@ -455,6 +469,7 @@ private constructor(
             serviceTier,
             store,
             stream,
+            streamId,
             streamOptions,
             temperature,
             text,
@@ -732,6 +747,9 @@ private constructor(
          *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
          *   Completions. The response will show `service_tier=priority` regardless of if you
          *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -763,6 +781,18 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun stream(): Optional<Boolean> = stream.getOptional("stream")
+
+        /**
+         * The WebSocket lane for this response. Requests with the same `stream_id` are processed
+         * FIFO, and events for the response echo the same `stream_id`.
+         *
+         * `stream_id` controls routing; `previous_response_id` controls conversation lineage, so a
+         * new lane can fork from a response created on another lane.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun streamId(): Optional<String> = streamId.getOptional("stream_id")
 
         /**
          * Options for streaming responses. Only set this when you set `stream: true`.
@@ -1083,6 +1113,13 @@ private constructor(
         @JsonProperty("stream") @ExcludeMissing fun _stream(): JsonField<Boolean> = stream
 
         /**
+         * Returns the raw JSON value of [streamId].
+         *
+         * Unlike [streamId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("stream_id") @ExcludeMissing fun _streamId(): JsonField<String> = streamId
+
+        /**
          * Returns the raw JSON value of [streamOptions].
          *
          * Unlike [streamOptions], this method doesn't throw if the JSON field has an unexpected
@@ -1205,6 +1242,7 @@ private constructor(
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var store: JsonField<Boolean> = JsonMissing.of()
             private var stream: JsonField<Boolean> = JsonMissing.of()
+            private var streamId: JsonField<String> = JsonMissing.of()
             private var streamOptions: JsonField<StreamOptions> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
             private var text: JsonField<BetaResponseTextConfig> = JsonMissing.of()
@@ -1242,6 +1280,7 @@ private constructor(
                 serviceTier = responseCreate.serviceTier
                 store = responseCreate.store
                 stream = responseCreate.stream
+                streamId = responseCreate.streamId
                 streamOptions = responseCreate.streamOptions
                 temperature = responseCreate.temperature
                 text = responseCreate.text
@@ -1827,6 +1866,10 @@ private constructor(
              *   the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
              *   Completions. The response will show `service_tier=priority` regardless of if you
              *   specify `service_tier=fast` or `priority` in your request.
+             * - If set to 'ultrafast', then the request will be processed with the
+             *   access-controlled Ultrafast Processing service tier. This tier is currently
+             *   available for `gpt-5.6-sol`; a response served through it will show
+             *   `service_tier=ultrafast`.
              * - When not set, the default behavior is 'auto'.
              *
              *   When the `service_tier` parameter is set, the response body will include the
@@ -1901,6 +1944,24 @@ private constructor(
              * supported value.
              */
             fun stream(stream: JsonField<Boolean>) = apply { this.stream = stream }
+
+            /**
+             * The WebSocket lane for this response. Requests with the same `stream_id` are
+             * processed FIFO, and events for the response echo the same `stream_id`.
+             *
+             * `stream_id` controls routing; `previous_response_id` controls conversation lineage,
+             * so a new lane can fork from a response created on another lane.
+             */
+            fun streamId(streamId: String) = streamId(JsonField.of(streamId))
+
+            /**
+             * Sets [Builder.streamId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.streamId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun streamId(streamId: JsonField<String>) = apply { this.streamId = streamId }
 
             /** Options for streaming responses. Only set this when you set `stream: true`. */
             fun streamOptions(streamOptions: StreamOptions?) =
@@ -2355,6 +2416,7 @@ private constructor(
                     serviceTier,
                     store,
                     stream,
+                    streamId,
                     streamOptions,
                     temperature,
                     text,
@@ -2412,6 +2474,7 @@ private constructor(
             serviceTier().ifPresent { it.validate() }
             store()
             stream()
+            streamId()
             streamOptions().ifPresent { it.validate() }
             temperature()
             text().ifPresent { it.validate() }
@@ -2464,6 +2527,7 @@ private constructor(
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (store.asKnown().isPresent) 1 else 0) +
                 (if (stream.asKnown().isPresent) 1 else 0) +
+                (if (streamId.asKnown().isPresent) 1 else 0) +
                 (streamOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (temperature.asKnown().isPresent) 1 else 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -3349,6 +3413,8 @@ private constructor(
 
                 @JvmField val GPT_5_5 = of("gpt-5.5")
 
+                @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
+
                 @JvmField val GPT_5_4 = of("gpt-5.4")
 
                 @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
@@ -3535,6 +3601,10 @@ private constructor(
                 @JvmField
                 val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
+                @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
+
+                @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
+
                 @JvmField val GPT_5_CODEX = of("gpt-5-codex")
 
                 @JvmField val GPT_5_PRO = of("gpt-5-pro")
@@ -3542,6 +3612,12 @@ private constructor(
                 @JvmField val GPT_5_PRO_2025_10_06 = of("gpt-5-pro-2025-10-06")
 
                 @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
+
+                @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+                @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+                @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
 
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
@@ -3552,6 +3628,7 @@ private constructor(
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
                 GPT_5_5,
+                GPT_5_5_2026_04_23,
                 GPT_5_4,
                 GPT_5_4_MINI,
                 GPT_5_4_NANO,
@@ -3640,10 +3717,15 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26,
                 COMPUTER_USE_PREVIEW,
                 COMPUTER_USE_PREVIEW_2025_03_11,
+                GPT_5_5_PRO,
+                GPT_5_5_PRO_2026_04_23,
                 GPT_5_CODEX,
                 GPT_5_PRO,
                 GPT_5_PRO_2025_10_06,
                 GPT_5_1_CODEX_MAX,
+                GPT_DAYBREAK_BLUE_LATEST,
+                GPT_DAYBREAK_RED_LATEST,
+                GPT_5_6_CYBER,
             }
 
             /**
@@ -3660,6 +3742,7 @@ private constructor(
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
                 GPT_5_5,
+                GPT_5_5_2026_04_23,
                 GPT_5_4,
                 GPT_5_4_MINI,
                 GPT_5_4_NANO,
@@ -3748,10 +3831,15 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26,
                 COMPUTER_USE_PREVIEW,
                 COMPUTER_USE_PREVIEW_2025_03_11,
+                GPT_5_5_PRO,
+                GPT_5_5_PRO_2026_04_23,
                 GPT_5_CODEX,
                 GPT_5_PRO,
                 GPT_5_PRO_2025_10_06,
                 GPT_5_1_CODEX_MAX,
+                GPT_DAYBREAK_BLUE_LATEST,
+                GPT_DAYBREAK_RED_LATEST,
+                GPT_5_6_CYBER,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -3771,6 +3859,7 @@ private constructor(
                     GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
                     GPT_5_5 -> Value.GPT_5_5
+                    GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
                     GPT_5_4 -> Value.GPT_5_4
                     GPT_5_4_MINI -> Value.GPT_5_4_MINI
                     GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -3861,10 +3950,15 @@ private constructor(
                     O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                     COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                     COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                    GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                    GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                     GPT_5_CODEX -> Value.GPT_5_CODEX
                     GPT_5_PRO -> Value.GPT_5_PRO
                     GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                     GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                    GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                    GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                    GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
                     else -> Value._UNKNOWN
                 }
 
@@ -3883,6 +3977,7 @@ private constructor(
                     GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
                     GPT_5_5 -> Known.GPT_5_5
+                    GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
                     GPT_5_4 -> Known.GPT_5_4
                     GPT_5_4_MINI -> Known.GPT_5_4_MINI
                     GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -3973,10 +4068,15 @@ private constructor(
                     O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                     COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                     COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                    GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                    GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                     GPT_5_CODEX -> Known.GPT_5_CODEX
                     GPT_5_PRO -> Known.GPT_5_PRO
                     GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                     GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                    GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                    GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                    GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 
@@ -7216,6 +7316,9 @@ private constructor(
          *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
          *   Completions. The response will show `service_tier=priority` regardless of if you
          *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -7249,6 +7352,8 @@ private constructor(
 
                 @JvmField val FAST = of("fast")
 
+                @JvmField val ULTRAFAST = of("ultrafast")
+
                 @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
             }
 
@@ -7260,6 +7365,7 @@ private constructor(
                 SCALE,
                 PRIORITY,
                 FAST,
+                ULTRAFAST,
             }
 
             /**
@@ -7278,6 +7384,7 @@ private constructor(
                 SCALE,
                 PRIORITY,
                 FAST,
+                ULTRAFAST,
                 /**
                  * An enum member indicating that [ServiceTier] was instantiated with an unknown
                  * value.
@@ -7300,6 +7407,7 @@ private constructor(
                     SCALE -> Value.SCALE
                     PRIORITY -> Value.PRIORITY
                     FAST -> Value.FAST
+                    ULTRAFAST -> Value.ULTRAFAST
                     else -> Value._UNKNOWN
                 }
 
@@ -7320,6 +7428,7 @@ private constructor(
                     SCALE -> Known.SCALE
                     PRIORITY -> Known.PRIORITY
                     FAST -> Known.FAST
+                    ULTRAFAST -> Known.ULTRAFAST
                     else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
                 }
 
@@ -8365,6 +8474,7 @@ private constructor(
                 serviceTier == other.serviceTier &&
                 store == other.store &&
                 stream == other.stream &&
+                streamId == other.streamId &&
                 streamOptions == other.streamOptions &&
                 temperature == other.temperature &&
                 text == other.text &&
@@ -8403,6 +8513,7 @@ private constructor(
                 serviceTier,
                 store,
                 stream,
+                streamId,
                 streamOptions,
                 temperature,
                 text,
@@ -8419,6 +8530,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ResponseCreate{type=$type, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, multiAgent=$multiAgent, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "ResponseCreate{type=$type, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, multiAgent=$multiAgent, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 }

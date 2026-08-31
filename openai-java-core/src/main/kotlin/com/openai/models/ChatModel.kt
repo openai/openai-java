@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -27,6 +27,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         @JvmField val GPT_5_6_LUNA = of("gpt-5.6-luna")
 
         @JvmField val GPT_5_5 = of("gpt-5.5")
+
+        @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
 
         @JvmField val GPT_5_4 = of("gpt-5.4")
 
@@ -195,6 +197,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_5_6_TERRA,
         GPT_5_6_LUNA,
         GPT_5_5,
+        GPT_5_5_2026_04_23,
         GPT_5_4,
         GPT_5_4_MINI,
         GPT_5_4_NANO,
@@ -289,6 +292,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_5_6_TERRA,
         GPT_5_6_LUNA,
         GPT_5_5,
+        GPT_5_5_2026_04_23,
         GPT_5_4,
         GPT_5_4_MINI,
         GPT_5_4_NANO,
@@ -384,6 +388,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
             GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
             GPT_5_5 -> Value.GPT_5_5
+            GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
             GPT_5_4 -> Value.GPT_5_4
             GPT_5_4_MINI -> Value.GPT_5_4_MINI
             GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -479,6 +484,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
             GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
             GPT_5_5 -> Known.GPT_5_5
+            GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
             GPT_5_4 -> Known.GPT_5_4
             GPT_5_4_MINI -> Known.GPT_5_4_MINI
             GPT_5_4_NANO -> Known.GPT_5_4_NANO

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -5110,17 +5110,13 @@ private constructor(
         fun action(): Optional<Action> = action.getOptional("action")
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * Transparent backgrounds are available for supported GPT Image models. For `gpt-image-2`
+         * and `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set
+         * the output format to `png` or `webp`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5149,7 +5145,9 @@ private constructor(
             inputImageMask.getOptional("input_image_mask")
 
         /**
-         * The image generation model to use. Default: `gpt-image-1`.
+         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+         * Default: `gpt-image-1`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5390,18 +5388,13 @@ private constructor(
             fun action(action: JsonField<Action>) = apply { this.action = action }
 
             /**
-             * Allows to set transparency for the background of the generated image(s). This
-             * parameter is only supported for GPT image models that support transparent
-             * backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value). When
-             * `auto` is used, the model will automatically determine the best background for the
-             * image.
+             * Allows to set transparency for the background of the generated image(s). Must be one
+             * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+             * will automatically determine the best background for the image.
              *
-             * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-             * Requests with `background` set to `transparent` will return an error for these
-             * models; use `opaque` or `auto` instead.
-             *
-             * If `transparent`, the output format needs to support transparency, so it should be
-             * set to either `png` (default value) or `webp`.
+             * Transparent backgrounds are available for supported GPT Image models. For
+             * `gpt-image-2` and `gpt-image-2-2026-04-21`, this support is in preview. When using
+             * `transparent`, set the output format to `png` or `webp`.
              */
             fun background(background: Background) = background(JsonField.of(background))
 
@@ -5458,7 +5451,11 @@ private constructor(
                 this.inputImageMask = inputImageMask
             }
 
-            /** The image generation model to use. Default: `gpt-image-1`. */
+            /**
+             * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+             * Default: `gpt-image-1`.
+             */
             fun model(model: Model) = model(JsonField.of(model))
 
             /**
@@ -5840,17 +5837,13 @@ private constructor(
         }
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * Transparent backgrounds are available for supported GPT Image models. For `gpt-image-2`
+         * and `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set
+         * the output format to `png` or `webp`.
          */
         class Background @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -6348,7 +6341,11 @@ private constructor(
                 "InputImageMask{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
         }
 
-        /** The image generation model to use. Default: `gpt-image-1`. */
+        /**
+         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`.
+         * Default: `gpt-image-1`.
+         */
         class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**

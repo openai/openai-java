@@ -4,6 +4,7 @@ com.openai.models.chat.completions.StructuredChatCompletion#_additionalPropertie
 com.openai.models.chat.completions.StructuredChatCompletion#_choices ()Lcom/openai/core/JsonField;
 com.openai.models.chat.completions.StructuredChatCompletion#_created ()Lcom/openai/core/JsonField;
 com.openai.models.chat.completions.StructuredChatCompletion#_id ()Lcom/openai/core/JsonField;
+com.openai.models.chat.completions.StructuredChatCompletion#_metadata ()Lcom/openai/core/JsonField;
 com.openai.models.chat.completions.StructuredChatCompletion#_model ()Lcom/openai/core/JsonField;
 com.openai.models.chat.completions.StructuredChatCompletion#_moderation ()Lcom/openai/core/JsonField;
 com.openai.models.chat.completions.StructuredChatCompletion#_object_ ()Lcom/openai/core/JsonValue;
@@ -14,6 +15,7 @@ com.openai.models.chat.completions.StructuredChatCompletion#choices ()Ljava/util
 com.openai.models.chat.completions.StructuredChatCompletion#created ()J
 com.openai.models.chat.completions.StructuredChatCompletion#id ()Ljava/lang/String;
 com.openai.models.chat.completions.StructuredChatCompletion#isValid ()Z
+com.openai.models.chat.completions.StructuredChatCompletion#metadata ()Ljava/util/Optional;
 com.openai.models.chat.completions.StructuredChatCompletion#model ()Ljava/lang/String;
 com.openai.models.chat.completions.StructuredChatCompletion#moderation ()Ljava/util/Optional;
 com.openai.models.chat.completions.StructuredChatCompletion#rawChatCompletion ()Lcom/openai/models/chat/completions/ChatCompletion;

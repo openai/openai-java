@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -14,6 +14,7 @@ internal class WebSearchToolTest {
         val webSearchTool =
             WebSearchTool.builder()
                 .type(WebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(
@@ -28,6 +29,7 @@ internal class WebSearchToolTest {
                 .build()
 
         assertThat(webSearchTool.type()).isEqualTo(WebSearchTool.Type.WEB_SEARCH)
+        assertThat(webSearchTool.externalWebAccess()).contains(true)
         assertThat(webSearchTool.filters())
             .contains(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
         assertThat(webSearchTool.searchContextSize()).contains(WebSearchTool.SearchContextSize.LOW)
@@ -49,6 +51,7 @@ internal class WebSearchToolTest {
         val webSearchTool =
             WebSearchTool.builder()
                 .type(WebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(

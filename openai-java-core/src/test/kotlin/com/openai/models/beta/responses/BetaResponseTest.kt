@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -216,6 +216,7 @@ internal class BetaResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
+                        .computeUnits(0L)
                         .build()
                 )
                 .user("user-1234")
@@ -432,6 +433,7 @@ internal class BetaResponseTest {
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
+                    .computeUnits(0L)
                     .build()
             )
         assertThat(betaResponse.user()).contains("user-1234")
@@ -644,6 +646,7 @@ internal class BetaResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
+                        .computeUnits(0L)
                         .build()
                 )
                 .user("user-1234")

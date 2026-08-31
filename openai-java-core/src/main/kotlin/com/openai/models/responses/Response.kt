@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -506,6 +506,9 @@ private constructor(
      *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
      *   The response will show `service_tier=priority` regardless of if you specify
      *   `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -1914,6 +1917,9 @@ private constructor(
          *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
          *   Completions. The response will show `service_tier=priority` regardless of if you
          *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -7011,6 +7017,9 @@ private constructor(
      *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
      *   The response will show `service_tier=priority` regardless of if you specify
      *   `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -7044,6 +7053,8 @@ private constructor(
 
             @JvmField val FAST = of("fast")
 
+            @JvmField val ULTRAFAST = of("ultrafast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -7055,6 +7066,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
         }
 
         /**
@@ -7073,6 +7085,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -7094,6 +7107,7 @@ private constructor(
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
                 FAST -> Value.FAST
+                ULTRAFAST -> Value.ULTRAFAST
                 else -> Value._UNKNOWN
             }
 
@@ -7114,6 +7128,7 @@ private constructor(
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
                 FAST -> Known.FAST
+                ULTRAFAST -> Known.ULTRAFAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 

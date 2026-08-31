@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -69,6 +69,7 @@ internal class BetaCompactedResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
+                        .computeUnits(0L)
                         .build()
                 )
                 .build()
@@ -131,6 +132,7 @@ internal class BetaCompactedResponseTest {
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
+                    .computeUnits(0L)
                     .build()
             )
     }
@@ -196,6 +198,7 @@ internal class BetaCompactedResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
+                        .computeUnits(0L)
                         .build()
                 )
                 .build()

@@ -7,6 +7,44 @@ management. The framework-neutral SDK requires Java 8, while development require
 Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
 artifact-level runtime, framework, lifecycle, and release rules.
 
+## Custom-code budget
+
+The custom-code budget counts additions plus deletions in the remaining patch
+against verified generated output. `.castiron-ratchet.json` defines this repository's
+ceiling. CI uses the checker and budget on main, not the PR's proposed versions.
+
+Budget changes must be in a separate PR modifying **only `.castiron-ratchet.json`**.
+Justify the current usage, proposed ceiling, and why fixing generation is not
+appropriate in the PR description. Increases require a **human approving review**
+and must merge before an SDK change relies on them. Agents may draft proposals,
+but must not approve increases or bypass the gate. Keep default CODEOWNERS.
+Lower the ceiling after cleanup while retaining headroom; decreases must still
+fit the measured usage.
+
+See [custom-code technical details](scripts/castiron/CUSTOM_CODE.md) for accounting,
+local checks, trusted CI, and activation instructions.
+
+## Security expectations
+
+- Never commit API keys, bearer tokens, AWS/Bedrock credentials, Maven Central/Sonatype tokens, GPG
+  private keys or passphrases, or other secrets. Use environment variables such as `OPENAI_API_KEY`
+  and clearly fake values in examples, JUnit/WireMock fixtures, recordings, and snapshots.
+- Keep credentials, authorization headers, signed requests, and customer data out of default or
+  uncontrolled logs, errors, and test output. Preserve documented `OpenAIServiceException.body()`,
+  API-error and validation messages, and explicitly enabled `DEBUG` diagnostics; use sanitized
+  fixtures and redact sensitive data before forwarding it to untrusted sinks.
+- Scrutinize direct and transitive Maven dependencies, Gradle plugins and repositories, Gradle
+  wrapper/distribution changes, dependency locks, and build/install scripts. Verify integrity and
+  provenance before adding or updating anything that executes during the build.
+- Pin third-party GitHub Actions to full commit SHAs, minimize workflow token and publishing
+  permissions, avoid exposing secrets to untrusted pull requests, and protect Sonatype credentials,
+  GPG signing keys, and tokens in their release or publishing environments.
+- Obtain security-focused review and add regression tests for changes to authentication, OkHttp
+  transport, redirects/TLS, file uploads or paths, Jackson deserialization, AWS/Bedrock credentials,
+  or signing and release workflows.
+- Report vulnerabilities privately through [SECURITY.md](SECURITY.md), never in public issues,
+  discussions, or pull requests.
+
 ## Project structure
 
 The SDK's primary artifacts are:
@@ -76,14 +114,14 @@ Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally pu
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:4.50.0")
+implementation("com.openai:openai-java:4.54.0")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.50.0</version>
+  <version>4.54.0</version>
 </dependency>
 ```
 
@@ -139,27 +177,24 @@ The project uses:
 
 ## Linting and formatting
 
-This repository uses [Spotless](https://github.com/diffplug/spotless) with Palantir Java Format for code formatting and various linting tools.
+Kotlin formatting uses the repository-pinned ktfmt version and Kotlin style. The same
+Gradle tasks cover SDK sources and the `.kt` build-logic sources under `buildSrc/src`,
+whether or not a standalone `ktfmt` is installed. Java formatting uses Palantir Java Format.
 
-To check formatting and run lints:
+To check formatting:
 
 ```sh
 $ ./scripts/lint
 ```
 
-This will compile all modules and run static analysis checks.
-
-To fix all formatting issues automatically:
+To fix formatting:
 
 ```sh
 $ ./scripts/format
 ```
 
-You can also check formatting directly with Gradle:
-
-```sh
-$ ./gradlew spotlessCheck  # Check formatting
-```
+For Kotlin only, run `./gradlew lintKotlin` or `./gradlew formatKotlin`. A module's
+own tasks remain available, such as `./gradlew :openai-java-core:lintKotlin`.
 
 ## Building
 
@@ -222,7 +257,6 @@ key:
 ```sh
 $ gpg --quick-gen-key "OpenAI Maven Central <maintainer@openai.com>" rsa4096 sign 0
 $ gpg --list-secret-keys --keyid-format LONG
-$ gpg --armor --export-secret-keys KEY_ID > openai-sonatype-signing-key.asc
 $ gpg --keyserver keyserver.ubuntu.com --send-keys KEY_ID
 ```
 
@@ -233,9 +267,24 @@ to match the Central Portal token account.
 ```sh
 $ gh secret set OPENAI_SONATYPE_USERNAME --env publish --repo openai/openai-java
 $ gh secret set OPENAI_SONATYPE_PASSWORD --env publish --repo openai/openai-java
-$ gh secret set OPENAI_SONATYPE_GPG_SIGNING_KEY --env publish --repo openai/openai-java < openai-sonatype-signing-key.asc
+$ (
+>   set -eu
+>   trap 'unset signing_key' EXIT
+>   signing_key="$(gpg --armor --export-secret-keys KEY_ID)"
+>   case "$signing_key" in
+>     "-----BEGIN PGP PRIVATE KEY BLOCK-----"*"-----END PGP PRIVATE KEY BLOCK-----") ;;
+>     *) echo "Refusing to store an empty or invalid private key" >&2; exit 1 ;;
+>   esac
+>   printf '%s\n' "$signing_key" |
+>     gh secret set OPENAI_SONATYPE_GPG_SIGNING_KEY --env publish --repo openai/openai-java
+>   unset signing_key
+> )
 $ gh secret set OPENAI_SONATYPE_GPG_SIGNING_PASSWORD --env publish --repo openai/openai-java
 ```
+
+Validate the armored private key in a short-lived shell variable before updating the protected
+`publish` environment. Never write it to the repository or another file, print it in logs, or run
+these commands with shell tracing enabled.
 
 After the rotated secrets work, revoke the old Central Portal token and remove any old repository-level copies of the
 `OPENAI_SONATYPE_*` secrets.
@@ -247,11 +296,13 @@ before retrying. If you need to publish directly as a last resort, first confirm
 existing deployment, then run:
 
 ```sh
-$ ./gradlew publishAndReleaseToMavenCentral \
-    -PmavenCentralUsername="$SONATYPE_USERNAME" \
-    -PmavenCentralPassword="$SONATYPE_PASSWORD" \
-    --no-configuration-cache
+$ ORG_GRADLE_PROJECT_mavenCentralUsername="$SONATYPE_USERNAME" \
+    ORG_GRADLE_PROJECT_mavenCentralPassword="$SONATYPE_PASSWORD" \
+    ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
 ```
+
+Pass Maven Central credentials through Gradle's environment-backed project properties, not `-P`
+command-line arguments, committed `gradle.properties` files, logs, or shell history.
 
 This requires the following environment variables to be set:
 

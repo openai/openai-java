@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -116,6 +116,7 @@ internal class BetaResponsesClientEventTest {
                 .serviceTier(BetaResponsesClientEvent.ResponseCreate.ServiceTier.AUTO)
                 .store(true)
                 .stream(true)
+                .streamId("stream_id")
                 .streamOptions(
                     BetaResponsesClientEvent.ResponseCreate.StreamOptions.builder()
                         .includeObfuscation(true)
@@ -270,6 +271,7 @@ internal class BetaResponsesClientEventTest {
                     .serviceTier(BetaResponsesClientEvent.ResponseCreate.ServiceTier.AUTO)
                     .store(true)
                     .stream(true)
+                    .streamId("stream_id")
                     .streamOptions(
                         BetaResponsesClientEvent.ResponseCreate.StreamOptions.builder()
                             .includeObfuscation(true)
