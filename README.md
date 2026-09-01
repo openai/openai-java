@@ -1803,10 +1803,10 @@ The SDK consists of three artifacts:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
-  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Depends on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
@@ -1814,7 +1814,7 @@ The SDK consists of three artifacts:
 
 This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
 
-#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/4.x/okhttp/okhttp3/-ok-http-client/)
 
 > [!TIP]
 > Try the available [network options](#network-options) before replacing the default client.
