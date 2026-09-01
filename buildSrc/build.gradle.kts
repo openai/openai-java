@@ -51,4 +51,7 @@ tasks.test {
     inputs
         .file(layout.projectDirectory.file("../SECURITY.md"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../docs/architecture/security-model.md"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }
