@@ -83,10 +83,10 @@ private constructor(
     fun messages(): List<ChatCompletionMessageParam> = body.messages()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a wide
+     * range of models with different capabilities, performance characteristics, and price points.
+     * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -991,10 +991,10 @@ private constructor(
         }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a wide
+         * range of models with different capabilities, performance characteristics, and price
+         * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse and
+         * compare available models.
          */
         fun model(model: ChatModel) = apply { body.model(model) }
 
@@ -2342,10 +2342,10 @@ private constructor(
         fun messages(): List<ChatCompletionMessageParam> = messages.getRequired("messages")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a wide
+         * range of models with different capabilities, performance characteristics, and price
+         * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse and
+         * compare available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -3423,10 +3423,10 @@ private constructor(
                 addMessage(ChatCompletionMessageParam.ofFunction(function))
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
-             * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a
+             * wide range of models with different capabilities, performance characteristics, and
+             * price points. Refer to the [model guide](https://platform.openai.com/docs/models) to
+             * browse and compare available models.
              */
             fun model(model: ChatModel) = model(JsonField.of(model))
 

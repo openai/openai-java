@@ -53,7 +53,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_5_1)
+                    .model(ResponseCreateParams.Model.GPT_5_6_SOL)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -193,7 +193,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_5_1)
+                    .model(ResponseCreateParams.Model.GPT_5_6_SOL)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")

@@ -38,7 +38,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_5_6_SOL)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -212,7 +212,6 @@ internal class ResponseTest {
                             ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                         )
                         .totalTokens(0L)
-                        .computeUnits(0L)
                         .build()
                 )
                 .user("user-1234")
@@ -240,7 +239,7 @@ internal class ResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_5_6_SOL))
         assertThat(response.output())
             .containsExactly(
                 ResponseOutputItem.ofMessage(
@@ -420,7 +419,6 @@ internal class ResponseTest {
                         ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
-                    .computeUnits(0L)
                     .build()
             )
         assertThat(response.user()).contains("user-1234")
@@ -450,7 +448,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_5_6_SOL)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -624,7 +622,6 @@ internal class ResponseTest {
                             ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                         )
                         .totalTokens(0L)
-                        .computeUnits(0L)
                         .build()
                 )
                 .user("user-1234")

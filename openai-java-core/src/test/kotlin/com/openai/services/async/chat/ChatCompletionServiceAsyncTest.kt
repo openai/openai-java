@@ -42,7 +42,7 @@ internal class ChatCompletionServiceAsyncTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
@@ -194,7 +194,7 @@ internal class ChatCompletionServiceAsyncTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
