@@ -142,19 +142,29 @@ jobs:
                 run.repository.full_name !== `${context.repo.owner}/${context.repo.repo}`) return;
             const head = run.head_sha;
             if (!/^[0-9a-f]{40}$/.test(head)) throw new Error('Invalid candidate SHA');
-            const {data: main} = await github.rest.git.getRef({...context.repo, ref: 'heads/main'});
+            const {data: repository} = await github.rest.repos.get(context.repo);
+            const branch = repository.default_branch;
+            const {data: main} = await github.rest.git.getRef({...context.repo, ref: `heads/${branch}`});
             const base = main.object.sha;
             if (run.event === 'pull_request') {
+              const headRepository = run.head_repository;
+              if (!headRepository || !Number.isInteger(headRepository.id) || headRepository.id <= 0 ||
+                  !headRepository.full_name || !headRepository.owner?.login || !run.head_branch) return;
               const pulls = run.pull_requests.length ? run.pull_requests : await github.paginate(
-                github.rest.repos.listPullRequestsAssociatedWithCommit, {...context.repo, commit_sha: head});
+                github.rest.pulls.list, {...context.repo, state: 'open',
+                  head: `${headRepository.owner.login}:${run.head_branch}`, base: branch, per_page: 100});
               const current = [];
-              for (const pull of pulls) {
-                const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: pull.number});
+              for (const number of [...new Set(pulls.map(pull => pull.number))].sort((a, b) => a - b)) {
+                if (!Number.isInteger(number) || number <= 0) return;
+                const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: number});
                 if (pr.state === 'open' && pr.head.sha === head && pr.base.sha === base &&
-                    pr.base.ref === 'main' && pr.base.repo.full_name === `${context.repo.owner}/${context.repo.repo}`) current.push(pr);
+                    pr.head.ref === run.head_branch && pr.head.repo?.id === headRepository.id &&
+                    pr.head.repo?.full_name === headRepository.full_name &&
+                    pr.base.ref === branch &&
+                    pr.base.repo.full_name === `${context.repo.owner}/${context.repo.repo}`) current.push(pr);
               }
               if (current.length !== 1) return;
-            } else if (run.event !== 'merge_group' || !run.head_branch.startsWith('gh-readonly-queue/main/')) {
+            } else if (run.event !== 'merge_group' || !run.head_branch.startsWith(`gh-readonly-queue/${branch}/`)) {
               return;
             }
             const fresh = base === process.env.BASE_SHA && head === process.env.HEAD_SHA;
@@ -220,12 +230,34 @@ jobs:
         with:
           script: |
             const marker = '<!-- castiron:custom-code-report:v1 -->';
-            const run = context.payload.workflow_run;
-            if (run.event !== 'pull_request' || run.path !== '.github/workflows/castiron-custom-code.yml') return;
-            const pulls = run.pull_requests?.length ? run.pull_requests : await github.paginate(github.rest.repos.listPullRequestsAssociatedWithCommit, {...context.repo, commit_sha: run.head_sha});
-            for (const pull of pulls) {
-              const {data: current} = await github.rest.pulls.get({...context.repo, pull_number: pull.number});
-              if (current.state !== 'open' || current.head.sha !== run.head_sha) continue;
+            const event = context.payload.workflow_run;
+            const {data: run} = await github.rest.actions.getWorkflowRun({...context.repo, run_id: event.id});
+            if (run.event !== 'pull_request' ||
+                run.head_sha !== event.head_sha || run.run_attempt !== event.run_attempt ||
+                run.status !== 'completed' ||
+                run.path.split('@', 1)[0] !== '.github/workflows/castiron-custom-code.yml' ||
+                run.repository.full_name !== `${context.repo.owner}/${context.repo.repo}`) return;
+            const {data: repository} = await github.rest.repos.get(context.repo);
+            const branch = repository.default_branch;
+            const {data: main} = await github.rest.git.getRef({...context.repo, ref: `heads/${branch}`});
+            const headRepository = run.head_repository;
+            if (!headRepository || !Number.isInteger(headRepository.id) || headRepository.id <= 0 ||
+                !headRepository.full_name || !headRepository.owner?.login || !run.head_branch) return;
+            const pulls = run.pull_requests?.length ? run.pull_requests : await github.paginate(
+              github.rest.pulls.list, {...context.repo, state: 'open',
+                head: `${headRepository.owner.login}:${run.head_branch}`, base: branch, per_page: 100});
+            const current = [];
+            for (const number of [...new Set(pulls.map(pull => pull.number))].sort((a, b) => a - b)) {
+              if (!Number.isInteger(number) || number <= 0) return;
+              const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: number});
+              if (pr.state === 'open' && pr.head.sha === run.head_sha &&
+                  pr.head.ref === run.head_branch && pr.head.repo?.id === headRepository.id &&
+                  pr.head.repo?.full_name === headRepository.full_name &&
+                  pr.base.sha === main.object.sha && pr.base.ref === branch &&
+                  pr.base.repo.full_name === `${context.repo.owner}/${context.repo.repo}`) current.push(pr);
+            }
+            if (current.length !== 1) return;
+            for (const pull of current) {
               const comments = await github.paginate(github.rest.issues.listComments, {...context.repo, issue_number: pull.number});
               const previous = comments.find(c => c.user?.type === 'Bot' && c.user?.login === 'github-actions[bot]' && c.body?.startsWith(marker));
               const prior = previous?.body?.match(/<!-- castiron:run:v1:(\d+):(\d+) -->/);

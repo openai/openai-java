@@ -20,6 +20,41 @@ import custom_code_report as report
 GENERATION = "550e8400-e29b-41d4-a716-446655440000"
 
 
+def source_run(head: str, pull_requests: list[dict[str, int]] | None = None) -> dict[str, Any]:
+    return {
+        "event": "pull_request",
+        "status": "completed",
+        "path": ".github/workflows/castiron-custom-code.yml",
+        "head_sha": head,
+        "head_branch": "sdk",
+        "head_repository": {
+            "id": 7,
+            "full_name": "fork/example",
+            "owner": {"login": "fork"},
+        },
+        "repository": {"full_name": "openai/example"},
+        "run_attempt": 1,
+        "pull_requests": [{"number": 1}] if pull_requests is None else pull_requests,
+    }
+
+
+def source_pull(head: str, base: str, number: int = 1) -> dict[str, Any]:
+    return {
+        "number": number,
+        "state": "open",
+        "head": {
+            "sha": head,
+            "ref": "sdk",
+            "repo": {"id": 7, "full_name": "fork/example"},
+        },
+        "base": {
+            "sha": base,
+            "ref": "main",
+            "repo": {"full_name": "openai/example"},
+        },
+    }
+
+
 class CustomCodeTests(unittest.TestCase):
     # Keep the vendored test stdlib-only on Python 3.10 (no typing.override yet).
     def setUp(self) -> None:  # pyright: ignore[reportImplicitOverride]
@@ -286,11 +321,18 @@ const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 async function check(stale, exists, priorRun, expected) {
   const writes = [];
   const event = {id: 20, run_attempt: 1, event: 'pull_request', path: '.github/workflows/castiron-custom-code.yml', head_sha: 'a'.repeat(40), pull_requests: [{number: 1}]};
-  const current = {state: 'open', head: {sha: (stale ? 'c' : 'a').repeat(40)}};
+  const run = {...event, status: 'completed', repository: {full_name: 'openai/example'},
+    head_branch: 'sdk', head_repository: {id: 7, full_name: 'fork/example', owner: {login: 'fork'}}};
+  const current = {number: 1, state: 'open',
+    head: {sha: (stale ? 'c' : 'a').repeat(40), ref: 'sdk', repo: {id: 7, full_name: 'fork/example'}},
+    base: {sha: 'b'.repeat(40), ref: 'main', repo: {full_name: 'openai/example'}}};
   const previous = {id: 42, user: {type: 'Bot', login: 'github-actions[bot]'},
     body: `<!-- castiron:custom-code-report:v1 -->\n<!-- castiron:run:v1:${priorRun}:1 -->`};
   const github = {paginate: async () => exists ? [previous] : [], rest: {
     pulls: {get: async () => ({data: current})},
+    actions: {getWorkflowRun: async () => ({data: run})},
+    repos: {get: async () => ({data: {default_branch: 'main'}})},
+    git: {getRef: async () => ({data: {object: {sha: 'b'.repeat(40)}}})},
     issues: {listComments() {}, updateComment: async x => writes.push(['update', x]),
       createComment: async x => writes.push(['create', x])}}};
   const context = {payload: {workflow_run: event}, repo: {owner: 'openai', repo: 'example'},
@@ -382,16 +424,20 @@ async function check(stale, exists, priorRun, expected) {
 
         _, base = self.baseline()
         result, _ = report.build_report(self.repo, base, base)
-        pull = {"state": "open", "head": {"sha": base}, "base": {"sha": base}}
-        run = {
-            "event": "pull_request",
-            "path": ".github/workflows/castiron-custom-code.yml",
-            "head_sha": base,
-            "run_attempt": 1,
-            "pull_requests": [{"number": 1}],
-        }
+        pull = source_pull(base, base)
+        run = source_run(base)
         with mock.patch.object(
-            report, "api", side_effect=[pull, run, [], pull, {"html_url": "published"}]
+            report,
+            "api",
+            side_effect=[
+                run,
+                {"default_branch": "main"},
+                {"object": {"sha": base}},
+                pull,
+                [],
+                pull,
+                {"html_url": "published"},
+            ],
         ) as api:
             self.assertEqual(
                 report.publish_comment(
@@ -452,19 +498,8 @@ async function check(stale, exists, priorRun, expected) {
             with self.subTest(label=label):
                 calls: list[tuple[str, str]] = []
                 bodies: list[str] = []
-                pull = {
-                    "state": "open",
-                    "head": {"sha": revision},
-                    "base": {"sha": base, "repo": {"full_name": "openai/example"}},
-                }
-                run: dict[str, Any] = {
-                    "event": "pull_request",
-                    "status": "completed",
-                    "path": ".github/workflows/castiron-custom-code.yml",
-                    "head_sha": revision,
-                    "run_attempt": 1,
-                    "pull_requests": [],
-                }
+                pull = source_pull(revision, base)
+                run = source_run(revision, [])
                 forged: dict[str, Any] = {**legitimate, "head_sha": revision, "files": []}
                 self.assertIn("Generated baselines verified", report.render_report(forged))
                 producer = self.repo / f"producer-{label}"
@@ -475,9 +510,10 @@ async function check(stale, exists, priorRun, expected) {
                     calls.append((method, path))
                     if method == "GET":
                         responses: dict[str, Any] = {
-                            "repos/openai/example": {"private": False},
+                            "repos/openai/example": {"default_branch": "main", "private": False},
                             "repos/openai/example/actions/runs/2": run,
-                            f"repos/openai/example/commits/{revision}/pulls?per_page=100": [
+                            "repos/openai/example/git/ref/heads/main": {"object": {"sha": base}},
+                            "repos/openai/example/pulls?state=open&head=fork%3Asdk&base=main&per_page=100": [
                                 {"number": 1}
                             ],
                             "repos/openai/example/pulls/1": pull,
@@ -536,31 +572,22 @@ async function check(stale, exists, priorRun, expected) {
                     self.assertIn("--name castiron-custom-code-9-3", body)
 
     def test_trusted_report_rejects_invalid_or_stale_association_before_fetch(self) -> None:
-        run = {
-            "event": "pull_request",
-            "status": "completed",
-            "path": ".github/workflows/castiron-custom-code.yml",
-            "head_sha": "a" * 40,
-            "run_attempt": 1,
-            "pull_requests": [{"number": 1}],
-        }
-        pull = {
-            "state": "open",
-            "head": {"sha": "a" * 40},
-            "base": {"sha": "b" * 40, "repo": {"full_name": "openai/example"}},
-        }
+        run = source_run("a" * 40)
+        pull = source_pull("a" * 40, "b" * 40)
+        metadata = {"default_branch": "main", "private": False}
+        main = {"object": {"sha": "b" * 40}}
         cases: list[tuple[list[Any], bool]] = [
             ([{**run, "path": "other.yml"}], True),
             ([{**run, "status": "in_progress"}], True),
             ([{**run, "run_attempt": 2}], False),
-            ([run, {**pull, "state": "closed"}], False),
-            ([run, {**pull, "head": {"sha": "c" * 40}}], False),
+            ([run, metadata, main, {**pull, "state": "closed"}], False),
+            ([run, metadata, main, {**pull, "head": {**pull["head"], "sha": "c" * 40}}], False),
             (
-                [run, {**pull, "base": {"sha": "b" * 40, "repo": {"full_name": "other/repo"}}}],
+                [run, metadata, main, {**pull, "base": {**pull["base"], "repo": {"full_name": "other/repo"}}}],
                 False,
             ),
-            ([{**run, "pull_requests": []}, []], False),
-            ([{**run, "pull_requests": [{"number": 1}, {"number": 2}]}, pull, pull], True),
+            ([{**run, "pull_requests": []}, metadata, main, []], False),
+            ([{**run, "pull_requests": [{"number": 1}, {"number": 2}]}, metadata, main, pull, {**pull, "number": 2}], True),
         ]
         for responses, raises in cases:
             with (
@@ -579,6 +606,86 @@ async function check(stale, exists, priorRun, expected) {
                     )
                 git.assert_not_called()
                 self.assertFalse((self.repo / "out").exists())
+
+    def test_fork_run_uses_scoped_open_pr_lookup_and_rejects_unsafe_matches(self) -> None:
+        head, base = "a" * 40, "b" * 40
+        run = source_run(head, [])
+        pull = source_pull(head, base)
+        with mock.patch.object(report, "api", side_effect=[[{"number": 1}], pull]) as api:
+            self.assertEqual(
+                report.current_pull_request(
+                    "repos/openai/example", "openai/example", run, "main", base
+                ),
+                pull,
+            )
+        self.assertEqual(
+            api.call_args_list[0].args[1],
+            "repos/openai/example/pulls?state=open&head=fork%3Asdk&base=main&per_page=100",
+        )
+        cases = (
+            (
+                [[{"number": 1}], {**pull, "head": {**pull["head"], "ref": "spoofed"}}],
+                None,
+            ),
+            (
+                [[{"number": 1}], {**pull, "base": {**pull["base"], "sha": "c" * 40}}],
+                None,
+            ),
+            (
+                [
+                    [{"number": 1}, {"number": 2}],
+                    pull,
+                    {**pull, "number": 2},
+                ],
+                report.ReportError,
+            ),
+        )
+        for responses, expected in cases:
+            with self.subTest(expected=expected), mock.patch.object(
+                report, "api", side_effect=responses
+            ):
+                if expected is report.ReportError:
+                    with self.assertRaises(report.ReportError):
+                        report.current_pull_request(
+                            "repos/openai/example", "openai/example", run, "main", base
+                        )
+                else:
+                    self.assertIsNone(
+                        report.current_pull_request(
+                            "repos/openai/example", "openai/example", run, "main", base
+                        )
+                    )
+
+        def later_page(
+            method: str, path: str, payload: dict[str, Any] | None = None
+        ) -> Any:
+            self.assertEqual(method, "GET")
+            self.assertIsNone(payload)
+            if path.endswith("per_page=100"):
+                return [{"number": number} for number in range(1, 101)]
+            if path.endswith("per_page=100&page=2"):
+                return [{"number": 101}]
+            number = int(path.rsplit("/", 1)[1])
+            if number == 101 or (ambiguous and number == 1):
+                return source_pull(head, base, number)
+            return {**source_pull(head, base, number), "state": "closed"}
+
+        for ambiguous in (False, True):
+            with self.subTest(ambiguous=ambiguous), mock.patch.object(
+                report, "api", side_effect=later_page
+            ):
+                if ambiguous:
+                    with self.assertRaises(report.ReportError):
+                        report.current_pull_request(
+                            "repos/openai/example", "openai/example", run, "main", base
+                        )
+                else:
+                    self.assertEqual(
+                        report.current_pull_request(
+                            "repos/openai/example", "openai/example", run, "main", base
+                        )["number"],
+                        101,
+                    )
 
     def test_removals_include_changed_baselines_but_not_handwritten_only_files(self) -> None:
         _, base = self.baseline()
@@ -816,15 +923,13 @@ async function check(stale, exists, priorRun, expected) {
         def fake_api(method: str, path: str, payload: object = None) -> object:
             calls.append((method, path, payload))
             if "/pulls/" in path:
-                return {"state": "open", "head": {"sha": base}, "base": {"sha": base}}
+                return source_pull(base, base)
             if "/actions/runs/" in path:
-                return {
-                    "event": "pull_request",
-                    "path": ".github/workflows/castiron-custom-code.yml",
-                    "head_sha": base,
-                    "run_attempt": 1,
-                    "pull_requests": [{"number": 1}],
-                }
+                return source_run(base)
+            if path == "repos/openai/example":
+                return {"default_branch": "main"}
+            if path == "repos/openai/example/git/ref/heads/main":
+                return {"object": {"sha": base}}
             if "/comments?" in path:
                 return [
                     {"id": 7, "user": {"login": "someone"}, "body": report.MARKER},
@@ -842,63 +947,65 @@ async function check(stale, exists, priorRun, expected) {
             self.assertEqual(calls[-1][:2], ("PATCH", "repos/openai/example/issues/comments/8"))
             calls.clear()
             result["head_sha"] = "f" * 40
-            self.assertEqual(
-                report.publish_comment(result, "openai/example", 1, 2, 1), "Skipped stale report"
-            )
-            self.assertEqual(len(calls), 1)
+            with self.assertRaisesRegex(report.ReportError, "does not match report PR"):
+                report.publish_comment(result, "openai/example", 1, 2, 1)
+            self.assertFalse(any(method in {"PATCH", "POST"} for method, _, _ in calls))
 
     def test_comment_rejects_older_runs_attempts_and_wrong_pr(self) -> None:
         _, base = self.baseline()
         result, _ = report.build_report(self.repo, base, base)
-        pull = {"state": "open", "head": {"sha": base}, "base": {"sha": base}}
-        run = {
-            "event": "pull_request",
-            "path": ".github/workflows/castiron-custom-code.yml",
-            "head_sha": base,
-            "run_attempt": 2,
-            "pull_requests": [{"number": 1}],
-        }
+        pull = source_pull(base, base)
+        run = {**source_run(base), "run_attempt": 2}
+        metadata = {"default_branch": "main"}
+        main = {"object": {"sha": base}}
         comment = {
             "id": 8,
             "user": {"login": "github-actions[bot]"},
             "body": report.MARKER + "\n<!-- castiron:run:v1:3:1 -->",
             "html_url": "existing",
         }
-        with mock.patch.object(report, "api", side_effect=[pull, run]) as api:
+        with mock.patch.object(report, "api", side_effect=[run, metadata, main, pull]) as api:
             self.assertEqual(
                 report.publish_comment(result, "openai/example", 1, 2, 1), "Skipped stale report"
             )
-            self.assertEqual(api.call_count, 2)
-        with mock.patch.object(report, "api", side_effect=[pull, run, [comment]]) as api:
+            self.assertEqual(api.call_count, 4)
+        with mock.patch.object(report, "api", side_effect=[run, metadata, main, pull, [comment]]) as api:
             self.assertEqual(
                 report.publish_comment(result, "openai/example", 1, 2, 2), "Skipped stale report"
             )
-            self.assertEqual(api.call_count, 3)
+            self.assertEqual(api.call_count, 5)
         with (
-            mock.patch.object(report, "api", side_effect=[pull, {**run, "pull_requests": []}, []]),
+            mock.patch.object(report, "api", side_effect=[{**run, "pull_requests": []}, metadata, main, []]),
             self.assertRaisesRegex(report.ReportError, "does not match report PR"),
         ):
             report.publish_comment(result, "openai/example", 1, 2, 2)
         with (
-            mock.patch.object(report, "api", side_effect=[pull, {**run, "path": "other.yml"}]),
+            mock.patch.object(report, "api", side_effect=[{**run, "path": "other.yml"}]),
             self.assertRaisesRegex(report.ReportError, "does not match report PR"),
         ):
             report.publish_comment(result, "openai/example", 1, 2, 2)
         with mock.patch.object(
             report,
             "api",
-            side_effect=[pull, {**run, "pull_requests": []}, [{"number": 1}], [comment]],
+            side_effect=[
+                {**run, "pull_requests": []},
+                metadata,
+                main,
+                [{"number": 1}],
+                pull,
+                [comment],
+            ],
         ) as api:
             self.assertEqual(
                 report.publish_comment(result, "openai/example", 1, 2, 2), "Skipped stale report"
             )
-            self.assertIn(f"/commits/{base}/pulls", api.call_args_list[2].args[1])
-        changed = {**pull, "head": {"sha": "f" * 40}}
-        with mock.patch.object(report, "api", side_effect=[pull, run, [], changed]) as api:
+            self.assertIn("/pulls?state=open&head=fork%3Asdk", api.call_args_list[3].args[1])
+        changed = {**pull, "head": {**pull["head"], "sha": "f" * 40}}
+        with mock.patch.object(report, "api", side_effect=[run, metadata, main, pull, [], changed]) as api:
             self.assertEqual(
                 report.publish_comment(result, "openai/example", 1, 2, 2), "Skipped stale report"
             )
-            self.assertEqual(api.call_count, 4)
+            self.assertEqual(api.call_count, 6)
 
 
 if __name__ == "__main__":
