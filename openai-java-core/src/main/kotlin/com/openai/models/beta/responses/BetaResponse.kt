@@ -256,7 +256,7 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -473,8 +473,6 @@ private constructor(
         promptCacheRetention.getOptional("prompt_cache_retention")
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
      *
@@ -1087,9 +1085,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          */
         fun model(model: Model) = model(JsonField.of(model))
@@ -1925,8 +1923,6 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
          */
@@ -2458,6 +2454,8 @@ private constructor(
 
                 @JvmField val MAX_OUTPUT_TOKENS = of("max_output_tokens")
 
+                @JvmField val MAX_MESSAGES = of("max_messages")
+
                 @JvmField val CONTENT_FILTER = of("content_filter")
 
                 @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
@@ -2466,6 +2464,7 @@ private constructor(
             /** An enum containing [Reason]'s known values. */
             enum class Known {
                 MAX_OUTPUT_TOKENS,
+                MAX_MESSAGES,
                 CONTENT_FILTER,
             }
 
@@ -2480,6 +2479,7 @@ private constructor(
              */
             enum class Value {
                 MAX_OUTPUT_TOKENS,
+                MAX_MESSAGES,
                 CONTENT_FILTER,
                 /**
                  * An enum member indicating that [Reason] was instantiated with an unknown value.
@@ -2497,6 +2497,7 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     MAX_OUTPUT_TOKENS -> Value.MAX_OUTPUT_TOKENS
+                    MAX_MESSAGES -> Value.MAX_MESSAGES
                     CONTENT_FILTER -> Value.CONTENT_FILTER
                     else -> Value._UNKNOWN
                 }
@@ -2513,6 +2514,7 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     MAX_OUTPUT_TOKENS -> Known.MAX_OUTPUT_TOKENS
+                    MAX_MESSAGES -> Known.MAX_MESSAGES
                     CONTENT_FILTER -> Known.CONTENT_FILTER
                     else -> throw OpenAIInvalidDataException("Unknown Reason: $value")
                 }
@@ -2951,7 +2953,7 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -7893,8 +7895,6 @@ private constructor(
     }
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
      */

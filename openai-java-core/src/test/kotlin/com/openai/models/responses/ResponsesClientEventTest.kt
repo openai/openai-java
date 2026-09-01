@@ -38,7 +38,7 @@ internal class ResponsesClientEventTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_5_6_SOL)
                 .moderation(
                     ResponsesClientEvent.Moderation.builder()
                         .model("model")
@@ -156,7 +156,8 @@ internal class ResponsesClientEventTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(responsesClientEvent.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(responsesClientEvent.model())
+            .contains(ResponsesModel.ofChat(ChatModel.GPT_5_6_SOL))
         assertThat(responsesClientEvent.moderation())
             .contains(
                 ResponsesClientEvent.Moderation.builder()
@@ -280,7 +281,7 @@ internal class ResponsesClientEventTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_5_6_SOL)
                 .moderation(
                     ResponsesClientEvent.Moderation.builder()
                         .model("model")

@@ -55,7 +55,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -188,7 +188,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")

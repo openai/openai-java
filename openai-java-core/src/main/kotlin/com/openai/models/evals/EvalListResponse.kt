@@ -40,7 +40,7 @@ import kotlin.jvm.optionals.getOrNull
  * done for your LLM integration. Like:
  * - Improve the quality of my chatbot
  * - See how well my chatbot handles customer support
- * - Check if o4-mini is better at my usecase than gpt-4o
+ * - Check if o4-mini is better at my usecase than gpt-5.6-sol
  */
 class EvalListResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

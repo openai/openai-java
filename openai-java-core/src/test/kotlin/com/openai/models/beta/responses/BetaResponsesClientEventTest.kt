@@ -36,7 +36,7 @@ internal class BetaResponsesClientEventTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_5_1)
+                .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_5_6_SOL)
                 .moderation(
                     BetaResponsesClientEvent.ResponseCreate.Moderation.builder()
                         .model("model")
@@ -185,7 +185,7 @@ internal class BetaResponsesClientEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_5_1)
+                    .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_5_6_SOL)
                     .moderation(
                         BetaResponsesClientEvent.ResponseCreate.Moderation.builder()
                             .model("model")

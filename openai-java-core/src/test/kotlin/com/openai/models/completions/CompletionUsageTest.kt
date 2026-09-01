@@ -25,7 +25,6 @@ internal class CompletionUsageTest {
                         .textTokens(0L)
                         .build()
                 )
-                .computeUnits(0L)
                 .promptTokensDetails(
                     CompletionUsage.PromptTokensDetails.builder()
                         .audioTokens(0L)
@@ -50,7 +49,6 @@ internal class CompletionUsageTest {
                     .textTokens(0L)
                     .build()
             )
-        assertThat(completionUsage.computeUnits()).contains(0L)
         assertThat(completionUsage.promptTokensDetails())
             .contains(
                 CompletionUsage.PromptTokensDetails.builder()
@@ -80,7 +78,6 @@ internal class CompletionUsageTest {
                         .textTokens(0L)
                         .build()
                 )
-                .computeUnits(0L)
                 .promptTokensDetails(
                     CompletionUsage.PromptTokensDetails.builder()
                         .audioTokens(0L)

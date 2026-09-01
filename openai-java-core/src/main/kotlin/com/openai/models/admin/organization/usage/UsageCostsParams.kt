@@ -24,6 +24,7 @@ private constructor(
     private val endTime: Long?,
     private val groupBy: List<GroupBy>?,
     private val limit: Long?,
+    private val lineItems: List<String>?,
     private val page: String?,
     private val projectIds: List<String>?,
     private val additionalHeaders: Headers,
@@ -53,6 +54,12 @@ private constructor(
      * default is 7.
      */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
+
+    /**
+     * Return only costs for these exact line item names. Each value must match the complete
+     * `line_item` value, for example `gpt-5.6-sol, input_tokens`.
+     */
+    fun lineItems(): Optional<List<String>> = Optional.ofNullable(lineItems)
 
     /**
      * A cursor for use in pagination. Corresponding to the `next_page` field from the previous
@@ -93,6 +100,7 @@ private constructor(
         private var endTime: Long? = null
         private var groupBy: MutableList<GroupBy>? = null
         private var limit: Long? = null
+        private var lineItems: MutableList<String>? = null
         private var page: String? = null
         private var projectIds: MutableList<String>? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -106,6 +114,7 @@ private constructor(
             endTime = usageCostsParams.endTime
             groupBy = usageCostsParams.groupBy?.toMutableList()
             limit = usageCostsParams.limit
+            lineItems = usageCostsParams.lineItems?.toMutableList()
             page = usageCostsParams.page
             projectIds = usageCostsParams.projectIds?.toMutableList()
             additionalHeaders = usageCostsParams.additionalHeaders.toBuilder()
@@ -186,6 +195,26 @@ private constructor(
 
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
+
+        /**
+         * Return only costs for these exact line item names. Each value must match the complete
+         * `line_item` value, for example `gpt-5.6-sol, input_tokens`.
+         */
+        fun lineItems(lineItems: List<String>?) = apply {
+            this.lineItems = lineItems?.toMutableList()
+        }
+
+        /** Alias for calling [Builder.lineItems] with `lineItems.orElse(null)`. */
+        fun lineItems(lineItems: Optional<List<String>>) = lineItems(lineItems.getOrNull())
+
+        /**
+         * Adds a single [String] to [lineItems].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLineItem(lineItem: String) = apply {
+            lineItems = (lineItems ?: mutableListOf()).apply { add(lineItem) }
+        }
 
         /**
          * A cursor for use in pagination. Corresponding to the `next_page` field from the previous
@@ -331,6 +360,7 @@ private constructor(
                 endTime,
                 groupBy?.toImmutable(),
                 limit,
+                lineItems?.toImmutable(),
                 page,
                 projectIds?.toImmutable(),
                 additionalHeaders.build(),
@@ -349,6 +379,7 @@ private constructor(
                 endTime?.let { put("end_time", it.toString()) }
                 groupBy?.forEach { put("group_by[]", it.toString()) }
                 limit?.let { put("limit", it.toString()) }
+                lineItems?.forEach { put("line_items[]", it) }
                 page?.let { put("page", it) }
                 projectIds?.forEach { put("project_ids[]", it) }
                 putAll(additionalQueryParams)
@@ -639,6 +670,7 @@ private constructor(
             endTime == other.endTime &&
             groupBy == other.groupBy &&
             limit == other.limit &&
+            lineItems == other.lineItems &&
             page == other.page &&
             projectIds == other.projectIds &&
             additionalHeaders == other.additionalHeaders &&
@@ -653,6 +685,7 @@ private constructor(
             endTime,
             groupBy,
             limit,
+            lineItems,
             page,
             projectIds,
             additionalHeaders,
@@ -660,5 +693,5 @@ private constructor(
         )
 
     override fun toString() =
-        "UsageCostsParams{startTime=$startTime, apiKeyIds=$apiKeyIds, bucketWidth=$bucketWidth, endTime=$endTime, groupBy=$groupBy, limit=$limit, page=$page, projectIds=$projectIds, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "UsageCostsParams{startTime=$startTime, apiKeyIds=$apiKeyIds, bucketWidth=$bucketWidth, endTime=$endTime, groupBy=$groupBy, limit=$limit, lineItems=$lineItems, page=$page, projectIds=$projectIds, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

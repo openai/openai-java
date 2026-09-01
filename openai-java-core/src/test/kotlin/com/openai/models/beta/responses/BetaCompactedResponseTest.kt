@@ -69,7 +69,6 @@ internal class BetaCompactedResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
-                        .computeUnits(0L)
                         .build()
                 )
                 .build()
@@ -132,7 +131,6 @@ internal class BetaCompactedResponseTest {
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
-                    .computeUnits(0L)
                     .build()
             )
     }
@@ -198,7 +196,6 @@ internal class BetaCompactedResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
-                        .computeUnits(0L)
                         .build()
                 )
                 .build()

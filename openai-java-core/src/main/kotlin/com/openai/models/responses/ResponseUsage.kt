@@ -14,7 +14,6 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -29,7 +28,6 @@ private constructor(
     private val outputTokens: JsonField<Long>,
     private val outputTokensDetails: JsonField<OutputTokensDetails>,
     private val totalTokens: JsonField<Long>,
-    private val computeUnits: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -50,16 +48,12 @@ private constructor(
         @JsonProperty("total_tokens")
         @ExcludeMissing
         totalTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("compute_units")
-        @ExcludeMissing
-        computeUnits: JsonField<Long> = JsonMissing.of(),
     ) : this(
         inputTokens,
         inputTokensDetails,
         outputTokens,
         outputTokensDetails,
         totalTokens,
-        computeUnits,
         mutableMapOf(),
     )
 
@@ -106,14 +100,6 @@ private constructor(
     fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
 
     /**
-     * Compute units for the request. Currently null when available.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun computeUnits(): Optional<Long> = computeUnits.getOptional("compute_units")
-
-    /**
      * Returns the raw JSON value of [inputTokens].
      *
      * Unlike [inputTokens], this method doesn't throw if the JSON field has an unexpected type.
@@ -156,15 +142,6 @@ private constructor(
      */
     @JsonProperty("total_tokens") @ExcludeMissing fun _totalTokens(): JsonField<Long> = totalTokens
 
-    /**
-     * Returns the raw JSON value of [computeUnits].
-     *
-     * Unlike [computeUnits], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("compute_units")
-    @ExcludeMissing
-    fun _computeUnits(): JsonField<Long> = computeUnits
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -202,7 +179,6 @@ private constructor(
         private var outputTokens: JsonField<Long>? = null
         private var outputTokensDetails: JsonField<OutputTokensDetails>? = null
         private var totalTokens: JsonField<Long>? = null
-        private var computeUnits: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -212,7 +188,6 @@ private constructor(
             outputTokens = responseUsage.outputTokens
             outputTokensDetails = responseUsage.outputTokensDetails
             totalTokens = responseUsage.totalTokens
-            computeUnits = responseUsage.computeUnits
             additionalProperties = responseUsage.additionalProperties.toMutableMap()
         }
 
@@ -282,28 +257,6 @@ private constructor(
          */
         fun totalTokens(totalTokens: JsonField<Long>) = apply { this.totalTokens = totalTokens }
 
-        /** Compute units for the request. Currently null when available. */
-        fun computeUnits(computeUnits: Long?) = computeUnits(JsonField.ofNullable(computeUnits))
-
-        /**
-         * Alias for [Builder.computeUnits].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun computeUnits(computeUnits: Long) = computeUnits(computeUnits as Long?)
-
-        /** Alias for calling [Builder.computeUnits] with `computeUnits.orElse(null)`. */
-        fun computeUnits(computeUnits: Optional<Long>) = computeUnits(computeUnits.getOrNull())
-
-        /**
-         * Sets [Builder.computeUnits] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.computeUnits] with a well-typed [Long] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun computeUnits(computeUnits: JsonField<Long>) = apply { this.computeUnits = computeUnits }
-
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -346,7 +299,6 @@ private constructor(
                 checkRequired("outputTokens", outputTokens),
                 checkRequired("outputTokensDetails", outputTokensDetails),
                 checkRequired("totalTokens", totalTokens),
-                computeUnits,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -371,7 +323,6 @@ private constructor(
         outputTokens()
         outputTokensDetails().validate()
         totalTokens()
-        computeUnits()
         validated = true
     }
 
@@ -394,8 +345,7 @@ private constructor(
             (inputTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
             (if (outputTokens.asKnown().isPresent) 1 else 0) +
             (outputTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (totalTokens.asKnown().isPresent) 1 else 0) +
-            (if (computeUnits.asKnown().isPresent) 1 else 0)
+            (if (totalTokens.asKnown().isPresent) 1 else 0)
 
     /** A detailed breakdown of the input tokens. */
     class InputTokensDetails
@@ -815,7 +765,6 @@ private constructor(
             outputTokens == other.outputTokens &&
             outputTokensDetails == other.outputTokensDetails &&
             totalTokens == other.totalTokens &&
-            computeUnits == other.computeUnits &&
             additionalProperties == other.additionalProperties
     }
 
@@ -826,7 +775,6 @@ private constructor(
             outputTokens,
             outputTokensDetails,
             totalTokens,
-            computeUnits,
             additionalProperties,
         )
     }
@@ -834,5 +782,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseUsage{inputTokens=$inputTokens, inputTokensDetails=$inputTokensDetails, outputTokens=$outputTokens, outputTokensDetails=$outputTokensDetails, totalTokens=$totalTokens, computeUnits=$computeUnits, additionalProperties=$additionalProperties}"
+        "ResponseUsage{inputTokens=$inputTokens, inputTokensDetails=$inputTokensDetails, outputTokens=$outputTokens, outputTokensDetails=$outputTokensDetails, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
 }

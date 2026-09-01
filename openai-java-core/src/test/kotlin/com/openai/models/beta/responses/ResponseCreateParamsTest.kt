@@ -32,7 +32,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ResponseCreateParams.Model.GPT_5_1)
+            .model(ResponseCreateParams.Model.GPT_5_6_SOL)
             .moderation(
                 ResponseCreateParams.Moderation.builder()
                     .model("model")
@@ -151,7 +151,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ResponseCreateParams.Model.GPT_5_1)
+                .model(ResponseCreateParams.Model.GPT_5_6_SOL)
                 .moderation(
                     ResponseCreateParams.Moderation.builder()
                         .model("model")
@@ -288,7 +288,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ResponseCreateParams.Model.GPT_5_1)
+                .model(ResponseCreateParams.Model.GPT_5_6_SOL)
                 .moderation(
                     ResponseCreateParams.Moderation.builder()
                         .model("model")
@@ -410,7 +410,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ResponseCreateParams.Model.GPT_5_1)
+        assertThat(body.model()).contains(ResponseCreateParams.Model.GPT_5_6_SOL)
         assertThat(body.moderation())
             .contains(
                 ResponseCreateParams.Moderation.builder()
