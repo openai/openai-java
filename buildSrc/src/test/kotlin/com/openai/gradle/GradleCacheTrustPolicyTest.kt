@@ -622,14 +622,14 @@ class GradleCacheTrustPolicyTest {
 
     @Test
     fun `published Maven artifact provenance verification is documented`() {
-        val securityPolicy = Path.of("../SECURITY.md").readText()
+        val securityModel = Path.of("../docs/architecture/security-model.md").readText()
 
-        assertContains(securityPolicy, "## Maven Artifact Provenance")
+        assertContains(securityModel, "### Maven artifact provenance")
         assertContains(
-            securityPolicy,
+            securityModel,
             "gh attestation verify path/to/openai-java-VERSION.jar -R openai/openai-java",
         )
-        assertContains(securityPolicy, "not exposed to the attestation action")
+        assertContains(securityModel, "not exposed to the attestation action")
     }
 
     @Test
@@ -651,14 +651,14 @@ class GradleCacheTrustPolicyTest {
 
     @Test
     fun `documented cache trust boundary is enforced outside pull request code`() {
-        val securityPolicy = Path.of("../SECURITY.md").readText()
+        val securityModel = Path.of("../docs/architecture/security-model.md").readText()
 
-        assertContains(securityPolicy, "`refs/pull/<number>/merge`")
-        assertContains(securityPolicy, "cannot write to the default-branch cache scope")
-        assertContains(securityPolicy, "not a security boundary")
-        assertContains(securityPolicy, "base branch's CODEOWNERS")
+        assertContains(securityModel, "`refs/pull/<number>/merge`")
+        assertContains(securityModel, "cannot write to the default-branch cache scope")
+        assertContains(securityModel, "not a security boundary")
+        assertContains(securityModel, "base branch's CODEOWNERS")
         assertContains(
-            securityPolicy,
+            securityModel,
             "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
         )
     }
