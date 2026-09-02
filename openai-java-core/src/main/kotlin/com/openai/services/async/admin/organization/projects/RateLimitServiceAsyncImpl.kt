@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.projects.ratelimits.ProjectRateLimit
 import com.openai.models.admin.organization.projects.ratelimits.RateLimitListRateLimitsPageAsync
 import com.openai.models.admin.organization.projects.ratelimits.RateLimitListRateLimitsPageResponse
@@ -43,14 +45,18 @@ class RateLimitServiceAsyncImpl internal constructor(private val clientOptions: 
         requestOptions: RequestOptions,
     ): CompletableFuture<RateLimitListRateLimitsPageAsync> =
         // get /organization/projects/{project_id}/rate_limits
-        withRawResponse().listRateLimits(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().listRateLimits(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun updateRateLimit(
         params: RateLimitUpdateRateLimitParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectRateLimit> =
         // post /organization/projects/{project_id}/rate_limits/{rate_limit_id}
-        withRawResponse().updateRateLimit(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().updateRateLimit(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RateLimitServiceAsync.WithRawResponse {
@@ -93,8 +99,10 @@ class RateLimitServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listRateLimitsHandler.handle(it) }
@@ -145,8 +153,10 @@ class RateLimitServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateRateLimitHandler.handle(it) }

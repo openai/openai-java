@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.projects.modelpermissions.ModelPermissionDeleteParams
 import com.openai.models.admin.organization.projects.modelpermissions.ModelPermissionRetrieveParams
 import com.openai.models.admin.organization.projects.modelpermissions.ModelPermissionUpdateParams
@@ -45,21 +47,27 @@ internal constructor(private val clientOptions: ClientOptions) : ModelPermission
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectModelPermissions> =
         // get /organization/projects/{project_id}/model_permissions
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: ModelPermissionUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectModelPermissions> =
         // post /organization/projects/{project_id}/model_permissions
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: ModelPermissionDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectModelPermissionsDeleted> =
         // delete /organization/projects/{project_id}/model_permissions
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ModelPermissionServiceAsync.WithRawResponse {
@@ -102,8 +110,10 @@ internal constructor(private val clientOptions: ClientOptions) : ModelPermission
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -145,8 +155,10 @@ internal constructor(private val clientOptions: ClientOptions) : ModelPermission
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
@@ -188,8 +200,10 @@ internal constructor(private val clientOptions: ClientOptions) : ModelPermission
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }

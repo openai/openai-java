@@ -25,6 +25,8 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.beta.responses.BetaCompactedResponse
 import com.openai.models.beta.responses.BetaResponse
 import com.openai.models.beta.responses.BetaResponseStreamEvent
@@ -70,7 +72,9 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         requestOptions: RequestOptions,
     ): CompletableFuture<BetaResponse> =
         // post /responses?beta=true
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun createStreaming(
         params: ResponseCreateParams,
@@ -79,7 +83,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         // post /responses?beta=true
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun retrieve(
@@ -87,7 +91,9 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         requestOptions: RequestOptions,
     ): CompletableFuture<BetaResponse> =
         // get /responses/{response_id}?beta=true
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieveStreaming(
         params: ResponseRetrieveParams,
@@ -96,7 +102,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         // get /responses/{response_id}?beta=true
         withRawResponse()
             .retrieveStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun delete(
@@ -111,14 +117,18 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         requestOptions: RequestOptions,
     ): CompletableFuture<BetaResponse> =
         // post /responses/{response_id}/cancel?beta=true
-        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().cancel(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun compact(
         params: ResponseCompactParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<BetaCompactedResponse> =
         // post /responses/compact?beta=true
-        withRawResponse().compact(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().compact(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseServiceAsync.WithRawResponse {
@@ -167,8 +177,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -213,8 +225,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { createStreamingHandler.handle(it) }
@@ -253,8 +267,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -293,8 +309,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { retrieveStreamingHandler.handle(it) }
@@ -333,8 +351,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response.use { deleteHandler.handle(it) }
                     }
@@ -366,8 +386,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
@@ -402,8 +424,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { compactHandler.handle(it) }

@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.projects.certificates.CertificateActivatePageAsync
 import com.openai.models.admin.organization.projects.certificates.CertificateActivatePageResponse
 import com.openai.models.admin.organization.projects.certificates.CertificateActivateParams
@@ -47,21 +49,27 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateListPageAsync> =
         // get /organization/projects/{project_id}/certificates
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun activate(
         params: CertificateActivateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateActivatePageAsync> =
         // post /organization/projects/{project_id}/certificates/activate
-        withRawResponse().activate(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().activate(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun deactivate(
         params: CertificateDeactivateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CertificateDeactivatePageAsync> =
         // post /organization/projects/{project_id}/certificates/deactivate
-        withRawResponse().deactivate(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().deactivate(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CertificateServiceAsync.WithRawResponse {
@@ -104,8 +112,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -156,8 +166,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { activateHandler.handle(it) }
@@ -208,8 +220,10 @@ class CertificateServiceAsyncImpl internal constructor(private val clientOptions
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deactivateHandler.handle(it) }
