@@ -99,6 +99,30 @@ internal class OkHttpClientTest {
             assertThat(responseFuture.isCancelled).isTrue()
         }
     }
+
+    @Test
+    fun execute_stainlessHeadersCanBeDisabled() {
+        stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
+        val client = OkHttpClient.builder().sendStainlessHeaders(false).build()
+
+        client.use {
+            val response =
+                client.execute(
+                    HttpRequest.builder()
+                        .method(HttpMethod.POST)
+                        .baseUrl(baseUrl)
+                        .addPathSegment("something")
+                        .build()
+                )
+            response.close()
+        }
+
+        verify(
+            postRequestedFor(urlPathEqualTo("/something"))
+                .withoutHeader("X-Stainless-Read-Timeout")
+                .withoutHeader("X-Stainless-Timeout")
+        )
+    }
 }
 
 private class TrackingResponseBody : ResponseBody() {

@@ -255,6 +255,9 @@ private constructor(
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
             sendStainlessHeaders = clientOptions.sendStainlessHeaders
+            if (!sendStainlessHeaders) {
+                headers.removeAll(STAINLESS_HEADER_NAMES)
+            }
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
@@ -462,6 +465,9 @@ private constructor(
          */
         fun sendStainlessHeaders(sendStainlessHeaders: Boolean) = apply {
             this.sendStainlessHeaders = sendStainlessHeaders
+            if (!sendStainlessHeaders) {
+                headers.removeAll(STAINLESS_HEADER_NAMES)
+            }
         }
 
         fun organization(organization: String?) = apply { this.organization = organization }
@@ -794,6 +800,7 @@ private constructor(
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
+                    .sendStainlessHeaders(sendStainlessHeaders)
                     .build()
 
             return ClientOptions(
@@ -897,3 +904,18 @@ private constructor(
 private object AdminApiKeyOnlyCredential : Credential
 
 private object HttpRequestAuthenticatorCredential : Credential
+
+private val STAINLESS_HEADER_NAMES =
+    setOf(
+        "X-Stainless-Lang",
+        "X-Stainless-Arch",
+        "X-Stainless-OS",
+        "X-Stainless-OS-Version",
+        "X-Stainless-Package-Version",
+        "X-Stainless-Runtime",
+        "X-Stainless-Runtime-Version",
+        "X-Stainless-Kotlin-Version",
+        "X-Stainless-Retry-Count",
+        "X-Stainless-Read-Timeout",
+        "X-Stainless-Timeout",
+    )

@@ -124,6 +124,34 @@ internal class RetryingHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun execute_stainlessHeadersCanBeDisabled(async: Boolean) {
+        stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
+        val sleeper = RecordingSleeper()
+        val retryingClient =
+            retryingHttpClientBuilder(sleeper)
+                .sendStainlessHeaders(false)
+                .build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        response.close()
+        verify(
+            postRequestedFor(urlPathEqualTo("/something"))
+                .withoutHeader("X-Stainless-Retry-Count")
+        )
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun execute_withIdempotencyHeader(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))

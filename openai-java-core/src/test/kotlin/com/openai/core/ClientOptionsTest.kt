@@ -221,6 +221,20 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun toBuilder_canDisableStainlessHeadersAfterTheyWereMaterialized() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("My API Key")
+                .build()
+                .toBuilder()
+                .sendStainlessHeaders(false)
+                .build()
+
+        assertThat(clientOptions.headers.names()).noneMatch { it.startsWith("X-Stainless-") }
+    }
+
+    @Test
     fun toBuilder_organizationCanBeUpdated() {
         var clientOptions =
             ClientOptions.builder()

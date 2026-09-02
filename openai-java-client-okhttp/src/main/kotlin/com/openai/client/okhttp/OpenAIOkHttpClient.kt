@@ -52,6 +52,7 @@ class OpenAIOkHttpClient private constructor() {
     class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
+        private var sendStainlessHeaders: Boolean = true
         private var dispatcherExecutorService: ExecutorService? = null
         private var followRedirects: Boolean = true
         private var proxy: Proxy? = null
@@ -370,6 +371,16 @@ class OpenAIOkHttpClient private constructor() {
             clientOptions.azureUrlPathMode(azureUrlPathMode)
         }
 
+        /**
+         * Whether to send the SDK's default `X-Stainless-*` telemetry headers.
+         *
+         * Defaults to `true`.
+         */
+        fun sendStainlessHeaders(sendStainlessHeaders: Boolean) = apply {
+            this.sendStainlessHeaders = sendStainlessHeaders
+            clientOptions.sendStainlessHeaders(sendStainlessHeaders)
+        }
+
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
         /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
@@ -512,6 +523,7 @@ class OpenAIOkHttpClient private constructor() {
                                 .maxIdleConnections(maxIdleConnections)
                                 .keepAliveDuration(keepAliveDuration)
                                 .dispatcherExecutorService(dispatcherExecutorService)
+                                .sendStainlessHeaders(sendStainlessHeaders)
                                 .sslSocketFactory(sslSocketFactory)
                                 .trustManager(trustManager)
                                 .hostnameVerifier(hostnameVerifier)

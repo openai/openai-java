@@ -40,7 +40,10 @@ import okio.buffer
 import okio.sink
 
 class OkHttpClient
-internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) : HttpClient {
+internal constructor(
+    @JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient,
+    private val sendStainlessHeaders: Boolean = true,
+) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
@@ -104,7 +107,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         }
 
         val client = clientBuilder.build()
-        return client.newCall(request.toRequest(client))
+        return client.newCall(request.toRequest(client, sendStainlessHeaders))
     }
 
     companion object {
@@ -123,6 +126,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
+        private var sendStainlessHeaders: Boolean = true
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
@@ -175,6 +179,11 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
 
         fun hostnameVerifier(hostnameVerifier: HostnameVerifier?) = apply {
             this.hostnameVerifier = hostnameVerifier
+        }
+
+        @JvmSynthetic
+        internal fun sendStainlessHeaders(sendStainlessHeaders: Boolean) = apply {
+            this.sendStainlessHeaders = sendStainlessHeaders
         }
 
         fun build(): OkHttpClient =
@@ -238,12 +247,16 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                         // We usually make all our requests to the same host so it makes sense to
                         // raise the per-host limit to the overall limit.
                         dispatcher.maxRequestsPerHost = dispatcher.maxRequests
-                    }
+                    },
+                sendStainlessHeaders,
             )
     }
 }
 
-private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient?): Request {
+private fun HttpRequest.toRequest(
+    client: okhttp3.OkHttpClient?,
+    sendStainlessHeaders: Boolean = true,
+): Request {
     var body: RequestBody? = body?.toRequestBody()
     if (body == null && requiresBody(method)) {
         body = "".toRequestBody()
@@ -252,7 +265,7 @@ private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient?): Request {
     val builder = Request.Builder().url(toUrl()).method(method.name, body)
     headers.names().forEach { name -> headers.values(name).forEach { builder.addHeader(name, it) } }
 
-    if (client != null) {
+    if (client != null && sendStainlessHeaders) {
         if (
             !headers.names().contains("X-Stainless-Read-Timeout") && client.readTimeoutMillis != 0
         ) {
