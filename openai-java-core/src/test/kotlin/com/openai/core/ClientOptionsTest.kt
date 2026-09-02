@@ -193,6 +193,34 @@ internal class ClientOptionsTest {
     }
 
     @Test
+    fun build_withStainlessHeadersDisabled_doesNotIncludeStainlessHeaders() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("My API Key")
+                .sendStainlessHeaders(false)
+                .build()
+
+        assertThat(clientOptions.sendStainlessHeaders).isFalse()
+        assertThat(clientOptions.headers.names()).noneMatch { it.startsWith("X-Stainless-") }
+    }
+
+    @Test
+    fun toBuilder_preservesStainlessHeadersSetting() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("My API Key")
+                .sendStainlessHeaders(false)
+                .build()
+                .toBuilder()
+                .build()
+
+        assertThat(clientOptions.sendStainlessHeaders).isFalse()
+        assertThat(clientOptions.headers.names()).noneMatch { it.startsWith("X-Stainless-") }
+    }
+
+    @Test
     fun toBuilder_organizationCanBeUpdated() {
         var clientOptions =
             ClientOptions.builder()

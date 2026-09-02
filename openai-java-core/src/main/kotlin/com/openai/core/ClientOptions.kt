@@ -137,6 +137,8 @@ private constructor(
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     @get:JvmName("azureUrlPathMode") val azureUrlPathMode: AzureUrlPathMode,
+    /** Whether to send the SDK's default `X-Stainless-*` telemetry headers. */
+    @get:JvmName("sendStainlessHeaders") val sendStainlessHeaders: Boolean,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -216,6 +218,7 @@ private constructor(
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
         private var azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.AUTO
+        private var sendStainlessHeaders: Boolean = true
         private var adminApiKey: String? = null
         private var organization: String? = null
         private var project: String? = null
@@ -251,6 +254,7 @@ private constructor(
                 }
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
+            sendStainlessHeaders = clientOptions.sendStainlessHeaders
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
@@ -448,6 +452,16 @@ private constructor(
 
         fun azureUrlPathMode(azureUrlPathMode: AzureUrlPathMode) = apply {
             this.azureUrlPathMode = azureUrlPathMode
+        }
+
+        /**
+         * Whether to send the SDK's default `X-Stainless-*` telemetry headers.
+         *
+         * Defaults to `true`. Set to `false` when a provider or gateway imposes a strict request
+         * header limit, such as Azure OpenAI returning HTTP 431 for the default telemetry headers.
+         */
+        fun sendStainlessHeaders(sendStainlessHeaders: Boolean) = apply {
+            this.sendStainlessHeaders = sendStainlessHeaders
         }
 
         fun organization(organization: String?) = apply { this.organization = organization }
@@ -711,14 +725,16 @@ private constructor(
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
-            headers.put("X-Stainless-Lang", "java")
-            headers.put("X-Stainless-Arch", getOsArch())
-            headers.put("X-Stainless-OS", getOsName())
-            headers.put("X-Stainless-OS-Version", getOsVersion())
-            headers.put("X-Stainless-Package-Version", getPackageVersion())
-            headers.put("X-Stainless-Runtime", "JRE")
-            headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
+            if (sendStainlessHeaders) {
+                headers.put("X-Stainless-Lang", "java")
+                headers.put("X-Stainless-Arch", getOsArch())
+                headers.put("X-Stainless-OS", getOsName())
+                headers.put("X-Stainless-OS-Version", getOsVersion())
+                headers.put("X-Stainless-Package-Version", getPackageVersion())
+                headers.put("X-Stainless-Runtime", "JRE")
+                headers.put("X-Stainless-Runtime-Version", getJavaVersion())
+                headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
+            }
             // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
 
@@ -802,6 +818,7 @@ private constructor(
                 credential,
                 azureServiceVersion,
                 azureUrlPathMode,
+                sendStainlessHeaders,
                 organization,
                 project,
                 webhookSecret,
