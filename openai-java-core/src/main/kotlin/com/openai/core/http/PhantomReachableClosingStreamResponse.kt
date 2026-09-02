@@ -1,6 +1,7 @@
 package com.openai.core.http
 
 import com.openai.core.closeWhenPhantomReachable
+import java.util.Optional
 import java.util.stream.Stream
 
 /**
@@ -14,6 +15,8 @@ internal class PhantomReachableClosingStreamResponse<T>(
     init {
         closeWhenPhantomReachable(this, streamResponse)
     }
+
+    override fun requestId(): Optional<String> = streamResponse.requestId()
 
     override fun stream(): Stream<T> = streamResponse.stream()
 

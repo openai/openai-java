@@ -8,6 +8,7 @@ import com.openai.core.http.PhantomReachableClosingStreamResponse
 import com.openai.core.http.StreamResponse
 import com.openai.errors.OpenAIIoException
 import java.io.IOException
+import java.util.Optional
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
@@ -18,6 +19,7 @@ internal fun <T> streamHandler(
     object : Handler<StreamResponse<T>> {
 
         override fun handle(response: HttpResponse): StreamResponse<T> {
+            val requestId = response.requestId()
             val reader = response.body().bufferedReader()
             val sequence =
                 // Wrap in a `CloseableSequence` to avoid performing a read on the `reader`
@@ -39,6 +41,8 @@ internal fun <T> streamHandler(
 
             return PhantomReachableClosingStreamResponse(
                 object : StreamResponse<T> {
+
+                    override fun requestId(): Optional<String> = requestId
 
                     override fun stream(): Stream<T> = sequence.asStream()
 

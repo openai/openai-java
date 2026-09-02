@@ -1,8 +1,11 @@
 package com.openai.core.http
 
 import com.openai.core.http.AsyncStreamResponse.Handler
+import com.openai.errors.OpenAIServiceException
 import java.util.Optional
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicReference
 
@@ -12,6 +15,14 @@ import java.util.concurrent.atomic.AtomicReference
  * full response.
  */
 interface AsyncStreamResponse<T> {
+
+    /**
+     * Returns the value of the `x-request-id` header, or an empty [Optional] if it's unavailable.
+     *
+     * This method does not wait for response headers. Its result is empty until those headers are
+     * available, and may remain empty if the response has no `x-request-id` header.
+     */
+    fun requestId(): Optional<String> = Optional.empty()
 
     /**
      * Registers [handler] to be called for events of this stream.
@@ -76,6 +87,19 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                     // `onCompleteFuture` even if `subscribe` has not been called.
                     error?.let(onCompleteFuture::completeExceptionally)
                 }
+            }
+
+            override fun requestId(): Optional<String> {
+                val streamResponse =
+                    try {
+                        this@toAsync.getNow(null)
+                    } catch (error: CompletionException) {
+                        return requestIdFromError(error)
+                    } catch (_: CancellationException) {
+                        return Optional.empty()
+                    }
+
+                return streamResponse?.requestId() ?: Optional.empty()
             }
 
             override fun subscribe(handler: Handler<T>): AsyncStreamResponse<T> =
@@ -149,6 +173,14 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
             }
         }
     )
+
+private tailrec fun requestIdFromError(error: Throwable): Optional<String> =
+    when {
+        error is CompletionException && error.cause != null -> requestIdFromError(error.cause!!)
+        error is OpenAIServiceException ->
+            Optional.ofNullable(error.headers().values("x-request-id").firstOrNull())
+        else -> Optional.empty()
+    }
 
 private enum class State {
     NEW,
