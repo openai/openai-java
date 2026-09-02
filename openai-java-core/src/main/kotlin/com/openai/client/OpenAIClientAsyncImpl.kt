@@ -234,7 +234,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun videos(): VideoServiceAsync = videos
 
-    override fun close() = clientOptions.close()
+    override fun close() {
+        clientOptionsWithUserAgent.close()
+        if (clientOptionsWithUserAgent !== clientOptions) clientOptions.close()
+    }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OpenAIClientAsync.WithRawResponse {
