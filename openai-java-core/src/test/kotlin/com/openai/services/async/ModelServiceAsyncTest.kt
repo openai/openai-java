@@ -20,7 +20,7 @@ internal class ModelServiceAsyncTest {
                 .build()
         val modelServiceAsync = client.models()
 
-        val modelFuture = modelServiceAsync.retrieve("gpt-4o-mini")
+        val modelFuture = modelServiceAsync.retrieve("gpt-5.6-sol")
 
         val model = modelFuture.get()
         model.validate()

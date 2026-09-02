@@ -33,7 +33,7 @@ internal class BetaResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(BetaResponse.Model.GPT_5_1)
+                .model(BetaResponse.Model.GPT_5_6_SOL)
                 .addOutput(
                     BetaResponseOutputMessage.builder()
                         .id("id")
@@ -216,7 +216,6 @@ internal class BetaResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
-                        .computeUnits(0L)
                         .build()
                 )
                 .user("user-1234")
@@ -245,7 +244,7 @@ internal class BetaResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(betaResponse.model()).isEqualTo(BetaResponse.Model.GPT_5_1)
+        assertThat(betaResponse.model()).isEqualTo(BetaResponse.Model.GPT_5_6_SOL)
         assertThat(betaResponse.output())
             .containsExactly(
                 BetaResponseOutputItem.ofMessage(
@@ -433,7 +432,6 @@ internal class BetaResponseTest {
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
-                    .computeUnits(0L)
                     .build()
             )
         assertThat(betaResponse.user()).contains("user-1234")
@@ -463,7 +461,7 @@ internal class BetaResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(BetaResponse.Model.GPT_5_1)
+                .model(BetaResponse.Model.GPT_5_6_SOL)
                 .addOutput(
                     BetaResponseOutputMessage.builder()
                         .id("id")
@@ -646,7 +644,6 @@ internal class BetaResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
-                        .computeUnits(0L)
                         .build()
                 )
                 .user("user-1234")

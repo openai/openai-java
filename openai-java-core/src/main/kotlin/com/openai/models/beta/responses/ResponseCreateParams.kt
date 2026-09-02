@@ -163,7 +163,7 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -265,8 +265,6 @@ private constructor(
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
      *
@@ -970,9 +968,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          */
         fun model(model: Model) = apply { body.model(model) }
@@ -1186,8 +1184,6 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
          */
@@ -2094,9 +2090,9 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -2201,8 +2197,6 @@ private constructor(
             promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
          *
@@ -3012,7 +3006,7 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -3235,8 +3229,6 @@ private constructor(
                 }
 
             /**
-             * **gpt-5 and o-series models only**
-             *
              * Configuration options for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
              */
@@ -4808,7 +4800,7 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -7464,8 +7456,6 @@ private constructor(
     }
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
      */

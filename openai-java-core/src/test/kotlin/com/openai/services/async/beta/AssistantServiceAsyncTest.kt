@@ -29,7 +29,7 @@ internal class AssistantServiceAsyncTest {
         val assistantFuture =
             assistantServiceAsync.create(
                 AssistantCreateParams.builder()
-                    .model(ChatModel.GPT_4O)
+                    .model(ChatModel.GPT_5)
                     .description("description")
                     .instructions("instructions")
                     .metadata(
