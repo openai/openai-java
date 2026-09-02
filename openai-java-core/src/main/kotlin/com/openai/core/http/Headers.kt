@@ -21,7 +21,20 @@ private constructor(
 
     fun names(): Set<String> = map.keys
 
+    /**
+     * Returns all values associated with [name], or an empty list when the header is absent.
+     *
+     * Names returned by [names] always have at least one value.
+     */
     fun values(name: String): List<String> = map[name].orEmpty()
+
+    /**
+     * Returns the immutable, case-insensitive mapping of header names to their values.
+     *
+     * The returned map and its value lists are the same immutable representation used by this
+     * [Headers] instance; mutating the returned data is not supported.
+     */
+    fun asMap(): Map<String, List<String>> = map
 
     fun toBuilder(): Builder = Builder().putAll(map)
 
