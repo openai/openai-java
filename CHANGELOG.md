@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.0](https://github.com/openai/openai-java/compare/v4.56.0...v4.57.0) (2026-09-03)
+
+
+### Features
+
+* **api:** add gpt-6-astra and related features ([#969](https://github.com/openai/openai-java/issues/969)) ([39f1715](https://github.com/openai/openai-java/commit/39f1715c67c0138727bfde55ddb02317b3784ad7))
+
 ## [4.56.0](https://github.com/openai/openai-java/compare/v4.55.0...v4.56.0) (2026-09-02)
 
 
