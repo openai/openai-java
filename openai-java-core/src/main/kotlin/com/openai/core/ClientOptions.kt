@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -10,10 +8,13 @@ import com.openai.azure.AzureUrlCategory
 import com.openai.azure.AzureUrlPathMode
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.AsyncStreamResponse
+import com.openai.core.http.AuthenticatingHttpClient
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
+import com.openai.core.http.PhantomReachableClosingHttpRequestAuthenticator
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
 import com.openai.core.http.WorkloadIdentityHttpClient
@@ -42,6 +43,7 @@ private constructor(
      * This class takes ownership of the client and closes it when closed.
      */
     @get:JvmName("httpClient") val httpClient: HttpClient,
+    private val httpRequestAuthenticator: HttpRequestAuthenticator?,
     /**
      * Whether to throw an exception if any of the Jackson versions detected at runtime are
      * incompatible with the SDK's minimum supported Jackson version (2.13.4).
@@ -84,6 +86,7 @@ private constructor(
      */
     @get:JvmName("clock") val clock: Clock,
     private val baseUrl: String?,
+    private val dataResidencySelected: Boolean,
     /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
     /** Query params to send with the request. */
@@ -191,12 +194,18 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
+        private var httpRequestAuthenticator: HttpRequestAuthenticator? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
         private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String? = null
+        // Retain only whether the resolved URL came from residency, not a competing URL value.
+        private var dataResidencySelected: Boolean = false
+        private var explicitBaseUrl: Boolean = false
+        private var explicitDataResidency: Boolean = false
+        private var inheritedAzureEndpoint: Boolean = false
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
@@ -216,12 +225,18 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
+            httpRequestAuthenticator = clientOptions.httpRequestAuthenticator
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
             sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
+            dataResidencySelected = clientOptions.dataResidencySelected
+            inheritedAzureEndpoint =
+                clientOptions.baseUrl?.let {
+                    AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
+                } ?: false
             headers = clientOptions.headers.toBuilder()
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
@@ -230,7 +245,10 @@ private constructor(
             logLevel = clientOptions.logLevel
             apiKey = clientOptions.apiKey
             adminApiKey = clientOptions.adminApiKey
-            credential = clientOptions.credential.takeUnless { it === AdminApiKeyOnlyCredential }
+            credential =
+                clientOptions.credential.takeUnless {
+                    it === AdminApiKeyOnlyCredential || it === HttpRequestAuthenticatorCredential
+                }
             azureServiceVersion = clientOptions.azureServiceVersion
             azureUrlPathMode = clientOptions.azureUrlPathMode
             organization = clientOptions.organization
@@ -247,6 +265,19 @@ private constructor(
          */
         fun httpClient(httpClient: HttpClient) = apply {
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+        }
+
+        /**
+         * Configures authentication that must inspect the complete HTTP request.
+         *
+         * This is reserved for OpenAI-owned provider integrations. The authenticator runs once per
+         * request attempt after request construction and immediately before transport logging.
+         */
+        @JvmSynthetic
+        fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator?) = apply {
+            this.httpRequestAuthenticator =
+                if (httpRequestAuthenticator == null) null
+                else PhantomReachableClosingHttpRequestAuthenticator(httpRequestAuthenticator)
         }
 
         /**
@@ -307,10 +338,35 @@ private constructor(
          *
          * Defaults to the production environment: `https://api.openai.com/v1`.
          */
-        fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String?) = apply {
+            require(!explicitDataResidency) { "baseUrl and dataResidency are mutually exclusive" }
+            this.baseUrl = baseUrl
+            dataResidencySelected = false
+            explicitBaseUrl = true
+        }
 
         /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        /**
+         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         *
+         * Cannot be combined with [baseUrl] on the same builder or with third-party provider
+         * configuration. An inherited or environment-derived URL may be replaced. A null value
+         * leaves the endpoint unchanged. Availability is determined by the API.
+         */
+        fun dataResidency(dataResidency: DataResidency?) = apply {
+            if (dataResidency != null) {
+                require(!explicitBaseUrl) { "baseUrl and dataResidency are mutually exclusive" }
+                baseUrl = dataResidency.baseUrl
+                dataResidencySelected = true
+                explicitDataResidency = true
+            }
+        }
+
+        /** Alias for calling [dataResidency] with `dataResidency.orElse(null)`. */
+        fun dataResidency(dataResidency: Optional<DataResidency>) =
+            dataResidency(dataResidency.getOrNull())
 
         /**
          * Whether to call `validate` on every response before returning it.
@@ -504,6 +560,16 @@ private constructor(
             httpClient: HttpClient,
             jsonMapper: JsonMapper,
         ): Credential {
+            if (httpRequestAuthenticator != null) {
+                if (
+                    credential != null || workloadIdentity != null || !adminApiKey.isNullOrEmpty()
+                ) {
+                    throw IllegalStateException(
+                        "Provider authentication cannot be combined with credential (apiKey), workloadIdentity, or adminApiKey"
+                    )
+                }
+                return HttpRequestAuthenticatorCredential
+            }
             if (
                 credential != null &&
                     credential !== AdminApiKeyOnlyCredential &&
@@ -551,7 +617,11 @@ private constructor(
         fun fromEnv() = apply {
             logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
-                baseUrl(it)
+                if (!dataResidencySelected) {
+                    inheritedAzureEndpoint =
+                        AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
+                    baseUrl = it
+                }
             }
 
             val openAIKey = System.getProperty("openai.apiKey") ?: System.getenv("OPENAI_API_KEY")
@@ -608,6 +678,16 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ClientOptions {
+            require(
+                !dataResidencySelected ||
+                    (!inheritedAzureEndpoint &&
+                        httpRequestAuthenticator == null &&
+                        credential !is AzureApiKeyCredential &&
+                        azureServiceVersion == null &&
+                        azureUrlPathMode == AzureUrlPathMode.AUTO)
+            ) {
+                "dataResidency cannot be combined with third-party provider configuration"
+            }
             val httpClient = checkRequired("httpClient", httpClient)
             val streamHandlerExecutor =
                 streamHandlerExecutor
@@ -669,21 +749,32 @@ private constructor(
             val effectiveWorkloadIdentityAuth =
                 (credential as? WorkloadIdentityCredential)?.getAuth()
 
-            val workloadIdentityHttpClient =
-                WorkloadIdentityHttpClient(
-                    delegate = httpClient,
-                    workloadIdentityAuth = effectiveWorkloadIdentityAuth,
-                )
+            val loggingDelegate =
+                if (httpRequestAuthenticator != null) httpClient
+                else
+                    WorkloadIdentityHttpClient(
+                        delegate = httpClient,
+                        workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                    )
+
+            val loggingHttpClient =
+                LoggingHttpClient.builder()
+                    .httpClient(loggingDelegate)
+                    .clock(clock)
+                    .level(logLevel)
+                    .build()
+
+            val perAttemptHttpClient =
+                httpRequestAuthenticator?.let { authenticator ->
+                    AuthenticatingHttpClient(
+                        delegate = loggingHttpClient,
+                        authenticator = authenticator,
+                    )
+                } ?: loggingHttpClient
 
             val wrappedHttpClient =
                 RetryingHttpClient.builder()
-                    .httpClient(
-                        LoggingHttpClient.builder()
-                            .httpClient(workloadIdentityHttpClient)
-                            .clock(clock)
-                            .level(logLevel)
-                            .build()
-                    )
+                    .httpClient(perAttemptHttpClient)
                     .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
@@ -692,12 +783,14 @@ private constructor(
             return ClientOptions(
                 httpClient,
                 wrappedHttpClient,
+                httpRequestAuthenticator,
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor,
                 sleeper,
                 clock,
                 baseUrl,
+                dataResidencySelected,
                 headers.build(),
                 queryParams.build(),
                 responseValidation,
@@ -735,7 +828,9 @@ private constructor(
     @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {
         val headers = Headers.builder()
-        var isSatisfied = false
+        var isSatisfied =
+            credential === HttpRequestAuthenticatorCredential &&
+                (security.bearerAuth || security.adminApiKeyAuth)
 
         if (security.bearerAuth) {
             when {
@@ -751,6 +846,9 @@ private constructor(
                     isSatisfied = true
                 }
                 credential is WorkloadIdentityCredential -> {
+                    isSatisfied = true
+                }
+                credential === HttpRequestAuthenticatorCredential -> {
                     isSatisfied = true
                 }
             }
@@ -780,3 +878,5 @@ private constructor(
 }
 
 private object AdminApiKeyOnlyCredential : Credential
+
+private object HttpRequestAuthenticatorCredential : Credential

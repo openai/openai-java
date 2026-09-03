@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -23,6 +23,21 @@ internal class GroupServiceTest {
         val groupService = client.admin().organization().groups()
 
         val group = groupService.create(GroupCreateParams.builder().name("x").build())
+
+        group.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val groupService = client.admin().organization().groups()
+
+        val group = groupService.retrieve("group_id")
 
         group.validate()
     }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -15,10 +15,15 @@ import com.openai.models.admin.organization.projects.ProjectRetrieveParams
 import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import com.openai.services.blocking.admin.organization.projects.ApiKeyService
 import com.openai.services.blocking.admin.organization.projects.CertificateService
+import com.openai.services.blocking.admin.organization.projects.DataRetentionService
 import com.openai.services.blocking.admin.organization.projects.GroupService
+import com.openai.services.blocking.admin.organization.projects.HostedToolPermissionService
+import com.openai.services.blocking.admin.organization.projects.ModelPermissionService
 import com.openai.services.blocking.admin.organization.projects.RateLimitService
 import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
+import com.openai.services.blocking.admin.organization.projects.SpendAlertService
+import com.openai.services.blocking.admin.organization.projects.SpendLimitService
 import com.openai.services.blocking.admin.organization.projects.UserService
 import java.util.function.Consumer
 
@@ -44,9 +49,19 @@ interface ProjectService {
 
     fun rateLimits(): RateLimitService
 
+    fun modelPermissions(): ModelPermissionService
+
+    fun hostedToolPermissions(): HostedToolPermissionService
+
     fun groups(): GroupService
 
     fun roles(): RoleService
+
+    fun dataRetention(): DataRetentionService
+
+    fun spendLimit(): SpendLimitService
+
+    fun spendAlerts(): SpendAlertService
 
     fun certificates(): CertificateService
 
@@ -184,9 +199,19 @@ interface ProjectService {
 
         fun rateLimits(): RateLimitService.WithRawResponse
 
+        fun modelPermissions(): ModelPermissionService.WithRawResponse
+
+        fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse
+
         fun groups(): GroupService.WithRawResponse
 
         fun roles(): RoleService.WithRawResponse
+
+        fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun spendLimit(): SpendLimitService.WithRawResponse
+
+        fun spendAlerts(): SpendAlertService.WithRawResponse
 
         fun certificates(): CertificateService.WithRawResponse
 

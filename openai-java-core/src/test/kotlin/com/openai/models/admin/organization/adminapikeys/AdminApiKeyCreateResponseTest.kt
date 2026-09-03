@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.adminapikeys
 
@@ -15,6 +15,7 @@ internal class AdminApiKeyCreateResponseTest {
             AdminApiKeyCreateResponse.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
+                .expiresAt(1714063533L)
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")
@@ -33,6 +34,7 @@ internal class AdminApiKeyCreateResponseTest {
 
         assertThat(adminApiKeyCreateResponse.id()).isEqualTo("key_abc")
         assertThat(adminApiKeyCreateResponse.createdAt()).isEqualTo(1711471533L)
+        assertThat(adminApiKeyCreateResponse.expiresAt()).contains(1714063533L)
         assertThat(adminApiKeyCreateResponse.owner())
             .isEqualTo(
                 AdminApiKey.Owner.builder()
@@ -57,6 +59,7 @@ internal class AdminApiKeyCreateResponseTest {
             AdminApiKeyCreateResponse.builder()
                 .id("key_abc")
                 .createdAt(1711471533L)
+                .expiresAt(1714063533L)
                 .owner(
                     AdminApiKey.Owner.builder()
                         .id("sa_456")

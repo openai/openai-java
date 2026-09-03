@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -27,8 +27,14 @@ internal class ResponseToolSearchOutputItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .createdBy("created_by")
@@ -51,8 +57,14 @@ internal class ResponseToolSearchOutputItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
             )
@@ -77,8 +89,14 @@ internal class ResponseToolSearchOutputItemTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .createdBy("created_by")

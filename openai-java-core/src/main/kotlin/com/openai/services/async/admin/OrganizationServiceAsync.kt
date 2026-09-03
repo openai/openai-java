@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin
 
@@ -6,10 +6,13 @@ import com.openai.core.ClientOptions
 import com.openai.services.async.admin.organization.AdminApiKeyServiceAsync
 import com.openai.services.async.admin.organization.AuditLogServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsync
+import com.openai.services.async.admin.organization.DataRetentionServiceAsync
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import com.openai.services.async.admin.organization.InviteServiceAsync
 import com.openai.services.async.admin.organization.ProjectServiceAsync
 import com.openai.services.async.admin.organization.RoleServiceAsync
+import com.openai.services.async.admin.organization.SpendAlertServiceAsync
+import com.openai.services.async.admin.organization.SpendLimitServiceAsync
 import com.openai.services.async.admin.organization.UsageServiceAsync
 import com.openai.services.async.admin.organization.UserServiceAsync
 import java.util.function.Consumer
@@ -42,6 +45,12 @@ interface OrganizationServiceAsync {
     fun groups(): GroupServiceAsync
 
     fun roles(): RoleServiceAsync
+
+    fun dataRetention(): DataRetentionServiceAsync
+
+    fun spendLimit(): SpendLimitServiceAsync
+
+    fun spendAlerts(): SpendAlertServiceAsync
 
     fun certificates(): CertificateServiceAsync
 
@@ -76,6 +85,12 @@ interface OrganizationServiceAsync {
         fun groups(): GroupServiceAsync.WithRawResponse
 
         fun roles(): RoleServiceAsync.WithRawResponse
+
+        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
+
+        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 
         fun certificates(): CertificateServiceAsync.WithRawResponse
 

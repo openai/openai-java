@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -49,7 +49,7 @@ private constructor(
 ) : Params {
 
     /**
-     * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -98,12 +98,48 @@ private constructor(
     fun promptCacheKey(): Optional<String> = body.promptCacheKey()
 
     /**
+     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
+     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
+     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
+     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
+     * details.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheOptions(): Optional<PromptCacheOptions> = body.promptCacheOptions()
+
+    /**
      * How long to retain a prompt cache entry created by this request.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    @Deprecated("deprecated")
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
+
+    /**
+     * Specifies the processing type used for serving the request. - If set to 'auto', then the
+     * request will be processed with the service tier configured in the Project settings. Unless
+     * otherwise configured, the Project will use 'default'. - If set to 'default', then the request
+     * will be processed with the standard pricing and performance for the selected model. - If set
+     * to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request will
+     * be processed with the Flex Processing service tier. - To opt-in to
+     * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the `service_tier=fast`
+     * or `service_tier=priority` parameter for Responses or Chat Completions. The response will
+     * show `service_tier=priority` regardless of if you specify `service_tier=fast` or `priority`
+     * in your request. - When not set, the default behavior is 'auto'. When the `service_tier`
+     * parameter is set, the response body will include the `service_tier` value based on the
+     * processing mode actually used to serve the request. This response value may be different from
+     * the value set in the parameter.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
     /**
      * Returns the raw JSON value of [model].
@@ -142,12 +178,28 @@ private constructor(
     fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
 
     /**
+     * Returns the raw JSON value of [promptCacheOptions].
+     *
+     * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheOptions(): JsonField<PromptCacheOptions> = body._promptCacheOptions()
+
+    /**
      * Returns the raw JSON value of [promptCacheRetention].
      *
      * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
+    @Deprecated("deprecated")
     fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
+
+    /**
+     * Returns the raw JSON value of [serviceTier].
+     *
+     * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _serviceTier(): JsonField<ServiceTier> = body._serviceTier()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -201,9 +253,9 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          */
         fun model(model: Model?) = apply { body.model(model) }
@@ -316,7 +368,40 @@ private constructor(
             body.promptCacheKey(promptCacheKey)
         }
 
+        /**
+         * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+         * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+         * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
+         * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
+         * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
+         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
+         * supported value. See the
+         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * current details.
+         */
+        fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheOptions] with `promptCacheOptions.orElse(null)`.
+         */
+        fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+            promptCacheOptions(promptCacheOptions.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheOptions] with a well-typed
+         * [PromptCacheOptions] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
         /** How long to retain a prompt cache entry created by this request. */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) = apply {
             body.promptCacheRetention(promptCacheRetention)
         }
@@ -325,6 +410,7 @@ private constructor(
          * Alias for calling [Builder.promptCacheRetention] with
          * `promptCacheRetention.orElse(null)`.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
             promptCacheRetention(promptCacheRetention.getOrNull())
 
@@ -335,8 +421,40 @@ private constructor(
          * [PromptCacheRetention] value instead. This method is primarily for setting the field to
          * an undocumented or not yet supported value.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
             body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /**
+         * Specifies the processing type used for serving the request. - If set to 'auto', then the
+         * request will be processed with the service tier configured in the Project settings.
+         * Unless otherwise configured, the Project will use 'default'. - If set to 'default', then
+         * the request will be processed with the standard pricing and performance for the selected
+         * model. - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)',
+         * then the request will be processed with the Flex Processing service tier. - To opt-in to
+         * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         * Completions. The response will show `service_tier=priority` regardless of if you specify
+         * `service_tier=fast` or `priority` in your request. - When not set, the default behavior
+         * is 'auto'. When the `service_tier` parameter is set, the response body will include the
+         * `service_tier` value based on the processing mode actually used to serve the request.
+         * This response value may be different from the value set in the parameter.
+         */
+        fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
+
+        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
+
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+            body.serviceTier(serviceTier)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -490,7 +608,9 @@ private constructor(
         private val instructions: JsonField<String>,
         private val previousResponseId: JsonField<String>,
         private val promptCacheKey: JsonField<String>,
+        private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val promptCacheRetention: JsonField<PromptCacheRetention>,
+        private val serviceTier: JsonField<ServiceTier>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -507,23 +627,31 @@ private constructor(
             @JsonProperty("prompt_cache_key")
             @ExcludeMissing
             promptCacheKey: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_options")
+            @ExcludeMissing
+            promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of(),
             @JsonProperty("prompt_cache_retention")
             @ExcludeMissing
             promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
+            @JsonProperty("service_tier")
+            @ExcludeMissing
+            serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
         ) : this(
             model,
             input,
             instructions,
             previousResponseId,
             promptCacheKey,
+            promptCacheOptions,
             promptCacheRetention,
+            serviceTier,
             mutableMapOf(),
         )
 
         /**
-         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -571,13 +699,51 @@ private constructor(
         fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
         /**
+         * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+         * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+         * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
+         * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
+         * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
+         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
+         * supported value. See the
+         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * current details.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheOptions(): Optional<PromptCacheOptions> =
+            promptCacheOptions.getOptional("prompt_cache_options")
+
+        /**
          * How long to retain a prompt cache entry created by this request.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(): Optional<PromptCacheRetention> =
             promptCacheRetention.getOptional("prompt_cache_retention")
+
+        /**
+         * Specifies the processing type used for serving the request. - If set to 'auto', then the
+         * request will be processed with the service tier configured in the Project settings.
+         * Unless otherwise configured, the Project will use 'default'. - If set to 'default', then
+         * the request will be processed with the standard pricing and performance for the selected
+         * model. - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)',
+         * then the request will be processed with the Flex Processing service tier. - To opt-in to
+         * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         * Completions. The response will show `service_tier=priority` regardless of if you specify
+         * `service_tier=fast` or `priority` in your request. - When not set, the default behavior
+         * is 'auto'. When the `service_tier` parameter is set, the response body will include the
+         * `service_tier` value based on the processing mode actually used to serve the request.
+         * This response value may be different from the value set in the parameter.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
          * Returns the raw JSON value of [model].
@@ -624,14 +790,34 @@ private constructor(
         fun _promptCacheKey(): JsonField<String> = promptCacheKey
 
         /**
+         * Returns the raw JSON value of [promptCacheOptions].
+         *
+         * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_options")
+        @ExcludeMissing
+        fun _promptCacheOptions(): JsonField<PromptCacheOptions> = promptCacheOptions
+
+        /**
          * Returns the raw JSON value of [promptCacheRetention].
          *
          * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an
          * unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("prompt_cache_retention")
         @ExcludeMissing
         fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
+
+        /**
+         * Returns the raw JSON value of [serviceTier].
+         *
+         * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("service_tier")
+        @ExcludeMissing
+        fun _serviceTier(): JsonField<ServiceTier> = serviceTier
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -666,7 +852,9 @@ private constructor(
             private var instructions: JsonField<String> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
+            private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
+            private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -676,12 +864,14 @@ private constructor(
                 instructions = body.instructions
                 previousResponseId = body.previousResponseId
                 promptCacheKey = body.promptCacheKey
+                promptCacheOptions = body.promptCacheOptions
                 promptCacheRetention = body.promptCacheRetention
+                serviceTier = body.serviceTier
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
-             * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -801,7 +991,40 @@ private constructor(
                 this.promptCacheKey = promptCacheKey
             }
 
+            /**
+             * Options for prompt caching. Supported for `gpt-5.6` and later models. By default,
+             * OpenAI automatically chooses one implicit cache breakpoint. You can add explicit
+             * breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write
+             * up to four breakpoints. For cache matching, OpenAI considers up to the latest 80
+             * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
+             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
+             * is currently the only supported value. See the
+             * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+             * current details.
+             */
+            fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) =
+                promptCacheOptions(JsonField.ofNullable(promptCacheOptions))
+
+            /**
+             * Alias for calling [Builder.promptCacheOptions] with
+             * `promptCacheOptions.orElse(null)`.
+             */
+            fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+                promptCacheOptions(promptCacheOptions.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheOptions] with a well-typed
+             * [PromptCacheOptions] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+                this.promptCacheOptions = promptCacheOptions
+            }
+
             /** How long to retain a prompt cache entry created by this request. */
+            @Deprecated("deprecated")
             fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
                 promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
 
@@ -809,6 +1032,7 @@ private constructor(
              * Alias for calling [Builder.promptCacheRetention] with
              * `promptCacheRetention.orElse(null)`.
              */
+            @Deprecated("deprecated")
             fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
                 promptCacheRetention(promptCacheRetention.getOrNull())
 
@@ -819,10 +1043,46 @@ private constructor(
              * [PromptCacheRetention] value instead. This method is primarily for setting the field
              * to an undocumented or not yet supported value.
              */
+            @Deprecated("deprecated")
             fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) =
                 apply {
                     this.promptCacheRetention = promptCacheRetention
                 }
+
+            /**
+             * Specifies the processing type used for serving the request. - If set to 'auto', then
+             * the request will be processed with the service tier configured in the Project
+             * settings. Unless otherwise configured, the Project will use 'default'. - If set to
+             * 'default', then the request will be processed with the standard pricing and
+             * performance for the selected model. - If set to
+             * '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request
+             * will be processed with the Flex Processing service tier. - To opt-in to
+             * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+             * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+             * Completions. The response will show `service_tier=priority` regardless of if you
+             * specify `service_tier=fast` or `priority` in your request. - When not set, the
+             * default behavior is 'auto'. When the `service_tier` parameter is set, the response
+             * body will include the `service_tier` value based on the processing mode actually used
+             * to serve the request. This response value may be different from the value set in the
+             * parameter.
+             */
+            fun serviceTier(serviceTier: ServiceTier?) =
+                serviceTier(JsonField.ofNullable(serviceTier))
+
+            /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+            fun serviceTier(serviceTier: Optional<ServiceTier>) =
+                serviceTier(serviceTier.getOrNull())
+
+            /**
+             * Sets [Builder.serviceTier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+                this.serviceTier = serviceTier
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -862,7 +1122,9 @@ private constructor(
                     instructions,
                     previousResponseId,
                     promptCacheKey,
+                    promptCacheOptions,
                     promptCacheRetention,
+                    serviceTier,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -888,7 +1150,9 @@ private constructor(
             instructions()
             previousResponseId()
             promptCacheKey()
+            promptCacheOptions().ifPresent { it.validate() }
             promptCacheRetention().ifPresent { it.validate() }
+            serviceTier().ifPresent { it.validate() }
             validated = true
         }
 
@@ -913,7 +1177,9 @@ private constructor(
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
-                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0)
+                (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
+                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
+                (serviceTier.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -926,7 +1192,9 @@ private constructor(
                 instructions == other.instructions &&
                 previousResponseId == other.previousResponseId &&
                 promptCacheKey == other.promptCacheKey &&
+                promptCacheOptions == other.promptCacheOptions &&
                 promptCacheRetention == other.promptCacheRetention &&
+                serviceTier == other.serviceTier &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -937,7 +1205,9 @@ private constructor(
                 instructions,
                 previousResponseId,
                 promptCacheKey,
+                promptCacheOptions,
                 promptCacheRetention,
+                serviceTier,
                 additionalProperties,
             )
         }
@@ -945,11 +1215,11 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, additionalProperties=$additionalProperties}"
+            "Body{model=$model, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, serviceTier=$serviceTier, additionalProperties=$additionalProperties}"
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -967,6 +1237,16 @@ private constructor(
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
+
+            @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
+
+            @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
+
+            @JvmField val GPT_5_6_LUNA = of("gpt-5.6-luna")
+
+            @JvmField val GPT_5_5 = of("gpt-5.5")
+
+            @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
 
             @JvmField val GPT_5_4 = of("gpt-5.4")
 
@@ -1146,6 +1426,10 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
+            @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
+
+            @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
+
             @JvmField val GPT_5_CODEX = of("gpt-5-codex")
 
             @JvmField val GPT_5_PRO = of("gpt-5-pro")
@@ -1154,11 +1438,22 @@ private constructor(
 
             @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
 
+            @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+            @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+            @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_5_6_SOL,
+            GPT_5_6_TERRA,
+            GPT_5_6_LUNA,
+            GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -1247,10 +1542,15 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
         }
 
         /**
@@ -1263,6 +1563,11 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_5_6_SOL,
+            GPT_5_6_TERRA,
+            GPT_5_6_LUNA,
+            GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -1351,10 +1656,15 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1368,6 +1678,11 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_5_6_SOL -> Value.GPT_5_6_SOL
+                GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
+                GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
+                GPT_5_5 -> Value.GPT_5_5
+                GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
                 GPT_5_4 -> Value.GPT_5_4
                 GPT_5_4_MINI -> Value.GPT_5_4_MINI
                 GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -1456,10 +1771,15 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Value.GPT_5_CODEX
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
                 else -> Value._UNKNOWN
             }
 
@@ -1474,6 +1794,11 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_5_6_SOL -> Known.GPT_5_6_SOL
+                GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
+                GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
+                GPT_5_5 -> Known.GPT_5_5
+                GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
                 GPT_5_4 -> Known.GPT_5_4
                 GPT_5_4_MINI -> Known.GPT_5_4_MINI
                 GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -1562,10 +1887,15 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Known.GPT_5_CODEX
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 
@@ -1861,7 +2191,502 @@ private constructor(
         }
     }
 
+    /**
+     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
+     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
+     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
+     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
+     * details.
+     */
+    class PromptCacheOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val mode: JsonField<Mode>,
+        private val ttl: JsonField<Ttl>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
+        ) : this(mode, ttl, mutableMapOf())
+
+        /**
+         * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
+         * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
+         * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
+         * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
+         * are no explicit breakpoints, the request does not use prompt caching.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+        /**
+         * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
+         * the request. Defaults to `30m`, which is currently the only supported value. The backend
+         * may retain cache entries for longer.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the raw JSON value of [mode].
+         *
+         * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PromptCacheOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheOptions]. */
+        class Builder internal constructor() {
+
+            private var mode: JsonField<Mode> = JsonMissing.of()
+            private var ttl: JsonField<Ttl> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                mode = promptCacheOptions.mode
+                ttl = promptCacheOptions.ttl
+                additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults
+             * to `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up
+             * to the latest three explicit breakpoints in the request. With `explicit`, OpenAI does
+             * not create an implicit breakpoint and writes up to the latest four explicit
+             * breakpoints. If there are no explicit breakpoints, the request does not use prompt
+             * caching.
+             */
+            fun mode(mode: Mode) = mode(JsonField.of(mode))
+
+            /**
+             * Sets [Builder.mode] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.mode] with a well-typed [Mode] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+            /**
+             * The minimum lifetime applied to every implicit and explicit cache breakpoint written
+             * by the request. Defaults to `30m`, which is currently the only supported value. The
+             * backend may retain cache entries for longer.
+             */
+            fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [Ttl] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PromptCacheOptions =
+                PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            mode().ifPresent { it.validate() }
+            ttl().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (ttl.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
+         * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
+         * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
+         * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
+         * are no explicit breakpoints, the request does not use prompt caching.
+         */
+        class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IMPLICIT = of("implicit")
+
+                @JvmField val EXPLICIT = of("explicit")
+
+                @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+            }
+
+            /** An enum containing [Mode]'s known values. */
+            enum class Known {
+                IMPLICIT,
+                EXPLICIT,
+            }
+
+            /**
+             * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Mode] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IMPLICIT,
+                EXPLICIT,
+                /** An enum member indicating that [Mode] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IMPLICIT -> Value.IMPLICIT
+                    EXPLICIT -> Value.EXPLICIT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IMPLICIT -> Known.IMPLICIT
+                    EXPLICIT -> Known.EXPLICIT
+                    else -> throw OpenAIInvalidDataException("Unknown Mode: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Mode = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Mode && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /**
+         * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
+         * the request. Defaults to `30m`, which is currently the only supported value. The backend
+         * may retain cache entries for longer.
+         */
+        class Ttl @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _30M = of("30m")
+
+                @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
+            }
+
+            /** An enum containing [Ttl]'s known values. */
+            enum class Known {
+                _30M
+            }
+
+            /**
+             * An enum containing [Ttl]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Ttl] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _30M,
+                /** An enum member indicating that [Ttl] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _30M -> Value._30M
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _30M -> Known._30M
+                    else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Ttl = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Ttl && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheOptions &&
+                mode == other.mode &&
+                ttl == other.ttl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+    }
+
     /** How long to retain a prompt cache entry created by this request. */
+    @Deprecated("deprecated")
     class PromptCacheRetention
     @JsonCreator
     private constructor(private val value: JsonField<String>) : Enum {
@@ -1995,6 +2820,176 @@ private constructor(
             }
 
             return other is PromptCacheRetention && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * Specifies the processing type used for serving the request. - If set to 'auto', then the
+     * request will be processed with the service tier configured in the Project settings. Unless
+     * otherwise configured, the Project will use 'default'. - If set to 'default', then the request
+     * will be processed with the standard pricing and performance for the selected model. - If set
+     * to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request will
+     * be processed with the Flex Processing service tier. - To opt-in to
+     * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the `service_tier=fast`
+     * or `service_tier=priority` parameter for Responses or Chat Completions. The response will
+     * show `service_tier=priority` regardless of if you specify `service_tier=fast` or `priority`
+     * in your request. - When not set, the default behavior is 'auto'. When the `service_tier`
+     * parameter is set, the response body will include the `service_tier` value based on the
+     * processing mode actually used to serve the request. This response value may be different from
+     * the value set in the parameter.
+     */
+    class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val AUTO = of("auto")
+
+            @JvmField val DEFAULT = of("default")
+
+            @JvmField val FAST = of("fast")
+
+            @JvmField val FLEX = of("flex")
+
+            @JvmField val PRIORITY = of("priority")
+
+            @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
+        }
+
+        /** An enum containing [ServiceTier]'s known values. */
+        enum class Known {
+            AUTO,
+            DEFAULT,
+            FAST,
+            FLEX,
+            PRIORITY,
+        }
+
+        /**
+         * An enum containing [ServiceTier]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ServiceTier] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            AUTO,
+            DEFAULT,
+            FAST,
+            FLEX,
+            PRIORITY,
+            /**
+             * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                AUTO -> Value.AUTO
+                DEFAULT -> Value.DEFAULT
+                FAST -> Value.FAST
+                FLEX -> Value.FLEX
+                PRIORITY -> Value.PRIORITY
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                AUTO -> Known.AUTO
+                DEFAULT -> Known.DEFAULT
+                FAST -> Known.FAST
+                FLEX -> Known.FLEX
+                PRIORITY -> Known.PRIORITY
+                else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ServiceTier = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ServiceTier && value == other.value
         }
 
         override fun hashCode() = value.hashCode()

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.client
 
@@ -10,6 +10,7 @@ import com.openai.services.async.BetaServiceAsync
 import com.openai.services.async.ChatServiceAsync
 import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.ContainerServiceAsync
+import com.openai.services.async.ContentProvenanceCheckServiceAsync
 import com.openai.services.async.ConversationServiceAsync
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EvalServiceAsync
@@ -86,6 +87,8 @@ interface OpenAIClientAsync {
 
     /** Given a prompt and/or an input image, the model will generate a new image. */
     fun images(): ImageServiceAsync
+
+    fun contentProvenanceChecks(): ContentProvenanceCheckServiceAsync
 
     fun audio(): AudioServiceAsync
 
@@ -176,6 +179,8 @@ interface OpenAIClientAsync {
 
         /** Given a prompt and/or an input image, the model will generate a new image. */
         fun images(): ImageServiceAsync.WithRawResponse
+
+        fun contentProvenanceChecks(): ContentProvenanceCheckServiceAsync.WithRawResponse
 
         fun audio(): AudioServiceAsync.WithRawResponse
 

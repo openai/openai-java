@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations.items
 
@@ -256,9 +256,23 @@ private constructor(
         fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
             addData(ConversationItem.ofToolSearchOutput(toolSearchOutput))
 
+        /**
+         * Alias for calling [addData] with `ConversationItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addData(additionalTools: ConversationItem.AdditionalTools) =
+            addData(ConversationItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [addData] with `ConversationItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) =
             addData(ConversationItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addData] with `ConversationItem.ofProgram(program)`. */
+        fun addData(program: ConversationItem.Program) =
+            addData(ConversationItem.ofProgram(program))
+
+        /** Alias for calling [addData] with `ConversationItem.ofProgramOutput(programOutput)`. */
+        fun addData(programOutput: ConversationItem.ProgramOutput) =
+            addData(ConversationItem.ofProgramOutput(programOutput))
 
         /** Alias for calling [addData] with `ConversationItem.ofCompaction(compaction)`. */
         fun addData(compaction: ResponseCompactionItem) =

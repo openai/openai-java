@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -16,8 +16,8 @@ internal class ResponseFunctionWebSearchTest {
                 .id("id")
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("https://example.com")
@@ -33,8 +33,8 @@ internal class ResponseFunctionWebSearchTest {
             .isEqualTo(
                 ResponseFunctionWebSearch.Action.ofSearch(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("https://example.com")
@@ -55,8 +55,8 @@ internal class ResponseFunctionWebSearchTest {
                 .id("id")
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
                         .addQuery("string")
+                        .query("query")
                         .addSource(
                             ResponseFunctionWebSearch.Action.Search.Source.builder()
                                 .url("https://example.com")

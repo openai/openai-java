@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -29,14 +29,24 @@ import com.openai.services.async.admin.organization.projects.ApiKeyServiceAsync
 import com.openai.services.async.admin.organization.projects.ApiKeyServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsync
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.DataRetentionServiceAsync
+import com.openai.services.async.admin.organization.projects.DataRetentionServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.GroupServiceAsync
 import com.openai.services.async.admin.organization.projects.GroupServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsync
+import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsync
+import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.UserServiceAsync
 import com.openai.services.async.admin.organization.projects.UserServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -62,9 +72,29 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         RateLimitServiceAsyncImpl(clientOptions)
     }
 
+    private val modelPermissions: ModelPermissionServiceAsync by lazy {
+        ModelPermissionServiceAsyncImpl(clientOptions)
+    }
+
+    private val hostedToolPermissions: HostedToolPermissionServiceAsync by lazy {
+        HostedToolPermissionServiceAsyncImpl(clientOptions)
+    }
+
     private val groups: GroupServiceAsync by lazy { GroupServiceAsyncImpl(clientOptions) }
 
     private val roles: RoleServiceAsync by lazy { RoleServiceAsyncImpl(clientOptions) }
+
+    private val dataRetention: DataRetentionServiceAsync by lazy {
+        DataRetentionServiceAsyncImpl(clientOptions)
+    }
+
+    private val spendLimit: SpendLimitServiceAsync by lazy {
+        SpendLimitServiceAsyncImpl(clientOptions)
+    }
+
+    private val spendAlerts: SpendAlertServiceAsync by lazy {
+        SpendAlertServiceAsyncImpl(clientOptions)
+    }
 
     private val certificates: CertificateServiceAsync by lazy {
         CertificateServiceAsyncImpl(clientOptions)
@@ -83,9 +113,19 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     override fun rateLimits(): RateLimitServiceAsync = rateLimits
 
+    override fun modelPermissions(): ModelPermissionServiceAsync = modelPermissions
+
+    override fun hostedToolPermissions(): HostedToolPermissionServiceAsync = hostedToolPermissions
+
     override fun groups(): GroupServiceAsync = groups
 
     override fun roles(): RoleServiceAsync = roles
+
+    override fun dataRetention(): DataRetentionServiceAsync = dataRetention
+
+    override fun spendLimit(): SpendLimitServiceAsync = spendLimit
+
+    override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
 
     override fun certificates(): CertificateServiceAsync = certificates
 
@@ -146,12 +186,33 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             RateLimitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val modelPermissions: ModelPermissionServiceAsync.WithRawResponse by lazy {
+            ModelPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val hostedToolPermissions:
+            HostedToolPermissionServiceAsync.WithRawResponse by lazy {
+            HostedToolPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val groups: GroupServiceAsync.WithRawResponse by lazy {
             GroupServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val roles: RoleServiceAsync.WithRawResponse by lazy {
             RoleServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val dataRetention: DataRetentionServiceAsync.WithRawResponse by lazy {
+            DataRetentionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val spendLimit: SpendLimitServiceAsync.WithRawResponse by lazy {
+            SpendLimitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val spendAlerts: SpendAlertServiceAsync.WithRawResponse by lazy {
+            SpendAlertServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val certificates: CertificateServiceAsync.WithRawResponse by lazy {
@@ -173,9 +234,21 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
         override fun rateLimits(): RateLimitServiceAsync.WithRawResponse = rateLimits
 
+        override fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse =
+            modelPermissions
+
+        override fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse =
+            hostedToolPermissions
+
         override fun groups(): GroupServiceAsync.WithRawResponse = groups
 
         override fun roles(): RoleServiceAsync.WithRawResponse = roles
+
+        override fun dataRetention(): DataRetentionServiceAsync.WithRawResponse = dataRetention
+
+        override fun spendLimit(): SpendLimitServiceAsync.WithRawResponse = spendLimit
+
+        override fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateServiceAsync.WithRawResponse = certificates
 

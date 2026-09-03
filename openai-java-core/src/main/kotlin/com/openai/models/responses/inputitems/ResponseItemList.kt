@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses.inputitems
 
@@ -258,8 +258,19 @@ private constructor(
         fun addData(toolSearchOutput: ResponseToolSearchOutputItem) =
             addData(ResponseItem.ofToolSearchOutput(toolSearchOutput))
 
+        /** Alias for calling [addData] with `ResponseItem.ofAdditionalTools(additionalTools)`. */
+        fun addData(additionalTools: ResponseItem.AdditionalTools) =
+            addData(ResponseItem.ofAdditionalTools(additionalTools))
+
         /** Alias for calling [addData] with `ResponseItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) = addData(ResponseItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addData] with `ResponseItem.ofProgram(program)`. */
+        fun addData(program: ResponseItem.Program) = addData(ResponseItem.ofProgram(program))
+
+        /** Alias for calling [addData] with `ResponseItem.ofProgramOutput(programOutput)`. */
+        fun addData(programOutput: ResponseItem.ProgramOutput) =
+            addData(ResponseItem.ofProgramOutput(programOutput))
 
         /** Alias for calling [addData] with `ResponseItem.ofCompaction(compaction)`. */
         fun addData(compaction: ResponseCompactionItem) =

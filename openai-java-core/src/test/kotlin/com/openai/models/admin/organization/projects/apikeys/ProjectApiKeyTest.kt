@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.apikeys
 
@@ -39,6 +39,7 @@ internal class ProjectApiKeyTest {
                         )
                         .build()
                 )
+                .ownerProjectAccess(ProjectApiKey.OwnerProjectAccess.ACTIVE)
                 .redactedValue("redacted_value")
                 .build()
 
@@ -69,6 +70,8 @@ internal class ProjectApiKeyTest {
                     )
                     .build()
             )
+        assertThat(projectApiKey.ownerProjectAccess())
+            .isEqualTo(ProjectApiKey.OwnerProjectAccess.ACTIVE)
         assertThat(projectApiKey.redactedValue()).isEqualTo("redacted_value")
     }
 
@@ -103,6 +106,7 @@ internal class ProjectApiKeyTest {
                         )
                         .build()
                 )
+                .ownerProjectAccess(ProjectApiKey.OwnerProjectAccess.ACTIVE)
                 .redactedValue("redacted_value")
                 .build()
 

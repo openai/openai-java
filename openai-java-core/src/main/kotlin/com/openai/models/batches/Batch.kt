@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.batches
 
@@ -269,9 +269,9 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * Model ID used to process the batch, like `gpt-5-2025-08-07`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * Model ID used to process the batch, like `gpt-5.6-sol`. OpenAI offers a wide range of models
+     * with different capabilities, performance characteristics, and price points. Refer to the
+     * [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -774,9 +774,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * Model ID used to process the batch, like `gpt-5-2025-08-07`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to process the batch, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          */
         fun model(model: String) = model(JsonField.of(model))

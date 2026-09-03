@@ -37,6 +37,12 @@ class StructuredChatCompletion<T : Any>(
     /** @see ChatCompletion.model */
     fun model(): String = rawChatCompletion.model()
 
+    /** @see ChatCompletion.metadata */
+    fun metadata(): Optional<ChatCompletion.Metadata> = rawChatCompletion.metadata()
+
+    /** @see ChatCompletion.moderation */
+    fun moderation(): Optional<ChatCompletion.Moderation> = rawChatCompletion.moderation()
+
     /** @see ChatCompletion._object_ */
     fun _object_(): JsonValue = rawChatCompletion._object_()
 
@@ -60,6 +66,12 @@ class StructuredChatCompletion<T : Any>(
 
     /** @see ChatCompletion._model */
     fun _model(): JsonField<String> = rawChatCompletion._model()
+
+    /** @see ChatCompletion._metadata */
+    fun _metadata(): JsonField<ChatCompletion.Metadata> = rawChatCompletion._metadata()
+
+    /** @see ChatCompletion._moderation */
+    fun _moderation(): JsonField<ChatCompletion.Moderation> = rawChatCompletion._moderation()
 
     /** @see ChatCompletion._serviceTier */
     fun _serviceTier(): JsonField<ServiceTier> = rawChatCompletion._serviceTier()

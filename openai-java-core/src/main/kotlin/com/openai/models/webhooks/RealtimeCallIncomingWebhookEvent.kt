@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -20,7 +20,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Sent when Realtime API Receives a incoming SIP call. */
+/**
+ * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
+ * session can also emit `live.call.incoming`; the first successful Realtime or Live accept endpoint
+ * selects the runtime surface.
+ */
 class RealtimeCallIncomingWebhookEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -332,7 +336,8 @@ private constructor(
         ) : this(callId, sipHeaders, mutableMapOf())
 
         /**
-         * The unique ID of this call.
+         * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
+         * `session_id` in `live.call.incoming`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -403,7 +408,10 @@ private constructor(
                 additionalProperties = data.additionalProperties.toMutableMap()
             }
 
-            /** The unique ID of this call. */
+            /**
+             * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
+             * `session_id` in `live.call.incoming`.
+             */
             fun callId(callId: String) = callId(JsonField.of(callId))
 
             /**

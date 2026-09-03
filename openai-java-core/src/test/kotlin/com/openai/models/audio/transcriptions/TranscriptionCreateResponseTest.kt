@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -19,6 +19,7 @@ internal class TranscriptionCreateResponseTest {
         val transcription =
             Transcription.builder()
                 .text("text")
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
                 )
@@ -51,6 +52,7 @@ internal class TranscriptionCreateResponseTest {
             TranscriptionCreateResponse.ofTranscription(
                 Transcription.builder()
                     .text("text")
+                    .addLanguage(TranscriptionLanguage.builder().code("code").build())
                     .addLogprob(
                         Transcription.Logprob.builder()
                             .token("token")

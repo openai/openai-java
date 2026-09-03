@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.client
 
@@ -18,6 +18,8 @@ import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.CompletionServiceAsyncImpl
 import com.openai.services.async.ContainerServiceAsync
 import com.openai.services.async.ContainerServiceAsyncImpl
+import com.openai.services.async.ContentProvenanceCheckServiceAsync
+import com.openai.services.async.ContentProvenanceCheckServiceAsyncImpl
 import com.openai.services.async.ConversationServiceAsync
 import com.openai.services.async.ConversationServiceAsyncImpl
 import com.openai.services.async.EmbeddingServiceAsync
@@ -83,6 +85,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     private val images: ImageServiceAsync by lazy {
         ImageServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
+    private val contentProvenanceChecks: ContentProvenanceCheckServiceAsync by lazy {
+        ContentProvenanceCheckServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val audio: AudioServiceAsync by lazy {
@@ -183,6 +189,9 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     /** Given a prompt and/or an input image, the model will generate a new image. */
     override fun images(): ImageServiceAsync = images
 
+    override fun contentProvenanceChecks(): ContentProvenanceCheckServiceAsync =
+        contentProvenanceChecks
+
     override fun audio(): AudioServiceAsync = audio
 
     /** Given text and/or image inputs, classifies if those inputs are potentially harmful. */
@@ -248,6 +257,11 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         private val images: ImageServiceAsync.WithRawResponse by lazy {
             ImageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val contentProvenanceChecks:
+            ContentProvenanceCheckServiceAsync.WithRawResponse by lazy {
+            ContentProvenanceCheckServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val audio: AudioServiceAsync.WithRawResponse by lazy {
@@ -351,6 +365,9 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         /** Given a prompt and/or an input image, the model will generate a new image. */
         override fun images(): ImageServiceAsync.WithRawResponse = images
+
+        override fun contentProvenanceChecks(): ContentProvenanceCheckServiceAsync.WithRawResponse =
+            contentProvenanceChecks
 
         override fun audio(): AudioServiceAsync.WithRawResponse = audio
 

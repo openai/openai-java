@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.completions
 
@@ -22,12 +22,16 @@ internal class CompletionUsageTest {
                         .audioTokens(0L)
                         .reasoningTokens(0L)
                         .rejectedPredictionTokens(0L)
+                        .textTokens(0L)
                         .build()
                 )
                 .promptTokensDetails(
                     CompletionUsage.PromptTokensDetails.builder()
                         .audioTokens(0L)
+                        .cacheWriteTokens(0L)
                         .cachedTokens(0L)
+                        .imageTokens(0L)
+                        .textTokens(0L)
                         .build()
                 )
                 .build()
@@ -42,13 +46,17 @@ internal class CompletionUsageTest {
                     .audioTokens(0L)
                     .reasoningTokens(0L)
                     .rejectedPredictionTokens(0L)
+                    .textTokens(0L)
                     .build()
             )
         assertThat(completionUsage.promptTokensDetails())
             .contains(
                 CompletionUsage.PromptTokensDetails.builder()
                     .audioTokens(0L)
+                    .cacheWriteTokens(0L)
                     .cachedTokens(0L)
+                    .imageTokens(0L)
+                    .textTokens(0L)
                     .build()
             )
     }
@@ -67,12 +75,16 @@ internal class CompletionUsageTest {
                         .audioTokens(0L)
                         .reasoningTokens(0L)
                         .rejectedPredictionTokens(0L)
+                        .textTokens(0L)
                         .build()
                 )
                 .promptTokensDetails(
                     CompletionUsage.PromptTokensDetails.builder()
                         .audioTokens(0L)
+                        .cacheWriteTokens(0L)
                         .cachedTokens(0L)
+                        .imageTokens(0L)
+                        .textTokens(0L)
                         .build()
                 )
                 .build()

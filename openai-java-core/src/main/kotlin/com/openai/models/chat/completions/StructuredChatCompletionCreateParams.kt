@@ -331,6 +331,21 @@ internal constructor(
             paramsBuilder.metadata(metadata)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.moderation */
+        fun moderation(moderation: ChatCompletionCreateParams.Moderation?) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.moderation */
+        fun moderation(moderation: Optional<ChatCompletionCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.moderation */
+        fun moderation(moderation: JsonField<ChatCompletionCreateParams.Moderation>) = apply {
+            paramsBuilder.moderation(moderation)
+        }
+
         /** @see ChatCompletionCreateParams.Builder.modalities */
         fun modalities(modalities: List<ChatCompletionCreateParams.Modality>?) = apply {
             paramsBuilder.modalities(modalities)
@@ -394,9 +409,25 @@ internal constructor(
         }
 
         /** @see ChatCompletionCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: Optional<String>) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheKey */
         fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(promptCacheOptions: ChatCompletionCreateParams.PromptCacheOptions) =
+            apply {
+                paramsBuilder.promptCacheOptions(promptCacheOptions)
+            }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheOptions */
+        fun promptCacheOptions(
+            promptCacheOptions: JsonField<ChatCompletionCreateParams.PromptCacheOptions>
+        ) = apply { paramsBuilder.promptCacheOptions(promptCacheOptions) }
 
         /** @see ChatCompletionCreateParams.Builder.promptCacheRetention */
         fun promptCacheRetention(
@@ -450,6 +481,11 @@ internal constructor(
 
         /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
         fun safetyIdentifier(safetyIdentifier: String) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) = apply {
             paramsBuilder.safetyIdentifier(safetyIdentifier)
         }
 

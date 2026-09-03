@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -49,7 +49,9 @@ private constructor(
 
     /**
      * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4,
-     * mpeg, mpga, m4a, ogg, wav, or webm.
+     * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for the
+     * file to be identified. We recommend an extension-bearing filename and an appropriate content
+     * type.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -57,9 +59,9 @@ private constructor(
     fun file(): InputStream = body.file()
 
     /**
-     * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-     * `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source Whisper
-     * V2 model), and `gpt-4o-transcribe-diarize`.
+     * ID of the model to use. The options are `gpt-transcribe`, `gpt-4o-transcribe`,
+     * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered
+     * by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -92,6 +94,14 @@ private constructor(
     fun include(): Optional<List<TranscriptionInclude>> = body.include()
 
     /**
+     * Words or phrases to guide transcription of the input audio. Supported by `gpt-transcribe`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun keywords(): Optional<List<String>> = body.keywords()
+
+    /**
      * Optional list of speaker names that correspond to the audio samples provided in
      * `known_speaker_references[]`. Each entry should be a short identifier (for example `customer`
      * or `agent`). Up to 4 speakers are supported.
@@ -122,6 +132,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun language(): Optional<String> = body.language()
+
+    /**
+     * Possible languages of the input audio, in
+     * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by
+     * `gpt-transcribe`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun languages(): Optional<List<String>> = body.languages()
 
     /**
      * An optional text to guide the model's style or continue a previous audio segment. The
@@ -199,6 +219,13 @@ private constructor(
     fun _include(): MultipartField<List<TranscriptionInclude>> = body._include()
 
     /**
+     * Returns the raw multipart value of [keywords].
+     *
+     * Unlike [keywords], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _keywords(): MultipartField<List<String>> = body._keywords()
+
+    /**
      * Returns the raw multipart value of [knownSpeakerNames].
      *
      * Unlike [knownSpeakerNames], this method doesn't throw if the multipart field has an
@@ -220,6 +247,13 @@ private constructor(
      * Unlike [language], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _language(): MultipartField<String> = body._language()
+
+    /**
+     * Returns the raw multipart value of [languages].
+     *
+     * Unlike [languages], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _languages(): MultipartField<List<String>> = body._languages()
 
     /**
      * Returns the raw multipart value of [prompt].
@@ -300,14 +334,16 @@ private constructor(
          * - [model]
          * - [chunkingStrategy]
          * - [include]
-         * - [knownSpeakerNames]
+         * - [keywords]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          */
         fun file(file: InputStream) = apply { body.file(file) }
 
@@ -322,20 +358,24 @@ private constructor(
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          */
         fun file(file: ByteArray) = apply { body.file(file) }
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          */
         fun file(path: Path) = apply { body.file(path) }
 
         /**
-         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source
-         * Whisper V2 model), and `gpt-4o-transcribe-diarize`.
+         * ID of the model to use. The options are `gpt-transcribe`, `gpt-4o-transcribe`,
+         * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is
+         * powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
          */
         fun model(model: AudioModel) = apply { body.model(model) }
 
@@ -419,6 +459,28 @@ private constructor(
         fun addInclude(include: TranscriptionInclude) = apply { body.addInclude(include) }
 
         /**
+         * Words or phrases to guide transcription of the input audio. Supported by
+         * `gpt-transcribe`.
+         */
+        fun keywords(keywords: List<String>) = apply { body.keywords(keywords) }
+
+        /**
+         * Sets [Builder.keywords] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.keywords] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun keywords(keywords: MultipartField<List<String>>) = apply { body.keywords(keywords) }
+
+        /**
+         * Adds a single [String] to [keywords].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addKeyword(keyword: String) = apply { body.addKeyword(keyword) }
+
+        /**
          * Optional list of speaker names that correspond to the audio samples provided in
          * `known_speaker_references[]`. Each entry should be a short identifier (for example
          * `customer` or `agent`). Up to 4 speakers are supported.
@@ -492,6 +554,29 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun language(language: MultipartField<String>) = apply { body.language(language) }
+
+        /**
+         * Possible languages of the input audio, in
+         * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by
+         * `gpt-transcribe`.
+         */
+        fun languages(languages: List<String>) = apply { body.languages(languages) }
+
+        /**
+         * Sets [Builder.languages] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.languages] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun languages(languages: MultipartField<List<String>>) = apply { body.languages(languages) }
+
+        /**
+         * Adds a single [String] to [languages].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLanguage(language: String) = apply { body.addLanguage(language) }
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
@@ -725,9 +810,11 @@ private constructor(
                 "model" to _model(),
                 "chunking_strategy" to _chunkingStrategy(),
                 "include" to _include(),
+                "keywords" to _keywords(),
                 "known_speaker_names" to _knownSpeakerNames(),
                 "known_speaker_references" to _knownSpeakerReferences(),
                 "language" to _language(),
+                "languages" to _languages(),
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
                 "temperature" to _temperature(),
@@ -745,9 +832,11 @@ private constructor(
         private val model: MultipartField<AudioModel>,
         private val chunkingStrategy: MultipartField<ChunkingStrategy>,
         private val include: MultipartField<List<TranscriptionInclude>>,
+        private val keywords: MultipartField<List<String>>,
         private val knownSpeakerNames: MultipartField<List<String>>,
         private val knownSpeakerReferences: MultipartField<List<String>>,
         private val language: MultipartField<String>,
+        private val languages: MultipartField<List<String>>,
         private val prompt: MultipartField<String>,
         private val responseFormat: MultipartField<AudioResponseFormat>,
         private val temperature: MultipartField<Double>,
@@ -757,7 +846,9 @@ private constructor(
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -765,9 +856,9 @@ private constructor(
         fun file(): InputStream = file.value.getRequired("file")
 
         /**
-         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source
-         * Whisper V2 model), and `gpt-4o-transcribe-diarize`.
+         * ID of the model to use. The options are `gpt-transcribe`, `gpt-4o-transcribe`,
+         * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is
+         * powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -799,6 +890,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun include(): Optional<List<TranscriptionInclude>> = include.value.getOptional("include")
+
+        /**
+         * Words or phrases to guide transcription of the input audio. Supported by
+         * `gpt-transcribe`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun keywords(): Optional<List<String>> = keywords.value.getOptional("keywords")
 
         /**
          * Optional list of speaker names that correspond to the audio samples provided in
@@ -833,6 +933,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun language(): Optional<String> = language.value.getOptional("language")
+
+        /**
+         * Possible languages of the input audio, in
+         * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by
+         * `gpt-transcribe`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun languages(): Optional<List<String>> = languages.value.getOptional("languages")
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
@@ -917,6 +1027,16 @@ private constructor(
         fun _include(): MultipartField<List<TranscriptionInclude>> = include
 
         /**
+         * Returns the raw multipart value of [keywords].
+         *
+         * Unlike [keywords], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("keywords")
+        @ExcludeMissing
+        fun _keywords(): MultipartField<List<String>> = keywords
+
+        /**
          * Returns the raw multipart value of [knownSpeakerNames].
          *
          * Unlike [knownSpeakerNames], this method doesn't throw if the multipart field has an
@@ -943,6 +1063,16 @@ private constructor(
          * type.
          */
         @JsonProperty("language") @ExcludeMissing fun _language(): MultipartField<String> = language
+
+        /**
+         * Returns the raw multipart value of [languages].
+         *
+         * Unlike [languages], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("languages")
+        @ExcludeMissing
+        fun _languages(): MultipartField<List<String>> = languages
 
         /**
          * Returns the raw multipart value of [prompt].
@@ -1015,9 +1145,11 @@ private constructor(
             private var model: MultipartField<AudioModel>? = null
             private var chunkingStrategy: MultipartField<ChunkingStrategy> = MultipartField.of(null)
             private var include: MultipartField<MutableList<TranscriptionInclude>>? = null
+            private var keywords: MultipartField<MutableList<String>>? = null
             private var knownSpeakerNames: MultipartField<MutableList<String>>? = null
             private var knownSpeakerReferences: MultipartField<MutableList<String>>? = null
             private var language: MultipartField<String> = MultipartField.of(null)
+            private var languages: MultipartField<MutableList<String>>? = null
             private var prompt: MultipartField<String> = MultipartField.of(null)
             private var responseFormat: MultipartField<AudioResponseFormat> =
                 MultipartField.of(null)
@@ -1032,9 +1164,11 @@ private constructor(
                 model = body.model
                 chunkingStrategy = body.chunkingStrategy
                 include = body.include.map { it.toMutableList() }
+                keywords = body.keywords.map { it.toMutableList() }
                 knownSpeakerNames = body.knownSpeakerNames.map { it.toMutableList() }
                 knownSpeakerReferences = body.knownSpeakerReferences.map { it.toMutableList() }
                 language = body.language
+                languages = body.languages.map { it.toMutableList() }
                 prompt = body.prompt
                 responseFormat = body.responseFormat
                 temperature = body.temperature
@@ -1044,7 +1178,9 @@ private constructor(
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(file: InputStream) = file(MultipartField.of(file))
 
@@ -1059,13 +1195,17 @@ private constructor(
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(file: ByteArray) = file(file.inputStream())
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(path: Path) =
                 file(
@@ -1076,7 +1216,7 @@ private constructor(
                 )
 
             /**
-             * ID of the model to use. The options are `gpt-4o-transcribe`,
+             * ID of the model to use. The options are `gpt-transcribe`, `gpt-4o-transcribe`,
              * `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is
              * powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
              */
@@ -1170,6 +1310,35 @@ private constructor(
             }
 
             /**
+             * Words or phrases to guide transcription of the input audio. Supported by
+             * `gpt-transcribe`.
+             */
+            fun keywords(keywords: List<String>) = keywords(MultipartField.of(keywords))
+
+            /**
+             * Sets [Builder.keywords] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.keywords] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun keywords(keywords: MultipartField<List<String>>) = apply {
+                this.keywords = keywords.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [keywords].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addKeyword(keyword: String) = apply {
+                keywords =
+                    (keywords ?: MultipartField.of(mutableListOf())).also {
+                        checkKnown("keywords", it).add(keyword)
+                    }
+            }
+
+            /**
              * Optional list of speaker names that correspond to the audio samples provided in
              * `known_speaker_references[]`. Each entry should be a short identifier (for example
              * `customer` or `agent`). Up to 4 speakers are supported.
@@ -1249,6 +1418,36 @@ private constructor(
              * supported value.
              */
             fun language(language: MultipartField<String>) = apply { this.language = language }
+
+            /**
+             * Possible languages of the input audio, in
+             * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported
+             * by `gpt-transcribe`.
+             */
+            fun languages(languages: List<String>) = languages(MultipartField.of(languages))
+
+            /**
+             * Sets [Builder.languages] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.languages] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun languages(languages: MultipartField<List<String>>) = apply {
+                this.languages = languages.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [languages].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addLanguage(language: String) = apply {
+                languages =
+                    (languages ?: MultipartField.of(mutableListOf())).also {
+                        checkKnown("languages", it).add(language)
+                    }
+            }
 
             /**
              * An optional text to guide the model's style or continue a previous audio segment. The
@@ -1381,9 +1580,11 @@ private constructor(
                     checkRequired("model", model),
                     chunkingStrategy,
                     (include ?: MultipartField.of(null)).map { it.toImmutable() },
+                    (keywords ?: MultipartField.of(null)).map { it.toImmutable() },
                     (knownSpeakerNames ?: MultipartField.of(null)).map { it.toImmutable() },
                     (knownSpeakerReferences ?: MultipartField.of(null)).map { it.toImmutable() },
                     language,
+                    (languages ?: MultipartField.of(null)).map { it.toImmutable() },
                     prompt,
                     responseFormat,
                     temperature,
@@ -1412,9 +1613,11 @@ private constructor(
             model().validate()
             chunkingStrategy().ifPresent { it.validate() }
             include().ifPresent { it.forEach { it.validate() } }
+            keywords()
             knownSpeakerNames()
             knownSpeakerReferences()
             language()
+            languages()
             prompt()
             responseFormat().ifPresent { it.validate() }
             temperature()
@@ -1440,9 +1643,11 @@ private constructor(
                 model == other.model &&
                 chunkingStrategy == other.chunkingStrategy &&
                 include == other.include &&
+                keywords == other.keywords &&
                 knownSpeakerNames == other.knownSpeakerNames &&
                 knownSpeakerReferences == other.knownSpeakerReferences &&
                 language == other.language &&
+                languages == other.languages &&
                 prompt == other.prompt &&
                 responseFormat == other.responseFormat &&
                 temperature == other.temperature &&
@@ -1456,9 +1661,11 @@ private constructor(
                 model,
                 chunkingStrategy,
                 include,
+                keywords,
                 knownSpeakerNames,
                 knownSpeakerReferences,
                 language,
+                languages,
                 prompt,
                 responseFormat,
                 temperature,
@@ -1470,7 +1677,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, knownSpeakerNames=$knownSpeakerNames, knownSpeakerReferences=$knownSpeakerReferences, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities, additionalProperties=$additionalProperties}"
+            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, keywords=$keywords, knownSpeakerNames=$knownSpeakerNames, knownSpeakerReferences=$knownSpeakerReferences, language=$language, languages=$languages, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities, additionalProperties=$additionalProperties}"
     }
 
     /**

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -20,7 +20,7 @@ internal class ModelServiceTest {
                 .build()
         val modelService = client.models()
 
-        val model = modelService.retrieve("gpt-4o-mini")
+        val model = modelService.retrieve("gpt-5.6-sol")
 
         model.validate()
     }

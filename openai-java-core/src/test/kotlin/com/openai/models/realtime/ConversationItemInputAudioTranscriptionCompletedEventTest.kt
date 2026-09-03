@@ -1,9 +1,10 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.audio.transcriptions.TranscriptionLanguage
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -36,6 +37,7 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
                         )
                         .build()
                 )
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
                 )
@@ -71,6 +73,8 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
                             .build()
                     )
             )
+        assertThat(conversationItemInputAudioTranscriptionCompletedEvent.languages().getOrNull())
+            .containsExactly(TranscriptionLanguage.builder().code("code").build())
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.logprobs().getOrNull())
             .containsExactly(
                 LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
@@ -104,6 +108,7 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
                         )
                         .build()
                 )
+                .addLanguage(TranscriptionLanguage.builder().code("code").build())
                 .addLogprob(
                     LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
                 )

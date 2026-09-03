@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -85,10 +85,10 @@ private constructor(
     fun messages(): List<ChatCompletionMessageParam> = body.messages()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a wide
+     * range of models with different capabilities, performance characteristics, and price points.
+     * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -221,6 +221,14 @@ private constructor(
     fun modalities(): Optional<List<Modality>> = body.modalities()
 
     /**
+     * Configuration for running moderation on the request input and generated output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun moderation(): Optional<Moderation> = body.moderation()
+
+    /**
      * How many chat completion choices to generate for each input message. Note that you will be
      * charged based on the number of generated tokens across all of the choices. Keep `n` as `1` to
      * minimize costs.
@@ -269,27 +277,49 @@ private constructor(
     fun promptCacheKey(): Optional<String> = body.promptCacheKey()
 
     /**
-     * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
-     * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
+     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
+     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
+     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
+     * details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    fun promptCacheOptions(): Optional<PromptCacheOptions> = body.promptCacheOptions()
+
+    /**
+     * Deprecated. Use `prompt_cache_options.ttl` instead.
+     *
+     * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
+     * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
+     * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
+     * `gpt-5.5-pro`, and future models, only `24h` is supported.
+     *
+     * For older models that support both `in_memory` and `24h`, the default depends on your
+     * organization's data retention policy:
+     * - Organizations without ZDR enabled default to `24h`.
+     * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not
+     *   specified.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    @Deprecated("deprecated")
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
 
     /**
-     * Constrains effort on reasoning for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing reasoning effort
-     * can result in faster responses and fewer tokens used on reasoning in a response.
-     * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-     *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for
-     *   all reasoning values in gpt-5.1.
-     * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-     *   `none`.
-     * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-     * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+     * Constrains effort on reasoning for reasoning models. Currently supported values are `none`,
+     * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
+     * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
+     * models support every value. See the
+     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -341,9 +371,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-     *   processed with the corresponding service tier.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     *   request will be processed with the Flex Processing service tier.
+     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
+     *   The response will show `service_tier=priority` regardless of if you specify
+     *   `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -458,7 +491,7 @@ private constructor(
     /**
      * Constrains the verbosity of the model's response. Lower values will result in more concise
      * responses, while higher values will result in more verbose responses. Currently supported
-     * values are `low`, `medium`, and `high`.
+     * values are `low`, `medium`, and `high`. The default is `medium`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -561,6 +594,13 @@ private constructor(
     fun _modalities(): JsonField<List<Modality>> = body._modalities()
 
     /**
+     * Returns the raw JSON value of [moderation].
+     *
+     * Unlike [moderation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _moderation(): JsonField<Moderation> = body._moderation()
+
+    /**
      * Returns the raw JSON value of [n].
      *
      * Unlike [n], this method doesn't throw if the JSON field has an unexpected type.
@@ -597,11 +637,20 @@ private constructor(
     fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
 
     /**
+     * Returns the raw JSON value of [promptCacheOptions].
+     *
+     * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheOptions(): JsonField<PromptCacheOptions> = body._promptCacheOptions()
+
+    /**
      * Returns the raw JSON value of [promptCacheRetention].
      *
      * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
+    @Deprecated("deprecated")
     fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
 
     /**
@@ -944,10 +993,10 @@ private constructor(
         }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a wide
+         * range of models with different capabilities, performance characteristics, and price
+         * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse and
+         * compare available models.
          */
         fun model(model: ChatModel) = apply { body.model(model) }
 
@@ -1256,6 +1305,21 @@ private constructor(
          */
         fun addModality(modality: Modality) = apply { body.addModality(modality) }
 
+        /** Configuration for running moderation on the request input and generated output. */
+        fun moderation(moderation: Moderation?) = apply { body.moderation(moderation) }
+
+        /** Alias for calling [Builder.moderation] with `moderation.orElse(null)`. */
+        fun moderation(moderation: Optional<Moderation>) = moderation(moderation.getOrNull())
+
+        /**
+         * Sets [Builder.moderation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.moderation] with a well-typed [Moderation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun moderation(moderation: JsonField<Moderation>) = apply { body.moderation(moderation) }
+
         /**
          * How many chat completion choices to generate for each input message. Note that you will
          * be charged based on the number of generated tokens across all of the choices. Keep `n` as
@@ -1359,7 +1423,11 @@ private constructor(
          * Replaces the `user` field.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
          */
-        fun promptCacheKey(promptCacheKey: String) = apply { body.promptCacheKey(promptCacheKey) }
+        fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
 
         /**
          * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -1373,10 +1441,48 @@ private constructor(
         }
 
         /**
+         * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+         * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+         * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
+         * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
+         * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
+         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
+         * supported value. See the
+         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * current details.
+         */
+        fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
+         * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheOptions] with a well-typed
+         * [PromptCacheOptions] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
+         * Deprecated. Use `prompt_cache_options.ttl` instead.
+         *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
          * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
+         * expresses a minimum cache lifetime. The two fields are independent and do not interact.
+         * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+         *
+         * For older models that support both `in_memory` and `24h`, the default depends on your
+         * organization's data retention policy:
+         * - Organizations without ZDR enabled default to `24h`.
+         * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is
+         *   not specified.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) = apply {
             body.promptCacheRetention(promptCacheRetention)
         }
@@ -1385,6 +1491,7 @@ private constructor(
          * Alias for calling [Builder.promptCacheRetention] with
          * `promptCacheRetention.orElse(null)`.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
             promptCacheRetention(promptCacheRetention.getOrNull())
 
@@ -1395,23 +1502,18 @@ private constructor(
          * [PromptCacheRetention] value instead. This method is primarily for setting the field to
          * an undocumented or not yet supported value.
          */
+        @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
             body.promptCacheRetention(promptCacheRetention)
         }
 
         /**
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing
-         * reasoning effort can result in faster responses and fewer tokens used on reasoning in a
-         * response.
-         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
-         *   for all reasoning values in gpt-5.1.
-         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-         *   `none`.
-         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+         * Constrains effort on reasoning for reasoning models. Currently supported values are
+         * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response. Not all
+         * reasoning models support every value. See the
+         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+         * support.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -1490,9 +1592,13 @@ private constructor(
          * address, in order to avoid sending us any identifying information.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
          */
-        fun safetyIdentifier(safetyIdentifier: String) = apply {
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
             body.safetyIdentifier(safetyIdentifier)
         }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
 
         /**
          * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -1562,9 +1668,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-         *   processed with the corresponding service tier.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+         *   request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         *   Completions. The response will show `service_tier=priority` regardless of if you
+         *   specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -1877,7 +1986,7 @@ private constructor(
         /**
          * Constrains the verbosity of the model's response. Lower values will result in more
          * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
+         * supported values are `low`, `medium`, and `high`. The default is `medium`.
          */
         fun verbosity(verbosity: Verbosity?) = apply { body.verbosity(verbosity) }
 
@@ -2072,11 +2181,13 @@ private constructor(
         private val maxTokens: JsonField<Long>,
         private val metadata: JsonField<Metadata>,
         private val modalities: JsonField<List<Modality>>,
+        private val moderation: JsonField<Moderation>,
         private val n: JsonField<Long>,
         private val parallelToolCalls: JsonField<Boolean>,
         private val prediction: JsonField<ChatCompletionPredictionContent>,
         private val presencePenalty: JsonField<Double>,
         private val promptCacheKey: JsonField<String>,
+        private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val promptCacheRetention: JsonField<PromptCacheRetention>,
         private val reasoningEffort: JsonField<ReasoningEffort>,
         private val responseFormat: JsonField<ResponseFormat>,
@@ -2133,6 +2244,9 @@ private constructor(
             @JsonProperty("modalities")
             @ExcludeMissing
             modalities: JsonField<List<Modality>> = JsonMissing.of(),
+            @JsonProperty("moderation")
+            @ExcludeMissing
+            moderation: JsonField<Moderation> = JsonMissing.of(),
             @JsonProperty("n") @ExcludeMissing n: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("parallel_tool_calls")
             @ExcludeMissing
@@ -2146,6 +2260,9 @@ private constructor(
             @JsonProperty("prompt_cache_key")
             @ExcludeMissing
             promptCacheKey: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_options")
+            @ExcludeMissing
+            promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of(),
             @JsonProperty("prompt_cache_retention")
             @ExcludeMissing
             promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
@@ -2200,11 +2317,13 @@ private constructor(
             maxTokens,
             metadata,
             modalities,
+            moderation,
             n,
             parallelToolCalls,
             prediction,
             presencePenalty,
             promptCacheKey,
+            promptCacheOptions,
             promptCacheRetention,
             reasoningEffort,
             responseFormat,
@@ -2239,10 +2358,10 @@ private constructor(
         fun messages(): List<ChatCompletionMessageParam> = messages.getRequired("messages")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a wide
+         * range of models with different capabilities, performance characteristics, and price
+         * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse and
+         * compare available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -2379,6 +2498,14 @@ private constructor(
         fun modalities(): Optional<List<Modality>> = modalities.getOptional("modalities")
 
         /**
+         * Configuration for running moderation on the request input and generated output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
+
+        /**
          * How many chat completion choices to generate for each input message. Note that you will
          * be charged based on the number of generated tokens across all of the choices. Keep `n` as
          * `1` to minimize costs.
@@ -2429,29 +2556,52 @@ private constructor(
         fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
         /**
-         * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
-         * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+         * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+         * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
+         * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
+         * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
+         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
+         * supported value. See the
+         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * current details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        fun promptCacheOptions(): Optional<PromptCacheOptions> =
+            promptCacheOptions.getOptional("prompt_cache_options")
+
+        /**
+         * Deprecated. Use `prompt_cache_options.ttl` instead.
+         *
+         * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+         * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
+         * expresses a minimum cache lifetime. The two fields are independent and do not interact.
+         * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+         *
+         * For older models that support both `in_memory` and `24h`, the default depends on your
+         * organization's data retention policy:
+         * - Organizations without ZDR enabled default to `24h`.
+         * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is
+         *   not specified.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        @Deprecated("deprecated")
         fun promptCacheRetention(): Optional<PromptCacheRetention> =
             promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing
-         * reasoning effort can result in faster responses and fewer tokens used on reasoning in a
-         * response.
-         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
-         *   for all reasoning values in gpt-5.1.
-         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-         *   `none`.
-         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+         * Constrains effort on reasoning for reasoning models. Currently supported values are
+         * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response. Not all
+         * reasoning models support every value. See the
+         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+         * support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2505,9 +2655,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-         *   processed with the corresponding service tier.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+         *   request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+         *   Completions. The response will show `service_tier=priority` regardless of if you
+         *   specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -2625,7 +2778,7 @@ private constructor(
         /**
          * Constrains the verbosity of the model's response. Lower values will result in more
          * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
+         * supported values are `low`, `medium`, and `high`. The default is `medium`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2752,6 +2905,15 @@ private constructor(
         fun _modalities(): JsonField<List<Modality>> = modalities
 
         /**
+         * Returns the raw JSON value of [moderation].
+         *
+         * Unlike [moderation], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("moderation")
+        @ExcludeMissing
+        fun _moderation(): JsonField<Moderation> = moderation
+
+        /**
          * Returns the raw JSON value of [n].
          *
          * Unlike [n], this method doesn't throw if the JSON field has an unexpected type.
@@ -2798,11 +2960,22 @@ private constructor(
         fun _promptCacheKey(): JsonField<String> = promptCacheKey
 
         /**
+         * Returns the raw JSON value of [promptCacheOptions].
+         *
+         * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_options")
+        @ExcludeMissing
+        fun _promptCacheOptions(): JsonField<PromptCacheOptions> = promptCacheOptions
+
+        /**
          * Returns the raw JSON value of [promptCacheRetention].
          *
          * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an
          * unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("prompt_cache_retention")
         @ExcludeMissing
         fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
@@ -2993,11 +3166,13 @@ private constructor(
             private var maxTokens: JsonField<Long> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var modalities: JsonField<MutableList<Modality>>? = null
+            private var moderation: JsonField<Moderation> = JsonMissing.of()
             private var n: JsonField<Long> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
             private var prediction: JsonField<ChatCompletionPredictionContent> = JsonMissing.of()
             private var presencePenalty: JsonField<Double> = JsonMissing.of()
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
+            private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
             private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
@@ -3031,11 +3206,13 @@ private constructor(
                 maxTokens = body.maxTokens
                 metadata = body.metadata
                 modalities = body.modalities.map { it.toMutableList() }
+                moderation = body.moderation
                 n = body.n
                 parallelToolCalls = body.parallelToolCalls
                 prediction = body.prediction
                 presencePenalty = body.presencePenalty
                 promptCacheKey = body.promptCacheKey
+                promptCacheOptions = body.promptCacheOptions
                 promptCacheRetention = body.promptCacheRetention
                 reasoningEffort = body.reasoningEffort
                 responseFormat = body.responseFormat
@@ -3262,10 +3439,10 @@ private constructor(
                 addMessage(ChatCompletionMessageParam.ofFunction(function))
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
-             * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * Model ID used to generate the response, like `gpt-5.6-sol` or `o3`. OpenAI offers a
+             * wide range of models with different capabilities, performance characteristics, and
+             * price points. Refer to the [model guide](https://platform.openai.com/docs/models) to
+             * browse and compare available models.
              */
             fun model(model: ChatModel) = model(JsonField.of(model))
 
@@ -3593,6 +3770,23 @@ private constructor(
                     }
             }
 
+            /** Configuration for running moderation on the request input and generated output. */
+            fun moderation(moderation: Moderation?) = moderation(JsonField.ofNullable(moderation))
+
+            /** Alias for calling [Builder.moderation] with `moderation.orElse(null)`. */
+            fun moderation(moderation: Optional<Moderation>) = moderation(moderation.getOrNull())
+
+            /**
+             * Sets [Builder.moderation] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.moderation] with a well-typed [Moderation] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun moderation(moderation: JsonField<Moderation>) = apply {
+                this.moderation = moderation
+            }
+
             /**
              * How many chat completion choices to generate for each input message. Note that you
              * will be charged based on the number of generated tokens across all of the choices.
@@ -3696,8 +3890,12 @@ private constructor(
              * rates. Replaces the `user` field.
              * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
              */
-            fun promptCacheKey(promptCacheKey: String) =
-                promptCacheKey(JsonField.of(promptCacheKey))
+            fun promptCacheKey(promptCacheKey: String?) =
+                promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+            /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+            fun promptCacheKey(promptCacheKey: Optional<String>) =
+                promptCacheKey(promptCacheKey.getOrNull())
 
             /**
              * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
@@ -3711,10 +3909,47 @@ private constructor(
             }
 
             /**
+             * Options for prompt caching. Supported for `gpt-5.6` and later models. By default,
+             * OpenAI automatically chooses one implicit cache breakpoint. You can add explicit
+             * breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write
+             * up to four breakpoints. For cache matching, OpenAI considers up to the latest 80
+             * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
+             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
+             * is currently the only supported value. See the
+             * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+             * current details.
+             */
+            fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) =
+                promptCacheOptions(JsonField.of(promptCacheOptions))
+
+            /**
+             * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheOptions] with a well-typed
+             * [PromptCacheOptions] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+                this.promptCacheOptions = promptCacheOptions
+            }
+
+            /**
+             * Deprecated. Use `prompt_cache_options.ttl` instead.
+             *
              * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
              * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
              * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+             * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
+             * expresses a minimum cache lifetime. The two fields are independent and do not
+             * interact. For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+             *
+             * For older models that support both `in_memory` and `24h`, the default depends on your
+             * organization's data retention policy:
+             * - Organizations without ZDR enabled default to `24h`.
+             * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention`
+             *   is not specified.
              */
+            @Deprecated("deprecated")
             fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
                 promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
 
@@ -3722,6 +3957,7 @@ private constructor(
              * Alias for calling [Builder.promptCacheRetention] with
              * `promptCacheRetention.orElse(null)`.
              */
+            @Deprecated("deprecated")
             fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
                 promptCacheRetention(promptCacheRetention.getOrNull())
 
@@ -3732,24 +3968,19 @@ private constructor(
              * [PromptCacheRetention] value instead. This method is primarily for setting the field
              * to an undocumented or not yet supported value.
              */
+            @Deprecated("deprecated")
             fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) =
                 apply {
                     this.promptCacheRetention = promptCacheRetention
                 }
 
             /**
-             * Constrains effort on reasoning for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`.
-             * Reducing reasoning effort can result in faster responses and fewer tokens used on
-             * reasoning in a response.
-             * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported
-             *   reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls
-             *   are supported for all reasoning values in gpt-5.1.
-             * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
-             *   support `none`.
-             * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-             * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+             * Constrains effort on reasoning for reasoning models. Currently supported values are
+             * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
+             * effort can result in faster responses and fewer tokens used on reasoning in a
+             * response. Not all reasoning models support every value. See the
+             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -3830,8 +4061,14 @@ private constructor(
              * information.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
              */
-            fun safetyIdentifier(safetyIdentifier: String) =
-                safetyIdentifier(JsonField.of(safetyIdentifier))
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
 
             /**
              * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
@@ -3878,9 +4115,12 @@ private constructor(
              *   use 'default'.
              * - If set to 'default', then the request will be processed with the standard pricing
              *   and performance for the selected model.
-             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-             *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-             *   processed with the corresponding service tier.
+             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then
+             *   the request will be processed with the Flex Processing service tier.
+             * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include
+             *   the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+             *   Completions. The response will show `service_tier=priority` regardless of if you
+             *   specify `service_tier=fast` or `priority` in your request.
              * - When not set, the default behavior is 'auto'.
              *
              *   When the `service_tier` parameter is set, the response body will include the
@@ -4195,7 +4435,7 @@ private constructor(
             /**
              * Constrains the verbosity of the model's response. Lower values will result in more
              * concise responses, while higher values will result in more verbose responses.
-             * Currently supported values are `low`, `medium`, and `high`.
+             * Currently supported values are `low`, `medium`, and `high`. The default is `medium`.
              */
             fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
 
@@ -4276,11 +4516,13 @@ private constructor(
                     maxTokens,
                     metadata,
                     (modalities ?: JsonMissing.of()).map { it.toImmutable() },
+                    moderation,
                     n,
                     parallelToolCalls,
                     prediction,
                     presencePenalty,
                     promptCacheKey,
+                    promptCacheOptions,
                     promptCacheRetention,
                     reasoningEffort,
                     responseFormat,
@@ -4330,11 +4572,13 @@ private constructor(
             maxTokens()
             metadata().ifPresent { it.validate() }
             modalities().ifPresent { it.forEach { it.validate() } }
+            moderation().ifPresent { it.validate() }
             n()
             parallelToolCalls()
             prediction().ifPresent { it.validate() }
             presencePenalty()
             promptCacheKey()
+            promptCacheOptions().ifPresent { it.validate() }
             promptCacheRetention().ifPresent { it.validate() }
             reasoningEffort().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
@@ -4383,11 +4627,13 @@ private constructor(
                 (if (maxTokens.asKnown().isPresent) 1 else 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (modalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (moderation.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (n.asKnown().isPresent) 1 else 0) +
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
                 (prediction.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (presencePenalty.asKnown().isPresent) 1 else 0) +
                 (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
+                (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
                 (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
                 (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
@@ -4424,11 +4670,13 @@ private constructor(
                 maxTokens == other.maxTokens &&
                 metadata == other.metadata &&
                 modalities == other.modalities &&
+                moderation == other.moderation &&
                 n == other.n &&
                 parallelToolCalls == other.parallelToolCalls &&
                 prediction == other.prediction &&
                 presencePenalty == other.presencePenalty &&
                 promptCacheKey == other.promptCacheKey &&
+                promptCacheOptions == other.promptCacheOptions &&
                 promptCacheRetention == other.promptCacheRetention &&
                 reasoningEffort == other.reasoningEffort &&
                 responseFormat == other.responseFormat &&
@@ -4463,11 +4711,13 @@ private constructor(
                 maxTokens,
                 metadata,
                 modalities,
+                moderation,
                 n,
                 parallelToolCalls,
                 prediction,
                 presencePenalty,
                 promptCacheKey,
+                promptCacheOptions,
                 promptCacheRetention,
                 reasoningEffort,
                 responseFormat,
@@ -4492,7 +4742,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, moderation=$moderation, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -5554,11 +5804,1551 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** Configuration for running moderation on the request input and generated output. */
+    class Moderation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val model: JsonField<String>,
+        private val policy: JsonField<Policy>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("policy") @ExcludeMissing policy: JsonField<Policy> = JsonMissing.of(),
+        ) : this(model, policy, mutableMapOf())
+
+        /**
+         * The moderation model to use for moderated completions, e.g. 'omni-moderation-latest'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun model(): String = model.getRequired("model")
+
+        /**
+         * The policy to apply to moderated response input and output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun policy(): Optional<Policy> = policy.getOptional("policy")
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+        /**
+         * Returns the raw JSON value of [policy].
+         *
+         * Unlike [policy], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("policy") @ExcludeMissing fun _policy(): JsonField<Policy> = policy
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Moderation].
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Moderation]. */
+        class Builder internal constructor() {
+
+            private var model: JsonField<String>? = null
+            private var policy: JsonField<Policy> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(moderation: Moderation) = apply {
+                model = moderation.model
+                policy = moderation.policy
+                additionalProperties = moderation.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The moderation model to use for moderated completions, e.g. 'omni-moderation-latest'.
+             */
+            fun model(model: String) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<String>) = apply { this.model = model }
+
+            /** The policy to apply to moderated response input and output. */
+            fun policy(policy: Policy?) = policy(JsonField.ofNullable(policy))
+
+            /** Alias for calling [Builder.policy] with `policy.orElse(null)`. */
+            fun policy(policy: Optional<Policy>) = policy(policy.getOrNull())
+
+            /**
+             * Sets [Builder.policy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.policy] with a well-typed [Policy] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun policy(policy: JsonField<Policy>) = apply { this.policy = policy }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Moderation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Moderation =
+                Moderation(
+                    checkRequired("model", model),
+                    policy,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Moderation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            model()
+            policy().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (model.asKnown().isPresent) 1 else 0) +
+                (policy.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The policy to apply to moderated response input and output. */
+        class Policy
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val input: JsonField<Input>,
+            private val output: JsonField<Output>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
+                @JsonProperty("output") @ExcludeMissing output: JsonField<Output> = JsonMissing.of(),
+            ) : this(input, output, mutableMapOf())
+
+            /**
+             * The moderation policy for the response input.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun input(): Optional<Input> = input.getOptional("input")
+
+            /**
+             * The moderation policy for the response output.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun output(): Optional<Output> = output.getOptional("output")
+
+            /**
+             * Returns the raw JSON value of [input].
+             *
+             * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
+
+            /**
+             * Returns the raw JSON value of [output].
+             *
+             * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<Output> = output
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Policy]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Policy]. */
+            class Builder internal constructor() {
+
+                private var input: JsonField<Input> = JsonMissing.of()
+                private var output: JsonField<Output> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(policy: Policy) = apply {
+                    input = policy.input
+                    output = policy.output
+                    additionalProperties = policy.additionalProperties.toMutableMap()
+                }
+
+                /** The moderation policy for the response input. */
+                fun input(input: Input?) = input(JsonField.ofNullable(input))
+
+                /** Alias for calling [Builder.input] with `input.orElse(null)`. */
+                fun input(input: Optional<Input>) = input(input.getOrNull())
+
+                /**
+                 * Sets [Builder.input] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.input] with a well-typed [Input] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun input(input: JsonField<Input>) = apply { this.input = input }
+
+                /** The moderation policy for the response output. */
+                fun output(output: Output?) = output(JsonField.ofNullable(output))
+
+                /** Alias for calling [Builder.output] with `output.orElse(null)`. */
+                fun output(output: Optional<Output>) = output(output.getOrNull())
+
+                /**
+                 * Sets [Builder.output] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.output] with a well-typed [Output] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun output(output: JsonField<Output>) = apply { this.output = output }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Policy].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Policy = Policy(input, output, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Policy = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                input().ifPresent { it.validate() }
+                output().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (input.asKnown().getOrNull()?.validity() ?: 0) +
+                    (output.asKnown().getOrNull()?.validity() ?: 0)
+
+            /** The moderation policy for the response input. */
+            class Input
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val mode: JsonField<Mode>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of()
+                ) : this(mode, mutableMapOf())
+
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun mode(): Mode = mode.getRequired("mode")
+
+                /**
+                 * Returns the raw JSON value of [mode].
+                 *
+                 * Unlike [mode], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Input].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .mode()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Input]. */
+                class Builder internal constructor() {
+
+                    private var mode: JsonField<Mode>? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(input: Input) = apply {
+                        mode = input.mode
+                        additionalProperties = input.additionalProperties.toMutableMap()
+                    }
+
+                    fun mode(mode: Mode) = mode(JsonField.of(mode))
+
+                    /**
+                     * Sets [Builder.mode] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.mode] with a well-typed [Mode] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Input].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .mode()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Input =
+                        Input(checkRequired("mode", mode), additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Input = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    mode().validate()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int = (mode.asKnown().getOrNull()?.validity() ?: 0)
+
+                class Mode @JsonCreator private constructor(private val value: JsonField<String>) :
+                    Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val SCORE = of("score")
+
+                        @JvmField val BLOCK = of("block")
+
+                        @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+                    }
+
+                    /** An enum containing [Mode]'s known values. */
+                    enum class Known {
+                        SCORE,
+                        BLOCK,
+                    }
+
+                    /**
+                     * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+                     *
+                     * An instance of [Mode] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        SCORE,
+                        BLOCK,
+                        /**
+                         * An enum member indicating that [Mode] was instantiated with an unknown
+                         * value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            SCORE -> Value.SCORE
+                            BLOCK -> Value.BLOCK
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            SCORE -> Known.SCORE
+                            BLOCK -> Known.BLOCK
+                            else -> throw OpenAIInvalidDataException("Unknown Mode: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): Mode = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Mode && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Input &&
+                        mode == other.mode &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(mode, additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Input{mode=$mode, additionalProperties=$additionalProperties}"
+            }
+
+            /** The moderation policy for the response output. */
+            class Output
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val mode: JsonField<Mode>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of()
+                ) : this(mode, mutableMapOf())
+
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun mode(): Mode = mode.getRequired("mode")
+
+                /**
+                 * Returns the raw JSON value of [mode].
+                 *
+                 * Unlike [mode], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Output].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .mode()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Output]. */
+                class Builder internal constructor() {
+
+                    private var mode: JsonField<Mode>? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(output: Output) = apply {
+                        mode = output.mode
+                        additionalProperties = output.additionalProperties.toMutableMap()
+                    }
+
+                    fun mode(mode: Mode) = mode(JsonField.of(mode))
+
+                    /**
+                     * Sets [Builder.mode] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.mode] with a well-typed [Mode] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Output].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .mode()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Output =
+                        Output(checkRequired("mode", mode), additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Output = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    mode().validate()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int = (mode.asKnown().getOrNull()?.validity() ?: 0)
+
+                class Mode @JsonCreator private constructor(private val value: JsonField<String>) :
+                    Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val SCORE = of("score")
+
+                        @JvmField val BLOCK = of("block")
+
+                        @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+                    }
+
+                    /** An enum containing [Mode]'s known values. */
+                    enum class Known {
+                        SCORE,
+                        BLOCK,
+                    }
+
+                    /**
+                     * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+                     *
+                     * An instance of [Mode] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        SCORE,
+                        BLOCK,
+                        /**
+                         * An enum member indicating that [Mode] was instantiated with an unknown
+                         * value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            SCORE -> Value.SCORE
+                            BLOCK -> Value.BLOCK
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            SCORE -> Known.SCORE
+                            BLOCK -> Known.BLOCK
+                            else -> throw OpenAIInvalidDataException("Unknown Mode: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): Mode = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Mode && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Output &&
+                        mode == other.mode &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(mode, additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Output{mode=$mode, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Policy &&
+                    input == other.input &&
+                    output == other.output &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(input, output, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Policy{input=$input, output=$output, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Moderation &&
+                model == other.model &&
+                policy == other.policy &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(model, policy, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Moderation{model=$model, policy=$policy, additionalProperties=$additionalProperties}"
+    }
+
     /**
+     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
+     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
+     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
+     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
+     * details.
+     */
+    class PromptCacheOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val mode: JsonField<Mode>,
+        private val ttl: JsonField<Ttl>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
+        ) : this(mode, ttl, mutableMapOf())
+
+        /**
+         * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
+         * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
+         * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
+         * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
+         * are no explicit breakpoints, the request does not use prompt caching.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+        /**
+         * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
+         * the request. Defaults to `30m`, which is currently the only supported value. The backend
+         * may retain cache entries for longer.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the raw JSON value of [mode].
+         *
+         * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PromptCacheOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheOptions]. */
+        class Builder internal constructor() {
+
+            private var mode: JsonField<Mode> = JsonMissing.of()
+            private var ttl: JsonField<Ttl> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                mode = promptCacheOptions.mode
+                ttl = promptCacheOptions.ttl
+                additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults
+             * to `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up
+             * to the latest three explicit breakpoints in the request. With `explicit`, OpenAI does
+             * not create an implicit breakpoint and writes up to the latest four explicit
+             * breakpoints. If there are no explicit breakpoints, the request does not use prompt
+             * caching.
+             */
+            fun mode(mode: Mode) = mode(JsonField.of(mode))
+
+            /**
+             * Sets [Builder.mode] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.mode] with a well-typed [Mode] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+            /**
+             * The minimum lifetime applied to every implicit and explicit cache breakpoint written
+             * by the request. Defaults to `30m`, which is currently the only supported value. The
+             * backend may retain cache entries for longer.
+             */
+            fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [Ttl] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PromptCacheOptions =
+                PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            mode().ifPresent { it.validate() }
+            ttl().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (ttl.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
+         * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
+         * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
+         * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
+         * are no explicit breakpoints, the request does not use prompt caching.
+         */
+        class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IMPLICIT = of("implicit")
+
+                @JvmField val EXPLICIT = of("explicit")
+
+                @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+            }
+
+            /** An enum containing [Mode]'s known values. */
+            enum class Known {
+                IMPLICIT,
+                EXPLICIT,
+            }
+
+            /**
+             * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Mode] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IMPLICIT,
+                EXPLICIT,
+                /** An enum member indicating that [Mode] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IMPLICIT -> Value.IMPLICIT
+                    EXPLICIT -> Value.EXPLICIT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IMPLICIT -> Known.IMPLICIT
+                    EXPLICIT -> Known.EXPLICIT
+                    else -> throw OpenAIInvalidDataException("Unknown Mode: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Mode = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Mode && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /**
+         * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
+         * the request. Defaults to `30m`, which is currently the only supported value. The backend
+         * may retain cache entries for longer.
+         */
+        class Ttl @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _30M = of("30m")
+
+                @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
+            }
+
+            /** An enum containing [Ttl]'s known values. */
+            enum class Known {
+                _30M
+            }
+
+            /**
+             * An enum containing [Ttl]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Ttl] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _30M,
+                /** An enum member indicating that [Ttl] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _30M -> Value._30M
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _30M -> Known._30M
+                    else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Ttl = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Ttl && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheOptions &&
+                mode == other.mode &&
+                ttl == other.ttl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Deprecated. Use `prompt_cache_options.ttl` instead.
+     *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
      * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
+     * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
+     * `gpt-5.5-pro`, and future models, only `24h` is supported.
+     *
+     * For older models that support both `in_memory` and `24h`, the default depends on your
+     * organization's data retention policy:
+     * - Organizations without ZDR enabled default to `24h`.
+     * - Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not
+     *   specified.
      */
+    @Deprecated("deprecated")
     class PromptCacheRetention
     @JsonCreator
     private constructor(private val value: JsonField<String>) : Enum {
@@ -5997,9 +7787,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
-     *   processed with the corresponding service tier.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     *   request will be processed with the Flex Processing service tier.
+     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
+     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
+     *   The response will show `service_tier=priority` regardless of if you specify
+     *   `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -6031,6 +7824,8 @@ private constructor(
 
             @JvmField val PRIORITY = of("priority")
 
+            @JvmField val FAST = of("fast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -6041,6 +7836,7 @@ private constructor(
             FLEX,
             SCALE,
             PRIORITY,
+            FAST,
         }
 
         /**
@@ -6058,6 +7854,7 @@ private constructor(
             FLEX,
             SCALE,
             PRIORITY,
+            FAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -6078,6 +7875,7 @@ private constructor(
                 FLEX -> Value.FLEX
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
+                FAST -> Value.FAST
                 else -> Value._UNKNOWN
             }
 
@@ -6097,6 +7895,7 @@ private constructor(
                 FLEX -> Known.FLEX
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
+                FAST -> Known.FAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -6374,7 +8173,7 @@ private constructor(
     /**
      * Constrains the verbosity of the model's response. Lower values will result in more concise
      * responses, while higher values will result in more verbose responses. Currently supported
-     * values are `low`, `medium`, and `high`.
+     * values are `low`, `medium`, and `high`. The default is `medium`.
      */
     class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

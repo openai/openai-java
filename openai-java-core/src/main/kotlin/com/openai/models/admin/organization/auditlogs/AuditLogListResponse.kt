@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.auditlogs
 
@@ -65,8 +65,10 @@ private constructor(
     private val rateLimitUpdated: JsonField<RateLimitUpdated>,
     private val roleAssignmentCreated: JsonField<RoleAssignmentCreated>,
     private val roleAssignmentDeleted: JsonField<RoleAssignmentDeleted>,
+    private val roleBoundToResource: JsonField<RoleBoundToResource>,
     private val roleCreated: JsonField<RoleCreated>,
     private val roleDeleted: JsonField<RoleDeleted>,
+    private val roleUnboundFromResource: JsonField<RoleUnboundFromResource>,
     private val roleUpdated: JsonField<RoleUpdated>,
     private val scimDisabled: JsonField<ScimDisabled>,
     private val scimEnabled: JsonField<ScimEnabled>,
@@ -76,6 +78,15 @@ private constructor(
     private val userAdded: JsonField<UserAdded>,
     private val userDeleted: JsonField<UserDeleted>,
     private val userUpdated: JsonField<UserUpdated>,
+    private val workloadIdentityProviderMappingCreated:
+        JsonField<WorkloadIdentityProviderMappingCreated>,
+    private val workloadIdentityProviderMappingDeleted:
+        JsonField<WorkloadIdentityProviderMappingDeleted>,
+    private val workloadIdentityProviderMappingUpdated:
+        JsonField<WorkloadIdentityProviderMappingUpdated>,
+    private val workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated>,
+    private val workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted>,
+    private val workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -196,12 +207,18 @@ private constructor(
         @JsonProperty("role.assignment.deleted")
         @ExcludeMissing
         roleAssignmentDeleted: JsonField<RoleAssignmentDeleted> = JsonMissing.of(),
+        @JsonProperty("role.bound_to_resource")
+        @ExcludeMissing
+        roleBoundToResource: JsonField<RoleBoundToResource> = JsonMissing.of(),
         @JsonProperty("role.created")
         @ExcludeMissing
         roleCreated: JsonField<RoleCreated> = JsonMissing.of(),
         @JsonProperty("role.deleted")
         @ExcludeMissing
         roleDeleted: JsonField<RoleDeleted> = JsonMissing.of(),
+        @JsonProperty("role.unbound_from_resource")
+        @ExcludeMissing
+        roleUnboundFromResource: JsonField<RoleUnboundFromResource> = JsonMissing.of(),
         @JsonProperty("role.updated")
         @ExcludeMissing
         roleUpdated: JsonField<RoleUpdated> = JsonMissing.of(),
@@ -229,6 +246,30 @@ private constructor(
         @JsonProperty("user.updated")
         @ExcludeMissing
         userUpdated: JsonField<UserUpdated> = JsonMissing.of(),
+        @JsonProperty("workload_identity_provider_mapping.created")
+        @ExcludeMissing
+        workloadIdentityProviderMappingCreated: JsonField<WorkloadIdentityProviderMappingCreated> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider_mapping.deleted")
+        @ExcludeMissing
+        workloadIdentityProviderMappingDeleted: JsonField<WorkloadIdentityProviderMappingDeleted> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider_mapping.updated")
+        @ExcludeMissing
+        workloadIdentityProviderMappingUpdated: JsonField<WorkloadIdentityProviderMappingUpdated> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider.created")
+        @ExcludeMissing
+        workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider.deleted")
+        @ExcludeMissing
+        workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted> =
+            JsonMissing.of(),
+        @JsonProperty("workload_identity_provider.updated")
+        @ExcludeMissing
+        workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated> =
+            JsonMissing.of(),
     ) : this(
         id,
         effectiveAt,
@@ -271,8 +312,10 @@ private constructor(
         rateLimitUpdated,
         roleAssignmentCreated,
         roleAssignmentDeleted,
+        roleBoundToResource,
         roleCreated,
         roleDeleted,
+        roleUnboundFromResource,
         roleUpdated,
         scimDisabled,
         scimEnabled,
@@ -282,6 +325,12 @@ private constructor(
         userAdded,
         userDeleted,
         userUpdated,
+        workloadIdentityProviderMappingCreated,
+        workloadIdentityProviderMappingDeleted,
+        workloadIdentityProviderMappingUpdated,
+        workloadIdentityProviderCreated,
+        workloadIdentityProviderDeleted,
+        workloadIdentityProviderUpdated,
         mutableMapOf(),
     )
 
@@ -648,6 +697,15 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    fun roleBoundToResource(): Optional<RoleBoundToResource> =
+        roleBoundToResource.getOptional("role.bound_to_resource")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun roleCreated(): Optional<RoleCreated> = roleCreated.getOptional("role.created")
 
     /**
@@ -657,6 +715,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun roleDeleted(): Optional<RoleDeleted> = roleDeleted.getOptional("role.deleted")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun roleUnboundFromResource(): Optional<RoleUnboundFromResource> =
+        roleUnboundFromResource.getOptional("role.unbound_from_resource")
 
     /**
      * The details for events with this `type`.
@@ -732,6 +799,66 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun userUpdated(): Optional<UserUpdated> = userUpdated.getOptional("user.updated")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderMappingCreated(): Optional<WorkloadIdentityProviderMappingCreated> =
+        workloadIdentityProviderMappingCreated.getOptional(
+            "workload_identity_provider_mapping.created"
+        )
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderMappingDeleted(): Optional<WorkloadIdentityProviderMappingDeleted> =
+        workloadIdentityProviderMappingDeleted.getOptional(
+            "workload_identity_provider_mapping.deleted"
+        )
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderMappingUpdated(): Optional<WorkloadIdentityProviderMappingUpdated> =
+        workloadIdentityProviderMappingUpdated.getOptional(
+            "workload_identity_provider_mapping.updated"
+        )
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderCreated(): Optional<WorkloadIdentityProviderCreated> =
+        workloadIdentityProviderCreated.getOptional("workload_identity_provider.created")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderDeleted(): Optional<WorkloadIdentityProviderDeleted> =
+        workloadIdentityProviderDeleted.getOptional("workload_identity_provider.deleted")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun workloadIdentityProviderUpdated(): Optional<WorkloadIdentityProviderUpdated> =
+        workloadIdentityProviderUpdated.getOptional("workload_identity_provider.updated")
 
     /**
      * Returns the raw JSON value of [id].
@@ -1098,6 +1225,16 @@ private constructor(
     fun _roleAssignmentDeleted(): JsonField<RoleAssignmentDeleted> = roleAssignmentDeleted
 
     /**
+     * Returns the raw JSON value of [roleBoundToResource].
+     *
+     * Unlike [roleBoundToResource], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("role.bound_to_resource")
+    @ExcludeMissing
+    fun _roleBoundToResource(): JsonField<RoleBoundToResource> = roleBoundToResource
+
+    /**
      * Returns the raw JSON value of [roleCreated].
      *
      * Unlike [roleCreated], this method doesn't throw if the JSON field has an unexpected type.
@@ -1114,6 +1251,16 @@ private constructor(
     @JsonProperty("role.deleted")
     @ExcludeMissing
     fun _roleDeleted(): JsonField<RoleDeleted> = roleDeleted
+
+    /**
+     * Returns the raw JSON value of [roleUnboundFromResource].
+     *
+     * Unlike [roleUnboundFromResource], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("role.unbound_from_resource")
+    @ExcludeMissing
+    fun _roleUnboundFromResource(): JsonField<RoleUnboundFromResource> = roleUnboundFromResource
 
     /**
      * Returns the raw JSON value of [roleUpdated].
@@ -1197,6 +1344,72 @@ private constructor(
     @ExcludeMissing
     fun _userUpdated(): JsonField<UserUpdated> = userUpdated
 
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderMappingCreated].
+     *
+     * Unlike [workloadIdentityProviderMappingCreated], this method doesn't throw if the JSON field
+     * has an unexpected type.
+     */
+    @JsonProperty("workload_identity_provider_mapping.created")
+    @ExcludeMissing
+    fun _workloadIdentityProviderMappingCreated():
+        JsonField<WorkloadIdentityProviderMappingCreated> = workloadIdentityProviderMappingCreated
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderMappingDeleted].
+     *
+     * Unlike [workloadIdentityProviderMappingDeleted], this method doesn't throw if the JSON field
+     * has an unexpected type.
+     */
+    @JsonProperty("workload_identity_provider_mapping.deleted")
+    @ExcludeMissing
+    fun _workloadIdentityProviderMappingDeleted():
+        JsonField<WorkloadIdentityProviderMappingDeleted> = workloadIdentityProviderMappingDeleted
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderMappingUpdated].
+     *
+     * Unlike [workloadIdentityProviderMappingUpdated], this method doesn't throw if the JSON field
+     * has an unexpected type.
+     */
+    @JsonProperty("workload_identity_provider_mapping.updated")
+    @ExcludeMissing
+    fun _workloadIdentityProviderMappingUpdated():
+        JsonField<WorkloadIdentityProviderMappingUpdated> = workloadIdentityProviderMappingUpdated
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderCreated].
+     *
+     * Unlike [workloadIdentityProviderCreated], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("workload_identity_provider.created")
+    @ExcludeMissing
+    fun _workloadIdentityProviderCreated(): JsonField<WorkloadIdentityProviderCreated> =
+        workloadIdentityProviderCreated
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderDeleted].
+     *
+     * Unlike [workloadIdentityProviderDeleted], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("workload_identity_provider.deleted")
+    @ExcludeMissing
+    fun _workloadIdentityProviderDeleted(): JsonField<WorkloadIdentityProviderDeleted> =
+        workloadIdentityProviderDeleted
+
+    /**
+     * Returns the raw JSON value of [workloadIdentityProviderUpdated].
+     *
+     * Unlike [workloadIdentityProviderUpdated], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("workload_identity_provider.updated")
+    @ExcludeMissing
+    fun _workloadIdentityProviderUpdated(): JsonField<WorkloadIdentityProviderUpdated> =
+        workloadIdentityProviderUpdated
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -1272,8 +1485,10 @@ private constructor(
         private var rateLimitUpdated: JsonField<RateLimitUpdated> = JsonMissing.of()
         private var roleAssignmentCreated: JsonField<RoleAssignmentCreated> = JsonMissing.of()
         private var roleAssignmentDeleted: JsonField<RoleAssignmentDeleted> = JsonMissing.of()
+        private var roleBoundToResource: JsonField<RoleBoundToResource> = JsonMissing.of()
         private var roleCreated: JsonField<RoleCreated> = JsonMissing.of()
         private var roleDeleted: JsonField<RoleDeleted> = JsonMissing.of()
+        private var roleUnboundFromResource: JsonField<RoleUnboundFromResource> = JsonMissing.of()
         private var roleUpdated: JsonField<RoleUpdated> = JsonMissing.of()
         private var scimDisabled: JsonField<ScimDisabled> = JsonMissing.of()
         private var scimEnabled: JsonField<ScimEnabled> = JsonMissing.of()
@@ -1283,6 +1498,21 @@ private constructor(
         private var userAdded: JsonField<UserAdded> = JsonMissing.of()
         private var userDeleted: JsonField<UserDeleted> = JsonMissing.of()
         private var userUpdated: JsonField<UserUpdated> = JsonMissing.of()
+        private var workloadIdentityProviderMappingCreated:
+            JsonField<WorkloadIdentityProviderMappingCreated> =
+            JsonMissing.of()
+        private var workloadIdentityProviderMappingDeleted:
+            JsonField<WorkloadIdentityProviderMappingDeleted> =
+            JsonMissing.of()
+        private var workloadIdentityProviderMappingUpdated:
+            JsonField<WorkloadIdentityProviderMappingUpdated> =
+            JsonMissing.of()
+        private var workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated> =
+            JsonMissing.of()
+        private var workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted> =
+            JsonMissing.of()
+        private var workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated> =
+            JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -1328,8 +1558,10 @@ private constructor(
             rateLimitUpdated = auditLogListResponse.rateLimitUpdated
             roleAssignmentCreated = auditLogListResponse.roleAssignmentCreated
             roleAssignmentDeleted = auditLogListResponse.roleAssignmentDeleted
+            roleBoundToResource = auditLogListResponse.roleBoundToResource
             roleCreated = auditLogListResponse.roleCreated
             roleDeleted = auditLogListResponse.roleDeleted
+            roleUnboundFromResource = auditLogListResponse.roleUnboundFromResource
             roleUpdated = auditLogListResponse.roleUpdated
             scimDisabled = auditLogListResponse.scimDisabled
             scimEnabled = auditLogListResponse.scimEnabled
@@ -1339,6 +1571,15 @@ private constructor(
             userAdded = auditLogListResponse.userAdded
             userDeleted = auditLogListResponse.userDeleted
             userUpdated = auditLogListResponse.userUpdated
+            workloadIdentityProviderMappingCreated =
+                auditLogListResponse.workloadIdentityProviderMappingCreated
+            workloadIdentityProviderMappingDeleted =
+                auditLogListResponse.workloadIdentityProviderMappingDeleted
+            workloadIdentityProviderMappingUpdated =
+                auditLogListResponse.workloadIdentityProviderMappingUpdated
+            workloadIdentityProviderCreated = auditLogListResponse.workloadIdentityProviderCreated
+            workloadIdentityProviderDeleted = auditLogListResponse.workloadIdentityProviderDeleted
+            workloadIdentityProviderUpdated = auditLogListResponse.workloadIdentityProviderUpdated
             additionalProperties = auditLogListResponse.additionalProperties.toMutableMap()
         }
 
@@ -1919,6 +2160,21 @@ private constructor(
         }
 
         /** The details for events with this `type`. */
+        fun roleBoundToResource(roleBoundToResource: RoleBoundToResource) =
+            roleBoundToResource(JsonField.of(roleBoundToResource))
+
+        /**
+         * Sets [Builder.roleBoundToResource] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.roleBoundToResource] with a well-typed
+         * [RoleBoundToResource] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun roleBoundToResource(roleBoundToResource: JsonField<RoleBoundToResource>) = apply {
+            this.roleBoundToResource = roleBoundToResource
+        }
+
+        /** The details for events with this `type`. */
         fun roleCreated(roleCreated: RoleCreated) = roleCreated(JsonField.of(roleCreated))
 
         /**
@@ -1945,6 +2201,22 @@ private constructor(
         fun roleDeleted(roleDeleted: JsonField<RoleDeleted>) = apply {
             this.roleDeleted = roleDeleted
         }
+
+        /** The details for events with this `type`. */
+        fun roleUnboundFromResource(roleUnboundFromResource: RoleUnboundFromResource) =
+            roleUnboundFromResource(JsonField.of(roleUnboundFromResource))
+
+        /**
+         * Sets [Builder.roleUnboundFromResource] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.roleUnboundFromResource] with a well-typed
+         * [RoleUnboundFromResource] value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
+        fun roleUnboundFromResource(roleUnboundFromResource: JsonField<RoleUnboundFromResource>) =
+            apply {
+                this.roleUnboundFromResource = roleUnboundFromResource
+            }
 
         /** The details for events with this `type`. */
         fun roleUpdated(roleUpdated: RoleUpdated) = roleUpdated(JsonField.of(roleUpdated))
@@ -2073,6 +2345,120 @@ private constructor(
             this.userUpdated = userUpdated
         }
 
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderMappingCreated(
+            workloadIdentityProviderMappingCreated: WorkloadIdentityProviderMappingCreated
+        ) =
+            workloadIdentityProviderMappingCreated(
+                JsonField.of(workloadIdentityProviderMappingCreated)
+            )
+
+        /**
+         * Sets [Builder.workloadIdentityProviderMappingCreated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderMappingCreated] with a
+         * well-typed [WorkloadIdentityProviderMappingCreated] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderMappingCreated(
+            workloadIdentityProviderMappingCreated:
+                JsonField<WorkloadIdentityProviderMappingCreated>
+        ) = apply {
+            this.workloadIdentityProviderMappingCreated = workloadIdentityProviderMappingCreated
+        }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderMappingDeleted(
+            workloadIdentityProviderMappingDeleted: WorkloadIdentityProviderMappingDeleted
+        ) =
+            workloadIdentityProviderMappingDeleted(
+                JsonField.of(workloadIdentityProviderMappingDeleted)
+            )
+
+        /**
+         * Sets [Builder.workloadIdentityProviderMappingDeleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderMappingDeleted] with a
+         * well-typed [WorkloadIdentityProviderMappingDeleted] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderMappingDeleted(
+            workloadIdentityProviderMappingDeleted:
+                JsonField<WorkloadIdentityProviderMappingDeleted>
+        ) = apply {
+            this.workloadIdentityProviderMappingDeleted = workloadIdentityProviderMappingDeleted
+        }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderMappingUpdated(
+            workloadIdentityProviderMappingUpdated: WorkloadIdentityProviderMappingUpdated
+        ) =
+            workloadIdentityProviderMappingUpdated(
+                JsonField.of(workloadIdentityProviderMappingUpdated)
+            )
+
+        /**
+         * Sets [Builder.workloadIdentityProviderMappingUpdated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderMappingUpdated] with a
+         * well-typed [WorkloadIdentityProviderMappingUpdated] value instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderMappingUpdated(
+            workloadIdentityProviderMappingUpdated:
+                JsonField<WorkloadIdentityProviderMappingUpdated>
+        ) = apply {
+            this.workloadIdentityProviderMappingUpdated = workloadIdentityProviderMappingUpdated
+        }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderCreated(
+            workloadIdentityProviderCreated: WorkloadIdentityProviderCreated
+        ) = workloadIdentityProviderCreated(JsonField.of(workloadIdentityProviderCreated))
+
+        /**
+         * Sets [Builder.workloadIdentityProviderCreated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderCreated] with a well-typed
+         * [WorkloadIdentityProviderCreated] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderCreated(
+            workloadIdentityProviderCreated: JsonField<WorkloadIdentityProviderCreated>
+        ) = apply { this.workloadIdentityProviderCreated = workloadIdentityProviderCreated }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderDeleted(
+            workloadIdentityProviderDeleted: WorkloadIdentityProviderDeleted
+        ) = workloadIdentityProviderDeleted(JsonField.of(workloadIdentityProviderDeleted))
+
+        /**
+         * Sets [Builder.workloadIdentityProviderDeleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderDeleted] with a well-typed
+         * [WorkloadIdentityProviderDeleted] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderDeleted(
+            workloadIdentityProviderDeleted: JsonField<WorkloadIdentityProviderDeleted>
+        ) = apply { this.workloadIdentityProviderDeleted = workloadIdentityProviderDeleted }
+
+        /** The details for events with this `type`. */
+        fun workloadIdentityProviderUpdated(
+            workloadIdentityProviderUpdated: WorkloadIdentityProviderUpdated
+        ) = workloadIdentityProviderUpdated(JsonField.of(workloadIdentityProviderUpdated))
+
+        /**
+         * Sets [Builder.workloadIdentityProviderUpdated] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.workloadIdentityProviderUpdated] with a well-typed
+         * [WorkloadIdentityProviderUpdated] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun workloadIdentityProviderUpdated(
+            workloadIdentityProviderUpdated: JsonField<WorkloadIdentityProviderUpdated>
+        ) = apply { this.workloadIdentityProviderUpdated = workloadIdentityProviderUpdated }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -2149,8 +2535,10 @@ private constructor(
                 rateLimitUpdated,
                 roleAssignmentCreated,
                 roleAssignmentDeleted,
+                roleBoundToResource,
                 roleCreated,
                 roleDeleted,
+                roleUnboundFromResource,
                 roleUpdated,
                 scimDisabled,
                 scimEnabled,
@@ -2160,6 +2548,12 @@ private constructor(
                 userAdded,
                 userDeleted,
                 userUpdated,
+                workloadIdentityProviderMappingCreated,
+                workloadIdentityProviderMappingDeleted,
+                workloadIdentityProviderMappingUpdated,
+                workloadIdentityProviderCreated,
+                workloadIdentityProviderDeleted,
+                workloadIdentityProviderUpdated,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -2218,8 +2612,10 @@ private constructor(
         rateLimitUpdated().ifPresent { it.validate() }
         roleAssignmentCreated().ifPresent { it.validate() }
         roleAssignmentDeleted().ifPresent { it.validate() }
+        roleBoundToResource().ifPresent { it.validate() }
         roleCreated().ifPresent { it.validate() }
         roleDeleted().ifPresent { it.validate() }
+        roleUnboundFromResource().ifPresent { it.validate() }
         roleUpdated().ifPresent { it.validate() }
         scimDisabled().ifPresent { it.validate() }
         scimEnabled().ifPresent { it.validate() }
@@ -2229,6 +2625,12 @@ private constructor(
         userAdded().ifPresent { it.validate() }
         userDeleted().ifPresent { it.validate() }
         userUpdated().ifPresent { it.validate() }
+        workloadIdentityProviderMappingCreated().ifPresent { it.validate() }
+        workloadIdentityProviderMappingDeleted().ifPresent { it.validate() }
+        workloadIdentityProviderMappingUpdated().ifPresent { it.validate() }
+        workloadIdentityProviderCreated().ifPresent { it.validate() }
+        workloadIdentityProviderDeleted().ifPresent { it.validate() }
+        workloadIdentityProviderUpdated().ifPresent { it.validate() }
         validated = true
     }
 
@@ -2286,8 +2688,10 @@ private constructor(
             (rateLimitUpdated.asKnown().getOrNull()?.validity() ?: 0) +
             (roleAssignmentCreated.asKnown().getOrNull()?.validity() ?: 0) +
             (roleAssignmentDeleted.asKnown().getOrNull()?.validity() ?: 0) +
+            (roleBoundToResource.asKnown().getOrNull()?.validity() ?: 0) +
             (roleCreated.asKnown().getOrNull()?.validity() ?: 0) +
             (roleDeleted.asKnown().getOrNull()?.validity() ?: 0) +
+            (roleUnboundFromResource.asKnown().getOrNull()?.validity() ?: 0) +
             (roleUpdated.asKnown().getOrNull()?.validity() ?: 0) +
             (scimDisabled.asKnown().getOrNull()?.validity() ?: 0) +
             (scimEnabled.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2296,7 +2700,13 @@ private constructor(
             (serviceAccountUpdated.asKnown().getOrNull()?.validity() ?: 0) +
             (userAdded.asKnown().getOrNull()?.validity() ?: 0) +
             (userDeleted.asKnown().getOrNull()?.validity() ?: 0) +
-            (userUpdated.asKnown().getOrNull()?.validity() ?: 0)
+            (userUpdated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderMappingCreated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderMappingDeleted.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderMappingUpdated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderCreated.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderDeleted.asKnown().getOrNull()?.validity() ?: 0) +
+            (workloadIdentityProviderUpdated.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The event type. */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -2389,6 +2799,27 @@ private constructor(
 
             @JvmField val TUNNEL_DELETED = of("tunnel.deleted")
 
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_CREATED = of("workload_identity_provider.created")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_UPDATED = of("workload_identity_provider.updated")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_DELETED = of("workload_identity_provider.deleted")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED =
+                of("workload_identity_provider_mapping.created")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED =
+                of("workload_identity_provider_mapping.updated")
+
+            @JvmField
+            val WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED =
+                of("workload_identity_provider_mapping.deleted")
+
             @JvmField val ROLE_CREATED = of("role.created")
 
             @JvmField val ROLE_UPDATED = of("role.updated")
@@ -2398,6 +2829,10 @@ private constructor(
             @JvmField val ROLE_ASSIGNMENT_CREATED = of("role.assignment.created")
 
             @JvmField val ROLE_ASSIGNMENT_DELETED = of("role.assignment.deleted")
+
+            @JvmField val ROLE_BOUND_TO_RESOURCE = of("role.bound_to_resource")
+
+            @JvmField val ROLE_UNBOUND_FROM_RESOURCE = of("role.unbound_from_resource")
 
             @JvmField val SCIM_ENABLED = of("scim.enabled")
 
@@ -2414,6 +2849,245 @@ private constructor(
             @JvmField val USER_UPDATED = of("user.updated")
 
             @JvmField val USER_DELETED = of("user.deleted")
+
+            @JvmField val TENANT_METADATA_UPDATED = of("tenant.metadata.updated")
+
+            @JvmField
+            val TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED =
+                of("tenant.microsoft_entra_mapping.upserted")
+
+            @JvmField
+            val TENANT_MICROSOFT_ENTRA_MAPPING_DELETED =
+                of("tenant.microsoft_entra_mapping.deleted")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED =
+                of("tenant.workload_identity.provider.created")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED =
+                of("tenant.workload_identity.provider.updated")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED =
+                of("tenant.workload_identity.provider.archived")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED =
+                of("tenant.workload_identity.mapping.created")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED =
+                of("tenant.workload_identity.mapping.updated")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED =
+                of("tenant.workload_identity.mapping.archived")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_BINDING_CREATED =
+                of("tenant.workload_identity.binding.created")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED =
+                of("tenant.workload_identity.principal.provisioned")
+
+            @JvmField
+            val TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED =
+                of("tenant.workload_identity.access_token.issued")
+
+            @JvmField val TENANT_ADMIN_API_KEY_CREATED = of("tenant.admin_api_key.created")
+
+            @JvmField val TENANT_ADMIN_API_KEY_UPDATED = of("tenant.admin_api_key.updated")
+
+            @JvmField val TENANT_ADMIN_API_KEY_DELETED = of("tenant.admin_api_key.deleted")
+
+            @JvmField val TENANT_PROJECT_API_KEY_CREATED = of("tenant.project_api_key.created")
+
+            @JvmField
+            val TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED =
+                of("tenant.trusted_access.business_verification.started")
+
+            @JvmField
+            val TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED =
+                of("tenant.trusted_access.application.submitted")
+
+            @JvmField
+            val TENANT_CHATGPT_ACCESS_TOKEN_REVOKED = of("tenant.chatgpt_access_token.revoked")
+
+            @JvmField val TENANT_MIGRATION_COMPLETED = of("tenant.migration.completed")
+
+            @JvmField val TENANT_SSO_MIGRATED = of("tenant.sso.migrated")
+
+            @JvmField val TENANT_DOMAINS_MIGRATED = of("tenant.domains.migrated")
+
+            @JvmField val TENANT_SSO_CONNECTION_CREATED = of("tenant.sso_connection.created")
+
+            @JvmField val TENANT_SSO_CONNECTION_UPDATED = of("tenant.sso_connection.updated")
+
+            @JvmField val TENANT_SSO_CONNECTION_DELETED = of("tenant.sso_connection.deleted")
+
+            @JvmField
+            val TENANT_SSO_CONNECTION_SETUP_STARTED = of("tenant.sso_connection.setup.started")
+
+            @JvmField val TENANT_POLICY_CREATED = of("tenant.policy.created")
+
+            @JvmField val TENANT_POLICY_UPDATED = of("tenant.policy.updated")
+
+            @JvmField val TENANT_POLICY_DELETED = of("tenant.policy.deleted")
+
+            @JvmField val TENANT_POLICY_ATTACHED = of("tenant.policy.attached")
+
+            @JvmField val TENANT_POLICY_DETACHED = of("tenant.policy.detached")
+
+            @JvmField
+            val TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED =
+                of("tenant.principal_authentication_policy.resolved")
+
+            @JvmField val TENANT_SCIM_SETUP_STARTED = of("tenant.scim.setup.started")
+
+            @JvmField val TENANT_SCIM_DELETION_REQUESTED = of("tenant.scim.deletion.requested")
+
+            @JvmField val TENANT_SCIM_DIRECTORY_CREATED = of("tenant.scim.directory.created")
+
+            @JvmField
+            val TENANT_PRODUCT_ACCESS_POLICY_UPDATED = of("tenant.product_access_policy.updated")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_CREATED = of("tenant.resource_share_grant.created")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_UPDATED = of("tenant.resource_share_grant.updated")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_ACCEPTED = of("tenant.resource_share_grant.accepted")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_DECLINED = of("tenant.resource_share_grant.declined")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_REVOKED = of("tenant.resource_share_grant.revoked")
+
+            @JvmField
+            val TENANT_RESOURCE_SHARE_GRANT_DELETED = of("tenant.resource_share_grant.deleted")
+
+            @JvmField val TENANT_SERVICE_ACCOUNT_UPDATED = of("tenant.service_account.updated")
+
+            @JvmField val TENANT_SERVICE_ACCOUNT_DELETED = of("tenant.service_account.deleted")
+
+            @JvmField
+            val TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED = of("tenant.service_account.token.revoked")
+
+            @JvmField
+            val TENANT_BILLING_OVERAGE_LIMIT_UPDATED = of("tenant.billing.overage_limit.updated")
+
+            @JvmField val TENANT_BILLING_ALERTS_UPDATED = of("tenant.billing.alerts.updated")
+
+            @JvmField val TENANT_BILLING_INFO_UPDATED = of("tenant.billing.info.updated")
+
+            @JvmField
+            val TENANT_USAGE_LIMIT_WORKSPACE_UPDATED = of("tenant.usage_limit.workspace.updated")
+
+            @JvmField val TENANT_USAGE_LIMIT_GROUP_UPDATED = of("tenant.usage_limit.group.updated")
+
+            @JvmField val TENANT_USAGE_LIMIT_USER_UPDATED = of("tenant.usage_limit.user.updated")
+
+            @JvmField
+            val TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED =
+                of("tenant.usage_limit.increase_request.updated")
+
+            @JvmField
+            val TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED =
+                of("tenant.usage_limit.increase_request.resolved")
+
+            @JvmField val TENANT_GROUP_CREATED = of("tenant.group.created")
+
+            @JvmField val TENANT_GROUP_UPDATED = of("tenant.group.updated")
+
+            @JvmField val TENANT_GROUP_DELETED = of("tenant.group.deleted")
+
+            @JvmField val TENANT_GROUP_MEMBER_ADDED = of("tenant.group.member.added")
+
+            @JvmField val TENANT_GROUP_MEMBER_REMOVED = of("tenant.group.member.removed")
+
+            @JvmField
+            val TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED =
+                of("tenant.migration_rollout.status.updated")
+
+            @JvmField
+            val TENANT_MIGRATION_ROLLOUT_TIER_UPDATED = of("tenant.migration_rollout.tier.updated")
+
+            @JvmField val TENANT_ROLE_METADATA_UPDATED = of("tenant.role.metadata.updated")
+
+            @JvmField val TENANT_CUSTOM_ROLE_CREATED = of("tenant.custom_role.created")
+
+            @JvmField val TENANT_CUSTOM_ROLE_UPDATED = of("tenant.custom_role.updated")
+
+            @JvmField val TENANT_CUSTOM_ROLE_DELETED = of("tenant.custom_role.deleted")
+
+            @JvmField val TENANT_ROLE_ASSIGNMENT_CREATED = of("tenant.role_assignment.created")
+
+            @JvmField val TENANT_ROLE_ASSIGNMENT_DELETED = of("tenant.role_assignment.deleted")
+
+            @JvmField
+            val TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED =
+                of("tenant.resource_role_assignment.created")
+
+            @JvmField
+            val TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED =
+                of("tenant.resource_role_assignment.deleted")
+
+            @JvmField val TENANT_RESOURCE_ACCESS_UPDATED = of("tenant.resource_access.updated")
+
+            @JvmField val TENANT_RESOURCE_ACCESS_DELETED = of("tenant.resource_access.deleted")
+
+            @JvmField
+            val TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION =
+                of("tenant.ads_account.onboarding.redemption")
+
+            @JvmField val TENANT_SESSION_POLICY_CREATED = of("tenant.session_policy.created")
+
+            @JvmField val TENANT_SESSION_POLICY_UPDATED = of("tenant.session_policy.updated")
+
+            @JvmField val TENANT_SESSION_POLICY_DELETED = of("tenant.session_policy.deleted")
+
+            @JvmField
+            val TENANT_SESSION_REVOCATION_STARTED = of("tenant.session_revocation.started")
+
+            @JvmField
+            val TENANT_THIRD_PARTY_APP_POLICY_UPDATED = of("tenant.third_party_app_policy.updated")
+
+            @JvmField val TENANT_USER_ADDED = of("tenant.user.added")
+
+            @JvmField val TENANT_USER_UPDATED = of("tenant.user.updated")
+
+            @JvmField val TENANT_USER_REMOVED = of("tenant.user.removed")
+
+            @JvmField val TENANT_USER_LOOKED_UP = of("tenant.user.looked_up")
+
+            @JvmField val TENANT_USER_INVITED = of("tenant.user.invited")
+
+            @JvmField val TENANT_MEMBERSHIP_REVOKED = of("tenant.membership.revoked")
+
+            @JvmField
+            val TENANT_API_ORGANIZATION_INVITE_UPSERTED =
+                of("tenant.api_organization_invite.upserted")
+
+            @JvmField
+            val TENANT_API_ORGANIZATION_INVITE_DELETED =
+                of("tenant.api_organization_invite.deleted")
+
+            @JvmField
+            val TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED =
+                of("tenant.chatgpt_workspace_invite.upserted")
+
+            @JvmField val TENANT_MEMBERSHIP_ACCEPTED = of("tenant.membership.accepted")
+
+            @JvmField val TENANT_MEMBERSHIP_DECLINED = of("tenant.membership.declined")
+
+            @JvmField
+            val TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED =
+                of("tenant.workspace_invite_email_settings.updated")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
@@ -2458,11 +3132,19 @@ private constructor(
             TUNNEL_CREATED,
             TUNNEL_UPDATED,
             TUNNEL_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED,
             ROLE_CREATED,
             ROLE_UPDATED,
             ROLE_DELETED,
             ROLE_ASSIGNMENT_CREATED,
             ROLE_ASSIGNMENT_DELETED,
+            ROLE_BOUND_TO_RESOURCE,
+            ROLE_UNBOUND_FROM_RESOURCE,
             SCIM_ENABLED,
             SCIM_DISABLED,
             SERVICE_ACCOUNT_CREATED,
@@ -2471,6 +3153,94 @@ private constructor(
             USER_ADDED,
             USER_UPDATED,
             USER_DELETED,
+            TENANT_METADATA_UPDATED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_DELETED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_BINDING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED,
+            TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED,
+            TENANT_ADMIN_API_KEY_CREATED,
+            TENANT_ADMIN_API_KEY_UPDATED,
+            TENANT_ADMIN_API_KEY_DELETED,
+            TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED,
+            TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED,
+            TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
+            TENANT_MIGRATION_COMPLETED,
+            TENANT_SSO_MIGRATED,
+            TENANT_DOMAINS_MIGRATED,
+            TENANT_SSO_CONNECTION_CREATED,
+            TENANT_SSO_CONNECTION_UPDATED,
+            TENANT_SSO_CONNECTION_DELETED,
+            TENANT_SSO_CONNECTION_SETUP_STARTED,
+            TENANT_POLICY_CREATED,
+            TENANT_POLICY_UPDATED,
+            TENANT_POLICY_DELETED,
+            TENANT_POLICY_ATTACHED,
+            TENANT_POLICY_DETACHED,
+            TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED,
+            TENANT_SCIM_SETUP_STARTED,
+            TENANT_SCIM_DELETION_REQUESTED,
+            TENANT_SCIM_DIRECTORY_CREATED,
+            TENANT_PRODUCT_ACCESS_POLICY_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_CREATED,
+            TENANT_RESOURCE_SHARE_GRANT_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_ACCEPTED,
+            TENANT_RESOURCE_SHARE_GRANT_DECLINED,
+            TENANT_RESOURCE_SHARE_GRANT_REVOKED,
+            TENANT_RESOURCE_SHARE_GRANT_DELETED,
+            TENANT_SERVICE_ACCOUNT_UPDATED,
+            TENANT_SERVICE_ACCOUNT_DELETED,
+            TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED,
+            TENANT_BILLING_OVERAGE_LIMIT_UPDATED,
+            TENANT_BILLING_ALERTS_UPDATED,
+            TENANT_BILLING_INFO_UPDATED,
+            TENANT_USAGE_LIMIT_WORKSPACE_UPDATED,
+            TENANT_USAGE_LIMIT_GROUP_UPDATED,
+            TENANT_USAGE_LIMIT_USER_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED,
+            TENANT_GROUP_CREATED,
+            TENANT_GROUP_UPDATED,
+            TENANT_GROUP_DELETED,
+            TENANT_GROUP_MEMBER_ADDED,
+            TENANT_GROUP_MEMBER_REMOVED,
+            TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED,
+            TENANT_MIGRATION_ROLLOUT_TIER_UPDATED,
+            TENANT_ROLE_METADATA_UPDATED,
+            TENANT_CUSTOM_ROLE_CREATED,
+            TENANT_CUSTOM_ROLE_UPDATED,
+            TENANT_CUSTOM_ROLE_DELETED,
+            TENANT_ROLE_ASSIGNMENT_CREATED,
+            TENANT_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ACCESS_UPDATED,
+            TENANT_RESOURCE_ACCESS_DELETED,
+            TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION,
+            TENANT_SESSION_POLICY_CREATED,
+            TENANT_SESSION_POLICY_UPDATED,
+            TENANT_SESSION_POLICY_DELETED,
+            TENANT_SESSION_REVOCATION_STARTED,
+            TENANT_THIRD_PARTY_APP_POLICY_UPDATED,
+            TENANT_USER_ADDED,
+            TENANT_USER_UPDATED,
+            TENANT_USER_REMOVED,
+            TENANT_USER_LOOKED_UP,
+            TENANT_USER_INVITED,
+            TENANT_MEMBERSHIP_REVOKED,
+            TENANT_API_ORGANIZATION_INVITE_UPSERTED,
+            TENANT_API_ORGANIZATION_INVITE_DELETED,
+            TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED,
+            TENANT_MEMBERSHIP_ACCEPTED,
+            TENANT_MEMBERSHIP_DECLINED,
+            TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED,
         }
 
         /**
@@ -2521,11 +3291,19 @@ private constructor(
             TUNNEL_CREATED,
             TUNNEL_UPDATED,
             TUNNEL_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_DELETED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED,
+            WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED,
             ROLE_CREATED,
             ROLE_UPDATED,
             ROLE_DELETED,
             ROLE_ASSIGNMENT_CREATED,
             ROLE_ASSIGNMENT_DELETED,
+            ROLE_BOUND_TO_RESOURCE,
+            ROLE_UNBOUND_FROM_RESOURCE,
             SCIM_ENABLED,
             SCIM_DISABLED,
             SERVICE_ACCOUNT_CREATED,
@@ -2534,6 +3312,94 @@ private constructor(
             USER_ADDED,
             USER_UPDATED,
             USER_DELETED,
+            TENANT_METADATA_UPDATED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED,
+            TENANT_MICROSOFT_ENTRA_MAPPING_DELETED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED,
+            TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED,
+            TENANT_WORKLOAD_IDENTITY_BINDING_CREATED,
+            TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED,
+            TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED,
+            TENANT_ADMIN_API_KEY_CREATED,
+            TENANT_ADMIN_API_KEY_UPDATED,
+            TENANT_ADMIN_API_KEY_DELETED,
+            TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED,
+            TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED,
+            TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
+            TENANT_MIGRATION_COMPLETED,
+            TENANT_SSO_MIGRATED,
+            TENANT_DOMAINS_MIGRATED,
+            TENANT_SSO_CONNECTION_CREATED,
+            TENANT_SSO_CONNECTION_UPDATED,
+            TENANT_SSO_CONNECTION_DELETED,
+            TENANT_SSO_CONNECTION_SETUP_STARTED,
+            TENANT_POLICY_CREATED,
+            TENANT_POLICY_UPDATED,
+            TENANT_POLICY_DELETED,
+            TENANT_POLICY_ATTACHED,
+            TENANT_POLICY_DETACHED,
+            TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED,
+            TENANT_SCIM_SETUP_STARTED,
+            TENANT_SCIM_DELETION_REQUESTED,
+            TENANT_SCIM_DIRECTORY_CREATED,
+            TENANT_PRODUCT_ACCESS_POLICY_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_CREATED,
+            TENANT_RESOURCE_SHARE_GRANT_UPDATED,
+            TENANT_RESOURCE_SHARE_GRANT_ACCEPTED,
+            TENANT_RESOURCE_SHARE_GRANT_DECLINED,
+            TENANT_RESOURCE_SHARE_GRANT_REVOKED,
+            TENANT_RESOURCE_SHARE_GRANT_DELETED,
+            TENANT_SERVICE_ACCOUNT_UPDATED,
+            TENANT_SERVICE_ACCOUNT_DELETED,
+            TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED,
+            TENANT_BILLING_OVERAGE_LIMIT_UPDATED,
+            TENANT_BILLING_ALERTS_UPDATED,
+            TENANT_BILLING_INFO_UPDATED,
+            TENANT_USAGE_LIMIT_WORKSPACE_UPDATED,
+            TENANT_USAGE_LIMIT_GROUP_UPDATED,
+            TENANT_USAGE_LIMIT_USER_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED,
+            TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED,
+            TENANT_GROUP_CREATED,
+            TENANT_GROUP_UPDATED,
+            TENANT_GROUP_DELETED,
+            TENANT_GROUP_MEMBER_ADDED,
+            TENANT_GROUP_MEMBER_REMOVED,
+            TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED,
+            TENANT_MIGRATION_ROLLOUT_TIER_UPDATED,
+            TENANT_ROLE_METADATA_UPDATED,
+            TENANT_CUSTOM_ROLE_CREATED,
+            TENANT_CUSTOM_ROLE_UPDATED,
+            TENANT_CUSTOM_ROLE_DELETED,
+            TENANT_ROLE_ASSIGNMENT_CREATED,
+            TENANT_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED,
+            TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED,
+            TENANT_RESOURCE_ACCESS_UPDATED,
+            TENANT_RESOURCE_ACCESS_DELETED,
+            TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION,
+            TENANT_SESSION_POLICY_CREATED,
+            TENANT_SESSION_POLICY_UPDATED,
+            TENANT_SESSION_POLICY_DELETED,
+            TENANT_SESSION_REVOCATION_STARTED,
+            TENANT_THIRD_PARTY_APP_POLICY_UPDATED,
+            TENANT_USER_ADDED,
+            TENANT_USER_UPDATED,
+            TENANT_USER_REMOVED,
+            TENANT_USER_LOOKED_UP,
+            TENANT_USER_INVITED,
+            TENANT_MEMBERSHIP_REVOKED,
+            TENANT_API_ORGANIZATION_INVITE_UPSERTED,
+            TENANT_API_ORGANIZATION_INVITE_DELETED,
+            TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED,
+            TENANT_MEMBERSHIP_ACCEPTED,
+            TENANT_MEMBERSHIP_DECLINED,
+            TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -2585,11 +3451,22 @@ private constructor(
                 TUNNEL_CREATED -> Value.TUNNEL_CREATED
                 TUNNEL_UPDATED -> Value.TUNNEL_UPDATED
                 TUNNEL_DELETED -> Value.TUNNEL_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_CREATED -> Value.WORKLOAD_IDENTITY_PROVIDER_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_UPDATED -> Value.WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_DELETED -> Value.WORKLOAD_IDENTITY_PROVIDER_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED ->
+                    Value.WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED
                 ROLE_CREATED -> Value.ROLE_CREATED
                 ROLE_UPDATED -> Value.ROLE_UPDATED
                 ROLE_DELETED -> Value.ROLE_DELETED
                 ROLE_ASSIGNMENT_CREATED -> Value.ROLE_ASSIGNMENT_CREATED
                 ROLE_ASSIGNMENT_DELETED -> Value.ROLE_ASSIGNMENT_DELETED
+                ROLE_BOUND_TO_RESOURCE -> Value.ROLE_BOUND_TO_RESOURCE
+                ROLE_UNBOUND_FROM_RESOURCE -> Value.ROLE_UNBOUND_FROM_RESOURCE
                 SCIM_ENABLED -> Value.SCIM_ENABLED
                 SCIM_DISABLED -> Value.SCIM_DISABLED
                 SERVICE_ACCOUNT_CREATED -> Value.SERVICE_ACCOUNT_CREATED
@@ -2598,6 +3475,118 @@ private constructor(
                 USER_ADDED -> Value.USER_ADDED
                 USER_UPDATED -> Value.USER_UPDATED
                 USER_DELETED -> Value.USER_DELETED
+                TENANT_METADATA_UPDATED -> Value.TENANT_METADATA_UPDATED
+                TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED ->
+                    Value.TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED
+                TENANT_MICROSOFT_ENTRA_MAPPING_DELETED ->
+                    Value.TENANT_MICROSOFT_ENTRA_MAPPING_DELETED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_BINDING_CREATED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_BINDING_CREATED
+                TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED
+                TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED ->
+                    Value.TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED
+                TENANT_ADMIN_API_KEY_CREATED -> Value.TENANT_ADMIN_API_KEY_CREATED
+                TENANT_ADMIN_API_KEY_UPDATED -> Value.TENANT_ADMIN_API_KEY_UPDATED
+                TENANT_ADMIN_API_KEY_DELETED -> Value.TENANT_ADMIN_API_KEY_DELETED
+                TENANT_PROJECT_API_KEY_CREATED -> Value.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED ->
+                    Value.TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED
+                TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED ->
+                    Value.TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED
+                TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Value.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
+                TENANT_MIGRATION_COMPLETED -> Value.TENANT_MIGRATION_COMPLETED
+                TENANT_SSO_MIGRATED -> Value.TENANT_SSO_MIGRATED
+                TENANT_DOMAINS_MIGRATED -> Value.TENANT_DOMAINS_MIGRATED
+                TENANT_SSO_CONNECTION_CREATED -> Value.TENANT_SSO_CONNECTION_CREATED
+                TENANT_SSO_CONNECTION_UPDATED -> Value.TENANT_SSO_CONNECTION_UPDATED
+                TENANT_SSO_CONNECTION_DELETED -> Value.TENANT_SSO_CONNECTION_DELETED
+                TENANT_SSO_CONNECTION_SETUP_STARTED -> Value.TENANT_SSO_CONNECTION_SETUP_STARTED
+                TENANT_POLICY_CREATED -> Value.TENANT_POLICY_CREATED
+                TENANT_POLICY_UPDATED -> Value.TENANT_POLICY_UPDATED
+                TENANT_POLICY_DELETED -> Value.TENANT_POLICY_DELETED
+                TENANT_POLICY_ATTACHED -> Value.TENANT_POLICY_ATTACHED
+                TENANT_POLICY_DETACHED -> Value.TENANT_POLICY_DETACHED
+                TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED ->
+                    Value.TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED
+                TENANT_SCIM_SETUP_STARTED -> Value.TENANT_SCIM_SETUP_STARTED
+                TENANT_SCIM_DELETION_REQUESTED -> Value.TENANT_SCIM_DELETION_REQUESTED
+                TENANT_SCIM_DIRECTORY_CREATED -> Value.TENANT_SCIM_DIRECTORY_CREATED
+                TENANT_PRODUCT_ACCESS_POLICY_UPDATED -> Value.TENANT_PRODUCT_ACCESS_POLICY_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_CREATED -> Value.TENANT_RESOURCE_SHARE_GRANT_CREATED
+                TENANT_RESOURCE_SHARE_GRANT_UPDATED -> Value.TENANT_RESOURCE_SHARE_GRANT_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_ACCEPTED -> Value.TENANT_RESOURCE_SHARE_GRANT_ACCEPTED
+                TENANT_RESOURCE_SHARE_GRANT_DECLINED -> Value.TENANT_RESOURCE_SHARE_GRANT_DECLINED
+                TENANT_RESOURCE_SHARE_GRANT_REVOKED -> Value.TENANT_RESOURCE_SHARE_GRANT_REVOKED
+                TENANT_RESOURCE_SHARE_GRANT_DELETED -> Value.TENANT_RESOURCE_SHARE_GRANT_DELETED
+                TENANT_SERVICE_ACCOUNT_UPDATED -> Value.TENANT_SERVICE_ACCOUNT_UPDATED
+                TENANT_SERVICE_ACCOUNT_DELETED -> Value.TENANT_SERVICE_ACCOUNT_DELETED
+                TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED -> Value.TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED
+                TENANT_BILLING_OVERAGE_LIMIT_UPDATED -> Value.TENANT_BILLING_OVERAGE_LIMIT_UPDATED
+                TENANT_BILLING_ALERTS_UPDATED -> Value.TENANT_BILLING_ALERTS_UPDATED
+                TENANT_BILLING_INFO_UPDATED -> Value.TENANT_BILLING_INFO_UPDATED
+                TENANT_USAGE_LIMIT_WORKSPACE_UPDATED -> Value.TENANT_USAGE_LIMIT_WORKSPACE_UPDATED
+                TENANT_USAGE_LIMIT_GROUP_UPDATED -> Value.TENANT_USAGE_LIMIT_GROUP_UPDATED
+                TENANT_USAGE_LIMIT_USER_UPDATED -> Value.TENANT_USAGE_LIMIT_USER_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED ->
+                    Value.TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED ->
+                    Value.TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED
+                TENANT_GROUP_CREATED -> Value.TENANT_GROUP_CREATED
+                TENANT_GROUP_UPDATED -> Value.TENANT_GROUP_UPDATED
+                TENANT_GROUP_DELETED -> Value.TENANT_GROUP_DELETED
+                TENANT_GROUP_MEMBER_ADDED -> Value.TENANT_GROUP_MEMBER_ADDED
+                TENANT_GROUP_MEMBER_REMOVED -> Value.TENANT_GROUP_MEMBER_REMOVED
+                TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED ->
+                    Value.TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED
+                TENANT_MIGRATION_ROLLOUT_TIER_UPDATED -> Value.TENANT_MIGRATION_ROLLOUT_TIER_UPDATED
+                TENANT_ROLE_METADATA_UPDATED -> Value.TENANT_ROLE_METADATA_UPDATED
+                TENANT_CUSTOM_ROLE_CREATED -> Value.TENANT_CUSTOM_ROLE_CREATED
+                TENANT_CUSTOM_ROLE_UPDATED -> Value.TENANT_CUSTOM_ROLE_UPDATED
+                TENANT_CUSTOM_ROLE_DELETED -> Value.TENANT_CUSTOM_ROLE_DELETED
+                TENANT_ROLE_ASSIGNMENT_CREATED -> Value.TENANT_ROLE_ASSIGNMENT_CREATED
+                TENANT_ROLE_ASSIGNMENT_DELETED -> Value.TENANT_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED ->
+                    Value.TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED ->
+                    Value.TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ACCESS_UPDATED -> Value.TENANT_RESOURCE_ACCESS_UPDATED
+                TENANT_RESOURCE_ACCESS_DELETED -> Value.TENANT_RESOURCE_ACCESS_DELETED
+                TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION ->
+                    Value.TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION
+                TENANT_SESSION_POLICY_CREATED -> Value.TENANT_SESSION_POLICY_CREATED
+                TENANT_SESSION_POLICY_UPDATED -> Value.TENANT_SESSION_POLICY_UPDATED
+                TENANT_SESSION_POLICY_DELETED -> Value.TENANT_SESSION_POLICY_DELETED
+                TENANT_SESSION_REVOCATION_STARTED -> Value.TENANT_SESSION_REVOCATION_STARTED
+                TENANT_THIRD_PARTY_APP_POLICY_UPDATED -> Value.TENANT_THIRD_PARTY_APP_POLICY_UPDATED
+                TENANT_USER_ADDED -> Value.TENANT_USER_ADDED
+                TENANT_USER_UPDATED -> Value.TENANT_USER_UPDATED
+                TENANT_USER_REMOVED -> Value.TENANT_USER_REMOVED
+                TENANT_USER_LOOKED_UP -> Value.TENANT_USER_LOOKED_UP
+                TENANT_USER_INVITED -> Value.TENANT_USER_INVITED
+                TENANT_MEMBERSHIP_REVOKED -> Value.TENANT_MEMBERSHIP_REVOKED
+                TENANT_API_ORGANIZATION_INVITE_UPSERTED ->
+                    Value.TENANT_API_ORGANIZATION_INVITE_UPSERTED
+                TENANT_API_ORGANIZATION_INVITE_DELETED ->
+                    Value.TENANT_API_ORGANIZATION_INVITE_DELETED
+                TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED ->
+                    Value.TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED
+                TENANT_MEMBERSHIP_ACCEPTED -> Value.TENANT_MEMBERSHIP_ACCEPTED
+                TENANT_MEMBERSHIP_DECLINED -> Value.TENANT_MEMBERSHIP_DECLINED
+                TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED ->
+                    Value.TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED
                 else -> Value._UNKNOWN
             }
 
@@ -2650,11 +3639,22 @@ private constructor(
                 TUNNEL_CREATED -> Known.TUNNEL_CREATED
                 TUNNEL_UPDATED -> Known.TUNNEL_UPDATED
                 TUNNEL_DELETED -> Known.TUNNEL_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_CREATED -> Known.WORKLOAD_IDENTITY_PROVIDER_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_UPDATED -> Known.WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_DELETED -> Known.WORKLOAD_IDENTITY_PROVIDER_DELETED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_CREATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_UPDATED
+                WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED ->
+                    Known.WORKLOAD_IDENTITY_PROVIDER_MAPPING_DELETED
                 ROLE_CREATED -> Known.ROLE_CREATED
                 ROLE_UPDATED -> Known.ROLE_UPDATED
                 ROLE_DELETED -> Known.ROLE_DELETED
                 ROLE_ASSIGNMENT_CREATED -> Known.ROLE_ASSIGNMENT_CREATED
                 ROLE_ASSIGNMENT_DELETED -> Known.ROLE_ASSIGNMENT_DELETED
+                ROLE_BOUND_TO_RESOURCE -> Known.ROLE_BOUND_TO_RESOURCE
+                ROLE_UNBOUND_FROM_RESOURCE -> Known.ROLE_UNBOUND_FROM_RESOURCE
                 SCIM_ENABLED -> Known.SCIM_ENABLED
                 SCIM_DISABLED -> Known.SCIM_DISABLED
                 SERVICE_ACCOUNT_CREATED -> Known.SERVICE_ACCOUNT_CREATED
@@ -2663,6 +3663,118 @@ private constructor(
                 USER_ADDED -> Known.USER_ADDED
                 USER_UPDATED -> Known.USER_UPDATED
                 USER_DELETED -> Known.USER_DELETED
+                TENANT_METADATA_UPDATED -> Known.TENANT_METADATA_UPDATED
+                TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED ->
+                    Known.TENANT_MICROSOFT_ENTRA_MAPPING_UPSERTED
+                TENANT_MICROSOFT_ENTRA_MAPPING_DELETED ->
+                    Known.TENANT_MICROSOFT_ENTRA_MAPPING_DELETED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PROVIDER_CREATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PROVIDER_UPDATED
+                TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PROVIDER_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_MAPPING_CREATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_MAPPING_UPDATED
+                TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_MAPPING_ARCHIVED
+                TENANT_WORKLOAD_IDENTITY_BINDING_CREATED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_BINDING_CREATED
+                TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_PRINCIPAL_PROVISIONED
+                TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED ->
+                    Known.TENANT_WORKLOAD_IDENTITY_ACCESS_TOKEN_ISSUED
+                TENANT_ADMIN_API_KEY_CREATED -> Known.TENANT_ADMIN_API_KEY_CREATED
+                TENANT_ADMIN_API_KEY_UPDATED -> Known.TENANT_ADMIN_API_KEY_UPDATED
+                TENANT_ADMIN_API_KEY_DELETED -> Known.TENANT_ADMIN_API_KEY_DELETED
+                TENANT_PROJECT_API_KEY_CREATED -> Known.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED ->
+                    Known.TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED
+                TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED ->
+                    Known.TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED
+                TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Known.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
+                TENANT_MIGRATION_COMPLETED -> Known.TENANT_MIGRATION_COMPLETED
+                TENANT_SSO_MIGRATED -> Known.TENANT_SSO_MIGRATED
+                TENANT_DOMAINS_MIGRATED -> Known.TENANT_DOMAINS_MIGRATED
+                TENANT_SSO_CONNECTION_CREATED -> Known.TENANT_SSO_CONNECTION_CREATED
+                TENANT_SSO_CONNECTION_UPDATED -> Known.TENANT_SSO_CONNECTION_UPDATED
+                TENANT_SSO_CONNECTION_DELETED -> Known.TENANT_SSO_CONNECTION_DELETED
+                TENANT_SSO_CONNECTION_SETUP_STARTED -> Known.TENANT_SSO_CONNECTION_SETUP_STARTED
+                TENANT_POLICY_CREATED -> Known.TENANT_POLICY_CREATED
+                TENANT_POLICY_UPDATED -> Known.TENANT_POLICY_UPDATED
+                TENANT_POLICY_DELETED -> Known.TENANT_POLICY_DELETED
+                TENANT_POLICY_ATTACHED -> Known.TENANT_POLICY_ATTACHED
+                TENANT_POLICY_DETACHED -> Known.TENANT_POLICY_DETACHED
+                TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED ->
+                    Known.TENANT_PRINCIPAL_AUTHENTICATION_POLICY_RESOLVED
+                TENANT_SCIM_SETUP_STARTED -> Known.TENANT_SCIM_SETUP_STARTED
+                TENANT_SCIM_DELETION_REQUESTED -> Known.TENANT_SCIM_DELETION_REQUESTED
+                TENANT_SCIM_DIRECTORY_CREATED -> Known.TENANT_SCIM_DIRECTORY_CREATED
+                TENANT_PRODUCT_ACCESS_POLICY_UPDATED -> Known.TENANT_PRODUCT_ACCESS_POLICY_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_CREATED -> Known.TENANT_RESOURCE_SHARE_GRANT_CREATED
+                TENANT_RESOURCE_SHARE_GRANT_UPDATED -> Known.TENANT_RESOURCE_SHARE_GRANT_UPDATED
+                TENANT_RESOURCE_SHARE_GRANT_ACCEPTED -> Known.TENANT_RESOURCE_SHARE_GRANT_ACCEPTED
+                TENANT_RESOURCE_SHARE_GRANT_DECLINED -> Known.TENANT_RESOURCE_SHARE_GRANT_DECLINED
+                TENANT_RESOURCE_SHARE_GRANT_REVOKED -> Known.TENANT_RESOURCE_SHARE_GRANT_REVOKED
+                TENANT_RESOURCE_SHARE_GRANT_DELETED -> Known.TENANT_RESOURCE_SHARE_GRANT_DELETED
+                TENANT_SERVICE_ACCOUNT_UPDATED -> Known.TENANT_SERVICE_ACCOUNT_UPDATED
+                TENANT_SERVICE_ACCOUNT_DELETED -> Known.TENANT_SERVICE_ACCOUNT_DELETED
+                TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED -> Known.TENANT_SERVICE_ACCOUNT_TOKEN_REVOKED
+                TENANT_BILLING_OVERAGE_LIMIT_UPDATED -> Known.TENANT_BILLING_OVERAGE_LIMIT_UPDATED
+                TENANT_BILLING_ALERTS_UPDATED -> Known.TENANT_BILLING_ALERTS_UPDATED
+                TENANT_BILLING_INFO_UPDATED -> Known.TENANT_BILLING_INFO_UPDATED
+                TENANT_USAGE_LIMIT_WORKSPACE_UPDATED -> Known.TENANT_USAGE_LIMIT_WORKSPACE_UPDATED
+                TENANT_USAGE_LIMIT_GROUP_UPDATED -> Known.TENANT_USAGE_LIMIT_GROUP_UPDATED
+                TENANT_USAGE_LIMIT_USER_UPDATED -> Known.TENANT_USAGE_LIMIT_USER_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED ->
+                    Known.TENANT_USAGE_LIMIT_INCREASE_REQUEST_UPDATED
+                TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED ->
+                    Known.TENANT_USAGE_LIMIT_INCREASE_REQUEST_RESOLVED
+                TENANT_GROUP_CREATED -> Known.TENANT_GROUP_CREATED
+                TENANT_GROUP_UPDATED -> Known.TENANT_GROUP_UPDATED
+                TENANT_GROUP_DELETED -> Known.TENANT_GROUP_DELETED
+                TENANT_GROUP_MEMBER_ADDED -> Known.TENANT_GROUP_MEMBER_ADDED
+                TENANT_GROUP_MEMBER_REMOVED -> Known.TENANT_GROUP_MEMBER_REMOVED
+                TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED ->
+                    Known.TENANT_MIGRATION_ROLLOUT_STATUS_UPDATED
+                TENANT_MIGRATION_ROLLOUT_TIER_UPDATED -> Known.TENANT_MIGRATION_ROLLOUT_TIER_UPDATED
+                TENANT_ROLE_METADATA_UPDATED -> Known.TENANT_ROLE_METADATA_UPDATED
+                TENANT_CUSTOM_ROLE_CREATED -> Known.TENANT_CUSTOM_ROLE_CREATED
+                TENANT_CUSTOM_ROLE_UPDATED -> Known.TENANT_CUSTOM_ROLE_UPDATED
+                TENANT_CUSTOM_ROLE_DELETED -> Known.TENANT_CUSTOM_ROLE_DELETED
+                TENANT_ROLE_ASSIGNMENT_CREATED -> Known.TENANT_ROLE_ASSIGNMENT_CREATED
+                TENANT_ROLE_ASSIGNMENT_DELETED -> Known.TENANT_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED ->
+                    Known.TENANT_RESOURCE_ROLE_ASSIGNMENT_CREATED
+                TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED ->
+                    Known.TENANT_RESOURCE_ROLE_ASSIGNMENT_DELETED
+                TENANT_RESOURCE_ACCESS_UPDATED -> Known.TENANT_RESOURCE_ACCESS_UPDATED
+                TENANT_RESOURCE_ACCESS_DELETED -> Known.TENANT_RESOURCE_ACCESS_DELETED
+                TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION ->
+                    Known.TENANT_ADS_ACCOUNT_ONBOARDING_REDEMPTION
+                TENANT_SESSION_POLICY_CREATED -> Known.TENANT_SESSION_POLICY_CREATED
+                TENANT_SESSION_POLICY_UPDATED -> Known.TENANT_SESSION_POLICY_UPDATED
+                TENANT_SESSION_POLICY_DELETED -> Known.TENANT_SESSION_POLICY_DELETED
+                TENANT_SESSION_REVOCATION_STARTED -> Known.TENANT_SESSION_REVOCATION_STARTED
+                TENANT_THIRD_PARTY_APP_POLICY_UPDATED -> Known.TENANT_THIRD_PARTY_APP_POLICY_UPDATED
+                TENANT_USER_ADDED -> Known.TENANT_USER_ADDED
+                TENANT_USER_UPDATED -> Known.TENANT_USER_UPDATED
+                TENANT_USER_REMOVED -> Known.TENANT_USER_REMOVED
+                TENANT_USER_LOOKED_UP -> Known.TENANT_USER_LOOKED_UP
+                TENANT_USER_INVITED -> Known.TENANT_USER_INVITED
+                TENANT_MEMBERSHIP_REVOKED -> Known.TENANT_MEMBERSHIP_REVOKED
+                TENANT_API_ORGANIZATION_INVITE_UPSERTED ->
+                    Known.TENANT_API_ORGANIZATION_INVITE_UPSERTED
+                TENANT_API_ORGANIZATION_INVITE_DELETED ->
+                    Known.TENANT_API_ORGANIZATION_INVITE_DELETED
+                TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED ->
+                    Known.TENANT_CHATGPT_WORKSPACE_INVITE_UPSERTED
+                TENANT_MEMBERSHIP_ACCEPTED -> Known.TENANT_MEMBERSHIP_ACCEPTED
+                TENANT_MEMBERSHIP_DECLINED -> Known.TENANT_MEMBERSHIP_DECLINED
+                TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED ->
+                    Known.TENANT_WORKSPACE_INVITE_EMAIL_SETTINGS_UPDATED
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 
@@ -14013,6 +15125,718 @@ private constructor(
     }
 
     /** The details for events with this `type`. */
+    class RoleBoundToResource
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val connectorId: JsonField<String>,
+        private val connectorName: JsonField<String>,
+        private val enabled: JsonField<Boolean>,
+        private val permissions: JsonField<List<String>>,
+        private val resourceId: JsonField<String>,
+        private val resourceType: JsonField<String>,
+        private val roleId: JsonField<String>,
+        private val source: JsonField<Source>,
+        private val workspaceId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("connector_id")
+            @ExcludeMissing
+            connectorId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("connector_name")
+            @ExcludeMissing
+            connectorName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("enabled") @ExcludeMissing enabled: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("permissions")
+            @ExcludeMissing
+            permissions: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("resource_id")
+            @ExcludeMissing
+            resourceId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("resource_type")
+            @ExcludeMissing
+            resourceType: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role_id") @ExcludeMissing roleId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("source") @ExcludeMissing source: JsonField<Source> = JsonMissing.of(),
+            @JsonProperty("workspace_id")
+            @ExcludeMissing
+            workspaceId: JsonField<String> = JsonMissing.of(),
+        ) : this(
+            id,
+            connectorId,
+            connectorName,
+            enabled,
+            permissions,
+            resourceId,
+            resourceType,
+            roleId,
+            source,
+            workspaceId,
+            mutableMapOf(),
+        )
+
+        /**
+         * The ID of the resource the role was bound to. ChatGPT workspace connector resources use
+         * `<workspace_id>__<connector_id>`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The connector ID for a ChatGPT workspace connector resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun connectorId(): Optional<String> = connectorId.getOptional("connector_id")
+
+        /**
+         * The connector display name for a ChatGPT workspace connector resource, or the connector
+         * ID when the display name could not be resolved.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun connectorName(): Optional<String> = connectorName.getOptional("connector_name")
+
+        /**
+         * Whether the connector is enabled for the role.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * The permissions granted to the role for the resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun permissions(): Optional<List<String>> = permissions.getOptional("permissions")
+
+        /**
+         * The ID of the resource the role was bound to.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun resourceId(): Optional<String> = resourceId.getOptional("resource_id")
+
+        /**
+         * The type of resource the role was bound to.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun resourceType(): Optional<String> = resourceType.getOptional("resource_type")
+
+        /**
+         * The ID of the role that was bound to the resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun roleId(): Optional<String> = roleId.getOptional("role_id")
+
+        /**
+         * The connector role mutation path that produced the event.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun source(): Optional<Source> = source.getOptional("source")
+
+        /**
+         * The workspace ID for a ChatGPT workspace connector resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun workspaceId(): Optional<String> = workspaceId.getOptional("workspace_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [connectorId].
+         *
+         * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("connector_id")
+        @ExcludeMissing
+        fun _connectorId(): JsonField<String> = connectorId
+
+        /**
+         * Returns the raw JSON value of [connectorName].
+         *
+         * Unlike [connectorName], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("connector_name")
+        @ExcludeMissing
+        fun _connectorName(): JsonField<String> = connectorName
+
+        /**
+         * Returns the raw JSON value of [enabled].
+         *
+         * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
+
+        /**
+         * Returns the raw JSON value of [permissions].
+         *
+         * Unlike [permissions], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("permissions")
+        @ExcludeMissing
+        fun _permissions(): JsonField<List<String>> = permissions
+
+        /**
+         * Returns the raw JSON value of [resourceId].
+         *
+         * Unlike [resourceId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("resource_id")
+        @ExcludeMissing
+        fun _resourceId(): JsonField<String> = resourceId
+
+        /**
+         * Returns the raw JSON value of [resourceType].
+         *
+         * Unlike [resourceType], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("resource_type")
+        @ExcludeMissing
+        fun _resourceType(): JsonField<String> = resourceType
+
+        /**
+         * Returns the raw JSON value of [roleId].
+         *
+         * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
+
+        /**
+         * Returns the raw JSON value of [source].
+         *
+         * Unlike [source], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("source") @ExcludeMissing fun _source(): JsonField<Source> = source
+
+        /**
+         * Returns the raw JSON value of [workspaceId].
+         *
+         * Unlike [workspaceId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("workspace_id")
+        @ExcludeMissing
+        fun _workspaceId(): JsonField<String> = workspaceId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [RoleBoundToResource]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [RoleBoundToResource]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var connectorId: JsonField<String> = JsonMissing.of()
+            private var connectorName: JsonField<String> = JsonMissing.of()
+            private var enabled: JsonField<Boolean> = JsonMissing.of()
+            private var permissions: JsonField<MutableList<String>>? = null
+            private var resourceId: JsonField<String> = JsonMissing.of()
+            private var resourceType: JsonField<String> = JsonMissing.of()
+            private var roleId: JsonField<String> = JsonMissing.of()
+            private var source: JsonField<Source> = JsonMissing.of()
+            private var workspaceId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(roleBoundToResource: RoleBoundToResource) = apply {
+                id = roleBoundToResource.id
+                connectorId = roleBoundToResource.connectorId
+                connectorName = roleBoundToResource.connectorName
+                enabled = roleBoundToResource.enabled
+                permissions = roleBoundToResource.permissions.map { it.toMutableList() }
+                resourceId = roleBoundToResource.resourceId
+                resourceType = roleBoundToResource.resourceType
+                roleId = roleBoundToResource.roleId
+                source = roleBoundToResource.source
+                workspaceId = roleBoundToResource.workspaceId
+                additionalProperties = roleBoundToResource.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The ID of the resource the role was bound to. ChatGPT workspace connector resources
+             * use `<workspace_id>__<connector_id>`.
+             */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The connector ID for a ChatGPT workspace connector resource. */
+            fun connectorId(connectorId: String) = connectorId(JsonField.of(connectorId))
+
+            /**
+             * Sets [Builder.connectorId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.connectorId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun connectorId(connectorId: JsonField<String>) = apply {
+                this.connectorId = connectorId
+            }
+
+            /**
+             * The connector display name for a ChatGPT workspace connector resource, or the
+             * connector ID when the display name could not be resolved.
+             */
+            fun connectorName(connectorName: String) = connectorName(JsonField.of(connectorName))
+
+            /**
+             * Sets [Builder.connectorName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.connectorName] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun connectorName(connectorName: JsonField<String>) = apply {
+                this.connectorName = connectorName
+            }
+
+            /** Whether the connector is enabled for the role. */
+            fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+            /**
+             * Sets [Builder.enabled] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.enabled] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
+
+            /** The permissions granted to the role for the resource. */
+            fun permissions(permissions: List<String>) = permissions(JsonField.of(permissions))
+
+            /**
+             * Sets [Builder.permissions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.permissions] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun permissions(permissions: JsonField<List<String>>) = apply {
+                this.permissions = permissions.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [permissions].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addPermission(permission: String) = apply {
+                permissions =
+                    (permissions ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("permissions", it).add(permission)
+                    }
+            }
+
+            /** The ID of the resource the role was bound to. */
+            fun resourceId(resourceId: String) = resourceId(JsonField.of(resourceId))
+
+            /**
+             * Sets [Builder.resourceId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.resourceId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun resourceId(resourceId: JsonField<String>) = apply { this.resourceId = resourceId }
+
+            /** The type of resource the role was bound to. */
+            fun resourceType(resourceType: String) = resourceType(JsonField.of(resourceType))
+
+            /**
+             * Sets [Builder.resourceType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.resourceType] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun resourceType(resourceType: JsonField<String>) = apply {
+                this.resourceType = resourceType
+            }
+
+            /** The ID of the role that was bound to the resource. */
+            fun roleId(roleId: String) = roleId(JsonField.of(roleId))
+
+            /**
+             * Sets [Builder.roleId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.roleId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
+
+            /** The connector role mutation path that produced the event. */
+            fun source(source: Source) = source(JsonField.of(source))
+
+            /**
+             * Sets [Builder.source] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.source] with a well-typed [Source] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun source(source: JsonField<Source>) = apply { this.source = source }
+
+            /** The workspace ID for a ChatGPT workspace connector resource. */
+            fun workspaceId(workspaceId: String) = workspaceId(JsonField.of(workspaceId))
+
+            /**
+             * Sets [Builder.workspaceId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.workspaceId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun workspaceId(workspaceId: JsonField<String>) = apply {
+                this.workspaceId = workspaceId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [RoleBoundToResource].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): RoleBoundToResource =
+                RoleBoundToResource(
+                    id,
+                    connectorId,
+                    connectorName,
+                    enabled,
+                    (permissions ?: JsonMissing.of()).map { it.toImmutable() },
+                    resourceId,
+                    resourceType,
+                    roleId,
+                    source,
+                    workspaceId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): RoleBoundToResource = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            connectorId()
+            connectorName()
+            enabled()
+            permissions()
+            resourceId()
+            resourceType()
+            roleId()
+            source().ifPresent { it.validate() }
+            workspaceId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (connectorId.asKnown().isPresent) 1 else 0) +
+                (if (connectorName.asKnown().isPresent) 1 else 0) +
+                (if (enabled.asKnown().isPresent) 1 else 0) +
+                (permissions.asKnown().getOrNull()?.size ?: 0) +
+                (if (resourceId.asKnown().isPresent) 1 else 0) +
+                (if (resourceType.asKnown().isPresent) 1 else 0) +
+                (if (roleId.asKnown().isPresent) 1 else 0) +
+                (source.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (workspaceId.asKnown().isPresent) 1 else 0)
+
+        /** The connector role mutation path that produced the event. */
+        class Source @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val ROLE_TOGGLE = of("role_toggle")
+
+                @JvmField val ROLE_CONNECTOR_UPDATE = of("role_connector_update")
+
+                @JvmField val ROLE_DELETE = of("role_delete")
+
+                @JvmField val WORKSPACE_PERMISSIONS = of("workspace_permissions")
+
+                @JvmField val CONNECTOR_PUBLISH = of("connector_publish")
+
+                @JvmStatic fun of(value: String) = Source(JsonField.of(value))
+            }
+
+            /** An enum containing [Source]'s known values. */
+            enum class Known {
+                ROLE_TOGGLE,
+                ROLE_CONNECTOR_UPDATE,
+                ROLE_DELETE,
+                WORKSPACE_PERMISSIONS,
+                CONNECTOR_PUBLISH,
+            }
+
+            /**
+             * An enum containing [Source]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Source] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                ROLE_TOGGLE,
+                ROLE_CONNECTOR_UPDATE,
+                ROLE_DELETE,
+                WORKSPACE_PERMISSIONS,
+                CONNECTOR_PUBLISH,
+                /**
+                 * An enum member indicating that [Source] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    ROLE_TOGGLE -> Value.ROLE_TOGGLE
+                    ROLE_CONNECTOR_UPDATE -> Value.ROLE_CONNECTOR_UPDATE
+                    ROLE_DELETE -> Value.ROLE_DELETE
+                    WORKSPACE_PERMISSIONS -> Value.WORKSPACE_PERMISSIONS
+                    CONNECTOR_PUBLISH -> Value.CONNECTOR_PUBLISH
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    ROLE_TOGGLE -> Known.ROLE_TOGGLE
+                    ROLE_CONNECTOR_UPDATE -> Known.ROLE_CONNECTOR_UPDATE
+                    ROLE_DELETE -> Known.ROLE_DELETE
+                    WORKSPACE_PERMISSIONS -> Known.WORKSPACE_PERMISSIONS
+                    CONNECTOR_PUBLISH -> Known.CONNECTOR_PUBLISH
+                    else -> throw OpenAIInvalidDataException("Unknown Source: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Source = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Source && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is RoleBoundToResource &&
+                id == other.id &&
+                connectorId == other.connectorId &&
+                connectorName == other.connectorName &&
+                enabled == other.enabled &&
+                permissions == other.permissions &&
+                resourceId == other.resourceId &&
+                resourceType == other.resourceType &&
+                roleId == other.roleId &&
+                source == other.source &&
+                workspaceId == other.workspaceId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                id,
+                connectorId,
+                connectorName,
+                enabled,
+                permissions,
+                resourceId,
+                resourceType,
+                roleId,
+                source,
+                workspaceId,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "RoleBoundToResource{id=$id, connectorId=$connectorId, connectorName=$connectorName, enabled=$enabled, permissions=$permissions, resourceId=$resourceId, resourceType=$resourceType, roleId=$roleId, source=$source, workspaceId=$workspaceId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
     class RoleCreated
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -14490,6 +16314,720 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "RoleDeleted{id=$id, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class RoleUnboundFromResource
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val connectorId: JsonField<String>,
+        private val connectorName: JsonField<String>,
+        private val enabled: JsonField<Boolean>,
+        private val permissions: JsonField<List<String>>,
+        private val resourceId: JsonField<String>,
+        private val resourceType: JsonField<String>,
+        private val roleId: JsonField<String>,
+        private val source: JsonField<Source>,
+        private val workspaceId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("connector_id")
+            @ExcludeMissing
+            connectorId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("connector_name")
+            @ExcludeMissing
+            connectorName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("enabled") @ExcludeMissing enabled: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("permissions")
+            @ExcludeMissing
+            permissions: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("resource_id")
+            @ExcludeMissing
+            resourceId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("resource_type")
+            @ExcludeMissing
+            resourceType: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role_id") @ExcludeMissing roleId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("source") @ExcludeMissing source: JsonField<Source> = JsonMissing.of(),
+            @JsonProperty("workspace_id")
+            @ExcludeMissing
+            workspaceId: JsonField<String> = JsonMissing.of(),
+        ) : this(
+            id,
+            connectorId,
+            connectorName,
+            enabled,
+            permissions,
+            resourceId,
+            resourceType,
+            roleId,
+            source,
+            workspaceId,
+            mutableMapOf(),
+        )
+
+        /**
+         * The ID of the resource the role was unbound from. ChatGPT workspace connector resources
+         * use `<workspace_id>__<connector_id>`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The connector ID for a ChatGPT workspace connector resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun connectorId(): Optional<String> = connectorId.getOptional("connector_id")
+
+        /**
+         * The connector display name for a ChatGPT workspace connector resource, or the connector
+         * ID when the display name could not be resolved.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun connectorName(): Optional<String> = connectorName.getOptional("connector_name")
+
+        /**
+         * Whether the connector is enabled for the role.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * The permissions remaining for the role after the change.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun permissions(): Optional<List<String>> = permissions.getOptional("permissions")
+
+        /**
+         * The ID of the resource the role was unbound from.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun resourceId(): Optional<String> = resourceId.getOptional("resource_id")
+
+        /**
+         * The type of resource the role was unbound from.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun resourceType(): Optional<String> = resourceType.getOptional("resource_type")
+
+        /**
+         * The ID of the role that was unbound from the resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun roleId(): Optional<String> = roleId.getOptional("role_id")
+
+        /**
+         * The connector role mutation path that produced the event.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun source(): Optional<Source> = source.getOptional("source")
+
+        /**
+         * The workspace ID for a ChatGPT workspace connector resource.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun workspaceId(): Optional<String> = workspaceId.getOptional("workspace_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [connectorId].
+         *
+         * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("connector_id")
+        @ExcludeMissing
+        fun _connectorId(): JsonField<String> = connectorId
+
+        /**
+         * Returns the raw JSON value of [connectorName].
+         *
+         * Unlike [connectorName], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("connector_name")
+        @ExcludeMissing
+        fun _connectorName(): JsonField<String> = connectorName
+
+        /**
+         * Returns the raw JSON value of [enabled].
+         *
+         * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
+
+        /**
+         * Returns the raw JSON value of [permissions].
+         *
+         * Unlike [permissions], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("permissions")
+        @ExcludeMissing
+        fun _permissions(): JsonField<List<String>> = permissions
+
+        /**
+         * Returns the raw JSON value of [resourceId].
+         *
+         * Unlike [resourceId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("resource_id")
+        @ExcludeMissing
+        fun _resourceId(): JsonField<String> = resourceId
+
+        /**
+         * Returns the raw JSON value of [resourceType].
+         *
+         * Unlike [resourceType], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("resource_type")
+        @ExcludeMissing
+        fun _resourceType(): JsonField<String> = resourceType
+
+        /**
+         * Returns the raw JSON value of [roleId].
+         *
+         * Unlike [roleId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("role_id") @ExcludeMissing fun _roleId(): JsonField<String> = roleId
+
+        /**
+         * Returns the raw JSON value of [source].
+         *
+         * Unlike [source], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("source") @ExcludeMissing fun _source(): JsonField<Source> = source
+
+        /**
+         * Returns the raw JSON value of [workspaceId].
+         *
+         * Unlike [workspaceId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("workspace_id")
+        @ExcludeMissing
+        fun _workspaceId(): JsonField<String> = workspaceId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [RoleUnboundFromResource].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [RoleUnboundFromResource]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var connectorId: JsonField<String> = JsonMissing.of()
+            private var connectorName: JsonField<String> = JsonMissing.of()
+            private var enabled: JsonField<Boolean> = JsonMissing.of()
+            private var permissions: JsonField<MutableList<String>>? = null
+            private var resourceId: JsonField<String> = JsonMissing.of()
+            private var resourceType: JsonField<String> = JsonMissing.of()
+            private var roleId: JsonField<String> = JsonMissing.of()
+            private var source: JsonField<Source> = JsonMissing.of()
+            private var workspaceId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(roleUnboundFromResource: RoleUnboundFromResource) = apply {
+                id = roleUnboundFromResource.id
+                connectorId = roleUnboundFromResource.connectorId
+                connectorName = roleUnboundFromResource.connectorName
+                enabled = roleUnboundFromResource.enabled
+                permissions = roleUnboundFromResource.permissions.map { it.toMutableList() }
+                resourceId = roleUnboundFromResource.resourceId
+                resourceType = roleUnboundFromResource.resourceType
+                roleId = roleUnboundFromResource.roleId
+                source = roleUnboundFromResource.source
+                workspaceId = roleUnboundFromResource.workspaceId
+                additionalProperties = roleUnboundFromResource.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The ID of the resource the role was unbound from. ChatGPT workspace connector
+             * resources use `<workspace_id>__<connector_id>`.
+             */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The connector ID for a ChatGPT workspace connector resource. */
+            fun connectorId(connectorId: String) = connectorId(JsonField.of(connectorId))
+
+            /**
+             * Sets [Builder.connectorId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.connectorId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun connectorId(connectorId: JsonField<String>) = apply {
+                this.connectorId = connectorId
+            }
+
+            /**
+             * The connector display name for a ChatGPT workspace connector resource, or the
+             * connector ID when the display name could not be resolved.
+             */
+            fun connectorName(connectorName: String) = connectorName(JsonField.of(connectorName))
+
+            /**
+             * Sets [Builder.connectorName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.connectorName] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun connectorName(connectorName: JsonField<String>) = apply {
+                this.connectorName = connectorName
+            }
+
+            /** Whether the connector is enabled for the role. */
+            fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+            /**
+             * Sets [Builder.enabled] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.enabled] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
+
+            /** The permissions remaining for the role after the change. */
+            fun permissions(permissions: List<String>) = permissions(JsonField.of(permissions))
+
+            /**
+             * Sets [Builder.permissions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.permissions] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun permissions(permissions: JsonField<List<String>>) = apply {
+                this.permissions = permissions.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [permissions].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addPermission(permission: String) = apply {
+                permissions =
+                    (permissions ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("permissions", it).add(permission)
+                    }
+            }
+
+            /** The ID of the resource the role was unbound from. */
+            fun resourceId(resourceId: String) = resourceId(JsonField.of(resourceId))
+
+            /**
+             * Sets [Builder.resourceId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.resourceId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun resourceId(resourceId: JsonField<String>) = apply { this.resourceId = resourceId }
+
+            /** The type of resource the role was unbound from. */
+            fun resourceType(resourceType: String) = resourceType(JsonField.of(resourceType))
+
+            /**
+             * Sets [Builder.resourceType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.resourceType] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun resourceType(resourceType: JsonField<String>) = apply {
+                this.resourceType = resourceType
+            }
+
+            /** The ID of the role that was unbound from the resource. */
+            fun roleId(roleId: String) = roleId(JsonField.of(roleId))
+
+            /**
+             * Sets [Builder.roleId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.roleId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun roleId(roleId: JsonField<String>) = apply { this.roleId = roleId }
+
+            /** The connector role mutation path that produced the event. */
+            fun source(source: Source) = source(JsonField.of(source))
+
+            /**
+             * Sets [Builder.source] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.source] with a well-typed [Source] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun source(source: JsonField<Source>) = apply { this.source = source }
+
+            /** The workspace ID for a ChatGPT workspace connector resource. */
+            fun workspaceId(workspaceId: String) = workspaceId(JsonField.of(workspaceId))
+
+            /**
+             * Sets [Builder.workspaceId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.workspaceId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun workspaceId(workspaceId: JsonField<String>) = apply {
+                this.workspaceId = workspaceId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [RoleUnboundFromResource].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): RoleUnboundFromResource =
+                RoleUnboundFromResource(
+                    id,
+                    connectorId,
+                    connectorName,
+                    enabled,
+                    (permissions ?: JsonMissing.of()).map { it.toImmutable() },
+                    resourceId,
+                    resourceType,
+                    roleId,
+                    source,
+                    workspaceId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): RoleUnboundFromResource = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            connectorId()
+            connectorName()
+            enabled()
+            permissions()
+            resourceId()
+            resourceType()
+            roleId()
+            source().ifPresent { it.validate() }
+            workspaceId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (connectorId.asKnown().isPresent) 1 else 0) +
+                (if (connectorName.asKnown().isPresent) 1 else 0) +
+                (if (enabled.asKnown().isPresent) 1 else 0) +
+                (permissions.asKnown().getOrNull()?.size ?: 0) +
+                (if (resourceId.asKnown().isPresent) 1 else 0) +
+                (if (resourceType.asKnown().isPresent) 1 else 0) +
+                (if (roleId.asKnown().isPresent) 1 else 0) +
+                (source.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (workspaceId.asKnown().isPresent) 1 else 0)
+
+        /** The connector role mutation path that produced the event. */
+        class Source @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val ROLE_TOGGLE = of("role_toggle")
+
+                @JvmField val ROLE_CONNECTOR_UPDATE = of("role_connector_update")
+
+                @JvmField val ROLE_DELETE = of("role_delete")
+
+                @JvmField val WORKSPACE_PERMISSIONS = of("workspace_permissions")
+
+                @JvmField val CONNECTOR_PUBLISH = of("connector_publish")
+
+                @JvmStatic fun of(value: String) = Source(JsonField.of(value))
+            }
+
+            /** An enum containing [Source]'s known values. */
+            enum class Known {
+                ROLE_TOGGLE,
+                ROLE_CONNECTOR_UPDATE,
+                ROLE_DELETE,
+                WORKSPACE_PERMISSIONS,
+                CONNECTOR_PUBLISH,
+            }
+
+            /**
+             * An enum containing [Source]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Source] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                ROLE_TOGGLE,
+                ROLE_CONNECTOR_UPDATE,
+                ROLE_DELETE,
+                WORKSPACE_PERMISSIONS,
+                CONNECTOR_PUBLISH,
+                /**
+                 * An enum member indicating that [Source] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    ROLE_TOGGLE -> Value.ROLE_TOGGLE
+                    ROLE_CONNECTOR_UPDATE -> Value.ROLE_CONNECTOR_UPDATE
+                    ROLE_DELETE -> Value.ROLE_DELETE
+                    WORKSPACE_PERMISSIONS -> Value.WORKSPACE_PERMISSIONS
+                    CONNECTOR_PUBLISH -> Value.CONNECTOR_PUBLISH
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    ROLE_TOGGLE -> Known.ROLE_TOGGLE
+                    ROLE_CONNECTOR_UPDATE -> Known.ROLE_CONNECTOR_UPDATE
+                    ROLE_DELETE -> Known.ROLE_DELETE
+                    WORKSPACE_PERMISSIONS -> Known.WORKSPACE_PERMISSIONS
+                    CONNECTOR_PUBLISH -> Known.CONNECTOR_PUBLISH
+                    else -> throw OpenAIInvalidDataException("Unknown Source: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Source = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Source && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is RoleUnboundFromResource &&
+                id == other.id &&
+                connectorId == other.connectorId &&
+                connectorName == other.connectorName &&
+                enabled == other.enabled &&
+                permissions == other.permissions &&
+                resourceId == other.resourceId &&
+                resourceType == other.resourceType &&
+                roleId == other.roleId &&
+                source == other.source &&
+                workspaceId == other.workspaceId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                id,
+                connectorId,
+                connectorName,
+                enabled,
+                permissions,
+                resourceId,
+                resourceType,
+                roleId,
+                source,
+                workspaceId,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "RoleUnboundFromResource{id=$id, connectorId=$connectorId, connectorName=$connectorName, enabled=$enabled, permissions=$permissions, resourceId=$resourceId, resourceType=$resourceType, roleId=$roleId, source=$source, workspaceId=$workspaceId, additionalProperties=$additionalProperties}"
     }
 
     /** The details for events with this `type`. */
@@ -17133,6 +19671,1312 @@ private constructor(
             "UserUpdated{id=$id, changesRequested=$changesRequested, additionalProperties=$additionalProperties}"
     }
 
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderMappingCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val data: JsonValue,
+        private val identityProviderId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("data") @ExcludeMissing data: JsonValue = JsonMissing.of(),
+            @JsonProperty("identity_provider_id")
+            @ExcludeMissing
+            identityProviderId: JsonField<String> = JsonMissing.of(),
+        ) : this(id, data, identityProviderId, mutableMapOf())
+
+        /**
+         * The workload identity provider mapping ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to create the workload identity provider mapping.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderMappingCreated.data().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun identityProviderId(): Optional<String> =
+            identityProviderId.getOptional("identity_provider_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [identityProviderId].
+         *
+         * Unlike [identityProviderId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("identity_provider_id")
+        @ExcludeMissing
+        fun _identityProviderId(): JsonField<String> = identityProviderId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderMappingCreated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderMappingCreated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var data: JsonValue = JsonMissing.of()
+            private var identityProviderId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                workloadIdentityProviderMappingCreated: WorkloadIdentityProviderMappingCreated
+            ) = apply {
+                id = workloadIdentityProviderMappingCreated.id
+                data = workloadIdentityProviderMappingCreated.data
+                identityProviderId = workloadIdentityProviderMappingCreated.identityProviderId
+                additionalProperties =
+                    workloadIdentityProviderMappingCreated.additionalProperties.toMutableMap()
+            }
+
+            /** The workload identity provider mapping ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to create the workload identity provider mapping. */
+            fun data(data: JsonValue) = apply { this.data = data }
+
+            /** The workload identity provider ID. */
+            fun identityProviderId(identityProviderId: String) =
+                identityProviderId(JsonField.of(identityProviderId))
+
+            /**
+             * Sets [Builder.identityProviderId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.identityProviderId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun identityProviderId(identityProviderId: JsonField<String>) = apply {
+                this.identityProviderId = identityProviderId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderMappingCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderMappingCreated =
+                WorkloadIdentityProviderMappingCreated(
+                    id,
+                    data,
+                    identityProviderId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderMappingCreated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            identityProviderId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (identityProviderId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderMappingCreated &&
+                id == other.id &&
+                data == other.data &&
+                identityProviderId == other.identityProviderId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, data, identityProviderId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderMappingCreated{id=$id, data=$data, identityProviderId=$identityProviderId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderMappingDeleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val identityProviderId: JsonField<String>,
+        private val projectId: JsonField<String>,
+        private val serviceAccountId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("identity_provider_id")
+            @ExcludeMissing
+            identityProviderId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("project_id")
+            @ExcludeMissing
+            projectId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("service_account_id")
+            @ExcludeMissing
+            serviceAccountId: JsonField<String> = JsonMissing.of(),
+        ) : this(id, identityProviderId, projectId, serviceAccountId, mutableMapOf())
+
+        /**
+         * The workload identity provider mapping ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun identityProviderId(): Optional<String> =
+            identityProviderId.getOptional("identity_provider_id")
+
+        /**
+         * The project ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun projectId(): Optional<String> = projectId.getOptional("project_id")
+
+        /**
+         * The mapped service account ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serviceAccountId(): Optional<String> =
+            serviceAccountId.getOptional("service_account_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [identityProviderId].
+         *
+         * Unlike [identityProviderId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("identity_provider_id")
+        @ExcludeMissing
+        fun _identityProviderId(): JsonField<String> = identityProviderId
+
+        /**
+         * Returns the raw JSON value of [projectId].
+         *
+         * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("project_id") @ExcludeMissing fun _projectId(): JsonField<String> = projectId
+
+        /**
+         * Returns the raw JSON value of [serviceAccountId].
+         *
+         * Unlike [serviceAccountId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("service_account_id")
+        @ExcludeMissing
+        fun _serviceAccountId(): JsonField<String> = serviceAccountId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderMappingDeleted].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderMappingDeleted]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var identityProviderId: JsonField<String> = JsonMissing.of()
+            private var projectId: JsonField<String> = JsonMissing.of()
+            private var serviceAccountId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                workloadIdentityProviderMappingDeleted: WorkloadIdentityProviderMappingDeleted
+            ) = apply {
+                id = workloadIdentityProviderMappingDeleted.id
+                identityProviderId = workloadIdentityProviderMappingDeleted.identityProviderId
+                projectId = workloadIdentityProviderMappingDeleted.projectId
+                serviceAccountId = workloadIdentityProviderMappingDeleted.serviceAccountId
+                additionalProperties =
+                    workloadIdentityProviderMappingDeleted.additionalProperties.toMutableMap()
+            }
+
+            /** The workload identity provider mapping ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The workload identity provider ID. */
+            fun identityProviderId(identityProviderId: String) =
+                identityProviderId(JsonField.of(identityProviderId))
+
+            /**
+             * Sets [Builder.identityProviderId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.identityProviderId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun identityProviderId(identityProviderId: JsonField<String>) = apply {
+                this.identityProviderId = identityProviderId
+            }
+
+            /** The project ID. */
+            fun projectId(projectId: String) = projectId(JsonField.of(projectId))
+
+            /**
+             * Sets [Builder.projectId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.projectId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun projectId(projectId: JsonField<String>) = apply { this.projectId = projectId }
+
+            /** The mapped service account ID. */
+            fun serviceAccountId(serviceAccountId: String) =
+                serviceAccountId(JsonField.of(serviceAccountId))
+
+            /**
+             * Sets [Builder.serviceAccountId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serviceAccountId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serviceAccountId(serviceAccountId: JsonField<String>) = apply {
+                this.serviceAccountId = serviceAccountId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderMappingDeleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderMappingDeleted =
+                WorkloadIdentityProviderMappingDeleted(
+                    id,
+                    identityProviderId,
+                    projectId,
+                    serviceAccountId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderMappingDeleted = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            identityProviderId()
+            projectId()
+            serviceAccountId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (identityProviderId.asKnown().isPresent) 1 else 0) +
+                (if (projectId.asKnown().isPresent) 1 else 0) +
+                (if (serviceAccountId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderMappingDeleted &&
+                id == other.id &&
+                identityProviderId == other.identityProviderId &&
+                projectId == other.projectId &&
+                serviceAccountId == other.serviceAccountId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, identityProviderId, projectId, serviceAccountId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderMappingDeleted{id=$id, identityProviderId=$identityProviderId, projectId=$projectId, serviceAccountId=$serviceAccountId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderMappingUpdated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val changesRequested: JsonValue,
+        private val identityProviderId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("changes_requested")
+            @ExcludeMissing
+            changesRequested: JsonValue = JsonMissing.of(),
+            @JsonProperty("identity_provider_id")
+            @ExcludeMissing
+            identityProviderId: JsonField<String> = JsonMissing.of(),
+        ) : this(id, changesRequested, identityProviderId, mutableMapOf())
+
+        /**
+         * The workload identity provider mapping ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to update the workload identity provider mapping.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderMappingUpdated.changesRequested().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("changes_requested")
+        @ExcludeMissing
+        fun _changesRequested(): JsonValue = changesRequested
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun identityProviderId(): Optional<String> =
+            identityProviderId.getOptional("identity_provider_id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [identityProviderId].
+         *
+         * Unlike [identityProviderId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("identity_provider_id")
+        @ExcludeMissing
+        fun _identityProviderId(): JsonField<String> = identityProviderId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderMappingUpdated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderMappingUpdated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var changesRequested: JsonValue = JsonMissing.of()
+            private var identityProviderId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                workloadIdentityProviderMappingUpdated: WorkloadIdentityProviderMappingUpdated
+            ) = apply {
+                id = workloadIdentityProviderMappingUpdated.id
+                changesRequested = workloadIdentityProviderMappingUpdated.changesRequested
+                identityProviderId = workloadIdentityProviderMappingUpdated.identityProviderId
+                additionalProperties =
+                    workloadIdentityProviderMappingUpdated.additionalProperties.toMutableMap()
+            }
+
+            /** The workload identity provider mapping ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to update the workload identity provider mapping. */
+            fun changesRequested(changesRequested: JsonValue) = apply {
+                this.changesRequested = changesRequested
+            }
+
+            /** The workload identity provider ID. */
+            fun identityProviderId(identityProviderId: String) =
+                identityProviderId(JsonField.of(identityProviderId))
+
+            /**
+             * Sets [Builder.identityProviderId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.identityProviderId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun identityProviderId(identityProviderId: JsonField<String>) = apply {
+                this.identityProviderId = identityProviderId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderMappingUpdated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderMappingUpdated =
+                WorkloadIdentityProviderMappingUpdated(
+                    id,
+                    changesRequested,
+                    identityProviderId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderMappingUpdated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            identityProviderId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (identityProviderId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderMappingUpdated &&
+                id == other.id &&
+                changesRequested == other.changesRequested &&
+                identityProviderId == other.identityProviderId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, changesRequested, identityProviderId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderMappingUpdated{id=$id, changesRequested=$changesRequested, identityProviderId=$identityProviderId, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val data: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("data") @ExcludeMissing data: JsonValue = JsonMissing.of(),
+        ) : this(id, data, mutableMapOf())
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to create the workload identity provider.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderCreated.data().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderCreated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderCreated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var data: JsonValue = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(workloadIdentityProviderCreated: WorkloadIdentityProviderCreated) =
+                apply {
+                    id = workloadIdentityProviderCreated.id
+                    data = workloadIdentityProviderCreated.data
+                    additionalProperties =
+                        workloadIdentityProviderCreated.additionalProperties.toMutableMap()
+                }
+
+            /** The workload identity provider ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to create the workload identity provider. */
+            fun data(data: JsonValue) = apply { this.data = data }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderCreated =
+                WorkloadIdentityProviderCreated(id, data, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderCreated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderCreated &&
+                id == other.id &&
+                data == other.data &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, data, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderCreated{id=$id, data=$data, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderDeleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val name: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        ) : this(id, name, mutableMapOf())
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The workload identity provider name.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun name(): Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderDeleted].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderDeleted]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(workloadIdentityProviderDeleted: WorkloadIdentityProviderDeleted) =
+                apply {
+                    id = workloadIdentityProviderDeleted.id
+                    name = workloadIdentityProviderDeleted.name
+                    additionalProperties =
+                        workloadIdentityProviderDeleted.additionalProperties.toMutableMap()
+                }
+
+            /** The workload identity provider ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The workload identity provider name. */
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderDeleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderDeleted =
+                WorkloadIdentityProviderDeleted(id, name, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderDeleted = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            name()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) + (if (name.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderDeleted &&
+                id == other.id &&
+                name == other.name &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, name, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderDeleted{id=$id, name=$name, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class WorkloadIdentityProviderUpdated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val changesRequested: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("changes_requested")
+            @ExcludeMissing
+            changesRequested: JsonValue = JsonMissing.of(),
+        ) : this(id, changesRequested, mutableMapOf())
+
+        /**
+         * The workload identity provider ID.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The payload used to update the workload identity provider.
+         *
+         * This arbitrary value can be deserialized into a custom type using the `convert` method:
+         * ```java
+         * MyClass myObject = workloadIdentityProviderUpdated.changesRequested().convert(MyClass.class);
+         * ```
+         */
+        @JsonProperty("changes_requested")
+        @ExcludeMissing
+        fun _changesRequested(): JsonValue = changesRequested
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [WorkloadIdentityProviderUpdated].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WorkloadIdentityProviderUpdated]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var changesRequested: JsonValue = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(workloadIdentityProviderUpdated: WorkloadIdentityProviderUpdated) =
+                apply {
+                    id = workloadIdentityProviderUpdated.id
+                    changesRequested = workloadIdentityProviderUpdated.changesRequested
+                    additionalProperties =
+                        workloadIdentityProviderUpdated.additionalProperties.toMutableMap()
+                }
+
+            /** The workload identity provider ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The payload used to update the workload identity provider. */
+            fun changesRequested(changesRequested: JsonValue) = apply {
+                this.changesRequested = changesRequested
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WorkloadIdentityProviderUpdated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WorkloadIdentityProviderUpdated =
+                WorkloadIdentityProviderUpdated(
+                    id,
+                    changesRequested,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WorkloadIdentityProviderUpdated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WorkloadIdentityProviderUpdated &&
+                id == other.id &&
+                changesRequested == other.changesRequested &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, changesRequested, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WorkloadIdentityProviderUpdated{id=$id, changesRequested=$changesRequested, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -17180,8 +21024,10 @@ private constructor(
             rateLimitUpdated == other.rateLimitUpdated &&
             roleAssignmentCreated == other.roleAssignmentCreated &&
             roleAssignmentDeleted == other.roleAssignmentDeleted &&
+            roleBoundToResource == other.roleBoundToResource &&
             roleCreated == other.roleCreated &&
             roleDeleted == other.roleDeleted &&
+            roleUnboundFromResource == other.roleUnboundFromResource &&
             roleUpdated == other.roleUpdated &&
             scimDisabled == other.scimDisabled &&
             scimEnabled == other.scimEnabled &&
@@ -17191,6 +21037,15 @@ private constructor(
             userAdded == other.userAdded &&
             userDeleted == other.userDeleted &&
             userUpdated == other.userUpdated &&
+            workloadIdentityProviderMappingCreated ==
+                other.workloadIdentityProviderMappingCreated &&
+            workloadIdentityProviderMappingDeleted ==
+                other.workloadIdentityProviderMappingDeleted &&
+            workloadIdentityProviderMappingUpdated ==
+                other.workloadIdentityProviderMappingUpdated &&
+            workloadIdentityProviderCreated == other.workloadIdentityProviderCreated &&
+            workloadIdentityProviderDeleted == other.workloadIdentityProviderDeleted &&
+            workloadIdentityProviderUpdated == other.workloadIdentityProviderUpdated &&
             additionalProperties == other.additionalProperties
     }
 
@@ -17237,8 +21092,10 @@ private constructor(
             rateLimitUpdated,
             roleAssignmentCreated,
             roleAssignmentDeleted,
+            roleBoundToResource,
             roleCreated,
             roleDeleted,
+            roleUnboundFromResource,
             roleUpdated,
             scimDisabled,
             scimEnabled,
@@ -17248,6 +21105,12 @@ private constructor(
             userAdded,
             userDeleted,
             userUpdated,
+            workloadIdentityProviderMappingCreated,
+            workloadIdentityProviderMappingDeleted,
+            workloadIdentityProviderMappingUpdated,
+            workloadIdentityProviderCreated,
+            workloadIdentityProviderDeleted,
+            workloadIdentityProviderUpdated,
             additionalProperties,
         )
     }
@@ -17255,5 +21118,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, additionalProperties=$additionalProperties}"
+        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleBoundToResource=$roleBoundToResource, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUnboundFromResource=$roleUnboundFromResource, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, workloadIdentityProviderMappingCreated=$workloadIdentityProviderMappingCreated, workloadIdentityProviderMappingDeleted=$workloadIdentityProviderMappingDeleted, workloadIdentityProviderMappingUpdated=$workloadIdentityProviderMappingUpdated, workloadIdentityProviderCreated=$workloadIdentityProviderCreated, workloadIdentityProviderDeleted=$workloadIdentityProviderDeleted, workloadIdentityProviderUpdated=$workloadIdentityProviderUpdated, additionalProperties=$additionalProperties}"
 }

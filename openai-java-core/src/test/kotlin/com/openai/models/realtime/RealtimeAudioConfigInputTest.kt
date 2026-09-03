@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -26,7 +26,10 @@ internal class RealtimeAudioConfigInputTest {
                 )
                 .transcription(
                     AudioTranscription.builder()
+                        .delay(AudioTranscription.Delay.MINIMAL)
+                        .addKeyword("string")
                         .language("language")
+                        .addLanguage("string")
                         .model(AudioTranscription.Model.WHISPER_1)
                         .prompt("prompt")
                         .build()
@@ -61,7 +64,10 @@ internal class RealtimeAudioConfigInputTest {
         assertThat(realtimeAudioConfigInput.transcription())
             .contains(
                 AudioTranscription.builder()
+                    .delay(AudioTranscription.Delay.MINIMAL)
+                    .addKeyword("string")
                     .language("language")
+                    .addLanguage("string")
                     .model(AudioTranscription.Model.WHISPER_1)
                     .prompt("prompt")
                     .build()
@@ -99,7 +105,10 @@ internal class RealtimeAudioConfigInputTest {
                 )
                 .transcription(
                     AudioTranscription.builder()
+                        .delay(AudioTranscription.Delay.MINIMAL)
+                        .addKeyword("string")
                         .language("language")
+                        .addLanguage("string")
                         .model(AudioTranscription.Model.WHISPER_1)
                         .prompt("prompt")
                         .build()

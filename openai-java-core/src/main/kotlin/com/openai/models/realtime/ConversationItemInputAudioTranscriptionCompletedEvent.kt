@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -25,6 +25,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.audio.transcriptions.TranscriptionLanguage
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -49,6 +50,7 @@ private constructor(
     private val transcript: JsonField<String>,
     private val type: JsonValue,
     private val usage: JsonField<Usage>,
+    private val languages: JsonField<List<TranscriptionLanguage>>,
     private val logprobs: JsonField<List<LogProbProperties>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -65,10 +67,23 @@ private constructor(
         transcript: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
+        @JsonProperty("languages")
+        @ExcludeMissing
+        languages: JsonField<List<TranscriptionLanguage>> = JsonMissing.of(),
         @JsonProperty("logprobs")
         @ExcludeMissing
         logprobs: JsonField<List<LogProbProperties>> = JsonMissing.of(),
-    ) : this(contentIndex, eventId, itemId, transcript, type, usage, logprobs, mutableMapOf())
+    ) : this(
+        contentIndex,
+        eventId,
+        itemId,
+        transcript,
+        type,
+        usage,
+        languages,
+        logprobs,
+        mutableMapOf(),
+    )
 
     /**
      * The index of the content part containing the audio.
@@ -125,6 +140,15 @@ private constructor(
     fun usage(): Usage = usage.getRequired("usage")
 
     /**
+     * The languages detected in the audio. Returned by `gpt-transcribe`. An empty array indicates
+     * that no language could be reliably detected.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun languages(): Optional<List<TranscriptionLanguage>> = languages.getOptional("languages")
+
+    /**
      * The log probabilities of the transcription.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -168,6 +192,15 @@ private constructor(
      * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
+
+    /**
+     * Returns the raw JSON value of [languages].
+     *
+     * Unlike [languages], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("languages")
+    @ExcludeMissing
+    fun _languages(): JsonField<List<TranscriptionLanguage>> = languages
 
     /**
      * Returns the raw JSON value of [logprobs].
@@ -218,6 +251,7 @@ private constructor(
         private var type: JsonValue =
             JsonValue.from("conversation.item.input_audio_transcription.completed")
         private var usage: JsonField<Usage>? = null
+        private var languages: JsonField<MutableList<TranscriptionLanguage>>? = null
         private var logprobs: JsonField<MutableList<LogProbProperties>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -232,6 +266,10 @@ private constructor(
             transcript = conversationItemInputAudioTranscriptionCompletedEvent.transcript
             type = conversationItemInputAudioTranscriptionCompletedEvent.type
             usage = conversationItemInputAudioTranscriptionCompletedEvent.usage
+            languages =
+                conversationItemInputAudioTranscriptionCompletedEvent.languages.map {
+                    it.toMutableList()
+                }
             logprobs =
                 conversationItemInputAudioTranscriptionCompletedEvent.logprobs.map {
                     it.toMutableList()
@@ -329,6 +367,35 @@ private constructor(
         fun usage(transcriptTextUsageDuration: Usage.TranscriptTextUsageDuration) =
             usage(Usage.ofTranscriptTextUsageDuration(transcriptTextUsageDuration))
 
+        /**
+         * The languages detected in the audio. Returned by `gpt-transcribe`. An empty array
+         * indicates that no language could be reliably detected.
+         */
+        fun languages(languages: List<TranscriptionLanguage>) = languages(JsonField.of(languages))
+
+        /**
+         * Sets [Builder.languages] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.languages] with a well-typed
+         * `List<TranscriptionLanguage>` value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun languages(languages: JsonField<List<TranscriptionLanguage>>) = apply {
+            this.languages = languages.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [TranscriptionLanguage] to [languages].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLanguage(language: TranscriptionLanguage) = apply {
+            languages =
+                (languages ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("languages", it).add(language)
+                }
+        }
+
         /** The log probabilities of the transcription. */
         fun logprobs(logprobs: List<LogProbProperties>?) = logprobs(JsonField.ofNullable(logprobs))
 
@@ -401,6 +468,7 @@ private constructor(
                 checkRequired("transcript", transcript),
                 type,
                 checkRequired("usage", usage),
+                (languages ?: JsonMissing.of()).map { it.toImmutable() },
                 (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
@@ -431,6 +499,7 @@ private constructor(
             }
         }
         usage().validate()
+        languages().ifPresent { it.forEach { it.validate() } }
         logprobs().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
@@ -459,6 +528,7 @@ private constructor(
                 else 0
             } +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
+            (languages.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     /**
@@ -1532,6 +1602,7 @@ private constructor(
             transcript == other.transcript &&
             type == other.type &&
             usage == other.usage &&
+            languages == other.languages &&
             logprobs == other.logprobs &&
             additionalProperties == other.additionalProperties
     }
@@ -1544,6 +1615,7 @@ private constructor(
             transcript,
             type,
             usage,
+            languages,
             logprobs,
             additionalProperties,
         )
@@ -1552,5 +1624,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ConversationItemInputAudioTranscriptionCompletedEvent{contentIndex=$contentIndex, eventId=$eventId, itemId=$itemId, transcript=$transcript, type=$type, usage=$usage, logprobs=$logprobs, additionalProperties=$additionalProperties}"
+        "ConversationItemInputAudioTranscriptionCompletedEvent{contentIndex=$contentIndex, eventId=$eventId, itemId=$itemId, transcript=$transcript, type=$type, usage=$usage, languages=$languages, logprobs=$logprobs, additionalProperties=$additionalProperties}"
 }

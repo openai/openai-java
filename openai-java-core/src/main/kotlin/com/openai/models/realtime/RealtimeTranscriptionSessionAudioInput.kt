@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -88,6 +88,9 @@ private constructor(
      * based on this probability. For example, if user audio trails off with "uhhm", the model will
      * score a low probability of turn end and wait longer for the user to continue speaking. This
      * can be useful for more natural conversations, but may have a higher latency.
+     *
+     * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to `null`; VAD
+     * is not supported.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -253,6 +256,9 @@ private constructor(
          * model will score a low probability of turn end and wait longer for the user to continue
          * speaking. This can be useful for more natural conversations, but may have a higher
          * latency.
+         *
+         * For `gpt-realtime-whisper` transcription sessions, turn detection must be set to `null`;
+         * VAD is not supported.
          */
         fun turnDetection(turnDetection: RealtimeTranscriptionSessionAudioInputTurnDetection?) =
             turnDetection(JsonField.ofNullable(turnDetection))

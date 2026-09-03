@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -279,6 +279,9 @@ private constructor(
             addCodeInterpreterTool(
                 Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)
             )
+
+        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
 
         /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
         fun addTool(imageGeneration: Tool.ImageGeneration) =

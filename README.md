@@ -1,30 +1,21 @@
 # OpenAI Java API Library
 
-<!-- x-release-please-start-version -->
-
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.35.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.35.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.35.0)
-
-<!-- x-release-please-end -->
+<!-- These URLs intentionally omit versions and stay outside Release Please markers so they track the latest release. -->
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java)
 
 The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://platform.openai.com/docs) from applications written in Java.
 
-<!-- x-release-please-start-version -->
-
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.35.0).
-
-<!-- x-release-please-end -->
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java).
 
 ## Installation
 
 <!-- x-release-please-start-version -->
 
-[_Try `openai-java-spring-boot-starter` if you're using Spring Boot!_](#spring-boot)
-
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.35.0")
+implementation("com.openai:openai-java:4.56.0")
 ```
 
 ### Maven
@@ -33,7 +24,7 @@ implementation("com.openai:openai-java:4.35.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.35.0</version>
+  <version>4.56.0</version>
 </dependency>
 ```
 
@@ -41,7 +32,8 @@ implementation("com.openai:openai-java:4.35.0")
 
 ## Requirements
 
-This library requires Java 8 or later.
+The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
+are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
 
 ## Usage
 
@@ -86,6 +78,35 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
+
+## Amazon Bedrock
+
+Use the optional `openai-java-bedrock` artifact to call OpenAI-compatible APIs on Amazon Bedrock
+with normal AWS credentials:
+
+<!-- x-release-please-start-version -->
+
+```kotlin
+implementation("com.openai:openai-java-bedrock:4.56.0")
+```
+
+<!-- x-release-please-end -->
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.BedrockOpenAIOkHttpClient;
+
+// Uses the standard AWS credential chain, including environment credentials,
+// ~/.aws/credentials, AWS_PROFILE, workload roles, and instance metadata.
+OpenAIClient client = BedrockOpenAIOkHttpClient.builder()
+        .awsRegion("us-east-1")
+        .build();
+```
+
+Requests are signed with fresh AWS credentials on every attempt. Existing
+`AWS_BEARER_TOKEN_BEDROCK` bearer credentials remain supported as a compatibility fallback. See
+the [Amazon Bedrock guide](bedrock.md) for named profiles, temporary credentials, custom credential
+providers, async streaming, precedence rules, and security guidance.
 
 ## Client configuration
 
@@ -172,7 +193,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 SubjectTokenProvider provider = K8sServiceAccountTokenProvider.builder().build();
 
 WorkloadIdentity workloadIdentity = WorkloadIdentity.builder()
-    .clientId("your-client-id")
     .identityProviderId("your-identity-provider-id")
     .serviceAccountId("your-service-account-id")
     .provider(provider)
@@ -182,6 +202,48 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .workloadIdentity(workloadIdentity)
     .build();
 ```
+
+#### X.509 client certificate authentication
+
+Applications with a client certificate can exchange that certificate directly for short-lived
+OpenAI access tokens without providing a JWT or implementing `SubjectTokenProvider`:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.client.okhttp.X509Transport;
+import com.openai.client.okhttp.X509WorkloadIdentity;
+import java.time.Duration;
+import javax.net.ssl.X509ExtendedKeyManager;
+import javax.net.ssl.X509TrustManager;
+
+X509ExtendedKeyManager keyManager = /* load your PKCS#12 key manager */;
+X509TrustManager trustManager = /* load your trusted server roots */;
+
+X509Transport transport = X509Transport.builder()
+    .keyManager(keyManager)
+    .certificateAlias("client-certificate")
+    .trustManager(trustManager)
+    .build();
+
+X509WorkloadIdentity identity = X509WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .transport(transport)
+    .refreshBuffer(Duration.ofMinutes(10)) // Optional; defaults to 20 minutes.
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .x509WorkloadIdentity(identity)
+    .build();
+```
+
+`OpenAIOkHttpClientAsync.builder()` supports the same `x509WorkloadIdentity` option. Tokens are
+obtained lazily, cached, and refreshed before expiration. Both the token exchange and API requests
+use the configured fixed certificate alias, isolated direct mutual-TLS connections, and native
+hostname verification; redirects and custom transport settings are not supported. Close the SDK
+client to release both connection pools. For a complete compilable PKCS#12 setup, see
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java).
 
 #### Kubernetes service account token provider
 
@@ -1425,82 +1487,22 @@ GraalVM should automatically detect and use the published metadata, but [manual 
 
 ## Spring Boot
 
-If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#using.build-systems.starters) to simplify configuration and get set up quickly.
+> [!WARNING]
+> `openai-java-spring-boot-starter` targets Spring Boot 2.7 and is OpenAI EOL as of 2026-07-27.
+> Version 4.45.0 is the final supported, tested, and published release. The artifact remains
+> downloadable but receives no fixes, testing, or compatibility support, and its source is no
+> longer part of the active build. See the
+> [Spring Boot 2 EOL decision and migration path](docs/spring-boot-2-eol.md). New Spring
+> applications should depend on `openai-java` directly and provide an `OpenAIClient` bean until a
+> supported, generation-specific integration is available.
 
-### Installation
-
-<!-- x-release-please-start-version -->
-
-#### Gradle
-
-```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:4.35.0")
-```
-
-#### Maven
-
-```xml
-<dependency>
-  <groupId>com.openai</groupId>
-  <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>4.35.0</version>
-</dependency>
-```
-
-<!-- x-release-please-end -->
-
-### Configuration
-
-The [client's environment variable options](#client-configuration) can be configured in [`application.properties` or `application.yml`](https://docs.spring.io/spring-boot/how-to/properties-and-configuration.html).
-
-#### `application.properties`
-
-```properties
-openai.base-url=https://api.openai.com/v1
-openai.api-key=My API Key
-openai.admin-key=My Admin API Key
-openai.org-id=My Organization
-openai.project-id=My Project
-openai.webhook-secret=My Webhook Secret
-```
-
-#### `application.yml`
-
-```yaml
-openai:
-  base-url: https://api.openai.com/v1
-  api-key: My API Key
-  admin-key: My Admin API Key
-  org-id: My Organization
-  project-id: My Project
-  webhook-secret: My Webhook Secret
-```
-
-#### Other configuration
-
-Configure any other client option by providing one or more instances of [`OpenAIClientCustomizer`](openai-java-spring-boot-starter/src/main/kotlin/com/openai/springboot/OpenAIClientCustomizer.kt). For example, here's how you'd set [`maxRetries`](#retries):
-
-```java
-import com.openai.springboot.OpenAIClientCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class OpenAIConfig {
-    @Bean
-    public OpenAIClientCustomizer customizer() {
-        return builder -> builder.maxRetries(3);
-    }
-}
-```
-
-### Usage
-
-[Inject](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html) [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt) anywhere and start using it!
+Existing Spring Boot 2 users can refer to the
+[`v4.45.0` Spring Boot documentation](https://github.com/openai/openai-java/blob/v4.45.0/README.md#spring-boot)
+for the final legacy configuration and usage instructions.
 
 ## Jackson
 
-The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.2 by default.
+The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, and its default dependency is the [published Jackson version](gradle/libs.versions.toml).
 
 The SDK throws an exception if it detects an incompatible Jackson version at runtime (e.g. if the default version was overridden in your Maven or Gradle config).
 
@@ -1665,16 +1667,146 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+#### Mutual TLS with native JSSE
+
+API-key authenticated HTTP requests can use mTLS without a dedicated SDK API. Build an
+`SSLContext` using Java's native JSSE APIs and pass it through the existing OkHttp TLS hooks.
+
+To opt in, follow the
+[OpenAI Mutual TLS Beta Program](https://help.openai.com/en/articles/10876024-openai-mutual-tls-beta-program)
+guide to upload a CA certificate and activate it for your project or organization before
+configuring the client.
+
+Certificate-chain support is a separate mTLS beta capability that is available by request. Contact
+your Account Director or OpenAI Support to enable it. When it is enabled, the PKCS#12 key store must
+contain the client private key and the complete certificate chain: the leaf certificate first,
+followed by every required intermediate certificate. Without certificate-chain support, the client
+leaf certificate must be directly signed by an active CA certificate that you uploaded to OpenAI.
+
+Keep server trust separate from the client identity. Initializing `TrustManagerFactory` with a null
+`KeyStore` retains the JVM's normal server-trust configuration.
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.util.Arrays;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+String apiKey = System.getProperty("openai.apiKey");
+if (apiKey == null) {
+    apiKey = System.getenv("OPENAI_API_KEY");
+}
+if (apiKey == null || apiKey.isEmpty()) {
+    throw new IllegalStateException(
+        "openai.apiKey or OPENAI_API_KEY must be set for OpenAI mTLS");
+}
+String baseUrl = System.getProperty("openai.baseUrl");
+if (baseUrl == null) {
+    baseUrl = System.getenv("OPENAI_BASE_URL");
+}
+if (baseUrl == null) {
+    baseUrl = "https://mtls.api.openai.com/v1";
+} else if (baseUrl.isEmpty()) {
+    throw new IllegalStateException(
+        "openai.baseUrl or OPENAI_BASE_URL must not be empty for OpenAI mTLS");
+}
+URI baseUri;
+try {
+    baseUri = URI.create(baseUrl);
+} catch (IllegalArgumentException ignored) {
+    // URI parse exceptions include the rejected value, which may contain credentials.
+    throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+}
+if (!"https".equalsIgnoreCase(baseUri.getScheme()) || baseUri.getRawAuthority() == null) {
+    throw new IllegalStateException("OpenAI mTLS requires a valid HTTPS base URL");
+}
+String organization = System.getProperty("openai.orgId");
+if (organization == null) {
+    organization = System.getenv("OPENAI_ORG_ID");
+}
+String project = System.getProperty("openai.projectId");
+if (project == null) {
+    project = System.getenv("OPENAI_PROJECT_ID");
+}
+
+String keyStorePath = System.getenv("OPENAI_MTLS_KEYSTORE");
+String keyStorePassword = System.getenv("OPENAI_MTLS_KEYSTORE_PASSWORD");
+if (keyStorePath == null || keyStorePath.isEmpty()) {
+    throw new IllegalStateException("OPENAI_MTLS_KEYSTORE must be set");
+}
+if (keyStorePassword == null || keyStorePassword.isEmpty()) {
+    throw new IllegalStateException("OPENAI_MTLS_KEYSTORE_PASSWORD must be set");
+}
+
+char[] password = keyStorePassword.toCharArray();
+KeyStore clientKeyStore = KeyStore.getInstance("PKCS12");
+KeyManagerFactory keyManagers =
+    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+try {
+    try (InputStream input = Files.newInputStream(Paths.get(keyStorePath))) {
+        clientKeyStore.load(input, password);
+    }
+    keyManagers.init(clientKeyStore, password);
+} finally {
+    Arrays.fill(password, '\0');
+}
+
+TrustManagerFactory trustManagers =
+    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+trustManagers.init((KeyStore) null);
+X509TrustManager trustManager = Arrays.stream(trustManagers.getTrustManagers())
+    .filter(X509TrustManager.class::isInstance)
+    .map(X509TrustManager.class::cast)
+    .findFirst()
+    .orElseThrow(() -> new IllegalStateException(
+        "The default TrustManagerFactory did not provide an X509TrustManager"));
+
+SSLContext sslContext = SSLContext.getInstance("TLS");
+sslContext.init(keyManagers.getKeyManagers(), new TrustManager[] {trustManager}, null);
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    // Set the OpenAI credential explicitly so an Azure key cannot be selected accidentally.
+    .apiKey(apiKey)
+    // Preserve the organization and project scope selected by normal SDK configuration.
+    .organization(organization)
+    .project(project)
+    .baseUrl(baseUrl)
+    // Avoid presenting the client identity to a redirect target.
+    .followRedirects(false)
+    .sslSocketFactory(sslContext.getSocketFactory())
+    .trustManager(trustManager)
+    .build();
+```
+
+Set `openai.baseUrl` or `OPENAI_BASE_URL` to `https://mtls-eu.api.openai.com/v1` for EU Data
+Residency, or to an appropriate custom mTLS gateway. If neither is set, the recipe uses
+`https://mtls.api.openai.com/v1`. The SDK does not inspect or rewrite that URL. To rotate the client
+identity, build a new `SSLContext`, HTTP transport, and SDK client, then close the old client. This
+recipe applies to ordinary HTTP API-key traffic; it does not add certificate-only authentication or
+Realtime/WebSocket mTLS support.
+
+See the complete, compilable
+[`MutualTlsExample`](openai-java-example/src/main/java/com/openai/example/MutualTlsExample.java).
+
 ### Custom HTTP client
 
 The SDK consists of three artifacts:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
-  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Depends on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
@@ -1682,7 +1814,7 @@ The SDK consists of three artifacts:
 
 This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
 
-#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/4.x/okhttp/okhttp3/-ok-http-client/)
 
 > [!TIP]
 > Try the available [network options](#network-options) before replacing the default client.
@@ -1901,7 +2033,7 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 ### Why don't you use plain `enum` classes?
 
-Java `enum` classes are not trivially [forwards compatible](https://www.stainless.com/blog/making-java-enums-forwards-compatible). Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
+Java `enum` classes are not trivially forwards compatible. Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
 
 ### Why do you represent fields using `JsonField<T>` instead of just plain `T`?
 
@@ -1932,6 +2064,11 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 1. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
 2. Changes that we do not expect to impact the vast majority of users in practice.
+
+Those exceptions do not apply to raising a supported JVM or JDK API floor, changing an integration's
+framework generation, removing a published artifact, or removing a transitive dependency that
+consumers may rely on; those changes require a major release. Announcing EOL without removing or
+changing the last available artifact may be a minor release.
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 

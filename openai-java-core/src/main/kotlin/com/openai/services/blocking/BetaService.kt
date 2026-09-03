@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.RealtimeService
+import com.openai.services.blocking.beta.ResponseService
 import com.openai.services.blocking.beta.ThreadService
 import java.util.function.Consumer
 
@@ -27,6 +28,8 @@ interface BetaService {
         "Realtime has now launched and is generally available. The old beta API is now deprecated."
     )
     fun realtime(): RealtimeService
+
+    fun responses(): ResponseService
 
     fun chatkit(): ChatKitService
 
@@ -51,6 +54,8 @@ interface BetaService {
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         fun realtime(): RealtimeService.WithRawResponse
+
+        fun responses(): ResponseService.WithRawResponse
 
         fun chatkit(): ChatKitService.WithRawResponse
 

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.handlers
 
 import com.openai.core.http.Headers
@@ -41,6 +39,45 @@ internal class SseHandlerTest {
                 sseMessageBuilder().data("{\"foo\":true}").build(),
                 sseMessageBuilder().data("{\"bar\":false}").build(),
             ),
+        ),
+        RETRY_MISSING_DATA(
+            buildString {
+                append("retry: 10000\n")
+                append("\n")
+                append("data: {\"foo\":true}\n")
+                append("\n")
+            },
+            listOf(sseMessageBuilder().data("{\"foo\":true}").build()),
+        ),
+        EVENT_MISSING_DATA(
+            buildString {
+                append("event: ignored\n")
+                append("\n")
+                append("data: {\"foo\":true}\n")
+                append("\n")
+                append("data: {\"bar\":false}\n")
+                append("\n")
+            },
+            listOf(
+                sseMessageBuilder().data("{\"foo\":true}").build(),
+                sseMessageBuilder().data("{\"bar\":false}").build(),
+            ),
+        ),
+        ID_MISSING_DATA(
+            buildString {
+                append("id: 1\n")
+                append("\n")
+                append("data: {\"foo\":true}\n")
+                append("\n")
+            },
+            listOf(sseMessageBuilder().data("{\"foo\":true}").id("1").build()),
+        ),
+        EMPTY_DATA(
+            buildString {
+                append("data:\n")
+                append("\n")
+            },
+            listOf(sseMessageBuilder().data("").build()),
         ),
         DATA_JSON_ESCAPED_DOUBLE_NEW_LINE(
             buildString {

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -23,7 +23,10 @@ internal class AdminApiKeyServiceAsyncTest {
 
         val adminApiKeyFuture =
             adminApiKeyServiceAsync.create(
-                AdminApiKeyCreateParams.builder().name("New Admin Key").build()
+                AdminApiKeyCreateParams.builder()
+                    .name("New Admin Key")
+                    .expiresInSeconds(2592000L)
+                    .build()
             )
 
         val adminApiKey = adminApiKeyFuture.get()

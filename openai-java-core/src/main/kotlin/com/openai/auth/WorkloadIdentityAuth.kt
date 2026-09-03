@@ -251,15 +251,12 @@ internal class WorkloadIdentityAuth(
                 SubjectTokenType.ID -> ID_TOKEN_TYPE
             }
 
-        val requestBody =
-            mapOf(
-                "grant_type" to TOKEN_EXCHANGE_GRANT_TYPE,
-                "client_id" to config.clientId,
-                "subject_token" to subjectToken,
-                "subject_token_type" to subjectTokenTypeURN,
-                "identity_provider_id" to config.identityProviderId,
-                "service_account_id" to config.serviceAccountId,
-            )
+        val requestBody = mutableMapOf("grant_type" to TOKEN_EXCHANGE_GRANT_TYPE)
+        config.clientId?.let { requestBody["client_id"] = it }
+        requestBody["subject_token"] = subjectToken
+        requestBody["subject_token_type"] = subjectTokenTypeURN
+        requestBody["identity_provider_id"] = config.identityProviderId
+        requestBody["service_account_id"] = config.serviceAccountId
 
         val jsonBody = jsonMapper.writeValueAsBytes(requestBody)
 

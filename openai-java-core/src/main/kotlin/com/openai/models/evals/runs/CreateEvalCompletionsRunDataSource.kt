@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals.runs
 
@@ -1613,7 +1613,7 @@ private constructor(
             fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
             /**
-             * An optional model to filter by (e.g., 'gpt-4o').
+             * An optional model to filter by (e.g., 'gpt-5.6-sol').
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1816,7 +1816,7 @@ private constructor(
                  */
                 fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-                /** An optional model to filter by (e.g., 'gpt-4o'). */
+                /** An optional model to filter by (e.g., 'gpt-5.6-sol'). */
                 fun model(model: String?) = model(JsonField.ofNullable(model))
 
                 /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -4772,18 +4772,12 @@ private constructor(
             maxCompletionTokens.getOptional("max_completion_tokens")
 
         /**
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing
-         * reasoning effort can result in faster responses and fewer tokens used on reasoning in a
-         * response.
-         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
-         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
-         *   for all reasoning values in gpt-5.1.
-         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
-         *   `none`.
-         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-         * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+         * Constrains effort on reasoning for reasoning models. Currently supported values are
+         * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response. Not all
+         * reasoning models support every value. See the
+         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+         * support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -4962,18 +4956,12 @@ private constructor(
             }
 
             /**
-             * Constrains effort on reasoning for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`.
-             * Reducing reasoning effort can result in faster responses and fewer tokens used on
-             * reasoning in a response.
-             * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported
-             *   reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls
-             *   are supported for all reasoning values in gpt-5.1.
-             * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
-             *   support `none`.
-             * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
-             * - `xhigh` is supported for all models after `gpt-5.1-codex-max`.
+             * Constrains effort on reasoning for reasoning models. Currently supported values are
+             * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
+             * effort can result in faster responses and fewer tokens used on reasoning in a
+             * response. Not all reasoning models support every value. See the
+             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))

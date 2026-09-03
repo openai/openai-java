@@ -30,6 +30,7 @@ import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.ResponseFormatJsonSchema
 import java.util.Optional
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -83,6 +84,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val PROMPT_CACHE_RETENTION =
             ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY
+        private val PROMPT_CACHE_OPTIONS =
+            ChatCompletionCreateParams.PromptCacheOptions.builder().build()
         private val PROMPT_CACHE_RETENTION_OPTIONAL = Optional.of(PROMPT_CACHE_RETENTION)
         private val PROMPT_CACHE_RETENTION_JSON_FIELD = JsonField.of(PROMPT_CACHE_RETENTION)
 
@@ -103,6 +106,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val FUNCTION = ChatCompletionCreateParams.Function.builder().name(STRING).build()
         private val METADATA = ChatCompletionCreateParams.Metadata.builder().build()
+        private val MODERATION =
+            ChatCompletionCreateParams.Moderation.builder().model(STRING).build()
         private val MODALITY = ChatCompletionCreateParams.Modality.TEXT
         private val FUNCTION_DEFINITION = FunctionDefinition.builder().name(STRING).build()
         private val TOOL =
@@ -212,6 +217,9 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
+                DelegationWriteTestCase("moderation", MODERATION),
+                DelegationWriteTestCase("moderation", OPTIONAL),
+                DelegationWriteTestCase("moderation", JSON_FIELD),
                 DelegationWriteTestCase("modalities", LIST),
                 DelegationWriteTestCase("modalities", OPTIONAL),
                 DelegationWriteTestCase("modalities", JSON_FIELD),
@@ -226,7 +234,10 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("prediction", OPTIONAL),
                 DelegationWriteTestCase("prediction", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheKey", STRING),
+                DelegationWriteTestCase("promptCacheKey", OPTIONAL),
                 DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheOptions", PROMPT_CACHE_OPTIONS),
+                DelegationWriteTestCase("promptCacheOptions", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_OPTIONAL),
                 DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_JSON_FIELD),
@@ -240,6 +251,7 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("jsonSchemaResponseFormat", RESPONSE_FORMAT_JSON_SCHEMA),
                 // `responseFormat()` is a special case and has its own unit test.
                 DelegationWriteTestCase("safetyIdentifier", STRING),
+                DelegationWriteTestCase("safetyIdentifier", OPTIONAL),
                 DelegationWriteTestCase("safetyIdentifier", JSON_FIELD),
                 DelegationWriteTestCase("seed", NULLABLE_LONG),
                 DelegationWriteTestCase("seed", LONG),
@@ -331,6 +343,38 @@ internal class StructuredChatCompletionCreateParamsTest {
         mock(ChatCompletionCreateParams.Builder::class.java)
     private val builderDelegator =
         StructuredChatCompletionCreateParams.builder<X>().inject(mockBuilderDelegate)
+
+    @Test
+    fun structuredOutputsBuilder() {
+        class X(val s: String)
+
+        // Only interested in a few things:
+        // - Does the `Builder` type change when `responseFormat(Class<T>)` is called?
+        // - Are values already set on the "old" `Builder` preserved in the change-over?
+        // - Can new values be set on the "new" `Builder` alongside the "old" values?
+        val params =
+            ChatCompletionCreateParams.builder()
+                .addDeveloperMessage("dev message")
+                .model(ChatModel.GPT_4_1)
+                .responseFormat(X::class.java) // Creates and return a new builder.
+                .addSystemMessage("sys message")
+                .build()
+
+        val body = params.rawParams._body()
+
+        assertThat(params).isInstanceOf(StructuredChatCompletionCreateParams::class.java)
+        assertThat(params.responseType).isEqualTo(X::class.java)
+        assertThat(body.messages())
+            .containsExactly(
+                ChatCompletionMessageParam.ofDeveloper(
+                    ChatCompletionDeveloperMessageParam.builder().content("dev message").build()
+                ),
+                ChatCompletionMessageParam.ofSystem(
+                    ChatCompletionSystemMessageParam.builder().content("sys message").build()
+                ),
+            )
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+    }
 
     @Test
     fun allBuilderDelegateFunctionsExistInDelegator() {

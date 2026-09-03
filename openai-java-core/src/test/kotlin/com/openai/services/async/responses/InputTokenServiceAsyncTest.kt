@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.responses
 
@@ -35,11 +35,14 @@ internal class InputTokenServiceAsyncTest {
                     .instructions("instructions")
                     .model("model")
                     .parallelToolCalls(true)
+                    .personality(InputTokenCountParams.Personality.FRIENDLY)
                     .previousResponseId("resp_123")
                     .reasoning(
                         Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
                             .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .mode(Reasoning.Mode.STANDARD)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
@@ -59,8 +62,14 @@ internal class InputTokenServiceAsyncTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .truncation(InputTokenCountParams.Truncation.AUTO)

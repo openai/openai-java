@@ -1,0 +1,116 @@
+# CodeQL is intentionally disabled repository-wide (maintainer decision, 2026-08-20).
+# This SDK has a large generated Java/Kotlin surface. CodeQL's instrumented
+# Gradle build and analysis have repeatedly been slow (roughly 10-15+ minutes)
+# and unreliable, blocking unrelated changes while maintainers debug the scanner.
+# Example: https://github.com/openai/openai-java/actions/runs/32377826339
+# Decision: https://github.com/openai/openai-java/pull/916
+# Repository-wide follow-up: https://github.com/openai/openai-java/pull/913
+#
+# GitHub-managed Code Quality also invokes CodeQL. Commenting out this workflow
+# alone does not stop that separate service. Both code-scanning default setup and
+# Code Quality setup are disabled in repository settings, this Actions workflow
+# is disabled, and neither code_scanning nor code_quality is a merge requirement.
+# Keep all of these entry points disabled; do not restore one via a ruleset,
+# merge-queue rollout, default setup, or SDK-parity change.
+#
+# This is a conscious security-tooling tradeoff, not an accidental omission or
+# evidence of a known SDK vulnerability. We accept reduced automated static-
+# analysis coverage rather than require these unreliable checks. Required CI,
+# code-owner review, dependency updates, secret scanning, and private
+# vulnerability reporting remain in place. Codex Security has provided useful
+# findings, but is not claimed to be an equivalent or required CI replacement.
+#
+# Do not automatically restore CodeQL, Code Quality, or their merge requirements
+# for SDK parity or to "fix" a missing security check. Revisit after a reliable,
+# acceptably fast Java analysis path or a suitable replacement is demonstrated.
+# Before restoring it, review/update the archived action SHAs and permissions,
+# validate a real scan, restore the Dependabot group, and separately agree on
+# whether any scanning result should block merges.
+#
+# Archived GitHub-managed Code Quality settings (reference only, not active YAML):
+# PATCH /repos/openai/openai-java/code-quality/setup
+#   state: configured
+#   languages: [java-kotlin, python]
+#   runner_type: standard
+#   ai_findings_option: disabled
+# Former main-ruleset rule:
+#   type: code_quality
+#   parameters:
+#     severity: errors
+# Re-enabling this service or its rule requires a new maintainer decision.
+#
+# Keep a valid, manual-only workflow with an always-skipped placeholder. The
+# original configuration below is commented out for reference; this placeholder
+# neither runs CodeQL nor represents a successful security analysis.
+name: CodeQL (intentionally disabled)
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  disabled:
+    name: CodeQL intentionally disabled
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'CodeQL is intentionally disabled; see PR 916.'
+
+# Archived workflow (restore only after maintainer review):
+# name: CodeQL
+#
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+#   merge_group:
+#     types:
+#       - checks_requested
+#   workflow_dispatch:
+#
+# concurrency:
+#   group: codeql-${{ github.ref }}
+#   cancel-in-progress: true
+#
+# jobs:
+#   analyze:
+#     name: Analyze Java and Kotlin
+#     if: github.repository != 'openai/openai-java-internal'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 45
+#     permissions:
+#       contents: read
+#       security-events: write
+#
+#     steps:
+#       - name: Check out repository
+#         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+#         with:
+#           persist-credentials: false
+#
+#       - name: Set up Java
+#         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+#         with:
+#           distribution: temurin
+#           java-version: 21
+#
+#       - name: Set up Gradle
+#         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+#
+#       - name: Initialize CodeQL
+#         uses: github/codeql-action/init@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4
+#         with:
+#           languages: java-kotlin
+#           build-mode: manual
+#
+#       - name: Build production classes
+#         env:
+#           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
+#         run: ./scripts/gradle classes --no-build-cache
+#
+#       - name: Perform CodeQL analysis
+#         uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4

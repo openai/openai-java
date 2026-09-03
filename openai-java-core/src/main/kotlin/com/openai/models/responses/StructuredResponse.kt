@@ -40,6 +40,9 @@ class StructuredResponse<T : Any>(
     /** @see Response.model */
     fun model(): ResponsesModel = rawResponse.model()
 
+    /** @see Response.moderation */
+    fun moderation(): Optional<Response.Moderation> = rawResponse.moderation()
+
     /** @see Response._object_ */
     fun _object_(): JsonValue = rawResponse._object_()
 
@@ -84,6 +87,10 @@ class StructuredResponse<T : Any>(
 
     /** @see Response.promptCacheKey */
     fun promptCacheKey(): Optional<String> = rawResponse.promptCacheKey()
+
+    /** @see Response.promptCacheOptions */
+    fun promptCacheOptions(): Optional<Response.PromptCacheOptions> =
+        rawResponse.promptCacheOptions()
 
     /** @see Response.promptCacheRetention */
     fun promptCacheRetention(): Optional<Response.PromptCacheRetention> =
@@ -144,6 +151,9 @@ class StructuredResponse<T : Any>(
     /** @see Response._model */
     fun _model(): JsonField<ResponsesModel> = rawResponse._model()
 
+    /** @see Response._moderation */
+    fun _moderation(): JsonField<Response.Moderation> = rawResponse._moderation()
+
     /** @see Response._output */
     fun _output(): JsonField<List<StructuredResponseOutputItem<T>>> = output
 
@@ -179,6 +189,10 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._promptCacheKey */
     fun _promptCacheKey(): JsonField<String> = rawResponse._promptCacheKey()
+
+    /** @see Response._promptCacheOptions */
+    fun _promptCacheOptions(): JsonField<Response.PromptCacheOptions> =
+        rawResponse._promptCacheOptions()
 
     /** @see Response._promptCacheRetention */
     fun _promptCacheRetention(): JsonField<Response.PromptCacheRetention> =

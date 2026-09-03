@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -322,8 +322,6 @@ private constructor(
             inputAudioFormat.getOptional("input_audio_format")
 
         /**
-         * Configuration of the transcription model.
-         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -474,7 +472,6 @@ private constructor(
                 this.inputAudioFormat = inputAudioFormat
             }
 
-            /** Configuration of the transcription model. */
             fun inputAudioTranscription(inputAudioTranscription: AudioTranscription) =
                 inputAudioTranscription(JsonField.of(inputAudioTranscription))
 

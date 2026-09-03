@@ -1,9 +1,8 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.proguard
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionAudio
@@ -64,6 +63,7 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.embeddings()).isNotNull()
         assertThat(client.files()).isNotNull()
         assertThat(client.images()).isNotNull()
+        assertThat(client.contentProvenanceChecks()).isNotNull()
         assertThat(client.audio()).isNotNull()
         assertThat(client.moderations()).isNotNull()
         assertThat(client.models()).isNotNull()
@@ -173,6 +173,85 @@ internal class ProGuardCompatibilityTest {
                 )
                 .created(0L)
                 .model("model")
+                .moderation(
+                    ChatCompletion.Moderation.builder()
+                        .input(
+                            ChatCompletion.Moderation.Input.ModerationResults.builder()
+                                .model("model")
+                                .addResult(
+                                    ChatCompletion.Moderation.Input.ModerationResults.Result
+                                        .builder()
+                                        .categories(
+                                            ChatCompletion.Moderation.Input.ModerationResults.Result
+                                                .Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            ChatCompletion.Moderation.Input.ModerationResults.Result
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            ChatCompletion.Moderation.Input.ModerationResults.Result
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .output(
+                            ChatCompletion.Moderation.Output.ModerationResults.builder()
+                                .model("model")
+                                .addResult(
+                                    ChatCompletion.Moderation.Output.ModerationResults.Result
+                                        .builder()
+                                        .categories(
+                                            ChatCompletion.Moderation.Output.ModerationResults
+                                                .Result
+                                                .Categories
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(true))
+                                                .build()
+                                        )
+                                        .categoryAppliedInputTypes(
+                                            ChatCompletion.Moderation.Output.ModerationResults
+                                                .Result
+                                                .CategoryAppliedInputTypes
+                                                .builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from(listOf("text")),
+                                                )
+                                                .build()
+                                        )
+                                        .categoryScores(
+                                            ChatCompletion.Moderation.Output.ModerationResults
+                                                .Result
+                                                .CategoryScores
+                                                .builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
+                                        )
+                                        .flagged(true)
+                                        .model("model")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .serviceTier(ChatCompletion.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
@@ -186,12 +265,16 @@ internal class ProGuardCompatibilityTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
                                 .audioTokens(0L)
+                                .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()
@@ -212,7 +295,12 @@ internal class ProGuardCompatibilityTest {
         val jsonMapper = jsonMapper()
         val chatCompletionContentPart =
             ChatCompletionContentPart.ofText(
-                ChatCompletionContentPartText.builder().text("text").build()
+                ChatCompletionContentPartText.builder()
+                    .text("text")
+                    .promptCacheBreakpoint(
+                        ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                    )
+                    .build()
             )
 
         val roundtrippedChatCompletionContentPart =

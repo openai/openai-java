@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -18,6 +18,7 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
                 .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
+                .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .build()
 
         assertThat(responseReasoningSummaryPartDoneEvent.itemId()).isEqualTo("item_id")
@@ -26,6 +27,8 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
             .isEqualTo(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
         assertThat(responseReasoningSummaryPartDoneEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
+        assertThat(responseReasoningSummaryPartDoneEvent.status())
+            .contains(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
     }
 
     @Test
@@ -38,6 +41,7 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
                 .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
                 .sequenceNumber(0L)
                 .summaryIndex(0L)
+                .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .build()
 
         val roundtrippedResponseReasoningSummaryPartDoneEvent =

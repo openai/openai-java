@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -52,7 +52,10 @@ internal class CompactedResponseTest {
                     ResponseUsage.builder()
                         .inputTokens(0L)
                         .inputTokensDetails(
-                            ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                            ResponseUsage.InputTokensDetails.builder()
+                                .cacheWriteTokens(0L)
+                                .cachedTokens(0L)
+                                .build()
                         )
                         .outputTokens(0L)
                         .outputTokensDetails(
@@ -106,7 +109,10 @@ internal class CompactedResponseTest {
                 ResponseUsage.builder()
                     .inputTokens(0L)
                     .inputTokensDetails(
-                        ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                        ResponseUsage.InputTokensDetails.builder()
+                            .cacheWriteTokens(0L)
+                            .cachedTokens(0L)
+                            .build()
                     )
                     .outputTokens(0L)
                     .outputTokensDetails(
@@ -161,7 +167,10 @@ internal class CompactedResponseTest {
                     ResponseUsage.builder()
                         .inputTokens(0L)
                         .inputTokensDetails(
-                            ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                            ResponseUsage.InputTokensDetails.builder()
+                                .cacheWriteTokens(0L)
+                                .cachedTokens(0L)
+                                .build()
                         )
                         .outputTokens(0L)
                         .outputTokensDetails(

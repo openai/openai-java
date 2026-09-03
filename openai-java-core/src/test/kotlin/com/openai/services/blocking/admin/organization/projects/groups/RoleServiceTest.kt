@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.projects.groups
 
@@ -7,6 +7,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.projects.groups.roles.RoleCreateParams
 import com.openai.models.admin.organization.projects.groups.roles.RoleDeleteParams
 import com.openai.models.admin.organization.projects.groups.roles.RoleListParams
+import com.openai.models.admin.organization.projects.groups.roles.RoleRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -26,6 +27,28 @@ internal class RoleServiceTest {
         val role =
             roleService.create(
                 RoleCreateParams.builder()
+                    .projectId("project_id")
+                    .groupId("group_id")
+                    .roleId("role_id")
+                    .build()
+            )
+
+        role.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val roleService = client.admin().organization().projects().groups().roles()
+
+        val role =
+            roleService.retrieve(
+                RoleRetrieveParams.builder()
                     .projectId("project_id")
                     .groupId("group_id")
                     .roleId("role_id")

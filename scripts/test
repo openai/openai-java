@@ -61,4 +61,4 @@ unset OPENAI_PROJECT_ID
 unset OPENAI_WEBHOOK_SECRET
 unset OPENAI_BASE_URL
 
-./gradlew test "$@"
+./scripts/gradle test "$@"

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -19,6 +19,16 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
     companion object {
+
+        @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
+
+        @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
+
+        @JvmField val GPT_5_6_LUNA = of("gpt-5.6-luna")
+
+        @JvmField val GPT_5_5 = of("gpt-5.5")
+
+        @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
 
         @JvmField val GPT_5_4 = of("gpt-5.4")
 
@@ -183,6 +193,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
+        GPT_5_6_SOL,
+        GPT_5_6_TERRA,
+        GPT_5_6_LUNA,
+        GPT_5_5,
+        GPT_5_5_2026_04_23,
         GPT_5_4,
         GPT_5_4_MINI,
         GPT_5_4_NANO,
@@ -273,6 +288,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        GPT_5_6_SOL,
+        GPT_5_6_TERRA,
+        GPT_5_6_LUNA,
+        GPT_5_5,
+        GPT_5_5_2026_04_23,
         GPT_5_4,
         GPT_5_4_MINI,
         GPT_5_4_NANO,
@@ -364,6 +384,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun value(): Value =
         when (this) {
+            GPT_5_6_SOL -> Value.GPT_5_6_SOL
+            GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
+            GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
+            GPT_5_5 -> Value.GPT_5_5
+            GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
             GPT_5_4 -> Value.GPT_5_4
             GPT_5_4_MINI -> Value.GPT_5_4_MINI
             GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -455,6 +480,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun known(): Known =
         when (this) {
+            GPT_5_6_SOL -> Known.GPT_5_6_SOL
+            GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
+            GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
+            GPT_5_5 -> Known.GPT_5_5
+            GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
             GPT_5_4 -> Known.GPT_5_4
             GPT_5_4_MINI -> Known.GPT_5_4_MINI
             GPT_5_4_NANO -> Known.GPT_5_4_NANO

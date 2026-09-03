@@ -1,3 +1,5 @@
+import com.openai.gradle.CoreCompilationShards
+import com.openai.gradle.VersionSupportPolicy
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
@@ -8,18 +10,23 @@ repositories {
     mavenCentral()
 }
 
+val versionSupportPolicy =
+    VersionSupportPolicy.load(rootProject.file("gradle/version-support.properties"))
+val versionPolicyProject = CoreCompilationShards.versionPolicyProjectName(project.name)
+val runtimeFloor = versionSupportPolicy.runtimeFloor(versionPolicyProject)
+
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(versionSupportPolicy.buildJdk))
     }
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.toVersion(runtimeFloor)
+    targetCompatibility = JavaVersion.toVersion(runtimeFloor)
 }
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Werror")
-    options.release.set(8)
+    options.release.set(runtimeFloor)
 }
 
 tasks.named<Jar>("jar") {
@@ -45,7 +52,10 @@ tasks.withType<Test>().configureEach {
 
 val palantir by configurations.creating
 dependencies {
-    palantir("com.palantir.javaformat:palantir-java-format:2.89.0")
+    // Palantir is an isolated build tool and must use the internally aligned Jackson line it was
+    // built against. This does not affect any published or runtime dependency configuration.
+    palantir(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    palantir("com.palantir.javaformat:palantir-java-format:2.96.0")
 }
 
 fun registerPalantir(

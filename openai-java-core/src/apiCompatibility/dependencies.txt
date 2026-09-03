@@ -1,0 +1,9 @@
+# Baseline-owned compile dependencies for restored generated tests.
+org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+org.jetbrains.kotlin:kotlin-test:1.9.20
+org.assertj:assertj-core:3.27.7
+org.junit.jupiter:junit-jupiter-api:5.9.3
+org.junit.jupiter:junit-jupiter-params:5.9.3
+org.mockito:mockito-core:5.14.2
+org.mockito.kotlin:mockito-kotlin:4.1.0
+org.wiremock:wiremock-jetty12:3.13.2

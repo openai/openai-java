@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -30,6 +30,21 @@ internal class RoleServiceTest {
                     .description("description")
                     .build()
             )
+
+        role.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val roleService = client.admin().organization().roles()
+
+        val role = roleService.retrieve("role_id")
 
         role.validate()
     }

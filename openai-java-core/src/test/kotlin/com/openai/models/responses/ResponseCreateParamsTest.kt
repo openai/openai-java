@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -35,7 +35,26 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ChatModel.GPT_5_1)
+            .model(ChatModel.GPT_5_6_SOL)
+            .moderation(
+                ResponseCreateParams.Moderation.builder()
+                    .model("model")
+                    .policy(
+                        ResponseCreateParams.Moderation.Policy.builder()
+                            .input(
+                                ResponseCreateParams.Moderation.Policy.Input.builder()
+                                    .mode(ResponseCreateParams.Moderation.Policy.Input.Mode.SCORE)
+                                    .build()
+                            )
+                            .output(
+                                ResponseCreateParams.Moderation.Policy.Output.builder()
+                                    .mode(ResponseCreateParams.Moderation.Policy.Output.Mode.SCORE)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
             .prompt(
@@ -50,11 +69,19 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
             .promptCacheKey("prompt-cache-key-1234")
+            .promptCacheOptions(
+                ResponseCreateParams.PromptCacheOptions.builder()
+                    .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
             .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
             .reasoning(
                 Reasoning.builder()
+                    .context(Reasoning.Context.AUTO)
                     .effort(ReasoningEffort.NONE)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                    .mode(Reasoning.Mode.STANDARD)
                     .summary(Reasoning.Summary.AUTO)
                     .build()
             )
@@ -81,8 +108,14 @@ internal class ResponseCreateParamsTest {
                             .build()
                     )
                     .strict(true)
+                    .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                     .deferLoading(true)
                     .description("description")
+                    .outputSchema(
+                        FunctionTool.OutputSchema.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .build()
             )
             .topLogprobs(0L)
@@ -114,7 +147,30 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_5_6_SOL)
+                .moderation(
+                    ResponseCreateParams.Moderation.builder()
+                        .model("model")
+                        .policy(
+                            ResponseCreateParams.Moderation.Policy.builder()
+                                .input(
+                                    ResponseCreateParams.Moderation.Policy.Input.builder()
+                                        .mode(
+                                            ResponseCreateParams.Moderation.Policy.Input.Mode.SCORE
+                                        )
+                                        .build()
+                                )
+                                .output(
+                                    ResponseCreateParams.Moderation.Policy.Output.builder()
+                                        .mode(
+                                            ResponseCreateParams.Moderation.Policy.Output.Mode.SCORE
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -129,11 +185,19 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
                 .promptCacheKey("prompt-cache-key-1234")
+                .promptCacheOptions(
+                    ResponseCreateParams.PromptCacheOptions.builder()
+                        .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                        .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                 .reasoning(
                     Reasoning.builder()
+                        .context(Reasoning.Context.AUTO)
                         .effort(ReasoningEffort.NONE)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
+                        .mode(Reasoning.Mode.STANDARD)
                         .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
@@ -160,8 +224,14 @@ internal class ResponseCreateParamsTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
                 .topLogprobs(0L)
@@ -193,7 +263,27 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_6_SOL))
+        assertThat(body.moderation())
+            .contains(
+                ResponseCreateParams.Moderation.builder()
+                    .model("model")
+                    .policy(
+                        ResponseCreateParams.Moderation.Policy.builder()
+                            .input(
+                                ResponseCreateParams.Moderation.Policy.Input.builder()
+                                    .mode(ResponseCreateParams.Moderation.Policy.Input.Mode.SCORE)
+                                    .build()
+                            )
+                            .output(
+                                ResponseCreateParams.Moderation.Policy.Output.builder()
+                                    .mode(ResponseCreateParams.Moderation.Policy.Output.Mode.SCORE)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")
         assertThat(body.prompt())
@@ -209,13 +299,22 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
         assertThat(body.promptCacheKey()).contains("prompt-cache-key-1234")
+        assertThat(body.promptCacheOptions())
+            .contains(
+                ResponseCreateParams.PromptCacheOptions.builder()
+                    .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
         assertThat(body.promptCacheRetention())
             .contains(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
         assertThat(body.reasoning())
             .contains(
                 Reasoning.builder()
+                    .context(Reasoning.Context.AUTO)
                     .effort(ReasoningEffort.NONE)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
+                    .mode(Reasoning.Mode.STANDARD)
                     .summary(Reasoning.Summary.AUTO)
                     .build()
             )
@@ -245,8 +344,14 @@ internal class ResponseCreateParamsTest {
                                 .build()
                         )
                         .strict(true)
+                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                         .deferLoading(true)
                         .description("description")
+                        .outputSchema(
+                            FunctionTool.OutputSchema.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .build()
                 )
             )

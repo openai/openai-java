@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.projects
 
@@ -14,6 +14,8 @@ import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAcco
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListPage
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountListParams
 import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountRetrieveParams
+import com.openai.models.admin.organization.projects.serviceaccounts.ServiceAccountUpdateParams
+import com.openai.services.blocking.admin.organization.projects.serviceaccounts.ApiKeyService
 import java.util.function.Consumer
 
 interface ServiceAccountService {
@@ -30,9 +32,11 @@ interface ServiceAccountService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ServiceAccountService
 
+    fun apiKeys(): ApiKeyService
+
     /**
-     * Creates a new service account in the project. This also returns an unredacted API key for the
-     * service account.
+     * Creates a new service account in the project. By default, this also returns an unredacted API
+     * key for the service account.
      */
     fun create(
         projectId: String,
@@ -78,6 +82,30 @@ interface ServiceAccountService {
     /** @see retrieve */
     fun retrieve(
         params: ServiceAccountRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectServiceAccount
+
+    /** Updates a service account in the project. */
+    fun update(
+        serviceAccountId: String,
+        params: ServiceAccountUpdateParams,
+    ): ProjectServiceAccount = update(serviceAccountId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        serviceAccountId: String,
+        params: ServiceAccountUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectServiceAccount =
+        update(params.toBuilder().serviceAccountId(serviceAccountId).build(), requestOptions)
+
+    /** @see update */
+    fun update(params: ServiceAccountUpdateParams): ProjectServiceAccount =
+        update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: ServiceAccountUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectServiceAccount
 
@@ -156,6 +184,8 @@ interface ServiceAccountService {
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountService.WithRawResponse
 
+        fun apiKeys(): ApiKeyService.WithRawResponse
+
         /**
          * Returns a raw HTTP response for `post
          * /organization/projects/{project_id}/service_accounts`, but is otherwise the same as
@@ -220,6 +250,39 @@ interface ServiceAccountService {
         @MustBeClosed
         fun retrieve(
             params: ServiceAccountRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectServiceAccount>
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /organization/projects/{project_id}/service_accounts/{service_account_id}`, but is
+         * otherwise the same as [ServiceAccountService.update].
+         */
+        @MustBeClosed
+        fun update(
+            serviceAccountId: String,
+            params: ServiceAccountUpdateParams,
+        ): HttpResponseFor<ProjectServiceAccount> =
+            update(serviceAccountId, params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            serviceAccountId: String,
+            params: ServiceAccountUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectServiceAccount> =
+            update(params.toBuilder().serviceAccountId(serviceAccountId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(params: ServiceAccountUpdateParams): HttpResponseFor<ProjectServiceAccount> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: ServiceAccountUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectServiceAccount>
 

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 @file:JvmName("SseHandler")
 
 package com.openai.core.handlers
@@ -39,7 +37,7 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
 
             val jsonNode =
                 try {
-                    message.json<JsonNode>()
+                    message.json<JsonNode?>() ?: jsonMapper.createObjectNode()
                 } catch (e: Exception) {
                     jsonMapper.createObjectNode()
                 }
@@ -110,7 +108,12 @@ private class SseState(
     }
 
     private fun flush(): SseMessage? {
-        if (isEmpty()) {
+        // Per the SSE spec, metadata-only blocks do not dispatch an event. Check the collection
+        // rather than the joined data because an explicitly empty `data:` field is still an event.
+        if (data.isEmpty()) {
+            // The dispatch algorithm clears the event type buffer even when no event is emitted.
+            event = null
+            retry = null
             return null
         }
 
@@ -130,9 +133,6 @@ private class SseState(
 
         return message
     }
-
-    private fun isEmpty(): Boolean =
-        event.isNullOrEmpty() && data.isEmpty() && lastId.isNullOrEmpty() && retry == null
 }
 
 @JvmSynthetic

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -30,6 +30,22 @@ internal class RoleServiceAsyncTest {
                     .description("description")
                     .build()
             )
+
+        val role = roleFuture.get()
+        role.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val roleServiceAsync = client.admin().organization().roles()
+
+        val roleFuture = roleServiceAsync.retrieve("role_id")
 
         val role = roleFuture.get()
         role.validate()

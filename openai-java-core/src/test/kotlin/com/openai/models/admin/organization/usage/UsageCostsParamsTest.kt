@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.usage
 
@@ -17,6 +17,7 @@ internal class UsageCostsParamsTest {
             .endTime(0L)
             .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
             .limit(0L)
+            .addLineItem("string")
             .page("page")
             .addProjectId("string")
             .build()
@@ -32,6 +33,7 @@ internal class UsageCostsParamsTest {
                 .endTime(0L)
                 .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
                 .limit(0L)
+                .addLineItem("string")
                 .page("page")
                 .addProjectId("string")
                 .build()
@@ -47,6 +49,7 @@ internal class UsageCostsParamsTest {
                     .put("end_time", "0")
                     .put("group_by[]", "project_id")
                     .put("limit", "0")
+                    .put("line_items[]", "string")
                     .put("page", "page")
                     .put("project_ids[]", "string")
                     .build()

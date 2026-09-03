@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -54,7 +54,14 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
                 .id("id")
-                .addContentPart(ChatCompletionContentPartText.builder().text("text").build())
+                .addContentPart(
+                    ChatCompletionContentPartText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
                 .build()
 
         assertThat(chatCompletionStoreMessage.content()).contains("content")
@@ -106,7 +113,12 @@ internal class ChatCompletionStoreMessageTest {
         assertThat(chatCompletionStoreMessage.contentParts().getOrNull())
             .containsExactly(
                 ChatCompletionStoreMessage.ContentPart.ofChatCompletionContentPartText(
-                    ChatCompletionContentPartText.builder().text("text").build()
+                    ChatCompletionContentPartText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
                 )
             )
     }
@@ -156,7 +168,14 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
                 .id("id")
-                .addContentPart(ChatCompletionContentPartText.builder().text("text").build())
+                .addContentPart(
+                    ChatCompletionContentPartText.builder()
+                        .text("text")
+                        .promptCacheBreakpoint(
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                        )
+                        .build()
+                )
                 .build()
 
         val roundtrippedChatCompletionStoreMessage =

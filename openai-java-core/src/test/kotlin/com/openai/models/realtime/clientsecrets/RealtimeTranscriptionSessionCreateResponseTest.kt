@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime.clientsecrets
 
@@ -38,7 +38,10 @@ internal class RealtimeTranscriptionSessionCreateResponseTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
+                                        .addKeyword("string")
                                         .language("language")
+                                        .addLanguage("string")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
                                         .build()
@@ -84,7 +87,10 @@ internal class RealtimeTranscriptionSessionCreateResponseTest {
                             )
                             .transcription(
                                 AudioTranscription.builder()
+                                    .delay(AudioTranscription.Delay.MINIMAL)
+                                    .addKeyword("string")
                                     .language("language")
+                                    .addLanguage("string")
                                     .model(AudioTranscription.Model.WHISPER_1)
                                     .prompt("prompt")
                                     .build()
@@ -135,7 +141,10 @@ internal class RealtimeTranscriptionSessionCreateResponseTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
+                                        .addKeyword("string")
                                         .language("language")
+                                        .addLanguage("string")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
                                         .build()

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -16,6 +16,7 @@ internal class ResponseApplyPatchToolCallOutputTest {
                 .id("id")
                 .callId("call_id")
                 .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                .callerDirect()
                 .createdBy("created_by")
                 .output("output")
                 .build()
@@ -24,6 +25,8 @@ internal class ResponseApplyPatchToolCallOutputTest {
         assertThat(responseApplyPatchToolCallOutput.callId()).isEqualTo("call_id")
         assertThat(responseApplyPatchToolCallOutput.status())
             .isEqualTo(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+        assertThat(responseApplyPatchToolCallOutput.caller())
+            .contains(ResponseApplyPatchToolCallOutput.Caller.ofDirect())
         assertThat(responseApplyPatchToolCallOutput.createdBy()).contains("created_by")
         assertThat(responseApplyPatchToolCallOutput.output()).contains("output")
     }
@@ -36,6 +39,7 @@ internal class ResponseApplyPatchToolCallOutputTest {
                 .id("id")
                 .callId("call_id")
                 .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                .callerDirect()
                 .createdBy("created_by")
                 .output("output")
                 .build()

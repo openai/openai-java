@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.auditlogs
 
@@ -22,6 +22,7 @@ internal class AuditLogListParamsTest {
             .limit(0L)
             .addProjectId("string")
             .addResourceId("string")
+            .tenantOnly(true)
             .build()
     }
 
@@ -40,6 +41,7 @@ internal class AuditLogListParamsTest {
                 .limit(0L)
                 .addProjectId("string")
                 .addResourceId("string")
+                .tenantOnly(true)
                 .build()
 
         val queryParams = params._queryParams()
@@ -59,6 +61,7 @@ internal class AuditLogListParamsTest {
                     .put("limit", "0")
                     .put("project_ids[]", "string")
                     .put("resource_ids[]", "string")
+                    .put("tenant_only", "true")
                     .build()
             )
     }

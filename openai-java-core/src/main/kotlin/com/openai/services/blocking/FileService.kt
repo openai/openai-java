@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -140,7 +140,7 @@ interface FileService {
     fun delete(fileId: String, requestOptions: RequestOptions): FileDeleted =
         delete(fileId, FileDeleteParams.none(), requestOptions)
 
-    /** Returns the contents of the specified file. */
+    /** Returns a response containing the contents of the specified file. */
     @MustBeClosed
     fun content(fileId: String): HttpResponse = content(fileId, FileContentParams.none())
 

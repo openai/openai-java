@@ -9,7 +9,10 @@ repositories {
 
 dependencies {
     implementation(project(":openai-java"))
-    implementation("com.azure:azure-identity:1.15.0")
+    implementation(project(":openai-java-bedrock"))
+    // Keep Azure Identity's Netty runtime aligned on a secure release.
+    implementation(platform("io.netty:netty-bom:4.1.137.Final"))
+    implementation("com.azure:azure-identity:1.18.4")
 }
 
 tasks.withType<JavaCompile>().configureEach {

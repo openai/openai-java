@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -25,7 +25,10 @@ internal class TranscriptionSessionUpdatedEventTest {
                         .inputAudioFormat("input_audio_format")
                         .inputAudioTranscription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
+                                .addKeyword("string")
                                 .language("language")
+                                .addLanguage("string")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
                                 .build()
@@ -56,7 +59,10 @@ internal class TranscriptionSessionUpdatedEventTest {
                     .inputAudioFormat("input_audio_format")
                     .inputAudioTranscription(
                         AudioTranscription.builder()
+                            .delay(AudioTranscription.Delay.MINIMAL)
+                            .addKeyword("string")
                             .language("language")
+                            .addLanguage("string")
                             .model(AudioTranscription.Model.WHISPER_1)
                             .prompt("prompt")
                             .build()
@@ -91,7 +97,10 @@ internal class TranscriptionSessionUpdatedEventTest {
                         .inputAudioFormat("input_audio_format")
                         .inputAudioTranscription(
                             AudioTranscription.builder()
+                                .delay(AudioTranscription.Delay.MINIMAL)
+                                .addKeyword("string")
                                 .language("language")
+                                .addLanguage("string")
                                 .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
                                 .build()

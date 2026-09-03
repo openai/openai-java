@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -14,10 +14,15 @@ import com.openai.models.admin.organization.projects.ProjectRetrieveParams
 import com.openai.models.admin.organization.projects.ProjectUpdateParams
 import com.openai.services.async.admin.organization.projects.ApiKeyServiceAsync
 import com.openai.services.async.admin.organization.projects.CertificateServiceAsync
+import com.openai.services.async.admin.organization.projects.DataRetentionServiceAsync
 import com.openai.services.async.admin.organization.projects.GroupServiceAsync
+import com.openai.services.async.admin.organization.projects.HostedToolPermissionServiceAsync
+import com.openai.services.async.admin.organization.projects.ModelPermissionServiceAsync
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
+import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.UserServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -44,9 +49,19 @@ interface ProjectServiceAsync {
 
     fun rateLimits(): RateLimitServiceAsync
 
+    fun modelPermissions(): ModelPermissionServiceAsync
+
+    fun hostedToolPermissions(): HostedToolPermissionServiceAsync
+
     fun groups(): GroupServiceAsync
 
     fun roles(): RoleServiceAsync
+
+    fun dataRetention(): DataRetentionServiceAsync
+
+    fun spendLimit(): SpendLimitServiceAsync
+
+    fun spendAlerts(): SpendAlertServiceAsync
 
     fun certificates(): CertificateServiceAsync
 
@@ -199,9 +214,19 @@ interface ProjectServiceAsync {
 
         fun rateLimits(): RateLimitServiceAsync.WithRawResponse
 
+        fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse
+
+        fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse
+
         fun groups(): GroupServiceAsync.WithRawResponse
 
         fun roles(): RoleServiceAsync.WithRawResponse
+
+        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
+
+        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 
         fun certificates(): CertificateServiceAsync.WithRawResponse
 

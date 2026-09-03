@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.audio
 
@@ -32,9 +32,11 @@ internal class TranscriptionServiceAsyncTest {
                     .model(AudioModel.GPT_4O_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)
+                    .addKeyword("string")
                     .addKnownSpeakerName("string")
                     .addKnownSpeakerReference("string")
                     .language("language")
+                    .addLanguage("string")
                     .prompt("prompt")
                     .responseFormat(AudioResponseFormat.JSON)
                     .temperature(0.0)
@@ -64,9 +66,11 @@ internal class TranscriptionServiceAsyncTest {
                     .model(AudioModel.GPT_4O_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)
+                    .addKeyword("string")
                     .addKnownSpeakerName("string")
                     .addKnownSpeakerReference("string")
                     .language("language")
+                    .addLanguage("string")
                     .prompt("prompt")
                     .responseFormat(AudioResponseFormat.JSON)
                     .temperature(0.0)

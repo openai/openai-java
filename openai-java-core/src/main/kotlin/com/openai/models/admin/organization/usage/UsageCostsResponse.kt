@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.usage
 
@@ -562,6 +562,36 @@ private constructor(
                 )
 
             /**
+             * Alias for calling [addResult] with
+             * `Result.ofOrganizationUsageFileSearches(organizationUsageFileSearches)`.
+             */
+            fun addResult(
+                organizationUsageFileSearches: Result.OrganizationUsageFileSearchesResult
+            ) = addResult(Result.ofOrganizationUsageFileSearches(organizationUsageFileSearches))
+
+            /**
+             * Alias for calling [addResult] with the following:
+             * ```java
+             * Result.OrganizationUsageFileSearchesResult.builder()
+             *     .numRequests(numRequests)
+             *     .build()
+             * ```
+             */
+            fun addOrganizationUsageFileSearchesResult(numRequests: Long) =
+                addResult(
+                    Result.OrganizationUsageFileSearchesResult.builder()
+                        .numRequests(numRequests)
+                        .build()
+                )
+
+            /**
+             * Alias for calling [addResult] with
+             * `Result.ofOrganizationUsageWebSearches(organizationUsageWebSearches)`.
+             */
+            fun addResult(organizationUsageWebSearches: Result.OrganizationUsageWebSearchesResult) =
+                addResult(Result.ofOrganizationUsageWebSearches(organizationUsageWebSearches))
+
+            /**
              * Alias for calling [addResult] with `Result.ofOrganizationCosts(organizationCosts)`.
              */
             fun addResult(organizationCosts: Result.OrganizationCostsResult) =
@@ -687,6 +717,8 @@ private constructor(
             private val organizationUsageCodeInterpreterSessions:
                 OrganizationUsageCodeInterpreterSessionsResult? =
                 null,
+            private val organizationUsageFileSearches: OrganizationUsageFileSearchesResult? = null,
+            private val organizationUsageWebSearches: OrganizationUsageWebSearchesResult? = null,
             private val organizationCosts: OrganizationCostsResult? = null,
             private val _json: JsonValue? = null,
         ) {
@@ -727,6 +759,14 @@ private constructor(
                 Optional<OrganizationUsageCodeInterpreterSessionsResult> =
                 Optional.ofNullable(organizationUsageCodeInterpreterSessions)
 
+            /** The aggregated file search calls usage details of the specific time bucket. */
+            fun organizationUsageFileSearches(): Optional<OrganizationUsageFileSearchesResult> =
+                Optional.ofNullable(organizationUsageFileSearches)
+
+            /** The aggregated web search calls usage details of the specific time bucket. */
+            fun organizationUsageWebSearches(): Optional<OrganizationUsageWebSearchesResult> =
+                Optional.ofNullable(organizationUsageWebSearches)
+
             /** The aggregated costs details of the specific time bucket. */
             fun organizationCosts(): Optional<OrganizationCostsResult> =
                 Optional.ofNullable(organizationCosts)
@@ -748,6 +788,10 @@ private constructor(
 
             fun isOrganizationUsageCodeInterpreterSessions(): Boolean =
                 organizationUsageCodeInterpreterSessions != null
+
+            fun isOrganizationUsageFileSearches(): Boolean = organizationUsageFileSearches != null
+
+            fun isOrganizationUsageWebSearches(): Boolean = organizationUsageWebSearches != null
 
             fun isOrganizationCosts(): Boolean = organizationCosts != null
 
@@ -790,6 +834,14 @@ private constructor(
                 organizationUsageCodeInterpreterSessions.getOrThrow(
                     "organizationUsageCodeInterpreterSessions"
                 )
+
+            /** The aggregated file search calls usage details of the specific time bucket. */
+            fun asOrganizationUsageFileSearches(): OrganizationUsageFileSearchesResult =
+                organizationUsageFileSearches.getOrThrow("organizationUsageFileSearches")
+
+            /** The aggregated web search calls usage details of the specific time bucket. */
+            fun asOrganizationUsageWebSearches(): OrganizationUsageWebSearchesResult =
+                organizationUsageWebSearches.getOrThrow("organizationUsageWebSearches")
 
             /** The aggregated costs details of the specific time bucket. */
             fun asOrganizationCosts(): OrganizationCostsResult =
@@ -849,6 +901,10 @@ private constructor(
                         visitor.visitOrganizationUsageCodeInterpreterSessions(
                             organizationUsageCodeInterpreterSessions
                         )
+                    organizationUsageFileSearches != null ->
+                        visitor.visitOrganizationUsageFileSearches(organizationUsageFileSearches)
+                    organizationUsageWebSearches != null ->
+                        visitor.visitOrganizationUsageWebSearches(organizationUsageWebSearches)
                     organizationCosts != null -> visitor.visitOrganizationCosts(organizationCosts)
                     else -> visitor.unknown(_json)
                 }
@@ -922,6 +978,18 @@ private constructor(
                             organizationUsageCodeInterpreterSessions.validate()
                         }
 
+                        override fun visitOrganizationUsageFileSearches(
+                            organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                        ) {
+                            organizationUsageFileSearches.validate()
+                        }
+
+                        override fun visitOrganizationUsageWebSearches(
+                            organizationUsageWebSearches: OrganizationUsageWebSearchesResult
+                        ) {
+                            organizationUsageWebSearches.validate()
+                        }
+
                         override fun visitOrganizationCosts(
                             organizationCosts: OrganizationCostsResult
                         ) {
@@ -984,6 +1052,14 @@ private constructor(
                                 OrganizationUsageCodeInterpreterSessionsResult
                         ) = organizationUsageCodeInterpreterSessions.validity()
 
+                        override fun visitOrganizationUsageFileSearches(
+                            organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                        ) = organizationUsageFileSearches.validity()
+
+                        override fun visitOrganizationUsageWebSearches(
+                            organizationUsageWebSearches: OrganizationUsageWebSearchesResult
+                        ) = organizationUsageWebSearches.validity()
+
                         override fun visitOrganizationCosts(
                             organizationCosts: OrganizationCostsResult
                         ) = organizationCosts.validity()
@@ -1008,6 +1084,8 @@ private constructor(
                     organizationUsageVectorStores == other.organizationUsageVectorStores &&
                     organizationUsageCodeInterpreterSessions ==
                         other.organizationUsageCodeInterpreterSessions &&
+                    organizationUsageFileSearches == other.organizationUsageFileSearches &&
+                    organizationUsageWebSearches == other.organizationUsageWebSearches &&
                     organizationCosts == other.organizationCosts
             }
 
@@ -1021,6 +1099,8 @@ private constructor(
                     organizationUsageAudioTranscriptions,
                     organizationUsageVectorStores,
                     organizationUsageCodeInterpreterSessions,
+                    organizationUsageFileSearches,
+                    organizationUsageWebSearches,
                     organizationCosts,
                 )
 
@@ -1042,6 +1122,10 @@ private constructor(
                         "Result{organizationUsageVectorStores=$organizationUsageVectorStores}"
                     organizationUsageCodeInterpreterSessions != null ->
                         "Result{organizationUsageCodeInterpreterSessions=$organizationUsageCodeInterpreterSessions}"
+                    organizationUsageFileSearches != null ->
+                        "Result{organizationUsageFileSearches=$organizationUsageFileSearches}"
+                    organizationUsageWebSearches != null ->
+                        "Result{organizationUsageWebSearches=$organizationUsageWebSearches}"
                     organizationCosts != null -> "Result{organizationCosts=$organizationCosts}"
                     _json != null -> "Result{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid Result")
@@ -1110,6 +1194,18 @@ private constructor(
                             organizationUsageCodeInterpreterSessions
                     )
 
+                /** The aggregated file search calls usage details of the specific time bucket. */
+                @JvmStatic
+                fun ofOrganizationUsageFileSearches(
+                    organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                ) = Result(organizationUsageFileSearches = organizationUsageFileSearches)
+
+                /** The aggregated web search calls usage details of the specific time bucket. */
+                @JvmStatic
+                fun ofOrganizationUsageWebSearches(
+                    organizationUsageWebSearches: OrganizationUsageWebSearchesResult
+                ) = Result(organizationUsageWebSearches = organizationUsageWebSearches)
+
                 /** The aggregated costs details of the specific time bucket. */
                 @JvmStatic
                 fun ofOrganizationCosts(organizationCosts: OrganizationCostsResult) =
@@ -1165,6 +1261,16 @@ private constructor(
                 fun visitOrganizationUsageCodeInterpreterSessions(
                     organizationUsageCodeInterpreterSessions:
                         OrganizationUsageCodeInterpreterSessionsResult
+                ): T
+
+                /** The aggregated file search calls usage details of the specific time bucket. */
+                fun visitOrganizationUsageFileSearches(
+                    organizationUsageFileSearches: OrganizationUsageFileSearchesResult
+                ): T
+
+                /** The aggregated web search calls usage details of the specific time bucket. */
+                fun visitOrganizationUsageWebSearches(
+                    organizationUsageWebSearches: OrganizationUsageWebSearchesResult
                 ): T
 
                 /** The aggregated costs details of the specific time bucket. */
@@ -1262,6 +1368,22 @@ private constructor(
                                     )
                                 } ?: Result(_json = json)
                         }
+                        "organization.usage.file_searches.result" -> {
+                            return tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<OrganizationUsageFileSearchesResult>(),
+                                )
+                                ?.let { Result(organizationUsageFileSearches = it, _json = json) }
+                                ?: Result(_json = json)
+                        }
+                        "organization.usage.web_searches.result" -> {
+                            return tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<OrganizationUsageWebSearchesResult>(),
+                                )
+                                ?.let { Result(organizationUsageWebSearches = it, _json = json) }
+                                ?: Result(_json = json)
+                        }
                         "organization.costs.result" -> {
                             return tryDeserialize(node, jacksonTypeRef<OrganizationCostsResult>())
                                 ?.let { Result(organizationCosts = it, _json = json) }
@@ -1297,6 +1419,10 @@ private constructor(
                             generator.writeObject(value.organizationUsageVectorStores)
                         value.organizationUsageCodeInterpreterSessions != null ->
                             generator.writeObject(value.organizationUsageCodeInterpreterSessions)
+                        value.organizationUsageFileSearches != null ->
+                            generator.writeObject(value.organizationUsageFileSearches)
+                        value.organizationUsageWebSearches != null ->
+                            generator.writeObject(value.organizationUsageWebSearches)
                         value.organizationCosts != null ->
                             generator.writeObject(value.organizationCosts)
                         value._json != null -> generator.writeObject(value._json)
@@ -1316,9 +1442,18 @@ private constructor(
                 private val apiKeyId: JsonField<String>,
                 private val batch: JsonField<Boolean>,
                 private val inputAudioTokens: JsonField<Long>,
+                private val inputCacheWriteTokens: JsonField<Long>,
+                private val inputCachedAudioTokens: JsonField<Long>,
+                private val inputCachedImageTokens: JsonField<Long>,
+                private val inputCachedTextTokens: JsonField<Long>,
                 private val inputCachedTokens: JsonField<Long>,
+                private val inputImageTokens: JsonField<Long>,
+                private val inputTextTokens: JsonField<Long>,
+                private val inputUncachedTokens: JsonField<Long>,
                 private val model: JsonField<String>,
                 private val outputAudioTokens: JsonField<Long>,
+                private val outputImageTokens: JsonField<Long>,
+                private val outputTextTokens: JsonField<Long>,
                 private val projectId: JsonField<String>,
                 private val serviceTier: JsonField<String>,
                 private val userId: JsonField<String>,
@@ -1346,15 +1481,42 @@ private constructor(
                     @JsonProperty("input_audio_tokens")
                     @ExcludeMissing
                     inputAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cache_write_tokens")
+                    @ExcludeMissing
+                    inputCacheWriteTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cached_audio_tokens")
+                    @ExcludeMissing
+                    inputCachedAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cached_image_tokens")
+                    @ExcludeMissing
+                    inputCachedImageTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cached_text_tokens")
+                    @ExcludeMissing
+                    inputCachedTextTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("input_cached_tokens")
                     @ExcludeMissing
                     inputCachedTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_image_tokens")
+                    @ExcludeMissing
+                    inputImageTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_text_tokens")
+                    @ExcludeMissing
+                    inputTextTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_uncached_tokens")
+                    @ExcludeMissing
+                    inputUncachedTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("model")
                     @ExcludeMissing
                     model: JsonField<String> = JsonMissing.of(),
                     @JsonProperty("output_audio_tokens")
                     @ExcludeMissing
                     outputAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("output_image_tokens")
+                    @ExcludeMissing
+                    outputImageTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("output_text_tokens")
+                    @ExcludeMissing
+                    outputTextTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("project_id")
                     @ExcludeMissing
                     projectId: JsonField<String> = JsonMissing.of(),
@@ -1372,9 +1534,18 @@ private constructor(
                     apiKeyId,
                     batch,
                     inputAudioTokens,
+                    inputCacheWriteTokens,
+                    inputCachedAudioTokens,
+                    inputCachedImageTokens,
+                    inputCachedTextTokens,
                     inputCachedTokens,
+                    inputImageTokens,
+                    inputTextTokens,
+                    inputUncachedTokens,
                     model,
                     outputAudioTokens,
+                    outputImageTokens,
+                    outputTextTokens,
                     projectId,
                     serviceTier,
                     userId,
@@ -1382,8 +1553,9 @@ private constructor(
                 )
 
                 /**
-                 * The aggregated number of text input tokens used, including cached tokens. For
-                 * customers subscribe to scale tier, this includes scale tier tokens.
+                 * The aggregated number of input tokens used, including cached and cache-write
+                 * tokens. This includes text, audio, and image tokens. For customers subscribed to
+                 * Scale Tier, this includes Scale Tier tokens.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
                  *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -1412,8 +1584,8 @@ private constructor(
                 @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
                 /**
-                 * The aggregated number of text output tokens used. For customers subscribe to
-                 * scale tier, this includes scale tier tokens.
+                 * The aggregated number of output tokens used across text, audio, and image
+                 * outputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
                  *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -1440,7 +1612,7 @@ private constructor(
                 fun batch(): Optional<Boolean> = batch.getOptional("batch")
 
                 /**
-                 * The aggregated number of audio input tokens used, including cached tokens.
+                 * The aggregated number of uncached audio input tokens used.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1449,14 +1621,79 @@ private constructor(
                     inputAudioTokens.getOptional("input_audio_tokens")
 
                 /**
-                 * The aggregated number of text input tokens that has been cached from previous
-                 * requests. For customers subscribe to scale tier, this includes scale tier tokens.
+                 * The aggregated number of input tokens written to the cache.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCacheWriteTokens(): Optional<Long> =
+                    inputCacheWriteTokens.getOptional("input_cache_write_tokens")
+
+                /**
+                 * The aggregated number of cached audio input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCachedAudioTokens(): Optional<Long> =
+                    inputCachedAudioTokens.getOptional("input_cached_audio_tokens")
+
+                /**
+                 * The aggregated number of cached image input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCachedImageTokens(): Optional<Long> =
+                    inputCachedImageTokens.getOptional("input_cached_image_tokens")
+
+                /**
+                 * The aggregated number of cached text input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCachedTextTokens(): Optional<Long> =
+                    inputCachedTextTokens.getOptional("input_cached_text_tokens")
+
+                /**
+                 * The aggregated number of cached input tokens used across text, audio, and image
+                 * inputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
                 fun inputCachedTokens(): Optional<Long> =
                     inputCachedTokens.getOptional("input_cached_tokens")
+
+                /**
+                 * The aggregated number of uncached image input tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputImageTokens(): Optional<Long> =
+                    inputImageTokens.getOptional("input_image_tokens")
+
+                /**
+                 * The aggregated number of uncached text input tokens used, excluding cache-write
+                 * tokens.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputTextTokens(): Optional<Long> =
+                    inputTextTokens.getOptional("input_text_tokens")
+
+                /**
+                 * The aggregated number of uncached input tokens used across text, audio, and image
+                 * inputs, excluding cache-write tokens.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputUncachedTokens(): Optional<Long> =
+                    inputUncachedTokens.getOptional("input_uncached_tokens")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
@@ -1475,6 +1712,24 @@ private constructor(
                  */
                 fun outputAudioTokens(): Optional<Long> =
                     outputAudioTokens.getOptional("output_audio_tokens")
+
+                /**
+                 * The aggregated number of image output tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun outputImageTokens(): Optional<Long> =
+                    outputImageTokens.getOptional("output_image_tokens")
+
+                /**
+                 * The aggregated number of text output tokens used.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun outputTextTokens(): Optional<Long> =
+                    outputTextTokens.getOptional("output_text_tokens")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
@@ -1562,6 +1817,46 @@ private constructor(
                 fun _inputAudioTokens(): JsonField<Long> = inputAudioTokens
 
                 /**
+                 * Returns the raw JSON value of [inputCacheWriteTokens].
+                 *
+                 * Unlike [inputCacheWriteTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cache_write_tokens")
+                @ExcludeMissing
+                fun _inputCacheWriteTokens(): JsonField<Long> = inputCacheWriteTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCachedAudioTokens].
+                 *
+                 * Unlike [inputCachedAudioTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cached_audio_tokens")
+                @ExcludeMissing
+                fun _inputCachedAudioTokens(): JsonField<Long> = inputCachedAudioTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCachedImageTokens].
+                 *
+                 * Unlike [inputCachedImageTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cached_image_tokens")
+                @ExcludeMissing
+                fun _inputCachedImageTokens(): JsonField<Long> = inputCachedImageTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCachedTextTokens].
+                 *
+                 * Unlike [inputCachedTextTokens], this method doesn't throw if the JSON field has
+                 * an unexpected type.
+                 */
+                @JsonProperty("input_cached_text_tokens")
+                @ExcludeMissing
+                fun _inputCachedTextTokens(): JsonField<Long> = inputCachedTextTokens
+
+                /**
                  * Returns the raw JSON value of [inputCachedTokens].
                  *
                  * Unlike [inputCachedTokens], this method doesn't throw if the JSON field has an
@@ -1570,6 +1865,36 @@ private constructor(
                 @JsonProperty("input_cached_tokens")
                 @ExcludeMissing
                 fun _inputCachedTokens(): JsonField<Long> = inputCachedTokens
+
+                /**
+                 * Returns the raw JSON value of [inputImageTokens].
+                 *
+                 * Unlike [inputImageTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("input_image_tokens")
+                @ExcludeMissing
+                fun _inputImageTokens(): JsonField<Long> = inputImageTokens
+
+                /**
+                 * Returns the raw JSON value of [inputTextTokens].
+                 *
+                 * Unlike [inputTextTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("input_text_tokens")
+                @ExcludeMissing
+                fun _inputTextTokens(): JsonField<Long> = inputTextTokens
+
+                /**
+                 * Returns the raw JSON value of [inputUncachedTokens].
+                 *
+                 * Unlike [inputUncachedTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("input_uncached_tokens")
+                @ExcludeMissing
+                fun _inputUncachedTokens(): JsonField<Long> = inputUncachedTokens
 
                 /**
                  * Returns the raw JSON value of [model].
@@ -1588,6 +1913,26 @@ private constructor(
                 @JsonProperty("output_audio_tokens")
                 @ExcludeMissing
                 fun _outputAudioTokens(): JsonField<Long> = outputAudioTokens
+
+                /**
+                 * Returns the raw JSON value of [outputImageTokens].
+                 *
+                 * Unlike [outputImageTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("output_image_tokens")
+                @ExcludeMissing
+                fun _outputImageTokens(): JsonField<Long> = outputImageTokens
+
+                /**
+                 * Returns the raw JSON value of [outputTextTokens].
+                 *
+                 * Unlike [outputTextTokens], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("output_text_tokens")
+                @ExcludeMissing
+                fun _outputTextTokens(): JsonField<Long> = outputTextTokens
 
                 /**
                  * Returns the raw JSON value of [projectId].
@@ -1656,9 +2001,18 @@ private constructor(
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
                     private var batch: JsonField<Boolean> = JsonMissing.of()
                     private var inputAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCacheWriteTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCachedAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCachedImageTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCachedTextTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCachedTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputImageTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputTextTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputUncachedTokens: JsonField<Long> = JsonMissing.of()
                     private var model: JsonField<String> = JsonMissing.of()
                     private var outputAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var outputImageTokens: JsonField<Long> = JsonMissing.of()
+                    private var outputTextTokens: JsonField<Long> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var serviceTier: JsonField<String> = JsonMissing.of()
                     private var userId: JsonField<String> = JsonMissing.of()
@@ -1675,9 +2029,22 @@ private constructor(
                         apiKeyId = organizationUsageCompletionsResult.apiKeyId
                         batch = organizationUsageCompletionsResult.batch
                         inputAudioTokens = organizationUsageCompletionsResult.inputAudioTokens
+                        inputCacheWriteTokens =
+                            organizationUsageCompletionsResult.inputCacheWriteTokens
+                        inputCachedAudioTokens =
+                            organizationUsageCompletionsResult.inputCachedAudioTokens
+                        inputCachedImageTokens =
+                            organizationUsageCompletionsResult.inputCachedImageTokens
+                        inputCachedTextTokens =
+                            organizationUsageCompletionsResult.inputCachedTextTokens
                         inputCachedTokens = organizationUsageCompletionsResult.inputCachedTokens
+                        inputImageTokens = organizationUsageCompletionsResult.inputImageTokens
+                        inputTextTokens = organizationUsageCompletionsResult.inputTextTokens
+                        inputUncachedTokens = organizationUsageCompletionsResult.inputUncachedTokens
                         model = organizationUsageCompletionsResult.model
                         outputAudioTokens = organizationUsageCompletionsResult.outputAudioTokens
+                        outputImageTokens = organizationUsageCompletionsResult.outputImageTokens
+                        outputTextTokens = organizationUsageCompletionsResult.outputTextTokens
                         projectId = organizationUsageCompletionsResult.projectId
                         serviceTier = organizationUsageCompletionsResult.serviceTier
                         userId = organizationUsageCompletionsResult.userId
@@ -1686,8 +2053,9 @@ private constructor(
                     }
 
                     /**
-                     * The aggregated number of text input tokens used, including cached tokens. For
-                     * customers subscribe to scale tier, this includes scale tier tokens.
+                     * The aggregated number of input tokens used, including cached and cache-write
+                     * tokens. This includes text, audio, and image tokens. For customers subscribed
+                     * to Scale Tier, this includes Scale Tier tokens.
                      */
                     fun inputTokens(inputTokens: Long) = inputTokens(JsonField.of(inputTokens))
 
@@ -1732,8 +2100,9 @@ private constructor(
                     fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
                     /**
-                     * The aggregated number of text output tokens used. For customers subscribe to
-                     * scale tier, this includes scale tier tokens.
+                     * The aggregated number of output tokens used across text, audio, and image
+                     * outputs. For customers subscribed to Scale Tier, this includes Scale Tier
+                     * tokens.
                      */
                     fun outputTokens(outputTokens: Long) = outputTokens(JsonField.of(outputTokens))
 
@@ -1791,9 +2160,7 @@ private constructor(
                      */
                     fun batch(batch: JsonField<Boolean>) = apply { this.batch = batch }
 
-                    /**
-                     * The aggregated number of audio input tokens used, including cached tokens.
-                     */
+                    /** The aggregated number of uncached audio input tokens used. */
                     fun inputAudioTokens(inputAudioTokens: Long) =
                         inputAudioTokens(JsonField.of(inputAudioTokens))
 
@@ -1808,10 +2175,70 @@ private constructor(
                         this.inputAudioTokens = inputAudioTokens
                     }
 
+                    /** The aggregated number of input tokens written to the cache. */
+                    fun inputCacheWriteTokens(inputCacheWriteTokens: Long) =
+                        inputCacheWriteTokens(JsonField.of(inputCacheWriteTokens))
+
                     /**
-                     * The aggregated number of text input tokens that has been cached from previous
-                     * requests. For customers subscribe to scale tier, this includes scale tier
-                     * tokens.
+                     * Sets [Builder.inputCacheWriteTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCacheWriteTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCacheWriteTokens(inputCacheWriteTokens: JsonField<Long>) = apply {
+                        this.inputCacheWriteTokens = inputCacheWriteTokens
+                    }
+
+                    /** The aggregated number of cached audio input tokens used. */
+                    fun inputCachedAudioTokens(inputCachedAudioTokens: Long) =
+                        inputCachedAudioTokens(JsonField.of(inputCachedAudioTokens))
+
+                    /**
+                     * Sets [Builder.inputCachedAudioTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCachedAudioTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCachedAudioTokens(inputCachedAudioTokens: JsonField<Long>) = apply {
+                        this.inputCachedAudioTokens = inputCachedAudioTokens
+                    }
+
+                    /** The aggregated number of cached image input tokens used. */
+                    fun inputCachedImageTokens(inputCachedImageTokens: Long) =
+                        inputCachedImageTokens(JsonField.of(inputCachedImageTokens))
+
+                    /**
+                     * Sets [Builder.inputCachedImageTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCachedImageTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCachedImageTokens(inputCachedImageTokens: JsonField<Long>) = apply {
+                        this.inputCachedImageTokens = inputCachedImageTokens
+                    }
+
+                    /** The aggregated number of cached text input tokens used. */
+                    fun inputCachedTextTokens(inputCachedTextTokens: Long) =
+                        inputCachedTextTokens(JsonField.of(inputCachedTextTokens))
+
+                    /**
+                     * Sets [Builder.inputCachedTextTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCachedTextTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCachedTextTokens(inputCachedTextTokens: JsonField<Long>) = apply {
+                        this.inputCachedTextTokens = inputCachedTextTokens
+                    }
+
+                    /**
+                     * The aggregated number of cached input tokens used across text, audio, and
+                     * image inputs. For customers subscribed to Scale Tier, this includes Scale
+                     * Tier tokens.
                      */
                     fun inputCachedTokens(inputCachedTokens: Long) =
                         inputCachedTokens(JsonField.of(inputCachedTokens))
@@ -1825,6 +2252,57 @@ private constructor(
                      */
                     fun inputCachedTokens(inputCachedTokens: JsonField<Long>) = apply {
                         this.inputCachedTokens = inputCachedTokens
+                    }
+
+                    /** The aggregated number of uncached image input tokens used. */
+                    fun inputImageTokens(inputImageTokens: Long) =
+                        inputImageTokens(JsonField.of(inputImageTokens))
+
+                    /**
+                     * Sets [Builder.inputImageTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputImageTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputImageTokens(inputImageTokens: JsonField<Long>) = apply {
+                        this.inputImageTokens = inputImageTokens
+                    }
+
+                    /**
+                     * The aggregated number of uncached text input tokens used, excluding
+                     * cache-write tokens.
+                     */
+                    fun inputTextTokens(inputTextTokens: Long) =
+                        inputTextTokens(JsonField.of(inputTextTokens))
+
+                    /**
+                     * Sets [Builder.inputTextTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputTextTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputTextTokens(inputTextTokens: JsonField<Long>) = apply {
+                        this.inputTextTokens = inputTextTokens
+                    }
+
+                    /**
+                     * The aggregated number of uncached input tokens used across text, audio, and
+                     * image inputs, excluding cache-write tokens.
+                     */
+                    fun inputUncachedTokens(inputUncachedTokens: Long) =
+                        inputUncachedTokens(JsonField.of(inputUncachedTokens))
+
+                    /**
+                     * Sets [Builder.inputUncachedTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputUncachedTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputUncachedTokens(inputUncachedTokens: JsonField<Long>) = apply {
+                        this.inputUncachedTokens = inputUncachedTokens
                     }
 
                     /**
@@ -1858,6 +2336,36 @@ private constructor(
                      */
                     fun outputAudioTokens(outputAudioTokens: JsonField<Long>) = apply {
                         this.outputAudioTokens = outputAudioTokens
+                    }
+
+                    /** The aggregated number of image output tokens used. */
+                    fun outputImageTokens(outputImageTokens: Long) =
+                        outputImageTokens(JsonField.of(outputImageTokens))
+
+                    /**
+                     * Sets [Builder.outputImageTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.outputImageTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun outputImageTokens(outputImageTokens: JsonField<Long>) = apply {
+                        this.outputImageTokens = outputImageTokens
+                    }
+
+                    /** The aggregated number of text output tokens used. */
+                    fun outputTextTokens(outputTextTokens: Long) =
+                        outputTextTokens(JsonField.of(outputTextTokens))
+
+                    /**
+                     * Sets [Builder.outputTextTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.outputTextTokens] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun outputTextTokens(outputTextTokens: JsonField<Long>) = apply {
+                        this.outputTextTokens = outputTextTokens
                     }
 
                     /**
@@ -1965,9 +2473,18 @@ private constructor(
                             apiKeyId,
                             batch,
                             inputAudioTokens,
+                            inputCacheWriteTokens,
+                            inputCachedAudioTokens,
+                            inputCachedImageTokens,
+                            inputCachedTextTokens,
                             inputCachedTokens,
+                            inputImageTokens,
+                            inputTextTokens,
+                            inputUncachedTokens,
                             model,
                             outputAudioTokens,
+                            outputImageTokens,
+                            outputTextTokens,
                             projectId,
                             serviceTier,
                             userId,
@@ -2003,9 +2520,18 @@ private constructor(
                     apiKeyId()
                     batch()
                     inputAudioTokens()
+                    inputCacheWriteTokens()
+                    inputCachedAudioTokens()
+                    inputCachedImageTokens()
+                    inputCachedTextTokens()
                     inputCachedTokens()
+                    inputImageTokens()
+                    inputTextTokens()
+                    inputUncachedTokens()
                     model()
                     outputAudioTokens()
+                    outputImageTokens()
+                    outputTextTokens()
                     projectId()
                     serviceTier()
                     userId()
@@ -2038,9 +2564,18 @@ private constructor(
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (batch.asKnown().isPresent) 1 else 0) +
                         (if (inputAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCacheWriteTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCachedAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCachedImageTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCachedTextTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCachedTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputImageTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputTextTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputUncachedTokens.asKnown().isPresent) 1 else 0) +
                         (if (model.asKnown().isPresent) 1 else 0) +
                         (if (outputAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (outputImageTokens.asKnown().isPresent) 1 else 0) +
+                        (if (outputTextTokens.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
                         (if (serviceTier.asKnown().isPresent) 1 else 0) +
                         (if (userId.asKnown().isPresent) 1 else 0)
@@ -2058,9 +2593,18 @@ private constructor(
                         apiKeyId == other.apiKeyId &&
                         batch == other.batch &&
                         inputAudioTokens == other.inputAudioTokens &&
+                        inputCacheWriteTokens == other.inputCacheWriteTokens &&
+                        inputCachedAudioTokens == other.inputCachedAudioTokens &&
+                        inputCachedImageTokens == other.inputCachedImageTokens &&
+                        inputCachedTextTokens == other.inputCachedTextTokens &&
                         inputCachedTokens == other.inputCachedTokens &&
+                        inputImageTokens == other.inputImageTokens &&
+                        inputTextTokens == other.inputTextTokens &&
+                        inputUncachedTokens == other.inputUncachedTokens &&
                         model == other.model &&
                         outputAudioTokens == other.outputAudioTokens &&
+                        outputImageTokens == other.outputImageTokens &&
+                        outputTextTokens == other.outputTextTokens &&
                         projectId == other.projectId &&
                         serviceTier == other.serviceTier &&
                         userId == other.userId &&
@@ -2076,9 +2620,18 @@ private constructor(
                         apiKeyId,
                         batch,
                         inputAudioTokens,
+                        inputCacheWriteTokens,
+                        inputCachedAudioTokens,
+                        inputCachedImageTokens,
+                        inputCachedTextTokens,
                         inputCachedTokens,
+                        inputImageTokens,
+                        inputTextTokens,
+                        inputUncachedTokens,
                         model,
                         outputAudioTokens,
+                        outputImageTokens,
+                        outputTextTokens,
                         projectId,
                         serviceTier,
                         userId,
@@ -2089,7 +2642,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCachedTokens=$inputCachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated embeddings usage details of the specific time bucket. */
@@ -5162,6 +5715,981 @@ private constructor(
                     "OrganizationUsageCodeInterpreterSessionsResult{numSessions=$numSessions, object_=$object_, projectId=$projectId, additionalProperties=$additionalProperties}"
             }
 
+            /** The aggregated file search calls usage details of the specific time bucket. */
+            class OrganizationUsageFileSearchesResult
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val numRequests: JsonField<Long>,
+                private val object_: JsonValue,
+                private val apiKeyId: JsonField<String>,
+                private val projectId: JsonField<String>,
+                private val userId: JsonField<String>,
+                private val vectorStoreId: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("num_requests")
+                    @ExcludeMissing
+                    numRequests: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+                    @JsonProperty("api_key_id")
+                    @ExcludeMissing
+                    apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("project_id")
+                    @ExcludeMissing
+                    projectId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("vector_store_id")
+                    @ExcludeMissing
+                    vectorStoreId: JsonField<String> = JsonMissing.of(),
+                ) : this(
+                    numRequests,
+                    object_,
+                    apiKeyId,
+                    projectId,
+                    userId,
+                    vectorStoreId,
+                    mutableMapOf(),
+                )
+
+                /**
+                 * The count of file search calls.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numRequests(): Long = numRequests.getRequired("num_requests")
+
+                /**
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("organization.usage.file_searches.result")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+
+                /**
+                 * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When `group_by=project_id`, this field provides the project ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun userId(): Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * When `group_by=vector_store_id`, this field provides the vector store ID of the
+                 * grouped usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun vectorStoreId(): Optional<String> = vectorStoreId.getOptional("vector_store_id")
+
+                /**
+                 * Returns the raw JSON value of [numRequests].
+                 *
+                 * Unlike [numRequests], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("num_requests")
+                @ExcludeMissing
+                fun _numRequests(): JsonField<Long> = numRequests
+
+                /**
+                 * Returns the raw JSON value of [apiKeyId].
+                 *
+                 * Unlike [apiKeyId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_key_id")
+                @ExcludeMissing
+                fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [projectId].
+                 *
+                 * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("project_id")
+                @ExcludeMissing
+                fun _projectId(): JsonField<String> = projectId
+
+                /**
+                 * Returns the raw JSON value of [userId].
+                 *
+                 * Unlike [userId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+                /**
+                 * Returns the raw JSON value of [vectorStoreId].
+                 *
+                 * Unlike [vectorStoreId], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("vector_store_id")
+                @ExcludeMissing
+                fun _vectorStoreId(): JsonField<String> = vectorStoreId
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [OrganizationUsageFileSearchesResult].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numRequests()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [OrganizationUsageFileSearchesResult]. */
+                class Builder internal constructor() {
+
+                    private var numRequests: JsonField<Long>? = null
+                    private var object_: JsonValue =
+                        JsonValue.from("organization.usage.file_searches.result")
+                    private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var projectId: JsonField<String> = JsonMissing.of()
+                    private var userId: JsonField<String> = JsonMissing.of()
+                    private var vectorStoreId: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(
+                        organizationUsageFileSearchesResult: OrganizationUsageFileSearchesResult
+                    ) = apply {
+                        numRequests = organizationUsageFileSearchesResult.numRequests
+                        object_ = organizationUsageFileSearchesResult.object_
+                        apiKeyId = organizationUsageFileSearchesResult.apiKeyId
+                        projectId = organizationUsageFileSearchesResult.projectId
+                        userId = organizationUsageFileSearchesResult.userId
+                        vectorStoreId = organizationUsageFileSearchesResult.vectorStoreId
+                        additionalProperties =
+                            organizationUsageFileSearchesResult.additionalProperties.toMutableMap()
+                    }
+
+                    /** The count of file search calls. */
+                    fun numRequests(numRequests: Long) = numRequests(JsonField.of(numRequests))
+
+                    /**
+                     * Sets [Builder.numRequests] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numRequests] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun numRequests(numRequests: JsonField<Long>) = apply {
+                        this.numRequests = numRequests
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("organization.usage.file_searches.result")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun object_(object_: JsonValue) = apply { this.object_ = object_ }
+
+                    /**
+                     * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                     * usage result.
+                     */
+                    fun apiKeyId(apiKeyId: String?) = apiKeyId(JsonField.ofNullable(apiKeyId))
+
+                    /** Alias for calling [Builder.apiKeyId] with `apiKeyId.orElse(null)`. */
+                    fun apiKeyId(apiKeyId: Optional<String>) = apiKeyId(apiKeyId.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiKeyId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiKeyId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When `group_by=project_id`, this field provides the project ID of the grouped
+                     * usage result.
+                     */
+                    fun projectId(projectId: String?) = projectId(JsonField.ofNullable(projectId))
+
+                    /** Alias for calling [Builder.projectId] with `projectId.orElse(null)`. */
+                    fun projectId(projectId: Optional<String>) = projectId(projectId.getOrNull())
+
+                    /**
+                     * Sets [Builder.projectId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.projectId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun projectId(projectId: JsonField<String>) = apply {
+                        this.projectId = projectId
+                    }
+
+                    /**
+                     * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                     * result.
+                     */
+                    fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+                    /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+                    fun userId(userId: Optional<String>) = userId(userId.getOrNull())
+
+                    /**
+                     * Sets [Builder.userId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.userId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
+                    /**
+                     * When `group_by=vector_store_id`, this field provides the vector store ID of
+                     * the grouped usage result.
+                     */
+                    fun vectorStoreId(vectorStoreId: String?) =
+                        vectorStoreId(JsonField.ofNullable(vectorStoreId))
+
+                    /**
+                     * Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`.
+                     */
+                    fun vectorStoreId(vectorStoreId: Optional<String>) =
+                        vectorStoreId(vectorStoreId.getOrNull())
+
+                    /**
+                     * Sets [Builder.vectorStoreId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.vectorStoreId] with a well-typed [String]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
+                        this.vectorStoreId = vectorStoreId
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [OrganizationUsageFileSearchesResult].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numRequests()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): OrganizationUsageFileSearchesResult =
+                        OrganizationUsageFileSearchesResult(
+                            checkRequired("numRequests", numRequests),
+                            object_,
+                            apiKeyId,
+                            projectId,
+                            userId,
+                            vectorStoreId,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): OrganizationUsageFileSearchesResult = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    numRequests()
+                    _object_().let {
+                        if (it != JsonValue.from("organization.usage.file_searches.result")) {
+                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+                        }
+                    }
+                    apiKeyId()
+                    projectId()
+                    userId()
+                    vectorStoreId()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (numRequests.asKnown().isPresent) 1 else 0) +
+                        object_.let {
+                            if (it == JsonValue.from("organization.usage.file_searches.result")) 1
+                            else 0
+                        } +
+                        (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (if (projectId.asKnown().isPresent) 1 else 0) +
+                        (if (userId.asKnown().isPresent) 1 else 0) +
+                        (if (vectorStoreId.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is OrganizationUsageFileSearchesResult &&
+                        numRequests == other.numRequests &&
+                        object_ == other.object_ &&
+                        apiKeyId == other.apiKeyId &&
+                        projectId == other.projectId &&
+                        userId == other.userId &&
+                        vectorStoreId == other.vectorStoreId &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(
+                        numRequests,
+                        object_,
+                        apiKeyId,
+                        projectId,
+                        userId,
+                        vectorStoreId,
+                        additionalProperties,
+                    )
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "OrganizationUsageFileSearchesResult{numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, projectId=$projectId, userId=$userId, vectorStoreId=$vectorStoreId, additionalProperties=$additionalProperties}"
+            }
+
+            /** The aggregated web search calls usage details of the specific time bucket. */
+            class OrganizationUsageWebSearchesResult
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val numModelRequests: JsonField<Long>,
+                private val numRequests: JsonField<Long>,
+                private val object_: JsonValue,
+                private val apiKeyId: JsonField<String>,
+                private val contextLevel: JsonField<String>,
+                private val model: JsonField<String>,
+                private val projectId: JsonField<String>,
+                private val userId: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("num_model_requests")
+                    @ExcludeMissing
+                    numModelRequests: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("num_requests")
+                    @ExcludeMissing
+                    numRequests: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+                    @JsonProperty("api_key_id")
+                    @ExcludeMissing
+                    apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("context_level")
+                    @ExcludeMissing
+                    contextLevel: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("model")
+                    @ExcludeMissing
+                    model: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("project_id")
+                    @ExcludeMissing
+                    projectId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of(),
+                ) : this(
+                    numModelRequests,
+                    numRequests,
+                    object_,
+                    apiKeyId,
+                    contextLevel,
+                    model,
+                    projectId,
+                    userId,
+                    mutableMapOf(),
+                )
+
+                /**
+                 * The count of model requests.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The count of web search calls.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun numRequests(): Long = numRequests.getRequired("num_requests")
+
+                /**
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("organization.usage.web_searches.result")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+
+                /**
+                 * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When `group_by=context_level`, this field provides the search context size of the
+                 * grouped usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun contextLevel(): Optional<String> = contextLevel.getOptional("context_level")
+
+                /**
+                 * When `group_by=model`, this field provides the model name of the grouped usage
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun model(): Optional<String> = model.getOptional("model")
+
+                /**
+                 * When `group_by=project_id`, this field provides the project ID of the grouped
+                 * usage result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun userId(): Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the raw JSON value of [numModelRequests].
+                 *
+                 * Unlike [numModelRequests], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("num_model_requests")
+                @ExcludeMissing
+                fun _numModelRequests(): JsonField<Long> = numModelRequests
+
+                /**
+                 * Returns the raw JSON value of [numRequests].
+                 *
+                 * Unlike [numRequests], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("num_requests")
+                @ExcludeMissing
+                fun _numRequests(): JsonField<Long> = numRequests
+
+                /**
+                 * Returns the raw JSON value of [apiKeyId].
+                 *
+                 * Unlike [apiKeyId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_key_id")
+                @ExcludeMissing
+                fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [contextLevel].
+                 *
+                 * Unlike [contextLevel], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("context_level")
+                @ExcludeMissing
+                fun _contextLevel(): JsonField<String> = contextLevel
+
+                /**
+                 * Returns the raw JSON value of [model].
+                 *
+                 * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                /**
+                 * Returns the raw JSON value of [projectId].
+                 *
+                 * Unlike [projectId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("project_id")
+                @ExcludeMissing
+                fun _projectId(): JsonField<String> = projectId
+
+                /**
+                 * Returns the raw JSON value of [userId].
+                 *
+                 * Unlike [userId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [OrganizationUsageWebSearchesResult].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numModelRequests()
+                     * .numRequests()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [OrganizationUsageWebSearchesResult]. */
+                class Builder internal constructor() {
+
+                    private var numModelRequests: JsonField<Long>? = null
+                    private var numRequests: JsonField<Long>? = null
+                    private var object_: JsonValue =
+                        JsonValue.from("organization.usage.web_searches.result")
+                    private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var contextLevel: JsonField<String> = JsonMissing.of()
+                    private var model: JsonField<String> = JsonMissing.of()
+                    private var projectId: JsonField<String> = JsonMissing.of()
+                    private var userId: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(
+                        organizationUsageWebSearchesResult: OrganizationUsageWebSearchesResult
+                    ) = apply {
+                        numModelRequests = organizationUsageWebSearchesResult.numModelRequests
+                        numRequests = organizationUsageWebSearchesResult.numRequests
+                        object_ = organizationUsageWebSearchesResult.object_
+                        apiKeyId = organizationUsageWebSearchesResult.apiKeyId
+                        contextLevel = organizationUsageWebSearchesResult.contextLevel
+                        model = organizationUsageWebSearchesResult.model
+                        projectId = organizationUsageWebSearchesResult.projectId
+                        userId = organizationUsageWebSearchesResult.userId
+                        additionalProperties =
+                            organizationUsageWebSearchesResult.additionalProperties.toMutableMap()
+                    }
+
+                    /** The count of model requests. */
+                    fun numModelRequests(numModelRequests: Long) =
+                        numModelRequests(JsonField.of(numModelRequests))
+
+                    /**
+                     * Sets [Builder.numModelRequests] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numModelRequests] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun numModelRequests(numModelRequests: JsonField<Long>) = apply {
+                        this.numModelRequests = numModelRequests
+                    }
+
+                    /** The count of web search calls. */
+                    fun numRequests(numRequests: Long) = numRequests(JsonField.of(numRequests))
+
+                    /**
+                     * Sets [Builder.numRequests] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.numRequests] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun numRequests(numRequests: JsonField<Long>) = apply {
+                        this.numRequests = numRequests
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("organization.usage.web_searches.result")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun object_(object_: JsonValue) = apply { this.object_ = object_ }
+
+                    /**
+                     * When `group_by=api_key_id`, this field provides the API key ID of the grouped
+                     * usage result.
+                     */
+                    fun apiKeyId(apiKeyId: String?) = apiKeyId(JsonField.ofNullable(apiKeyId))
+
+                    /** Alias for calling [Builder.apiKeyId] with `apiKeyId.orElse(null)`. */
+                    fun apiKeyId(apiKeyId: Optional<String>) = apiKeyId(apiKeyId.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiKeyId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiKeyId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When `group_by=context_level`, this field provides the search context size of
+                     * the grouped usage result.
+                     */
+                    fun contextLevel(contextLevel: String?) =
+                        contextLevel(JsonField.ofNullable(contextLevel))
+
+                    /**
+                     * Alias for calling [Builder.contextLevel] with `contextLevel.orElse(null)`.
+                     */
+                    fun contextLevel(contextLevel: Optional<String>) =
+                        contextLevel(contextLevel.getOrNull())
+
+                    /**
+                     * Sets [Builder.contextLevel] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.contextLevel] with a well-typed [String]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun contextLevel(contextLevel: JsonField<String>) = apply {
+                        this.contextLevel = contextLevel
+                    }
+
+                    /**
+                     * When `group_by=model`, this field provides the model name of the grouped
+                     * usage result.
+                     */
+                    fun model(model: String?) = model(JsonField.ofNullable(model))
+
+                    /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+                    fun model(model: Optional<String>) = model(model.getOrNull())
+
+                    /**
+                     * Sets [Builder.model] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.model] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun model(model: JsonField<String>) = apply { this.model = model }
+
+                    /**
+                     * When `group_by=project_id`, this field provides the project ID of the grouped
+                     * usage result.
+                     */
+                    fun projectId(projectId: String?) = projectId(JsonField.ofNullable(projectId))
+
+                    /** Alias for calling [Builder.projectId] with `projectId.orElse(null)`. */
+                    fun projectId(projectId: Optional<String>) = projectId(projectId.getOrNull())
+
+                    /**
+                     * Sets [Builder.projectId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.projectId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun projectId(projectId: JsonField<String>) = apply {
+                        this.projectId = projectId
+                    }
+
+                    /**
+                     * When `group_by=user_id`, this field provides the user ID of the grouped usage
+                     * result.
+                     */
+                    fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+                    /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+                    fun userId(userId: Optional<String>) = userId(userId.getOrNull())
+
+                    /**
+                     * Sets [Builder.userId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.userId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [OrganizationUsageWebSearchesResult].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .numModelRequests()
+                     * .numRequests()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): OrganizationUsageWebSearchesResult =
+                        OrganizationUsageWebSearchesResult(
+                            checkRequired("numModelRequests", numModelRequests),
+                            checkRequired("numRequests", numRequests),
+                            object_,
+                            apiKeyId,
+                            contextLevel,
+                            model,
+                            projectId,
+                            userId,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): OrganizationUsageWebSearchesResult = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    numModelRequests()
+                    numRequests()
+                    _object_().let {
+                        if (it != JsonValue.from("organization.usage.web_searches.result")) {
+                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+                        }
+                    }
+                    apiKeyId()
+                    contextLevel()
+                    model()
+                    projectId()
+                    userId()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (numModelRequests.asKnown().isPresent) 1 else 0) +
+                        (if (numRequests.asKnown().isPresent) 1 else 0) +
+                        object_.let {
+                            if (it == JsonValue.from("organization.usage.web_searches.result")) 1
+                            else 0
+                        } +
+                        (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (if (contextLevel.asKnown().isPresent) 1 else 0) +
+                        (if (model.asKnown().isPresent) 1 else 0) +
+                        (if (projectId.asKnown().isPresent) 1 else 0) +
+                        (if (userId.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is OrganizationUsageWebSearchesResult &&
+                        numModelRequests == other.numModelRequests &&
+                        numRequests == other.numRequests &&
+                        object_ == other.object_ &&
+                        apiKeyId == other.apiKeyId &&
+                        contextLevel == other.contextLevel &&
+                        model == other.model &&
+                        projectId == other.projectId &&
+                        userId == other.userId &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(
+                        numModelRequests,
+                        numRequests,
+                        object_,
+                        apiKeyId,
+                        contextLevel,
+                        model,
+                        projectId,
+                        userId,
+                        additionalProperties,
+                    )
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "OrganizationUsageWebSearchesResult{numModelRequests=$numModelRequests, numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, contextLevel=$contextLevel, model=$model, projectId=$projectId, userId=$userId, additionalProperties=$additionalProperties}"
+            }
+
             /** The aggregated costs details of the specific time bucket. */
             class OrganizationCostsResult
             @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -5172,6 +6700,7 @@ private constructor(
                 private val lineItem: JsonField<String>,
                 private val projectId: JsonField<String>,
                 private val quantity: JsonField<Double>,
+                private val quantityUnit: JsonField<CostQuantityUnit>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -5193,7 +6722,19 @@ private constructor(
                     @JsonProperty("quantity")
                     @ExcludeMissing
                     quantity: JsonField<Double> = JsonMissing.of(),
-                ) : this(object_, amount, apiKeyId, lineItem, projectId, quantity, mutableMapOf())
+                    @JsonProperty("quantity_unit")
+                    @ExcludeMissing
+                    quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of(),
+                ) : this(
+                    object_,
+                    amount,
+                    apiKeyId,
+                    lineItem,
+                    projectId,
+                    quantity,
+                    quantityUnit,
+                    mutableMapOf(),
+                )
 
                 /**
                  * Expected to always return the following:
@@ -5251,6 +6792,16 @@ private constructor(
                 fun quantity(): Optional<Double> = quantity.getOptional("quantity")
 
                 /**
+                 * The unit of the `quantity` value. If no single supported unit applies to the
+                 * result, this field is `null`.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun quantityUnit(): Optional<CostQuantityUnit> =
+                    quantityUnit.getOptional("quantity_unit")
+
+                /**
                  * Returns the raw JSON value of [amount].
                  *
                  * Unlike [amount], this method doesn't throw if the JSON field has an unexpected
@@ -5298,6 +6849,16 @@ private constructor(
                 @ExcludeMissing
                 fun _quantity(): JsonField<Double> = quantity
 
+                /**
+                 * Returns the raw JSON value of [quantityUnit].
+                 *
+                 * Unlike [quantityUnit], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("quantity_unit")
+                @ExcludeMissing
+                fun _quantityUnit(): JsonField<CostQuantityUnit> = quantityUnit
+
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                     additionalProperties.put(key, value)
@@ -5328,6 +6889,7 @@ private constructor(
                     private var lineItem: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var quantity: JsonField<Double> = JsonMissing.of()
+                    private var quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -5338,6 +6900,7 @@ private constructor(
                         lineItem = organizationCostsResult.lineItem
                         projectId = organizationCostsResult.projectId
                         quantity = organizationCostsResult.quantity
+                        quantityUnit = organizationCostsResult.quantityUnit
                         additionalProperties =
                             organizationCostsResult.additionalProperties.toMutableMap()
                     }
@@ -5449,6 +7012,39 @@ private constructor(
                      */
                     fun quantity(quantity: JsonField<Double>) = apply { this.quantity = quantity }
 
+                    /**
+                     * The unit of the `quantity` value. If no single supported unit applies to the
+                     * result, this field is `null`.
+                     */
+                    fun quantityUnit(quantityUnit: CostQuantityUnit?) =
+                        quantityUnit(JsonField.ofNullable(quantityUnit))
+
+                    /**
+                     * Alias for calling [Builder.quantityUnit] with `quantityUnit.orElse(null)`.
+                     */
+                    fun quantityUnit(quantityUnit: Optional<CostQuantityUnit>) =
+                        quantityUnit(quantityUnit.getOrNull())
+
+                    /**
+                     * Sets [Builder.quantityUnit] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.quantityUnit] with a well-typed
+                     * [CostQuantityUnit] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(quantityUnit: JsonField<CostQuantityUnit>) = apply {
+                        this.quantityUnit = quantityUnit
+                    }
+
+                    /**
+                     * Sets [quantityUnit] to an arbitrary [String].
+                     *
+                     * You should usually call [quantityUnit] with a well-typed [CostQuantityUnit]
+                     * constant instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(value: String) = quantityUnit(CostQuantityUnit.of(value))
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -5484,6 +7080,7 @@ private constructor(
                             lineItem,
                             projectId,
                             quantity,
+                            quantityUnit,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -5515,6 +7112,7 @@ private constructor(
                     lineItem()
                     projectId()
                     quantity()
+                    quantityUnit()
                     validated = true
                 }
 
@@ -5541,7 +7139,8 @@ private constructor(
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (lineItem.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
-                        (if (quantity.asKnown().isPresent) 1 else 0)
+                        (if (quantity.asKnown().isPresent) 1 else 0) +
+                        (if (quantityUnit.asKnown().isPresent) 1 else 0)
 
                 /** The monetary value in its associated currency. */
                 class Amount
@@ -5760,6 +7359,7 @@ private constructor(
                         lineItem == other.lineItem &&
                         projectId == other.projectId &&
                         quantity == other.quantity &&
+                        quantityUnit == other.quantityUnit &&
                         additionalProperties == other.additionalProperties
                 }
 
@@ -5771,6 +7371,7 @@ private constructor(
                         lineItem,
                         projectId,
                         quantity,
+                        quantityUnit,
                         additionalProperties,
                     )
                 }
@@ -5778,7 +7379,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, additionalProperties=$additionalProperties}"
+                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, quantityUnit=$quantityUnit, additionalProperties=$additionalProperties}"
             }
         }
 

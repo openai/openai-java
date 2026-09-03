@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.groups
 
@@ -17,7 +17,7 @@ internal class GroupListPageResponseTest {
                     Group.builder()
                         .id("id")
                         .createdAt(0L)
-                        .groupType("group_type")
+                        .groupType(Group.GroupType.GROUP)
                         .isScimManaged(true)
                         .name("name")
                         .build()
@@ -31,7 +31,7 @@ internal class GroupListPageResponseTest {
                 Group.builder()
                     .id("id")
                     .createdAt(0L)
-                    .groupType("group_type")
+                    .groupType(Group.GroupType.GROUP)
                     .isScimManaged(true)
                     .name("name")
                     .build()
@@ -49,7 +49,7 @@ internal class GroupListPageResponseTest {
                     Group.builder()
                         .id("id")
                         .createdAt(0L)
-                        .groupType("group_type")
+                        .groupType(Group.GroupType.GROUP)
                         .isScimManaged(true)
                         .name("name")
                         .build()

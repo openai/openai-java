@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -34,7 +34,10 @@ internal class RealtimeSessionCreateRequestTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
+                                        .addKeyword("string")
                                         .language("language")
+                                        .addLanguage("string")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
                                         .build()
@@ -72,6 +75,7 @@ internal class RealtimeSessionCreateRequestTest {
                 .maxOutputTokensInf()
                 .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                .parallelToolCalls(true)
                 .prompt(
                     ResponsePrompt.builder()
                         .id("id")
@@ -82,6 +86,9 @@ internal class RealtimeSessionCreateRequestTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
@@ -114,7 +121,10 @@ internal class RealtimeSessionCreateRequestTest {
                             )
                             .transcription(
                                 AudioTranscription.builder()
+                                    .delay(AudioTranscription.Delay.MINIMAL)
+                                    .addKeyword("string")
                                     .language("language")
+                                    .addLanguage("string")
                                     .model(AudioTranscription.Model.WHISPER_1)
                                     .prompt("prompt")
                                     .build()
@@ -156,6 +166,7 @@ internal class RealtimeSessionCreateRequestTest {
             .contains(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateRequest.outputModalities().getOrNull())
             .containsExactly(RealtimeSessionCreateRequest.OutputModality.TEXT)
+        assertThat(realtimeSessionCreateRequest.parallelToolCalls()).contains(true)
         assertThat(realtimeSessionCreateRequest.prompt())
             .contains(
                 ResponsePrompt.builder()
@@ -168,6 +179,8 @@ internal class RealtimeSessionCreateRequestTest {
                     .version("version")
                     .build()
             )
+        assertThat(realtimeSessionCreateRequest.reasoning())
+            .contains(RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build())
         assertThat(realtimeSessionCreateRequest.toolChoice())
             .contains(RealtimeToolChoiceConfig.ofToolChoiceOptions(ToolChoiceOptions.NONE))
         assertThat(realtimeSessionCreateRequest.tools().getOrNull())
@@ -210,7 +223,10 @@ internal class RealtimeSessionCreateRequestTest {
                                 )
                                 .transcription(
                                     AudioTranscription.builder()
+                                        .delay(AudioTranscription.Delay.MINIMAL)
+                                        .addKeyword("string")
                                         .language("language")
+                                        .addLanguage("string")
                                         .model(AudioTranscription.Model.WHISPER_1)
                                         .prompt("prompt")
                                         .build()
@@ -248,6 +264,7 @@ internal class RealtimeSessionCreateRequestTest {
                 .maxOutputTokensInf()
                 .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                .parallelToolCalls(true)
                 .prompt(
                     ResponsePrompt.builder()
                         .id("id")
@@ -258,6 +275,9 @@ internal class RealtimeSessionCreateRequestTest {
                         )
                         .version("version")
                         .build()
+                )
+                .reasoning(
+                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(

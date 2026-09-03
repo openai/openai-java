@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.LogLevel
@@ -111,16 +109,14 @@ private constructor(
 
         logHeaders(request.headers)
 
-        if (request.body == null) {
+        val requestBody = request.body
+        if (requestBody == null) {
             System.err.println("--> END ${request.method}")
             System.err.println()
             return request
         }
 
-        return request
-            .toBuilder()
-            .body(LoggingHttpRequestBody(request.method, request.body))
-            .build()
+        return request.toBuilder().body(LoggingHttpRequestBody(request.method, requestBody)).build()
     }
 
     private fun logResponse(response: HttpResponse, took: Duration): HttpResponse {
@@ -193,7 +189,14 @@ private constructor(
 
         private var httpClient: HttpClient? = null
         private var redactedHeaders: Set<String> =
-            setOf("authorization", "api-key", "x-api-key", "cookie", "set-cookie")
+            setOf(
+                "authorization",
+                "api-key",
+                "x-api-key",
+                "x-amz-security-token",
+                "cookie",
+                "set-cookie",
+            )
         private var clock: Clock = Clock.systemUTC()
         private var level: LogLevel? = null
 
@@ -211,7 +214,8 @@ private constructor(
         /**
          * Sensitive headers to redact from logs.
          *
-         * Defaults to `Set.of("authorization", "api-key", "x-api-key", "cookie", "set-cookie")`.
+         * Defaults to `Set.of("authorization", "api-key", "x-api-key", "x-amz-security-token",
+         * "cookie", "set-cookie")`.
          */
         fun redactedHeaders(redactedHeaders: Set<String>) = apply {
             this.redactedHeaders = redactedHeaders

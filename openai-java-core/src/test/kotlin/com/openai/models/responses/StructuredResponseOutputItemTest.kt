@@ -71,6 +71,12 @@ internal class StructuredResponseOutputItemTest {
                         .build()
                 )
                 .build()
+        private val ADDITIONAL_TOOLS =
+            ResponseOutputItem.AdditionalTools.builder()
+                .id(STRING)
+                .role(ResponseOutputItem.AdditionalTools.Role.DEVELOPER)
+                .tools(listOf())
+                .build()
         private val FUNCTION_WEB_SEARCH =
             ResponseFunctionWebSearch.builder()
                 .id(STRING)
@@ -112,6 +118,20 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val REASONING_ITEM =
             ResponseReasoningItem.builder().id(STRING).summary(listOf()).build()
+        private val PROGRAM =
+            ResponseOutputItem.Program.builder()
+                .id(STRING)
+                .callId(STRING)
+                .code(STRING)
+                .fingerprint(STRING)
+                .build()
+        private val PROGRAM_OUTPUT =
+            ResponseOutputItem.ProgramOutput.builder()
+                .id(STRING)
+                .callId(STRING)
+                .result(STRING)
+                .status(ResponseOutputItem.ProgramOutput.Status.COMPLETED)
+                .build()
         private val COMPACTION_ITEM =
             ResponseCompactionItem.builder().id(STRING).encryptedContent(STRING).build()
         private val CODE_INTERPRETER_CALL =
@@ -251,10 +271,13 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("functionCallOutput", OPTIONAL),
                 DelegationReadTestCase("toolSearchCall", OPTIONAL),
                 DelegationReadTestCase("toolSearchOutput", OPTIONAL),
+                DelegationReadTestCase("additionalTools", OPTIONAL),
                 DelegationReadTestCase("webSearchCall", OPTIONAL),
                 DelegationReadTestCase("computerCall", OPTIONAL),
                 DelegationReadTestCase("computerCallOutput", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
+                DelegationReadTestCase("program", OPTIONAL),
+                DelegationReadTestCase("programOutput", OPTIONAL),
                 DelegationReadTestCase("compaction", OPTIONAL),
                 DelegationReadTestCase("localShellCall", OPTIONAL),
                 DelegationReadTestCase("localShellCallOutput", OPTIONAL),
@@ -281,6 +304,8 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isToolSearchCall", false),
                 DelegationReadTestCase("isToolSearchOutput", true),
                 DelegationReadTestCase("isToolSearchOutput", false),
+                DelegationReadTestCase("isAdditionalTools", true),
+                DelegationReadTestCase("isAdditionalTools", false),
                 DelegationReadTestCase("isWebSearchCall", true),
                 DelegationReadTestCase("isWebSearchCall", false),
                 DelegationReadTestCase("isComputerCall", true),
@@ -289,6 +314,10 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isComputerCallOutput", false),
                 DelegationReadTestCase("isReasoning", true),
                 DelegationReadTestCase("isReasoning", false),
+                DelegationReadTestCase("isProgram", true),
+                DelegationReadTestCase("isProgram", false),
+                DelegationReadTestCase("isProgramOutput", true),
+                DelegationReadTestCase("isProgramOutput", false),
                 DelegationReadTestCase("isCompaction", true),
                 DelegationReadTestCase("isCompaction", false),
                 DelegationReadTestCase("isLocalShellCall", true),
@@ -321,10 +350,13 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asFunctionCallOutput", FUNCTION_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asToolSearchCall", TOOL_SEARCH_CALL),
                 DelegationReadTestCase("asToolSearchOutput", TOOL_SEARCH_OUTPUT),
+                DelegationReadTestCase("asAdditionalTools", ADDITIONAL_TOOLS),
                 DelegationReadTestCase("asWebSearchCall", FUNCTION_WEB_SEARCH),
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
                 DelegationReadTestCase("asComputerCallOutput", COMPUTER_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asReasoning", REASONING_ITEM),
+                DelegationReadTestCase("asProgram", PROGRAM),
+                DelegationReadTestCase("asProgramOutput", PROGRAM_OUTPUT),
                 DelegationReadTestCase("asCompaction", COMPACTION_ITEM),
                 DelegationReadTestCase("asCodeInterpreterCall", CODE_INTERPRETER_CALL),
                 DelegationReadTestCase("asImageGenerationCall", IMAGE_GENERATION_CALL),
@@ -410,6 +442,8 @@ internal class StructuredResponseOutputItemTest {
                     "visitCodeInterpreterCall",
                     "visitImageGenerationCall",
                     "visitCompaction",
+                    "visitProgram",
+                    "visitProgramOutput",
                     "visitFunctionCallOutput",
                     "visitComputerCallOutput",
                     "visitMcpApprovalRequest",

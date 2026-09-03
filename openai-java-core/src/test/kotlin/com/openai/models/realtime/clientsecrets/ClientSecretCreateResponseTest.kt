@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime.clientsecrets
 
@@ -9,6 +9,8 @@ import com.openai.models.realtime.AudioTranscription
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioFormats
 import com.openai.models.realtime.RealtimeFunctionTool
+import com.openai.models.realtime.RealtimeReasoning
+import com.openai.models.realtime.RealtimeReasoningEffort
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
@@ -24,12 +26,7 @@ internal class ClientSecretCreateResponseTest {
                 .expiresAt(0L)
                 .session(
                     RealtimeSessionCreateResponse.builder()
-                        .clientSecret(
-                            RealtimeSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
+                        .id("id")
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
@@ -48,7 +45,10 @@ internal class ClientSecretCreateResponseTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
+                                                .addKeyword("string")
                                                 .language("language")
+                                                .addLanguage("string")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
@@ -81,6 +81,7 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
+                        .expiresAt(0L)
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -98,6 +99,11 @@ internal class ClientSecretCreateResponseTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -121,12 +127,7 @@ internal class ClientSecretCreateResponseTest {
             .isEqualTo(
                 ClientSecretCreateResponse.Session.ofRealtime(
                     RealtimeSessionCreateResponse.builder()
-                        .clientSecret(
-                            RealtimeSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
+                        .id("id")
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
@@ -145,7 +146,10 @@ internal class ClientSecretCreateResponseTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
+                                                .addKeyword("string")
                                                 .language("language")
+                                                .addLanguage("string")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
@@ -178,6 +182,7 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
+                        .expiresAt(0L)
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -195,6 +200,11 @@ internal class ClientSecretCreateResponseTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -222,12 +232,7 @@ internal class ClientSecretCreateResponseTest {
                 .expiresAt(0L)
                 .session(
                     RealtimeSessionCreateResponse.builder()
-                        .clientSecret(
-                            RealtimeSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
+                        .id("id")
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
@@ -246,7 +251,10 @@ internal class ClientSecretCreateResponseTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
+                                                .addKeyword("string")
                                                 .language("language")
+                                                .addLanguage("string")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
@@ -279,6 +287,7 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
+                        .expiresAt(0L)
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -296,6 +305,11 @@ internal class ClientSecretCreateResponseTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)

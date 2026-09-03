@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -271,6 +271,16 @@ private constructor(
         fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [addOutput] with `ResponseOutputItem.ofProgram(program)`. */
+        fun addOutput(program: ResponseOutputItem.Program) =
+            addOutput(ResponseOutputItem.ofProgram(program))
+
+        /**
+         * Alias for calling [addOutput] with `ResponseOutputItem.ofProgramOutput(programOutput)`.
+         */
+        fun addOutput(programOutput: ResponseOutputItem.ProgramOutput) =
+            addOutput(ResponseOutputItem.ofProgramOutput(programOutput))
+
         /**
          * Alias for calling [addOutput] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
          */
@@ -283,6 +293,13 @@ private constructor(
          */
         fun addOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
             addOutput(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addOutput(additionalTools: ResponseOutputItem.AdditionalTools) =
+            addOutput(ResponseOutputItem.ofAdditionalTools(additionalTools))
 
         /** Alias for calling [addOutput] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: ResponseCompactionItem) =

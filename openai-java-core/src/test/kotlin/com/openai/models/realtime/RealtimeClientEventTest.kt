@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -456,6 +456,7 @@ internal class RealtimeClientEventTest {
                                 .build()
                         )
                         .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -465,6 +466,11 @@ internal class RealtimeClientEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -552,6 +558,7 @@ internal class RealtimeClientEventTest {
                                     .build()
                             )
                             .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
+                            .parallelToolCalls(true)
                             .prompt(
                                 ResponsePrompt.builder()
                                     .id("id")
@@ -561,6 +568,11 @@ internal class RealtimeClientEventTest {
                                             .build()
                                     )
                                     .version("version")
+                                    .build()
+                            )
+                            .reasoning(
+                                RealtimeReasoning.builder()
+                                    .effort(RealtimeReasoningEffort.MINIMAL)
                                     .build()
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
@@ -609,7 +621,10 @@ internal class RealtimeClientEventTest {
                                         )
                                         .transcription(
                                             AudioTranscription.builder()
+                                                .delay(AudioTranscription.Delay.MINIMAL)
+                                                .addKeyword("string")
                                                 .language("language")
+                                                .addLanguage("string")
                                                 .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
@@ -648,6 +663,7 @@ internal class RealtimeClientEventTest {
                         .maxOutputTokensInf()
                         .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                        .parallelToolCalls(true)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -657,6 +673,11 @@ internal class RealtimeClientEventTest {
                                         .build()
                                 )
                                 .version("version")
+                                .build()
+                        )
+                        .reasoning(
+                            RealtimeReasoning.builder()
+                                .effort(RealtimeReasoningEffort.MINIMAL)
                                 .build()
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
@@ -717,7 +738,10 @@ internal class RealtimeClientEventTest {
                                             )
                                             .transcription(
                                                 AudioTranscription.builder()
+                                                    .delay(AudioTranscription.Delay.MINIMAL)
+                                                    .addKeyword("string")
                                                     .language("language")
+                                                    .addLanguage("string")
                                                     .model(AudioTranscription.Model.WHISPER_1)
                                                     .prompt("prompt")
                                                     .build()
@@ -760,6 +784,7 @@ internal class RealtimeClientEventTest {
                             .maxOutputTokensInf()
                             .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
+                            .parallelToolCalls(true)
                             .prompt(
                                 ResponsePrompt.builder()
                                     .id("id")
@@ -769,6 +794,11 @@ internal class RealtimeClientEventTest {
                                             .build()
                                     )
                                     .version("version")
+                                    .build()
+                            )
+                            .reasoning(
+                                RealtimeReasoning.builder()
+                                    .effort(RealtimeReasoningEffort.MINIMAL)
                                     .build()
                             )
                             .toolChoice(ToolChoiceOptions.NONE)

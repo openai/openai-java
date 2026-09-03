@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
@@ -28,6 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create a new video generation job by editing a source video or existing generated video. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoEditParams
 private constructor(
     private val body: Body,
@@ -522,7 +523,7 @@ private constructor(
         /** Reference to the completed video to edit. */
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to edit. */
         fun referenceInputParam(): Optional<VideoReferenceInputParam> =
             Optional.ofNullable(referenceInputParam)
 
@@ -533,7 +534,7 @@ private constructor(
         /** Reference to the completed video to edit. */
         fun asInputStream(): InputStream = inputStream.getOrThrow("inputStream")
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to edit. */
         fun asReferenceInputParam(): VideoReferenceInputParam =
             referenceInputParam.getOrThrow("referenceInputParam")
 
@@ -639,7 +640,7 @@ private constructor(
             @JvmStatic
             fun ofInputStream(inputStream: InputStream) = Video(inputStream = inputStream)
 
-            /** Reference to the completed video. */
+            /** Reference to the completed video to edit. */
             @JvmStatic
             fun ofReferenceInputParam(referenceInputParam: VideoReferenceInputParam) =
                 Video(referenceInputParam = referenceInputParam)
@@ -651,7 +652,7 @@ private constructor(
             /** Reference to the completed video to edit. */
             fun visitInputStream(inputStream: InputStream): T
 
-            /** Reference to the completed video. */
+            /** Reference to the completed video to edit. */
             fun visitReferenceInputParam(referenceInputParam: VideoReferenceInputParam): T
 
             /**
@@ -686,7 +687,7 @@ private constructor(
             }
         }
 
-        /** Reference to the completed video. */
+        /** Reference to the completed video to edit. */
         class VideoReferenceInputParam
         private constructor(
             private val id: MultipartField<String>,

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads
 
@@ -24,7 +24,7 @@ internal class ThreadCreateAndRunParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ChatModel.GPT_5_4)
+            .model(ChatModel.GPT_5_6_SOL)
             .parallelToolCalls(true)
             .responseFormatAuto()
             .temperature(1.0)
@@ -128,7 +128,7 @@ internal class ThreadCreateAndRunParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_4)
+                .model(ChatModel.GPT_5_6_SOL)
                 .parallelToolCalls(true)
                 .responseFormatAuto()
                 .temperature(1.0)
@@ -231,7 +231,7 @@ internal class ThreadCreateAndRunParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ChatModel.GPT_5_4)
+        assertThat(body.model()).contains(ChatModel.GPT_5_6_SOL)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)

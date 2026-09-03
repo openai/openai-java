@@ -1,0 +1,44 @@
+name: Examples smoke test
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: examples-smoke-test-main
+  cancel-in-progress: true
+
+jobs:
+  examples:
+    name: Examples / live API smoke test
+    if: >-
+      github.repository == 'openai/openai-java' &&
+      github.event.head_commit.message != 'codegen metadata'
+    environment: CI
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Run example
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: ./gradlew :openai-java-example:run

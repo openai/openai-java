@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs
 
@@ -49,7 +49,7 @@ internal class RunCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ChatModel.GPT_5_4)
+            .model(ChatModel.GPT_5_6_SOL)
             .parallelToolCalls(true)
             .reasoningEffort(ReasoningEffort.NONE)
             .responseFormatAuto()
@@ -109,7 +109,7 @@ internal class RunCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_4)
+                .model(ChatModel.GPT_5_6_SOL)
                 .parallelToolCalls(true)
                 .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormatAuto()
@@ -178,7 +178,7 @@ internal class RunCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_4)
+                .model(ChatModel.GPT_5_6_SOL)
                 .parallelToolCalls(true)
                 .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormatAuto()
@@ -225,7 +225,7 @@ internal class RunCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ChatModel.GPT_5_4)
+        assertThat(body.model()).contains(ChatModel.GPT_5_6_SOL)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.reasoningEffort()).contains(ReasoningEffort.NONE)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())

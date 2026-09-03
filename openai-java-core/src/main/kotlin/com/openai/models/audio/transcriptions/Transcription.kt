@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -34,6 +34,7 @@ class Transcription
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
+    private val languages: JsonField<List<TranscriptionLanguage>>,
     private val logprobs: JsonField<List<Logprob>>,
     private val usage: JsonField<Usage>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -42,11 +43,14 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("languages")
+        @ExcludeMissing
+        languages: JsonField<List<TranscriptionLanguage>> = JsonMissing.of(),
         @JsonProperty("logprobs")
         @ExcludeMissing
         logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
-    ) : this(text, logprobs, usage, mutableMapOf())
+    ) : this(text, languages, logprobs, usage, mutableMapOf())
 
     /**
      * The transcribed text.
@@ -55,6 +59,15 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun text(): String = text.getRequired("text")
+
+    /**
+     * The languages detected in the audio. Returned by `gpt-transcribe`. An empty array indicates
+     * that no language could be reliably detected.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun languages(): Optional<List<TranscriptionLanguage>> = languages.getOptional("languages")
 
     /**
      * The log probabilities of the tokens in the transcription. Only returned with the models
@@ -80,6 +93,15 @@ private constructor(
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+    /**
+     * Returns the raw JSON value of [languages].
+     *
+     * Unlike [languages], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("languages")
+    @ExcludeMissing
+    fun _languages(): JsonField<List<TranscriptionLanguage>> = languages
 
     /**
      * Returns the raw JSON value of [logprobs].
@@ -124,6 +146,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var text: JsonField<String>? = null
+        private var languages: JsonField<MutableList<TranscriptionLanguage>>? = null
         private var logprobs: JsonField<MutableList<Logprob>>? = null
         private var usage: JsonField<Usage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -131,6 +154,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(transcription: Transcription) = apply {
             text = transcription.text
+            languages = transcription.languages.map { it.toMutableList() }
             logprobs = transcription.logprobs.map { it.toMutableList() }
             usage = transcription.usage
             additionalProperties = transcription.additionalProperties.toMutableMap()
@@ -146,6 +170,35 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun text(text: JsonField<String>) = apply { this.text = text }
+
+        /**
+         * The languages detected in the audio. Returned by `gpt-transcribe`. An empty array
+         * indicates that no language could be reliably detected.
+         */
+        fun languages(languages: List<TranscriptionLanguage>) = languages(JsonField.of(languages))
+
+        /**
+         * Sets [Builder.languages] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.languages] with a well-typed
+         * `List<TranscriptionLanguage>` value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun languages(languages: JsonField<List<TranscriptionLanguage>>) = apply {
+            this.languages = languages.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [TranscriptionLanguage] to [languages].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLanguage(language: TranscriptionLanguage) = apply {
+            languages =
+                (languages ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("languages", it).add(language)
+                }
+        }
 
         /**
          * The log probabilities of the tokens in the transcription. Only returned with the models
@@ -239,6 +292,7 @@ private constructor(
         fun build(): Transcription =
             Transcription(
                 checkRequired("text", text),
+                (languages ?: JsonMissing.of()).map { it.toImmutable() },
                 (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
                 usage,
                 additionalProperties.toMutableMap(),
@@ -261,6 +315,7 @@ private constructor(
         }
 
         text()
+        languages().ifPresent { it.forEach { it.validate() } }
         logprobs().ifPresent { it.forEach { it.validate() } }
         usage().ifPresent { it.validate() }
         validated = true
@@ -282,6 +337,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (text.asKnown().isPresent) 1 else 0) +
+            (languages.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -1551,15 +1607,18 @@ private constructor(
 
         return other is Transcription &&
             text == other.text &&
+            languages == other.languages &&
             logprobs == other.logprobs &&
             usage == other.usage &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(text, logprobs, usage, additionalProperties) }
+    private val hashCode: Int by lazy {
+        Objects.hash(text, languages, logprobs, usage, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Transcription{text=$text, logprobs=$logprobs, usage=$usage, additionalProperties=$additionalProperties}"
+        "Transcription{text=$text, languages=$languages, logprobs=$logprobs, usage=$usage, additionalProperties=$additionalProperties}"
 }

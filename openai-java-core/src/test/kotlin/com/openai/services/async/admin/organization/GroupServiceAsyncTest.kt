@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -23,6 +23,22 @@ internal class GroupServiceAsyncTest {
         val groupServiceAsync = client.admin().organization().groups()
 
         val groupFuture = groupServiceAsync.create(GroupCreateParams.builder().name("x").build())
+
+        val group = groupFuture.get()
+        group.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val groupServiceAsync = client.admin().organization().groups()
+
+        val groupFuture = groupServiceAsync.retrieve("group_id")
 
         val group = groupFuture.get()
         group.validate()

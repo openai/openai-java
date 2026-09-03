@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin
 
@@ -9,6 +9,8 @@ import com.openai.services.blocking.admin.organization.AuditLogService
 import com.openai.services.blocking.admin.organization.AuditLogServiceImpl
 import com.openai.services.blocking.admin.organization.CertificateService
 import com.openai.services.blocking.admin.organization.CertificateServiceImpl
+import com.openai.services.blocking.admin.organization.DataRetentionService
+import com.openai.services.blocking.admin.organization.DataRetentionServiceImpl
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.GroupServiceImpl
 import com.openai.services.blocking.admin.organization.InviteService
@@ -17,6 +19,10 @@ import com.openai.services.blocking.admin.organization.ProjectService
 import com.openai.services.blocking.admin.organization.ProjectServiceImpl
 import com.openai.services.blocking.admin.organization.RoleService
 import com.openai.services.blocking.admin.organization.RoleServiceImpl
+import com.openai.services.blocking.admin.organization.SpendAlertService
+import com.openai.services.blocking.admin.organization.SpendAlertServiceImpl
+import com.openai.services.blocking.admin.organization.SpendLimitService
+import com.openai.services.blocking.admin.organization.SpendLimitServiceImpl
 import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UsageServiceImpl
 import com.openai.services.blocking.admin.organization.UserService
@@ -44,6 +50,14 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     private val roles: RoleService by lazy { RoleServiceImpl(clientOptions) }
 
+    private val dataRetention: DataRetentionService by lazy {
+        DataRetentionServiceImpl(clientOptions)
+    }
+
+    private val spendLimit: SpendLimitService by lazy { SpendLimitServiceImpl(clientOptions) }
+
+    private val spendAlerts: SpendAlertService by lazy { SpendAlertServiceImpl(clientOptions) }
+
     private val certificates: CertificateService by lazy { CertificateServiceImpl(clientOptions) }
 
     private val projects: ProjectService by lazy { ProjectServiceImpl(clientOptions) }
@@ -67,6 +81,12 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
     override fun groups(): GroupService = groups
 
     override fun roles(): RoleService = roles
+
+    override fun dataRetention(): DataRetentionService = dataRetention
+
+    override fun spendLimit(): SpendLimitService = spendLimit
+
+    override fun spendAlerts(): SpendAlertService = spendAlerts
 
     override fun certificates(): CertificateService = certificates
 
@@ -103,6 +123,18 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
             RoleServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val dataRetention: DataRetentionService.WithRawResponse by lazy {
+            DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val spendLimit: SpendLimitService.WithRawResponse by lazy {
+            SpendLimitServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val spendAlerts: SpendAlertService.WithRawResponse by lazy {
+            SpendAlertServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val certificates: CertificateService.WithRawResponse by lazy {
             CertificateServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -132,6 +164,12 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         override fun groups(): GroupService.WithRawResponse = groups
 
         override fun roles(): RoleService.WithRawResponse = roles
+
+        override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
+
+        override fun spendLimit(): SpendLimitService.WithRawResponse = spendLimit
+
+        override fun spendAlerts(): SpendAlertService.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateService.WithRawResponse = certificates
 

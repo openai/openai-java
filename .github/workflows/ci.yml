@@ -1,162 +1,358 @@
 name: CI
+
 on:
   push:
     branches:
-      - '**'
-      - '!integrated/**'
-      - '!stl-preview-head/**'
-      - '!stl-preview-base/**'
-      - '!generated'
-      - '!codegen/**'
-      - 'codegen/stl/**'
+      - main
+      - next
+  # GitHub's cache service confines this event's writes to refs/pull/<number>/merge,
+  # even when an untrusted PR changes this workflow or its cache policy tests.
   pull_request:
-    branches-ignore:
-      - 'stl-preview-head/**'
-      - 'stl-preview-base/**'
+    branches:
+      - main
+      - next
+  merge_group:
+    types:
+      - checks_requested
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
+    name: CI / lint
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 15
-    name: lint
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
             8
             21
-          cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
+
+      - name: Verify Maven Central credential transport
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/create-releases.yml
+
+          for mapping in \
+            mavenCentralUsername:OPENAI_SONATYPE_USERNAME \
+            mavenCentralPassword:OPENAI_SONATYPE_PASSWORD; do
+            property="ORG_GRADLE_PROJECT_${mapping%%:*}"
+            secret="${mapping#*:}"
+
+            if ! awk -v property="$property" -v secret="$secret" '
+              $1 == property ":" {
+                if ($2 == ("$" "{{") && $3 == "secrets." secret && $4 == "}}" && NF == 4) {
+                  valid++
+                } else {
+                  invalid = 1
+                }
+              }
+              END { exit !(valid == 1 && !invalid) }
+            ' "$workflow"; then
+              echo "::error::Invalid or missing protected Maven mapping: $property"
+              exit 1
+            fi
+          done
+
+          if grep -Eq '(^|[[:space:]])-PmavenCentral(Username|Password)(=|[[:space:]]|$)' "$workflow"; then
+            echo '::error::Maven Central credentials must not appear in Gradle arguments.'
+            exit 1
+          fi
 
       - name: Run lints
         run: ./scripts/lint
 
   build:
+    name: CI / build + Jackson compatibility
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
-    name: build
-    permissions:
-      contents: read
-      id-token: write
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
+    outputs:
+      gradle-cache-artifact-id: ${{ steps.gradle-cache-artifact.outputs.artifact-id }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
             8
             21
-          cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
-      - name: Build SDK
-        # disable gradle daemon in CI because it is flakey
+      - name: Build SDK and run compatibility tests
         env:
-          GRADLE_OPTS: "-Dkotlin.compiler.execution.strategy=in-process"
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: ./scripts/build
 
-      - name: Build and upload Maven artifacts
-        if: |-
-          github.repository == 'stainless-sdks/openai-java' &&
-          !startsWith(github.ref, 'refs/heads/stl/')
+      - name: Collect exact-run Gradle build cache
         env:
-          URL: https://pkg.stainless.com/s
-          SHA: ${{ github.sha }}
-          PROJECT: openai-java
-        run: |
-          set -euo pipefail
+          CACHE_ARTIFACT_PATH: ${{ runner.temp }}/ci-gradle-build-cache
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
+        run: ./scripts/collect-gradle-build-cache "$CACHE_ARTIFACT_PATH"
 
-          max_retries=5
-          attempt=1
+      # Cross-run caches are read-only on pull requests and merge groups. Publish this run's local
+      # build cache as an immutable artifact for downstream jobs with the same trust boundary.
+      - name: Upload exact-run Gradle build cache
+        id: gradle-cache-artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ci-gradle-build-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-gradle-build-cache
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
 
-          while true; do
-            echo "Maven artifact upload attempt ${attempt}/${max_retries}"
-
-            oidc_response="$(curl -sSf \
-              -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-              "${ACTIONS_ID_TOKEN_REQUEST_URL}")"
-            github_token="$(printf '%s' "$oidc_response" | jq -er '.value')"
-
-            upload_log="$(mktemp)"
-            set +e
-            AUTH="$github_token" ./scripts/upload-artifacts 2>&1 | tee "$upload_log"
-            upload_status=${PIPESTATUS[0]}
-            set -e
-
-            if [ "$upload_status" -eq 0 ]; then
-              break
-            fi
-
-            if [ "$attempt" -lt "$max_retries" ] && \
-              grep -q "Failed to get valid signed URL" "$upload_log" && \
-              grep -q "GitHub JWT is missing or invalid\\." "$upload_log"; then
-              sleep_seconds=$((3 * (1 << (attempt - 1))))
-              echo "Retrying after fresh OIDC token due to transient GitHub JWT validation failure"
-              echo "Sleeping ${sleep_seconds}s before retry"
-              sleep "$sleep_seconds"
-              attempt=$((attempt + 1))
-              continue
-            fi
-
-            exit "$upload_status"
-          done
   test:
+    name: CI / tests
+    needs: build
+    if: needs.build.result == 'success'
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
-    name: test
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
             8
             21
-          cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@fe583dc97e032f41ccc310ea5176f2d7306abbc4 # v2
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: true
+
+      - name: Restore exact-run Gradle build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
+          path: ~/.gradle/caches/build-cache-1
 
       - name: Run tests
         run: ./scripts/test
-  examples:
+
+  api_compatibility:
+    name: CI / API compatibility
+    needs: build
+    if: >-
+      needs.build.result == 'success' &&
+      (github.event_name == 'pull_request' || github.event_name == 'merge_group')
+    permissions:
+      contents: read
+      pull-requests: read
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 20
-    name: examples
-    runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.repository == 'openai/openai-java' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
             8
             21
-          cache: gradle
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@fe583dc97e032f41ccc310ea5176f2d7306abbc4 # v2
 
-      - env: 
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: true
+
+      - name: Restore exact-run Gradle build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
+          path: ~/.gradle/caches/build-cache-1
+
+      - name: Compile previous tests against the proposed SDK
+        env:
+          BASE_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: |
-            ./gradlew :openai-java-example:run
+          set -euo pipefail
+
+          BASE_DETECTOR="$(mktemp ./scripts/detect-breaking-changes.baseline.XXXXXX)"
+          trap 'rm -f "$BASE_DETECTOR"' EXIT
+          git show "${BASE_COMMIT}:scripts/detect-breaking-changes" > "$BASE_DETECTOR"
+          chmod +x "$BASE_DETECTOR"
+
+          # Always enforce the trusted baseline policy so a PR cannot weaken the detector to hide
+          # an SDK break. The proposed detector is identical on most PRs, so only run its duplicate
+          # compilation when the PR actually changes the detector.
+          "$BASE_DETECTOR" "$BASE_COMMIT"
+
+          if git diff --quiet "$BASE_COMMIT" -- scripts/detect-breaking-changes; then
+            echo "API compatibility detector is unchanged; skipping duplicate validation."
+          else
+            echo "API compatibility detector changed; validating the proposed detector."
+            ./scripts/detect-breaking-changes "$BASE_COMMIT"
+          fi
+
+  version_support_matrix:
+    name: CI / version support matrix
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 5
+
+    outputs:
+      runtime-matrix: ${{ steps.matrix.outputs.runtime-matrix }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
+
+      - name: Read version support policy
+        id: matrix
+        run: |
+          ./scripts/gradle generateVersionSupportMatrix -PversionSupportMatrix=pull-request
+          echo "runtime-matrix=$(< build/version-support-matrix.json)" >> "$GITHUB_OUTPUT"
+
+  runtime_compatibility:
+    name: CI / runtime compatibility / Java ${{ matrix.java }}
+    needs:
+      - build
+      - version_support_matrix
+    if: >-
+      always() &&
+      needs.version_support_matrix.result == 'success' &&
+      needs.build.result == 'success'
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ${{ fromJSON(needs.version_support_matrix.outputs.runtime-matrix) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up consumer Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Set up build Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: true
+
+      - name: Restore exact-run Gradle build cache
+        if: needs.build.result == 'success'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
+          path: ~/.gradle/caches/build-cache-1
+
+      - name: Run consumer compatibility smoke test
+        env:
+          RUNTIME_JAVA_VERSION: ${{ matrix.java }}
+        run: >-
+          ./scripts/gradle
+          :openai-java-runtime-compatibility:runRuntimeCompatibility
+          -PruntimeJavaVersion="$RUNTIME_JAVA_VERSION"
+
+  required:
+    name: CI / required
+    if: always()
+    needs:
+      - lint
+      - build
+      - test
+      - api_compatibility
+      - runtime_compatibility
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 5
+
+    steps:
+      - name: Verify required jobs succeeded
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          API_COMPATIBILITY_RESULT: ${{ needs.api_compatibility.result }}
+          RUNTIME_COMPATIBILITY_RESULT: ${{ needs.runtime_compatibility.result }}
+        run: |
+          set -euo pipefail
+
+          failed_jobs=()
+          [[ "$LINT_RESULT" == "success" ]] || failed_jobs+=("lint: $LINT_RESULT")
+          [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
+          [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
+
+          if [[ ( "$EVENT_NAME" == "pull_request" || "$EVENT_NAME" == "merge_group" ) &&
+                "$API_COMPATIBILITY_RESULT" != "success" ]]; then
+            failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
+          fi
+          [[ "$RUNTIME_COMPATIBILITY_RESULT" == "success" ]] ||
+            failed_jobs+=("runtime compatibility: $RUNTIME_COMPATIBILITY_RESULT")
+
+          if (( ${#failed_jobs[@]} > 0 )); then
+            printf 'Required CI job did not succeed: %s\n' "${failed_jobs[@]}"
+            exit 1
+          fi
+
+          echo "All required CI jobs succeeded."

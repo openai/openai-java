@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -14,19 +14,26 @@ internal class ResponseFunctionToolCallOutputItemTest {
         val responseFunctionToolCallOutputItem =
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
-                .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callId("call_id")
+                .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         assertThat(responseFunctionToolCallOutputItem.id()).isEqualTo("id")
-        assertThat(responseFunctionToolCallOutputItem.callId()).isEqualTo("call_id")
         assertThat(responseFunctionToolCallOutputItem.output())
             .isEqualTo(ResponseFunctionToolCallOutputItem.Output.ofString("string"))
         assertThat(responseFunctionToolCallOutputItem.status())
             .isEqualTo(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+        assertThat(responseFunctionToolCallOutputItem.callId()).contains("call_id")
+        assertThat(responseFunctionToolCallOutputItem.caller())
+            .contains(ResponseFunctionToolCallOutputItem.Caller.ofDirect())
         assertThat(responseFunctionToolCallOutputItem.createdBy()).contains("created_by")
+        assertThat(responseFunctionToolCallOutputItem.name()).contains("name")
+        assertThat(responseFunctionToolCallOutputItem.namespace()).contains("namespace")
     }
 
     @Test
@@ -35,10 +42,13 @@ internal class ResponseFunctionToolCallOutputItemTest {
         val responseFunctionToolCallOutputItem =
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
-                .callId("call_id")
                 .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+                .callId("call_id")
+                .callerDirect()
                 .createdBy("created_by")
+                .name("name")
+                .namespace("namespace")
                 .build()
 
         val roundtrippedResponseFunctionToolCallOutputItem =

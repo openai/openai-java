@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -194,6 +194,13 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [item] with `ResponseOutputItem.ofProgram(program)`. */
+        fun item(program: ResponseOutputItem.Program) = item(ResponseOutputItem.ofProgram(program))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofProgramOutput(programOutput)`. */
+        fun item(programOutput: ResponseOutputItem.ProgramOutput) =
+            item(ResponseOutputItem.ofProgramOutput(programOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`. */
         fun item(toolSearchCall: ResponseToolSearchCall) =
             item(ResponseOutputItem.ofToolSearchCall(toolSearchCall))
@@ -203,6 +210,12 @@ private constructor(
          */
         fun item(toolSearchOutput: ResponseToolSearchOutputItem) =
             item(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+
+        /**
+         * Alias for calling [item] with `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun item(additionalTools: ResponseOutputItem.AdditionalTools) =
+            item(ResponseOutputItem.ofAdditionalTools(additionalTools))
 
         /** Alias for calling [item] with `ResponseOutputItem.ofCompaction(compaction)`. */
         fun item(compaction: ResponseCompactionItem) =

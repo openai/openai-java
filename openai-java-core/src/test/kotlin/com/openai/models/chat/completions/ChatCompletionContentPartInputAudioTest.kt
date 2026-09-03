@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -19,6 +19,9 @@ internal class ChatCompletionContentPartInputAudioTest {
                         .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                         .build()
                 )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         assertThat(chatCompletionContentPartInputAudio.inputAudio())
@@ -28,6 +31,8 @@ internal class ChatCompletionContentPartInputAudioTest {
                     .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                     .build()
             )
+        assertThat(chatCompletionContentPartInputAudio.promptCacheBreakpoint())
+            .contains(ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -40,6 +45,9 @@ internal class ChatCompletionContentPartInputAudioTest {
                         .data("data")
                         .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                         .build()
+                )
+                .promptCacheBreakpoint(
+                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
                 )
                 .build()
 

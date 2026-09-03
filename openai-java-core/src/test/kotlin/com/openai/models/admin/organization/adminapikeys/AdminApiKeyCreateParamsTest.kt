@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.adminapikeys
 
@@ -9,11 +9,25 @@ internal class AdminApiKeyCreateParamsTest {
 
     @Test
     fun create() {
-        AdminApiKeyCreateParams.builder().name("New Admin Key").build()
+        AdminApiKeyCreateParams.builder().name("New Admin Key").expiresInSeconds(2592000L).build()
     }
 
     @Test
     fun body() {
+        val params =
+            AdminApiKeyCreateParams.builder()
+                .name("New Admin Key")
+                .expiresInSeconds(2592000L)
+                .build()
+
+        val body = params._body()
+
+        assertThat(body.name()).isEqualTo("New Admin Key")
+        assertThat(body.expiresInSeconds()).contains(2592000L)
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
         val params = AdminApiKeyCreateParams.builder().name("New Admin Key").build()
 
         val body = params._body()

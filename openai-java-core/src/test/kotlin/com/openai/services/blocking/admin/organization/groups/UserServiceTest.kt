@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.groups
 
@@ -6,6 +6,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.groups.users.UserCreateParams
 import com.openai.models.admin.organization.groups.users.UserDeleteParams
+import com.openai.models.admin.organization.groups.users.UserRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -25,6 +26,24 @@ internal class UserServiceTest {
         val user =
             userService.create(
                 UserCreateParams.builder().groupId("group_id").userId("user_id").build()
+            )
+
+        user.validate()
+    }
+
+    @Test
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val userService = client.admin().organization().groups().users()
+
+        val user =
+            userService.retrieve(
+                UserRetrieveParams.builder().groupId("group_id").userId("user_id").build()
             )
 
         user.validate()

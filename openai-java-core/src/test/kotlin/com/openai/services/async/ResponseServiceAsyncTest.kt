@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -55,7 +55,32 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_5_6_SOL)
+                    .moderation(
+                        ResponseCreateParams.Moderation.builder()
+                            .model("model")
+                            .policy(
+                                ResponseCreateParams.Moderation.Policy.builder()
+                                    .input(
+                                        ResponseCreateParams.Moderation.Policy.Input.builder()
+                                            .mode(
+                                                ResponseCreateParams.Moderation.Policy.Input.Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .output(
+                                        ResponseCreateParams.Moderation.Policy.Output.builder()
+                                            .mode(
+                                                ResponseCreateParams.Moderation.Policy.Output.Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
@@ -70,11 +95,19 @@ internal class ResponseServiceAsyncTest {
                             .build()
                     )
                     .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheOptions(
+                        ResponseCreateParams.PromptCacheOptions.builder()
+                            .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
                         Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
                             .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .mode(Reasoning.Mode.STANDARD)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
@@ -103,8 +136,14 @@ internal class ResponseServiceAsyncTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .topLogprobs(0L)
@@ -150,7 +189,32 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_5_6_SOL)
+                    .moderation(
+                        ResponseCreateParams.Moderation.builder()
+                            .model("model")
+                            .policy(
+                                ResponseCreateParams.Moderation.Policy.builder()
+                                    .input(
+                                        ResponseCreateParams.Moderation.Policy.Input.builder()
+                                            .mode(
+                                                ResponseCreateParams.Moderation.Policy.Input.Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .output(
+                                        ResponseCreateParams.Moderation.Policy.Output.builder()
+                                            .mode(
+                                                ResponseCreateParams.Moderation.Policy.Output.Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
@@ -165,11 +229,19 @@ internal class ResponseServiceAsyncTest {
                             .build()
                     )
                     .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheOptions(
+                        ResponseCreateParams.PromptCacheOptions.builder()
+                            .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
                         Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
                             .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .mode(Reasoning.Mode.STANDARD)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
@@ -198,8 +270,14 @@ internal class ResponseServiceAsyncTest {
                                     .build()
                             )
                             .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
                             .deferLoading(true)
                             .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
                             .build()
                     )
                     .topLogprobs(0L)
@@ -308,12 +386,19 @@ internal class ResponseServiceAsyncTest {
         val compactedResponseFuture =
             responseServiceAsync.compact(
                 ResponseCompactParams.builder()
-                    .model(ResponseCompactParams.Model.GPT_5_4)
+                    .model(ResponseCompactParams.Model.GPT_5_6_SOL)
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")
                     .promptCacheKey("prompt_cache_key")
+                    .promptCacheOptions(
+                        ResponseCompactParams.PromptCacheOptions.builder()
+                            .mode(ResponseCompactParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .ttl(ResponseCompactParams.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+                    .serviceTier(ResponseCompactParams.ServiceTier.AUTO)
                     .build()
             )
 

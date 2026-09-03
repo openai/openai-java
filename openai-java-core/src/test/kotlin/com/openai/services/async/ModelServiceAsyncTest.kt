@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -20,7 +20,7 @@ internal class ModelServiceAsyncTest {
                 .build()
         val modelServiceAsync = client.models()
 
-        val modelFuture = modelServiceAsync.retrieve("gpt-4o-mini")
+        val modelFuture = modelServiceAsync.retrieve("gpt-5.6-sol")
 
         val model = modelFuture.get()
         model.validate()

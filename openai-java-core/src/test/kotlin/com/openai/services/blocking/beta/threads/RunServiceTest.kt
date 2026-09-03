@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta.threads
 
@@ -64,7 +64,7 @@ internal class RunServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .parallelToolCalls(true)
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()
@@ -127,7 +127,7 @@ internal class RunServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .parallelToolCalls(true)
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
@@ -28,6 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create a new video generation job from a prompt and optional reference assets. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoCreateParams
 private constructor(
     private val body: Body,
@@ -764,6 +765,10 @@ private constructor(
         /** Optional reference asset upload or reference object that guides generation. */
         fun stream(): Optional<InputStream> = Optional.ofNullable(stream)
 
+        /**
+         * Optional reference asset upload or reference object that guides generation. Provide
+         * exactly one of `image_url` or `file_id` when using an object.
+         */
         fun imageInputReferenceParam(): Optional<ImageInputReferenceParam> =
             Optional.ofNullable(imageInputReferenceParam)
 
@@ -774,6 +779,10 @@ private constructor(
         /** Optional reference asset upload or reference object that guides generation. */
         fun asStream(): InputStream = stream.getOrThrow("stream")
 
+        /**
+         * Optional reference asset upload or reference object that guides generation. Provide
+         * exactly one of `image_url` or `file_id` when using an object.
+         */
         fun asImageInputReferenceParam(): ImageInputReferenceParam =
             imageInputReferenceParam.getOrThrow("imageInputReferenceParam")
 
@@ -880,6 +889,10 @@ private constructor(
             /** Optional reference asset upload or reference object that guides generation. */
             @JvmStatic fun ofStream(stream: InputStream) = InputReference(stream = stream)
 
+            /**
+             * Optional reference asset upload or reference object that guides generation. Provide
+             * exactly one of `image_url` or `file_id` when using an object.
+             */
             @JvmStatic
             fun ofImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam) =
                 InputReference(imageInputReferenceParam = imageInputReferenceParam)
@@ -894,6 +907,10 @@ private constructor(
             /** Optional reference asset upload or reference object that guides generation. */
             fun visitStream(stream: InputStream): T
 
+            /**
+             * Optional reference asset upload or reference object that guides generation. Provide
+             * exactly one of `image_url` or `file_id` when using an object.
+             */
             fun visitImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam): T
 
             /**

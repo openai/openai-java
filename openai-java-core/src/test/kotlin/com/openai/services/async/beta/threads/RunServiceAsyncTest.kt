@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.beta.threads
 
@@ -64,7 +64,7 @@ internal class RunServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .parallelToolCalls(true)
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()
@@ -128,7 +128,7 @@ internal class RunServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_5_6_SOL)
                     .parallelToolCalls(true)
                     .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()

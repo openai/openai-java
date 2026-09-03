@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -41,7 +41,7 @@ internal class ResponsesModelTest {
 
     @Test
     fun ofChat() {
-        val chat = ChatModel.GPT_5_4
+        val chat = ChatModel.GPT_5_6_SOL
 
         val responsesModel = ResponsesModel.ofChat(chat)
 
@@ -53,7 +53,7 @@ internal class ResponsesModelTest {
     @Test
     fun ofChatRoundtrip() {
         val jsonMapper = jsonMapper()
-        val responsesModel = ResponsesModel.ofChat(ChatModel.GPT_5_4)
+        val responsesModel = ResponsesModel.ofChat(ChatModel.GPT_5_6_SOL)
 
         val roundtrippedResponsesModel =
             jsonMapper.readValue(

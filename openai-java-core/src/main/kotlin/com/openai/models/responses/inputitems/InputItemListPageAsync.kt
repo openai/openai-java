@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses.inputitems
 
@@ -107,9 +107,21 @@ private constructor(
                                 toolSearchOutput: ResponseToolSearchOutputItem
                             ): Optional<String> = toolSearchOutput._id().getOptional("id")
 
+                            override fun visitAdditionalTools(
+                                additionalTools: ResponseItem.AdditionalTools
+                            ): Optional<String> = additionalTools._id().getOptional("id")
+
                             override fun visitReasoning(
                                 reasoning: ResponseReasoningItem
                             ): Optional<String> = reasoning._id().getOptional("id")
+
+                            override fun visitProgram(
+                                program: ResponseItem.Program
+                            ): Optional<String> = program._id().getOptional("id")
+
+                            override fun visitProgramOutput(
+                                programOutput: ResponseItem.ProgramOutput
+                            ): Optional<String> = programOutput._id().getOptional("id")
 
                             override fun visitCompaction(
                                 compaction: ResponseCompactionItem

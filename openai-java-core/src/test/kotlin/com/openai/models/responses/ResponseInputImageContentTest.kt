@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -16,12 +16,17 @@ internal class ResponseInputImageContentTest {
                 .detail(ResponseInputImageContent.Detail.LOW)
                 .fileId("file-123")
                 .imageUrl("https://example.com")
+                .promptCacheBreakpoint(
+                    ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         assertThat(responseInputImageContent.detail())
             .contains(ResponseInputImageContent.Detail.LOW)
         assertThat(responseInputImageContent.fileId()).contains("file-123")
         assertThat(responseInputImageContent.imageUrl()).contains("https://example.com")
+        assertThat(responseInputImageContent.promptCacheBreakpoint())
+            .contains(ResponseInputImageContent.PromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -32,6 +37,9 @@ internal class ResponseInputImageContentTest {
                 .detail(ResponseInputImageContent.Detail.LOW)
                 .fileId("file-123")
                 .imageUrl("https://example.com")
+                .promptCacheBreakpoint(
+                    ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                )
                 .build()
 
         val roundtrippedResponseInputImageContent =
