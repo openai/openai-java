@@ -6,6 +6,7 @@ import com.openai.core.MultipartField
 import java.io.InputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class FileCreateParamsTest {
 
@@ -13,7 +14,7 @@ internal class FileCreateParamsTest {
     fun create() {
         FileCreateParams.builder()
             .file("Example data".byteInputStream())
-            .purpose(FilePurpose.ASSISTANTS)
+            .purpose(FilePurpose.BATCH)
             .expiresAfter(FileCreateParams.ExpiresAfter.builder().seconds(3600L).build())
             .build()
     }
@@ -23,7 +24,7 @@ internal class FileCreateParamsTest {
         val params =
             FileCreateParams.builder()
                 .file("Example data".byteInputStream())
-                .purpose(FilePurpose.ASSISTANTS)
+                .purpose(FilePurpose.BATCH)
                 .expiresAfter(FileCreateParams.ExpiresAfter.builder().seconds(3600L).build())
                 .build()
 
@@ -42,9 +43,9 @@ internal class FileCreateParamsTest {
                         "file" to
                             MultipartField.builder<InputStream>()
                                 .value("Example data".byteInputStream())
-                                .filename("assistant_data.jsonl")
+                                .filename("batch_data.jsonl")
                                 .build(),
-                        "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
+                        "purpose" to MultipartField.of(FilePurpose.BATCH),
                         "expires_after" to
                             MultipartField.of(
                                 FileCreateParams.ExpiresAfter.builder().seconds(3600L).build()
@@ -61,7 +62,7 @@ internal class FileCreateParamsTest {
         val params =
             FileCreateParams.builder()
                 .file("Example data".byteInputStream())
-                .purpose(FilePurpose.ASSISTANTS)
+                .purpose(FilePurpose.BATCH)
                 .build()
 
         val body = params._body()
@@ -79,9 +80,9 @@ internal class FileCreateParamsTest {
                         "file" to
                             MultipartField.builder<InputStream>()
                                 .value("Example data".byteInputStream())
-                                .filename("assistant_data.jsonl")
+                                .filename("batch_data.jsonl")
                                 .build(),
-                        "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
+                        "purpose" to MultipartField.of(FilePurpose.BATCH),
                     )
                     .mapValues { (_, field) ->
                         field.map { (it as? ByteArray)?.inputStream() ?: it }
@@ -90,7 +91,7 @@ internal class FileCreateParamsTest {
     }
 
     @Test
-    fun fileWithInputStreamUsesDefaultFilename() {
+    fun fileWithInputStreamUsesDefaultBatchFilename() {
         val params =
             FileCreateParams.builder()
                 .file("Example data".byteInputStream())
@@ -102,7 +103,19 @@ internal class FileCreateParamsTest {
     }
 
     @Test
-    fun fileWithBytesUsesDefaultFilename() {
+    fun fileWithInputStreamUsesDefaultFineTuneFilename() {
+        val params =
+            FileCreateParams.builder()
+                .file("Example data".byteInputStream())
+                .purpose(FilePurpose.FINE_TUNE)
+                .build()
+
+        assertThat(params._file().filename()).contains("training_data.jsonl")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithBytesUsesDefaultBatchFilename() {
         val params =
             FileCreateParams.builder()
                 .file("Example data".toByteArray())
@@ -111,6 +124,16 @@ internal class FileCreateParamsTest {
 
         assertThat(params._file().filename()).contains("batch_data.jsonl")
         assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithInputStreamWithoutFilename_forAssistants_throwsIllegalArgument() {
+        assertThrows<IllegalArgumentException> {
+            FileCreateParams.builder()
+                .file("Example data".byteInputStream())
+                .purpose(FilePurpose.ASSISTANTS)
+                .build()
+        }
     }
 
     @Test
@@ -129,11 +152,11 @@ internal class FileCreateParamsTest {
     fun fileWithBytesAndFilename() {
         val params =
             FileCreateParams.builder()
-                .file("Example data".toByteArray(), "input.jsonl")
-                .purpose(FilePurpose.BATCH)
+                .file("Example data".toByteArray(), "custom.pdf")
+                .purpose(FilePurpose.ASSISTANTS)
                 .build()
 
-        assertThat(params._file().filename()).contains("input.jsonl")
+        assertThat(params._file().filename()).contains("custom.pdf")
         assertThat(params._file().contentType).isEqualTo("application/octet-stream")
     }
 }

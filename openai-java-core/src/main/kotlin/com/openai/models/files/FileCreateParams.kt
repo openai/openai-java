@@ -153,18 +153,11 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Sets the file to upload from an InputStream with a purpose-appropriate default filename.
-         * Default determined by [FileNameMapper] based on purpose. Use [file(InputStream, String)]
-         * for explicit control.
+         * Sets the file to upload from an InputStream. If purpose is [FilePurpose.FINE_TUNE] or
+         * [FilePurpose.BATCH], an appropriate .jsonl default filename is inferred at build time.
+         * For all other purposes, use [file(InputStream, String)] to provide an explicit filename.
          */
-        fun file(file: InputStream) = apply {
-            val purpose = body._purposeIfSet()
-            if (purpose == null) {
-                body.file(file)
-            } else {
-                body.file(file, FileNameMapper.getDefaultFilename(purpose))
-            }
-        }
+        fun file(file: InputStream) = apply { body.file(file) }
 
         /** The File object (not file name) to be uploaded, with an explicit filename. */
         fun file(file: InputStream, filename: String) = apply { body.file(file, filename) }
@@ -172,25 +165,16 @@ private constructor(
         /**
          * Sets [Builder.file] to an arbitrary multipart value.
          *
-         * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You would typically use this if you want to provide a custom filename or content type.
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
         /**
-         * Sets the file to upload from a byte array with a purpose-appropriate default filename.
-         * Default determined by [FileNameMapper] based on purpose. Use [file(ByteArray, String)]
-         * for explicit control.
+         * Sets the file to upload from a byte array. If purpose is [FilePurpose.FINE_TUNE] or
+         * [FilePurpose.BATCH], an appropriate .jsonl default filename is inferred at build time.
+         * For all other purposes, use [file(ByteArray, String)] to provide an explicit filename.
          */
-        fun file(file: ByteArray) = apply {
-            val purpose = body._purposeIfSet()
-            if (purpose == null) {
-                body.file(file)
-            } else {
-                body.file(file, FileNameMapper.getDefaultFilename(purpose))
-            }
-        }
+        fun file(file: ByteArray) = apply { body.file(file) }
 
         /** The File object (not file name) to be uploaded, with an explicit filename. */
         fun file(file: ByteArray, filename: String) = apply { body.file(file, filename) }
@@ -357,44 +341,10 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
-         * The following fields are required:
-         * ```java
-         * .file()
-         * .purpose()
-         * ```
-         *
-         * @throws IllegalArgumentException if filename is not appropriate for purpose based on
-         *   [FileNameMapper.isValidForPurpose]
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): FileCreateParams {
-            val builtBody = body.build()
-            val purpose =
-                try {
-                    builtBody.purpose()
-                } catch (e: Exception) {
-                    null
-                }
-            val filename =
-                try {
-                    builtBody._file().filename().orElse(null)
-                } catch (e: Exception) {
-                    null
-                }
-
-            if (purpose != null && filename != null) {
-                require(FileNameMapper.isValidForPurpose(filename, purpose)) {
-                    "Filename '$filename' is not valid for purpose $purpose. " +
-                        "Use file(InputStream, String) or file(ByteArray, String) to set an appropriate filename."
-                }
-            }
-
-            return FileCreateParams(
-                builtBody,
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
-        }
+        fun build(): FileCreateParams =
+            FileCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _body(): Map<String, MultipartField<*>> =
@@ -514,25 +464,9 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Returns the current purpose if set, or null. */
-            @JvmSynthetic
-            internal fun _purposeIfSet(): FilePurpose? {
-                return try {
-                    purpose?.let { it.value.getOptional("purpose").orElse(null) }
-                } catch (e: Exception) {
-                    null
-                }
-            }
-
-            /**
-             * Sets the file to upload from an InputStream with a purpose-appropriate default
-             * filename. Default determined by [FileNameMapper] based on purpose. Use
-             * [file(InputStream, String)] for explicit control.
-             */
+            /** Sets the file to upload from an InputStream. */
             fun file(file: InputStream) =
-                _purposeIfSet()?.let { purpose ->
-                    file(file, FileNameMapper.getDefaultFilename(purpose))
-                } ?: file(MultipartField.builder<InputStream>().value(file).build())
+                file(MultipartField.builder<InputStream>().value(file).build())
 
             /** The File object (not file name) to be uploaded, with an explicit filename. */
             fun file(file: InputStream, filename: String) =
@@ -541,21 +475,13 @@ private constructor(
             /**
              * Sets [Builder.file] to an arbitrary multipart value.
              *
-             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You would typically use this if you want to provide a custom filename or content
+             * type.
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
-            /**
-             * Sets the file to upload from a byte array with a purpose-appropriate default
-             * filename. Default determined by [FileNameMapper] based on purpose. Use
-             * [file(ByteArray, String)] for explicit control.
-             */
-            fun file(file: ByteArray) =
-                _purposeIfSet()?.let { purpose ->
-                    file(file, FileNameMapper.getDefaultFilename(purpose))
-                } ?: file(file.inputStream())
+            /** Sets the file to upload from a byte array. */
+            fun file(file: ByteArray) = file(file.inputStream())
 
             /** The File object (not file name) to be uploaded, with an explicit filename. */
             fun file(file: ByteArray, filename: String) = file(file.inputStream(), filename)
@@ -631,30 +557,43 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              *
-             * The following fields are required:
-             * ```java
-             * .file()
-             * .purpose()
-             * ```
-             *
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body {
+                val currentPurpose: FilePurpose? =
+                    try {
+                        purpose?.value?.getRequired("purpose")
+                    } catch (e: Exception) {
+                        null
+                    }
+
                 val resolvedFile =
                     file?.let { multipart ->
-                        val filename = multipart.filename().orElse(null)
-                        if (filename != null || purpose == null) {
+                        val existingFilename = multipart.filename().orElse(null)
+                        if (existingFilename != null) {
                             multipart
                         } else {
-                            MultipartField.builder<InputStream>()
-                                .value(multipart.value)
-                                .contentType(multipart.contentType)
-                                .filename(
-                                    FileNameMapper.getDefaultFilename(
-                                        purpose!!.value.getRequired("purpose")
-                                    )
+                            val defaultName =
+                                when (currentPurpose) {
+                                    FilePurpose.FINE_TUNE -> "training_data.jsonl"
+                                    FilePurpose.BATCH -> "batch_data.jsonl"
+                                    else -> null
+                                }
+
+                            if (defaultName != null) {
+                                MultipartField.builder<InputStream>()
+                                    .value(multipart.value)
+                                    .contentType(multipart.contentType)
+                                    .filename(defaultName)
+                                    .build()
+                            } else {
+                                val purposeLabel = currentPurpose?.asString() ?: "unspecified"
+                                throw IllegalArgumentException(
+                                    "Uploading a stream or byte array for purpose '$purposeLabel' " +
+                                        "requires an explicit filename to avoid server-side validation errors. " +
+                                        "Use file(InputStream, String) or file(ByteArray, String) instead."
                                 )
-                                .build()
+                            }
                         }
                     }
 
