@@ -50,6 +50,7 @@ internal class InputTokenCountParamsTest {
                     )
                     .strict(true)
                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .outputSchema(
@@ -101,6 +102,7 @@ internal class InputTokenCountParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -166,6 +168,7 @@ internal class InputTokenCountParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -220,6 +223,7 @@ internal class InputTokenCountParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(

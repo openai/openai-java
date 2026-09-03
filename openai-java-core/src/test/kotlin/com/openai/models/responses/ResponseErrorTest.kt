@@ -12,17 +12,57 @@ internal class ResponseErrorTest {
     @Test
     fun create() {
         val responseError =
-            ResponseError.builder().code(ResponseError.Code.SERVER_ERROR).message("message").build()
+            ResponseError.builder()
+                .code(ResponseError.Code.SERVER_ERROR)
+                .message("message")
+                .misalignment(
+                    ResponseError.Misalignment.builder()
+                        .detailedExplanation("detailed_explanation")
+                        .errorType(
+                            ResponseError.Misalignment.ErrorType
+                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                        )
+                        .steer(
+                            ResponseError.Misalignment.Steer.builder().message("message").build()
+                        )
+                        .build()
+                )
+                .build()
 
         assertThat(responseError.code()).isEqualTo(ResponseError.Code.SERVER_ERROR)
         assertThat(responseError.message()).isEqualTo("message")
+        assertThat(responseError.misalignment())
+            .contains(
+                ResponseError.Misalignment.builder()
+                    .detailedExplanation("detailed_explanation")
+                    .errorType(
+                        ResponseError.Misalignment.ErrorType.POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                    )
+                    .steer(ResponseError.Misalignment.Steer.builder().message("message").build())
+                    .build()
+            )
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseError =
-            ResponseError.builder().code(ResponseError.Code.SERVER_ERROR).message("message").build()
+            ResponseError.builder()
+                .code(ResponseError.Code.SERVER_ERROR)
+                .message("message")
+                .misalignment(
+                    ResponseError.Misalignment.builder()
+                        .detailedExplanation("detailed_explanation")
+                        .errorType(
+                            ResponseError.Misalignment.ErrorType
+                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                        )
+                        .steer(
+                            ResponseError.Misalignment.Steer.builder().message("message").build()
+                        )
+                        .build()
+                )
+                .build()
 
         val roundtrippedResponseError =
             jsonMapper.readValue(

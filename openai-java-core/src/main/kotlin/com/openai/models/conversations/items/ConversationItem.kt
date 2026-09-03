@@ -41,6 +41,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -81,6 +82,7 @@ private constructor(
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -148,6 +150,13 @@ private constructor(
         Optional.ofNullable(toolSearchOutput)
 
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItem> =
+        Optional.ofNullable(configurationUpdate)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -234,6 +243,8 @@ private constructor(
 
     fun isAdditionalTools(): Boolean = additionalTools != null
 
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isProgram(): Boolean = program != null
@@ -315,6 +326,13 @@ private constructor(
         toolSearchOutput.getOrThrow("toolSearchOutput")
 
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItem =
+        configurationUpdate.getOrThrow("configurationUpdate")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -424,6 +442,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             program != null -> visitor.visitProgram(program)
             programOutput != null -> visitor.visitProgramOutput(programOutput)
@@ -507,6 +526,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -640,6 +665,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitProgram(program: Program) = program.validity()
@@ -712,6 +741,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             program == other.program &&
             programOutput == other.programOutput &&
@@ -744,6 +774,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             program,
             programOutput,
@@ -777,6 +808,8 @@ private constructor(
             toolSearchCall != null -> "ConversationItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ConversationItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ConversationItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "ConversationItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ConversationItem{reasoning=$reasoning}"
             program != null -> "ConversationItem{program=$program}"
             programOutput != null -> "ConversationItem{programOutput=$programOutput}"
@@ -868,6 +901,14 @@ private constructor(
         @JvmStatic
         fun ofAdditionalTools(additionalTools: AdditionalTools) =
             ConversationItem(additionalTools = additionalTools)
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem) =
+            ConversationItem(configurationUpdate = configurationUpdate)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1005,6 +1046,12 @@ private constructor(
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
 
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem): T
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1146,6 +1193,11 @@ private constructor(
                         ConversationItem(additionalTools = it, _json = json)
                     } ?: ConversationItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseConfigurationUpdateItem>())
+                        ?.let { ConversationItem(configurationUpdate = it, _json = json) }
+                        ?: ConversationItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ConversationItem(reasoning = it, _json = json)
@@ -1260,6 +1312,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.program != null -> generator.writeObject(value.program)
                 value.programOutput != null -> generator.writeObject(value.programOutput)

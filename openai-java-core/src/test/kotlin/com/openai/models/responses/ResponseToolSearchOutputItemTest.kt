@@ -28,6 +28,7 @@ internal class ResponseToolSearchOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -58,6 +59,7 @@ internal class ResponseToolSearchOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -90,6 +92,7 @@ internal class ResponseToolSearchOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(

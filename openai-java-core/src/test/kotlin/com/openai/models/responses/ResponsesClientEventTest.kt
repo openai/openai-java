@@ -5,24 +5,26 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
-import com.openai.models.ResponsesModel
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class ResponsesClientEventTest {
 
     @Test
-    fun create() {
-        val responsesClientEvent =
-            ResponsesClientEvent.builder()
+    fun ofResponseCreate() {
+        val responseCreate =
+            ResponsesClientEvent.ResponseCreate.builder()
                 .background(true)
                 .addContextManagement(
-                    ResponsesClientEvent.ContextManagement.builder()
+                    ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
                         .type("type")
                         .compactThreshold(1000L)
                         .build()
@@ -34,27 +36,35 @@ internal class ResponsesClientEventTest {
                 .maxOutputTokens(16L)
                 .maxToolCalls(0L)
                 .metadata(
-                    ResponsesClientEvent.Metadata.builder()
+                    ResponsesClientEvent.ResponseCreate.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_6_SOL)
+                .model(ChatModel.GPT_6_ASTRA)
                 .moderation(
-                    ResponsesClientEvent.Moderation.builder()
+                    ResponsesClientEvent.ResponseCreate.Moderation.builder()
                         .model("model")
                         .policy(
-                            ResponsesClientEvent.Moderation.Policy.builder()
+                            ResponsesClientEvent.ResponseCreate.Moderation.Policy.builder()
                                 .input(
-                                    ResponsesClientEvent.Moderation.Policy.Input.builder()
+                                    ResponsesClientEvent.ResponseCreate.Moderation.Policy.Input
+                                        .builder()
                                         .mode(
-                                            ResponsesClientEvent.Moderation.Policy.Input.Mode.SCORE
+                                            ResponsesClientEvent.ResponseCreate.Moderation.Policy
+                                                .Input
+                                                .Mode
+                                                .SCORE
                                         )
                                         .build()
                                 )
                                 .output(
-                                    ResponsesClientEvent.Moderation.Policy.Output.builder()
+                                    ResponsesClientEvent.ResponseCreate.Moderation.Policy.Output
+                                        .builder()
                                         .mode(
-                                            ResponsesClientEvent.Moderation.Policy.Output.Mode.SCORE
+                                            ResponsesClientEvent.ResponseCreate.Moderation.Policy
+                                                .Output
+                                                .Mode
+                                                .SCORE
                                         )
                                         .build()
                                 )
@@ -77,12 +87,14 @@ internal class ResponsesClientEventTest {
                 )
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
-                    ResponsesClientEvent.PromptCacheOptions.builder()
-                        .mode(ResponsesClientEvent.PromptCacheOptions.Mode.IMPLICIT)
-                        .ttl(ResponsesClientEvent.PromptCacheOptions.Ttl._30M)
+                    ResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
+                        .mode(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT)
+                        .ttl(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
-                .promptCacheRetention(ResponsesClientEvent.PromptCacheRetention.IN_MEMORY)
+                .promptCacheRetention(
+                    ResponsesClientEvent.ResponseCreate.PromptCacheRetention.IN_MEMORY
+                )
                 .reasoning(
                     Reasoning.builder()
                         .context(Reasoning.Context.AUTO)
@@ -93,12 +105,14 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .safetyIdentifier("safety-identifier-1234")
-                .serviceTier(ResponsesClientEvent.ServiceTier.AUTO)
+                .serviceTier(ResponsesClientEvent.ResponseCreate.ServiceTier.AUTO)
                 .store(true)
                 .stream(true)
                 .streamId("stream_id")
                 .streamOptions(
-                    ResponsesClientEvent.StreamOptions.builder().includeObfuscation(true).build()
+                    ResponsesClientEvent.ResponseCreate.StreamOptions.builder()
+                        .includeObfuscation(true)
+                        .build()
                 )
                 .temperature(1.0)
                 .text(
@@ -118,6 +132,7 @@ internal class ResponsesClientEventTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -129,252 +144,152 @@ internal class ResponsesClientEventTest {
                 )
                 .topLogprobs(0L)
                 .topP(1.0)
-                .truncation(ResponsesClientEvent.Truncation.AUTO)
+                .truncation(ResponsesClientEvent.ResponseCreate.Truncation.AUTO)
                 .user("user-1234")
                 .build()
 
-        assertThat(responsesClientEvent.background()).contains(true)
-        assertThat(responsesClientEvent.contextManagement().getOrNull())
-            .containsExactly(
-                ResponsesClientEvent.ContextManagement.builder()
-                    .type("type")
-                    .compactThreshold(1000L)
-                    .build()
-            )
-        assertThat(responsesClientEvent.conversation())
-            .contains(ResponsesClientEvent.Conversation.ofId("string"))
-        assertThat(responsesClientEvent.include().getOrNull())
-            .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-        assertThat(responsesClientEvent.input())
-            .contains(ResponsesClientEvent.Input.ofText("string"))
-        assertThat(responsesClientEvent.instructions()).contains("instructions")
-        assertThat(responsesClientEvent.maxOutputTokens()).contains(16L)
-        assertThat(responsesClientEvent.maxToolCalls()).contains(0L)
-        assertThat(responsesClientEvent.metadata())
-            .contains(
-                ResponsesClientEvent.Metadata.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
-                    .build()
-            )
-        assertThat(responsesClientEvent.model())
-            .contains(ResponsesModel.ofChat(ChatModel.GPT_5_6_SOL))
-        assertThat(responsesClientEvent.moderation())
-            .contains(
-                ResponsesClientEvent.Moderation.builder()
-                    .model("model")
-                    .policy(
-                        ResponsesClientEvent.Moderation.Policy.builder()
-                            .input(
-                                ResponsesClientEvent.Moderation.Policy.Input.builder()
-                                    .mode(ResponsesClientEvent.Moderation.Policy.Input.Mode.SCORE)
-                                    .build()
-                            )
-                            .output(
-                                ResponsesClientEvent.Moderation.Policy.Output.builder()
-                                    .mode(ResponsesClientEvent.Moderation.Policy.Output.Mode.SCORE)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-        assertThat(responsesClientEvent.parallelToolCalls()).contains(true)
-        assertThat(responsesClientEvent.previousResponseId()).contains("previous_response_id")
-        assertThat(responsesClientEvent.prompt())
-            .contains(
-                ResponsePrompt.builder()
-                    .id("id")
-                    .variables(
-                        ResponsePrompt.Variables.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
-                    )
-                    .version("version")
-                    .build()
-            )
-        assertThat(responsesClientEvent.promptCacheKey()).contains("prompt-cache-key-1234")
-        assertThat(responsesClientEvent.promptCacheOptions())
-            .contains(
-                ResponsesClientEvent.PromptCacheOptions.builder()
-                    .mode(ResponsesClientEvent.PromptCacheOptions.Mode.IMPLICIT)
-                    .ttl(ResponsesClientEvent.PromptCacheOptions.Ttl._30M)
-                    .build()
-            )
-        assertThat(responsesClientEvent.promptCacheRetention())
-            .contains(ResponsesClientEvent.PromptCacheRetention.IN_MEMORY)
-        assertThat(responsesClientEvent.reasoning())
-            .contains(
-                Reasoning.builder()
-                    .context(Reasoning.Context.AUTO)
-                    .effort(ReasoningEffort.NONE)
-                    .generateSummary(Reasoning.GenerateSummary.AUTO)
-                    .mode(Reasoning.Mode.STANDARD)
-                    .summary(Reasoning.Summary.AUTO)
-                    .build()
-            )
-        assertThat(responsesClientEvent.safetyIdentifier()).contains("safety-identifier-1234")
-        assertThat(responsesClientEvent.serviceTier())
-            .contains(ResponsesClientEvent.ServiceTier.AUTO)
-        assertThat(responsesClientEvent.store()).contains(true)
-        assertThat(responsesClientEvent.stream()).contains(true)
-        assertThat(responsesClientEvent.streamId()).contains("stream_id")
-        assertThat(responsesClientEvent.streamOptions())
-            .contains(ResponsesClientEvent.StreamOptions.builder().includeObfuscation(true).build())
-        assertThat(responsesClientEvent.temperature()).contains(1.0)
-        assertThat(responsesClientEvent.text())
-            .contains(
-                ResponseTextConfig.builder()
-                    .format(ResponseFormatText.builder().build())
-                    .verbosity(ResponseTextConfig.Verbosity.LOW)
-                    .build()
-            )
-        assertThat(responsesClientEvent.toolChoice())
-            .contains(ResponsesClientEvent.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
-        assertThat(responsesClientEvent.tools().getOrNull())
-            .containsExactly(
-                Tool.ofFunction(
-                    FunctionTool.builder()
-                        .name("name")
-                        .parameters(
-                            FunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            FunctionTool.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-            )
-        assertThat(responsesClientEvent.topLogprobs()).contains(0L)
-        assertThat(responsesClientEvent.topP()).contains(1.0)
-        assertThat(responsesClientEvent.truncation()).contains(ResponsesClientEvent.Truncation.AUTO)
-        assertThat(responsesClientEvent.user()).contains("user-1234")
+        val responsesClientEvent = ResponsesClientEvent.ofResponseCreate(responseCreate)
+
+        assertThat(responsesClientEvent.responseCreate()).contains(responseCreate)
+        assertThat(responsesClientEvent.responseSteer()).isEmpty
     }
 
     @Test
-    fun roundtrip() {
+    fun ofResponseCreateRoundtrip() {
         val jsonMapper = jsonMapper()
         val responsesClientEvent =
-            ResponsesClientEvent.builder()
-                .background(true)
-                .addContextManagement(
-                    ResponsesClientEvent.ContextManagement.builder()
-                        .type("type")
-                        .compactThreshold(1000L)
-                        .build()
-                )
-                .conversation("string")
-                .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-                .input("string")
-                .instructions("instructions")
-                .maxOutputTokens(16L)
-                .maxToolCalls(0L)
-                .metadata(
-                    ResponsesClientEvent.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .model(ChatModel.GPT_5_6_SOL)
-                .moderation(
-                    ResponsesClientEvent.Moderation.builder()
-                        .model("model")
-                        .policy(
-                            ResponsesClientEvent.Moderation.Policy.builder()
-                                .input(
-                                    ResponsesClientEvent.Moderation.Policy.Input.builder()
-                                        .mode(
-                                            ResponsesClientEvent.Moderation.Policy.Input.Mode.SCORE
-                                        )
-                                        .build()
-                                )
-                                .output(
-                                    ResponsesClientEvent.Moderation.Policy.Output.builder()
-                                        .mode(
-                                            ResponsesClientEvent.Moderation.Policy.Output.Mode.SCORE
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .parallelToolCalls(true)
-                .previousResponseId("previous_response_id")
-                .prompt(
-                    ResponsePrompt.builder()
-                        .id("id")
-                        .variables(
-                            ResponsePrompt.Variables.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .version("version")
-                        .build()
-                )
-                .promptCacheKey("prompt-cache-key-1234")
-                .promptCacheOptions(
-                    ResponsesClientEvent.PromptCacheOptions.builder()
-                        .mode(ResponsesClientEvent.PromptCacheOptions.Mode.IMPLICIT)
-                        .ttl(ResponsesClientEvent.PromptCacheOptions.Ttl._30M)
-                        .build()
-                )
-                .promptCacheRetention(ResponsesClientEvent.PromptCacheRetention.IN_MEMORY)
-                .reasoning(
-                    Reasoning.builder()
-                        .context(Reasoning.Context.AUTO)
-                        .effort(ReasoningEffort.NONE)
-                        .generateSummary(Reasoning.GenerateSummary.AUTO)
-                        .mode(Reasoning.Mode.STANDARD)
-                        .summary(Reasoning.Summary.AUTO)
-                        .build()
-                )
-                .safetyIdentifier("safety-identifier-1234")
-                .serviceTier(ResponsesClientEvent.ServiceTier.AUTO)
-                .store(true)
-                .stream(true)
-                .streamId("stream_id")
-                .streamOptions(
-                    ResponsesClientEvent.StreamOptions.builder().includeObfuscation(true).build()
-                )
-                .temperature(1.0)
-                .text(
-                    ResponseTextConfig.builder()
-                        .format(ResponseFormatText.builder().build())
-                        .verbosity(ResponseTextConfig.Verbosity.LOW)
-                        .build()
-                )
-                .toolChoice(ToolChoiceOptions.NONE)
-                .addTool(
-                    FunctionTool.builder()
-                        .name("name")
-                        .parameters(
-                            FunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            FunctionTool.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-                .topLogprobs(0L)
-                .topP(1.0)
-                .truncation(ResponsesClientEvent.Truncation.AUTO)
-                .user("user-1234")
-                .build()
+            ResponsesClientEvent.ofResponseCreate(
+                ResponsesClientEvent.ResponseCreate.builder()
+                    .background(true)
+                    .addContextManagement(
+                        ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
+                            .type("type")
+                            .compactThreshold(1000L)
+                            .build()
+                    )
+                    .conversation("string")
+                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .input("string")
+                    .instructions("instructions")
+                    .maxOutputTokens(16L)
+                    .maxToolCalls(0L)
+                    .metadata(
+                        ResponsesClientEvent.ResponseCreate.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .model(ChatModel.GPT_6_ASTRA)
+                    .moderation(
+                        ResponsesClientEvent.ResponseCreate.Moderation.builder()
+                            .model("model")
+                            .policy(
+                                ResponsesClientEvent.ResponseCreate.Moderation.Policy.builder()
+                                    .input(
+                                        ResponsesClientEvent.ResponseCreate.Moderation.Policy.Input
+                                            .builder()
+                                            .mode(
+                                                ResponsesClientEvent.ResponseCreate.Moderation
+                                                    .Policy
+                                                    .Input
+                                                    .Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .output(
+                                        ResponsesClientEvent.ResponseCreate.Moderation.Policy.Output
+                                            .builder()
+                                            .mode(
+                                                ResponsesClientEvent.ResponseCreate.Moderation
+                                                    .Policy
+                                                    .Output
+                                                    .Mode
+                                                    .SCORE
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .parallelToolCalls(true)
+                    .previousResponseId("previous_response_id")
+                    .prompt(
+                        ResponsePrompt.builder()
+                            .id("id")
+                            .variables(
+                                ResponsePrompt.Variables.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .version("version")
+                            .build()
+                    )
+                    .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheOptions(
+                        ResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
+                            .mode(
+                                ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
+                            )
+                            .ttl(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
+                    .promptCacheRetention(
+                        ResponsesClientEvent.ResponseCreate.PromptCacheRetention.IN_MEMORY
+                    )
+                    .reasoning(
+                        Reasoning.builder()
+                            .context(Reasoning.Context.AUTO)
+                            .effort(ReasoningEffort.NONE)
+                            .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .mode(Reasoning.Mode.STANDARD)
+                            .summary(Reasoning.Summary.AUTO)
+                            .build()
+                    )
+                    .safetyIdentifier("safety-identifier-1234")
+                    .serviceTier(ResponsesClientEvent.ResponseCreate.ServiceTier.AUTO)
+                    .store(true)
+                    .stream(true)
+                    .streamId("stream_id")
+                    .streamOptions(
+                        ResponsesClientEvent.ResponseCreate.StreamOptions.builder()
+                            .includeObfuscation(true)
+                            .build()
+                    )
+                    .temperature(1.0)
+                    .text(
+                        ResponseTextConfig.builder()
+                            .format(ResponseFormatText.builder().build())
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
+                            .build()
+                    )
+                    .toolChoice(ToolChoiceOptions.NONE)
+                    .addTool(
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
+                            .deferLoading(true)
+                            .description("description")
+                            .outputSchema(
+                                FunctionTool.OutputSchema.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .topLogprobs(0L)
+                    .topP(1.0)
+                    .truncation(ResponsesClientEvent.ResponseCreate.Truncation.AUTO)
+                    .user("user-1234")
+                    .build()
+            )
 
         val roundtrippedResponsesClientEvent =
             jsonMapper.readValue(
@@ -383,5 +298,57 @@ internal class ResponsesClientEventTest {
             )
 
         assertThat(roundtrippedResponsesClientEvent).isEqualTo(responsesClientEvent)
+    }
+
+    @Test
+    fun ofResponseSteer() {
+        val responseSteer =
+            ResponseSteerEvent.builder()
+                .input("string")
+                .previousResponseId("previous_response_id")
+                .build()
+
+        val responsesClientEvent = ResponsesClientEvent.ofResponseSteer(responseSteer)
+
+        assertThat(responsesClientEvent.responseCreate()).isEmpty
+        assertThat(responsesClientEvent.responseSteer()).contains(responseSteer)
+    }
+
+    @Test
+    fun ofResponseSteerRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesClientEvent =
+            ResponsesClientEvent.ofResponseSteer(
+                ResponseSteerEvent.builder()
+                    .input("string")
+                    .previousResponseId("previous_response_id")
+                    .build()
+            )
+
+        val roundtrippedResponsesClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesClientEvent),
+                jacksonTypeRef<ResponsesClientEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesClientEvent).isEqualTo(responsesClientEvent)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val responsesClientEvent =
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<ResponsesClientEvent>())
+
+        val e = assertThrows<OpenAIInvalidDataException> { responsesClientEvent.validate() }
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }

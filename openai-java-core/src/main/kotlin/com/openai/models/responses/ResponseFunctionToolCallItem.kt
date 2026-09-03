@@ -31,6 +31,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val id: JsonField<String>,
+    private val async: JsonField<Boolean>,
     private val caller: JsonField<ResponseFunctionToolCall.Caller>,
     private val namespace: JsonField<String>,
     private val status: JsonField<ResponseFunctionToolCall.Status>,
@@ -45,6 +46,7 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("caller")
         @ExcludeMissing
         caller: JsonField<ResponseFunctionToolCall.Caller> = JsonMissing.of(),
@@ -59,6 +61,7 @@ private constructor(
         name,
         type,
         id,
+        async,
         caller,
         namespace,
         status,
@@ -73,6 +76,7 @@ private constructor(
             .name(name)
             .type(type)
             .id(id)
+            .async(async)
             .caller(caller)
             .namespace(namespace)
             .status(status)
@@ -122,6 +126,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun id(): Optional<String> = id.getOptional("id")
+
+    /**
+     * Whether the function tool call runs asynchronously.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun async(): Optional<Boolean> = async.getOptional("async")
 
     /**
      * The execution context that produced this tool call.
@@ -183,6 +195,13 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [async].
+     *
+     * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
 
     /**
      * Returns the raw JSON value of [caller].
@@ -251,6 +270,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("function_call")
         private var id: JsonField<String> = JsonMissing.of()
+        private var async: JsonField<Boolean> = JsonMissing.of()
         private var caller: JsonField<ResponseFunctionToolCall.Caller> = JsonMissing.of()
         private var namespace: JsonField<String> = JsonMissing.of()
         private var status: JsonField<ResponseFunctionToolCall.Status> = JsonMissing.of()
@@ -264,6 +284,7 @@ private constructor(
             name = responseFunctionToolCallItem.name
             type = responseFunctionToolCallItem.type
             id = responseFunctionToolCallItem.id
+            async = responseFunctionToolCallItem.async
             caller = responseFunctionToolCallItem.caller
             namespace = responseFunctionToolCallItem.namespace
             status = responseFunctionToolCallItem.status
@@ -329,6 +350,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** Whether the function tool call runs asynchronously. */
+        fun async(async: Boolean) = async(JsonField.of(async))
+
+        /**
+         * Sets [Builder.async] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.async] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun async(async: JsonField<Boolean>) = apply { this.async = async }
 
         /** The execution context that produced this tool call. */
         fun caller(caller: ResponseFunctionToolCall.Caller?) = caller(JsonField.ofNullable(caller))
@@ -446,6 +478,7 @@ private constructor(
                 checkRequired("name", name),
                 type,
                 id,
+                async,
                 caller,
                 namespace,
                 status,
@@ -478,6 +511,7 @@ private constructor(
             }
         }
         id()
+        async()
         caller().ifPresent { it.validate() }
         namespace()
         status().ifPresent { it.validate() }
@@ -505,6 +539,7 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("function_call")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
+            (if (async.asKnown().isPresent) 1 else 0) +
             (caller.asKnown().getOrNull()?.validity() ?: 0) +
             (if (namespace.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
@@ -665,6 +700,7 @@ private constructor(
             name == other.name &&
             type == other.type &&
             id == other.id &&
+            async == other.async &&
             caller == other.caller &&
             namespace == other.namespace &&
             status == other.status &&
@@ -679,6 +715,7 @@ private constructor(
             name,
             type,
             id,
+            async,
             caller,
             namespace,
             status,
@@ -690,5 +727,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionToolCallItem{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, caller=$caller, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "ResponseFunctionToolCallItem{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, async=$async, caller=$caller, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

@@ -27,6 +27,7 @@ internal class ToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(
@@ -70,6 +71,7 @@ internal class ToolTest {
                     )
                     .strict(true)
                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .outputSchema(
@@ -641,6 +643,7 @@ internal class ToolTest {
             CustomTool.builder()
                 .name("name")
                 .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -674,6 +677,7 @@ internal class ToolTest {
                 CustomTool.builder()
                     .name("name")
                     .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .formatText()
@@ -696,6 +700,7 @@ internal class ToolTest {
                     NamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -741,6 +746,7 @@ internal class ToolTest {
                         NamespaceTool.Tool.Function.builder()
                             .name("name")
                             .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(

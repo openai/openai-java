@@ -47,6 +47,7 @@ private constructor(
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -115,6 +116,13 @@ private constructor(
         Optional.ofNullable(toolSearchOutput)
 
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItem> =
+        Optional.ofNullable(configurationUpdate)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -205,6 +213,8 @@ private constructor(
 
     fun isAdditionalTools(): Boolean = additionalTools != null
 
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isProgram(): Boolean = program != null
@@ -288,6 +298,13 @@ private constructor(
         toolSearchOutput.getOrThrow("toolSearchOutput")
 
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItem =
+        configurationUpdate.getOrThrow("configurationUpdate")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -403,6 +420,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             program != null -> visitor.visitProgram(program)
             programOutput != null -> visitor.visitProgramOutput(programOutput)
@@ -491,6 +509,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -631,6 +655,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitProgram(program: Program) = program.validity()
@@ -706,6 +734,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             program == other.program &&
             programOutput == other.programOutput &&
@@ -739,6 +768,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             program,
             programOutput,
@@ -774,6 +804,7 @@ private constructor(
             toolSearchCall != null -> "ResponseItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ResponseItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ResponseItem{additionalTools=$additionalTools}"
+            configurationUpdate != null -> "ResponseItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ResponseItem{reasoning=$reasoning}"
             program != null -> "ResponseItem{program=$program}"
             programOutput != null -> "ResponseItem{programOutput=$programOutput}"
@@ -865,6 +896,14 @@ private constructor(
         @JvmStatic
         fun ofAdditionalTools(additionalTools: AdditionalTools) =
             ResponseItem(additionalTools = additionalTools)
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem) =
+            ResponseItem(configurationUpdate = configurationUpdate)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1003,6 +1042,12 @@ private constructor(
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
 
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem): T
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1161,6 +1206,11 @@ private constructor(
                         ResponseItem(additionalTools = it, _json = json)
                     } ?: ResponseItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseConfigurationUpdateItem>())
+                        ?.let { ResponseItem(configurationUpdate = it, _json = json) }
+                        ?: ResponseItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ResponseItem(reasoning = it, _json = json)
@@ -1281,6 +1331,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.program != null -> generator.writeObject(value.program)
                 value.programOutput != null -> generator.writeObject(value.programOutput)

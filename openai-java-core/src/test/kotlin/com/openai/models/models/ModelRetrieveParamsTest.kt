@@ -9,14 +9,14 @@ internal class ModelRetrieveParamsTest {
 
     @Test
     fun create() {
-        ModelRetrieveParams.builder().model("gpt-5.6-sol").build()
+        ModelRetrieveParams.builder().model("gpt-6-astra").build()
     }
 
     @Test
     fun pathParams() {
-        val params = ModelRetrieveParams.builder().model("gpt-5.6-sol").build()
+        val params = ModelRetrieveParams.builder().model("gpt-6-astra").build()
 
-        assertThat(params._pathParam(0)).isEqualTo("gpt-5.6-sol")
+        assertThat(params._pathParam(0)).isEqualTo("gpt-6-astra")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }

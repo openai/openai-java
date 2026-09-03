@@ -26,6 +26,20 @@ internal class ResponseCompletedEventTest {
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -39,7 +53,7 @@ internal class ResponseCompletedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_6_SOL)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -86,6 +100,7 @@ internal class ResponseCompletedEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -236,6 +251,20 @@ internal class ResponseCompletedEventTest {
                         ResponseError.builder()
                             .code(ResponseError.Code.SERVER_ERROR)
                             .message("message")
+                            .misalignment(
+                                ResponseError.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        ResponseError.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        ResponseError.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .incompleteDetails(
@@ -249,7 +278,7 @@ internal class ResponseCompletedEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_6_SOL)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .addOutput(
                         ResponseOutputMessage.builder()
                             .id("id")
@@ -296,6 +325,7 @@ internal class ResponseCompletedEventTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -448,6 +478,20 @@ internal class ResponseCompletedEventTest {
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -461,7 +505,7 @@ internal class ResponseCompletedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_6_SOL)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -508,6 +552,7 @@ internal class ResponseCompletedEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(

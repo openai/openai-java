@@ -949,6 +949,20 @@ internal class BetaResponseStreamEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -962,7 +976,7 @@ internal class BetaResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -1015,6 +1029,7 @@ internal class BetaResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -1235,6 +1250,20 @@ internal class BetaResponseStreamEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -1248,7 +1277,7 @@ internal class BetaResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -1302,6 +1331,7 @@ internal class BetaResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -1790,6 +1820,20 @@ internal class BetaResponseStreamEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -1803,7 +1847,7 @@ internal class BetaResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -1856,6 +1900,7 @@ internal class BetaResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -2076,6 +2121,20 @@ internal class BetaResponseStreamEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -2089,7 +2148,7 @@ internal class BetaResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -2143,6 +2202,7 @@ internal class BetaResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -3511,6 +3571,20 @@ internal class BetaResponseStreamEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -3524,7 +3598,7 @@ internal class BetaResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -3577,6 +3651,7 @@ internal class BetaResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -3798,6 +3873,20 @@ internal class BetaResponseStreamEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -3811,7 +3900,7 @@ internal class BetaResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -3865,6 +3954,7 @@ internal class BetaResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4039,6 +4129,20 @@ internal class BetaResponseStreamEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -4052,7 +4156,7 @@ internal class BetaResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -4105,6 +4209,7 @@ internal class BetaResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -4325,6 +4430,20 @@ internal class BetaResponseStreamEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -4338,7 +4457,7 @@ internal class BetaResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -4392,6 +4511,7 @@ internal class BetaResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4564,6 +4684,20 @@ internal class BetaResponseStreamEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -4577,7 +4711,7 @@ internal class BetaResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -4630,6 +4764,7 @@ internal class BetaResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -4851,6 +4986,20 @@ internal class BetaResponseStreamEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -4864,7 +5013,7 @@ internal class BetaResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -4918,6 +5067,7 @@ internal class BetaResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -8277,6 +8427,20 @@ internal class BetaResponseStreamEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -8290,7 +8454,7 @@ internal class BetaResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -8343,6 +8507,7 @@ internal class BetaResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -8563,6 +8728,20 @@ internal class BetaResponseStreamEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -8576,7 +8755,7 @@ internal class BetaResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -8630,6 +8809,7 @@ internal class BetaResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
