@@ -137,7 +137,21 @@ JAR files will be available in each module's `build/libs/` directory.
 
 ## Running tests
 
-Most tests require [our mock server](https://github.com/stoplightio/prism) to be running against the OpenAPI spec to work.
+The mock server uses [the OpenAI Steady fork](https://github.com/openai-oss-forks/steady).
+`scripts/steady/settings` pins its full Git commit and Deno 2.7.11 runtime
+checksums. `./scripts/steady/install` fetches that source, verifies the runtime,
+and caches dependencies using the fork's frozen Deno lockfile. It requires
+Git, Node.js, curl, unzip, and sha256sum or shasum. The installation supports
+macOS and Linux on x64/ARM64, and Windows x64 through Git Bash.
+
+`./scripts/run-steady` verifies the local source and runtime, then runs without
+downloading dependencies. Pass a local OpenAPI specification path. To update
+Steady, review the fork commit and change `STEADY_REVISION`; review the release
+checksums when changing Deno. Run `node scripts/steady/test.cjs` to check the
+installation, integrity checks, and mock-server lifecycle.
+
+
+Most tests require [our mock server](https://github.com/openai-oss-forks/steady) to be running against the OpenAPI spec to work.
 
 The test script will automatically start the mock server for you (if it's not already running) and run the tests against it:
 
