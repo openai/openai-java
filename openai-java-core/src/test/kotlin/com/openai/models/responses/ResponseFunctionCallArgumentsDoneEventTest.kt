@@ -15,16 +15,16 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
+                .name("name")
                 .build()
 
         assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
         assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseFunctionCallArgumentsDoneEvent.name()).isEqualTo("name")
         assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseFunctionCallArgumentsDoneEvent.name()).contains("name")
     }
 
     @Test
@@ -34,9 +34,9 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
+                .name("name")
                 .build()
 
         val roundtrippedResponseFunctionCallArgumentsDoneEvent =

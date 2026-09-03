@@ -26,7 +26,12 @@ internal class ResponseStreamEventValidationTest {
     @ParameterizedTest
     @EnumSource(StreamingCall::class)
     fun keepaliveDoesNotBreakValidatedStreams(streamingCall: StreamingCall) {
-        val result = consume(streamingCall, responseValidation = true, middleType = "keepalive")
+        val result =
+            consume(
+                streamingCall,
+                responseValidation = true,
+                middleEvent = """{"type":"keepalive","sequence_number":2}""",
+            )
 
         assertThat(result.error).isNull()
         assertThat(result.events.map(::eventType))
@@ -41,7 +46,12 @@ internal class ResponseStreamEventValidationTest {
     @ParameterizedTest
     @EnumSource(StreamingCall::class)
     fun otherUnknownEventsStillFailValidation(streamingCall: StreamingCall) {
-        val result = consume(streamingCall, responseValidation = true, middleType = "future.event")
+        val result =
+            consume(
+                streamingCall,
+                responseValidation = true,
+                middleEvent = """{"type":"future.event","sequence_number":2}""",
+            )
 
         assertThat(result.error)
             .isInstanceOf(OpenAIInvalidDataException::class.java)
@@ -57,7 +67,7 @@ internal class ResponseStreamEventValidationTest {
             consume(
                 StreamingCall.ASYNC_CREATE,
                 responseValidation = false,
-                middleType = "future.event",
+                middleEvent = """{"type":"future.event","sequence_number":2}""",
             )
 
         assertThat(result.error).isNull()
@@ -70,14 +80,41 @@ internal class ResponseStreamEventValidationTest {
         assertThat(result.outputTextDeltas()).containsExactly("before", "after")
     }
 
+    @ParameterizedTest
+    @EnumSource(StreamingCall::class)
+    fun functionCallArgumentsDoneWithoutNameKeepsValidatedStreamUsable(
+        streamingCall: StreamingCall
+    ) {
+        val result =
+            consume(
+                streamingCall,
+                responseValidation = true,
+                middleEvent =
+                    """{"type":"response.function_call_arguments.done","item_id":"item_function","output_index":0,"arguments":"{}","sequence_number":2}""",
+            )
+
+        assertThat(result.error).isNull()
+        assertThat(result.events.map(::eventType))
+            .containsExactly(
+                "response.output_text.delta",
+                "response.function_call_arguments.done",
+                "response.output_text.delta",
+            )
+        val event = result.events[1].asFunctionCallArgumentsDone()
+        assertThat(event.name()).isEmpty()
+        assertThat(event.arguments()).isEqualTo("{}")
+        assertThat(event.itemId()).isEqualTo("item_function")
+        assertThat(result.outputTextDeltas()).containsExactly("before", "after")
+    }
+
     private fun consume(
         streamingCall: StreamingCall,
         responseValidation: Boolean,
-        middleType: String,
+        middleEvent: String,
     ): ConsumeResult {
         val clientOptions =
             ClientOptions.builder()
-                .httpClient(FakeSseHttpClient(sseBody(middleType)))
+                .httpClient(FakeSseHttpClient(sseBody(middleEvent)))
                 .apiKey("test-api-key")
                 .responseValidation(responseValidation)
                 .streamHandlerExecutor(Executor(Runnable::run))
@@ -164,11 +201,11 @@ internal class ResponseStreamEventValidationTest {
         fun Throwable.unwrapCompletionException(): Throwable =
             if (this is CompletionException && cause != null) cause!! else this
 
-        fun sseBody(middleType: String): String =
+        fun sseBody(middleEvent: String): String =
             """
             data: {"type":"response.output_text.delta","content_index":0,"delta":"before","item_id":"item_1","logprobs":[],"output_index":0,"sequence_number":1}
 
-            data: {"type":"$middleType","sequence_number":2}
+            data: $middleEvent
 
             data: {"type":"response.output_text.delta","content_index":0,"delta":"after","item_id":"item_1","logprobs":[],"output_index":0,"sequence_number":3}
 

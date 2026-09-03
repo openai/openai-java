@@ -2831,7 +2831,6 @@ internal class BetaResponseStreamEventTest {
             BetaResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(
@@ -2839,6 +2838,7 @@ internal class BetaResponseStreamEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .name("name")
                 .build()
 
         val betaResponseStreamEvent =
@@ -2915,7 +2915,6 @@ internal class BetaResponseStreamEventTest {
                 BetaResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .agent(
@@ -2923,6 +2922,7 @@ internal class BetaResponseStreamEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .name("name")
                     .build()
             )
 
