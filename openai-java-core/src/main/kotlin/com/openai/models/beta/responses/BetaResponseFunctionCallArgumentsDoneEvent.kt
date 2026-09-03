@@ -23,11 +23,11 @@ class BetaResponseFunctionCallArgumentsDoneEvent
 private constructor(
     private val arguments: JsonField<String>,
     private val itemId: JsonField<String>,
-    private val name: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val agent: JsonField<Agent>,
+    private val name: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -35,7 +35,6 @@ private constructor(
     private constructor(
         @JsonProperty("arguments") @ExcludeMissing arguments: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
@@ -44,7 +43,8 @@ private constructor(
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
-    ) : this(arguments, itemId, name, outputIndex, sequenceNumber, type, agent, mutableMapOf())
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+    ) : this(arguments, itemId, outputIndex, sequenceNumber, type, agent, name, mutableMapOf())
 
     /**
      * The function-call arguments.
@@ -61,14 +61,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun itemId(): String = itemId.getRequired("item_id")
-
-    /**
-     * The name of the function that was called.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = name.getRequired("name")
 
     /**
      * The index of the output item.
@@ -106,6 +98,14 @@ private constructor(
     fun agent(): Optional<Agent> = agent.getOptional("agent")
 
     /**
+     * The name of the function that was called.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun name(): Optional<String> = name.getOptional("name")
+
+    /**
      * Returns the raw JSON value of [arguments].
      *
      * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected type.
@@ -118,13 +118,6 @@ private constructor(
      * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
-
-    /**
-     * Returns the raw JSON value of [name].
-     *
-     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
      * Returns the raw JSON value of [outputIndex].
@@ -149,6 +142,13 @@ private constructor(
      */
     @JsonProperty("agent") @ExcludeMissing fun _agent(): JsonField<Agent> = agent
 
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -171,7 +171,6 @@ private constructor(
          * ```java
          * .arguments()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -184,11 +183,11 @@ private constructor(
 
         private var arguments: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
-        private var name: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.function_call_arguments.done")
         private var agent: JsonField<Agent> = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -197,11 +196,11 @@ private constructor(
         ) = apply {
             arguments = betaResponseFunctionCallArgumentsDoneEvent.arguments
             itemId = betaResponseFunctionCallArgumentsDoneEvent.itemId
-            name = betaResponseFunctionCallArgumentsDoneEvent.name
             outputIndex = betaResponseFunctionCallArgumentsDoneEvent.outputIndex
             sequenceNumber = betaResponseFunctionCallArgumentsDoneEvent.sequenceNumber
             type = betaResponseFunctionCallArgumentsDoneEvent.type
             agent = betaResponseFunctionCallArgumentsDoneEvent.agent
+            name = betaResponseFunctionCallArgumentsDoneEvent.name
             additionalProperties =
                 betaResponseFunctionCallArgumentsDoneEvent.additionalProperties.toMutableMap()
         }
@@ -228,17 +227,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
-
-        /** The name of the function that was called. */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /**
-         * Sets [Builder.name] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** The index of the output item. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
@@ -294,6 +282,17 @@ private constructor(
          */
         fun agent(agent: JsonField<Agent>) = apply { this.agent = agent }
 
+        /** The name of the function that was called. */
+        fun name(name: String) = name(JsonField.of(name))
+
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -322,7 +321,6 @@ private constructor(
          * ```java
          * .arguments()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -333,11 +331,11 @@ private constructor(
             BetaResponseFunctionCallArgumentsDoneEvent(
                 checkRequired("arguments", arguments),
                 checkRequired("itemId", itemId),
-                checkRequired("name", name),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 agent,
+                name,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -359,7 +357,6 @@ private constructor(
 
         arguments()
         itemId()
-        name()
         outputIndex()
         sequenceNumber()
         _type().let {
@@ -368,6 +365,7 @@ private constructor(
             }
         }
         agent().ifPresent { it.validate() }
+        name()
         validated = true
     }
 
@@ -388,13 +386,13 @@ private constructor(
     internal fun validity(): Int =
         (if (arguments.asKnown().isPresent) 1 else 0) +
             (if (itemId.asKnown().isPresent) 1 else 0) +
-            (if (name.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
                 if (it == JsonValue.from("response.function_call_arguments.done")) 1 else 0
             } +
-            (agent.asKnown().getOrNull()?.validity() ?: 0)
+            (agent.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (name.asKnown().isPresent) 1 else 0)
 
     /** The agent that owns this multi-agent streaming event. */
     class Agent
@@ -572,11 +570,11 @@ private constructor(
         return other is BetaResponseFunctionCallArgumentsDoneEvent &&
             arguments == other.arguments &&
             itemId == other.itemId &&
-            name == other.name &&
             outputIndex == other.outputIndex &&
             sequenceNumber == other.sequenceNumber &&
             type == other.type &&
             agent == other.agent &&
+            name == other.name &&
             additionalProperties == other.additionalProperties
     }
 
@@ -584,11 +582,11 @@ private constructor(
         Objects.hash(
             arguments,
             itemId,
-            name,
             outputIndex,
             sequenceNumber,
             type,
             agent,
+            name,
             additionalProperties,
         )
     }
@@ -596,5 +594,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseFunctionCallArgumentsDoneEvent{arguments=$arguments, itemId=$itemId, name=$name, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
+        "BetaResponseFunctionCallArgumentsDoneEvent{arguments=$arguments, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, name=$name, additionalProperties=$additionalProperties}"
 }

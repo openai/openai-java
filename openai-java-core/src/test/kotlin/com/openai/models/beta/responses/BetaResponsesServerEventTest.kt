@@ -2826,7 +2826,6 @@ internal class BetaResponsesServerEventTest {
             BetaResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(
@@ -2834,6 +2833,7 @@ internal class BetaResponsesServerEventTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .name("name")
                 .build()
 
         val betaResponsesServerEvent =
@@ -2912,7 +2912,6 @@ internal class BetaResponsesServerEventTest {
                 BetaResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .agent(
@@ -2920,6 +2919,7 @@ internal class BetaResponsesServerEventTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .name("name")
                     .build()
             )
 

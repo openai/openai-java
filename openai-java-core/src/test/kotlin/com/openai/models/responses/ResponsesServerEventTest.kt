@@ -2594,9 +2594,9 @@ internal class ResponsesServerEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
+                .name("name")
                 .build()
 
         val responsesServerEvent =
@@ -2673,9 +2673,9 @@ internal class ResponsesServerEventTest {
                 ResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
+                    .name("name")
                     .build()
             )
 

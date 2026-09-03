@@ -2615,9 +2615,9 @@ internal class ResponseStreamEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
+                .name("name")
                 .build()
 
         val responseStreamEvent =
@@ -2692,9 +2692,9 @@ internal class ResponseStreamEventTest {
                 ResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
+                    .name("name")
                     .build()
             )
 
