@@ -224,6 +224,7 @@ internal class ResponseOutputItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -271,6 +272,7 @@ internal class ResponseOutputItemTest {
                     .callId("call_id")
                     .name("name")
                     .id("id")
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -920,6 +922,7 @@ internal class ResponseOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -984,6 +987,7 @@ internal class ResponseOutputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1022,6 +1026,7 @@ internal class ResponseOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1083,6 +1088,7 @@ internal class ResponseOutputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -2049,6 +2055,7 @@ internal class ResponseOutputItemTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()
@@ -2095,6 +2102,7 @@ internal class ResponseOutputItemTest {
                     .input("input")
                     .name("name")
                     .id("id")
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .build()

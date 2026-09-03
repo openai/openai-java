@@ -256,7 +256,7 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -1085,7 +1085,7 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -2317,7 +2317,9 @@ private constructor(
         ) : this(reason, mutableMapOf())
 
         /**
-         * The reason why the response is incomplete.
+         * The reason why the response is incomplete. `steered` means the response stopped at a safe
+         * output boundary after a WebSocket `response.steer` event. The server can then create a
+         * successor response automatically with the queued input.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2361,7 +2363,11 @@ private constructor(
                 additionalProperties = incompleteDetails.additionalProperties.toMutableMap()
             }
 
-            /** The reason why the response is incomplete. */
+            /**
+             * The reason why the response is incomplete. `steered` means the response stopped at a
+             * safe output boundary after a WebSocket `response.steer` event. The server can then
+             * create a successor response automatically with the queued input.
+             */
             fun reason(reason: Reason) = reason(JsonField.of(reason))
 
             /**
@@ -2437,7 +2443,11 @@ private constructor(
          */
         @JvmSynthetic internal fun validity(): Int = (reason.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** The reason why the response is incomplete. */
+        /**
+         * The reason why the response is incomplete. `steered` means the response stopped at a safe
+         * output boundary after a WebSocket `response.steer` event. The server can then create a
+         * successor response automatically with the queued input.
+         */
         class Reason @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -2458,6 +2468,8 @@ private constructor(
 
                 @JvmField val CONTENT_FILTER = of("content_filter")
 
+                @JvmField val STEERED = of("steered")
+
                 @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
             }
 
@@ -2466,6 +2478,7 @@ private constructor(
                 MAX_OUTPUT_TOKENS,
                 MAX_MESSAGES,
                 CONTENT_FILTER,
+                STEERED,
             }
 
             /**
@@ -2481,6 +2494,7 @@ private constructor(
                 MAX_OUTPUT_TOKENS,
                 MAX_MESSAGES,
                 CONTENT_FILTER,
+                STEERED,
                 /**
                  * An enum member indicating that [Reason] was instantiated with an unknown value.
                  */
@@ -2499,6 +2513,7 @@ private constructor(
                     MAX_OUTPUT_TOKENS -> Value.MAX_OUTPUT_TOKENS
                     MAX_MESSAGES -> Value.MAX_MESSAGES
                     CONTENT_FILTER -> Value.CONTENT_FILTER
+                    STEERED -> Value.STEERED
                     else -> Value._UNKNOWN
                 }
 
@@ -2516,6 +2531,7 @@ private constructor(
                     MAX_OUTPUT_TOKENS -> Known.MAX_OUTPUT_TOKENS
                     MAX_MESSAGES -> Known.MAX_MESSAGES
                     CONTENT_FILTER -> Known.CONTENT_FILTER
+                    STEERED -> Known.STEERED
                     else -> throw OpenAIInvalidDataException("Unknown Reason: $value")
                 }
 
@@ -2953,7 +2969,7 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -2971,6 +2987,8 @@ private constructor(
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
+
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
@@ -3183,6 +3201,7 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -3297,6 +3316,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -3412,6 +3432,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -3528,6 +3549,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA

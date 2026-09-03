@@ -52,7 +52,7 @@ private constructor(
     fun betas(): Optional<List<Beta>> = Optional.ofNullable(betas)
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -270,7 +270,7 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -676,7 +676,7 @@ private constructor(
         )
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -898,7 +898,7 @@ private constructor(
             }
 
             /**
-             * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -1249,7 +1249,7 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -1267,6 +1267,8 @@ private constructor(
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
+
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
@@ -1479,6 +1481,7 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1593,6 +1596,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1708,6 +1712,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -1824,6 +1829,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA

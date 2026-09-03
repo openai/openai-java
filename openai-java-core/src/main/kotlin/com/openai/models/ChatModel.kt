@@ -20,6 +20,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     companion object {
 
+        @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
+
         @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
         @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -193,6 +195,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
+        GPT_6_ASTRA,
         GPT_5_6_SOL,
         GPT_5_6_TERRA,
         GPT_5_6_LUNA,
@@ -288,6 +291,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        GPT_6_ASTRA,
         GPT_5_6_SOL,
         GPT_5_6_TERRA,
         GPT_5_6_LUNA,
@@ -384,6 +388,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun value(): Value =
         when (this) {
+            GPT_6_ASTRA -> Value.GPT_6_ASTRA
             GPT_5_6_SOL -> Value.GPT_5_6_SOL
             GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
             GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -480,6 +485,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun known(): Known =
         when (this) {
+            GPT_6_ASTRA -> Known.GPT_6_ASTRA
             GPT_5_6_SOL -> Known.GPT_5_6_SOL
             GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
             GPT_5_6_LUNA -> Known.GPT_5_6_LUNA

@@ -37,6 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 class BetaResponsesClientEvent
 private constructor(
     private val responseCreate: ResponseCreate? = null,
+    private val responseSteer: BetaResponseSteerEvent? = null,
     private val responseInject: BetaResponseInjectEvent? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -54,6 +55,35 @@ private constructor(
     fun responseCreate(): Optional<ResponseCreate> = Optional.ofNullable(responseCreate)
 
     /**
+     * Queues user input to steer a response on this WebSocket connection. Input can contain text,
+     * images, and files. Steering is supported only for single-agent responses on models and
+     * execution modes that support steering. Responses bound to a conversation or using automatic
+     * compaction do not support steering.
+     *
+     * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+     * that it has been applied. The successor's `response.created` event is the commit point. Input
+     * that cannot be committed is returned in `response.steer.failed`.
+     *
+     * Steering may cause the active response to finish at a safe output boundary with
+     * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+     * automatically by a successor `response.created`. Normal completion can also be followed by an
+     * automatic successor. Automatic successors inherit the previous response's settings and
+     * continue from it with the queued input.
+     *
+     * If the response stops for client-owned tool output or approval, accepted steering input
+     * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill the
+     * `required_input` stubs from that event with saved tool results or approval decisions, and
+     * send one explicit `response.create` per parent with the same `previous_response_id` and
+     * WebSocket lane. Do not rerun tools or resend accepted steering input. The queued input is
+     * prepended in submission order to that request's input, and the explicit request retains its
+     * own settings.
+     *
+     * This event accepts only `type`, `previous_response_id`, and `input`. Do not send `stream_id`;
+     * the target response determines the WebSocket lane.
+     */
+    fun responseSteer(): Optional<BetaResponseSteerEvent> = Optional.ofNullable(responseSteer)
+
+    /**
      * Injects input items into an active response over a WebSocket connection. The items are
      * validated and committed atomically. Currently, the server accepts client-owned tool outputs
      * that resume a waiting agent.
@@ -61,6 +91,8 @@ private constructor(
     fun responseInject(): Optional<BetaResponseInjectEvent> = Optional.ofNullable(responseInject)
 
     fun isResponseCreate(): Boolean = responseCreate != null
+
+    fun isResponseSteer(): Boolean = responseSteer != null
 
     fun isResponseInject(): Boolean = responseInject != null
 
@@ -75,6 +107,35 @@ private constructor(
      * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
      */
     fun asResponseCreate(): ResponseCreate = responseCreate.getOrThrow("responseCreate")
+
+    /**
+     * Queues user input to steer a response on this WebSocket connection. Input can contain text,
+     * images, and files. Steering is supported only for single-agent responses on models and
+     * execution modes that support steering. Responses bound to a conversation or using automatic
+     * compaction do not support steering.
+     *
+     * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+     * that it has been applied. The successor's `response.created` event is the commit point. Input
+     * that cannot be committed is returned in `response.steer.failed`.
+     *
+     * Steering may cause the active response to finish at a safe output boundary with
+     * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+     * automatically by a successor `response.created`. Normal completion can also be followed by an
+     * automatic successor. Automatic successors inherit the previous response's settings and
+     * continue from it with the queued input.
+     *
+     * If the response stops for client-owned tool output or approval, accepted steering input
+     * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill the
+     * `required_input` stubs from that event with saved tool results or approval decisions, and
+     * send one explicit `response.create` per parent with the same `previous_response_id` and
+     * WebSocket lane. Do not rerun tools or resend accepted steering input. The queued input is
+     * prepended in submission order to that request's input, and the explicit request retains its
+     * own settings.
+     *
+     * This event accepts only `type`, `previous_response_id`, and `input`. Do not send `stream_id`;
+     * the target response determines the WebSocket lane.
+     */
+    fun asResponseSteer(): BetaResponseSteerEvent = responseSteer.getOrThrow("responseSteer")
 
     /**
      * Injects input items into an active response over a WebSocket connection. The items are
@@ -117,6 +178,7 @@ private constructor(
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             responseCreate != null -> visitor.visitResponseCreate(responseCreate)
+            responseSteer != null -> visitor.visitResponseSteer(responseSteer)
             responseInject != null -> visitor.visitResponseInject(responseInject)
             else -> visitor.unknown(_json)
         }
@@ -140,6 +202,10 @@ private constructor(
             object : Visitor<Unit> {
                 override fun visitResponseCreate(responseCreate: ResponseCreate) {
                     responseCreate.validate()
+                }
+
+                override fun visitResponseSteer(responseSteer: BetaResponseSteerEvent) {
+                    responseSteer.validate()
                 }
 
                 override fun visitResponseInject(responseInject: BetaResponseInjectEvent) {
@@ -170,6 +236,9 @@ private constructor(
                 override fun visitResponseCreate(responseCreate: ResponseCreate) =
                     responseCreate.validity()
 
+                override fun visitResponseSteer(responseSteer: BetaResponseSteerEvent) =
+                    responseSteer.validity()
+
                 override fun visitResponseInject(responseInject: BetaResponseInjectEvent) =
                     responseInject.validity()
 
@@ -184,14 +253,16 @@ private constructor(
 
         return other is BetaResponsesClientEvent &&
             responseCreate == other.responseCreate &&
+            responseSteer == other.responseSteer &&
             responseInject == other.responseInject
     }
 
-    override fun hashCode(): Int = Objects.hash(responseCreate, responseInject)
+    override fun hashCode(): Int = Objects.hash(responseCreate, responseSteer, responseInject)
 
     override fun toString(): String =
         when {
             responseCreate != null -> "BetaResponsesClientEvent{responseCreate=$responseCreate}"
+            responseSteer != null -> "BetaResponsesClientEvent{responseSteer=$responseSteer}"
             responseInject != null -> "BetaResponsesClientEvent{responseInject=$responseInject}"
             _json != null -> "BetaResponsesClientEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid BetaResponsesClientEvent")
@@ -212,6 +283,37 @@ private constructor(
         @JvmStatic
         fun ofResponseCreate(responseCreate: ResponseCreate) =
             BetaResponsesClientEvent(responseCreate = responseCreate)
+
+        /**
+         * Queues user input to steer a response on this WebSocket connection. Input can contain
+         * text, images, and files. Steering is supported only for single-agent responses on models
+         * and execution modes that support steering. Responses bound to a conversation or using
+         * automatic compaction do not support steering.
+         *
+         * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+         * that it has been applied. The successor's `response.created` event is the commit point.
+         * Input that cannot be committed is returned in `response.steer.failed`.
+         *
+         * Steering may cause the active response to finish at a safe output boundary with
+         * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+         * automatically by a successor `response.created`. Normal completion can also be followed
+         * by an automatic successor. Automatic successors inherit the previous response's settings
+         * and continue from it with the queued input.
+         *
+         * If the response stops for client-owned tool output or approval, accepted steering input
+         * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill
+         * the `required_input` stubs from that event with saved tool results or approval decisions,
+         * and send one explicit `response.create` per parent with the same `previous_response_id`
+         * and WebSocket lane. Do not rerun tools or resend accepted steering input. The queued
+         * input is prepended in submission order to that request's input, and the explicit request
+         * retains its own settings.
+         *
+         * This event accepts only `type`, `previous_response_id`, and `input`. Do not send
+         * `stream_id`; the target response determines the WebSocket lane.
+         */
+        @JvmStatic
+        fun ofResponseSteer(responseSteer: BetaResponseSteerEvent) =
+            BetaResponsesClientEvent(responseSteer = responseSteer)
 
         /**
          * Injects input items into an active response over a WebSocket connection. The items are
@@ -240,6 +342,35 @@ private constructor(
          * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
          */
         fun visitResponseCreate(responseCreate: ResponseCreate): T
+
+        /**
+         * Queues user input to steer a response on this WebSocket connection. Input can contain
+         * text, images, and files. Steering is supported only for single-agent responses on models
+         * and execution modes that support steering. Responses bound to a conversation or using
+         * automatic compaction do not support steering.
+         *
+         * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+         * that it has been applied. The successor's `response.created` event is the commit point.
+         * Input that cannot be committed is returned in `response.steer.failed`.
+         *
+         * Steering may cause the active response to finish at a safe output boundary with
+         * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+         * automatically by a successor `response.created`. Normal completion can also be followed
+         * by an automatic successor. Automatic successors inherit the previous response's settings
+         * and continue from it with the queued input.
+         *
+         * If the response stops for client-owned tool output or approval, accepted steering input
+         * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill
+         * the `required_input` stubs from that event with saved tool results or approval decisions,
+         * and send one explicit `response.create` per parent with the same `previous_response_id`
+         * and WebSocket lane. Do not rerun tools or resend accepted steering input. The queued
+         * input is prepended in submission order to that request's input, and the explicit request
+         * retains its own settings.
+         *
+         * This event accepts only `type`, `previous_response_id`, and `input`. Do not send
+         * `stream_id`; the target response determines the WebSocket lane.
+         */
+        fun visitResponseSteer(responseSteer: BetaResponseSteerEvent): T
 
         /**
          * Injects input items into an active response over a WebSocket connection. The items are
@@ -276,6 +407,11 @@ private constructor(
                         BetaResponsesClientEvent(responseCreate = it, _json = json)
                     } ?: BetaResponsesClientEvent(_json = json)
                 }
+                "response.steer" -> {
+                    return tryDeserialize(node, jacksonTypeRef<BetaResponseSteerEvent>())?.let {
+                        BetaResponsesClientEvent(responseSteer = it, _json = json)
+                    } ?: BetaResponsesClientEvent(_json = json)
+                }
                 "response.inject" -> {
                     return tryDeserialize(node, jacksonTypeRef<BetaResponseInjectEvent>())?.let {
                         BetaResponsesClientEvent(responseInject = it, _json = json)
@@ -297,6 +433,7 @@ private constructor(
         ) {
             when {
                 value.responseCreate != null -> generator.writeObject(value.responseCreate)
+                value.responseSteer != null -> generator.writeObject(value.responseSteer)
                 value.responseInject != null -> generator.writeObject(value.responseInject)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid BetaResponsesClientEvent")
@@ -606,7 +743,7 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -1581,7 +1718,7 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -3382,7 +3519,7 @@ private constructor(
         }
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -3400,6 +3537,8 @@ private constructor(
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
+
+                @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
                 @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
@@ -3620,6 +3759,7 @@ private constructor(
 
             /** An enum containing [Model]'s known values. */
             enum class Known {
+                GPT_6_ASTRA,
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
@@ -3734,6 +3874,7 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
+                GPT_6_ASTRA,
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
@@ -3851,6 +3992,7 @@ private constructor(
              */
             fun value(): Value =
                 when (this) {
+                    GPT_6_ASTRA -> Value.GPT_6_ASTRA
                     GPT_5_6_SOL -> Value.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -3969,6 +4111,7 @@ private constructor(
              */
             fun known(): Known =
                 when (this) {
+                    GPT_6_ASTRA -> Known.GPT_6_ASTRA
                     GPT_5_6_SOL -> Known.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
