@@ -398,6 +398,13 @@ private constructor(
         fun addAdditionalToolsInput(tools: List<BetaTool>) =
             addInput(BetaResponseInputItem.AdditionalTools.builder().tools(tools).build())
 
+        /**
+         * Alias for calling [addInput] with
+         * `BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addInput(configurationUpdate: BetaResponseConfigurationUpdateItemParam) =
+            addInput(BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate))
+
         /** Alias for calling [addInput] with `BetaResponseInputItem.ofReasoning(reasoning)`. */
         fun addInput(reasoning: BetaResponseReasoningItem) =
             addInput(BetaResponseInputItem.ofReasoning(reasoning))

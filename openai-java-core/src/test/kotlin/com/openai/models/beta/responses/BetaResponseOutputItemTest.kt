@@ -243,6 +243,7 @@ internal class BetaResponseOutputItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -296,6 +297,7 @@ internal class BetaResponseOutputItemTest {
                     .agent(
                         BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -1323,6 +1325,7 @@ internal class BetaResponseOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1393,6 +1396,7 @@ internal class BetaResponseOutputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1436,6 +1440,7 @@ internal class BetaResponseOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1505,6 +1510,7 @@ internal class BetaResponseOutputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -2644,6 +2650,7 @@ internal class BetaResponseOutputItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()
@@ -2696,6 +2703,7 @@ internal class BetaResponseOutputItemTest {
                     .agent(
                         BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .build()

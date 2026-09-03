@@ -84,6 +84,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -235,6 +238,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -336,6 +342,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -439,6 +448,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -546,6 +558,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -656,6 +671,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -765,6 +783,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -873,6 +894,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -981,6 +1005,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1023,6 +1050,20 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -1036,7 +1077,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -1089,6 +1130,7 @@ internal class BetaResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -1294,6 +1336,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1312,6 +1357,20 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -1325,7 +1384,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -1379,6 +1438,7 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -1644,6 +1704,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1802,6 +1865,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -1871,6 +1937,20 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -1884,7 +1964,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -1937,6 +2017,7 @@ internal class BetaResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -2141,6 +2222,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2159,6 +2243,20 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -2172,7 +2270,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -2226,6 +2324,7 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -2464,6 +2563,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2572,6 +2674,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2680,6 +2785,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2789,6 +2897,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -2900,6 +3011,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3009,6 +3123,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3118,6 +3235,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3227,6 +3347,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3343,6 +3466,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3467,6 +3593,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3518,6 +3647,20 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -3531,7 +3674,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -3584,6 +3727,7 @@ internal class BetaResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -3789,6 +3933,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -3807,6 +3954,20 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -3820,7 +3981,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -3874,6 +4035,7 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4048,6 +4210,20 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -4061,7 +4237,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -4114,6 +4290,7 @@ internal class BetaResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -4318,6 +4495,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4336,6 +4516,20 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -4349,7 +4543,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -4403,6 +4597,7 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4575,6 +4770,20 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -4588,7 +4797,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -4641,6 +4850,7 @@ internal class BetaResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -4846,6 +5056,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -4864,6 +5077,20 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -4877,7 +5104,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -4931,6 +5158,7 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -5204,6 +5432,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5382,6 +5613,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5531,6 +5765,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5648,6 +5885,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5765,6 +6005,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5877,6 +6120,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -5987,6 +6233,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6097,6 +6346,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6204,6 +6456,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6309,6 +6564,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6425,6 +6683,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6553,6 +6814,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6673,6 +6937,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6781,6 +7048,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6889,6 +7159,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -6997,6 +7270,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7105,6 +7381,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7213,6 +7492,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7327,6 +7609,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7440,6 +7725,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7548,6 +7836,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7655,6 +7946,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7758,6 +8052,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7864,6 +8161,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -7970,6 +8270,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8076,6 +8379,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8184,6 +8490,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8301,6 +8610,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8352,6 +8664,20 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -8365,7 +8691,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_6_SOL)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -8418,6 +8744,7 @@ internal class BetaResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -8622,6 +8949,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -8640,6 +8970,20 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseError.builder()
                                     .code(BetaResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        BetaResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                BetaResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                BetaResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -8653,7 +8997,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_5_6_SOL)
+                            .model(BetaResponse.Model.GPT_6_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -8707,6 +9051,7 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -8946,6 +9291,9 @@ internal class BetaResponsesServerEventTest {
             .contains(responseCustomToolCallInputDelta)
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -9056,6 +9404,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone())
             .contains(responseCustomToolCallInputDone)
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -9100,6 +9451,24 @@ internal class BetaResponsesServerEventTest {
                         .headers(
                             BetaResponsesServerEvent.BetaResponseWsError.Error.Headers.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .misalignment(
+                            BetaResponsesServerEvent.BetaResponseWsError.Error.Misalignment
+                                .builder()
+                                .detailedExplanation("detailed_explanation")
+                                .errorType(
+                                    BetaResponsesServerEvent.BetaResponseWsError.Error.Misalignment
+                                        .ErrorType
+                                        .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                )
+                                .steer(
+                                    BetaResponsesServerEvent.BetaResponseWsError.Error.Misalignment
+                                        .Steer
+                                        .builder()
+                                        .message("message")
+                                        .build()
+                                )
                                 .build()
                         )
                         .build()
@@ -9174,6 +9543,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).contains(error)
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -9193,6 +9565,26 @@ internal class BetaResponsesServerEventTest {
                             .headers(
                                 BetaResponsesServerEvent.BetaResponseWsError.Error.Headers.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .misalignment(
+                                BetaResponsesServerEvent.BetaResponseWsError.Error.Misalignment
+                                    .builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        BetaResponsesServerEvent.BetaResponseWsError.Error
+                                            .Misalignment
+                                            .ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        BetaResponsesServerEvent.BetaResponseWsError.Error
+                                            .Misalignment
+                                            .Steer
+                                            .builder()
+                                            .message("message")
+                                            .build()
+                                    )
                                     .build()
                             )
                             .build()
@@ -9234,6 +9626,26 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
+                            .misalignment(
+                                BetaResponsesServerEvent.BetaResponseWsError.Error.Misalignment
+                                    .builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        BetaResponsesServerEvent.BetaResponseWsError.Error
+                                            .Misalignment
+                                            .ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        BetaResponsesServerEvent.BetaResponseWsError.Error
+                                            .Misalignment
+                                            .Steer
+                                            .builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .agent(
@@ -9267,6 +9679,546 @@ internal class BetaResponsesServerEventTest {
                 )
             for (event in listOf(deserialized, wrapped)) {
                 assertThat(event.isError()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ofResponseSteerAccepted() {
+        val responseSteerAccepted =
+            BetaResponseSteerAcceptedEvent.builder()
+                .sequenceNumber(0L)
+                .steer(
+                    BetaResponseSteerAcceptedEvent.Steer.builder()
+                        .id("id")
+                        .previousResponseId("previous_response_id")
+                        .build()
+                )
+                .streamId("stream_id")
+                .build()
+
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseSteerAccepted(responseSteerAccepted)
+
+        assertThat(betaResponsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).contains(responseSteerAccepted)
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseSteerAcceptedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseSteerAccepted(
+                BetaResponseSteerAcceptedEvent.builder()
+                    .sequenceNumber(0L)
+                    .steer(
+                        BetaResponseSteerAcceptedEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedBetaResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponsesServerEvent),
+                jacksonTypeRef<BetaResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponsesServerEvent).isEqualTo(betaResponsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseSteerAcceptedStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            BetaResponsesServerEvent.ofResponseSteerAccepted(
+                BetaResponseSteerAcceptedEvent.builder()
+                    .sequenceNumber(0L)
+                    .steer(
+                        BetaResponseSteerAcceptedEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<BetaResponsesServerEvent>())
+            val wrapped =
+                BetaResponsesServerEvent.ofResponseSteerAccepted(
+                    mapper.readValue(json, original.asResponseSteerAccepted().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseSteerAccepted()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ofResponseSteerPending() {
+        val responseSteerPending =
+            BetaResponseSteerPendingEvent.builder()
+                .reason(BetaResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+                .addRequiredInput(
+                    BetaResponseSteerRequiredInput.FunctionCallOutput.builder()
+                        .callId("call_id")
+                        .name("name")
+                        .build()
+                )
+                .sequenceNumber(0L)
+                .steer(
+                    BetaResponseSteerPendingEvent.Steer.builder()
+                        .id("id")
+                        .previousResponseId("previous_response_id")
+                        .build()
+                )
+                .streamId("stream_id")
+                .build()
+
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseSteerPending(responseSteerPending)
+
+        assertThat(betaResponsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).contains(responseSteerPending)
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseSteerPendingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseSteerPending(
+                BetaResponseSteerPendingEvent.builder()
+                    .reason(BetaResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+                    .addRequiredInput(
+                        BetaResponseSteerRequiredInput.FunctionCallOutput.builder()
+                            .callId("call_id")
+                            .name("name")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        BetaResponseSteerPendingEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedBetaResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponsesServerEvent),
+                jacksonTypeRef<BetaResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponsesServerEvent).isEqualTo(betaResponsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseSteerPendingStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            BetaResponsesServerEvent.ofResponseSteerPending(
+                BetaResponseSteerPendingEvent.builder()
+                    .reason(BetaResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+                    .addRequiredInput(
+                        BetaResponseSteerRequiredInput.FunctionCallOutput.builder()
+                            .callId("call_id")
+                            .name("name")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        BetaResponseSteerPendingEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<BetaResponsesServerEvent>())
+            val wrapped =
+                BetaResponsesServerEvent.ofResponseSteerPending(
+                    mapper.readValue(json, original.asResponseSteerPending().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseSteerPending()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ofResponseSteerFailed() {
+        val responseSteerFailed =
+            BetaResponseSteerFailedEvent.builder()
+                .error(
+                    BetaResponseSteerFailedEvent.Error.builder()
+                        .code(BetaResponseSteerErrorCode.RESPONSE_NOT_FOUND)
+                        .message("message")
+                        .build()
+                )
+                .sequenceNumber(0L)
+                .steer(
+                    BetaResponseSteerFailedEvent.Steer.builder()
+                        .input("string")
+                        .previousResponseId("previous_response_id")
+                        .id("id")
+                        .build()
+                )
+                .streamId("stream_id")
+                .build()
+
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseSteerFailed(responseSteerFailed)
+
+        assertThat(betaResponsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponsesServerEvent.responseQueued()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).contains(responseSteerFailed)
+        assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
+        assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseSteerFailedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponsesServerEvent =
+            BetaResponsesServerEvent.ofResponseSteerFailed(
+                BetaResponseSteerFailedEvent.builder()
+                    .error(
+                        BetaResponseSteerFailedEvent.Error.builder()
+                            .code(BetaResponseSteerErrorCode.RESPONSE_NOT_FOUND)
+                            .message("message")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        BetaResponseSteerFailedEvent.Steer.builder()
+                            .input("string")
+                            .previousResponseId("previous_response_id")
+                            .id("id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedBetaResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponsesServerEvent),
+                jacksonTypeRef<BetaResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponsesServerEvent).isEqualTo(betaResponsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseSteerFailedStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            BetaResponsesServerEvent.ofResponseSteerFailed(
+                BetaResponseSteerFailedEvent.builder()
+                    .error(
+                        BetaResponseSteerFailedEvent.Error.builder()
+                            .code(BetaResponseSteerErrorCode.RESPONSE_NOT_FOUND)
+                            .message("message")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        BetaResponseSteerFailedEvent.Steer.builder()
+                            .input("string")
+                            .previousResponseId("previous_response_id")
+                            .id("id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<BetaResponsesServerEvent>())
+            val wrapped =
+                BetaResponsesServerEvent.ofResponseSteerFailed(
+                    mapper.readValue(json, original.asResponseSteerFailed().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseSteerFailed()).isTrue()
                 assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
                 when (value) {
                     null,
@@ -9358,6 +10310,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).contains(responseInjectCreated)
         assertThat(betaResponsesServerEvent.responseInjectFailed()).isEmpty
     }
@@ -9520,6 +10475,9 @@ internal class BetaResponsesServerEventTest {
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(betaResponsesServerEvent.responseCustomToolCallInputDone()).isEmpty
         assertThat(betaResponsesServerEvent.error()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(betaResponsesServerEvent.responseSteerFailed()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectCreated()).isEmpty
         assertThat(betaResponsesServerEvent.responseInjectFailed()).contains(responseInjectFailed)
     }

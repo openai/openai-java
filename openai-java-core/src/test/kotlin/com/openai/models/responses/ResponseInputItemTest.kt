@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.ReasoningEffort
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -38,6 +39,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -113,6 +115,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -213,6 +216,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -318,6 +322,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -421,6 +426,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -524,6 +530,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -613,6 +620,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -674,6 +682,7 @@ internal class ResponseInputItemTest {
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -693,6 +702,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -725,6 +735,7 @@ internal class ResponseInputItemTest {
                     .callId("call_id")
                     .name("name")
                     .id("id")
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -767,6 +778,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -839,6 +851,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).contains(toolSearchCall)
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -898,6 +911,7 @@ internal class ResponseInputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -927,6 +941,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).contains(toolSearchOutput)
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -965,6 +980,7 @@ internal class ResponseInputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1004,6 +1020,7 @@ internal class ResponseInputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1030,6 +1047,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).contains(additionalTools)
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1068,6 +1086,7 @@ internal class ResponseInputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1078,6 +1097,79 @@ internal class ResponseInputItemTest {
                             .build()
                     )
                     .id("at_123")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofConfigurationUpdate() {
+        val configurationUpdate =
+            ResponseConfigurationUpdateItemParam.builder()
+                .id("cnfu_123")
+                .reasoning(
+                    ResponseConfigurationUpdateItemParam.Reasoning.builder()
+                        .effort(ReasoningEffort.NONE)
+                        .build()
+                )
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofConfigurationUpdate(configurationUpdate)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.toolSearchCall()).isEmpty
+        assertThat(responseInputItem.toolSearchOutput()).isEmpty
+        assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).contains(configurationUpdate)
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.compaction()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.shellCall()).isEmpty
+        assertThat(responseInputItem.shellCallOutput()).isEmpty
+        assertThat(responseInputItem.applyPatchCall()).isEmpty
+        assertThat(responseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.customToolCallOutput()).isEmpty
+        assertThat(responseInputItem.customToolCall()).isEmpty
+        assertThat(responseInputItem.compactionTrigger()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+        assertThat(responseInputItem.program()).isEmpty
+        assertThat(responseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofConfigurationUpdateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofConfigurationUpdate(
+                ResponseConfigurationUpdateItemParam.builder()
+                    .id("cnfu_123")
+                    .reasoning(
+                        ResponseConfigurationUpdateItemParam.Reasoning.builder()
+                            .effort(ReasoningEffort.NONE)
+                            .build()
+                    )
                     .build()
             )
 
@@ -1115,6 +1207,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).contains(reasoning)
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1182,6 +1275,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).contains(compaction)
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1247,6 +1341,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).contains(imageGenerationCall)
@@ -1315,6 +1410,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1396,6 +1492,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1475,6 +1572,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1560,6 +1658,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1654,6 +1753,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1736,6 +1836,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1811,6 +1912,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1887,6 +1989,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -1962,6 +2065,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2030,6 +2134,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2104,6 +2209,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2181,6 +2287,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2233,6 +2340,7 @@ internal class ResponseInputItemTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()
@@ -2251,6 +2359,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2283,6 +2392,7 @@ internal class ResponseInputItemTest {
                     .input("input")
                     .name("name")
                     .id("id")
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .build()
@@ -2313,6 +2423,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2372,6 +2483,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2438,6 +2550,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty
@@ -2506,6 +2619,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.toolSearchCall()).isEmpty
         assertThat(responseInputItem.toolSearchOutput()).isEmpty
         assertThat(responseInputItem.additionalTools()).isEmpty
+        assertThat(responseInputItem.configurationUpdate()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.compaction()).isEmpty
         assertThat(responseInputItem.imageGenerationCall()).isEmpty

@@ -28,6 +28,7 @@ private constructor(
     private val type: JsonValue,
     private val id: JsonField<String>,
     private val agent: JsonField<BetaResponseCustomToolCall.Agent>,
+    private val async: JsonField<Boolean>,
     private val caller: JsonField<BetaResponseCustomToolCall.Caller>,
     private val namespace: JsonField<String>,
     private val status: JsonField<Status>,
@@ -45,6 +46,7 @@ private constructor(
         @JsonProperty("agent")
         @ExcludeMissing
         agent: JsonField<BetaResponseCustomToolCall.Agent> = JsonMissing.of(),
+        @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("caller")
         @ExcludeMissing
         caller: JsonField<BetaResponseCustomToolCall.Caller> = JsonMissing.of(),
@@ -58,6 +60,7 @@ private constructor(
         type,
         id,
         agent,
+        async,
         caller,
         namespace,
         status,
@@ -73,6 +76,7 @@ private constructor(
             .type(type)
             .id(id)
             .agent(agent)
+            .async(async)
             .caller(caller)
             .namespace(namespace)
             .build()
@@ -129,6 +133,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun agent(): Optional<BetaResponseCustomToolCall.Agent> = agent.getOptional("agent")
+
+    /**
+     * Whether the custom tool call runs asynchronously.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun async(): Optional<Boolean> = async.getOptional("async")
 
     /**
      * The execution context that produced this tool call.
@@ -201,6 +213,13 @@ private constructor(
     fun _agent(): JsonField<BetaResponseCustomToolCall.Agent> = agent
 
     /**
+     * Returns the raw JSON value of [async].
+     *
+     * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
+    /**
      * Returns the raw JSON value of [caller].
      *
      * Unlike [caller], this method doesn't throw if the JSON field has an unexpected type.
@@ -268,6 +287,7 @@ private constructor(
         private var type: JsonValue = JsonValue.from("custom_tool_call")
         private var id: JsonField<String> = JsonMissing.of()
         private var agent: JsonField<BetaResponseCustomToolCall.Agent> = JsonMissing.of()
+        private var async: JsonField<Boolean> = JsonMissing.of()
         private var caller: JsonField<BetaResponseCustomToolCall.Caller> = JsonMissing.of()
         private var namespace: JsonField<String> = JsonMissing.of()
         private var status: JsonField<Status>? = null
@@ -282,6 +302,7 @@ private constructor(
             type = betaResponseCustomToolCallItem.type
             id = betaResponseCustomToolCallItem.id
             agent = betaResponseCustomToolCallItem.agent
+            async = betaResponseCustomToolCallItem.async
             caller = betaResponseCustomToolCallItem.caller
             namespace = betaResponseCustomToolCallItem.namespace
             status = betaResponseCustomToolCallItem.status
@@ -362,6 +383,17 @@ private constructor(
          * the field to an undocumented or not yet supported value.
          */
         fun agent(agent: JsonField<BetaResponseCustomToolCall.Agent>) = apply { this.agent = agent }
+
+        /** Whether the custom tool call runs asynchronously. */
+        fun async(async: Boolean) = async(JsonField.of(async))
+
+        /**
+         * Sets [Builder.async] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.async] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun async(async: JsonField<Boolean>) = apply { this.async = async }
 
         /** The execution context that produced this tool call. */
         fun caller(caller: BetaResponseCustomToolCall.Caller?) =
@@ -481,6 +513,7 @@ private constructor(
                 type,
                 id,
                 agent,
+                async,
                 caller,
                 namespace,
                 checkRequired("status", status),
@@ -514,6 +547,7 @@ private constructor(
         }
         id()
         agent().ifPresent { it.validate() }
+        async()
         caller().ifPresent { it.validate() }
         namespace()
         status().validate()
@@ -542,6 +576,7 @@ private constructor(
             type.let { if (it == JsonValue.from("custom_tool_call")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
             (agent.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (async.asKnown().isPresent) 1 else 0) +
             (caller.asKnown().getOrNull()?.validity() ?: 0) +
             (if (namespace.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
@@ -703,6 +738,7 @@ private constructor(
             type == other.type &&
             id == other.id &&
             agent == other.agent &&
+            async == other.async &&
             caller == other.caller &&
             namespace == other.namespace &&
             status == other.status &&
@@ -718,6 +754,7 @@ private constructor(
             type,
             id,
             agent,
+            async,
             caller,
             namespace,
             status,
@@ -729,5 +766,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseCustomToolCallItem{callId=$callId, input=$input, name=$name, type=$type, id=$id, agent=$agent, caller=$caller, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
+        "BetaResponseCustomToolCallItem{callId=$callId, input=$input, name=$name, type=$type, id=$id, agent=$agent, async=$async, caller=$caller, namespace=$namespace, status=$status, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }

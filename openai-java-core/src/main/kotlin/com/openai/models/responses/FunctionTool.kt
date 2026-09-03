@@ -32,6 +32,7 @@ private constructor(
     private val strict: JsonField<Boolean>,
     private val type: JsonValue,
     private val allowedCallers: JsonField<List<AllowedCaller>>,
+    private val async: JsonField<Boolean>,
     private val deferLoading: JsonField<Boolean>,
     private val description: JsonField<String>,
     private val outputSchema: JsonField<OutputSchema>,
@@ -49,6 +50,7 @@ private constructor(
         @JsonProperty("allowed_callers")
         @ExcludeMissing
         allowedCallers: JsonField<List<AllowedCaller>> = JsonMissing.of(),
+        @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("defer_loading")
         @ExcludeMissing
         deferLoading: JsonField<Boolean> = JsonMissing.of(),
@@ -64,6 +66,7 @@ private constructor(
         strict,
         type,
         allowedCallers,
+        async,
         deferLoading,
         description,
         outputSchema,
@@ -115,6 +118,12 @@ private constructor(
      */
     fun allowedCallers(): Optional<List<AllowedCaller>> =
         allowedCallers.getOptional("allowed_callers")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun async(): Optional<Boolean> = async.getOptional("async")
 
     /**
      * Whether this function is deferred and loaded via tool search.
@@ -172,6 +181,13 @@ private constructor(
     @JsonProperty("allowed_callers")
     @ExcludeMissing
     fun _allowedCallers(): JsonField<List<AllowedCaller>> = allowedCallers
+
+    /**
+     * Returns the raw JSON value of [async].
+     *
+     * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
 
     /**
      * Returns the raw JSON value of [deferLoading].
@@ -233,6 +249,7 @@ private constructor(
         private var strict: JsonField<Boolean>? = null
         private var type: JsonValue = JsonValue.from("function")
         private var allowedCallers: JsonField<MutableList<AllowedCaller>>? = null
+        private var async: JsonField<Boolean> = JsonMissing.of()
         private var deferLoading: JsonField<Boolean> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
         private var outputSchema: JsonField<OutputSchema> = JsonMissing.of()
@@ -245,6 +262,7 @@ private constructor(
             strict = functionTool.strict
             type = functionTool.type
             allowedCallers = functionTool.allowedCallers.map { it.toMutableList() }
+            async = functionTool.async
             deferLoading = functionTool.deferLoading
             description = functionTool.description
             outputSchema = functionTool.outputSchema
@@ -343,6 +361,16 @@ private constructor(
                 }
         }
 
+        fun async(async: Boolean) = async(JsonField.of(async))
+
+        /**
+         * Sets [Builder.async] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.async] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun async(async: JsonField<Boolean>) = apply { this.async = async }
+
         /** Whether this function is deferred and loaded via tool search. */
         fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
 
@@ -437,6 +465,7 @@ private constructor(
                 checkRequired("strict", strict),
                 type,
                 (allowedCallers ?: JsonMissing.of()).map { it.toImmutable() },
+                async,
                 deferLoading,
                 description,
                 outputSchema,
@@ -468,6 +497,7 @@ private constructor(
             }
         }
         allowedCallers().ifPresent { it.forEach { it.validate() } }
+        async()
         deferLoading()
         description()
         outputSchema().ifPresent { it.validate() }
@@ -494,6 +524,7 @@ private constructor(
             (if (strict.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("function")) 1 else 0 } +
             (allowedCallers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (async.asKnown().isPresent) 1 else 0) +
             (if (deferLoading.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0) +
             (outputSchema.asKnown().getOrNull()?.validity() ?: 0)
@@ -867,6 +898,7 @@ private constructor(
             strict == other.strict &&
             type == other.type &&
             allowedCallers == other.allowedCallers &&
+            async == other.async &&
             deferLoading == other.deferLoading &&
             description == other.description &&
             outputSchema == other.outputSchema &&
@@ -880,6 +912,7 @@ private constructor(
             strict,
             type,
             allowedCallers,
+            async,
             deferLoading,
             description,
             outputSchema,
@@ -890,5 +923,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FunctionTool{name=$name, parameters=$parameters, strict=$strict, type=$type, allowedCallers=$allowedCallers, deferLoading=$deferLoading, description=$description, outputSchema=$outputSchema, additionalProperties=$additionalProperties}"
+        "FunctionTool{name=$name, parameters=$parameters, strict=$strict, type=$type, allowedCallers=$allowedCallers, async=$async, deferLoading=$deferLoading, description=$description, outputSchema=$outputSchema, additionalProperties=$additionalProperties}"
 }
