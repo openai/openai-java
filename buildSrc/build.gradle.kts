@@ -14,7 +14,7 @@ dependencies {
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.28.0")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:6.1.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testImplementation("org.yaml:snakeyaml:2.6")
 }
 
