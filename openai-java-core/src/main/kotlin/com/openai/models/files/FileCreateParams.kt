@@ -152,20 +152,32 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * Sets the file to upload from an InputStream. If purpose is [FilePurpose.FINE_TUNE] or
+         * [FilePurpose.BATCH], an appropriate .jsonl default filename is inferred at build time.
+         * For all other purposes, use [file(InputStream, String)] to provide an explicit filename.
+         */
         fun file(file: InputStream) = apply { body.file(file) }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: InputStream, filename: String) = apply { body.file(file, filename) }
 
         /**
          * Sets [Builder.file] to an arbitrary multipart value.
          *
-         * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You would typically use this if you want to provide a custom filename or content type.
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * Sets the file to upload from a byte array. If purpose is [FilePurpose.FINE_TUNE] or
+         * [FilePurpose.BATCH], an appropriate .jsonl default filename is inferred at build time.
+         * For all other purposes, use [file(ByteArray, String)] to provide an explicit filename.
+         */
         fun file(file: ByteArray) = apply { body.file(file) }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: ByteArray, filename: String) = apply { body.file(file, filename) }
 
         /** The File object (not file name) to be uploaded. */
         fun file(path: Path) = apply { body.file(path) }
@@ -329,12 +341,6 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
-         * The following fields are required:
-         * ```java
-         * .file()
-         * .purpose()
-         * ```
-         *
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): FileCreateParams =
@@ -458,20 +464,27 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: InputStream) = file(MultipartField.of(file))
+            /** Sets the file to upload from an InputStream. */
+            fun file(file: InputStream) =
+                file(MultipartField.builder<InputStream>().value(file).build())
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: InputStream, filename: String) =
+                file(MultipartField.builder<InputStream>().value(file).filename(filename).build())
 
             /**
              * Sets [Builder.file] to an arbitrary multipart value.
              *
-             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You would typically use this if you want to provide a custom filename or content
+             * type.
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
-            /** The File object (not file name) to be uploaded. */
+            /** Sets the file to upload from a byte array. */
             fun file(file: ByteArray) = file(file.inputStream())
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: ByteArray, filename: String) = file(file.inputStream(), filename)
 
             /** The File object (not file name) to be uploaded. */
             fun file(path: Path) =
@@ -544,21 +557,53 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              *
-             * The following fields are required:
-             * ```java
-             * .file()
-             * .purpose()
-             * ```
-             *
              * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body =
-                Body(
-                    checkRequired("file", file),
+            fun build(): Body {
+                val currentPurpose: FilePurpose? =
+                    try {
+                        purpose?.value?.getRequired("purpose")
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                val resolvedFile =
+                    file?.let { multipart ->
+                        val existingFilename = multipart.filename().orElse(null)
+                        if (existingFilename != null) {
+                            multipart
+                        } else {
+                            val defaultName =
+                                when (currentPurpose) {
+                                    FilePurpose.FINE_TUNE -> "training_data.jsonl"
+                                    FilePurpose.BATCH -> "batch_data.jsonl"
+                                    else -> null
+                                }
+
+                            if (defaultName != null) {
+                                MultipartField.builder<InputStream>()
+                                    .value(multipart.value)
+                                    .contentType(multipart.contentType)
+                                    .filename(defaultName)
+                                    .build()
+                            } else {
+                                val purposeLabel = currentPurpose?.asString() ?: "unspecified"
+                                throw IllegalArgumentException(
+                                    "Uploading a stream or byte array for purpose '$purposeLabel' " +
+                                        "requires an explicit filename to avoid server-side validation errors. " +
+                                        "Use file(InputStream, String) or file(ByteArray, String) instead."
+                                )
+                            }
+                        }
+                    }
+
+                return Body(
+                    checkRequired("file", resolvedFile),
                     checkRequired("purpose", purpose),
                     expiresAfter,
                     additionalProperties.toMutableMap(),
                 )
+            }
         }
 
         private var validated: Boolean = false

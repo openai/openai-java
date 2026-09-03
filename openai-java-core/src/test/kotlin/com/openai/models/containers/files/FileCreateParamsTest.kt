@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
-
 package com.openai.models.containers.files
 
 import com.openai.core.MultipartField
@@ -19,16 +17,7 @@ internal class FileCreateParamsTest {
     }
 
     @Test
-    fun pathParams() {
-        val params = FileCreateParams.builder().containerId("container_id").build()
-
-        assertThat(params._pathParam(0)).isEqualTo("container_id")
-        // out-of-bound path param
-        assertThat(params._pathParam(1)).isEqualTo("")
-    }
-
-    @Test
-    fun body() {
+    fun getBody() {
         val params =
             FileCreateParams.builder()
                 .containerId("container_id")
@@ -40,29 +29,67 @@ internal class FileCreateParamsTest {
 
         assertThat(body.filterValues { !it.value.isNull() })
             .usingRecursiveComparison()
-            // TODO(AssertJ): Replace this and the `mapValues` below with:
-            // https://github.com/assertj/assertj/issues/3165
             .withEqualsForType(
                 { a, b -> a.readBytes() contentEquals b.readBytes() },
                 InputStream::class.java,
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("Example data".byteInputStream()),
-                        "file_id" to MultipartField.of("file_id"),
-                    )
-                    .mapValues { (_, field) ->
-                        field.map { (it as? ByteArray)?.inputStream() ?: it }
-                    }
+                    "file" to
+                        MultipartField.builder<InputStream>()
+                            .value("Example data".byteInputStream())
+                            .filename("file.bin")
+                            .build(),
+                    "file_id" to MultipartField.of("file_id"),
+                )
             )
     }
 
     @Test
-    fun bodyWithoutOptionalFields() {
-        val params = FileCreateParams.builder().containerId("container_id").build()
+    fun fileWithInputStreamUsesDefaultFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".byteInputStream())
+                .build()
 
-        val body = params._body()
+        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
 
-        assertThat(body.filterValues { !it.value.isNull() }).isEmpty()
+    @Test
+    fun fileWithBytesUsesDefaultFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".toByteArray())
+                .build()
+
+        assertThat(params._file().filename()).contains("file.bin")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithInputStreamAndFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".byteInputStream(), "container-input.txt")
+                .build()
+
+        assertThat(params._file().filename()).contains("container-input.txt")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
+    }
+
+    @Test
+    fun fileWithBytesAndFilename() {
+        val params =
+            FileCreateParams.builder()
+                .containerId("container_id")
+                .file("Example data".toByteArray(), "container-input.txt")
+                .build()
+
+        assertThat(params._file().filename()).contains("container-input.txt")
+        assertThat(params._file().contentType).isEqualTo("application/octet-stream")
     }
 }
