@@ -2,6 +2,7 @@
 
 package com.openai.core.handlers
 
+import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.PhantomReachableClosingStreamResponse
@@ -30,7 +31,7 @@ internal fun <T> streamHandler(
                                     // We wrap the `lines` instead of the top-level sequence because
                                     // we only want to catch `IOException` from the reader; not from
                                     // the user's own code.
-                                    IOExceptionWrappingSequence(lines),
+                                    IOExceptionWrappingSequence(lines, response.headers()),
                                 )
                             }
                         }
@@ -53,7 +54,10 @@ internal fun <T> streamHandler(
     }
 
 /** A sequence that catches, wraps, and rethrows [IOException] as [OpenAIIoException]. */
-private class IOExceptionWrappingSequence<T>(private val sequence: Sequence<T>) : Sequence<T> {
+private class IOExceptionWrappingSequence<T>(
+    private val sequence: Sequence<T>,
+    private val headers: Headers,
+) : Sequence<T> {
 
     override fun iterator(): Iterator<T> {
         val iterator = sequence.iterator()
@@ -63,14 +67,14 @@ private class IOExceptionWrappingSequence<T>(private val sequence: Sequence<T>) 
                 try {
                     iterator.next()
                 } catch (e: IOException) {
-                    throw OpenAIIoException("Stream failed", e)
+                    throw OpenAIIoException("Stream failed", e, headers)
                 }
 
             override fun hasNext(): Boolean =
                 try {
                     iterator.hasNext()
                 } catch (e: IOException) {
-                    throw OpenAIIoException("Stream failed", e)
+                    throw OpenAIIoException("Stream failed", e, headers)
                 }
         }
     }
