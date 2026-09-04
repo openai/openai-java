@@ -2981,7 +2981,6 @@ internal class BetaResponsesServerEventTest {
             BetaResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(
@@ -3070,7 +3069,6 @@ internal class BetaResponsesServerEventTest {
                 BetaResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .agent(
