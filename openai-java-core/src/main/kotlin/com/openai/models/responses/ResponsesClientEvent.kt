@@ -4453,6 +4453,7 @@ private constructor(
         class PromptCacheOptions
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
+            private val comparisonResponseId: JsonField<String>,
             private val mode: JsonField<Mode>,
             private val ttl: JsonField<Ttl>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -4460,9 +4461,22 @@ private constructor(
 
             @JsonCreator
             private constructor(
+                @JsonProperty("comparison_response_id")
+                @ExcludeMissing
+                comparisonResponseId: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
                 @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-            ) : this(mode, ttl, mutableMapOf())
+            ) : this(comparisonResponseId, mode, ttl, mutableMapOf())
+
+            /**
+             * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this
+             * field requests prompt cache diagnostics when the feature is enabled.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun comparisonResponseId(): Optional<String> =
+                comparisonResponseId.getOptional("comparison_response_id")
 
             /**
              * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults
@@ -4486,6 +4500,16 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+
+            /**
+             * Returns the raw JSON value of [comparisonResponseId].
+             *
+             * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
 
             /**
              * Returns the raw JSON value of [mode].
@@ -4524,15 +4548,42 @@ private constructor(
             /** A builder for [PromptCacheOptions]. */
             class Builder internal constructor() {
 
+                private var comparisonResponseId: JsonField<String> = JsonMissing.of()
                 private var mode: JsonField<Mode> = JsonMissing.of()
                 private var ttl: JsonField<Ttl> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                    comparisonResponseId = promptCacheOptions.comparisonResponseId
                     mode = promptCacheOptions.mode
                     ttl = promptCacheOptions.ttl
                     additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * The ID of a response to compare when diagnosing prompt cache reuse. Supplying
+                 * this field requests prompt cache diagnostics when the feature is enabled.
+                 */
+                fun comparisonResponseId(comparisonResponseId: String?) =
+                    comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+                /**
+                 * Alias for calling [Builder.comparisonResponseId] with
+                 * `comparisonResponseId.orElse(null)`.
+                 */
+                fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                    comparisonResponseId(comparisonResponseId.getOrNull())
+
+                /**
+                 * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                    this.comparisonResponseId = comparisonResponseId
                 }
 
                 /**
@@ -4598,7 +4649,12 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): PromptCacheOptions =
-                    PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+                    PromptCacheOptions(
+                        comparisonResponseId,
+                        mode,
+                        ttl,
+                        additionalProperties.toMutableMap(),
+                    )
             }
 
             private var validated: Boolean = false
@@ -4618,6 +4674,7 @@ private constructor(
                     return@apply
                 }
 
+                comparisonResponseId()
                 mode().ifPresent { it.validate() }
                 ttl().ifPresent { it.validate() }
                 validated = true
@@ -4639,7 +4696,8 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
+                    (mode.asKnown().getOrNull()?.validity() ?: 0) +
                     (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
             /**
@@ -4935,17 +4993,20 @@ private constructor(
                 }
 
                 return other is PromptCacheOptions &&
+                    comparisonResponseId == other.comparisonResponseId &&
                     mode == other.mode &&
                     ttl == other.ttl &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(comparisonResponseId, mode, ttl, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+                "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
         }
 
         /**

@@ -96,6 +96,7 @@ internal class ResponseServiceTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
@@ -229,6 +230,7 @@ internal class ResponseServiceTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
