@@ -106,7 +106,10 @@ private constructor(
             }
 
             return responseFuture
-                .handle { response, throwable -> Pair(response, throwable) }
+                .handle(
+                    { response, throwable -> Pair(response, throwable) },
+                    { (response, _) -> response?.close() },
+                )
                 .thenCompose { (response, throwable) ->
                     if (response != null) {
                         if (++retries > maxRetries || !shouldRetry(response)) {
@@ -135,6 +138,7 @@ private constructor(
                     // All responses must be closed, so close the failed one before retrying.
                     response?.close()
                     CancellableFuture.wrap(sleeper.sleepAsync(backoffDuration)).thenCompose {
+                        _: Void? ->
                         executeWithRetries(requestWithRetryCount, requestOptions)
                     }
                 }

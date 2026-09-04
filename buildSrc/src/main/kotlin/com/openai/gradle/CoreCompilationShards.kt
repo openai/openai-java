@@ -75,7 +75,6 @@ object CoreCompilationShards {
             "com/openai/core/BaseDeserializer.kt",
             "com/openai/core/BaseSerializer.kt",
             "com/openai/core/Check.kt",
-            "com/openai/core/CancellableFuture.kt",
             "com/openai/core/DefaultSleeper.kt",
             "com/openai/core/JsonSchemaLocalValidation.kt",
             "com/openai/core/JsonSchemaValidator.kt",
@@ -110,6 +109,7 @@ object CoreCompilationShards {
 
     private val clientBaseSources =
         setOf(
+            "com/openai/core/CancellableFuture.kt",
             "com/openai/core/ClientOptions.kt",
             "com/openai/core/PrepareRequest.kt",
             "com/openai/core/Properties.kt",

@@ -85,7 +85,7 @@ private constructor(
                 logFailure(unwrapCompletionException(error), took)
                 throw error
             }
-            logResponse(response, took)
+            logResponse(checkNotNull(response), took)
         }
     }
 

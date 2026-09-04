@@ -147,6 +147,8 @@ internal class RetryAfterConformanceTest {
     fun cancellingPublicFutureCancelsInFlightTransport() {
         val dispatched = CountDownLatch(1)
         val pending = CompletableFuture<HttpResponse>()
+        val stopped = CountDownLatch(1)
+        pending.whenComplete { _, _ -> stopped.countDown() }
         val transport =
             object : HttpClient {
                 override fun execute(
@@ -169,6 +171,7 @@ internal class RetryAfterConformanceTest {
             val result = sdk.async().models().retrieve("test")
             assertThat(dispatched.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
+            assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(pending.isCancelled).isTrue()
         } finally {
             sdk.close()

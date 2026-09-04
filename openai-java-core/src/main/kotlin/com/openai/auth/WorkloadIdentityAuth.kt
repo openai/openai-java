@@ -66,7 +66,7 @@ internal class WorkloadIdentityAuth(
     private val condition = lock.newCondition()
     private var cachedToken: String? = null
     private var tokenExpiry: Instant? = null
-    private var refreshInFlight: CompletableFuture<TokenRefreshResult>? = null
+    private var refreshInFlight: TokenRefresh? = null
     private var refreshing: Boolean = false
 
     private sealed interface TokenRefreshResult {
@@ -75,18 +75,19 @@ internal class WorkloadIdentityAuth(
         data class Failure(val error: Throwable) : TokenRefreshResult
     }
 
+    private class TokenRefresh(val background: Boolean, var waiters: Int = 0) {
+        val future = CompletableFuture<TokenRefreshResult>()
+        var operation: CompletableFuture<String>? = null
+    }
+
     private sealed interface TokenAction {
         data class ReturnCached(val token: String) : TokenAction
 
-        data class BackgroundRefresh(
-            val future: CompletableFuture<TokenRefreshResult>,
-            val token: String,
-        ) : TokenAction
+        data class BackgroundRefresh(val refresh: TokenRefresh, val token: String) : TokenAction
 
-        data class ForegroundRefresh(val future: CompletableFuture<TokenRefreshResult>) :
-            TokenAction
+        data class ForegroundRefresh(val refresh: TokenRefresh) : TokenAction
 
-        data class WaitForRefresh(val future: CompletableFuture<TokenRefreshResult>) : TokenAction
+        data class WaitForRefresh(val refresh: TokenRefresh) : TokenAction
     }
 
     private fun unwrapCompletionException(error: Throwable?): Throwable? =
@@ -138,74 +139,87 @@ internal class WorkloadIdentityAuth(
                 val token = unexpiredCachedTokenUnsafe()
                 if (token != null) {
                     if (isExpiringSoonUnsafe() && refreshInFlight == null) {
-                        val future = CompletableFuture<TokenRefreshResult>()
-                        refreshInFlight = future
-                        TokenAction.BackgroundRefresh(future, token)
+                        val refresh = TokenRefresh(background = true)
+                        refreshInFlight = refresh
+                        TokenAction.BackgroundRefresh(refresh, token)
                     } else {
                         TokenAction.ReturnCached(token)
                     }
                 } else if (refreshInFlight != null) {
-                    TokenAction.WaitForRefresh(refreshInFlight!!)
+                    TokenAction.WaitForRefresh(refreshInFlight!!.also { it.waiters++ })
                 } else {
-                    val future = CompletableFuture<TokenRefreshResult>()
-                    refreshInFlight = future
-                    TokenAction.ForegroundRefresh(future)
+                    val refresh = TokenRefresh(background = false, waiters = 1)
+                    refreshInFlight = refresh
+                    TokenAction.ForegroundRefresh(refresh)
                 }
             }
 
         return when (action) {
             is TokenAction.ReturnCached -> CompletableFuture.completedFuture(action.token)
             is TokenAction.BackgroundRefresh -> {
-                performRefreshAndComplete(action.future)
+                performRefreshAndComplete(action.refresh)
                 CompletableFuture.completedFuture(action.token)
             }
-            is TokenAction.WaitForRefresh ->
-                action.future.thenApply { result ->
-                    when (result) {
-                        is TokenRefreshResult.Success -> result.token
-                        is TokenRefreshResult.Failure -> throw result.error
-                    }
-                }
+            is TokenAction.WaitForRefresh -> refreshWaiter(action.refresh)
             is TokenAction.ForegroundRefresh -> {
-                val refresh = refreshTokenAsync()
-                refresh.whenComplete { token, error ->
-                    finishRefresh(action.future, token, unwrapCompletionException(error))
-                }
-                refresh
+                val waiter = refreshWaiter(action.refresh)
+                performRefreshAndComplete(action.refresh)
+                waiter
             }
         }
     }
 
-    private fun performRefreshAndComplete(future: CompletableFuture<TokenRefreshResult>) {
-        refreshTokenAsync().whenComplete { token, error ->
-            finishRefresh(future, token, unwrapCompletionException(error))
+    private fun refreshWaiter(refresh: TokenRefresh): CompletableFuture<String> {
+        val waiter = CompletableFuture<String>()
+        waiter.whenComplete { _, _ ->
+            val cancelOperation =
+                lock.withLock {
+                    refresh.waiters--
+                    if (waiter.isCancelled && refresh.waiters == 0 && !refresh.background) {
+                        if (refreshInFlight === refresh) refreshInFlight = null
+                        refresh.operation
+                    } else null
+                }
+            cancelOperation?.cancel(true)
         }
+        refresh.future.whenComplete { result, error ->
+            when {
+                error != null -> waiter.completeExceptionally(error)
+                result is TokenRefreshResult.Success -> waiter.complete(result.token)
+                result is TokenRefreshResult.Failure -> waiter.completeExceptionally(result.error)
+            }
+        }
+        return waiter
     }
 
-    private fun finishRefresh(
-        future: CompletableFuture<TokenRefreshResult>,
-        token: String?,
-        error: Throwable?,
-    ) {
-        val shouldComplete =
+    private fun performRefreshAndComplete(refresh: TokenRefresh) {
+        val operation =
+            try {
+                refreshTokenAsync()
+            } catch (error: Throwable) {
+                finishRefresh(refresh, null, error)
+                return
+            }
+        val cancelOperation =
             lock.withLock {
-                if (refreshInFlight != future) {
-                    false
-                } else {
-                    refreshInFlight = null
-                    true
-                }
+                refresh.operation = operation
+                refresh.waiters == 0 && !refresh.background
             }
-
-        if (shouldComplete) {
-            future.complete(
-                when {
-                    error != null -> TokenRefreshResult.Failure(error)
-                    token != null -> TokenRefreshResult.Success(token)
-                    else -> error("finishRefresh requires either a token or an error")
-                }
-            )
+        operation.whenComplete { token, error ->
+            finishRefresh(refresh, token, unwrapCompletionException(error))
         }
+        if (cancelOperation) operation.cancel(true)
+    }
+
+    private fun finishRefresh(refresh: TokenRefresh, token: String?, error: Throwable?) {
+        lock.withLock { if (refreshInFlight === refresh) refreshInFlight = null }
+        refresh.future.complete(
+            when {
+                error != null -> TokenRefreshResult.Failure(error)
+                token != null -> TokenRefreshResult.Success(token)
+                else -> error("finishRefresh requires either a token or an error")
+            }
+        )
     }
 
     fun invalidateToken() {
