@@ -10,6 +10,30 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionWebSearchTest {
 
     @Test
+    fun deserializeIncompleteStatus() {
+        val responseFunctionWebSearch =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                        "id": "ws_incomplete",
+                        "type": "web_search_call",
+                        "status": "incomplete",
+                        "action": {"type": "search", "query": "synthetic query"}
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<ResponseFunctionWebSearch>(),
+                )
+
+        responseFunctionWebSearch.validate()
+        assertThat(responseFunctionWebSearch.status().value())
+            .isEqualTo(ResponseFunctionWebSearch.Status.Value.INCOMPLETE)
+        assertThat(responseFunctionWebSearch.status().known())
+            .isEqualTo(ResponseFunctionWebSearch.Status.Known.INCOMPLETE)
+    }
+
+    @Test
     fun create() {
         val responseFunctionWebSearch =
             ResponseFunctionWebSearch.builder()
