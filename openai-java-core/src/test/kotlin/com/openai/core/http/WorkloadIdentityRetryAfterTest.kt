@@ -1,6 +1,8 @@
 package com.openai.core.http
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.auth.AzureManagedIdentityTokenProvider
+import com.openai.auth.GcpIdTokenProvider
 import com.openai.auth.SubjectTokenProvider
 import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
@@ -32,9 +34,14 @@ internal class WorkloadIdentityRetryAfterTest {
             val issuer = request.baseUrl.contains("auth.openai.com")
             if (issuer) issuerCalls++ else apiCalls++
             return object : HttpResponse {
+                private var closed = false
+
                 override fun statusCode() = if (issuer) 200 else 401
 
-                override fun headers() = if (issuer) Headers.builder().build() else retryHeaders
+                override fun headers(): Headers {
+                    check(!closed) { "Response headers released on close" }
+                    return if (issuer) Headers.builder().build() else retryHeaders
+                }
 
                 override fun body() =
                     (if (issuer)
@@ -44,6 +51,7 @@ internal class WorkloadIdentityRetryAfterTest {
                         .byteInputStream()
 
                 override fun close() {
+                    closed = true
                     if (!issuer) closedApiResponses++
                 }
             }
@@ -240,6 +248,48 @@ internal class WorkloadIdentityRetryAfterTest {
             assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(active.isCancelled).isTrue()
         } finally {
+            sdk.close()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellingPublicRequestStopsBuiltInMetadataProvider(azure: Boolean) {
+        val dispatched = CountDownLatch(1)
+        val stopped = CountDownLatch(1)
+        val metadata = CompletableFuture<HttpResponse>()
+        metadata.whenComplete { _, _ -> stopped.countDown() }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    assertThat(request.baseUrl)
+                        .contains(if (azure) "169.254.169.254" else "metadata.google.internal")
+                    dispatched.countDown()
+                    return metadata
+                }
+
+                override fun close() {}
+            }
+        val provider =
+            if (azure) AzureManagedIdentityTokenProvider.builder().build()
+            else GcpIdTokenProvider.builder().build()
+        val sdk = client(transport, RecordingSleeper(), subjectProvider = provider)
+        try {
+            val result = sdk.async().models().retrieve("synthetic-model")
+            assertThat(dispatched.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(metadata.isCancelled).isTrue()
+        } finally {
+            metadata.cancel(true)
             sdk.close()
         }
     }

@@ -14,6 +14,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.atomic.AtomicReference
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /** Connects the existing X.509 exchange to the SDK's owned provider-authentication pipeline. */
@@ -192,12 +193,42 @@ private class X509RefreshingHttpClient(
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
-    ): CompletableFuture<HttpResponse> =
-        authenticator.authenticateForBoundTransportAsync(request).thenCompose { authenticated ->
-            delegate.executeAsync(authenticated, requestOptions).thenApply { response ->
-                checkResponse(authenticated, response)
+    ): CompletableFuture<HttpResponse> {
+        val result = CompletableFuture<HttpResponse>()
+        val authentication = authenticator.authenticateForBoundTransportAsync(request)
+        val active = AtomicReference<CompletableFuture<*>>(authentication)
+        result.whenComplete { _, _ -> if (result.isCancelled) active.get().cancel(true) }
+        authentication.whenComplete { authenticated, authenticationFailure ->
+            if (authenticationFailure != null) {
+                result.completeExceptionally(authenticationFailure)
+            } else if (!result.isDone) {
+                try {
+                    val transport = delegate.executeAsync(authenticated, requestOptions)
+                    active.set(transport)
+                    // Cancellation can race with transport creation and enrollment.
+                    if (result.isCancelled) transport.cancel(true)
+                    transport.whenComplete responseComplete@{ response, failure ->
+                        if (failure != null) {
+                            result.completeExceptionally(failure)
+                        } else {
+                            val checked =
+                                try {
+                                    checkResponse(authenticated, response)
+                                } catch (failure: Throwable) {
+                                    result.completeExceptionally(failure)
+                                    response.close()
+                                    return@responseComplete
+                                }
+                            if (!result.complete(checked)) checked.close()
+                        }
+                    }
+                } catch (failure: Throwable) {
+                    result.completeExceptionally(failure)
+                }
             }
         }
+        return result
+    }
 
     private fun checkResponse(request: HttpRequest, response: HttpResponse): HttpResponse {
         if (response.statusCode() != 401) return response

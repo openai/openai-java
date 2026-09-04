@@ -143,8 +143,9 @@ internal class RetryAfterConformanceTest {
         }
     }
 
-    @Test
-    fun cancellingPublicFutureCancelsInFlightTransport() {
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellingPublicFutureCancelsInFlightTransport(voidOperation: Boolean) {
         val dispatched = CountDownLatch(1)
         val pending = CompletableFuture<HttpResponse>()
         val stopped = CountDownLatch(1)
@@ -168,12 +169,34 @@ internal class RetryAfterConformanceTest {
             }
         val sdk = client(transport, RecordingSleeper())
         try {
-            val result = sdk.async().models().retrieve("test")
+            val result =
+                if (voidOperation) sdk.async().responses().delete("test")
+                else sdk.async().models().retrieve("test")
             assertThat(dispatched.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
             assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(pending.isCancelled).isTrue()
         } finally {
+            sdk.close()
+        }
+    }
+
+    @Test
+    fun cancellingVoidOperationStopsPendingRetry() {
+        val transport = Transport(503, "Retry-After", "90")
+        val sleeper = RecordingSleeper().apply { pending = CompletableFuture() }
+        val stopped = CountDownLatch(1)
+        sleeper.pending!!.whenComplete { _, _ -> stopped.countDown() }
+        val sdk = client(transport, sleeper)
+        try {
+            val result = sdk.async().responses().delete("synthetic-response")
+            assertThat(sleeper.entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(sleeper.pending!!.isCancelled).isTrue()
+            assertThat(transport.calls.get()).isEqualTo(1)
+        } finally {
+            sleeper.pending!!.cancel(true)
             sdk.close()
         }
     }

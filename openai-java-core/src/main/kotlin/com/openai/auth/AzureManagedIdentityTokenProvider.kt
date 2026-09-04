@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.CancellableFuture
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
@@ -83,8 +84,7 @@ private constructor(private val resource: String, private val apiVersion: String
                 .putQueryParam("resource", resource)
                 .build()
 
-        return httpClient
-            .executeAsync(request)
+        return CancellableFuture.wrap(httpClient.executeAsync(request))
             .thenApply { response ->
                 response.use {
                     if (response.statusCode() != 200) {

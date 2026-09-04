@@ -23,9 +23,10 @@ internal class WorkloadIdentityHttpClient(
         val response = delegate.execute(requestWithAuth, requestOptions)
 
         if (response.statusCode() == 401) {
+            val error = expiredToken(response.headers())
             response.close()
             workloadIdentityAuth.invalidateToken()
-            throw expiredToken(response.headers())
+            throw error
         }
 
         return response
@@ -46,9 +47,10 @@ internal class WorkloadIdentityHttpClient(
             CancellableFuture.wrap(delegate.executeAsync(requestWithAuth, requestOptions))
                 .thenApply { response ->
                     if (response.statusCode() == 401) {
+                        val error = expiredToken(response.headers())
                         response.close()
                         workloadIdentityAuth.invalidateToken()
-                        throw expiredToken(response.headers())
+                        throw error
                     }
 
                     response

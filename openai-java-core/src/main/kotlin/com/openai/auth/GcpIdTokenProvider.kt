@@ -1,6 +1,7 @@
 package com.openai.auth
 
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.core.CancellableFuture
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
@@ -81,8 +82,7 @@ class GcpIdTokenProvider private constructor(private val audience: String) : Sub
                 .putQueryParam("format", "full")
                 .build()
 
-        return httpClient
-            .executeAsync(request)
+        return CancellableFuture.wrap(httpClient.executeAsync(request))
             .thenApply { response ->
                 response.use {
                     if (response.statusCode() != 200) {

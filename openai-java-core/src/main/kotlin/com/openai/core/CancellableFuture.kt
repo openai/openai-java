@@ -6,6 +6,7 @@ import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.BiFunction
+import java.util.function.Consumer
 import java.util.function.Function
 
 /** Keeps cancellation connected across the stages of an SDK request on Java 8. */
@@ -33,6 +34,12 @@ private constructor(
 
     override fun <U> thenApply(fn: Function<in T, out U>): CompletableFuture<U> =
         CancellableFuture(super.thenApply(fn)) { cancel(it) }
+
+    override fun thenAccept(action: Consumer<in T>): CompletableFuture<Void> =
+        CancellableFuture(super.thenAccept(action)) { cancel(it) }
+
+    override fun exceptionally(fn: Function<Throwable, out T>): CompletableFuture<T> =
+        CancellableFuture(super.exceptionally(fn)) { cancel(it) }
 
     override fun <U> thenApplyAsync(fn: Function<in T, out U>): CompletableFuture<U> =
         CancellableFuture(super.thenApplyAsync(fn)) { cancel(it) }

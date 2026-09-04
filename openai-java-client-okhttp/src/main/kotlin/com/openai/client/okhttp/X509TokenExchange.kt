@@ -19,10 +19,15 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStream
 import java.io.Reader
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.nio.charset.CharacterCodingException
 import java.nio.charset.CodingErrorAction
 import java.nio.charset.StandardCharsets
 import java.time.Duration
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -273,7 +278,13 @@ internal class X509TokenExchange(
                 UnexpectedStatusCodeException.builder()
                     .statusCode(statusCode)
                     .headers(safeDiagnosticHeaders(response.headers()))
-            readOAuthError(response)?.let(builder::error)
+            try {
+                readOAuthError(response)?.let(builder::error)
+            } catch (failure: OpenAIIoException) {
+                // Retain received response metadata without replacing the original I/O cause.
+                failure.addSuppressed(builder.build())
+                throw failure
+            }
             throw builder.build()
         }
 
@@ -435,11 +446,13 @@ internal class X509TokenExchange(
         Headers.builder()
             .apply {
                 SAFE_DIAGNOSTIC_HEADERS.forEach { name ->
+                    // Retry selection uses only the first value, even if it is invalid.
+                    val values = headers.values(name)
                     put(
                         name,
-                        headers.values(name).mapNotNull { value ->
-                            safeDiagnosticHeaderValue(name, value)
-                        },
+                        (if (name == "Retry-After" || name == "Retry-After-Ms") values.take(1)
+                            else values)
+                            .mapNotNull { value -> safeDiagnosticHeaderValue(name, value) },
                     )
                 }
             }
@@ -449,12 +462,13 @@ internal class X509TokenExchange(
         if (name in OPAQUE_DIAGNOSTIC_HEADERS) {
             return if (value.isEmpty()) null else "<redacted>"
         }
+        if (name == "Retry-After" || name == "Retry-After-Ms") {
+            return safeRetryHeaderValue(name, value)
+        }
         if (value.length > MAX_DIAGNOSTIC_HEADER_CHARS) return null
 
         return when (name) {
-            "Content-Length",
-            "Retry-After",
-            "Retry-After-Ms" -> value.takeIf { it.isNotEmpty() && it.all { it in '0'..'9' } }
+            "Content-Length" -> value.takeIf { it.isNotEmpty() && it.all { it in '0'..'9' } }
             "Content-Type" ->
                 value.trim().lowercase().takeIf(SAFE_DIAGNOSTIC_CONTENT_TYPES::contains)
             "X-Should-Retry" -> value.lowercase().takeIf { it == "true" || it == "false" }
@@ -462,7 +476,39 @@ internal class X509TokenExchange(
         }
     }
 
+    private fun safeRetryHeaderValue(name: String, value: String): String? {
+        val text = value.trim()
+        if (DECIMAL_DELAY.matches(text) && !text.startsWith("-")) {
+            val scale = if (name == "Retry-After-Ms") 6 else 9
+            val number = text.toBigDecimalOrNull()
+            // Match the retry parser's overflow and sub-nanosecond handling without retaining
+            // unbounded input in diagnostics. The overflow marker still refuses replay.
+            val nanos =
+                if (number != null) number.multiply(BigDecimal.TEN.pow(scale))
+                else if (text.toDoubleOrNull() == Double.POSITIVE_INFINITY) return "1e99"
+                else if (
+                    text.substringBefore('e', text).substringBefore('E').any { it in '1'..'9' }
+                )
+                    BigDecimal.ONE
+                else BigDecimal.ZERO
+            if (nanos > BigDecimal.valueOf(Long.MAX_VALUE)) return "1e99"
+            val rounded =
+                if (nanos.signum() == 0) BigDecimal.ZERO
+                else if (nanos < BigDecimal.ONE) BigDecimal.ONE
+                else nanos.setScale(0, RoundingMode.CEILING)
+            return rounded.movePointLeft(scale).stripTrailingZeros().toPlainString()
+        }
+        if (name != "Retry-After") return null
+        return try {
+            OffsetDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME)
+                .format(DateTimeFormatter.RFC_1123_DATE_TIME)
+        } catch (_: DateTimeParseException) {
+            null
+        }
+    }
+
     private companion object {
+        val DECIMAL_DELAY = Regex("[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?")
         const val TOKEN_EXCHANGE_URL = "https://mtls.auth.openai.com/oauth/token"
         const val TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange"
         const val X509_TOKEN_TYPE = "urn:openai:params:oauth:token-type:x509"

@@ -7,6 +7,7 @@ import com.openai.core.Sleeper
 import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
+import com.openai.errors.UnexpectedStatusCodeException
 import java.io.IOException
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -207,8 +208,16 @@ private constructor(
         return current
     }
 
-    private fun retryHeaders(throwable: Throwable?): Headers? =
-        throwable?.let { (unwrap(it).cause as? WorkloadIdentityRetryHeaders)?.headers }
+    private fun retryHeaders(throwable: Throwable?): Headers? {
+        val failure = throwable?.let(::unwrap) ?: return null
+        (failure.cause as? WorkloadIdentityRetryHeaders)?.let {
+            return it.headers
+        }
+        // X.509 issuer body-read failures retain their sanitized response as suppressed context.
+        return if (failure is OpenAIIoException && failure.cause is IOException) {
+            (failure.suppressed.singleOrNull() as? UnexpectedStatusCodeException)?.headers()
+        } else null
+    }
 
     private fun shouldRetry(throwable: Throwable): Boolean {
         val cause = unwrap(throwable)
