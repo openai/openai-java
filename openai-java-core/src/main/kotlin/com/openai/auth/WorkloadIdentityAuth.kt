@@ -255,7 +255,7 @@ internal class WorkloadIdentityAuth(
     private fun performRefreshAndComplete(refresh: TokenRefresh) {
         val operation =
             try {
-                refreshTokenAsync()
+                refreshTokenAsync(refresh)
             } catch (error: Throwable) {
                 finishRefresh(refresh, null, error)
                 return
@@ -313,12 +313,12 @@ internal class WorkloadIdentityAuth(
         response.use { processTokenExchangeResponse(it) }
     }
 
-    private fun refreshTokenAsync(): CompletableFuture<String> {
+    private fun refreshTokenAsync(refresh: TokenRefresh): CompletableFuture<String> {
         return CancellableFuture.wrap(config.provider.getTokenAsync(httpClient, jsonMapper))
             .thenCompose { subjectToken ->
                 val request = buildTokenExchangeRequest(subjectToken)
                 CancellableFuture.wrap(httpClient.executeAsync(request)).thenApply { response ->
-                    response.use { processTokenExchangeResponse(it) }
+                    response.use { processTokenExchangeResponse(it, refresh) }
                 }
             }
     }
@@ -361,7 +361,10 @@ internal class WorkloadIdentityAuth(
             .build()
     }
 
-    private fun processTokenExchangeResponse(response: HttpResponse): String {
+    private fun processTokenExchangeResponse(
+        response: HttpResponse,
+        refresh: TokenRefresh? = null,
+    ): String {
         errorHandler.handle(response)
 
         val bodyString = response.body().bufferedReader().readText()
@@ -385,8 +388,11 @@ internal class WorkloadIdentityAuth(
         val newExpiry = Instant.now().plusSeconds(expiresIn.toLong())
 
         lock.withLock {
-            cachedToken = tokenResponse.accessToken
-            tokenExpiry = newExpiry
+            // A canceled async refresh may finish parsing after a newer refresh starts.
+            if (refresh == null || refreshInFlight === refresh) {
+                cachedToken = tokenResponse.accessToken
+                tokenExpiry = newExpiry
+            }
         }
 
         return tokenResponse.accessToken

@@ -1005,11 +1005,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1306,11 +1316,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1836,11 +1857,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -2137,11 +2168,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -2675,7 +2717,6 @@ internal class ResponseStreamEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -2752,7 +2793,6 @@ internal class ResponseStreamEventTest {
                 ResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -3447,11 +3487,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3748,11 +3798,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3986,11 +4047,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4287,11 +4358,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4525,11 +4607,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4826,11 +4918,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -7916,11 +8019,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -8217,11 +8330,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)

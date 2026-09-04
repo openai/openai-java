@@ -215,7 +215,6 @@ private constructor(
 
     private fun shouldRetry(throwable: Throwable): Boolean {
         val cause = unwrap(throwable)
-        if (retryHeaders(cause)?.values("X-Should-Retry")?.firstOrNull() == "false") return false
         // Only retry known retryable exceptions, other exceptions are not intended to be retried.
         return cause is IOException ||
             cause is OpenAIIoException ||

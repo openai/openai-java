@@ -139,7 +139,11 @@ internal class WorkloadIdentityRetryAfterTest {
                 Case(emptyMap(), null),
                 Case(mapOf("Retry-After" to "1e999"), null, 1),
                 Case(mapOf("Retry-After-Ms" to "1e999"), null, 1),
-                Case(mapOf("Retry-After" to "90", "X-Should-Retry" to "false"), null, 1),
+                Case(
+                    mapOf("Retry-After" to "90", "X-Should-Retry" to "false"),
+                    Duration.ofSeconds(90),
+                ),
+                Case(mapOf("X-Should-Retry" to "false"), null),
                 Case(mapOf("Retry-After" to "90"), null, 1, 0),
                 Case(mapOf("Retry-After" to "90"), Duration.ofSeconds(90), 3, 2),
             )) {
