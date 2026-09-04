@@ -76,8 +76,9 @@ internal class CancellableFutureTest {
         assertThat(result.isDone).isTrue()
     }
 
-    @Test
-    fun cancellingPublicModelReadClosesRunningResponseBody() {
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellingPublicModelReadClosesRunningResponseBody(closeThrows: Boolean) {
         val reading = CountDownLatch(1)
         val closed = CountDownLatch(1)
         val delivered = CompletableFuture<HttpResponse>()
@@ -111,8 +112,10 @@ internal class CancellableFutureTest {
                     }
 
                 override fun close() {
-                    isClosed.set(true)
-                    closed.countDown()
+                    if (isClosed.compareAndSet(false, true)) {
+                        closed.countDown()
+                        if (closeThrows) throw IOException("synthetic close failure")
+                    }
                 }
             }
         val sdk =
@@ -126,6 +129,7 @@ internal class CancellableFutureTest {
             assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
             assertThat(isClosed.get()).isTrue()
+            assertThat(result.isCancelled).isTrue()
             delivery.get(5, TimeUnit.SECONDS)
         } finally {
             response.close()

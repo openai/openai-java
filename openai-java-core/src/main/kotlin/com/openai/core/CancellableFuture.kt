@@ -86,8 +86,13 @@ private constructor(
         return CancellableFuture(result) { interrupt ->
             cancelled.set(true)
             // Headers may already have completed the parent while this handler reads the body.
-            active.getAndSet(null)?.let(discard)
-            cancel(interrupt)
+            try {
+                active.getAndSet(null)?.let(discard)
+            } catch (_: Exception) {
+                // A cleanup failure must not change the already-established cancellation outcome.
+            } finally {
+                cancel(interrupt)
+            }
         }
     }
 
