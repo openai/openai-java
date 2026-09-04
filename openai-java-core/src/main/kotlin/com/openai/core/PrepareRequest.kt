@@ -36,7 +36,9 @@ internal fun HttpRequest.prepareAsync(
 ): CompletableFuture<HttpRequest> =
     // This async version exists to make it easier to add async specific preparation logic in the
     // future.
-    CompletableFuture.completedFuture(prepare(clientOptions, params, security))
+    CancellableFuture.wrap(
+        CompletableFuture.completedFuture(prepare(clientOptions, params, security))
+    )
 
 @JvmSynthetic
 internal fun Params.modelNameOrNull(): String? {

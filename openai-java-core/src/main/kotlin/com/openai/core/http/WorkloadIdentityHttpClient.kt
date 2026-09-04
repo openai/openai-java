@@ -1,6 +1,7 @@
 package com.openai.core.http
 
 import com.openai.auth.WorkloadIdentityAuth
+import com.openai.core.CancellableFuture
 import com.openai.core.RequestOptions
 import com.openai.errors.OpenAIRetryableException
 import java.util.concurrent.CompletableFuture
@@ -24,7 +25,7 @@ internal class WorkloadIdentityHttpClient(
         if (response.statusCode() == 401) {
             response.close()
             workloadIdentityAuth.invalidateToken()
-            throw OpenAIRetryableException("OAuth token is expired")
+            throw expiredToken(response.headers())
         }
 
         return response
@@ -38,24 +39,32 @@ internal class WorkloadIdentityHttpClient(
             return delegate.executeAsync(request, requestOptions)
         }
 
-        return workloadIdentityAuth.getTokenAsync().thenCompose { token ->
+        return CancellableFuture.wrap(workloadIdentityAuth.getTokenAsync()).thenCompose { token ->
             val requestWithAuth =
                 request.toBuilder().replaceHeaders("Authorization", "Bearer $token").build()
 
-            delegate.executeAsync(requestWithAuth, requestOptions).thenApply { response ->
-                if (response.statusCode() == 401) {
-                    response.close()
-                    workloadIdentityAuth.invalidateToken()
-                    throw OpenAIRetryableException("OAuth token is expired")
-                }
+            CancellableFuture.wrap(delegate.executeAsync(requestWithAuth, requestOptions))
+                .thenApply { response ->
+                    if (response.statusCode() == 401) {
+                        response.close()
+                        workloadIdentityAuth.invalidateToken()
+                        throw expiredToken(response.headers())
+                    }
 
-                response
-            }
+                    response
+                }
         }
     }
+
+    private fun expiredToken(headers: Headers): OpenAIRetryableException =
+        OpenAIRetryableException("OAuth token is expired", WorkloadIdentityRetryHeaders(headers))
 
     override fun close() {
         workloadIdentityAuth?.close()
         delegate.close()
     }
 }
+
+/** Retry metadata retained after the rejected token response has been closed. */
+internal class WorkloadIdentityRetryHeaders(val headers: Headers) :
+    RuntimeException("Retry headers from an expired token response")

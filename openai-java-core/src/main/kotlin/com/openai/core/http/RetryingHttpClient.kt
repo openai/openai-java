@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.core.CancellableFuture
 import com.openai.core.DefaultSleeper
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
@@ -7,14 +8,17 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import java.io.IOException
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Clock
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import java.util.function.Function
@@ -48,6 +52,7 @@ private constructor(
                 return httpClient.execute(modifiedRequest, requestOptions)
             }
 
+            var failure: Throwable? = null
             val response =
                 try {
                     val response = httpClient.execute(modifiedRequest, requestOptions)
@@ -61,10 +66,13 @@ private constructor(
                         throw throwable
                     }
 
+                    failure = throwable
                     null
                 }
 
-            val backoffDuration = getRetryBackoffDuration(retries, response)
+            val backoffDuration =
+                getRetryBackoffDuration(retries, response?.headers() ?: retryHeaders(failure))
+                    ?: if (response != null) return response else throw checkNotNull(failure)
             // All responses must be closed, so close the failed one before retrying.
             response?.close()
             sleeper.sleep(backoffDuration)
@@ -90,7 +98,10 @@ private constructor(
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            val responseFuture =
+                CancellableFuture.wrap(
+                    httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                )
             if (!isRetryable(requestWithRetryCount)) {
                 return responseFuture
             }
@@ -113,12 +124,24 @@ private constructor(
                             }
                         }
 
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
+                        val backoffDuration =
+                            getRetryBackoffDuration(
+                                retries,
+                                response?.headers() ?: retryHeaders(throwable),
+                            )
+                                ?: return if (response != null) {
+                                    CompletableFuture.completedFuture(response)
+                                } else {
+                                    CompletableFuture<HttpResponse>().apply {
+                                        completeExceptionally(checkNotNull(throwable))
+                                    }
+                                }
                         // All responses must be closed, so close the failed one before retrying.
                         response?.close()
-                        return sleeper.sleepAsync(backoffDuration).thenCompose {
-                            executeWithRetries(requestWithRetryCount, requestOptions)
-                        }
+                        return CancellableFuture.wrap(sleeper.sleepAsync(backoffDuration))
+                            .thenCompose {
+                                executeWithRetries(requestWithRetryCount, requestOptions)
+                            }
                     }
                 ) {
                     // Run in the same thread.
@@ -179,27 +202,41 @@ private constructor(
         }
     }
 
-    private fun shouldRetry(throwable: Throwable): Boolean =
-        // Only retry known retryable exceptions, other exceptions are not intended to be retried.
-        throwable is IOException ||
-            throwable is OpenAIIoException ||
-            throwable is OpenAIRetryableException
+    private fun unwrap(throwable: Throwable): Throwable {
+        var current = throwable
+        while (
+            (current is CompletionException || current is ExecutionException) &&
+                current.cause != null
+        ) {
+            current = checkNotNull(current.cause)
+        }
+        return current
+    }
 
-    private fun getRetryBackoffDuration(retries: Int, response: HttpResponse?): Duration {
+    private fun retryHeaders(throwable: Throwable?): Headers? =
+        throwable?.let { (unwrap(it).cause as? WorkloadIdentityRetryHeaders)?.headers }
+
+    private fun shouldRetry(throwable: Throwable): Boolean {
+        val cause = unwrap(throwable)
+        if (retryHeaders(cause)?.values("X-Should-Retry")?.firstOrNull() == "false") return false
+        // Only retry known retryable exceptions, other exceptions are not intended to be retried.
+        return cause is IOException ||
+            cause is OpenAIIoException ||
+            cause is OpenAIRetryableException
+    }
+
+    private fun getRetryBackoffDuration(retries: Int, headers: Headers?): Duration? {
         // About the Retry-After header:
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
-        response
-            ?.headers()
+        headers
             ?.let { headers ->
-                headers
-                    .values("Retry-After-Ms")
-                    .getOrNull(0)
-                    ?.toFloatOrNull()
-                    ?.times(TimeUnit.MILLISECONDS.toNanos(1))
+                headers.values("Retry-After-Ms").getOrNull(0)?.let {
+                    parseNumericDelay(it, TimeUnit.MILLISECONDS.toNanos(1))
+                }
                     ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
-                        retryAfter.toFloatOrNull()?.times(TimeUnit.SECONDS.toNanos(1))
+                        parseNumericDelay(retryAfter, TimeUnit.SECONDS.toNanos(1))
                             ?: try {
-                                ChronoUnit.NANOS.between(
+                                Duration.between(
                                     OffsetDateTime.now(clock),
                                     OffsetDateTime.parse(
                                         retryAfter,
@@ -211,9 +248,11 @@ private constructor(
                             }
                     }
             }
-            ?.let { retryAfterNanos ->
+            ?.takeUnless { it.isNegative }
+            ?.let { delay ->
                 // If the API asks us to wait a certain amount of time, do what it says.
-                return Duration.ofNanos(retryAfterNanos.toLong())
+                // Return the original response if the duration cannot be represented safely.
+                return delay.takeIf { it <= Duration.ofNanos(Long.MAX_VALUE) }
             }
 
         // Apply exponential backoff, but not more than the max.
@@ -225,7 +264,37 @@ private constructor(
         return Duration.ofNanos((TimeUnit.SECONDS.toNanos(1) * backoffSeconds * jitter).toLong())
     }
 
+    private fun parseNumericDelay(value: String, nanosPerUnit: Long): Duration? {
+        val text = value.trim()
+        if (!DECIMAL_DELAY.matches(text) || text.startsWith("-")) return null
+        val number =
+            text.toBigDecimalOrNull()
+                ?: return if (text.toDoubleOrNull() == Double.POSITIVE_INFINITY) {
+                    Duration.ofSeconds(Long.MAX_VALUE)
+                } else {
+                    // A positive decimal too small for BigDecimal's exponent range still has a
+                    // minimum representable wait of one nanosecond.
+                    Duration.ofNanos(
+                        if (
+                            text.substringBefore('e', text).substringBefore('E').any {
+                                it in '1'..'9'
+                            }
+                        )
+                            1
+                        else 0
+                    )
+                }
+        val nanos = number.multiply(BigDecimal.valueOf(nanosPerUnit))
+        if (nanos > BigDecimal.valueOf(Long.MAX_VALUE)) return Duration.ofSeconds(Long.MAX_VALUE)
+        if (nanos < BigDecimal.ONE)
+            return if (nanos.signum() == 0) Duration.ZERO else Duration.ofNanos(1)
+        return Duration.ofNanos(nanos.setScale(0, RoundingMode.CEILING).longValueExact())
+    }
+
     companion object {
+
+        private val DECIMAL_DELAY =
+            Regex("[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?")
 
         @JvmStatic fun builder() = Builder()
     }

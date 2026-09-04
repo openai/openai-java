@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.core.CancellableFuture
 import com.openai.core.LogLevel
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
@@ -78,7 +79,7 @@ private constructor(
                 logFailure(e, Duration.between(before, OffsetDateTime.now(clock)))
                 throw e
             }
-        return future.handle { response, error ->
+        return CancellableFuture.wrap(future).handle { response, error ->
             val took = Duration.between(before, OffsetDateTime.now(clock))
             if (error != null) {
                 logFailure(unwrapCompletionException(error), took)

@@ -9,18 +9,19 @@ class DefaultSleeper : Sleeper {
 
     private val timer = Timer("DefaultSleeper", true)
 
-    override fun sleep(duration: Duration) = Thread.sleep(duration.toMillis())
+    override fun sleep(duration: Duration) =
+        Thread.sleep(duration.toMillis(), duration.nano % 1_000_000)
 
     override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
-        timer.schedule(
+        val task =
             object : TimerTask() {
                 override fun run() {
                     future.complete(null)
                 }
-            },
-            duration.toMillis(),
-        )
+            }
+        future.whenComplete { _, _ -> if (future.isCancelled) task.cancel() }
+        timer.schedule(task, duration.toMillis() + if (duration.nano % 1_000_000 == 0) 0 else 1)
         return future
     }
 

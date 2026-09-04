@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.core.CancellableFuture
 import com.openai.core.RequestOptions
 import java.util.concurrent.CompletableFuture
 
@@ -15,7 +16,8 @@ internal class AuthenticatingHttpClient(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
-        authenticator.authenticateAsync(request).thenCompose { authenticated ->
+        CancellableFuture.wrap(authenticator.authenticateAsync(request)).thenCompose { authenticated
+            ->
             delegate.executeAsync(authenticated, requestOptions)
         }
 
