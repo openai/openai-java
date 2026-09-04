@@ -92,6 +92,7 @@ internal class BetaResponsesClientEventTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
+                        .comparisonResponseId("resp_123")
                         .mode(
                             BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
                         )
@@ -245,6 +246,7 @@ internal class BetaResponsesClientEventTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(
                                 BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode
                                     .IMPLICIT

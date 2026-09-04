@@ -1222,11 +1222,22 @@ internal class BetaResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -1536,11 +1547,22 @@ internal class BetaResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 BetaResponse.PromptCacheOptions.builder()
                                     .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -2109,11 +2131,22 @@ internal class BetaResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -2422,11 +2455,22 @@ internal class BetaResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 BetaResponse.PromptCacheOptions.builder()
                                     .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -3819,11 +3863,22 @@ internal class BetaResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -4133,11 +4188,22 @@ internal class BetaResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 BetaResponse.PromptCacheOptions.builder()
                                     .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -4382,11 +4448,22 @@ internal class BetaResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -4695,11 +4772,22 @@ internal class BetaResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 BetaResponse.PromptCacheOptions.builder()
                                     .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -4942,11 +5030,22 @@ internal class BetaResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -5256,11 +5355,22 @@ internal class BetaResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 BetaResponse.PromptCacheOptions.builder()
                                     .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -8836,11 +8946,22 @@ internal class BetaResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -9149,11 +9270,22 @@ internal class BetaResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 BetaResponse.PromptCacheOptions.builder()
                                     .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
