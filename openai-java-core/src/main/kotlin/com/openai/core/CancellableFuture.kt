@@ -1,9 +1,12 @@
 package com.openai.core
 
+import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executor
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.BiFunction
 import java.util.function.Consumer
@@ -13,7 +16,12 @@ import java.util.function.Function
 internal class CancellableFuture<T>
 private constructor(
     source: CompletableFuture<T>,
-    private val discard: (T) -> Unit = { value -> if (value is HttpResponse) value.close() },
+    private val discard: (T) -> Unit = { value ->
+        when (value) {
+            is HttpResponse -> value.close()
+            is HttpRequest -> value.body?.close()
+        }
+    },
     cancelSource: (Boolean) -> Unit,
 ) : CompletableFuture<T>() {
     private val cancellation = AtomicReference<((Boolean) -> Unit)?>(cancelSource)
@@ -38,7 +46,7 @@ private constructor(
     }
 
     override fun <U> thenApply(fn: Function<in T, out U>): CompletableFuture<U> =
-        CancellableFuture(super.thenApply(fn)) { cancel(it) }
+        transform(fn) { super.thenApply(it) }
 
     override fun thenAccept(action: Consumer<in T>): CompletableFuture<Void> =
         CancellableFuture(super.thenAccept(action)) { cancel(it) }
@@ -47,12 +55,41 @@ private constructor(
         CancellableFuture(super.exceptionally(fn)) { cancel(it) }
 
     override fun <U> thenApplyAsync(fn: Function<in T, out U>): CompletableFuture<U> =
-        CancellableFuture(super.thenApplyAsync(fn)) { cancel(it) }
+        transform(fn) { super.thenApplyAsync(it) }
 
     override fun <U> thenApplyAsync(
         fn: Function<in T, out U>,
         executor: Executor,
-    ): CompletableFuture<U> = CancellableFuture(super.thenApplyAsync(fn, executor)) { cancel(it) }
+    ): CompletableFuture<U> = transform(fn) { super.thenApplyAsync(it, executor) }
+
+    private fun <U> transform(
+        fn: Function<in T, out U>,
+        apply: (Function<T, U>) -> CompletableFuture<U>,
+    ): CompletableFuture<U> {
+        val active = AtomicReference<T?>()
+        val cancelled = AtomicBoolean()
+        val result =
+            apply(
+                Function { value ->
+                    active.set(value)
+                    try {
+                        if (cancelled.get()) {
+                            active.getAndSet(null)?.let(discard)
+                            throw CancellationException()
+                        }
+                        fn.apply(value)
+                    } finally {
+                        active.set(null)
+                    }
+                }
+            )
+        return CancellableFuture(result) { interrupt ->
+            cancelled.set(true)
+            // Headers may already have completed the parent while this handler reads the body.
+            active.getAndSet(null)?.let(discard)
+            cancel(interrupt)
+        }
+    }
 
     override fun <U> handle(fn: BiFunction<in T?, Throwable?, out U>): CompletableFuture<U> =
         CancellableFuture(super.handle(fn)) { cancel(it) }

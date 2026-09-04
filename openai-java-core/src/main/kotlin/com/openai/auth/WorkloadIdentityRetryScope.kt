@@ -51,14 +51,10 @@ internal class WorkloadIdentityRetryGeneration(private val clock: Clock) {
     fun failed(error: Throwable) {
         val headers =
             (error as? OpenAIServiceException)?.headers() ?: retryAfterHeaders(error) ?: return
-        val minimum = retryAfterDelay(headers, clock) ?: return
-        failure =
-            Failure(
-                error,
-                minimum,
-                System.nanoTime(),
-                headers.values("X-Should-Retry").firstOrNull() != "false",
-            )
+        val retryAllowed = headers.values("X-Should-Retry").firstOrNull() != "false"
+        val minimum =
+            retryAfterDelay(headers, clock) ?: if (!retryAllowed) Duration.ZERO else return
+        failure = Failure(error, minimum, System.nanoTime(), retryAllowed)
     }
 
     data class Failure(

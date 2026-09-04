@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class WorkloadIdentityRetryAfterTest {
@@ -67,7 +68,7 @@ internal class WorkloadIdentityRetryAfterTest {
 
     private class RecordingSleeper : Sleeper {
         val waits = mutableListOf<Duration>()
-        val entered = CountDownLatch(1)
+        var entered = CountDownLatch(1)
         var pending: CompletableFuture<Void>? = null
 
         override fun sleep(duration: Duration) {
@@ -75,9 +76,10 @@ internal class WorkloadIdentityRetryAfterTest {
         }
 
         override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
+            val result: CompletableFuture<Void> = pending ?: CompletableFuture.completedFuture(null)
             waits.add(duration)
             entered.countDown()
-            return pending ?: CompletableFuture.completedFuture(null)
+            return result
         }
 
         override fun close() {}
@@ -88,7 +90,14 @@ internal class WorkloadIdentityRetryAfterTest {
         sleeper: RecordingSleeper,
         retries: Int = 1,
         subjectProvider: SubjectTokenProvider? = null,
-    ): OpenAIClientImpl {
+    ) = OpenAIClientImpl(clientOptions(transport, sleeper, retries, subjectProvider))
+
+    private fun clientOptions(
+        transport: HttpClient,
+        sleeper: RecordingSleeper,
+        retries: Int = 1,
+        subjectProvider: SubjectTokenProvider? = null,
+    ): ClientOptions {
         val provider =
             object : SubjectTokenProvider {
                 override fun tokenType() = SubjectTokenType.JWT
@@ -99,22 +108,20 @@ internal class WorkloadIdentityRetryAfterTest {
                 override fun getTokenAsync(httpClient: HttpClient, jsonMapper: JsonMapper) =
                     CompletableFuture.completedFuture("synthetic-subject-token")
             }
-        return OpenAIClientImpl(
-            ClientOptions.builder()
-                .baseUrl("https://sdk235.invalid")
-                .workloadIdentity(
-                    WorkloadIdentity.builder()
-                        .identityProviderId("synthetic-idp")
-                        .serviceAccountId("synthetic-sa")
-                        .provider(subjectProvider ?: provider)
-                        .build()
-                )
-                .httpClient(transport)
-                .sleeper(sleeper)
-                .maxRetries(retries)
-                .clock(Clock.fixed(Instant.parse("2026-09-04T00:00:00Z"), ZoneOffset.UTC))
-                .build()
-        )
+        return ClientOptions.builder()
+            .baseUrl("https://sdk235.invalid")
+            .workloadIdentity(
+                WorkloadIdentity.builder()
+                    .identityProviderId("synthetic-idp")
+                    .serviceAccountId("synthetic-sa")
+                    .provider(subjectProvider ?: provider)
+                    .build()
+            )
+            .httpClient(transport)
+            .sleeper(sleeper)
+            .maxRetries(retries)
+            .clock(Clock.fixed(Instant.parse("2026-09-04T00:00:00Z"), ZoneOffset.UTC))
+            .build()
     }
 
     @ParameterizedTest
@@ -236,7 +243,10 @@ internal class WorkloadIdentityRetryAfterTest {
             // Release the ordinary 401 retry backoff, then block the issuer minimum.
             val apiRetry = sleeper.pending!!
             sleeper.pending = CompletableFuture()
+            val issuerWaitEntered = CountDownLatch(1)
+            sleeper.entered = issuerWaitEntered
             apiRetry.complete(null)
+            assertThat(issuerWaitEntered.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(sleeper.waits).hasSize(2)
             assertThat(sleeper.waits.last())
                 .isBetween(Duration.ofSeconds(89), Duration.ofSeconds(90))
@@ -313,6 +323,115 @@ internal class WorkloadIdentityRetryAfterTest {
             } finally {
                 sdk.close()
             }
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "false, delay",
+        "true, delay",
+        "false, cancel",
+        "true, cancel",
+        "false, absent",
+        "true, absent",
+        "false, malformed",
+        "true, malformed",
+        "false, no-retry",
+        "true, no-retry",
+        "false, no-retry-malformed",
+        "true, no-retry-malformed",
+    )
+    fun backgroundFailureTimingPreservesRequestOutcome(pendingAtAttachment: Boolean, mode: String) {
+        val terminal = mode.startsWith("no-retry")
+        val delayed = mode == "delay" || mode == "cancel"
+        val headers = buildMap {
+            if (delayed) put("Retry-After", "90")
+            if (mode.endsWith("malformed")) put("Retry-After", "invalid")
+            if (terminal) put("X-Should-Retry", "false")
+        }
+        val delegate =
+            BackgroundTransport(
+                Headers.builder()
+                    .apply { headers.forEach { (name, value) -> put(name, value) } }
+                    .build()
+            )
+        val background = CompletableFuture<HttpResponse>()
+        var failedResponse: HttpResponse? = null
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    val response = delegate.execute(request, requestOptions)
+                    return if (
+                        request.baseUrl.contains("auth.openai.com") && delegate.issuerCalls == 2
+                    ) {
+                        failedResponse = response
+                        background
+                    } else CompletableFuture.completedFuture(response)
+                }
+
+                override fun close() = delegate.close()
+            }
+        val sleeper = RecordingSleeper()
+        val options = clientOptions(transport, sleeper)
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl(options.baseUrl())
+                .addPathSegments("models", "synthetic-model")
+                .build()
+        try {
+            options.httpClient.executeAsync(request, RequestOptions.none()).join().close()
+            val apiBackoff = CompletableFuture<Void>()
+            sleeper.pending = apiBackoff
+            val result = options.httpClient.executeAsync(request, RequestOptions.none())
+            assertThat(sleeper.waits).hasSize(1)
+            assertThat(delegate.issuerCalls).isEqualTo(2)
+            val minimumWait = CompletableFuture<Void>()
+            sleeper.pending = minimumWait
+            if (!pendingAtAttachment) background.complete(checkNotNull(failedResponse))
+            // HTTP retries attach synchronously when this controlled API backoff completes.
+            apiBackoff.complete(null)
+            if (pendingAtAttachment) {
+                assertThat(result.isDone).isFalse()
+                background.complete(checkNotNull(failedResponse))
+            }
+            if (delayed) {
+                assertThat(sleeper.waits).hasSize(2)
+                assertThat(sleeper.waits.last())
+                    .isBetween(Duration.ofSeconds(89), Duration.ofSeconds(90))
+                assertThat(delegate.issuerCalls).isEqualTo(2)
+                if (mode == "cancel") {
+                    assertThat(result.cancel(true)).isTrue()
+                    assertThat(minimumWait.isCancelled).isTrue()
+                } else minimumWait.complete(null)
+            }
+            if (terminal) {
+                val failure =
+                    org.junit.jupiter.api.assertThrows<CompletionException> { result.join() }.cause
+                assertThat(failure)
+                    .isInstanceOf(InternalServerException::class.java)
+                    .hasMessage("503: temporarily_unavailable")
+                assertThat((failure as InternalServerException).headers().values("X-Should-Retry"))
+                    .containsExactly("false")
+            } else if (mode != "cancel") {
+                result.join().use { assertThat(it.statusCode()).isEqualTo(200) }
+            }
+            assertThat(delegate.closedFailures).isEqualTo(1)
+            assertThat(delegate.issuerCalls).isEqualTo(if (terminal || mode == "cancel") 2 else 3)
+            assertThat(delegate.apiCalls).isEqualTo(if (terminal || mode == "cancel") 2 else 3)
+            assertThat(sleeper.waits).hasSize(if (delayed) 2 else 1)
+        } finally {
+            background.cancel(true)
+            sleeper.pending?.cancel(true)
+            options.httpClient.close()
         }
     }
 

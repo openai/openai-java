@@ -220,7 +220,19 @@ internal class WorkloadIdentityAuth(
                 performRefreshAndComplete(action.refresh)
                 CompletableFuture.completedFuture(action.token)
             }
-            is TokenAction.WaitForRefresh -> refreshWaiter(action.refresh)
+            is TokenAction.WaitForRefresh -> {
+                val waiter = refreshWaiter(action.refresh)
+                if (!action.refresh.background || scope == null) waiter
+                else
+                    CancellableFuture.wrap(waiter)
+                        .handle { token, error -> Pair(token, error) }
+                        .thenCompose { (token, error) ->
+                            // A background failure has the same scoped outcome whether it settled
+                            // before or after this caller attached to the generation.
+                            if (error != null) getTokenAsync(scope)
+                            else CompletableFuture.completedFuture(token)
+                        }
+            }
             is TokenAction.ForegroundRefresh -> {
                 val waiter = refreshWaiter(action.refresh)
                 performRefreshAndComplete(action.refresh)
