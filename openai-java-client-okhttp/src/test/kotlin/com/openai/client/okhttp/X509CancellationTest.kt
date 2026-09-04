@@ -122,6 +122,15 @@ internal class X509CancellationTest {
 
     @Test
     fun cancellingAuthWaiterPreservesSharedExchangeAndDoesNotDispatchItsApiRequest() {
+        verifyCancelledAuthWaiter(joinAfterCancellation = false)
+    }
+
+    @Test
+    fun cancellingSoleAuthWaiterLeavesSharedRefreshAvailableToLaterRequest() {
+        verifyCancelledAuthWaiter(joinAfterCancellation = true)
+    }
+
+    private fun verifyCancelledAuthWaiter(joinAfterCancellation: Boolean) {
         val entered = CountDownLatch(1)
         val release = CountDownLatch(1)
         val exchanges = AtomicInteger()
@@ -146,8 +155,9 @@ internal class X509CancellationTest {
         try {
             val cancelled = client.models().retrieve("cancelled-model")
             assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            if (joinAfterCancellation) assertThat(cancelled.cancel(true)).isTrue()
             val remaining = client.models().retrieve("test-model")
-            assertThat(cancelled.cancel(true)).isTrue()
+            if (!joinAfterCancellation) assertThat(cancelled.cancel(true)).isTrue()
             release.countDown()
             assertThat(remaining.get(5, TimeUnit.SECONDS).id()).isEqualTo("test-model")
             assertThat(cancelled.isCancelled).isTrue()
@@ -158,6 +168,21 @@ internal class X509CancellationTest {
             client.close()
         }
     }
+
+    @TestFactory
+    fun issuerErrorBodyIoRetainsMinimumWhenCloseAlsoFails() =
+        listOf(false, true).flatMap { async ->
+            listOf("90" to Duration.ofSeconds(90), "1e999" to null).map { (value, minimum) ->
+                dynamicTest("async=$async retryAfter=$value") {
+                    verifyIssuerErrorBodyIo(
+                        async,
+                        listOf("Retry-After" to value),
+                        minimum,
+                        closeAlsoFails = true,
+                    )
+                }
+            }
+        }
 
     @TestFactory
     fun issuerErrorBodyIoRetainsServerMinimum() =
@@ -201,8 +226,10 @@ internal class X509CancellationTest {
         async: Boolean,
         headers: List<Pair<String, String>>,
         minimum: Duration?,
+        closeAlsoFails: Boolean = false,
     ) {
         val cause = IOException("synthetic issuer body disconnect")
+        val closeFailure = IllegalStateException("synthetic issuer close failure")
         val exchanges = AtomicInteger()
         val apiRequests = AtomicInteger()
         val closes = AtomicInteger()
@@ -248,6 +275,11 @@ internal class X509CancellationTest {
                             override fun contentLength() = -1L
 
                             override fun source() = source
+
+                            override fun close() {
+                                super.close()
+                                if (closeAlsoFails) throw closeFailure
+                            }
                         }
                     response(chain, body)
                         .newBuilder()
@@ -278,7 +310,9 @@ internal class X509CancellationTest {
                 .isInstanceOf(OpenAIIoException::class.java)
                 .hasMessage("Failed to read X.509 token exchange response")
             assertThat(failure.cause).isSameAs(cause)
-            val context = failure.suppressed.single() as UnexpectedStatusCodeException
+            val context =
+                failure.suppressed.filterIsInstance<UnexpectedStatusCodeException>().single()
+            if (closeAlsoFails) assertThat(failure.suppressed).contains(closeFailure)
             assertThat(context.headers().toString())
                 .doesNotContain(
                     "fake-private-issuer-authorization",

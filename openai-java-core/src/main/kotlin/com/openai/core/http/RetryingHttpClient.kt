@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.auth.WorkloadIdentityRetryScope
 import com.openai.core.CancellableFuture
 import com.openai.core.DefaultSleeper
 import com.openai.core.RequestOptions
@@ -7,15 +8,9 @@ import com.openai.core.Sleeper
 import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
-import com.openai.errors.UnexpectedStatusCodeException
 import java.io.IOException
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.Clock
 import java.time.Duration
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
@@ -145,7 +140,12 @@ private constructor(
                 }
         }
 
-        return executeWithRetries(modifiedRequest, requestOptions)
+        return executeWithRetries(
+            modifiedRequest,
+            requestOptions.withWorkloadIdentityRetryScope(
+                WorkloadIdentityRetryScope(clock, sleeper)
+            ),
+        )
     }
 
     override fun close() {
@@ -210,13 +210,7 @@ private constructor(
 
     private fun retryHeaders(throwable: Throwable?): Headers? {
         val failure = throwable?.let(::unwrap) ?: return null
-        (failure.cause as? WorkloadIdentityRetryHeaders)?.let {
-            return it.headers
-        }
-        // X.509 issuer body-read failures retain their sanitized response as suppressed context.
-        return if (failure is OpenAIIoException && failure.cause is IOException) {
-            (failure.suppressed.singleOrNull() as? UnexpectedStatusCodeException)?.headers()
-        } else null
+        return retryAfterHeaders(failure)
     }
 
     private fun shouldRetry(throwable: Throwable): Boolean {
@@ -229,34 +223,10 @@ private constructor(
     }
 
     private fun getRetryBackoffDuration(retries: Int, headers: Headers?): Duration? {
-        // About the Retry-After header:
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
-        headers
-            ?.let { headers ->
-                headers.values("Retry-After-Ms").getOrNull(0)?.let {
-                    parseNumericDelay(it, TimeUnit.MILLISECONDS.toNanos(1))
-                }
-                    ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
-                        parseNumericDelay(retryAfter, TimeUnit.SECONDS.toNanos(1))
-                            ?: try {
-                                Duration.between(
-                                    OffsetDateTime.now(clock),
-                                    OffsetDateTime.parse(
-                                        retryAfter,
-                                        DateTimeFormatter.RFC_1123_DATE_TIME,
-                                    ),
-                                )
-                            } catch (e: DateTimeParseException) {
-                                null
-                            }
-                    }
-            }
-            ?.takeUnless { it.isNegative }
-            ?.let { delay ->
-                // If the API asks us to wait a certain amount of time, do what it says.
-                // Return the original response if the duration cannot be represented safely.
-                return delay.takeIf { it <= Duration.ofNanos(Long.MAX_VALUE) }
-            }
+        retryAfterDelay(headers, clock)?.let { delay ->
+            // Return the original response if the duration cannot be represented safely.
+            return delay.takeIf { it <= Duration.ofNanos(Long.MAX_VALUE) }
+        }
 
         // Apply exponential backoff, but not more than the max.
         val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), 8.0)
@@ -267,37 +237,7 @@ private constructor(
         return Duration.ofNanos((TimeUnit.SECONDS.toNanos(1) * backoffSeconds * jitter).toLong())
     }
 
-    private fun parseNumericDelay(value: String, nanosPerUnit: Long): Duration? {
-        val text = value.trim()
-        if (!DECIMAL_DELAY.matches(text) || text.startsWith("-")) return null
-        val number =
-            text.toBigDecimalOrNull()
-                ?: return if (text.toDoubleOrNull() == Double.POSITIVE_INFINITY) {
-                    Duration.ofSeconds(Long.MAX_VALUE)
-                } else {
-                    // A positive decimal too small for BigDecimal's exponent range still has a
-                    // minimum representable wait of one nanosecond.
-                    Duration.ofNanos(
-                        if (
-                            text.substringBefore('e', text).substringBefore('E').any {
-                                it in '1'..'9'
-                            }
-                        )
-                            1
-                        else 0
-                    )
-                }
-        val nanos = number.multiply(BigDecimal.valueOf(nanosPerUnit))
-        if (nanos > BigDecimal.valueOf(Long.MAX_VALUE)) return Duration.ofSeconds(Long.MAX_VALUE)
-        if (nanos < BigDecimal.ONE)
-            return if (nanos.signum() == 0) Duration.ZERO else Duration.ofNanos(1)
-        return Duration.ofNanos(nanos.setScale(0, RoundingMode.CEILING).longValueExact())
-    }
-
     companion object {
-
-        private val DECIMAL_DELAY =
-            Regex("[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?")
 
         @JvmStatic fun builder() = Builder()
     }

@@ -14,9 +14,12 @@ internal class CancellableFuture<T>
 private constructor(
     source: CompletableFuture<T>,
     private val discard: (T) -> Unit = { value -> if (value is HttpResponse) value.close() },
-    private val cancelSource: (Boolean) -> Unit,
+    cancelSource: (Boolean) -> Unit,
 ) : CompletableFuture<T>() {
+    private val cancellation = AtomicReference<((Boolean) -> Unit)?>(cancelSource)
+
     init {
+        super.whenComplete { _, _ -> cancellation.set(null) }
         source.whenComplete { value, error ->
             if (error != null) {
                 completeExceptionally(error)
@@ -27,8 +30,10 @@ private constructor(
     }
 
     override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+        // Completion callbacks run inside super.cancel, so retain the action before winning.
+        val action = cancellation.getAndSet(null)
         if (!super.cancel(mayInterruptIfRunning)) return false
-        cancelSource(mayInterruptIfRunning)
+        action?.invoke(mayInterruptIfRunning)
         return true
     }
 

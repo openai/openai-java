@@ -1,8 +1,17 @@
 package com.openai.core
 
+import com.openai.auth.WorkloadIdentityRetryScope
 import java.time.Duration
 
-class RequestOptions private constructor(val responseValidation: Boolean?, val timeout: Timeout?) {
+class RequestOptions
+private constructor(
+    val responseValidation: Boolean?,
+    val timeout: Timeout?,
+    @get:JvmSynthetic internal val workloadIdentityRetryScope: WorkloadIdentityRetryScope? = null,
+) {
+    @JvmSynthetic
+    internal fun withWorkloadIdentityRetryScope(scope: WorkloadIdentityRetryScope) =
+        RequestOptions(responseValidation, timeout, scope)
 
     companion object {
 
@@ -22,6 +31,7 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
 
     fun applyDefaults(options: RequestOptions): RequestOptions =
         RequestOptions(
+            workloadIdentityRetryScope = workloadIdentityRetryScope,
             responseValidation = responseValidation ?: options.responseValidation,
             timeout =
                 if (options.timeout != null && timeout != null) timeout.assign(options.timeout)

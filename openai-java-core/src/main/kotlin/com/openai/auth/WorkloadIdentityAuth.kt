@@ -15,6 +15,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ErrorObject
 import java.io.OutputStream
+import java.time.Clock
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
@@ -67,7 +68,12 @@ internal class WorkloadIdentityAuth(
     private var cachedToken: String? = null
     private var tokenExpiry: Instant? = null
     private var refreshInFlight: TokenRefresh? = null
-    private var refreshing: Boolean = false
+    private var synchronousRefresh: SynchronousRefresh? = null
+
+    private class SynchronousRefresh {
+        var complete = false
+        var failure: Throwable? = null
+    }
 
     private sealed interface TokenRefreshResult {
         data class Success(val token: String) : TokenRefreshResult
@@ -75,13 +81,19 @@ internal class WorkloadIdentityAuth(
         data class Failure(val error: Throwable) : TokenRefreshResult
     }
 
-    private class TokenRefresh(val background: Boolean, var waiters: Int = 0) {
+    private class TokenRefresh(
+        val background: Boolean,
+        var waiters: Int = 0,
+        val retryGeneration: WorkloadIdentityRetryGeneration,
+    ) {
         val future = CompletableFuture<TokenRefreshResult>()
         var operation: CompletableFuture<String>? = null
     }
 
     private sealed interface TokenAction {
         data class ReturnCached(val token: String) : TokenAction
+
+        data class WaitForMinimum(val barrier: WorkloadIdentityRetryScope.Barrier) : TokenAction
 
         data class BackgroundRefresh(val refresh: TokenRefresh, val token: String) : TokenAction
 
@@ -98,26 +110,26 @@ internal class WorkloadIdentityAuth(
         }
 
     fun getToken(): String {
-        lock.withLock {
-            while (refreshing && unexpiredCachedTokenUnsafe() == null) {
-                condition.await()
-            }
-
-            val token = unexpiredCachedTokenUnsafe()
-            if (token != null && !isExpiringSoonUnsafe()) {
-                return token
-            }
-
-            if (refreshing) {
-                while (refreshing) {
-                    condition.await()
+        val refresh =
+            lock.withLock {
+                val token = unexpiredCachedTokenUnsafe()
+                if (token != null && !isExpiringSoonUnsafe()) {
+                    return token
                 }
-                return unexpiredCachedTokenUnsafe()
-                    ?: throw IllegalStateException("Token is unusable after refresh completed")
-            }
 
-            refreshing = true
-        }
+                synchronousRefresh?.let { inFlight ->
+                    while (!inFlight.complete) {
+                        condition.await()
+                    }
+                    // Preserve cached-token fallback, but share a failed generation when no
+                    // usable bearer remains instead of starting another issuer exchange.
+                    return unexpiredCachedTokenUnsafe()
+                        ?: throw (inFlight.failure
+                            ?: IllegalStateException("Token is unusable after refresh completed"))
+                }
+
+                SynchronousRefresh().also { synchronousRefresh = it }
+            }
 
         try {
             performRefresh()
@@ -125,30 +137,64 @@ internal class WorkloadIdentityAuth(
                 return unexpiredCachedTokenUnsafe()
                     ?: throw IllegalStateException("Token is unusable after refresh completed")
             }
+        } catch (error: Throwable) {
+            lock.withLock { refresh.failure = error }
+            throw error
         } finally {
             lock.withLock {
-                refreshing = false
+                refresh.complete = true
+                synchronousRefresh = null
                 condition.signalAll()
             }
         }
     }
 
-    fun getTokenAsync(): CompletableFuture<String> {
+    fun getTokenAsync(): CompletableFuture<String> = getTokenAsync(null)
+
+    fun getTokenAsync(scope: WorkloadIdentityRetryScope?): CompletableFuture<String> {
         val action =
             lock.withLock {
                 val token = unexpiredCachedTokenUnsafe()
                 if (token != null) {
-                    if (isExpiringSoonUnsafe() && refreshInFlight == null) {
-                        val refresh = TokenRefresh(background = true)
+                    refreshInFlight?.let { scope?.observe(it.retryGeneration) }
+                    if (
+                        isExpiringSoonUnsafe() &&
+                            refreshInFlight == null &&
+                            scope?.barrier() == null
+                    ) {
+                        val refresh =
+                            TokenRefresh(
+                                background = true,
+                                retryGeneration =
+                                    WorkloadIdentityRetryGeneration(
+                                        scope?.clock ?: Clock.systemUTC()
+                                    ),
+                            )
+                        scope?.observe(refresh.retryGeneration)
                         refreshInFlight = refresh
                         TokenAction.BackgroundRefresh(refresh, token)
                     } else {
                         TokenAction.ReturnCached(token)
                     }
                 } else if (refreshInFlight != null) {
-                    TokenAction.WaitForRefresh(refreshInFlight!!.also { it.waiters++ })
+                    TokenAction.WaitForRefresh(
+                        refreshInFlight!!.also {
+                            it.waiters++
+                            scope?.observe(it.retryGeneration)
+                        }
+                    )
                 } else {
-                    val refresh = TokenRefresh(background = false, waiters = 1)
+                    val barrier = scope?.barrier()
+                    if (barrier != null) return@withLock TokenAction.WaitForMinimum(barrier)
+                    scope?.clear()
+                    val refresh =
+                        TokenRefresh(
+                            background = false,
+                            waiters = 1,
+                            retryGeneration =
+                                WorkloadIdentityRetryGeneration(scope?.clock ?: Clock.systemUTC()),
+                        )
+                    scope?.observe(refresh.retryGeneration)
                     refreshInFlight = refresh
                     TokenAction.ForegroundRefresh(refresh)
                 }
@@ -156,6 +202,20 @@ internal class WorkloadIdentityAuth(
 
         return when (action) {
             is TokenAction.ReturnCached -> CompletableFuture.completedFuture(action.token)
+            is TokenAction.WaitForMinimum -> {
+                val delay = action.barrier.delay
+                if (delay == null) {
+                    CompletableFuture<String>().apply {
+                        completeExceptionally(action.barrier.error)
+                    }
+                } else {
+                    CancellableFuture.wrap(checkNotNull(scope).sleeper.sleepAsync(delay))
+                        .thenCompose { _: Void? ->
+                            lock.withLock { scope.clear() }
+                            getTokenAsync(scope)
+                        }
+                }
+            }
             is TokenAction.BackgroundRefresh -> {
                 performRefreshAndComplete(action.refresh)
                 CompletableFuture.completedFuture(action.token)
@@ -212,7 +272,10 @@ internal class WorkloadIdentityAuth(
     }
 
     private fun finishRefresh(refresh: TokenRefresh, token: String?, error: Throwable?) {
-        lock.withLock { if (refreshInFlight === refresh) refreshInFlight = null }
+        lock.withLock {
+            error?.let { refresh.retryGeneration.failed(it) }
+            if (refreshInFlight === refresh) refreshInFlight = null
+        }
         refresh.future.complete(
             when {
                 error != null -> TokenRefreshResult.Failure(error)

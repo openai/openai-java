@@ -2,6 +2,8 @@ package com.openai.core
 
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
+import java.lang.ref.ReferenceQueue
+import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
@@ -10,6 +12,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class CancellableFutureTest {
     private class Response : HttpResponse {
@@ -24,6 +28,41 @@ internal class CancellableFutureTest {
         override fun close() {
             closes.incrementAndGet()
         }
+    }
+
+    private fun completedChain(
+        completion: Int,
+        queue: ReferenceQueue<CompletableFuture<String>>,
+    ): Pair<CompletableFuture<String>, WeakReference<CompletableFuture<String>>> {
+        val source = CompletableFuture<String>()
+        val reference = WeakReference(source, queue)
+        val result =
+            CancellableFuture.wrap(source)
+                .thenCompose { CompletableFuture.completedFuture(it) }
+                .handle { _, _ -> "finished" }
+        when (completion) {
+            0 -> source.complete("synthetic request payload")
+            1 -> source.completeExceptionally(IllegalStateException("synthetic failure"))
+            2 -> result.complete("finished")
+            3 -> result.completeExceptionally(IllegalStateException("manual failure"))
+        }
+        return Pair(result, reference)
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [0, 1, 2, 3])
+    fun completedChainReleasesCancellationTargets(completion: Int) {
+        val queue = ReferenceQueue<CompletableFuture<String>>()
+        val (result, reference) = completedChain(completion, queue)
+        assertThat(result.isDone).isTrue()
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        var collected = false
+        while (!collected && System.nanoTime() < deadline) {
+            System.gc()
+            collected = queue.remove(100) === reference
+        }
+        assertThat(collected).isTrue()
+        assertThat(result.isDone).isTrue()
     }
 
     @Test

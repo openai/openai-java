@@ -10,6 +10,7 @@ import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
+import com.openai.errors.InternalServerException
 import com.openai.errors.OpenAIRetryableException
 import java.time.Clock
 import java.time.Duration
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -173,6 +175,222 @@ internal class WorkloadIdentityRetryAfterTest {
         }
     }
 
+    private class BackgroundTransport(
+        private val failureHeaders: Headers = Headers.builder().put("Retry-After", "90").build(),
+        private val rejections: Map<Int, Int> = mapOf(2 to 401),
+    ) : HttpClient {
+        var issuerCalls = 0
+        var apiCalls = 0
+        var closedFailures = 0
+
+        override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+            val issuer = request.baseUrl.contains("auth.openai.com")
+            if (issuer) issuerCalls++ else apiCalls++
+            val failure = issuer && issuerCalls == 2
+            val rejectedStatus = if (issuer) null else rejections[apiCalls]
+            return object : HttpResponse {
+                override fun statusCode() = if (failure) 503 else rejectedStatus ?: 200
+
+                override fun headers() = if (failure) failureHeaders else Headers.builder().build()
+
+                override fun body() =
+                    (when {
+                            failure -> """{"error":"temporarily_unavailable"}"""
+                            issuer ->
+                                """{"access_token":"synthetic-token","token_type":"Bearer","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","expires_in":60}"""
+                            rejectedStatus != null -> """{"error":{"message":"expired"}}"""
+                            else ->
+                                """{"id":"synthetic-model","created":0,"object":"model","owned_by":"synthetic"}"""
+                        })
+                        .byteInputStream()
+
+                override fun close() {
+                    if (failure) closedFailures++
+                }
+            }
+        }
+
+        override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+            CompletableFuture.completedFuture(execute(request, requestOptions))
+
+        override fun close() {}
+    }
+
+    @Test
+    fun failedBackgroundGenerationDelaysOnlyItsLogicalRequest() {
+        val transport = BackgroundTransport()
+        val sleeper = RecordingSleeper()
+        val sdk = client(transport, sleeper)
+        val sharedOptions = RequestOptions.none()
+        try {
+            sdk.async().models().retrieve("synthetic-model", sharedOptions).join()
+            sleeper.pending = CompletableFuture()
+            val original = sdk.async().models().retrieve("synthetic-model", sharedOptions)
+            assertThat(sleeper.entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(transport.issuerCalls).isEqualTo(2)
+            assertThat(transport.closedFailures).isEqualTo(1)
+            // Release the ordinary 401 retry backoff, then block the issuer minimum.
+            val apiRetry = sleeper.pending!!
+            sleeper.pending = CompletableFuture()
+            apiRetry.complete(null)
+            assertThat(sleeper.waits).hasSize(2)
+            assertThat(sleeper.waits.last())
+                .isBetween(Duration.ofSeconds(89), Duration.ofSeconds(90))
+            assertThat(transport.issuerCalls).isEqualTo(2)
+            assertThat(original.isDone).isFalse()
+            // Reusing the same public options must not impose this request's minimum on a new call.
+            sdk.async().models().retrieve("synthetic-model", sharedOptions).join()
+            assertThat(transport.issuerCalls).isEqualTo(3)
+            original.cancel(true)
+            assertThat(sleeper.pending!!.isCancelled).isTrue()
+        } finally {
+            sdk.close()
+        }
+    }
+
+    @Test
+    fun backgroundMinimumPreservesGrammarTerminalErrorsAndCachedBearerUse() {
+        data class Case(
+            val headers: Map<String, String>,
+            val minimum: Duration? = null,
+            val terminal: Boolean = false,
+            val cached: Boolean = false,
+        )
+        for (case in
+            listOf(
+                Case(mapOf("Retry-After" to "90"), Duration.ofSeconds(90)),
+                Case(
+                    mapOf("Retry-After-Ms" to "90000.25", "Retry-After" to "180"),
+                    Duration.ofMillis(90000).plusNanos(250000),
+                ),
+                Case(
+                    mapOf("Retry-After" to "Fri, 04 Sep 2026 00:01:30 GMT"),
+                    Duration.ofSeconds(90),
+                ),
+                Case(mapOf("Retry-After" to "invalid")),
+                Case(emptyMap()),
+                Case(mapOf("Retry-After" to "1e999"), terminal = true),
+                Case(mapOf("Retry-After" to "90", "X-Should-Retry" to "false"), terminal = true),
+                Case(mapOf("Retry-After" to "90"), cached = true),
+            )) {
+            val headers =
+                Headers.builder()
+                    .apply { case.headers.forEach { (key, value) -> put(key, value) } }
+                    .build()
+            val transport = BackgroundTransport(headers, mapOf(2 to if (case.cached) 500 else 401))
+            val sleeper = RecordingSleeper()
+            val sdk = client(transport, sleeper)
+            try {
+                sdk.async().models().retrieve("synthetic-model").join()
+                val result = sdk.async().models().retrieve("synthetic-model")
+                if (case.terminal) {
+                    val error =
+                        try {
+                            result.join()
+                            error("Expected original issuer failure")
+                        } catch (error: CompletionException) {
+                            error.cause
+                        }
+                    assertThat(error)
+                        .isInstanceOf(InternalServerException::class.java)
+                        .hasMessage("503: temporarily_unavailable")
+                    assertThat((error as InternalServerException).headers().values("Retry-After"))
+                        .containsExactly(case.headers.getValue("Retry-After"))
+                } else {
+                    assertThat(result.join().id()).isEqualTo("synthetic-model")
+                }
+                assertThat(transport.closedFailures).isEqualTo(1)
+                assertThat(transport.issuerCalls)
+                    .isEqualTo(if (case.terminal || case.cached) 2 else 3)
+                assertThat(sleeper.waits).hasSize(if (case.minimum == null) 1 else 2)
+                case.minimum?.let { minimum ->
+                    assertThat(sleeper.waits.last()).isBetween(minimum.minusSeconds(1), minimum)
+                }
+            } finally {
+                sdk.close()
+            }
+        }
+    }
+
+    @Test
+    fun synchronousWaitersShareTheFailedIssuerGeneration() {
+        val issuerStarted = CountDownLatch(1)
+        val releaseIssuer = CountDownLatch(1)
+        val issuerCalls = AtomicInteger()
+        val closedResponses = AtomicInteger()
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    check(request.baseUrl.contains("auth.openai.com"))
+                    if (issuerCalls.incrementAndGet() == 1) {
+                        issuerStarted.countDown()
+                        check(releaseIssuer.await(5, TimeUnit.SECONDS))
+                    }
+                    return object : HttpResponse {
+                        override fun statusCode() = 503
+
+                        override fun headers() = Headers.builder().put("Retry-After", "90").build()
+
+                        override fun body() =
+                            """{"error":"temporarily_unavailable"}""".byteInputStream()
+
+                        override fun close() {
+                            closedResponses.incrementAndGet()
+                        }
+                    }
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> = error("sync only")
+
+                override fun close() {}
+            }
+        val sdk = client(transport, RecordingSleeper(), retries = 0)
+        val first = CompletableFuture<Throwable>()
+        val second = CompletableFuture<Throwable>()
+        fun caller(result: CompletableFuture<Throwable>) = Thread {
+            try {
+                sdk.models().retrieve("synthetic-model")
+                result.completeExceptionally(AssertionError("Expected issuer failure"))
+            } catch (error: Throwable) {
+                result.complete(error)
+            }
+        }
+        val leader = caller(first)
+        val waiter = caller(second)
+        try {
+            leader.start()
+            assertThat(issuerStarted.await(5, TimeUnit.SECONDS)).isTrue()
+            waiter.start()
+            val waitDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+            while (waiter.state != Thread.State.WAITING && System.nanoTime() < waitDeadline) {
+                Thread.yield()
+            }
+            assertThat(waiter.state).isEqualTo(Thread.State.WAITING)
+            releaseIssuer.countDown()
+            val failure = first.get(5, TimeUnit.SECONDS)
+            assertThat(failure).isInstanceOf(InternalServerException::class.java)
+            assertThat(second.get(5, TimeUnit.SECONDS)).isSameAs(failure)
+            assertThat(issuerCalls.get()).isEqualTo(1)
+            assertThat(closedResponses.get()).isEqualTo(1)
+            // A later request owns a new generation rather than inheriting a global cooldown.
+            org.junit.jupiter.api.assertThrows<InternalServerException> {
+                sdk.models().retrieve("synthetic-model")
+            }
+            assertThat(issuerCalls.get()).isEqualTo(2)
+        } finally {
+            releaseIssuer.countDown()
+            leader.join(5000)
+            waiter.join(5000)
+            sdk.close()
+        }
+    }
+
     @Test
     fun cancellingPublicFutureStopsTokenRefreshRetry() {
         val transport = Transport(Headers.builder().put("Retry-After", "90").build())
@@ -189,6 +407,50 @@ internal class WorkloadIdentityRetryAfterTest {
             sleeper.pending!!.complete(null)
             assertThat(transport.issuerCalls).isEqualTo(1)
             assertThat(transport.apiCalls).isEqualTo(1)
+        } finally {
+            sdk.close()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun expiredTokenRetainsOnlyFirstRetryControlValues(async: Boolean) {
+        val headers =
+            Headers.builder()
+                .put("Retry-After", listOf("90", "1"))
+                .put("Retry-After-Ms", listOf("90000", "1"))
+                .put("X-Should-Retry", listOf("false", "true"))
+                .put("Authorization", "synthetic-private-authorization")
+                .put("Set-Cookie", "synthetic-private-cookie")
+                .put("X-Custom", "synthetic-private-custom")
+                .build()
+        val transport = Transport(headers)
+        val sleeper = RecordingSleeper()
+        val sdk = client(transport, sleeper, retries = 0)
+        try {
+            val failure =
+                try {
+                    if (async) sdk.async().models().retrieve("synthetic-model").join()
+                    else sdk.models().retrieve("synthetic-model")
+                    error("Expected token rejection")
+                } catch (failure: CompletionException) {
+                    failure.cause!!
+                } catch (failure: OpenAIRetryableException) {
+                    failure
+                }
+            assertThat(failure)
+                .isInstanceOf(OpenAIRetryableException::class.java)
+                .hasMessage("OAuth token is expired")
+            val retained = (failure.cause as WorkloadIdentityRetryHeaders).headers
+            assertThat(retained.names())
+                .containsExactlyInAnyOrder("Retry-After", "Retry-After-Ms", "X-Should-Retry")
+            assertThat(retained.values("Retry-After")).containsExactly("90")
+            assertThat(retained.values("Retry-After-Ms")).containsExactly("90000")
+            assertThat(retained.values("X-Should-Retry")).containsExactly("false")
+            assertThat(transport.apiCalls).isEqualTo(1)
+            assertThat(transport.issuerCalls).isEqualTo(1)
+            assertThat(transport.closedApiResponses).isEqualTo(1)
+            assertThat(sleeper.waits).isEmpty()
         } finally {
             sdk.close()
         }

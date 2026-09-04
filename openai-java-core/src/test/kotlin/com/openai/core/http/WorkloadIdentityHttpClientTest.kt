@@ -78,7 +78,7 @@ internal class WorkloadIdentityHttpClientTest {
     fun executeAsync_on401_invalidatesTokenAndThrowsRetryableException() {
         val token = "test-token"
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
-        whenever(workloadIdentityAuth.getTokenAsync())
+        whenever(workloadIdentityAuth.getTokenAsync(null))
             .thenReturn(CompletableFuture.completedFuture(token))
 
         val delegateHttpClient = mock<HttpClient>()
@@ -107,7 +107,7 @@ internal class WorkloadIdentityHttpClientTest {
     fun executeAsync_injectsBearerToken() {
         val token = "test-token"
         val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
-        whenever(workloadIdentityAuth.getTokenAsync())
+        whenever(workloadIdentityAuth.getTokenAsync(null))
             .thenReturn(CompletableFuture.completedFuture(token))
 
         val delegateHttpClient = mock<HttpClient>()
