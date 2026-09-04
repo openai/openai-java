@@ -74,9 +74,10 @@ internal class WorkloadIdentityRetryAfterTest {
     }
 
     private fun client(
-        transport: Transport,
+        transport: HttpClient,
         sleeper: RecordingSleeper,
         retries: Int = 1,
+        subjectProvider: SubjectTokenProvider? = null,
     ): OpenAIClientImpl {
         val provider =
             object : SubjectTokenProvider {
@@ -95,7 +96,7 @@ internal class WorkloadIdentityRetryAfterTest {
                     WorkloadIdentity.builder()
                         .identityProviderId("synthetic-idp")
                         .serviceAccountId("synthetic-sa")
-                        .provider(provider)
+                        .provider(subjectProvider ?: provider)
                         .build()
                 )
                 .httpClient(transport)
@@ -168,15 +169,76 @@ internal class WorkloadIdentityRetryAfterTest {
     fun cancellingPublicFutureStopsTokenRefreshRetry() {
         val transport = Transport(Headers.builder().put("Retry-After", "90").build())
         val sleeper = RecordingSleeper().apply { pending = CompletableFuture() }
+        val stopped = CountDownLatch(1)
+        sleeper.pending!!.whenComplete { _, _ -> stopped.countDown() }
         val sdk = client(transport, sleeper)
         try {
             val result = sdk.async().models().retrieve("synthetic-model")
             assertThat(sleeper.entered.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
+            assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(sleeper.pending!!.isCancelled).isTrue()
             sleeper.pending!!.complete(null)
             assertThat(transport.issuerCalls).isEqualTo(1)
             assertThat(transport.apiCalls).isEqualTo(1)
+        } finally {
+            sdk.close()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellationStopsForegroundTokenExchange(providerPending: Boolean) {
+        val dispatched = CountDownLatch(1)
+        val stopped = CountDownLatch(1)
+        val subject = CompletableFuture<String>()
+        val issuer = CompletableFuture<HttpResponse>()
+        val active = if (providerPending) subject else issuer
+        active.whenComplete { _, _ -> stopped.countDown() }
+        val provider =
+            object : SubjectTokenProvider {
+                override fun tokenType() = SubjectTokenType.JWT
+
+                override fun getToken(httpClient: HttpClient, jsonMapper: JsonMapper): String =
+                    error("Unexpected sync provider")
+
+                override fun getTokenAsync(
+                    httpClient: HttpClient,
+                    jsonMapper: JsonMapper,
+                ): CompletableFuture<String> {
+                    if (providerPending) {
+                        dispatched.countDown()
+                        return subject
+                    }
+                    return CompletableFuture.completedFuture("synthetic-subject")
+                }
+            }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected sync request")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    check(!providerPending)
+                    check(request.baseUrl.contains("auth.openai.com"))
+                    dispatched.countDown()
+                    return issuer
+                }
+
+                override fun close() {}
+            }
+        val sdk = client(transport, RecordingSleeper(), subjectProvider = provider)
+        try {
+            val result = sdk.async().models().retrieve("synthetic-model")
+            assertThat(dispatched.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(active.isCancelled).isTrue()
         } finally {
             sdk.close()
         }

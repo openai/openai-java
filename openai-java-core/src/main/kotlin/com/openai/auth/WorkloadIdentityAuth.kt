@@ -2,6 +2,7 @@ package com.openai.auth
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.CancellableFuture
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
@@ -236,12 +237,13 @@ internal class WorkloadIdentityAuth(
     }
 
     private fun refreshTokenAsync(): CompletableFuture<String> {
-        return config.provider.getTokenAsync(httpClient, jsonMapper).thenCompose { subjectToken ->
-            val request = buildTokenExchangeRequest(subjectToken)
-            httpClient.executeAsync(request).thenApply { response ->
-                response.use { processTokenExchangeResponse(it) }
+        return CancellableFuture.wrap(config.provider.getTokenAsync(httpClient, jsonMapper))
+            .thenCompose { subjectToken ->
+                val request = buildTokenExchangeRequest(subjectToken)
+                CancellableFuture.wrap(httpClient.executeAsync(request)).thenApply { response ->
+                    response.use { processTokenExchangeResponse(it) }
+                }
             }
-        }
     }
 
     private fun buildTokenExchangeRequest(subjectToken: String): HttpRequest {

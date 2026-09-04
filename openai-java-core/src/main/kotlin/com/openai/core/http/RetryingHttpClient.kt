@@ -21,7 +21,6 @@ import java.util.concurrent.CompletionException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -107,47 +106,38 @@ private constructor(
             }
 
             return responseFuture
-                .handleAsync(
-                    fun(
-                        response: HttpResponse?,
-                        throwable: Throwable?,
-                    ): CompletableFuture<HttpResponse> {
-                        if (response != null) {
-                            if (++retries > maxRetries || !shouldRetry(response)) {
-                                return CompletableFuture.completedFuture(response)
-                            }
-                        } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
-                                val failedFuture = CompletableFuture<HttpResponse>()
-                                failedFuture.completeExceptionally(throwable)
-                                return failedFuture
-                            }
+                .handle { response, throwable -> Pair(response, throwable) }
+                .thenCompose { (response, throwable) ->
+                    if (response != null) {
+                        if (++retries > maxRetries || !shouldRetry(response)) {
+                            return@thenCompose CompletableFuture.completedFuture(response)
                         }
-
-                        val backoffDuration =
-                            getRetryBackoffDuration(
-                                retries,
-                                response?.headers() ?: retryHeaders(throwable),
-                            )
-                                ?: return if (response != null) {
-                                    CompletableFuture.completedFuture(response)
-                                } else {
-                                    CompletableFuture<HttpResponse>().apply {
-                                        completeExceptionally(checkNotNull(throwable))
-                                    }
-                                }
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
-                        return CancellableFuture.wrap(sleeper.sleepAsync(backoffDuration))
-                            .thenCompose {
-                                executeWithRetries(requestWithRetryCount, requestOptions)
-                            }
+                    } else {
+                        if (++retries > maxRetries || !shouldRetry(throwable!!)) {
+                            val failedFuture = CompletableFuture<HttpResponse>()
+                            failedFuture.completeExceptionally(throwable)
+                            return@thenCompose failedFuture
+                        }
                     }
-                ) {
-                    // Run in the same thread.
-                    it.run()
+
+                    val backoffDuration =
+                        getRetryBackoffDuration(
+                            retries,
+                            response?.headers() ?: retryHeaders(throwable),
+                        )
+                            ?: return@thenCompose if (response != null) {
+                                CompletableFuture.completedFuture(response)
+                            } else {
+                                CompletableFuture<HttpResponse>().apply {
+                                    completeExceptionally(checkNotNull(throwable))
+                                }
+                            }
+                    // All responses must be closed, so close the failed one before retrying.
+                    response?.close()
+                    CancellableFuture.wrap(sleeper.sleepAsync(backoffDuration)).thenCompose {
+                        executeWithRetries(requestWithRetryCount, requestOptions)
+                    }
                 }
-                .thenCompose(Function.identity())
         }
 
         return executeWithRetries(modifiedRequest, requestOptions)

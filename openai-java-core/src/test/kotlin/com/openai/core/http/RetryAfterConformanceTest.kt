@@ -21,6 +21,7 @@ internal class RetryAfterConformanceTest {
         val waits = mutableListOf<Duration>()
         val entered = CountDownLatch(1)
         var pending: CompletableFuture<Void>? = null
+        var beforeReturn: CountDownLatch? = null
 
         override fun sleep(duration: Duration) {
             waits.add(duration)
@@ -29,6 +30,7 @@ internal class RetryAfterConformanceTest {
         override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
             waits.add(duration)
             entered.countDown()
+            check(beforeReturn?.await(5, TimeUnit.SECONDS) != false)
             return pending ?: CompletableFuture.completedFuture(null)
         }
 
@@ -117,14 +119,23 @@ internal class RetryAfterConformanceTest {
         }
     }
 
-    @Test
-    fun cancellingPublicFutureStopsPendingRetry() {
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellingPublicFutureStopsPendingRetry(duringHandoff: Boolean) {
         val transport = Transport(503, "Retry-After", "90")
-        val sleeper = RecordingSleeper().apply { pending = CompletableFuture() }
+        val sleeper =
+            RecordingSleeper().apply {
+                pending = CompletableFuture()
+                if (duringHandoff) beforeReturn = CountDownLatch(1)
+            }
+        val stopped = CountDownLatch(1)
+        sleeper.pending!!.whenComplete { _, _ -> stopped.countDown() }
         client(transport, sleeper).let { sdk ->
             val result = sdk.async().models().retrieve("test")
             assertThat(sleeper.entered.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
+            sleeper.beforeReturn?.countDown()
+            assertThat(stopped.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(sleeper.pending!!.isCancelled).isTrue()
             sleeper.pending!!.complete(null)
             assertThat(transport.second.await(100, TimeUnit.MILLISECONDS)).isFalse()
