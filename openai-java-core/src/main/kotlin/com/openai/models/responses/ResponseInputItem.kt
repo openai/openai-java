@@ -1264,18 +1264,33 @@ private constructor(
 
         override fun ObjectCodec.deserialize(node: JsonNode): ResponseInputItem {
             val json = JsonValue.fromJsonNode(node)
-            val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+            val jsonObject = json.asObject().getOrNull()
+            val type = jsonObject?.get("type")?.asString()?.getOrNull()
 
             when (type) {
                 "message" -> {
+                    val role = jsonObject?.get("role")?.asString()?.getOrNull()
+                    val hasPhase = jsonObject?.containsKey("phase") == true
+                    val hasStructuredContent =
+                        jsonObject?.get("content")?.asArray()?.getOrNull() != null
+                    val isMessageRole = role == "user" || role == "system" || role == "developer"
+                    // These variants share a discriminator and become wire-identical in this
+                    // shape. Prefer the narrower Message; string content, assistant roles, and
+                    // phase-bearing messages remain EasyInputMessage.
+                    val preferMessage = hasStructuredContent && isMessageRole && !hasPhase
+                    val messageMatch =
+                        tryDeserialize(node, jacksonTypeRef<Message>())?.let {
+                            ResponseInputItem(message = it, _json = json)
+                        }
+                    val easyInputMessageMatch =
+                        tryDeserialize(node, jacksonTypeRef<EasyInputMessage>())?.let {
+                            ResponseInputItem(easyInputMessage = it, _json = json)
+                        }
+
                     val bestMatches =
                         sequenceOf(
-                                tryDeserialize(node, jacksonTypeRef<EasyInputMessage>())?.let {
-                                    ResponseInputItem(easyInputMessage = it, _json = json)
-                                },
-                                tryDeserialize(node, jacksonTypeRef<Message>())?.let {
-                                    ResponseInputItem(message = it, _json = json)
-                                },
+                                if (preferMessage) messageMatch else easyInputMessageMatch,
+                                if (preferMessage) easyInputMessageMatch else messageMatch,
                                 tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>())?.let {
                                     ResponseInputItem(responseOutputMessage = it, _json = json)
                                 },
@@ -1628,7 +1643,7 @@ private constructor(
             private var content: JsonField<MutableList<ResponseInputContent>>? = null
             private var role: JsonField<Role>? = null
             private var status: JsonField<Status> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
