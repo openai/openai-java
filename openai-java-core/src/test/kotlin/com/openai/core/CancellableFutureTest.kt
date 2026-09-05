@@ -270,6 +270,71 @@ internal class CancellableFutureTest {
     }
 
     @Test
+    fun cancellingWhileMultipartTransportIsStartingClosesUploadOnce() {
+        val closes = AtomicInteger()
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val queued = AtomicReference<Runnable?>()
+        val upload =
+            object : FilterInputStream("synthetic upload".byteInputStream()) {
+                override fun close() {
+                    closes.incrementAndGet()
+                    super.close()
+                }
+            }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    entered.countDown()
+                    check(release.await(5, TimeUnit.SECONDS))
+                    return CompletableFuture<HttpResponse>().also { future ->
+                        future.whenComplete { _, _ -> request.body?.close() }
+                    }
+                }
+
+                override fun close() {}
+            }
+        val options = ClientOptions.builder().apiKey("synthetic-key").httpClient(transport).build()
+        val params = FileCreateParams.builder().file(upload).purpose(FilePurpose.ASSISTANTS).build()
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(options.baseUrl())
+                    .addPathSegments("files")
+                    .body(multipartFormData(options.jsonMapper, params._body()))
+                    .build()
+            val result =
+                request
+                    .prepareAsync(options, params)
+                    .thenComposeAsync(
+                        { options.httpClient.executeAsync(it, RequestOptions.none()) },
+                        Executor { queued.set(it) },
+                    )
+            val delivery = executor.submit { checkNotNull(queued.get()).run() }
+            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            release.countDown()
+            delivery.get(5, TimeUnit.SECONDS)
+            assertThat(closes.get()).isEqualTo(1)
+        } finally {
+            release.countDown()
+            executor.shutdownNow()
+            options.httpClient.close()
+            if (closes.get() == 0) upload.close()
+        }
+    }
+
+    @Test
     fun closesResponseWhenTransportCompletionWinsCancellationRace() {
         val response = Response()
         val source =
