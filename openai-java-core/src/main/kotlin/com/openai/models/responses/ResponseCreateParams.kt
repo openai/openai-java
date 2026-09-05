@@ -4620,6 +4620,11 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Adds a metadata property using the string value type supported by the API. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
+            }
+
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
