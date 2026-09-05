@@ -1,11 +1,13 @@
 package com.openai.core
 
 import com.openai.client.OpenAIClientImpl
+import com.openai.core.http.DelegatingHttpResponse
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.multipartFormData
 import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FilePurpose
@@ -21,9 +23,12 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class CancellableFutureTest {
@@ -65,7 +70,7 @@ internal class CancellableFutureTest {
     fun completedChainReleasesCancellationTargets(completion: Int) {
         val queue = ReferenceQueue<CompletableFuture<String>>()
         val (result, reference) = completedChain(completion, queue)
-        assertThat(result.isDone).isTrue()
+        runCatching { result.join() }
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
         var collected = false
         while (!collected && System.nanoTime() < deadline) {
@@ -77,8 +82,11 @@ internal class CancellableFutureTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun cancellingPublicModelReadClosesRunningResponseBody(closeThrows: Boolean) {
+    @CsvSource("false,false", "true,false", "false,true", "true,true")
+    fun cancellingPublicModelReadClosesRunningResponseBody(
+        closeThrows: Boolean,
+        alreadyDelivered: Boolean,
+    ) {
         val reading = CountDownLatch(1)
         val closed = CountDownLatch(1)
         val delivered = CompletableFuture<HttpResponse>()
@@ -124,13 +132,15 @@ internal class CancellableFutureTest {
             )
         val executor = Executors.newSingleThreadExecutor()
         try {
+            if (alreadyDelivered) delivered.complete(response)
             val result = sdk.async().models().retrieve("synthetic-model")
-            val delivery = executor.submit { delivered.complete(response) }
+            val delivery =
+                if (alreadyDelivered) null else executor.submit { delivered.complete(response) }
             assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
             assertThat(isClosed.get()).isTrue()
             assertThat(result.isCancelled).isTrue()
-            delivery.get(5, TimeUnit.SECONDS)
+            delivery?.get(5, TimeUnit.SECONDS)
         } finally {
             response.close()
             executor.shutdownNow()
@@ -212,6 +222,248 @@ internal class CancellableFutureTest {
     }
 
     @Test
+    fun containsSourceCancellationExceptionAndRunsCleanup() {
+        val cleaned = AtomicBoolean()
+        val source =
+            object : CompletableFuture<HttpResponse>() {
+                override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+                    throw IOException("synthetic transport cleanup failure")
+                }
+            }
+        val result = CancellableFuture.wrap(source) { cleaned.set(true) }
+        assertThat(result.cancel(true)).isTrue()
+        assertThat(result.isCancelled).isTrue()
+        assertThat(cleaned.get()).isTrue()
+    }
+
+    @Test
+    fun cancellingPublicModelRequestContainsTransportCancellationException() {
+        val cancellationCalls = AtomicInteger()
+        val dispatched = CountDownLatch(1)
+        val pending =
+            object : CompletableFuture<HttpResponse>() {
+                override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+                    cancellationCalls.incrementAndGet()
+                    throw IOException("synthetic transport cleanup failure")
+                }
+            }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+                    pending.also { dispatched.countDown() }
+
+                override fun close() {}
+            }
+        val sdk =
+            OpenAIClientImpl(
+                ClientOptions.builder().apiKey("synthetic-key").httpClient(transport).build()
+            )
+        try {
+            val result = sdk.async().models().retrieve("synthetic-model")
+            assertThat(dispatched.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(result.isCancelled).isTrue()
+            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+            while (cancellationCalls.get() == 0 && System.nanoTime() < deadline) Thread.sleep(1)
+            assertThat(cancellationCalls.get()).isEqualTo(1)
+        } finally {
+            sdk.close()
+        }
+    }
+
+    @Test
+    fun propagatesFatalSourceCancellationError() {
+        val source =
+            object : CompletableFuture<HttpResponse>() {
+                override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+                    throw LinkageError("synthetic fatal transport failure")
+                }
+            }
+        val result = CancellableFuture.wrap(source)
+        assertThrows<LinkageError> { result.cancel(true) }
+        assertThat(result.isCancelled).isTrue()
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["handle", "handleAsync", "handleAsyncExecutor"])
+    fun cancellationClosesResponseWhileHandleIsReadingHeadersExactlyOnce(stage: String) {
+        val response =
+            object : HttpResponse {
+                val entered = CountDownLatch(1)
+                val closed = CountDownLatch(1)
+                val closes = AtomicInteger()
+
+                override fun statusCode(): Int {
+                    entered.countDown()
+                    check(closed.await(5, TimeUnit.SECONDS))
+                    return 200
+                }
+
+                override fun headers() = Headers.builder().build()
+
+                override fun body() = "synthetic".byteInputStream()
+
+                override fun close() {
+                    closes.incrementAndGet()
+                    closed.countDown()
+                }
+            }
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val source =
+                CancellableFuture.wrap(CompletableFuture.completedFuture<HttpResponse>(response))
+            val read =
+                java.util.function.BiFunction<HttpResponse?, Throwable?, HttpResponse> { value, _ ->
+                    checkNotNull(value).also { it.statusCode() }
+                }
+            val result =
+                when (stage) {
+                    "handle" -> source.handle(read)
+                    "handleAsync" -> source.handleAsync(read)
+                    else -> source.handleAsync(read, executor)
+                }
+            assertThat(response.entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+            executor.shutdown()
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(response.closes.get()).isEqualTo(1)
+        } finally {
+            response.closed.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun cancellingPublicRequestClosesResponseDuringLoggingHeaderRead() {
+        val entered = CountDownLatch(1)
+        val closed = CountDownLatch(1)
+        val closes = AtomicInteger()
+        val response =
+            object : HttpResponse {
+                override fun statusCode() = 200
+
+                override fun headers(): Headers {
+                    entered.countDown()
+                    check(closed.await(5, TimeUnit.SECONDS))
+                    return Headers.builder().build()
+                }
+
+                override fun body() = "synthetic".byteInputStream()
+
+                override fun close() {
+                    closes.incrementAndGet()
+                    closed.countDown()
+                }
+            }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+                    CompletableFuture.completedFuture<HttpResponse>(response)
+
+                override fun close() {}
+            }
+        val logging = LoggingHttpClient.builder().httpClient(transport).level(LogLevel.INFO).build()
+        val sdk =
+            OpenAIClientImpl(
+                ClientOptions.builder().apiKey("synthetic-key").httpClient(logging).build()
+            )
+        try {
+            val result = sdk.async().models().retrieve("synthetic-model")
+            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(closed.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.isCancelled).isTrue()
+            assertThat(closes.get()).isEqualTo(1)
+        } finally {
+            closed.countDown()
+            sdk.close()
+        }
+    }
+
+    @Test
+    fun cancellationClosesDistinctResponseReturnedByRunningHandle() {
+        val input = Response()
+        val output = Response()
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val result =
+                CancellableFuture.wrap(CompletableFuture.completedFuture<HttpResponse>(input))
+                    .handleAsync(
+                        { _, _ ->
+                            entered.countDown()
+                            check(release.await(5, TimeUnit.SECONDS))
+                            output
+                        },
+                        executor,
+                    )
+            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            release.countDown()
+            executor.shutdown()
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(input.closes.get()).isEqualTo(1)
+            assertThat(output.closes.get()).isEqualTo(1)
+        } finally {
+            release.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun cancellationDoesNotCloseLoggingWrapperOfDiscardedInputTwice() {
+        val input = Response()
+        val wrapper =
+            object : HttpResponse, DelegatingHttpResponse {
+                override val wrappedResponse: HttpResponse = input
+
+                override fun statusCode() = input.statusCode()
+
+                override fun headers() = input.headers()
+
+                override fun body() = input.body()
+
+                override fun close() = input.close()
+            }
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val result =
+                CancellableFuture.wrap(CompletableFuture.completedFuture<HttpResponse>(input))
+                    .handleAsync(
+                        { _, _ ->
+                            entered.countDown()
+                            check(release.await(5, TimeUnit.SECONDS))
+                            wrapper
+                        },
+                        executor,
+                    )
+            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            release.countDown()
+            executor.shutdown()
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(input.closes.get()).isEqualTo(1)
+        } finally {
+            release.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
     fun closesResponseCreatedByRunningStageAfterCancellation() {
         val response = Response()
         val entered = CountDownLatch(1)
@@ -275,16 +527,18 @@ internal class CancellableFutureTest {
     @Test
     fun closesResponseWhenQueuedCompositionIsCancelled() {
         val response = Response()
-        var queued: Runnable? = null
+        val queued = AtomicReference<Runnable?>()
         val result =
             CancellableFuture.wrap(CompletableFuture.completedFuture<HttpResponse>(response))
                 .handle({ value, error -> Pair(value, error) }, { (value, _) -> value?.close() })
                 .thenComposeAsync(
                     { (value, _) -> CompletableFuture.completedFuture(value) },
-                    Executor { queued = it },
+                    Executor { queued.set(it) },
                 )
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (queued.get() == null && System.nanoTime() < deadline) Thread.sleep(1)
         assertThat(result.cancel(true)).isTrue()
-        checkNotNull(queued).run()
+        checkNotNull(queued.get()).run()
         assertThat(response.closes.get()).isEqualTo(1)
     }
 

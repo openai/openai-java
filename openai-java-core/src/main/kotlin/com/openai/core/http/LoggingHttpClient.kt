@@ -333,7 +333,14 @@ private class LoggingOutputStream(private val outputStream: OutputStream, charse
  *
  * The logging occurs in a streaming manner with minimal buffering.
  */
-private class LoggingHttpResponse(private val response: HttpResponse) : HttpResponse {
+internal interface DelegatingHttpResponse {
+    val wrappedResponse: HttpResponse
+}
+
+private class LoggingHttpResponse(override val wrappedResponse: HttpResponse) :
+    HttpResponse, DelegatingHttpResponse {
+
+    private val response: HttpResponse = wrappedResponse
 
     private val loggingBody: Lazy<InputStream> = lazy {
         LoggingInputStream(

@@ -6,18 +6,22 @@ import com.openai.auth.GcpIdTokenProvider
 import com.openai.auth.SubjectTokenProvider
 import com.openai.auth.SubjectTokenType
 import com.openai.auth.WorkloadIdentity
+import com.openai.auth.WorkloadIdentityRetryScope
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
 import com.openai.errors.InternalServerException
 import com.openai.errors.OpenAIRetryableException
+import java.io.IOException
+import java.io.InputStream
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -67,9 +71,15 @@ internal class WorkloadIdentityRetryAfterTest {
     }
 
     private class RecordingSleeper : Sleeper {
-        val waits = mutableListOf<Duration>()
-        var entered = CountDownLatch(1)
-        var pending: CompletableFuture<Void>? = null
+        val waits = CopyOnWriteArrayList<Duration>()
+        @Volatile var entered = CountDownLatch(1)
+        @Volatile var pending: CompletableFuture<Void>? = null
+
+        fun awaitWaits(count: Int) {
+            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+            while (waits.size < count && System.nanoTime() < deadline) Thread.sleep(1)
+            assertThat(waits).hasSize(count)
+        }
 
         override fun sleep(duration: Duration) {
             waits.add(duration)
@@ -193,10 +203,12 @@ internal class WorkloadIdentityRetryAfterTest {
         var issuerCalls = 0
         var apiCalls = 0
         var closedFailures = 0
+        @Volatile var retryScope: WorkloadIdentityRetryScope? = null
 
         override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
             val issuer = request.baseUrl.contains("auth.openai.com")
             if (issuer) issuerCalls++ else apiCalls++
+            if (!issuer && apiCalls == 2) retryScope = requestOptions.workloadIdentityRetryScope
             val failure = issuer && issuerCalls == 2
             val rejectedStatus = if (issuer) null else rejections[apiCalls]
             return object : HttpResponse {
@@ -240,6 +252,13 @@ internal class WorkloadIdentityRetryAfterTest {
             assertThat(sleeper.entered.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(transport.issuerCalls).isEqualTo(2)
             assertThat(transport.closedFailures).isEqualTo(1)
+            // Closing the failed response precedes completion of its async refresh generation.
+            // Wait for the recorded failure before exercising the already-failed path.
+            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+            while (transport.retryScope?.barrier() == null && System.nanoTime() < deadline) {
+                Thread.sleep(1)
+            }
+            assertThat(transport.retryScope?.barrier()).isNotNull()
             // Release the ordinary 401 retry backoff, then block the issuer minimum.
             val apiRetry = sleeper.pending!!
             sleeper.pending = CompletableFuture()
@@ -392,24 +411,28 @@ internal class WorkloadIdentityRetryAfterTest {
             val apiBackoff = CompletableFuture<Void>()
             sleeper.pending = apiBackoff
             val result = options.httpClient.executeAsync(request, RequestOptions.none())
-            assertThat(sleeper.waits).hasSize(1)
+            sleeper.awaitWaits(1)
             assertThat(delegate.issuerCalls).isEqualTo(2)
             val minimumWait = CompletableFuture<Void>()
             sleeper.pending = minimumWait
+            sleeper.entered = CountDownLatch(1)
             if (!pendingAtAttachment) background.complete(checkNotNull(failedResponse))
-            // HTTP retries attach synchronously when this controlled API backoff completes.
+            // Release the controlled API backoff before resolving the pending issuer response.
             apiBackoff.complete(null)
             if (pendingAtAttachment) {
                 assertThat(result.isDone).isFalse()
                 background.complete(checkNotNull(failedResponse))
             }
             if (delayed) {
-                assertThat(sleeper.waits).hasSize(2)
+                sleeper.awaitWaits(2)
                 assertThat(sleeper.waits.last())
                     .isBetween(Duration.ofSeconds(89), Duration.ofSeconds(90))
                 assertThat(delegate.issuerCalls).isEqualTo(2)
                 if (mode == "cancel") {
+                    val cancellationReachedSleep = CountDownLatch(1)
+                    minimumWait.whenComplete { _, _ -> cancellationReachedSleep.countDown() }
                     assertThat(result.cancel(true)).isTrue()
+                    assertThat(cancellationReachedSleep.await(5, TimeUnit.SECONDS)).isTrue()
                     assertThat(minimumWait.isCancelled).isTrue()
                 } else minimumWait.complete(null)
             }
@@ -675,6 +698,64 @@ internal class WorkloadIdentityRetryAfterTest {
             assertThat(metadata.isCancelled).isTrue()
         } finally {
             metadata.cancel(true)
+            sdk.close()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellingPublicRequestClosesAlreadyDeliveredMetadataBody(azure: Boolean) {
+        val reading = CountDownLatch(1)
+        val closed = CountDownLatch(1)
+        val response =
+            object : HttpResponse {
+                override fun statusCode() = 200
+
+                override fun headers() = Headers.builder().build()
+
+                override fun body(): InputStream =
+                    object : InputStream() {
+                        override fun read(): Int {
+                            reading.countDown()
+                            check(closed.await(5, TimeUnit.SECONDS))
+                            throw IOException("synthetic metadata response closed")
+                        }
+                    }
+
+                override fun close() {
+                    closed.countDown()
+                }
+            }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    assertThat(request.baseUrl)
+                        .contains(if (azure) "169.254.169.254" else "metadata.google.internal")
+                    return CompletableFuture.completedFuture(response)
+                }
+
+                override fun close() {}
+            }
+        val provider =
+            if (azure) AzureManagedIdentityTokenProvider.builder().build()
+            else GcpIdTokenProvider.builder().build()
+        val sdk = client(transport, RecordingSleeper(), subjectProvider = provider)
+        try {
+            val result = sdk.async().models().retrieve("synthetic-model")
+            assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(closed.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.isCancelled).isTrue()
+        } finally {
+            closed.countDown()
             sdk.close()
         }
     }

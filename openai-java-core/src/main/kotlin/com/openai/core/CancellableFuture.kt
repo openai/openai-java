@@ -1,5 +1,6 @@
 package com.openai.core
 
+import com.openai.core.http.DelegatingHttpResponse
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import java.util.concurrent.CancellationException
@@ -41,12 +42,16 @@ private constructor(
         // Completion callbacks run inside super.cancel, so retain the action before winning.
         val action = cancellation.getAndSet(null)
         if (!super.cancel(mayInterruptIfRunning)) return false
-        action?.invoke(mayInterruptIfRunning)
+        try {
+            action?.invoke(mayInterruptIfRunning)
+        } catch (_: Exception) {
+            // The public cancellation already won; transport cleanup is best effort.
+        }
         return true
     }
 
     override fun <U> thenApply(fn: Function<in T, out U>): CompletableFuture<U> =
-        transform(fn) { super.thenApply(it) }
+        transform(fn) { super.thenApplyAsync(it) }
 
     override fun thenAccept(action: Consumer<in T>): CompletableFuture<Void> =
         CancellableFuture(super.thenAccept(action)) { cancel(it) }
@@ -97,17 +102,88 @@ private constructor(
     }
 
     override fun <U> handle(fn: BiFunction<in T?, Throwable?, out U>): CompletableFuture<U> =
-        CancellableFuture(super.handle(fn)) { cancel(it) }
+        handleStage(fn, { super.handleAsync(it) })
 
     fun <U> handle(
         fn: BiFunction<in T?, Throwable?, out U>,
         onDiscard: (U) -> Unit,
-    ): CompletableFuture<U> = CancellableFuture(super.handle(fn), onDiscard) { cancel(it) }
+    ): CompletableFuture<U> = handleStage(fn, { super.handleAsync(it) }, onDiscard)
 
     override fun <U> handleAsync(
         fn: BiFunction<in T?, Throwable?, out U>,
         executor: Executor,
-    ): CompletableFuture<U> = CancellableFuture(super.handleAsync(fn, executor)) { cancel(it) }
+    ): CompletableFuture<U> = handleStage(fn, { super.handleAsync(it, executor) })
+
+    override fun <U> handleAsync(fn: BiFunction<in T?, Throwable?, out U>): CompletableFuture<U> =
+        handleStage(fn, { super.handleAsync(it) })
+
+    private fun <U> handleStage(
+        fn: BiFunction<in T?, Throwable?, out U>,
+        apply: (BiFunction<T?, Throwable?, U>) -> CompletableFuture<U>,
+        onDiscard: (U) -> Unit = { value ->
+            when (value) {
+                is HttpResponse -> value.close()
+                is HttpRequest -> value.body?.close()
+            }
+        },
+    ): CompletableFuture<U> {
+        // Retained discard callbacks must not keep the completed parent and its source alive.
+        val discardInput = discard
+        val active = AtomicReference<T?>()
+        val discardedInput = AtomicReference<T?>()
+        val cancelled = AtomicBoolean()
+        val ownership = Any()
+        fun discardActive() {
+            // Record ownership before calling user-supplied close(), which may unblock the handler.
+            val input =
+                synchronized(ownership) { active.getAndSet(null)?.also { discardedInput.set(it) } }
+            input?.let(discardInput)
+        }
+        val discardOutput: (U) -> Unit = { output ->
+            discardActive()
+            val input = discardedInput.get()
+            val wrapsInput = output is DelegatingHttpResponse && output.wrappedResponse === input
+            if (
+                input == null ||
+                    (output !== input &&
+                        !wrapsInput &&
+                        (output !is Pair<*, *> || output.first !== input))
+            ) {
+                onDiscard(output)
+            }
+        }
+        val result =
+            apply(
+                BiFunction { value, error ->
+                    if (value != null) active.set(value)
+                    try {
+                        if (cancelled.get()) {
+                            discardActive()
+                            throw CancellationException()
+                        }
+                        val handled = fn.apply(value, error)
+                        if (cancelled.get()) {
+                            discardActive()
+                            discardOutput(handled)
+                            throw CancellationException()
+                        }
+                        handled
+                    } finally {
+                        active.set(null)
+                    }
+                }
+            )
+        return CancellableFuture(result, discardOutput) { interrupt ->
+            cancelled.set(true)
+            try {
+                discardActive()
+            } catch (_: Exception) {
+                // Cleanup must not change the established cancellation result.
+            } finally {
+                cancel(interrupt)
+            }
+        }
+    }
 
     override fun <U> thenCompose(fn: Function<in T, out CompletionStage<U>>): CompletableFuture<U> =
         compose(fn) { super.thenCompose(it) }
@@ -154,7 +230,11 @@ private constructor(
             onCancel: (Boolean) -> Unit = {},
         ): CancellableFuture<T> =
             CancellableFuture(source) { interrupt ->
-                source.cancel(interrupt)
+                try {
+                    source.cancel(interrupt)
+                } catch (_: Exception) {
+                    // A failed transport cancellation must still run SDK cleanup.
+                }
                 onCancel(interrupt)
             }
     }
