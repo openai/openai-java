@@ -62,13 +62,23 @@ internal class WorkloadIdentityHttpClient(
         OpenAIRetryableException("OAuth token is expired", WorkloadIdentityRetryHeaders(headers))
 
     private fun reject(response: HttpResponse, auth: WorkloadIdentityAuth): Nothing {
-        val error = expiredToken(response.headers())
+        // A cancellation can close the response during statusCode(), before headers are read.
+        auth.invalidateToken()
+        val error =
+            try {
+                expiredToken(response.headers())
+            } catch (failure: Exception) {
+                try {
+                    response.close()
+                } catch (closeFailure: Exception) {
+                    failure.addSuppressed(closeFailure)
+                }
+                throw failure
+            }
         try {
             response.close()
         } catch (failure: Exception) {
             error.addSuppressed(failure)
-        } finally {
-            auth.invalidateToken()
         }
         throw error
     }

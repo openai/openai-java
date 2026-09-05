@@ -24,6 +24,10 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -51,6 +55,65 @@ internal class RetryingHttpClientTest {
         }
 
         override fun close() {}
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancellingWhileRetryInspectsHeadersClosesTheResponse(readThrows: Boolean) {
+        val inspecting = CountDownLatch(1)
+        val closed = CountDownLatch(1)
+        val closes = AtomicInteger()
+        val response =
+            object : HttpResponse {
+                override fun statusCode() = 503
+
+                override fun headers(): Headers {
+                    inspecting.countDown()
+                    check(closed.await(5, TimeUnit.SECONDS))
+                    if (readThrows) throw java.io.IOException("synthetic response closed")
+                    return Headers.builder().put("X-Should-Retry", "false").build()
+                }
+
+                override fun body(): InputStream = "synthetic".byteInputStream()
+
+                override fun close() {
+                    closes.incrementAndGet()
+                    closed.countDown()
+                }
+            }
+        val pending = CompletableFuture<HttpResponse>()
+        val delegate =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+                    pending
+
+                override fun close() {}
+            }
+        val client =
+            RetryingHttpClient.builder().httpClient(delegate).sleeper(RecordingSleeper()).build()
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val result =
+                client.executeAsync(
+                    HttpRequest.builder().method(HttpMethod.GET).baseUrl(baseUrl).build(),
+                    RequestOptions.none(),
+                )
+            val delivery = executor.submit { pending.complete(response) }
+            assertThat(inspecting.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(closed.await(5, TimeUnit.SECONDS)).isTrue()
+            delivery.get(5, TimeUnit.SECONDS)
+            assertThat(closes.get()).isEqualTo(1)
+        } finally {
+            closed.countDown()
+            executor.shutdownNow()
+            client.close()
+        }
     }
 
     @BeforeEach

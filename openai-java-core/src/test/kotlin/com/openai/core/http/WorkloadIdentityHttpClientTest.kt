@@ -7,7 +7,10 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -211,6 +214,83 @@ internal class WorkloadIdentityHttpClientTest {
         successful.close()
         assertThat(seen).containsExactly("Bearer rejected", "Bearer fresh")
         verify(auth, times(1)).invalidateToken()
+    }
+
+    @Test
+    fun cancellationDuring401InspectionStillInvalidatesRejectedBearer() {
+        val auth = mock<WorkloadIdentityAuth>()
+        whenever(auth.getTokenAsync(null))
+            .thenReturn(
+                CompletableFuture.completedFuture("rejected"),
+                CompletableFuture.completedFuture("fresh"),
+            )
+        val invalidated = CountDownLatch(1)
+        whenever(auth.invalidateToken()).thenAnswer { invalidated.countDown() }
+        val inspecting = CountDownLatch(1)
+        val closed = CountDownLatch(1)
+        val isClosed = AtomicBoolean()
+        val rejected =
+            object : HttpResponse {
+                override fun statusCode(): Int {
+                    inspecting.countDown()
+                    check(closed.await(5, TimeUnit.SECONDS))
+                    return 401
+                }
+
+                override fun headers(): Headers {
+                    check(!isClosed.get()) { "synthetic headers unavailable after close" }
+                    return Headers.builder().build()
+                }
+
+                override fun body(): InputStream = ByteArrayInputStream(byteArrayOf())
+
+                override fun close() {
+                    isClosed.set(true)
+                    closed.countDown()
+                }
+            }
+        val seen = mutableListOf<String>()
+        val delegate =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    synchronized(seen) { seen += request.headers.values("Authorization").single() }
+                    return CompletableFuture.completedFuture(
+                        if (synchronized(seen) { seen.size } == 1) rejected
+                        else mockResponse(200, "success")
+                    )
+                }
+
+                override fun close() {}
+            }
+        val client = WorkloadIdentityHttpClient(delegate, auth)
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.openai.com/v1/models")
+                .build()
+        try {
+            val result = client.executeAsync(request, RequestOptions.none())
+            assertThat(inspecting.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            assertThat(invalidated.await(5, TimeUnit.SECONDS)).isTrue()
+            val success =
+                client.executeAsync(request, RequestOptions.none()).get(5, TimeUnit.SECONDS)
+            assertThat(success.statusCode()).isEqualTo(200)
+            success.close()
+            assertThat(synchronized(seen) { seen.toList() })
+                .containsExactly("Bearer rejected", "Bearer fresh")
+        } finally {
+            closed.countDown()
+            client.close()
+        }
     }
 
     private fun mockResponse(statusCode: Int, body: String): HttpResponse {

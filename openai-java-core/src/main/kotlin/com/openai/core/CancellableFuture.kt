@@ -112,7 +112,7 @@ private constructor(
     fun <U> handleAsync(
         fn: BiFunction<in T?, Throwable?, out U>,
         onDiscard: (U) -> Unit,
-    ): CompletableFuture<U> = handleStage(fn, { super.handleAsync(it) }, onDiscard)
+    ): CancellableFuture<U> = handleStage(fn, { super.handleAsync(it) }, onDiscard)
 
     override fun <U> handleAsync(
         fn: BiFunction<in T?, Throwable?, out U>,
@@ -131,7 +131,7 @@ private constructor(
                 is HttpRequest -> value.body?.close()
             }
         },
-    ): CompletableFuture<U> {
+    ): CancellableFuture<U> {
         // Retained discard callbacks must not keep the completed parent and its source alive.
         val discardInput = discard
         val active = AtomicReference<T?>()
@@ -191,41 +191,60 @@ private constructor(
     }
 
     override fun <U> thenCompose(fn: Function<in T, out CompletionStage<U>>): CompletableFuture<U> =
-        compose(fn) { super.thenCompose(it) }
+        compose(fn, discard) { super.thenCompose(it) }
+
+    fun <U> thenCompose(
+        fn: Function<in T, out CompletionStage<U>>,
+        onDiscard: (T) -> Unit,
+        onDiscardResult: (U) -> Unit,
+    ): CompletableFuture<U> = compose(fn, onDiscard, onDiscardResult) { super.thenCompose(it) }
 
     override fun <U> thenComposeAsync(
         fn: Function<in T, out CompletionStage<U>>
-    ): CompletableFuture<U> = compose(fn) { super.thenComposeAsync(it) }
+    ): CompletableFuture<U> = compose(fn, discard) { super.thenComposeAsync(it) }
 
     override fun <U> thenComposeAsync(
         fn: Function<in T, out CompletionStage<U>>,
         executor: Executor,
-    ): CompletableFuture<U> = compose(fn) { super.thenComposeAsync(it, executor) }
+    ): CompletableFuture<U> = compose(fn, discard) { super.thenComposeAsync(it, executor) }
 
     private fun <U> compose(
         fn: Function<in T, out CompletionStage<U>>,
+        onDiscard: (T) -> Unit,
+        onDiscardResult: (U) -> Unit = { value ->
+            when (value) {
+                is HttpResponse -> value.close()
+                is HttpRequest -> value.body?.close()
+            }
+        },
         apply: (Function<T, CompletionStage<U>>) -> CompletableFuture<U>,
     ): CompletableFuture<U> {
         val next = AtomicReference<CompletableFuture<U>?>()
         val cancelled = AtomicReference<Boolean?>()
+        val active = AtomicReference<T?>()
         val enrollment = CancellationEnrollment.Scope()
         val result =
             apply(
                 Function { value ->
-                    if (cancelled.get() != null) {
-                        discard(value)
-                        CompletableFuture<U>().apply { cancel(false) }
-                    } else {
-                        enrollment
-                            .during { fn.apply(value).toCompletableFuture() }
-                            .also { future ->
-                                next.set(future)
-                                cancelled.get()?.let { future.cancel(it) }
-                            }
+                    active.set(value)
+                    try {
+                        if (cancelled.get() != null) {
+                            active.getAndSet(null)?.let(onDiscard)
+                            CompletableFuture<U>().apply { cancel(false) }
+                        } else {
+                            enrollment
+                                .during { fn.apply(value).toCompletableFuture() }
+                                .also { future ->
+                                    next.set(future)
+                                    cancelled.get()?.let { future.cancel(it) }
+                                }
+                        }
+                    } finally {
+                        active.set(null)
                     }
                 }
             )
-        return CancellableFuture(result) { interrupt ->
+        return CancellableFuture(result, onDiscardResult) { interrupt ->
             cancelled.set(interrupt)
             var failure: Throwable? = null
             fun cleanup(action: () -> Unit) {
@@ -236,6 +255,7 @@ private constructor(
                     else if (failure !== error) failure?.addSuppressed(error)
                 }
             }
+            cleanup { active.getAndSet(null)?.let(onDiscard) }
             cleanup { enrollment.cancel(interrupt) }
             cleanup { cancel(interrupt) }
             cleanup { next.get()?.cancel(interrupt) }

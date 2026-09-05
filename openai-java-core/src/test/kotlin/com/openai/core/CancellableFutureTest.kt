@@ -613,6 +613,41 @@ internal class CancellableFutureTest {
     }
 
     @Test
+    fun cancellingActiveCompositionDiscardsSharedInputAndOutputOnce() {
+        val response = Response()
+        val source = CompletableFuture<HttpResponse>()
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val closed = AtomicBoolean()
+        val closeOnce: (HttpResponse) -> Unit = {
+            if (closed.compareAndSet(false, true)) it.close()
+        }
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val result =
+                CancellableFuture.wrap(source)
+                    .thenCompose(
+                        { value ->
+                            entered.countDown()
+                            check(release.await(5, TimeUnit.SECONDS))
+                            CompletableFuture.completedFuture(value)
+                        },
+                        closeOnce,
+                        closeOnce,
+                    )
+            val delivery = executor.submit { source.complete(response) }
+            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            release.countDown()
+            delivery.get(5, TimeUnit.SECONDS)
+            assertThat(response.closes.get()).isEqualTo(1)
+        } finally {
+            release.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
     fun deliveredResponseRemainsOwnedByCaller() {
         val response = Response()
         val result = CancellableFuture.wrap(CompletableFuture.completedFuture(response))
