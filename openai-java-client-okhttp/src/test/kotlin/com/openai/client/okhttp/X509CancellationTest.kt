@@ -2,8 +2,11 @@ package com.openai.client.okhttp
 
 import com.openai.client.OpenAIClientAsyncImpl
 import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.UnexpectedStatusCodeException
 import java.io.IOException
@@ -133,8 +136,12 @@ internal class X509CancellationTest {
     private fun verifyCancelledAuthWaiter(joinAfterCancellation: Boolean) {
         val entered = CountDownLatch(1)
         val release = CountDownLatch(1)
+        val adapterEntered = CountDownLatch(1)
+        val adapterRelease = CountDownLatch(1)
         val exchanges = AtomicInteger()
         val requests = AtomicInteger()
+        val apiFutures =
+            java.util.concurrent.ConcurrentHashMap<String, CompletableFuture<HttpResponse>>()
         val client =
             client(
                 Interceptor { chain ->
@@ -151,19 +158,30 @@ internal class X509CancellationTest {
                     check(release.await(5, TimeUnit.SECONDS))
                     response(chain, TOKEN.toResponseBody(JSON))
                 },
+                onApiFuture = { request, future ->
+                    if (request.url().endsWith("/cancelled-model")) {
+                        apiFutures["cancelled-model"] = future
+                        adapterEntered.countDown()
+                        check(adapterRelease.await(5, TimeUnit.SECONDS))
+                    }
+                },
             )
         try {
             val cancelled = client.models().retrieve("cancelled-model")
             assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(adapterEntered.await(5, TimeUnit.SECONDS)).isTrue()
             if (joinAfterCancellation) assertThat(cancelled.cancel(true)).isTrue()
             val remaining = client.models().retrieve("test-model")
             if (!joinAfterCancellation) assertThat(cancelled.cancel(true)).isTrue()
+            assertThat(apiFutures["cancelled-model"]?.isCancelled).isTrue()
+            adapterRelease.countDown()
             release.countDown()
             assertThat(remaining.get(5, TimeUnit.SECONDS).id()).isEqualTo("test-model")
             assertThat(cancelled.isCancelled).isTrue()
             assertThat(exchanges.get()).isEqualTo(1)
             assertThat(requests.get()).isEqualTo(1)
         } finally {
+            adapterRelease.countDown()
             release.countDown()
             client.close()
         }
@@ -343,6 +361,7 @@ internal class X509CancellationTest {
         auth: Interceptor = Interceptor { response(it, TOKEN.toResponseBody(JSON)) },
         listener: EventListener = EventListener.NONE,
         options: (ClientOptions.Builder) -> Unit = {},
+        onApiFuture: ((HttpRequest, CompletableFuture<HttpResponse>) -> Unit)? = null,
     ): OpenAIClientAsyncImpl {
         val apiClient =
             OkHttpClient(
@@ -364,10 +383,22 @@ internal class X509CancellationTest {
                 )
                 .apply { isAccessible = true }
                 .newInstance(apiClient, authenticator) as HttpClient
+        val observed =
+            if (onApiFuture == null) adapter
+            else
+                object : HttpClient by adapter {
+                    override fun executeAsync(
+                        request: HttpRequest,
+                        requestOptions: RequestOptions,
+                    ): CompletableFuture<HttpResponse> =
+                        adapter.executeAsync(request, requestOptions).also {
+                            onApiFuture(request, it)
+                        }
+                }
         return OpenAIClientAsyncImpl(
             ClientOptions.builder()
                 .baseUrl("https://mtls.api.openai.com/v1")
-                .httpClient(adapter)
+                .httpClient(observed)
                 .httpRequestAuthenticator(authenticator)
                 .maxRetries(0)
                 .apply(options)

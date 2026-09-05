@@ -203,6 +203,7 @@ private constructor(
     ): CompletableFuture<U> {
         val next = AtomicReference<CompletableFuture<U>?>()
         val cancelled = AtomicReference<Boolean?>()
+        val enrollment = CancellationEnrollment.Scope()
         val result =
             apply(
                 Function { value ->
@@ -210,17 +211,30 @@ private constructor(
                         discard(value)
                         CompletableFuture<U>().apply { cancel(false) }
                     } else {
-                        fn.apply(value).toCompletableFuture().also { future ->
-                            next.set(future)
-                            cancelled.get()?.let { future.cancel(it) }
-                        }
+                        enrollment
+                            .during { fn.apply(value).toCompletableFuture() }
+                            .also { future ->
+                                next.set(future)
+                                cancelled.get()?.let { future.cancel(it) }
+                            }
                     }
                 }
             )
         return CancellableFuture(result) { interrupt ->
             cancelled.set(interrupt)
-            cancel(interrupt)
-            next.get()?.cancel(interrupt)
+            var failure: Throwable? = null
+            fun cleanup(action: () -> Unit) {
+                try {
+                    action()
+                } catch (error: Throwable) {
+                    if (failure == null) failure = error
+                    else if (failure !== error) failure?.addSuppressed(error)
+                }
+            }
+            cleanup { enrollment.cancel(interrupt) }
+            cleanup { cancel(interrupt) }
+            cleanup { next.get()?.cancel(interrupt) }
+            failure?.let { throw it }
         }
     }
 

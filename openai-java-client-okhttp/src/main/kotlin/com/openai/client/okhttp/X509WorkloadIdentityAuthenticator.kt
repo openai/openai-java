@@ -1,5 +1,6 @@
 package com.openai.client.okhttp
 
+import com.openai.core.CancellationEnrollment
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.Headers
@@ -195,6 +196,7 @@ private class X509RefreshingHttpClient(
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
         val result = CompletableFuture<HttpResponse>()
+        CancellationEnrollment.register(result)
         val authentication = authenticator.authenticateForBoundTransportAsync(request)
         val active = AtomicReference<CompletableFuture<*>>(authentication)
         result.whenComplete { _, _ -> if (result.isCancelled) active.get().cancel(true) }
