@@ -25,11 +25,14 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -112,6 +115,51 @@ internal class RetryingHttpClientTest {
         } finally {
             closed.countDown()
             executor.shutdownNow()
+            client.close()
+        }
+    }
+
+    @Test
+    fun nullResponseFromNonRetryableRequestCompletesExceptionally() {
+        val delegate =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+                    CompletableFuture<HttpResponse>().apply { complete(null) }
+
+                override fun close() {}
+            }
+        val client =
+            RetryingHttpClient.builder().httpClient(delegate).sleeper(RecordingSleeper()).build()
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl(baseUrl)
+                .body(
+                    object : HttpRequestBody {
+                        override fun writeTo(outputStream: java.io.OutputStream) {}
+
+                        override fun contentType(): String? = null
+
+                        override fun contentLength() = 0L
+
+                        override fun repeatable() = false
+
+                        override fun close() {}
+                    }
+                )
+                .build()
+        try {
+            assertThatThrownBy {
+                    client.executeAsync(request, RequestOptions.none()).get(5, TimeUnit.SECONDS)
+                }
+                .isInstanceOf(ExecutionException::class.java)
+                .hasCauseInstanceOf(NullPointerException::class.java)
+        } finally {
             client.close()
         }
     }

@@ -9,6 +9,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
 import java.io.IOException
+import java.io.InputStream
 import java.time.Clock
 import java.time.Duration
 import java.util.UUID
@@ -156,12 +157,27 @@ private constructor(
                 )
         }
 
-        return executeWithRetries(
-            modifiedRequest,
-            requestOptions.withWorkloadIdentityRetryScope(
-                WorkloadIdentityRetryScope(clock, sleeper)
-            ),
-        )
+        val attempt =
+            executeWithRetries(
+                modifiedRequest,
+                requestOptions.withWorkloadIdentityRetryScope(
+                    WorkloadIdentityRetryScope(clock, sleeper)
+                ),
+            )
+        val delivery = CompletableFuture<HttpResponse>()
+        attempt.whenComplete { response, error ->
+            if (error != null) {
+                delivery.completeExceptionally(error)
+            } else if (response == null) {
+                delivery.completeExceptionally(
+                    NullPointerException("HTTP client returned null response")
+                )
+            } else {
+                val lease = CloseOnceHttpResponse(response)
+                if (!delivery.complete(lease)) lease.close()
+            }
+        }
+        return CancellableFuture.wrap(delivery) { attempt.cancel(it) }
     }
 
     override fun close() {
@@ -283,5 +299,23 @@ private constructor(
                 maxRetries,
                 idempotencyHeader,
             )
+    }
+}
+
+/** Shares response cleanup between cancellation and a parser's `use` block. */
+private class CloseOnceHttpResponse(override val wrappedResponse: HttpResponse) :
+    HttpResponse, DelegatingHttpResponse {
+    private val closed = AtomicBoolean()
+
+    override fun statusCode() = wrappedResponse.statusCode()
+
+    override fun headers() = wrappedResponse.headers()
+
+    override fun requestId() = wrappedResponse.requestId()
+
+    override fun body(): InputStream = wrappedResponse.body()
+
+    override fun close() {
+        if (closed.compareAndSet(false, true)) wrappedResponse.close()
     }
 }

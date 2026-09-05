@@ -7,10 +7,12 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.LoggingHttpClient
 import com.openai.core.http.multipartFormData
 import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FilePurpose
+import com.openai.models.models.Model
 import java.io.FilterInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -87,6 +89,7 @@ internal class CancellableFutureTest {
         val closed = CountDownLatch(1)
         val delivered = CompletableFuture<HttpResponse>()
         val isClosed = AtomicBoolean()
+        val closeCalls = AtomicInteger()
         val transport =
             object : HttpClient {
                 override fun execute(
@@ -116,6 +119,7 @@ internal class CancellableFutureTest {
                     }
 
                 override fun close() {
+                    closeCalls.incrementAndGet()
                     if (isClosed.compareAndSet(false, true)) {
                         closed.countDown()
                         if (closeThrows) throw IOException("synthetic close failure")
@@ -136,8 +140,74 @@ internal class CancellableFutureTest {
             assertThat(isClosed.get()).isTrue()
             assertThat(result.isCancelled).isTrue()
             delivery.get(5, TimeUnit.SECONDS)
+            assertThat(closeCalls.get()).isEqualTo(1)
         } finally {
-            response.close()
+            if (!isClosed.get()) response.close()
+            executor.shutdownNow()
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+            sdk.close()
+        }
+    }
+
+    @Test
+    fun cancellingPublicRawModelParserClosesResponseExactlyOnce() {
+        val reading = CountDownLatch(1)
+        val closed = CountDownLatch(1)
+        val closes = AtomicInteger()
+        val response =
+            object : HttpResponse {
+                override fun statusCode() = 200
+
+                override fun headers() =
+                    Headers.builder().put("Content-Type", "application/json").build()
+
+                override fun body(): InputStream =
+                    object : InputStream() {
+                        override fun read(): Int {
+                            reading.countDown()
+                            check(closed.await(5, TimeUnit.SECONDS))
+                            throw IOException("synthetic response closed")
+                        }
+                    }
+
+                override fun close() {
+                    closes.incrementAndGet()
+                    closed.countDown()
+                }
+            }
+        val transport =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous request")
+
+                override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+                    CompletableFuture.completedFuture<HttpResponse>(response)
+
+                override fun close() {}
+            }
+        val sdk =
+            OpenAIClientImpl(
+                ClientOptions.builder().apiKey("synthetic-key").httpClient(transport).build()
+            )
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val raw =
+                sdk.async()
+                    .models()
+                    .withRawResponse()
+                    .retrieve("synthetic-model")
+                    .get(5, TimeUnit.SECONDS)
+            val pending = CompletableFuture<HttpResponseFor<Model>>()
+            val result = CancellableFuture.wrap(pending).thenApply { it.parse() }
+            val delivery = executor.submit { pending.complete(raw) }
+            assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(result.cancel(true)).isTrue()
+            delivery.get(5, TimeUnit.SECONDS)
+            assertThat(closes.get()).isEqualTo(1)
+        } finally {
+            closed.countDown()
             executor.shutdownNow()
             assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
             sdk.close()
