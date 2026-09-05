@@ -837,7 +837,9 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
-         * Whether to store the generated model response for later retrieval via API.
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the [data retention exceptions](/api/docs/guides/your-data#v1responses).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1933,7 +1935,12 @@ private constructor(
                 this.serviceTier = serviceTier
             }
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Whether to store the generated model response for later retrieval via API. Defaults
+             * to true when omitted. If set to true, response data will be stored for at least 30
+             * days, subject to the
+             * [data retention exceptions](/api/docs/guides/your-data#v1responses).
+             */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
             /**
