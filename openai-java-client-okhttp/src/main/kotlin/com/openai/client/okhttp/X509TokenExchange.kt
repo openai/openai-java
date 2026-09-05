@@ -166,8 +166,11 @@ internal class X509TokenExchange(
 
             val lease = ResponseLease(response)
             activeResponse.set(lease)
-            if (terminal.get() && activeResponse.compareAndSet(lease, null)) lease.close()
-            responseLeaseFuture.complete(lease)
+            try {
+                if (terminal.get() && activeResponse.compareAndSet(lease, null)) lease.close()
+            } finally {
+                responseLeaseFuture.complete(lease)
+            }
         }
 
         private fun cancelResources(mayInterruptIfRunning: Boolean) {

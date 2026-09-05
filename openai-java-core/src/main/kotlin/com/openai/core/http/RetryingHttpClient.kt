@@ -102,9 +102,9 @@ private constructor(
             }
 
             return responseFuture
-                .handle(
+                .handleAsync(
                     { response, throwable -> Pair(response, throwable) },
-                    { (response, _) -> response?.close() },
+                    onDiscard = { (response, _) -> response?.close() },
                 )
                 .thenCompose { (response, throwable) ->
                     if (response != null) {

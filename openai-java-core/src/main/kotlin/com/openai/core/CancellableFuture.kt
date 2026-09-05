@@ -51,7 +51,7 @@ private constructor(
     }
 
     override fun <U> thenApply(fn: Function<in T, out U>): CompletableFuture<U> =
-        transform(fn) { super.thenApplyAsync(it) }
+        transform(fn) { super.thenApply(it) }
 
     override fun thenAccept(action: Consumer<in T>): CompletableFuture<Void> =
         CancellableFuture(super.thenAccept(action)) { cancel(it) }
@@ -102,9 +102,14 @@ private constructor(
     }
 
     override fun <U> handle(fn: BiFunction<in T?, Throwable?, out U>): CompletableFuture<U> =
-        handleStage(fn, { super.handleAsync(it) })
+        handleStage(fn, { super.handle(it) })
 
     fun <U> handle(
+        fn: BiFunction<in T?, Throwable?, out U>,
+        onDiscard: (U) -> Unit,
+    ): CompletableFuture<U> = handleStage(fn, { super.handle(it) }, onDiscard)
+
+    fun <U> handleAsync(
         fn: BiFunction<in T?, Throwable?, out U>,
         onDiscard: (U) -> Unit,
     ): CompletableFuture<U> = handleStage(fn, { super.handleAsync(it) }, onDiscard)

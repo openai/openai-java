@@ -79,7 +79,7 @@ private constructor(
                 logFailure(e, Duration.between(before, OffsetDateTime.now(clock)))
                 throw e
             }
-        return CancellableFuture.wrap(future).handle { response, error ->
+        return CancellableFuture.wrap(future).handleAsync { response, error ->
             val took = Duration.between(before, OffsetDateTime.now(clock))
             if (error != null) {
                 logFailure(unwrapCompletionException(error), took)

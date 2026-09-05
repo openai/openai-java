@@ -28,7 +28,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class CancellableFutureTest {
@@ -82,11 +81,8 @@ internal class CancellableFutureTest {
     }
 
     @ParameterizedTest
-    @CsvSource("false,false", "true,false", "false,true", "true,true")
-    fun cancellingPublicModelReadClosesRunningResponseBody(
-        closeThrows: Boolean,
-        alreadyDelivered: Boolean,
-    ) {
+    @ValueSource(booleans = [false, true])
+    fun cancellingPublicModelReadClosesRunningResponseBody(closeThrows: Boolean) {
         val reading = CountDownLatch(1)
         val closed = CountDownLatch(1)
         val delivered = CompletableFuture<HttpResponse>()
@@ -132,15 +128,14 @@ internal class CancellableFutureTest {
             )
         val executor = Executors.newSingleThreadExecutor()
         try {
-            if (alreadyDelivered) delivered.complete(response)
             val result = sdk.async().models().retrieve("synthetic-model")
-            val delivery =
-                if (alreadyDelivered) null else executor.submit { delivered.complete(response) }
+            // Non-async model parsing runs on the delivery thread; enroll before delivery.
+            val delivery = executor.submit { delivered.complete(response) }
             assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
             assertThat(isClosed.get()).isTrue()
             assertThat(result.isCancelled).isTrue()
-            delivery?.get(5, TimeUnit.SECONDS)
+            delivery.get(5, TimeUnit.SECONDS)
         } finally {
             response.close()
             executor.shutdownNow()
@@ -315,8 +310,8 @@ internal class CancellableFutureTest {
             }
         val executor = Executors.newSingleThreadExecutor()
         try {
-            val source =
-                CancellableFuture.wrap(CompletableFuture.completedFuture<HttpResponse>(response))
+            val pending = CompletableFuture<HttpResponse>()
+            val source = CancellableFuture.wrap(pending)
             val read =
                 java.util.function.BiFunction<HttpResponse?, Throwable?, HttpResponse> { value, _ ->
                     checkNotNull(value).also { it.statusCode() }
@@ -327,15 +322,90 @@ internal class CancellableFutureTest {
                     "handleAsync" -> source.handleAsync(read)
                     else -> source.handleAsync(read, executor)
                 }
+            val delivery = executor.submit { pending.complete(response) }
             assertThat(response.entered.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(result.cancel(true)).isTrue()
             assertThat(response.closed.await(5, TimeUnit.SECONDS)).isTrue()
+            delivery.get(5, TimeUnit.SECONDS)
             executor.shutdown()
             assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
             assertThat(response.closes.get()).isEqualTo(1)
         } finally {
             response.closed.countDown()
             executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun nonAsyncStagesPreserveCallerAndCompletionThreadContext() {
+        val context = ThreadLocal<String>()
+        val pending = CompletableFuture<String>()
+        val source = CancellableFuture.wrap(pending)
+        val seen = mutableListOf<String?>()
+        context.set("attaching")
+        try {
+            val completed = CancellableFuture.wrap(CompletableFuture.completedFuture("ready"))
+            val immediate =
+                completed
+                    .thenApply {
+                        seen += context.get()
+                        it
+                    }
+                    .handle { value, _ ->
+                        seen += context.get()
+                        value
+                    }
+            val immediateDiscard =
+                completed.handle(
+                    { value, _ ->
+                        seen += context.get()
+                        value
+                    },
+                    { _: String? -> },
+                )
+            assertThat(immediate.join()).isEqualTo("ready")
+            assertThat(immediateDiscard.join()).isEqualTo("ready")
+            assertThat(seen).containsExactly("attaching", "attaching", "attaching")
+
+            val applied =
+                source.thenApply {
+                    seen += context.get()
+                    it
+                }
+            val handled =
+                source.handle { value, _ ->
+                    seen += context.get()
+                    value
+                }
+            val discarded =
+                source.handle(
+                    { value, _ ->
+                        seen += context.get()
+                        value
+                    },
+                    { _: String? -> },
+                )
+            val executor = Executors.newSingleThreadExecutor()
+            try {
+                executor
+                    .submit {
+                        context.set("delivering")
+                        try {
+                            pending.complete("delivered")
+                        } finally {
+                            context.remove()
+                        }
+                    }
+                    .get(5, TimeUnit.SECONDS)
+                assertThat(applied.join()).isEqualTo("delivered")
+                assertThat(handled.join()).isEqualTo("delivered")
+                assertThat(discarded.join()).isEqualTo("delivered")
+                assertThat(seen.drop(3)).containsExactly("delivering", "delivering", "delivering")
+            } finally {
+                executor.shutdownNow()
+            }
+        } finally {
+            context.remove()
         }
     }
 

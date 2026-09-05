@@ -4,6 +4,7 @@ import com.openai.auth.WorkloadIdentityAuth
 import com.openai.core.RequestOptions
 import com.openai.errors.OpenAIRetryableException
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -132,6 +134,83 @@ internal class WorkloadIdentityHttpClientTest {
                 argThat { req -> req.headers.values("Authorization").contains("Bearer $token") },
                 any(),
             )
+    }
+
+    @Test
+    fun throwingCloseStillInvalidatesRejectedBearerSynchronously() =
+        throwingCloseStillInvalidatesRejectedBearer(async = false)
+
+    @Test
+    fun throwingCloseStillInvalidatesRejectedBearerAsynchronously() =
+        throwingCloseStillInvalidatesRejectedBearer(async = true)
+
+    private fun throwingCloseStillInvalidatesRejectedBearer(async: Boolean) {
+        val auth = mock<WorkloadIdentityAuth>()
+        if (async) {
+            whenever(auth.getTokenAsync(null))
+                .thenReturn(
+                    CompletableFuture.completedFuture("rejected"),
+                    CompletableFuture.completedFuture("fresh"),
+                )
+        } else {
+            whenever(auth.getToken()).thenReturn("rejected", "fresh")
+        }
+        val rejected =
+            object : HttpResponse {
+                override fun statusCode() = 401
+
+                override fun headers() = Headers.builder().put("Retry-After", "1").build()
+
+                override fun body(): InputStream = ByteArrayInputStream(byteArrayOf())
+
+                override fun close() {
+                    throw IOException("synthetic close failure")
+                }
+            }
+        val seen = mutableListOf<String>()
+        val delegate =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    seen += request.headers.values("Authorization").single()
+                    return if (seen.size == 1) rejected else mockResponse(200, "success")
+                }
+
+                override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+
+                override fun close() {}
+            }
+        val client = WorkloadIdentityHttpClient(delegate, auth)
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.openai.com/v1/models")
+                .build()
+
+        val failure =
+            runCatching {
+                    if (async) client.executeAsync(request, RequestOptions.none()).get()
+                    else client.execute(request, RequestOptions.none())
+                }
+                .exceptionOrNull()
+        if (async) assertThat(failure).isInstanceOf(ExecutionException::class.java)
+        val error = if (failure is ExecutionException) failure.cause else failure
+        assertThat(error).isInstanceOf(OpenAIRetryableException::class.java)
+        assertThat(retryAfterHeaders(checkNotNull(error))?.values("Retry-After"))
+            .containsExactly("1")
+        assertThat(error.suppressed).hasSize(1)
+        assertThat(error.suppressed.single()).isInstanceOf(IOException::class.java)
+        verify(auth).invalidateToken()
+        val successful =
+            if (async) client.executeAsync(request, RequestOptions.none()).get()
+            else client.execute(request, RequestOptions.none())
+        assertThat(successful.statusCode()).isEqualTo(200)
+        successful.close()
+        assertThat(seen).containsExactly("Bearer rejected", "Bearer fresh")
+        verify(auth, times(1)).invalidateToken()
     }
 
     private fun mockResponse(statusCode: Int, body: String): HttpResponse {

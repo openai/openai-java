@@ -85,7 +85,7 @@ private constructor(private val resource: String, private val apiVersion: String
                 .build()
 
         return CancellableFuture.wrap(httpClient.executeAsync(request))
-            .thenApply { response ->
+            .thenApplyAsync { response ->
                 response.use {
                     if (response.statusCode() != 200) {
                         throw SubjectTokenProviderException(

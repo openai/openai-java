@@ -329,7 +329,8 @@ internal class WorkloadIdentityAuth(
         return CancellableFuture.wrap(config.provider.getTokenAsync(httpClient, jsonMapper))
             .thenCompose { subjectToken ->
                 val request = buildTokenExchangeRequest(subjectToken)
-                CancellableFuture.wrap(httpClient.executeAsync(request)).thenApply { response ->
+                CancellableFuture.wrap(httpClient.executeAsync(request)).thenApplyAsync { response
+                    ->
                     response.use { processTokenExchangeResponse(it, refresh) }
                 }
             }

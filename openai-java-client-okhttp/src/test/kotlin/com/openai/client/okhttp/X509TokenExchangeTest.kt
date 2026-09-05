@@ -611,6 +611,64 @@ internal class X509TokenExchangeTest {
     }
 
     @Test
+    fun throwingLateResponseCloseDoesNotStrandResponseWorkers() {
+        val pending = List(4) { NonCancellableFuture<HttpResponse>() }
+        val admitted = AtomicInteger()
+        val allAdmitted = CountDownLatch(pending.size)
+        val closed = CountDownLatch(pending.size)
+        val closeCount = AtomicInteger()
+        val client =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = error("Unexpected synchronous exchange")
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    val index = admitted.getAndIncrement()
+                    allAdmitted.countDown()
+                    return if (index < pending.size) pending[index]
+                    else CompletableFuture.completedFuture(TestResponse(200, validResponse()))
+                }
+
+                override fun close() {}
+            }
+        X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, client).use { exchange ->
+            val canceled = pending.map { exchange.executeAsync() }
+            // The queued fifth exchange checks that every owned worker leaves its get().
+            assertThat(allAdmitted.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(admitted.get()).isEqualTo(pending.size)
+            canceled.forEach { assertThat(it.cancel(true)).isTrue() }
+            pending.forEach { future ->
+                val response =
+                    object : HttpResponse {
+                        override fun statusCode() = 200
+
+                        override fun headers() = Headers.builder().build()
+
+                        override fun body(): InputStream = ByteArrayInputStream(byteArrayOf())
+
+                        override fun close() {
+                            closeCount.incrementAndGet()
+                            closed.countDown()
+                            throw IOException("synthetic late close failure")
+                        }
+                    }
+                // Completing the transport may throw from the registered callback.
+                runCatching { future.complete(response) }
+            }
+            assertThat(closed.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(closeCount).hasValue(pending.size)
+            assertThat(canceled).allMatch { it.isCancelled }
+            assertThat(exchange.executeAsync().get(5, TimeUnit.SECONDS).value)
+                .isEqualTo(ACCESS_TOKEN)
+        }
+    }
+
+    @Test
     fun cancellationClosesActiveResponseBeforeRunningCallerCallbacks() {
         val response = BlockingResponse()
         val exchange = X509TokenExchange(IDP_ID, SERVICE_ACCOUNT_ID, SingleResponseClient(response))

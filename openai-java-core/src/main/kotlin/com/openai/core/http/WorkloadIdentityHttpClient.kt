@@ -26,10 +26,7 @@ internal class WorkloadIdentityHttpClient(
         val response = delegate.execute(requestWithAuth, requestOptions)
 
         if (response.statusCode() == 401) {
-            val error = expiredToken(response.headers())
-            response.close()
-            workloadIdentityAuth.invalidateToken()
-            throw error
+            reject(response, workloadIdentityAuth)
         }
 
         return response
@@ -51,12 +48,9 @@ internal class WorkloadIdentityHttpClient(
                     request.toBuilder().replaceHeaders("Authorization", "Bearer $token").build()
 
                 CancellableFuture.wrap(delegate.executeAsync(requestWithAuth, requestOptions))
-                    .thenApply { response ->
+                    .thenApplyAsync { response ->
                         if (response.statusCode() == 401) {
-                            val error = expiredToken(response.headers())
-                            response.close()
-                            workloadIdentityAuth.invalidateToken()
-                            throw error
+                            reject(response, workloadIdentityAuth)
                         }
 
                         response
@@ -66,6 +60,18 @@ internal class WorkloadIdentityHttpClient(
 
     private fun expiredToken(headers: Headers): OpenAIRetryableException =
         OpenAIRetryableException("OAuth token is expired", WorkloadIdentityRetryHeaders(headers))
+
+    private fun reject(response: HttpResponse, auth: WorkloadIdentityAuth): Nothing {
+        val error = expiredToken(response.headers())
+        try {
+            response.close()
+        } catch (failure: Exception) {
+            error.addSuppressed(failure)
+        } finally {
+            auth.invalidateToken()
+        }
+        throw error
+    }
 
     override fun close() {
         workloadIdentityAuth?.close()

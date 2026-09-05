@@ -83,7 +83,7 @@ class GcpIdTokenProvider private constructor(private val audience: String) : Sub
                 .build()
 
         return CancellableFuture.wrap(httpClient.executeAsync(request))
-            .thenApply { response ->
+            .thenApplyAsync { response ->
                 response.use {
                     if (response.statusCode() != 200) {
                         throw SubjectTokenProviderException(

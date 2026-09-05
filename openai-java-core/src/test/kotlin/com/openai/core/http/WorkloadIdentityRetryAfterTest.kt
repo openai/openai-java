@@ -337,6 +337,7 @@ internal class WorkloadIdentityRetryAfterTest {
                 } else {
                     assertThat(result.join().id()).isEqualTo("synthetic-model")
                 }
+                assertThat(transport.failureClosed.await(5, TimeUnit.SECONDS)).isTrue()
                 assertThat(transport.closedFailures).isEqualTo(1)
                 assertThat(transport.issuerCalls)
                     .isEqualTo(if (case.terminal || case.cached) 2 else 3)
