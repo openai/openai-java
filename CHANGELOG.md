@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.59.0](https://github.com/openai/openai-java/compare/v4.58.0...v4.59.0) (2026-09-05)
+
+
+### Features
+
+* **api:** Add prompt cache diagnostics ([#975](https://github.com/openai/openai-java/issues/975)) ([b9b9c85](https://github.com/openai/openai-java/commit/b9b9c851cf70331ee0aeb557a6ec38f3cb550bf7))
+* **api:** add service-account API key expiration fields ([#979](https://github.com/openai/openai-java/issues/979)) ([af2c32a](https://github.com/openai/openai-java/commit/af2c32a92c86ceddbfe704d1a192c1785cad1571))
+* **api:** correct function argument completion event fields (openapi-545) ([#978](https://github.com/openai/openai-java/issues/978)) ([198a7bd](https://github.com/openai/openai-java/commit/198a7bdf339d3180c11db70a7fd6ee0c96c79376))
+
+
+### Chores
+
+* **api:** document throttling and model overload responses — SDK-235 ([#980](https://github.com/openai/openai-java/issues/980)) ([5356310](https://github.com/openai/openai-java/commit/535631042faa338d7c8f1e88c44f68305ed1f632))
+
 ## [4.58.0](https://github.com/openai/openai-java/compare/v4.57.0...v4.58.0) (2026-09-04)
 
 
