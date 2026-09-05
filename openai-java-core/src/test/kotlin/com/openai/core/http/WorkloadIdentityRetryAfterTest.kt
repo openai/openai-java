@@ -203,6 +203,7 @@ internal class WorkloadIdentityRetryAfterTest {
         var issuerCalls = 0
         var apiCalls = 0
         var closedFailures = 0
+        val failureClosed = CountDownLatch(1)
         @Volatile var retryScope: WorkloadIdentityRetryScope? = null
 
         override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
@@ -228,7 +229,10 @@ internal class WorkloadIdentityRetryAfterTest {
                         .byteInputStream()
 
                 override fun close() {
-                    if (failure) closedFailures++
+                    if (failure) {
+                        closedFailures++
+                        failureClosed.countDown()
+                    }
                 }
             }
         }
@@ -250,6 +254,7 @@ internal class WorkloadIdentityRetryAfterTest {
             sleeper.pending = CompletableFuture()
             val original = sdk.async().models().retrieve("synthetic-model", sharedOptions)
             assertThat(sleeper.entered.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(transport.failureClosed.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(transport.issuerCalls).isEqualTo(2)
             assertThat(transport.closedFailures).isEqualTo(1)
             // Closing the failed response precedes completion of its async refresh generation.
