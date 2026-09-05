@@ -27,6 +27,7 @@ internal class ApiKeyServiceAsyncTest {
                 ApiKeyCreateParams.builder()
                     .projectId("project_id")
                     .serviceAccountId("service_account_id")
+                    .expiresInSeconds(1L)
                     .name("name")
                     .addScope("string")
                     .build()
