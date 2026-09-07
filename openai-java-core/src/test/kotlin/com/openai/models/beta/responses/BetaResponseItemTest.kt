@@ -50,6 +50,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -155,6 +156,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -266,6 +268,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -375,6 +378,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -487,6 +491,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -585,6 +590,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -650,6 +656,7 @@ internal class BetaResponseItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -672,6 +679,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -705,6 +713,7 @@ internal class BetaResponseItemTest {
                     .agent(
                         BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -756,6 +765,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -843,6 +853,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -926,6 +937,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1029,6 +1041,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1130,6 +1143,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).contains(toolSearchCall)
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1195,6 +1209,7 @@ internal class BetaResponseItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1226,6 +1241,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).contains(toolSearchOutput)
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1266,6 +1282,7 @@ internal class BetaResponseItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1309,6 +1326,7 @@ internal class BetaResponseItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1339,6 +1357,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).contains(additionalTools)
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1377,6 +1396,7 @@ internal class BetaResponseItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1389,6 +1409,89 @@ internal class BetaResponseItemTest {
                     .agent(
                         BetaResponseItem.AdditionalTools.Agent.builder()
                             .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseItem),
+                jacksonTypeRef<BetaResponseItem>(),
+            )
+
+        assertThat(roundtrippedBetaResponseItem).isEqualTo(betaResponseItem)
+    }
+
+    @Test
+    fun ofConfigurationUpdate() {
+        val configurationUpdate =
+            BetaResponseConfigurationUpdateItem.builder()
+                .id("cnfu_123")
+                .agent(
+                    BetaResponseConfigurationUpdateItem.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .reasoning(
+                    BetaResponseConfigurationUpdateItem.Reasoning.builder()
+                        .effort(BetaResponseConfigurationUpdateItem.Reasoning.Effort.NONE)
+                        .build()
+                )
+                .build()
+
+        val betaResponseItem = BetaResponseItem.ofConfigurationUpdate(configurationUpdate)
+
+        assertThat(betaResponseItem.betaResponseInputMessageItem()).isEmpty
+        assertThat(betaResponseItem.betaResponseOutputMessage()).isEmpty
+        assertThat(betaResponseItem.fileSearchCall()).isEmpty
+        assertThat(betaResponseItem.computerCall()).isEmpty
+        assertThat(betaResponseItem.computerCallOutput()).isEmpty
+        assertThat(betaResponseItem.webSearchCall()).isEmpty
+        assertThat(betaResponseItem.functionCall()).isEmpty
+        assertThat(betaResponseItem.functionCallOutput()).isEmpty
+        assertThat(betaResponseItem.agentMessage()).isEmpty
+        assertThat(betaResponseItem.multiAgentCall()).isEmpty
+        assertThat(betaResponseItem.multiAgentCallOutput()).isEmpty
+        assertThat(betaResponseItem.toolSearchCall()).isEmpty
+        assertThat(betaResponseItem.toolSearchOutput()).isEmpty
+        assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).contains(configurationUpdate)
+        assertThat(betaResponseItem.reasoning()).isEmpty
+        assertThat(betaResponseItem.program()).isEmpty
+        assertThat(betaResponseItem.programOutput()).isEmpty
+        assertThat(betaResponseItem.compaction()).isEmpty
+        assertThat(betaResponseItem.imageGenerationCall()).isEmpty
+        assertThat(betaResponseItem.codeInterpreterCall()).isEmpty
+        assertThat(betaResponseItem.localShellCall()).isEmpty
+        assertThat(betaResponseItem.localShellCallOutput()).isEmpty
+        assertThat(betaResponseItem.shellCall()).isEmpty
+        assertThat(betaResponseItem.shellCallOutput()).isEmpty
+        assertThat(betaResponseItem.applyPatchCall()).isEmpty
+        assertThat(betaResponseItem.applyPatchCallOutput()).isEmpty
+        assertThat(betaResponseItem.mcpListTools()).isEmpty
+        assertThat(betaResponseItem.mcpApprovalRequest()).isEmpty
+        assertThat(betaResponseItem.mcpApprovalResponse()).isEmpty
+        assertThat(betaResponseItem.mcpCall()).isEmpty
+        assertThat(betaResponseItem.customToolCall()).isEmpty
+        assertThat(betaResponseItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofConfigurationUpdateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseItem =
+            BetaResponseItem.ofConfigurationUpdate(
+                BetaResponseConfigurationUpdateItem.builder()
+                    .id("cnfu_123")
+                    .agent(
+                        BetaResponseConfigurationUpdateItem.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .reasoning(
+                        BetaResponseConfigurationUpdateItem.Reasoning.builder()
+                            .effort(BetaResponseConfigurationUpdateItem.Reasoning.Effort.NONE)
                             .build()
                     )
                     .build()
@@ -1431,6 +1534,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).contains(reasoning)
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1504,6 +1608,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).contains(program)
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1576,6 +1681,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).contains(programOutput)
@@ -1649,6 +1755,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1723,6 +1830,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1801,6 +1909,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1890,6 +1999,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -1979,6 +2089,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2065,6 +2176,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2162,6 +2274,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2255,6 +2368,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2342,6 +2456,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2427,6 +2542,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2512,6 +2628,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2590,6 +2707,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2673,6 +2791,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2734,6 +2853,7 @@ internal class BetaResponseItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
@@ -2756,6 +2876,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty
@@ -2789,6 +2910,7 @@ internal class BetaResponseItemTest {
                     .agent(
                         BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
@@ -2836,6 +2958,7 @@ internal class BetaResponseItemTest {
         assertThat(betaResponseItem.toolSearchCall()).isEmpty
         assertThat(betaResponseItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseItem.additionalTools()).isEmpty
+        assertThat(betaResponseItem.configurationUpdate()).isEmpty
         assertThat(betaResponseItem.reasoning()).isEmpty
         assertThat(betaResponseItem.program()).isEmpty
         assertThat(betaResponseItem.programOutput()).isEmpty

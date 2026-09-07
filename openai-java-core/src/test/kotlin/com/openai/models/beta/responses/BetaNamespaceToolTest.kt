@@ -20,6 +20,7 @@ internal class BetaNamespaceToolTest {
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -41,6 +42,7 @@ internal class BetaNamespaceToolTest {
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -66,6 +68,7 @@ internal class BetaNamespaceToolTest {
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(

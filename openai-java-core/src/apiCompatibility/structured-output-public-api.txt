@@ -256,6 +256,7 @@ com.openai.models.responses.StructuredResponse#_output ()Lcom/openai/core/JsonFi
 com.openai.models.responses.StructuredResponse#_parallelToolCalls ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_previousResponseId ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_prompt ()Lcom/openai/core/JsonField;
+com.openai.models.responses.StructuredResponse#_promptCacheDiagnostics ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_promptCacheKey ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_promptCacheOptions ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_promptCacheRetention ()Lcom/openai/core/JsonField;
@@ -290,6 +291,7 @@ com.openai.models.responses.StructuredResponse#output ()Ljava/util/List;
 com.openai.models.responses.StructuredResponse#parallelToolCalls ()Z
 com.openai.models.responses.StructuredResponse#previousResponseId ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#prompt ()Ljava/util/Optional;
+com.openai.models.responses.StructuredResponse#promptCacheDiagnostics ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#promptCacheKey ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#promptCacheOptions ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#promptCacheRetention ()Ljava/util/Optional;

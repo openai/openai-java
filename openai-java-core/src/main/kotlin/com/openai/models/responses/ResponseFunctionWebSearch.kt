@@ -1552,6 +1552,8 @@ private constructor(
 
             @JvmField val FAILED = of("failed")
 
+            @JvmField val INCOMPLETE = of("incomplete")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -1561,6 +1563,7 @@ private constructor(
             SEARCHING,
             COMPLETED,
             FAILED,
+            INCOMPLETE,
         }
 
         /**
@@ -1577,6 +1580,7 @@ private constructor(
             SEARCHING,
             COMPLETED,
             FAILED,
+            INCOMPLETE,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1594,6 +1598,7 @@ private constructor(
                 SEARCHING -> Value.SEARCHING
                 COMPLETED -> Value.COMPLETED
                 FAILED -> Value.FAILED
+                INCOMPLETE -> Value.INCOMPLETE
                 else -> Value._UNKNOWN
             }
 
@@ -1612,6 +1617,7 @@ private constructor(
                 SEARCHING -> Known.SEARCHING
                 COMPLETED -> Known.COMPLETED
                 FAILED -> Known.FAILED
+                INCOMPLETE -> Known.INCOMPLETE
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 

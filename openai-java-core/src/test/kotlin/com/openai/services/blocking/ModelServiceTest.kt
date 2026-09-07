@@ -20,7 +20,7 @@ internal class ModelServiceTest {
                 .build()
         val modelService = client.models()
 
-        val model = modelService.retrieve("gpt-5.6-sol")
+        val model = modelService.retrieve("gpt-6-astra")
 
         model.validate()
     }

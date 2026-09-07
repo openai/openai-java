@@ -32,7 +32,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ResponseCreateParams.Model.GPT_5_6_SOL)
+            .model(ResponseCreateParams.Model.GPT_6_ASTRA)
             .moderation(
                 ResponseCreateParams.Moderation.builder()
                     .model("model")
@@ -74,6 +74,7 @@ internal class ResponseCreateParamsTest {
             .promptCacheKey("prompt-cache-key-1234")
             .promptCacheOptions(
                 ResponseCreateParams.PromptCacheOptions.builder()
+                    .comparisonResponseId("resp_123")
                     .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                     .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                     .build()
@@ -112,6 +113,7 @@ internal class ResponseCreateParamsTest {
                     )
                     .strict(true)
                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .outputSchema(
@@ -151,7 +153,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ResponseCreateParams.Model.GPT_5_6_SOL)
+                .model(ResponseCreateParams.Model.GPT_6_ASTRA)
                 .moderation(
                     ResponseCreateParams.Moderation.builder()
                         .model("model")
@@ -197,6 +199,7 @@ internal class ResponseCreateParamsTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     ResponseCreateParams.PromptCacheOptions.builder()
+                        .comparisonResponseId("resp_123")
                         .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                         .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                         .build()
@@ -235,6 +238,7 @@ internal class ResponseCreateParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -288,7 +292,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ResponseCreateParams.Model.GPT_5_6_SOL)
+                .model(ResponseCreateParams.Model.GPT_6_ASTRA)
                 .moderation(
                     ResponseCreateParams.Moderation.builder()
                         .model("model")
@@ -334,6 +338,7 @@ internal class ResponseCreateParamsTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     ResponseCreateParams.PromptCacheOptions.builder()
+                        .comparisonResponseId("resp_123")
                         .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                         .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                         .build()
@@ -372,6 +377,7 @@ internal class ResponseCreateParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -410,7 +416,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ResponseCreateParams.Model.GPT_5_6_SOL)
+        assertThat(body.model()).contains(ResponseCreateParams.Model.GPT_6_ASTRA)
         assertThat(body.moderation())
             .contains(
                 ResponseCreateParams.Moderation.builder()
@@ -456,6 +462,7 @@ internal class ResponseCreateParamsTest {
         assertThat(body.promptCacheOptions())
             .contains(
                 ResponseCreateParams.PromptCacheOptions.builder()
+                    .comparisonResponseId("resp_123")
                     .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                     .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                     .build()
@@ -501,6 +508,7 @@ internal class ResponseCreateParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(

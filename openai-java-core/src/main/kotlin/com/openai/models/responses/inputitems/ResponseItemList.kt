@@ -20,6 +20,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCallItem
 import com.openai.models.responses.ResponseCustomToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -261,6 +262,24 @@ private constructor(
         /** Alias for calling [addData] with `ResponseItem.ofAdditionalTools(additionalTools)`. */
         fun addData(additionalTools: ResponseItem.AdditionalTools) =
             addData(ResponseItem.ofAdditionalTools(additionalTools))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addData(configurationUpdate: ResponseConfigurationUpdateItem) =
+            addData(ResponseItem.ofConfigurationUpdate(configurationUpdate))
+
+        /**
+         * Alias for calling [addData] with the following:
+         * ```java
+         * ResponseConfigurationUpdateItem.builder()
+         *     .id(id)
+         *     .build()
+         * ```
+         */
+        fun addConfigurationUpdateData(id: String) =
+            addData(ResponseConfigurationUpdateItem.builder().id(id).build())
 
         /** Alias for calling [addData] with `ResponseItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) = addData(ResponseItem.ofReasoning(reasoning))

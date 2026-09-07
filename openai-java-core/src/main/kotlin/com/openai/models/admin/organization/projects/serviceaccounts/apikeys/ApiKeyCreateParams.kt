@@ -39,6 +39,14 @@ private constructor(
     fun serviceAccountId(): Optional<String> = Optional.ofNullable(serviceAccountId)
 
     /**
+     * Number of seconds until the API key expires.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresInSeconds(): Optional<Long> = body.expiresInSeconds()
+
+    /**
      * API key name.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -53,6 +61,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun scopes(): Optional<List<String>> = body.scopes()
+
+    /**
+     * Returns the raw JSON value of [expiresInSeconds].
+     *
+     * Unlike [expiresInSeconds], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _expiresInSeconds(): JsonField<Long> = body._expiresInSeconds()
 
     /**
      * Returns the raw JSON value of [name].
@@ -126,10 +142,38 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [expiresInSeconds]
          * - [name]
          * - [scopes]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** Number of seconds until the API key expires. */
+        fun expiresInSeconds(expiresInSeconds: Long?) = apply {
+            body.expiresInSeconds(expiresInSeconds)
+        }
+
+        /**
+         * Alias for [Builder.expiresInSeconds].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresInSeconds(expiresInSeconds: Long) = expiresInSeconds(expiresInSeconds as Long?)
+
+        /** Alias for calling [Builder.expiresInSeconds] with `expiresInSeconds.orElse(null)`. */
+        fun expiresInSeconds(expiresInSeconds: Optional<Long>) =
+            expiresInSeconds(expiresInSeconds.getOrNull())
+
+        /**
+         * Sets [Builder.expiresInSeconds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresInSeconds] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun expiresInSeconds(expiresInSeconds: JsonField<Long>) = apply {
+            body.expiresInSeconds(expiresInSeconds)
+        }
 
         /** API key name. */
         fun name(name: String) = apply { body.name(name) }
@@ -317,6 +361,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val expiresInSeconds: JsonField<Long>,
         private val name: JsonField<String>,
         private val scopes: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -324,11 +369,22 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("expires_in_seconds")
+            @ExcludeMissing
+            expiresInSeconds: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             @JsonProperty("scopes")
             @ExcludeMissing
             scopes: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(name, scopes, mutableMapOf())
+        ) : this(expiresInSeconds, name, scopes, mutableMapOf())
+
+        /**
+         * Number of seconds until the API key expires.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun expiresInSeconds(): Optional<Long> = expiresInSeconds.getOptional("expires_in_seconds")
 
         /**
          * API key name.
@@ -345,6 +401,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun scopes(): Optional<List<String>> = scopes.getOptional("scopes")
+
+        /**
+         * Returns the raw JSON value of [expiresInSeconds].
+         *
+         * Unlike [expiresInSeconds], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("expires_in_seconds")
+        @ExcludeMissing
+        fun _expiresInSeconds(): JsonField<Long> = expiresInSeconds
 
         /**
          * Returns the raw JSON value of [name].
@@ -381,15 +447,46 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var expiresInSeconds: JsonField<Long> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var scopes: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                expiresInSeconds = body.expiresInSeconds
                 name = body.name
                 scopes = body.scopes.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** Number of seconds until the API key expires. */
+            fun expiresInSeconds(expiresInSeconds: Long?) =
+                expiresInSeconds(JsonField.ofNullable(expiresInSeconds))
+
+            /**
+             * Alias for [Builder.expiresInSeconds].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun expiresInSeconds(expiresInSeconds: Long) =
+                expiresInSeconds(expiresInSeconds as Long?)
+
+            /**
+             * Alias for calling [Builder.expiresInSeconds] with `expiresInSeconds.orElse(null)`.
+             */
+            fun expiresInSeconds(expiresInSeconds: Optional<Long>) =
+                expiresInSeconds(expiresInSeconds.getOrNull())
+
+            /**
+             * Sets [Builder.expiresInSeconds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.expiresInSeconds] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun expiresInSeconds(expiresInSeconds: JsonField<Long>) = apply {
+                this.expiresInSeconds = expiresInSeconds
             }
 
             /** API key name. */
@@ -456,6 +553,7 @@ private constructor(
              */
             fun build(): Body =
                 Body(
+                    expiresInSeconds,
                     name,
                     (scopes ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -478,6 +576,7 @@ private constructor(
                 return@apply
             }
 
+            expiresInSeconds()
             name()
             scopes()
             validated = true
@@ -499,7 +598,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (name.asKnown().isPresent) 1 else 0) + (scopes.asKnown().getOrNull()?.size ?: 0)
+            (if (expiresInSeconds.asKnown().isPresent) 1 else 0) +
+                (if (name.asKnown().isPresent) 1 else 0) +
+                (scopes.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -507,17 +608,20 @@ private constructor(
             }
 
             return other is Body &&
+                expiresInSeconds == other.expiresInSeconds &&
                 name == other.name &&
                 scopes == other.scopes &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(name, scopes, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(expiresInSeconds, name, scopes, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, scopes=$scopes, additionalProperties=$additionalProperties}"
+            "Body{expiresInSeconds=$expiresInSeconds, name=$name, scopes=$scopes, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

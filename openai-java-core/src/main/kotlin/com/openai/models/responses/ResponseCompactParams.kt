@@ -49,7 +49,7 @@ private constructor(
 ) : Params {
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -129,12 +129,12 @@ private constructor(
      * to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request will
      * be processed with the Flex Processing service tier. - To opt-in to
      * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the `service_tier=fast`
-     * or `service_tier=priority` parameter for Responses or Chat Completions. The response will
-     * show `service_tier=priority` regardless of if you specify `service_tier=fast` or `priority`
-     * in your request. - When not set, the default behavior is 'auto'. When the `service_tier`
-     * parameter is set, the response body will include the `service_tier` value based on the
-     * processing mode actually used to serve the request. This response value may be different from
-     * the value set in the parameter.
+     * or `service_tier=priority` parameter for Responses or Chat Completions. For models with a
+     * dedicated Fast tier, either value resolves to `service_tier=fast`; for other models, either
+     * value resolves to `service_tier=priority`. - When not set, the default behavior is 'auto'.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -253,7 +253,7 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -435,11 +435,12 @@ private constructor(
          * then the request will be processed with the Flex Processing service tier. - To opt-in to
          * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
          * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         * Completions. The response will show `service_tier=priority` regardless of if you specify
-         * `service_tier=fast` or `priority` in your request. - When not set, the default behavior
-         * is 'auto'. When the `service_tier` parameter is set, the response body will include the
-         * `service_tier` value based on the processing mode actually used to serve the request.
-         * This response value may be different from the value set in the parameter.
+         * Completions. For models with a dedicated Fast tier, either value resolves to
+         * `service_tier=fast`; for other models, either value resolves to
+         * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
+         * `service_tier` parameter is set, the response body will include the `service_tier` value
+         * based on the processing mode actually used to serve the request. This response value may
+         * be different from the value set in the parameter.
          */
         fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
 
@@ -649,7 +650,7 @@ private constructor(
         )
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -734,11 +735,12 @@ private constructor(
          * then the request will be processed with the Flex Processing service tier. - To opt-in to
          * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
          * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         * Completions. The response will show `service_tier=priority` regardless of if you specify
-         * `service_tier=fast` or `priority` in your request. - When not set, the default behavior
-         * is 'auto'. When the `service_tier` parameter is set, the response body will include the
-         * `service_tier` value based on the processing mode actually used to serve the request.
-         * This response value may be different from the value set in the parameter.
+         * Completions. For models with a dedicated Fast tier, either value resolves to
+         * `service_tier=fast`; for other models, either value resolves to
+         * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
+         * `service_tier` parameter is set, the response body will include the `service_tier` value
+         * based on the processing mode actually used to serve the request. This response value may
+         * be different from the value set in the parameter.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -871,7 +873,7 @@ private constructor(
             }
 
             /**
-             * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -1059,12 +1061,12 @@ private constructor(
              * will be processed with the Flex Processing service tier. - To opt-in to
              * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
              * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-             * Completions. The response will show `service_tier=priority` regardless of if you
-             * specify `service_tier=fast` or `priority` in your request. - When not set, the
-             * default behavior is 'auto'. When the `service_tier` parameter is set, the response
-             * body will include the `service_tier` value based on the processing mode actually used
-             * to serve the request. This response value may be different from the value set in the
-             * parameter.
+             * Completions. For models with a dedicated Fast tier, either value resolves to
+             * `service_tier=fast`; for other models, either value resolves to
+             * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
+             * `service_tier` parameter is set, the response body will include the `service_tier`
+             * value based on the processing mode actually used to serve the request. This response
+             * value may be different from the value set in the parameter.
              */
             fun serviceTier(serviceTier: ServiceTier?) =
                 serviceTier(JsonField.ofNullable(serviceTier))
@@ -1219,7 +1221,7 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -1237,6 +1239,8 @@ private constructor(
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
+
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
@@ -1449,6 +1453,7 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1563,6 +1568,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1678,6 +1684,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -1794,6 +1801,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
@@ -2835,12 +2843,12 @@ private constructor(
      * to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request will
      * be processed with the Flex Processing service tier. - To opt-in to
      * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the `service_tier=fast`
-     * or `service_tier=priority` parameter for Responses or Chat Completions. The response will
-     * show `service_tier=priority` regardless of if you specify `service_tier=fast` or `priority`
-     * in your request. - When not set, the default behavior is 'auto'. When the `service_tier`
-     * parameter is set, the response body will include the `service_tier` value based on the
-     * processing mode actually used to serve the request. This response value may be different from
-     * the value set in the parameter.
+     * or `service_tier=priority` parameter for Responses or Chat Completions. For models with a
+     * dedicated Fast tier, either value resolves to `service_tier=fast`; for other models, either
+     * value resolves to `service_tier=priority`. - When not set, the default behavior is 'auto'.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {

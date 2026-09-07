@@ -50,6 +50,7 @@ private constructor(
     private val toolSearchCall: BetaResponseToolSearchCall? = null,
     private val toolSearchOutput: BetaResponseToolSearchOutputItem? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: BetaResponseConfigurationUpdateItem? = null,
     private val reasoning: BetaResponseReasoningItem? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -128,6 +129,13 @@ private constructor(
         Optional.ofNullable(toolSearchOutput)
 
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun configurationUpdate(): Optional<BetaResponseConfigurationUpdateItem> =
+        Optional.ofNullable(configurationUpdate)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -226,6 +234,8 @@ private constructor(
 
     fun isAdditionalTools(): Boolean = additionalTools != null
 
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isProgram(): Boolean = program != null
@@ -317,6 +327,13 @@ private constructor(
         toolSearchOutput.getOrThrow("toolSearchOutput")
 
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun asConfigurationUpdate(): BetaResponseConfigurationUpdateItem =
+        configurationUpdate.getOrThrow("configurationUpdate")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -437,6 +454,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             program != null -> visitor.visitProgram(program)
             programOutput != null -> visitor.visitProgramOutput(programOutput)
@@ -539,6 +557,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: BetaResponseConfigurationUpdateItem
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: BetaResponseReasoningItem) {
@@ -688,6 +712,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: BetaResponseConfigurationUpdateItem
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: BetaResponseReasoningItem) =
                     reasoning.validity()
 
@@ -767,6 +795,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             program == other.program &&
             programOutput == other.programOutput &&
@@ -803,6 +832,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             program,
             programOutput,
@@ -842,6 +872,8 @@ private constructor(
             toolSearchCall != null -> "BetaResponseItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "BetaResponseItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "BetaResponseItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "BetaResponseItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "BetaResponseItem{reasoning=$reasoning}"
             program != null -> "BetaResponseItem{program=$program}"
             programOutput != null -> "BetaResponseItem{programOutput=$programOutput}"
@@ -949,6 +981,14 @@ private constructor(
         @JvmStatic
         fun ofAdditionalTools(additionalTools: AdditionalTools) =
             BetaResponseItem(additionalTools = additionalTools)
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: BetaResponseConfigurationUpdateItem) =
+            BetaResponseItem(configurationUpdate = configurationUpdate)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1099,6 +1139,12 @@ private constructor(
         fun visitToolSearchOutput(toolSearchOutput: BetaResponseToolSearchOutputItem): T
 
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: BetaResponseConfigurationUpdateItem): T
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1280,6 +1326,14 @@ private constructor(
                         BetaResponseItem(additionalTools = it, _json = json)
                     } ?: BetaResponseItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseConfigurationUpdateItem>(),
+                        )
+                        ?.let { BetaResponseItem(configurationUpdate = it, _json = json) }
+                        ?: BetaResponseItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<BetaResponseReasoningItem>())?.let {
                         BetaResponseItem(reasoning = it, _json = json)
@@ -1413,6 +1467,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.program != null -> generator.writeObject(value.program)
                 value.programOutput != null -> generator.writeObject(value.programOutput)

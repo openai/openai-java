@@ -15,10 +15,37 @@ internal class BetaResponseErrorTest {
             BetaResponseError.builder()
                 .code(BetaResponseError.Code.SERVER_ERROR)
                 .message("message")
+                .misalignment(
+                    BetaResponseError.Misalignment.builder()
+                        .detailedExplanation("detailed_explanation")
+                        .errorType(
+                            BetaResponseError.Misalignment.ErrorType
+                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                        )
+                        .steer(
+                            BetaResponseError.Misalignment.Steer.builder()
+                                .message("message")
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         assertThat(betaResponseError.code()).isEqualTo(BetaResponseError.Code.SERVER_ERROR)
         assertThat(betaResponseError.message()).isEqualTo("message")
+        assertThat(betaResponseError.misalignment())
+            .contains(
+                BetaResponseError.Misalignment.builder()
+                    .detailedExplanation("detailed_explanation")
+                    .errorType(
+                        BetaResponseError.Misalignment.ErrorType
+                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                    )
+                    .steer(
+                        BetaResponseError.Misalignment.Steer.builder().message("message").build()
+                    )
+                    .build()
+            )
     }
 
     @Test
@@ -28,6 +55,20 @@ internal class BetaResponseErrorTest {
             BetaResponseError.builder()
                 .code(BetaResponseError.Code.SERVER_ERROR)
                 .message("message")
+                .misalignment(
+                    BetaResponseError.Misalignment.builder()
+                        .detailedExplanation("detailed_explanation")
+                        .errorType(
+                            BetaResponseError.Misalignment.ErrorType
+                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                        )
+                        .steer(
+                            BetaResponseError.Misalignment.Steer.builder()
+                                .message("message")
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val roundtrippedBetaResponseError =

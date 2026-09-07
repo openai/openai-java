@@ -214,7 +214,13 @@ private constructor(
     /** An event that is emitted when a response fails. */
     fun responseFailed(): Optional<BetaResponseFailedEvent> = Optional.ofNullable(responseFailed)
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun responseIncomplete(): Optional<BetaResponseIncompleteEvent> =
         Optional.ofNullable(responseIncomplete)
 
@@ -578,7 +584,13 @@ private constructor(
     /** An event that is emitted when a response fails. */
     fun asResponseFailed(): BetaResponseFailedEvent = responseFailed.getOrThrow("responseFailed")
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun asResponseIncomplete(): BetaResponseIncompleteEvent =
         responseIncomplete.getOrThrow("responseIncomplete")
 
@@ -1924,7 +1936,13 @@ private constructor(
         fun ofResponseFailed(responseFailed: BetaResponseFailedEvent) =
             BetaResponseStreamEvent(responseFailed = responseFailed)
 
-        /** An event that is emitted when a response finishes as incomplete. */
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
         @JvmStatic
         fun ofResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent) =
             BetaResponseStreamEvent(responseIncomplete = responseIncomplete)
@@ -2275,7 +2293,13 @@ private constructor(
         /** An event that is emitted when a response fails. */
         fun visitResponseFailed(responseFailed: BetaResponseFailedEvent): T
 
-        /** An event that is emitted when a response finishes as incomplete. */
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
         fun visitResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent): T
 
         /** Emitted when a new output item is added. */

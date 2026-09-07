@@ -163,7 +163,7 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -312,7 +312,9 @@ private constructor(
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
     /**
-     * Whether to store the generated model response for later retrieval via API.
+     * Whether to store the generated model response for later retrieval via API. Defaults to true
+     * when omitted. If set to true, response data will be stored for at least 30 days, subject to
+     * the [data retention exceptions](/api/docs/guides/your-data#v1responses).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -968,7 +970,7 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -1264,7 +1266,11 @@ private constructor(
             body.serviceTier(serviceTier)
         }
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the [data retention exceptions](/api/docs/guides/your-data#v1responses).
+         */
         fun store(store: Boolean?) = apply { body.store(store) }
 
         /**
@@ -2090,7 +2096,7 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -2244,7 +2250,9 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
-         * Whether to store the generated model response for later retrieval via API.
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the [data retention exceptions](/api/docs/guides/your-data#v1responses).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3006,7 +3014,7 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -3315,7 +3323,12 @@ private constructor(
                 this.serviceTier = serviceTier
             }
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Whether to store the generated model response for later retrieval via API. Defaults
+             * to true when omitted. If set to true, response data will be stored for at least 30
+             * days, subject to the
+             * [data retention exceptions](/api/docs/guides/your-data#v1responses).
+             */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
             /**
@@ -4800,7 +4813,7 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-5.6-sol`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -4818,6 +4831,8 @@ private constructor(
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
+
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
@@ -5030,6 +5045,7 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -5144,6 +5160,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -5259,6 +5276,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -5375,6 +5393,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
@@ -6817,6 +6836,7 @@ private constructor(
     class PromptCacheOptions
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val comparisonResponseId: JsonField<String>,
         private val mode: JsonField<Mode>,
         private val ttl: JsonField<Ttl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -6824,9 +6844,22 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            comparisonResponseId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(mode, ttl, mutableMapOf())
+        ) : this(comparisonResponseId, mode, ttl, mutableMapOf())
+
+        /**
+         * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this field
+         * requests prompt cache diagnostics when the feature is enabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun comparisonResponseId(): Optional<String> =
+            comparisonResponseId.getOptional("comparison_response_id")
 
         /**
          * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
@@ -6849,6 +6882,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the raw JSON value of [comparisonResponseId].
+         *
+         * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("comparison_response_id")
+        @ExcludeMissing
+        fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
 
         /**
          * Returns the raw JSON value of [mode].
@@ -6885,15 +6928,42 @@ private constructor(
         /** A builder for [PromptCacheOptions]. */
         class Builder internal constructor() {
 
+            private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var mode: JsonField<Mode> = JsonMissing.of()
             private var ttl: JsonField<Ttl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                comparisonResponseId = promptCacheOptions.comparisonResponseId
                 mode = promptCacheOptions.mode
                 ttl = promptCacheOptions.ttl
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this
+             * field requests prompt cache diagnostics when the feature is enabled.
+             */
+            fun comparisonResponseId(comparisonResponseId: String?) =
+                comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+            /**
+             * Alias for calling [Builder.comparisonResponseId] with
+             * `comparisonResponseId.orElse(null)`.
+             */
+            fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                comparisonResponseId(comparisonResponseId.getOrNull())
+
+            /**
+             * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                this.comparisonResponseId = comparisonResponseId
             }
 
             /**
@@ -6956,7 +7026,12 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): PromptCacheOptions =
-                PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+                PromptCacheOptions(
+                    comparisonResponseId,
+                    mode,
+                    ttl,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -6975,6 +7050,7 @@ private constructor(
                 return@apply
             }
 
+            comparisonResponseId()
             mode().ifPresent { it.validate() }
             ttl().ifPresent { it.validate() }
             validated = true
@@ -6996,7 +7072,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
+                (mode.asKnown().getOrNull()?.validity() ?: 0) +
                 (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
@@ -7285,17 +7362,20 @@ private constructor(
             }
 
             return other is PromptCacheOptions &&
+                comparisonResponseId == other.comparisonResponseId &&
                 mode == other.mode &&
                 ttl == other.ttl &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(comparisonResponseId, mode, ttl, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     /**

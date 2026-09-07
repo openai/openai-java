@@ -16,7 +16,13 @@ import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** An event that is emitted when a response finishes as incomplete. */
+/**
+ * An event that is emitted when a response finishes as incomplete.
+ *
+ * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set to
+ * `steered`, followed automatically by a successor `response.created` that commits the queued
+ * steering input.
+ */
 class ResponseIncompleteEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

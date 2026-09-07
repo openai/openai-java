@@ -42,6 +42,8 @@ import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.RealtimeServiceAsyncImpl
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.ResponseServiceAsyncImpl
+import com.openai.services.async.SafetyServiceAsync
+import com.openai.services.async.SafetyServiceAsyncImpl
 import com.openai.services.async.SkillServiceAsync
 import com.openai.services.async.SkillServiceAsyncImpl
 import com.openai.services.async.UploadServiceAsync
@@ -113,6 +115,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     private val vectorStores: VectorStoreServiceAsync by lazy {
         VectorStoreServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
+    private val safety: SafetyServiceAsync by lazy {
+        SafetyServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val webhooks: WebhookServiceAsync by lazy {
@@ -206,6 +212,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun vectorStores(): VectorStoreServiceAsync = vectorStores
 
+    override fun safety(): SafetyServiceAsync = safety
+
     override fun webhooks(): WebhookServiceAsync = webhooks
 
     override fun beta(): BetaServiceAsync = beta
@@ -286,6 +294,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         private val vectorStores: VectorStoreServiceAsync.WithRawResponse by lazy {
             VectorStoreServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val safety: SafetyServiceAsync.WithRawResponse by lazy {
+            SafetyServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val webhooks: WebhookServiceAsync.WithRawResponse by lazy {
@@ -382,6 +394,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun graders(): GraderServiceAsync.WithRawResponse = graders
 
         override fun vectorStores(): VectorStoreServiceAsync.WithRawResponse = vectorStores
+
+        override fun safety(): SafetyServiceAsync.WithRawResponse = safety
 
         override fun webhooks(): WebhookServiceAsync.WithRawResponse = webhooks
 

@@ -42,6 +42,8 @@ import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.RealtimeServiceImpl
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.ResponseServiceImpl
+import com.openai.services.blocking.SafetyService
+import com.openai.services.blocking.SafetyServiceImpl
 import com.openai.services.blocking.SkillService
 import com.openai.services.blocking.SkillServiceImpl
 import com.openai.services.blocking.UploadService
@@ -106,6 +108,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     private val vectorStores: VectorStoreService by lazy {
         VectorStoreServiceImpl(clientOptionsWithUserAgent)
     }
+
+    private val safety: SafetyService by lazy { SafetyServiceImpl(clientOptionsWithUserAgent) }
 
     private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
 
@@ -184,6 +188,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun graders(): GraderService = graders
 
     override fun vectorStores(): VectorStoreService = vectorStores
+
+    override fun safety(): SafetyService = safety
 
     override fun webhooks(): WebhookService = webhooks
 
@@ -264,6 +270,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         private val vectorStores: VectorStoreService.WithRawResponse by lazy {
             VectorStoreServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val safety: SafetyService.WithRawResponse by lazy {
+            SafetyServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val webhooks: WebhookService.WithRawResponse by lazy {
@@ -360,6 +370,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun graders(): GraderService.WithRawResponse = graders
 
         override fun vectorStores(): VectorStoreService.WithRawResponse = vectorStores
+
+        override fun safety(): SafetyService.WithRawResponse = safety
 
         override fun webhooks(): WebhookService.WithRawResponse = webhooks
 

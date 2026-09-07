@@ -54,6 +54,7 @@ private constructor(
     private val toolSearchCall: ToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItemParam? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItemParam? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val compaction: ResponseCompactionItemParam? = null,
     private val imageGenerationCall: ImageGenerationCall? = null,
@@ -136,6 +137,13 @@ private constructor(
         Optional.ofNullable(toolSearchOutput)
 
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
+
+    /**
+     * An update to the conversation's response configuration. The configuration remains in effect
+     * for subsequent responses until it is replaced by another configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItemParam> =
+        Optional.ofNullable(configurationUpdate)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -232,6 +240,8 @@ private constructor(
     fun isToolSearchOutput(): Boolean = toolSearchOutput != null
 
     fun isAdditionalTools(): Boolean = additionalTools != null
+
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
 
     fun isReasoning(): Boolean = reasoning != null
 
@@ -334,6 +344,13 @@ private constructor(
         toolSearchOutput.getOrThrow("toolSearchOutput")
 
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
+
+    /**
+     * An update to the conversation's response configuration. The configuration remains in effect
+     * for subsequent responses until it is replaced by another configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItemParam =
+        configurationUpdate.getOrThrow("configurationUpdate")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -454,6 +471,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             compaction != null -> visitor.visitCompaction(compaction)
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
@@ -544,6 +562,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItemParam
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -694,6 +718,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItemParam
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitCompaction(compaction: ResponseCompactionItemParam) =
@@ -775,6 +803,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             compaction == other.compaction &&
             imageGenerationCall == other.imageGenerationCall &&
@@ -811,6 +840,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             compaction,
             imageGenerationCall,
@@ -850,6 +880,8 @@ private constructor(
             toolSearchCall != null -> "ResponseInputItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ResponseInputItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ResponseInputItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "ResponseInputItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ResponseInputItem{reasoning=$reasoning}"
             compaction != null -> "ResponseInputItem{compaction=$compaction}"
             imageGenerationCall != null ->
@@ -962,6 +994,14 @@ private constructor(
         @JvmStatic
         fun ofAdditionalTools(additionalTools: AdditionalTools) =
             ResponseInputItem(additionalTools = additionalTools)
+
+        /**
+         * An update to the conversation's response configuration. The configuration remains in
+         * effect for subsequent responses until it is replaced by another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam) =
+            ResponseInputItem(configurationUpdate = configurationUpdate)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1132,6 +1172,12 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
+         * An update to the conversation's response configuration. The configuration remains in
+         * effect for subsequent responses until it is replaced by another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam): T
+
+        /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
          * subsequent turns of a conversation if you are manually
@@ -1293,6 +1339,14 @@ private constructor(
                         ResponseInputItem(additionalTools = it, _json = json)
                     } ?: ResponseInputItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseConfigurationUpdateItemParam>(),
+                        )
+                        ?.let { ResponseInputItem(configurationUpdate = it, _json = json) }
+                        ?: ResponseInputItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ResponseInputItem(reasoning = it, _json = json)
@@ -1420,6 +1474,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.compaction != null -> generator.writeObject(value.compaction)
                 value.imageGenerationCall != null ->

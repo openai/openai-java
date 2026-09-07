@@ -53,7 +53,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_5_6_SOL)
+                    .model(ResponseCreateParams.Model.GPT_6_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -101,6 +101,7 @@ internal class ResponseServiceTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
@@ -141,6 +142,7 @@ internal class ResponseServiceTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -192,7 +194,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_5_6_SOL)
+                    .model(ResponseCreateParams.Model.GPT_6_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -240,6 +242,7 @@ internal class ResponseServiceTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
@@ -280,6 +283,7 @@ internal class ResponseServiceTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -402,7 +406,7 @@ internal class ResponseServiceTest {
             responseService.compact(
                 ResponseCompactParams.builder()
                     .addBeta(ResponseCompactParams.Beta.RESPONSES_MULTI_AGENT_V1)
-                    .model(ResponseCompactParams.Model.GPT_5_6_SOL)
+                    .model(ResponseCompactParams.Model.GPT_6_ASTRA)
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")

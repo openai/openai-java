@@ -13,6 +13,7 @@ internal class ApiKeyCreateParamsTest {
         ApiKeyCreateParams.builder()
             .projectId("project_id")
             .serviceAccountId("service_account_id")
+            .expiresInSeconds(1L)
             .name("name")
             .addScope("string")
             .build()
@@ -38,12 +39,14 @@ internal class ApiKeyCreateParamsTest {
             ApiKeyCreateParams.builder()
                 .projectId("project_id")
                 .serviceAccountId("service_account_id")
+                .expiresInSeconds(1L)
                 .name("name")
                 .addScope("string")
                 .build()
 
         val body = params._body()
 
+        assertThat(body.expiresInSeconds()).contains(1L)
         assertThat(body.name()).contains("name")
         assertThat(body.scopes().getOrNull()).containsExactly("string")
     }
