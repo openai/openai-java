@@ -1179,6 +1179,8 @@ internal class ResponseOutputItemTest {
                 .id("id")
                 .result("result")
                 .status(ResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                .quality(ResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                .size(ResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                 .build()
 
         val responseOutputItem = ResponseOutputItem.ofImageGenerationCall(imageGenerationCall)
@@ -1222,6 +1224,8 @@ internal class ResponseOutputItemTest {
                     .id("id")
                     .result("result")
                     .status(ResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                    .quality(ResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                    .size(ResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                     .build()
             )
 

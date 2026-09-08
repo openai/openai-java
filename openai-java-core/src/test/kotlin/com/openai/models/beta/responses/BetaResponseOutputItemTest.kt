@@ -1618,6 +1618,8 @@ internal class BetaResponseOutputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                 .build()
 
         val betaResponseOutputItem =
@@ -1670,6 +1672,8 @@ internal class BetaResponseOutputItemTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                    .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                     .build()
             )
 
