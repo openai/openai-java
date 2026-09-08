@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.models.beta.realtime.transcriptionsessions
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter

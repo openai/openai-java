@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
@@ -28,6 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create a new video generation job from a prompt and optional reference assets. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoCreateParams
 private constructor(
     private val body: Body,

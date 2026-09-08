@@ -22,10 +22,7 @@ enum class ArtifactLifecycle(val propertyValue: String) {
     }
 }
 
-data class ArtifactSupport(
-    val runtime: Int,
-    val lifecycle: ArtifactLifecycle,
-) : Serializable
+data class ArtifactSupport(val runtime: Int, val lifecycle: ArtifactLifecycle) : Serializable
 
 data class VersionSupportPolicy(
     val buildJdk: Int,
@@ -41,8 +38,7 @@ data class VersionSupportPolicy(
         artifacts[projectName]?.runtime ?: minimumSupportedRuntime
 
     fun runtimeMatrix(mode: String): List<Int> {
-        val supportedArtifactFloors =
-            supportedArtifacts.values.map(ArtifactSupport::runtime)
+        val supportedArtifactFloors = supportedArtifacts.values.map(ArtifactSupport::runtime)
         return when (mode) {
                 "pull-request" -> supportedArtifactFloors + currentLts
                 "full" -> supportedLts + currentNonLts
@@ -57,12 +53,7 @@ data class VersionSupportPolicy(
 
     companion object {
         private val requiredKeys =
-            setOf(
-                "build.jdk",
-                "test.current-lts",
-                "test.supported-lts",
-                "test.current-non-lts",
-            )
+            setOf("build.jdk", "test.current-lts", "test.supported-lts", "test.current-non-lts")
         private val artifactKey = Regex("""artifact\.(.+)\.(runtime|lifecycle)""")
 
         fun load(file: File): VersionSupportPolicy {
@@ -107,13 +98,10 @@ data class VersionSupportPolicy(
             val buildJdk = properties.requiredInt("build.jdk", file)
             val currentLts = properties.requiredInt("test.current-lts", file)
             val supportedLts =
-                properties
-                    .required("test.supported-lts", file)
-                    .split(',')
-                    .map { value ->
-                        value.trim().toIntOrNull()
-                            ?: error("test.supported-lts contains invalid JVM '$value' in $file")
-                    }
+                properties.required("test.supported-lts", file).split(',').map { value ->
+                    value.trim().toIntOrNull()
+                        ?: error("test.supported-lts contains invalid JVM '$value' in $file")
+                }
             val currentNonLts = properties.requiredInt("test.current-non-lts", file)
 
             check(buildJdk > 0) { "build.jdk must be positive" }
@@ -149,17 +137,11 @@ data class VersionSupportPolicy(
             )
         }
 
-        private fun Properties.required(
-            key: String,
-            file: File,
-        ): String =
+        private fun Properties.required(key: String, file: File): String =
             getProperty(key)?.trim()?.takeIf(String::isNotEmpty)
                 ?: error("Required version support property '$key' is missing or empty in $file")
 
-        private fun Properties.requiredInt(
-            key: String,
-            file: File,
-        ): Int =
+        private fun Properties.requiredInt(key: String, file: File): Int =
             required(key, file).toIntOrNull()
                 ?: error("Version support property '$key' must be an integer in $file")
     }

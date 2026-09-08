@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -167,6 +167,7 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
@@ -180,6 +181,7 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -187,6 +189,8 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()
@@ -344,6 +348,7 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
+        assertThat(chatCompletionChunk.obfuscation()).contains("obfuscation")
         assertThat(chatCompletionChunk.serviceTier()).contains(ChatCompletionChunk.ServiceTier.AUTO)
         assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")
         assertThat(chatCompletionChunk.usage())
@@ -358,6 +363,7 @@ internal class ChatCompletionChunkTest {
                             .audioTokens(0L)
                             .reasoningTokens(0L)
                             .rejectedPredictionTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .promptTokensDetails(
@@ -365,6 +371,8 @@ internal class ChatCompletionChunkTest {
                             .audioTokens(0L)
                             .cacheWriteTokens(0L)
                             .cachedTokens(0L)
+                            .imageTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .build()
@@ -528,6 +536,7 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
@@ -541,6 +550,7 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -548,6 +558,8 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()

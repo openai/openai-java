@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -22,6 +22,20 @@ internal class BetaResponseFailedEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -35,7 +49,7 @@ internal class BetaResponseFailedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_1)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -88,6 +102,7 @@ internal class BetaResponseFailedEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -179,11 +194,22 @@ internal class BetaResponseFailedEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -241,6 +267,20 @@ internal class BetaResponseFailedEventTest {
                         BetaResponseError.builder()
                             .code(BetaResponseError.Code.SERVER_ERROR)
                             .message("message")
+                            .misalignment(
+                                BetaResponseError.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        BetaResponseError.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        BetaResponseError.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .incompleteDetails(
@@ -254,7 +294,7 @@ internal class BetaResponseFailedEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(BetaResponse.Model.GPT_5_1)
+                    .model(BetaResponse.Model.GPT_6_ASTRA)
                     .addOutput(
                         BetaResponseOutputMessage.builder()
                             .id("id")
@@ -306,6 +346,7 @@ internal class BetaResponseFailedEventTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -395,11 +436,21 @@ internal class BetaResponseFailedEventTest {
                             .version("version")
                             .build()
                     )
+                    .promptCacheDiagnostics(
+                        BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                            .cacheMissedTokens(0L)
+                            .reason(
+                                BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                            )
+                            .comparisonReusableTokens(0L)
+                            .build()
+                    )
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         BetaResponse.PromptCacheOptions.builder()
                             .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                            .comparisonResponseId("comparison_response_id")
                             .build()
                     )
                     .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)
@@ -462,6 +513,20 @@ internal class BetaResponseFailedEventTest {
                             BetaResponseError.builder()
                                 .code(BetaResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    BetaResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            BetaResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            BetaResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -475,7 +540,7 @@ internal class BetaResponseFailedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_5_1)
+                        .model(BetaResponse.Model.GPT_6_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -528,6 +593,7 @@ internal class BetaResponseFailedEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -619,11 +685,22 @@ internal class BetaResponseFailedEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            BetaResponse.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    BetaResponse.PromptCacheDiagnostics.CacheMiss.Reason
+                                        .MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             BetaResponse.PromptCacheOptions.builder()
                                 .mode(BetaResponse.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(BetaResponse.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(BetaResponse.PromptCacheRetention.IN_MEMORY)

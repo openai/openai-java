@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -36,7 +36,7 @@ internal class BetaResponsesClientEventTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_5_1)
+                .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_6_ASTRA)
                 .moderation(
                     BetaResponsesClientEvent.ResponseCreate.Moderation.builder()
                         .model("model")
@@ -92,6 +92,7 @@ internal class BetaResponsesClientEventTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
+                        .comparisonResponseId("resp_123")
                         .mode(
                             BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
                         )
@@ -116,6 +117,7 @@ internal class BetaResponsesClientEventTest {
                 .serviceTier(BetaResponsesClientEvent.ResponseCreate.ServiceTier.AUTO)
                 .store(true)
                 .stream(true)
+                .streamId("stream_id")
                 .streamOptions(
                     BetaResponsesClientEvent.ResponseCreate.StreamOptions.builder()
                         .includeObfuscation(true)
@@ -139,6 +141,7 @@ internal class BetaResponsesClientEventTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -157,6 +160,7 @@ internal class BetaResponsesClientEventTest {
         val betaResponsesClientEvent = BetaResponsesClientEvent.ofResponseCreate(responseCreate)
 
         assertThat(betaResponsesClientEvent.responseCreate()).contains(responseCreate)
+        assertThat(betaResponsesClientEvent.responseSteer()).isEmpty
         assertThat(betaResponsesClientEvent.responseInject()).isEmpty
     }
 
@@ -184,7 +188,7 @@ internal class BetaResponsesClientEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_5_1)
+                    .model(BetaResponsesClientEvent.ResponseCreate.Model.GPT_6_ASTRA)
                     .moderation(
                         BetaResponsesClientEvent.ResponseCreate.Moderation.builder()
                             .model("model")
@@ -242,6 +246,7 @@ internal class BetaResponsesClientEventTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(
                                 BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode
                                     .IMPLICIT
@@ -270,6 +275,7 @@ internal class BetaResponsesClientEventTest {
                     .serviceTier(BetaResponsesClientEvent.ResponseCreate.ServiceTier.AUTO)
                     .store(true)
                     .stream(true)
+                    .streamId("stream_id")
                     .streamOptions(
                         BetaResponsesClientEvent.ResponseCreate.StreamOptions.builder()
                             .includeObfuscation(true)
@@ -293,6 +299,7 @@ internal class BetaResponsesClientEventTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -306,6 +313,41 @@ internal class BetaResponsesClientEventTest {
                     .topP(1.0)
                     .truncation(BetaResponsesClientEvent.ResponseCreate.Truncation.AUTO)
                     .user("user-1234")
+                    .build()
+            )
+
+        val roundtrippedBetaResponsesClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponsesClientEvent),
+                jacksonTypeRef<BetaResponsesClientEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponsesClientEvent).isEqualTo(betaResponsesClientEvent)
+    }
+
+    @Test
+    fun ofResponseSteer() {
+        val responseSteer =
+            BetaResponseSteerEvent.builder()
+                .input("string")
+                .previousResponseId("previous_response_id")
+                .build()
+
+        val betaResponsesClientEvent = BetaResponsesClientEvent.ofResponseSteer(responseSteer)
+
+        assertThat(betaResponsesClientEvent.responseCreate()).isEmpty
+        assertThat(betaResponsesClientEvent.responseSteer()).contains(responseSteer)
+        assertThat(betaResponsesClientEvent.responseInject()).isEmpty
+    }
+
+    @Test
+    fun ofResponseSteerRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponsesClientEvent =
+            BetaResponsesClientEvent.ofResponseSteer(
+                BetaResponseSteerEvent.builder()
+                    .input("string")
+                    .previousResponseId("previous_response_id")
                     .build()
             )
 
@@ -336,6 +378,7 @@ internal class BetaResponsesClientEventTest {
         val betaResponsesClientEvent = BetaResponsesClientEvent.ofResponseInject(responseInject)
 
         assertThat(betaResponsesClientEvent.responseCreate()).isEmpty
+        assertThat(betaResponsesClientEvent.responseSteer()).isEmpty
         assertThat(betaResponsesClientEvent.responseInject()).contains(responseInject)
     }
 

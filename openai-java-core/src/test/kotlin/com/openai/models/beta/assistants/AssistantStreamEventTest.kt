@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.assistants
 
@@ -3570,6 +3570,20 @@ internal class AssistantStreamEventTest {
                         .message("message")
                         .param("param")
                         .type("type")
+                        .misalignment(
+                            ErrorObject.Misalignment.builder()
+                                .detailedExplanation("detailed_explanation")
+                                .errorType(
+                                    ErrorObject.Misalignment.ErrorType
+                                        .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                )
+                                .steer(
+                                    ErrorObject.Misalignment.Steer.builder()
+                                        .message("message")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -3614,6 +3628,20 @@ internal class AssistantStreamEventTest {
                             .message("message")
                             .param("param")
                             .type("type")
+                            .misalignment(
+                                ErrorObject.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        ErrorObject.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        ErrorObject.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .build()

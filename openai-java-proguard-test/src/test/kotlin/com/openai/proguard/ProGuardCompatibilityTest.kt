@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.proguard
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
@@ -267,6 +265,7 @@ internal class ProGuardCompatibilityTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -274,6 +273,8 @@ internal class ProGuardCompatibilityTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()

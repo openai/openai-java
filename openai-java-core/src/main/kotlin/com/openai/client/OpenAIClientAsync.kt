@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.client
 
@@ -22,6 +22,7 @@ import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.ResponseServiceAsync
+import com.openai.services.async.SafetyServiceAsync
 import com.openai.services.async.SkillServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
@@ -103,6 +104,8 @@ interface OpenAIClientAsync {
     fun graders(): GraderServiceAsync
 
     fun vectorStores(): VectorStoreServiceAsync
+
+    fun safety(): SafetyServiceAsync
 
     fun webhooks(): WebhookServiceAsync
 
@@ -195,6 +198,8 @@ interface OpenAIClientAsync {
         fun graders(): GraderServiceAsync.WithRawResponse
 
         fun vectorStores(): VectorStoreServiceAsync.WithRawResponse
+
+        fun safety(): SafetyServiceAsync.WithRawResponse
 
         fun webhooks(): WebhookServiceAsync.WithRawResponse
 

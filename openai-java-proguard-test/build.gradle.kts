@@ -39,13 +39,13 @@ tasks.shadowJar {
     configurations = listOf(project.configurations.testRuntimeClasspath.get())
 }
 
+val shadowJarFile = tasks.shadowJar.flatMap { it.archiveFile }
 val proguardJarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.version}-proguard.jar"
 val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
     group = "verification"
     dependsOn(tasks.shadowJar)
-    notCompatibleWithConfigurationCache("ProGuard")
 
-    injars(tasks.shadowJar)
+    injars(shadowJarFile.get().asFile.absolutePath)
     outjars(proguardJarPath)
     printmapping("${layout.buildDirectory.get()}/proguard-mapping.txt")
 
@@ -69,7 +69,6 @@ val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
 val testProGuard by tasks.registering(JavaExec::class) {
     group = "verification"
     dependsOn(proguardJar)
-    notCompatibleWithConfigurationCache("ProGuard")
 
     mainClass.set("com.openai.proguard.ProGuardCompatibilityTest")
     classpath = files(proguardJarPath)
@@ -79,7 +78,6 @@ val r8JarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.v
 val r8Jar by tasks.registering(JavaExec::class) {
     group = "verification"
     dependsOn(tasks.shadowJar)
-    notCompatibleWithConfigurationCache("R8")
 
     mainClass.set("com.android.tools.r8.R8")
     classpath = buildscript.configurations["classpath"]
@@ -92,14 +90,13 @@ val r8Jar by tasks.registering(JavaExec::class) {
         "--pg-conf", "./test.pro",
         "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro",
         "--pg-map-output", "${layout.buildDirectory.get()}/r8-mapping.txt",
-        tasks.shadowJar.get().archiveFile.get().asFile.absolutePath,
+        shadowJarFile.get().asFile.absolutePath,
     )
 }
 
 val testR8 by tasks.registering(JavaExec::class) {
     group = "verification"
     dependsOn(r8Jar)
-    notCompatibleWithConfigurationCache("R8")
 
     mainClass.set("com.openai.proguard.ProGuardCompatibilityTest")
     classpath = files(r8JarPath)

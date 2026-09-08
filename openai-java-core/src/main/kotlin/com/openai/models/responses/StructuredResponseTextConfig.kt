@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.models.responses
 
 import com.openai.core.JsonField

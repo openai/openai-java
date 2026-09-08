@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -28,6 +28,7 @@ class WebSearchTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonField<Type>,
+    private val externalWebAccess: JsonField<Boolean>,
     private val filters: JsonField<Filters>,
     private val searchContextSize: JsonField<SearchContextSize>,
     private val userLocation: JsonField<UserLocation>,
@@ -37,6 +38,9 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("external_web_access")
+        @ExcludeMissing
+        externalWebAccess: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filters> = JsonMissing.of(),
         @JsonProperty("search_context_size")
         @ExcludeMissing
@@ -44,7 +48,7 @@ private constructor(
         @JsonProperty("user_location")
         @ExcludeMissing
         userLocation: JsonField<UserLocation> = JsonMissing.of(),
-    ) : this(type, filters, searchContextSize, userLocation, mutableMapOf())
+    ) : this(type, externalWebAccess, filters, searchContextSize, userLocation, mutableMapOf())
 
     /**
      * The type of the web search tool. One of `web_search` or `web_search_2025_08_26`.
@@ -53,6 +57,16 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
+
+    /**
+     * Allow live internet access for web search. Defaults to true when omitted. When false, the web
+     * search tool runs in offline/cache-only mode and will not fetch new external content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalWebAccess(): Optional<Boolean> =
+        externalWebAccess.getOptional("external_web_access")
 
     /**
      * Filters for the search.
@@ -86,6 +100,16 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+    /**
+     * Returns the raw JSON value of [externalWebAccess].
+     *
+     * Unlike [externalWebAccess], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("external_web_access")
+    @ExcludeMissing
+    fun _externalWebAccess(): JsonField<Boolean> = externalWebAccess
 
     /**
      * Returns the raw JSON value of [filters].
@@ -142,6 +166,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var type: JsonField<Type>? = null
+        private var externalWebAccess: JsonField<Boolean> = JsonMissing.of()
         private var filters: JsonField<Filters> = JsonMissing.of()
         private var searchContextSize: JsonField<SearchContextSize> = JsonMissing.of()
         private var userLocation: JsonField<UserLocation> = JsonMissing.of()
@@ -150,6 +175,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(webSearchTool: WebSearchTool) = apply {
             type = webSearchTool.type
+            externalWebAccess = webSearchTool.externalWebAccess
             filters = webSearchTool.filters
             searchContextSize = webSearchTool.searchContextSize
             userLocation = webSearchTool.userLocation
@@ -166,6 +192,24 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
+
+        /**
+         * Allow live internet access for web search. Defaults to true when omitted. When false, the
+         * web search tool runs in offline/cache-only mode and will not fetch new external content.
+         */
+        fun externalWebAccess(externalWebAccess: Boolean) =
+            externalWebAccess(JsonField.of(externalWebAccess))
+
+        /**
+         * Sets [Builder.externalWebAccess] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalWebAccess] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun externalWebAccess(externalWebAccess: JsonField<Boolean>) = apply {
+            this.externalWebAccess = externalWebAccess
+        }
 
         /** Filters for the search. */
         fun filters(filters: Filters?) = filters(JsonField.ofNullable(filters))
@@ -252,6 +296,7 @@ private constructor(
         fun build(): WebSearchTool =
             WebSearchTool(
                 checkRequired("type", type),
+                externalWebAccess,
                 filters,
                 searchContextSize,
                 userLocation,
@@ -275,6 +320,7 @@ private constructor(
         }
 
         type().validate()
+        externalWebAccess()
         filters().ifPresent { it.validate() }
         searchContextSize().ifPresent { it.validate() }
         userLocation().ifPresent { it.validate() }
@@ -297,6 +343,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (type.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (externalWebAccess.asKnown().isPresent) 1 else 0) +
             (filters.asKnown().getOrNull()?.validity() ?: 0) +
             (searchContextSize.asKnown().getOrNull()?.validity() ?: 0) +
             (userLocation.asKnown().getOrNull()?.validity() ?: 0)
@@ -1232,6 +1279,7 @@ private constructor(
 
         return other is WebSearchTool &&
             type == other.type &&
+            externalWebAccess == other.externalWebAccess &&
             filters == other.filters &&
             searchContextSize == other.searchContextSize &&
             userLocation == other.userLocation &&
@@ -1239,11 +1287,18 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, filters, searchContextSize, userLocation, additionalProperties)
+        Objects.hash(
+            type,
+            externalWebAccess,
+            filters,
+            searchContextSize,
+            userLocation,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "WebSearchTool{type=$type, filters=$filters, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
+        "WebSearchTool{type=$type, externalWebAccess=$externalWebAccess, filters=$filters, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
 }

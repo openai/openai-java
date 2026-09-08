@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals.runs
 
@@ -1613,7 +1613,7 @@ private constructor(
             fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
             /**
-             * An optional model to filter by (e.g., 'gpt-4o').
+             * An optional model to filter by (e.g., 'gpt-6-astra').
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1816,7 +1816,7 @@ private constructor(
                  */
                 fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-                /** An optional model to filter by (e.g., 'gpt-4o'). */
+                /** An optional model to filter by (e.g., 'gpt-6-astra'). */
                 fun model(model: String?) = model(JsonField.ofNullable(model))
 
                 /** Alias for calling [Builder.model] with `model.orElse(null)`. */

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations.items
 
@@ -33,6 +33,7 @@ import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionShellTool
 import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.McpToolCallError
 import com.openai.models.responses.NamespaceTool
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
@@ -40,6 +41,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -80,6 +82,7 @@ private constructor(
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -147,6 +150,13 @@ private constructor(
         Optional.ofNullable(toolSearchOutput)
 
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItem> =
+        Optional.ofNullable(configurationUpdate)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -233,6 +243,8 @@ private constructor(
 
     fun isAdditionalTools(): Boolean = additionalTools != null
 
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isProgram(): Boolean = program != null
@@ -314,6 +326,13 @@ private constructor(
         toolSearchOutput.getOrThrow("toolSearchOutput")
 
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
+
+    /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItem =
+        configurationUpdate.getOrThrow("configurationUpdate")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -423,6 +442,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             program != null -> visitor.visitProgram(program)
             programOutput != null -> visitor.visitProgramOutput(programOutput)
@@ -506,6 +526,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -639,6 +665,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitProgram(program: Program) = program.validity()
@@ -711,6 +741,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             program == other.program &&
             programOutput == other.programOutput &&
@@ -743,6 +774,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             program,
             programOutput,
@@ -776,6 +808,8 @@ private constructor(
             toolSearchCall != null -> "ConversationItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ConversationItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ConversationItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "ConversationItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ConversationItem{reasoning=$reasoning}"
             program != null -> "ConversationItem{program=$program}"
             programOutput != null -> "ConversationItem{programOutput=$programOutput}"
@@ -867,6 +901,14 @@ private constructor(
         @JvmStatic
         fun ofAdditionalTools(additionalTools: AdditionalTools) =
             ConversationItem(additionalTools = additionalTools)
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem) =
+            ConversationItem(configurationUpdate = configurationUpdate)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1004,6 +1046,12 @@ private constructor(
         fun visitToolSearchOutput(toolSearchOutput: ResponseToolSearchOutputItem): T
 
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
+
+        /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem): T
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1145,6 +1193,11 @@ private constructor(
                         ConversationItem(additionalTools = it, _json = json)
                     } ?: ConversationItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseConfigurationUpdateItem>())
+                        ?.let { ConversationItem(configurationUpdate = it, _json = json) }
+                        ?: ConversationItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ConversationItem(reasoning = it, _json = json)
@@ -1259,6 +1312,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.program != null -> generator.writeObject(value.program)
                 value.programOutput != null -> generator.writeObject(value.programOutput)
@@ -5833,7 +5888,7 @@ private constructor(
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
         private val approvalRequestId: JsonField<String>,
-        private val error: JsonField<String>,
+        private val error: JsonField<McpToolCallError>,
         private val output: JsonField<String>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -5853,7 +5908,9 @@ private constructor(
             @JsonProperty("approval_request_id")
             @ExcludeMissing
             approvalRequestId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<McpToolCallError> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         ) : this(
@@ -5931,7 +5988,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun error(): Optional<String> = error.getOptional("error")
+        fun error(): Optional<McpToolCallError> = error.getOptional("error")
 
         /**
          * The output from the tool call.
@@ -5995,7 +6052,7 @@ private constructor(
          *
          * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<McpToolCallError> = error
 
         /**
          * Returns the raw JSON value of [output].
@@ -6048,7 +6105,7 @@ private constructor(
             private var serverLabel: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp_call")
             private var approvalRequestId: JsonField<String> = JsonMissing.of()
-            private var error: JsonField<String> = JsonMissing.of()
+            private var error: JsonField<McpToolCallError> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -6157,19 +6214,41 @@ private constructor(
             }
 
             /** The error from the tool call, if any. */
-            fun error(error: String?) = error(JsonField.ofNullable(error))
+            fun error(error: McpToolCallError?) = error(JsonField.ofNullable(error))
 
             /** Alias for calling [Builder.error] with `error.orElse(null)`. */
-            fun error(error: Optional<String>) = error(error.getOrNull())
+            fun error(error: Optional<McpToolCallError>) = error(error.getOrNull())
 
             /**
              * Sets [Builder.error] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.error] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.error] with a well-typed [McpToolCallError] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun error(error: JsonField<String>) = apply { this.error = error }
+            fun error(error: JsonField<McpToolCallError>) = apply { this.error = error }
+
+            /** Alias for calling [error] with `McpToolCallError.ofProtocol(protocol)`. */
+            fun error(protocol: McpToolCallError.McpProtocolError) =
+                error(McpToolCallError.ofProtocol(protocol))
+
+            /** Alias for calling [error] with `McpToolCallError.ofToolExecution(toolExecution)`. */
+            fun error(toolExecution: McpToolCallError.McpToolExecutionError) =
+                error(McpToolCallError.ofToolExecution(toolExecution))
+
+            /**
+             * Alias for calling [error] with the following:
+             * ```java
+             * McpToolCallError.McpToolExecutionError.builder()
+             *     .content(content)
+             *     .build()
+             * ```
+             */
+            fun toolExecutionError(content: JsonValue) =
+                error(McpToolCallError.McpToolExecutionError.builder().content(content).build())
+
+            /** Alias for calling [error] with `McpToolCallError.ofHttp(http)`. */
+            fun error(http: McpToolCallError.HttpError) = error(McpToolCallError.ofHttp(http))
 
             /** The output from the tool call. */
             fun output(output: String?) = output(JsonField.ofNullable(output))
@@ -6276,7 +6355,7 @@ private constructor(
                 }
             }
             approvalRequestId()
-            error()
+            error().ifPresent { it.validate() }
             output()
             status().ifPresent { it.validate() }
             validated = true
@@ -6304,7 +6383,7 @@ private constructor(
                 (if (serverLabel.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
                 (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
-                (if (error.asKnown().isPresent) 1 else 0) +
+                (error.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (output.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 

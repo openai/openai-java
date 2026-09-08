@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -42,6 +42,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -123,6 +124,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -234,6 +236,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -348,6 +351,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -460,6 +464,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -574,6 +579,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -674,6 +680,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -741,6 +748,7 @@ internal class BetaResponseInputItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -763,6 +771,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -798,6 +807,7 @@ internal class BetaResponseInputItemTest {
                     .agent(
                         BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -817,7 +827,6 @@ internal class BetaResponseInputItemTest {
     fun ofFunctionCallOutput() {
         val functionCallOutput =
             BetaResponseInputItem.FunctionCallOutput.builder()
-                .callId("x")
                 .output("string")
                 .id("fc_123")
                 .agent(
@@ -825,6 +834,7 @@ internal class BetaResponseInputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .callId("x")
                 .callerDirect()
                 .name("x")
                 .namespace("namespace")
@@ -848,6 +858,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -876,7 +887,6 @@ internal class BetaResponseInputItemTest {
         val betaResponseInputItem =
             BetaResponseInputItem.ofFunctionCallOutput(
                 BetaResponseInputItem.FunctionCallOutput.builder()
-                    .callId("x")
                     .output("string")
                     .id("fc_123")
                     .agent(
@@ -884,6 +894,7 @@ internal class BetaResponseInputItemTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .callId("x")
                     .callerDirect()
                     .name("x")
                     .namespace("namespace")
@@ -939,6 +950,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1027,6 +1039,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1122,6 +1135,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1217,6 +1231,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).contains(toolSearchCall)
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1281,6 +1296,7 @@ internal class BetaResponseInputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1318,6 +1334,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).contains(toolSearchOutput)
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1356,6 +1373,7 @@ internal class BetaResponseInputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1400,6 +1418,7 @@ internal class BetaResponseInputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1434,6 +1453,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).contains(additionalTools)
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1472,6 +1492,7 @@ internal class BetaResponseInputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1485,6 +1506,92 @@ internal class BetaResponseInputItemTest {
                     .agent(
                         BetaResponseInputItem.AdditionalTools.Agent.builder()
                             .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseInputItem),
+                jacksonTypeRef<BetaResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedBetaResponseInputItem).isEqualTo(betaResponseInputItem)
+    }
+
+    @Test
+    fun ofConfigurationUpdate() {
+        val configurationUpdate =
+            BetaResponseConfigurationUpdateItemParam.builder()
+                .id("cnfu_123")
+                .agent(
+                    BetaResponseConfigurationUpdateItemParam.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .reasoning(
+                    BetaResponseConfigurationUpdateItemParam.Reasoning.builder()
+                        .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
+                        .build()
+                )
+                .build()
+
+        val betaResponseInputItem = BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate)
+
+        assertThat(betaResponseInputItem.betaEasyInputMessage()).isEmpty
+        assertThat(betaResponseInputItem.message()).isEmpty
+        assertThat(betaResponseInputItem.betaResponseOutputMessage()).isEmpty
+        assertThat(betaResponseInputItem.fileSearchCall()).isEmpty
+        assertThat(betaResponseInputItem.computerCall()).isEmpty
+        assertThat(betaResponseInputItem.computerCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.webSearchCall()).isEmpty
+        assertThat(betaResponseInputItem.functionCall()).isEmpty
+        assertThat(betaResponseInputItem.functionCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.agentMessage()).isEmpty
+        assertThat(betaResponseInputItem.multiAgentCall()).isEmpty
+        assertThat(betaResponseInputItem.multiAgentCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
+        assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
+        assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).contains(configurationUpdate)
+        assertThat(betaResponseInputItem.reasoning()).isEmpty
+        assertThat(betaResponseInputItem.compaction()).isEmpty
+        assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
+        assertThat(betaResponseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(betaResponseInputItem.localShellCall()).isEmpty
+        assertThat(betaResponseInputItem.localShellCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.shellCall()).isEmpty
+        assertThat(betaResponseInputItem.shellCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.applyPatchCall()).isEmpty
+        assertThat(betaResponseInputItem.applyPatchCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.mcpListTools()).isEmpty
+        assertThat(betaResponseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(betaResponseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(betaResponseInputItem.mcpCall()).isEmpty
+        assertThat(betaResponseInputItem.customToolCallOutput()).isEmpty
+        assertThat(betaResponseInputItem.customToolCall()).isEmpty
+        assertThat(betaResponseInputItem.compactionTrigger()).isEmpty
+        assertThat(betaResponseInputItem.itemReference()).isEmpty
+        assertThat(betaResponseInputItem.program()).isEmpty
+        assertThat(betaResponseInputItem.programOutput()).isEmpty
+    }
+
+    @Test
+    fun ofConfigurationUpdateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseInputItem =
+            BetaResponseInputItem.ofConfigurationUpdate(
+                BetaResponseConfigurationUpdateItemParam.builder()
+                    .id("cnfu_123")
+                    .agent(
+                        BetaResponseConfigurationUpdateItemParam.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .reasoning(
+                        BetaResponseConfigurationUpdateItemParam.Reasoning.builder()
+                            .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                             .build()
                     )
                     .build()
@@ -1528,6 +1635,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).contains(reasoning)
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1604,6 +1712,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).contains(compaction)
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1682,6 +1791,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).contains(imageGenerationCall)
@@ -1763,6 +1873,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1857,6 +1968,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -1950,6 +2062,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2046,6 +2159,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2153,6 +2267,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2248,6 +2363,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2337,6 +2453,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2426,6 +2543,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2514,6 +2632,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2595,6 +2714,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2656,7 +2776,12 @@ internal class BetaResponseInputItemTest {
                     BetaResponseInputItem.McpCall.Agent.builder().agentName("agent_name").build()
                 )
                 .approvalRequestId("approval_request_id")
-                .error("error")
+                .error(
+                    BetaMcpToolCallError.McpProtocolError.builder()
+                        .code(0L)
+                        .message("message")
+                        .build()
+                )
                 .output("output")
                 .status(BetaResponseInputItem.McpCall.Status.IN_PROGRESS)
                 .build()
@@ -2678,6 +2803,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2716,7 +2842,12 @@ internal class BetaResponseInputItemTest {
                             .build()
                     )
                     .approvalRequestId("approval_request_id")
-                    .error("error")
+                    .error(
+                        BetaMcpToolCallError.McpProtocolError.builder()
+                            .code(0L)
+                            .message("message")
+                            .build()
+                    )
                     .output("output")
                     .status(BetaResponseInputItem.McpCall.Status.IN_PROGRESS)
                     .build()
@@ -2762,6 +2893,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2820,6 +2952,7 @@ internal class BetaResponseInputItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()
@@ -2841,6 +2974,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2876,6 +3010,7 @@ internal class BetaResponseInputItemTest {
                     .agent(
                         BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .build()
@@ -2918,6 +3053,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -2993,6 +3129,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -3070,6 +3207,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty
@@ -3151,6 +3289,7 @@ internal class BetaResponseInputItemTest {
         assertThat(betaResponseInputItem.toolSearchCall()).isEmpty
         assertThat(betaResponseInputItem.toolSearchOutput()).isEmpty
         assertThat(betaResponseInputItem.additionalTools()).isEmpty
+        assertThat(betaResponseInputItem.configurationUpdate()).isEmpty
         assertThat(betaResponseInputItem.reasoning()).isEmpty
         assertThat(betaResponseInputItem.compaction()).isEmpty
         assertThat(betaResponseInputItem.imageGenerationCall()).isEmpty

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -25,6 +25,20 @@ internal class ResponseTest {
                     ResponseError.builder()
                         .code(ResponseError.Code.SERVER_ERROR)
                         .message("message")
+                        .misalignment(
+                            ResponseError.Misalignment.builder()
+                                .detailedExplanation("detailed_explanation")
+                                .errorType(
+                                    ResponseError.Misalignment.ErrorType
+                                        .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                )
+                                .steer(
+                                    ResponseError.Misalignment.Steer.builder()
+                                        .message("message")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .build()
                 )
                 .incompleteDetails(
@@ -38,7 +52,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_6_ASTRA)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -85,6 +99,7 @@ internal class ResponseTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -170,11 +185,19 @@ internal class ResponseTest {
                         .version("version")
                         .build()
                 )
+                .promptCacheDiagnostics(
+                    Response.PromptCacheDiagnostics.CacheMiss.builder()
+                        .cacheMissedTokens(0L)
+                        .reason(Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED)
+                        .comparisonReusableTokens(0L)
+                        .build()
+                )
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     Response.PromptCacheOptions.builder()
                         .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                         .ttl(Response.PromptCacheOptions.Ttl._30M)
+                        .comparisonResponseId("comparison_response_id")
                         .build()
                 )
                 .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -224,6 +247,20 @@ internal class ResponseTest {
                 ResponseError.builder()
                     .code(ResponseError.Code.SERVER_ERROR)
                     .message("message")
+                    .misalignment(
+                        ResponseError.Misalignment.builder()
+                            .detailedExplanation("detailed_explanation")
+                            .errorType(
+                                ResponseError.Misalignment.ErrorType
+                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                            )
+                            .steer(
+                                ResponseError.Misalignment.Steer.builder()
+                                    .message("message")
+                                    .build()
+                            )
+                            .build()
+                    )
                     .build()
             )
         assertThat(response.incompleteDetails())
@@ -239,7 +276,7 @@ internal class ResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA))
         assertThat(response.output())
             .containsExactly(
                 ResponseOutputItem.ofMessage(
@@ -292,6 +329,7 @@ internal class ResponseTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -372,12 +410,23 @@ internal class ResponseTest {
                     .version("version")
                     .build()
             )
+        assertThat(response.promptCacheDiagnostics())
+            .contains(
+                Response.PromptCacheDiagnostics.ofCacheMiss(
+                    Response.PromptCacheDiagnostics.CacheMiss.builder()
+                        .cacheMissedTokens(0L)
+                        .reason(Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED)
+                        .comparisonReusableTokens(0L)
+                        .build()
+                )
+            )
         assertThat(response.promptCacheKey()).contains("prompt-cache-key-1234")
         assertThat(response.promptCacheOptions())
             .contains(
                 Response.PromptCacheOptions.builder()
                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                    .comparisonResponseId("comparison_response_id")
                     .build()
             )
         assertThat(response.promptCacheRetention())
@@ -435,6 +484,20 @@ internal class ResponseTest {
                     ResponseError.builder()
                         .code(ResponseError.Code.SERVER_ERROR)
                         .message("message")
+                        .misalignment(
+                            ResponseError.Misalignment.builder()
+                                .detailedExplanation("detailed_explanation")
+                                .errorType(
+                                    ResponseError.Misalignment.ErrorType
+                                        .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                )
+                                .steer(
+                                    ResponseError.Misalignment.Steer.builder()
+                                        .message("message")
+                                        .build()
+                                )
+                                .build()
+                        )
                         .build()
                 )
                 .incompleteDetails(
@@ -448,7 +511,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_6_ASTRA)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -495,6 +558,7 @@ internal class ResponseTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -580,11 +644,19 @@ internal class ResponseTest {
                         .version("version")
                         .build()
                 )
+                .promptCacheDiagnostics(
+                    Response.PromptCacheDiagnostics.CacheMiss.builder()
+                        .cacheMissedTokens(0L)
+                        .reason(Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED)
+                        .comparisonReusableTokens(0L)
+                        .build()
+                )
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     Response.PromptCacheOptions.builder()
                         .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                         .ttl(Response.PromptCacheOptions.Ttl._30M)
+                        .comparisonResponseId("comparison_response_id")
                         .build()
                 )
                 .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)

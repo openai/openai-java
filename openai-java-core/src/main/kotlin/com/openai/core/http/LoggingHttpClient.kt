@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.LogLevel
@@ -111,16 +109,14 @@ private constructor(
 
         logHeaders(request.headers)
 
-        if (request.body == null) {
+        val requestBody = request.body
+        if (requestBody == null) {
             System.err.println("--> END ${request.method}")
             System.err.println()
             return request
         }
 
-        return request
-            .toBuilder()
-            .body(LoggingHttpRequestBody(request.method, request.body))
-            .build()
+        return request.toBuilder().body(LoggingHttpRequestBody(request.method, requestBody)).build()
     }
 
     private fun logResponse(response: HttpResponse, took: Duration): HttpResponse {

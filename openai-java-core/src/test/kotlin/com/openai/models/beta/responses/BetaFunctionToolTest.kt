@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -23,6 +23,7 @@ internal class BetaFunctionToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(
@@ -42,6 +43,7 @@ internal class BetaFunctionToolTest {
         assertThat(betaFunctionTool.strict()).contains(true)
         assertThat(betaFunctionTool.allowedCallers().getOrNull())
             .containsExactly(BetaFunctionTool.AllowedCaller.DIRECT)
+        assertThat(betaFunctionTool.async()).contains(true)
         assertThat(betaFunctionTool.deferLoading()).contains(true)
         assertThat(betaFunctionTool.description()).contains("description")
         assertThat(betaFunctionTool.outputSchema())
@@ -65,6 +67,7 @@ internal class BetaFunctionToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(

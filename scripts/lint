@@ -6,13 +6,8 @@ cd "$(dirname "$0")/.."
 
 echo "==> Running lints"
 
-if command -v ktfmt &> /dev/null; then
-    echo "==> Checking ktfmt"
-    ./scripts/kotlin-format --dry-run --set-exit-if-changed
-else
-    echo "==> Running gradlew lintKotlin"
-    ./scripts/gradle lintKotlin
-fi
+echo "==> Running gradlew lintKotlin"
+./scripts/gradle lintKotlin
 
 if command -v palantir-java-format &> /dev/null; then
     echo "==> Checking palantir-java-format"

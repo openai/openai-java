@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -18,8 +18,6 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * **gpt-5 and o-series models only**
- *
  * Configuration options for [reasoning models](https://platform.openai.com/docs/guides/reasoning).
  */
 class Reasoning

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations.items
 
@@ -21,9 +21,11 @@ import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItemParam
 import com.openai.models.responses.ResponseComputerToolCall
+import com.openai.models.responses.ResponseConfigurationUpdateItemParam
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionCallOutputItem
 import com.openai.models.responses.ResponseFunctionToolCall
 import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseIncludable
@@ -219,6 +221,38 @@ private constructor(
         }
 
         /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseInputItem.FunctionCallOutput.builder()
+         *     .output(output)
+         *     .build()
+         * ```
+         */
+        fun addFunctionCallOutputItem(output: ResponseInputItem.FunctionCallOutput.Output) = apply {
+            body.addFunctionCallOutputItem(output)
+        }
+
+        /**
+         * Alias for calling [addFunctionCallOutputItem] with
+         * `ResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+         */
+        fun addFunctionCallOutputItem(string: String) = apply {
+            body.addFunctionCallOutputItem(string)
+        }
+
+        /**
+         * Alias for calling [addFunctionCallOutputItem] with
+         * `ResponseInputItem.FunctionCallOutput.Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+         */
+        fun addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+            responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+        ) = apply {
+            body.addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList
+            )
+        }
+
+        /**
          * Alias for calling [addItem] with `ResponseInputItem.ofToolSearchCall(toolSearchCall)`.
          */
         fun addItem(toolSearchCall: ResponseInputItem.ToolSearchCall) = apply {
@@ -273,6 +307,14 @@ private constructor(
          * ```
          */
         fun addAdditionalToolsItem(tools: List<Tool>) = apply { body.addAdditionalToolsItem(tools) }
+
+        /**
+         * Alias for calling [addItem] with
+         * `ResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addItem(configurationUpdate: ResponseConfigurationUpdateItemParam) = apply {
+            body.addItem(configurationUpdate)
+        }
 
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
         fun addItem(reasoning: ResponseReasoningItem) = apply { body.addItem(reasoning) }
@@ -721,6 +763,38 @@ private constructor(
                 addItem(ResponseInputItem.ofFunctionCallOutput(functionCallOutput))
 
             /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseInputItem.FunctionCallOutput.builder()
+             *     .output(output)
+             *     .build()
+             * ```
+             */
+            fun addFunctionCallOutputItem(output: ResponseInputItem.FunctionCallOutput.Output) =
+                addItem(ResponseInputItem.FunctionCallOutput.builder().output(output).build())
+
+            /**
+             * Alias for calling [addFunctionCallOutputItem] with
+             * `ResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+             */
+            fun addFunctionCallOutputItem(string: String) =
+                addFunctionCallOutputItem(
+                    ResponseInputItem.FunctionCallOutput.Output.ofString(string)
+                )
+
+            /**
+             * Alias for calling [addFunctionCallOutputItem] with
+             * `ResponseInputItem.FunctionCallOutput.Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+             */
+            fun addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+            ) =
+                addFunctionCallOutputItem(
+                    ResponseInputItem.FunctionCallOutput.Output
+                        .ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)
+                )
+
+            /**
              * Alias for calling [addItem] with
              * `ResponseInputItem.ofToolSearchCall(toolSearchCall)`.
              */
@@ -773,6 +847,13 @@ private constructor(
              */
             fun addAdditionalToolsItem(tools: List<Tool>) =
                 addItem(ResponseInputItem.AdditionalTools.builder().tools(tools).build())
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+             */
+            fun addItem(configurationUpdate: ResponseConfigurationUpdateItemParam) =
+                addItem(ResponseInputItem.ofConfigurationUpdate(configurationUpdate))
 
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =

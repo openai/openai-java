@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.models.embeddings
 
 import com.fasterxml.jackson.core.JsonGenerator

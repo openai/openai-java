@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -54,6 +54,7 @@ private constructor(
     private val toolSearchCall: ToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItemParam? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItemParam? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val compaction: ResponseCompactionItemParam? = null,
     private val imageGenerationCall: ImageGenerationCall? = null,
@@ -136,6 +137,13 @@ private constructor(
         Optional.ofNullable(toolSearchOutput)
 
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
+
+    /**
+     * An update to the conversation's response configuration. The configuration remains in effect
+     * for subsequent responses until it is replaced by another configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItemParam> =
+        Optional.ofNullable(configurationUpdate)
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -232,6 +240,8 @@ private constructor(
     fun isToolSearchOutput(): Boolean = toolSearchOutput != null
 
     fun isAdditionalTools(): Boolean = additionalTools != null
+
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
 
     fun isReasoning(): Boolean = reasoning != null
 
@@ -334,6 +344,13 @@ private constructor(
         toolSearchOutput.getOrThrow("toolSearchOutput")
 
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
+
+    /**
+     * An update to the conversation's response configuration. The configuration remains in effect
+     * for subsequent responses until it is replaced by another configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItemParam =
+        configurationUpdate.getOrThrow("configurationUpdate")
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
@@ -454,6 +471,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             compaction != null -> visitor.visitCompaction(compaction)
             imageGenerationCall != null -> visitor.visitImageGenerationCall(imageGenerationCall)
@@ -544,6 +562,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItemParam
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -694,6 +718,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItemParam
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitCompaction(compaction: ResponseCompactionItemParam) =
@@ -775,6 +803,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             compaction == other.compaction &&
             imageGenerationCall == other.imageGenerationCall &&
@@ -811,6 +840,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             compaction,
             imageGenerationCall,
@@ -850,6 +880,8 @@ private constructor(
             toolSearchCall != null -> "ResponseInputItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ResponseInputItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ResponseInputItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "ResponseInputItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ResponseInputItem{reasoning=$reasoning}"
             compaction != null -> "ResponseInputItem{compaction=$compaction}"
             imageGenerationCall != null ->
@@ -962,6 +994,14 @@ private constructor(
         @JvmStatic
         fun ofAdditionalTools(additionalTools: AdditionalTools) =
             ResponseInputItem(additionalTools = additionalTools)
+
+        /**
+         * An update to the conversation's response configuration. The configuration remains in
+         * effect for subsequent responses until it is replaced by another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam) =
+            ResponseInputItem(configurationUpdate = configurationUpdate)
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1132,6 +1172,12 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
+         * An update to the conversation's response configuration. The configuration remains in
+         * effect for subsequent responses until it is replaced by another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam): T
+
+        /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
          * subsequent turns of a conversation if you are manually
@@ -1293,6 +1339,14 @@ private constructor(
                         ResponseInputItem(additionalTools = it, _json = json)
                     } ?: ResponseInputItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseConfigurationUpdateItemParam>(),
+                        )
+                        ?.let { ResponseInputItem(configurationUpdate = it, _json = json) }
+                        ?: ResponseInputItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ResponseInputItem(reasoning = it, _json = json)
@@ -1420,6 +1474,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.compaction != null -> generator.writeObject(value.compaction)
                 value.imageGenerationCall != null ->
@@ -3053,10 +3109,10 @@ private constructor(
     class FunctionCallOutput
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val callId: JsonField<String>,
         private val output: JsonField<Output>,
         private val type: JsonValue,
         private val id: JsonField<String>,
+        private val callId: JsonField<String>,
         private val caller: JsonField<Caller>,
         private val name: JsonField<String>,
         private val namespace: JsonField<String>,
@@ -3066,25 +3122,17 @@ private constructor(
 
         @JsonCreator
         private constructor(
-            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<Output> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("caller") @ExcludeMissing caller: JsonField<Caller> = JsonMissing.of(),
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             @JsonProperty("namespace")
             @ExcludeMissing
             namespace: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        ) : this(callId, output, type, id, caller, name, namespace, status, mutableMapOf())
-
-        /**
-         * The unique ID of the function tool call generated by the model.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun callId(): String = callId.getRequired("call_id")
+        ) : this(output, type, id, callId, caller, name, namespace, status, mutableMapOf())
 
         /**
          * Text, image, or file output of the function tool call.
@@ -3115,6 +3163,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The unique ID of the function tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun callId(): Optional<String> = callId.getOptional("call_id")
 
         /**
          * The execution context that produced this tool call.
@@ -3150,13 +3206,6 @@ private constructor(
         fun status(): Optional<Status> = status.getOptional("status")
 
         /**
-         * Returns the raw JSON value of [callId].
-         *
-         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
-
-        /**
          * Returns the raw JSON value of [output].
          *
          * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
@@ -3169,6 +3218,13 @@ private constructor(
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
 
         /**
          * Returns the raw JSON value of [caller].
@@ -3217,7 +3273,6 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .callId()
              * .output()
              * ```
              */
@@ -3227,10 +3282,10 @@ private constructor(
         /** A builder for [FunctionCallOutput]. */
         class Builder internal constructor() {
 
-            private var callId: JsonField<String>? = null
             private var output: JsonField<Output>? = null
             private var type: JsonValue = JsonValue.from("function_call_output")
             private var id: JsonField<String> = JsonMissing.of()
+            private var callId: JsonField<String> = JsonMissing.of()
             private var caller: JsonField<Caller> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var namespace: JsonField<String> = JsonMissing.of()
@@ -3239,28 +3294,16 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(functionCallOutput: FunctionCallOutput) = apply {
-                callId = functionCallOutput.callId
                 output = functionCallOutput.output
                 type = functionCallOutput.type
                 id = functionCallOutput.id
+                callId = functionCallOutput.callId
                 caller = functionCallOutput.caller
                 name = functionCallOutput.name
                 namespace = functionCallOutput.namespace
                 status = functionCallOutput.status
                 additionalProperties = functionCallOutput.additionalProperties.toMutableMap()
             }
-
-            /** The unique ID of the function tool call generated by the model. */
-            fun callId(callId: String) = callId(JsonField.of(callId))
-
-            /**
-             * Sets [Builder.callId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.callId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
             /** Text, image, or file output of the function tool call. */
             fun output(output: Output) = output(JsonField.of(output))
@@ -3327,6 +3370,21 @@ private constructor(
              * value.
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The unique ID of the function tool call generated by the model. */
+            fun callId(callId: String?) = callId(JsonField.ofNullable(callId))
+
+            /** Alias for calling [Builder.callId] with `callId.orElse(null)`. */
+            fun callId(callId: Optional<String>) = callId(callId.getOrNull())
+
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
             /** The execution context that produced this tool call. */
             fun caller(caller: Caller?) = caller(JsonField.ofNullable(caller))
@@ -3434,7 +3492,6 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .callId()
              * .output()
              * ```
              *
@@ -3442,10 +3499,10 @@ private constructor(
              */
             fun build(): FunctionCallOutput =
                 FunctionCallOutput(
-                    checkRequired("callId", callId),
                     checkRequired("output", output),
                     type,
                     id,
+                    callId,
                     caller,
                     name,
                     namespace,
@@ -3470,7 +3527,6 @@ private constructor(
                 return@apply
             }
 
-            callId()
             output().validate()
             _type().let {
                 if (it != JsonValue.from("function_call_output")) {
@@ -3478,6 +3534,7 @@ private constructor(
                 }
             }
             id()
+            callId()
             caller().ifPresent { it.validate() }
             name()
             namespace()
@@ -3501,10 +3558,10 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (callId.asKnown().isPresent) 1 else 0) +
-                (output.asKnown().getOrNull()?.validity() ?: 0) +
+            (output.asKnown().getOrNull()?.validity() ?: 0) +
                 type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
                 (if (id.asKnown().isPresent) 1 else 0) +
+                (if (callId.asKnown().isPresent) 1 else 0) +
                 (caller.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (name.asKnown().isPresent) 1 else 0) +
                 (if (namespace.asKnown().isPresent) 1 else 0) +
@@ -4355,10 +4412,10 @@ private constructor(
             }
 
             return other is FunctionCallOutput &&
-                callId == other.callId &&
                 output == other.output &&
                 type == other.type &&
                 id == other.id &&
+                callId == other.callId &&
                 caller == other.caller &&
                 name == other.name &&
                 namespace == other.namespace &&
@@ -4368,10 +4425,10 @@ private constructor(
 
         private val hashCode: Int by lazy {
             Objects.hash(
-                callId,
                 output,
                 type,
                 id,
+                callId,
                 caller,
                 name,
                 namespace,
@@ -4383,7 +4440,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FunctionCallOutput{callId=$callId, output=$output, type=$type, id=$id, caller=$caller, name=$name, namespace=$namespace, status=$status, additionalProperties=$additionalProperties}"
+            "FunctionCallOutput{output=$output, type=$type, id=$id, callId=$callId, caller=$caller, name=$name, namespace=$namespace, status=$status, additionalProperties=$additionalProperties}"
     }
 
     class ToolSearchCall
@@ -14178,7 +14235,7 @@ private constructor(
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
         private val approvalRequestId: JsonField<String>,
-        private val error: JsonField<String>,
+        private val error: JsonField<McpToolCallError>,
         private val output: JsonField<String>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -14198,7 +14255,9 @@ private constructor(
             @JsonProperty("approval_request_id")
             @ExcludeMissing
             approvalRequestId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<McpToolCallError> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         ) : this(
@@ -14276,7 +14335,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun error(): Optional<String> = error.getOptional("error")
+        fun error(): Optional<McpToolCallError> = error.getOptional("error")
 
         /**
          * The output from the tool call.
@@ -14340,7 +14399,7 @@ private constructor(
          *
          * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<McpToolCallError> = error
 
         /**
          * Returns the raw JSON value of [output].
@@ -14393,7 +14452,7 @@ private constructor(
             private var serverLabel: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp_call")
             private var approvalRequestId: JsonField<String> = JsonMissing.of()
-            private var error: JsonField<String> = JsonMissing.of()
+            private var error: JsonField<McpToolCallError> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -14502,19 +14561,41 @@ private constructor(
             }
 
             /** The error from the tool call, if any. */
-            fun error(error: String?) = error(JsonField.ofNullable(error))
+            fun error(error: McpToolCallError?) = error(JsonField.ofNullable(error))
 
             /** Alias for calling [Builder.error] with `error.orElse(null)`. */
-            fun error(error: Optional<String>) = error(error.getOrNull())
+            fun error(error: Optional<McpToolCallError>) = error(error.getOrNull())
 
             /**
              * Sets [Builder.error] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.error] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.error] with a well-typed [McpToolCallError] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun error(error: JsonField<String>) = apply { this.error = error }
+            fun error(error: JsonField<McpToolCallError>) = apply { this.error = error }
+
+            /** Alias for calling [error] with `McpToolCallError.ofProtocol(protocol)`. */
+            fun error(protocol: McpToolCallError.McpProtocolError) =
+                error(McpToolCallError.ofProtocol(protocol))
+
+            /** Alias for calling [error] with `McpToolCallError.ofToolExecution(toolExecution)`. */
+            fun error(toolExecution: McpToolCallError.McpToolExecutionError) =
+                error(McpToolCallError.ofToolExecution(toolExecution))
+
+            /**
+             * Alias for calling [error] with the following:
+             * ```java
+             * McpToolCallError.McpToolExecutionError.builder()
+             *     .content(content)
+             *     .build()
+             * ```
+             */
+            fun toolExecutionError(content: JsonValue) =
+                error(McpToolCallError.McpToolExecutionError.builder().content(content).build())
+
+            /** Alias for calling [error] with `McpToolCallError.ofHttp(http)`. */
+            fun error(http: McpToolCallError.HttpError) = error(McpToolCallError.ofHttp(http))
 
             /** The output from the tool call. */
             fun output(output: String?) = output(JsonField.ofNullable(output))
@@ -14621,7 +14702,7 @@ private constructor(
                 }
             }
             approvalRequestId()
-            error()
+            error().ifPresent { it.validate() }
             output()
             status().ifPresent { it.validate() }
             validated = true
@@ -14649,7 +14730,7 @@ private constructor(
                 (if (serverLabel.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
                 (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
-                (if (error.asKnown().isPresent) 1 else 0) +
+                (error.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (output.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 

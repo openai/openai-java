@@ -2,8 +2,6 @@
 
 package com.openai.core
 
-import com.openai.client.OpenAIClient
-
 fun getOsArch(): String {
     val osArch = System.getProperty("os.arch")
 
@@ -37,6 +35,6 @@ fun getOsName(): String {
 fun getOsVersion(): String = System.getProperty("os.version", "unknown") ?: "unknown"
 
 fun getPackageVersion(): String =
-    OpenAIClient::class.java.`package`?.implementationVersion ?: "unknown"
+    ClientOptions::class.java.`package`?.implementationVersion ?: "unknown"
 
 fun getJavaVersion(): String = System.getProperty("java.version", "unknown") ?: "unknown"

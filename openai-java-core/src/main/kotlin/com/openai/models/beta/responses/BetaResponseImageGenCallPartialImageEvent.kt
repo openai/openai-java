@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -28,6 +28,10 @@ private constructor(
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val agent: JsonField<Agent>,
+    private val background: JsonField<String>,
+    private val outputFormat: JsonField<String>,
+    private val quality: JsonField<String>,
+    private val size: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -48,6 +52,14 @@ private constructor(
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
+        @JsonProperty("background")
+        @ExcludeMissing
+        background: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output_format")
+        @ExcludeMissing
+        outputFormat: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("quality") @ExcludeMissing quality: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("size") @ExcludeMissing size: JsonField<String> = JsonMissing.of(),
     ) : this(
         itemId,
         outputIndex,
@@ -56,6 +68,10 @@ private constructor(
         sequenceNumber,
         type,
         agent,
+        background,
+        outputFormat,
+        quality,
+        size,
         mutableMapOf(),
     )
 
@@ -121,6 +137,38 @@ private constructor(
     fun agent(): Optional<Agent> = agent.getOptional("agent")
 
     /**
+     * The background setting that was used.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun background(): Optional<String> = background.getOptional("background")
+
+    /**
+     * The output format that was used.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun outputFormat(): Optional<String> = outputFormat.getOptional("output_format")
+
+    /**
+     * The image quality that was used.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun quality(): Optional<String> = quality.getOptional("quality")
+
+    /**
+     * The image size that was used.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun size(): Optional<String> = size.getOptional("size")
+
+    /**
      * Returns the raw JSON value of [itemId].
      *
      * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
@@ -169,6 +217,36 @@ private constructor(
      */
     @JsonProperty("agent") @ExcludeMissing fun _agent(): JsonField<Agent> = agent
 
+    /**
+     * Returns the raw JSON value of [background].
+     *
+     * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("background") @ExcludeMissing fun _background(): JsonField<String> = background
+
+    /**
+     * Returns the raw JSON value of [outputFormat].
+     *
+     * Unlike [outputFormat], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("output_format")
+    @ExcludeMissing
+    fun _outputFormat(): JsonField<String> = outputFormat
+
+    /**
+     * Returns the raw JSON value of [quality].
+     *
+     * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<String> = quality
+
+    /**
+     * Returns the raw JSON value of [size].
+     *
+     * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<String> = size
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -209,6 +287,10 @@ private constructor(
         private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.image_generation_call.partial_image")
         private var agent: JsonField<Agent> = JsonMissing.of()
+        private var background: JsonField<String> = JsonMissing.of()
+        private var outputFormat: JsonField<String> = JsonMissing.of()
+        private var quality: JsonField<String> = JsonMissing.of()
+        private var size: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -222,6 +304,10 @@ private constructor(
             sequenceNumber = betaResponseImageGenCallPartialImageEvent.sequenceNumber
             type = betaResponseImageGenCallPartialImageEvent.type
             agent = betaResponseImageGenCallPartialImageEvent.agent
+            background = betaResponseImageGenCallPartialImageEvent.background
+            outputFormat = betaResponseImageGenCallPartialImageEvent.outputFormat
+            quality = betaResponseImageGenCallPartialImageEvent.quality
+            size = betaResponseImageGenCallPartialImageEvent.size
             additionalProperties =
                 betaResponseImageGenCallPartialImageEvent.additionalProperties.toMutableMap()
         }
@@ -324,6 +410,54 @@ private constructor(
          */
         fun agent(agent: JsonField<Agent>) = apply { this.agent = agent }
 
+        /** The background setting that was used. */
+        fun background(background: String) = background(JsonField.of(background))
+
+        /**
+         * Sets [Builder.background] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.background] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun background(background: JsonField<String>) = apply { this.background = background }
+
+        /** The output format that was used. */
+        fun outputFormat(outputFormat: String) = outputFormat(JsonField.of(outputFormat))
+
+        /**
+         * Sets [Builder.outputFormat] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputFormat] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun outputFormat(outputFormat: JsonField<String>) = apply {
+            this.outputFormat = outputFormat
+        }
+
+        /** The image quality that was used. */
+        fun quality(quality: String) = quality(JsonField.of(quality))
+
+        /**
+         * Sets [Builder.quality] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.quality] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun quality(quality: JsonField<String>) = apply { this.quality = quality }
+
+        /** The image size that was used. */
+        fun size(size: String) = size(JsonField.of(size))
+
+        /**
+         * Sets [Builder.size] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.size] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun size(size: JsonField<String>) = apply { this.size = size }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -368,6 +502,10 @@ private constructor(
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 agent,
+                background,
+                outputFormat,
+                quality,
+                size,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -398,6 +536,10 @@ private constructor(
             }
         }
         agent().ifPresent { it.validate() }
+        background()
+        outputFormat()
+        quality()
+        size()
         validated = true
     }
 
@@ -424,7 +566,11 @@ private constructor(
             type.let {
                 if (it == JsonValue.from("response.image_generation_call.partial_image")) 1 else 0
             } +
-            (agent.asKnown().getOrNull()?.validity() ?: 0)
+            (agent.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (background.asKnown().isPresent) 1 else 0) +
+            (if (outputFormat.asKnown().isPresent) 1 else 0) +
+            (if (quality.asKnown().isPresent) 1 else 0) +
+            (if (size.asKnown().isPresent) 1 else 0)
 
     /** The agent that owns this multi-agent streaming event. */
     class Agent
@@ -607,6 +753,10 @@ private constructor(
             sequenceNumber == other.sequenceNumber &&
             type == other.type &&
             agent == other.agent &&
+            background == other.background &&
+            outputFormat == other.outputFormat &&
+            quality == other.quality &&
+            size == other.size &&
             additionalProperties == other.additionalProperties
     }
 
@@ -619,6 +769,10 @@ private constructor(
             sequenceNumber,
             type,
             agent,
+            background,
+            outputFormat,
+            quality,
+            size,
             additionalProperties,
         )
     }
@@ -626,5 +780,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseImageGenCallPartialImageEvent{itemId=$itemId, outputIndex=$outputIndex, partialImageB64=$partialImageB64, partialImageIndex=$partialImageIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
+        "BetaResponseImageGenCallPartialImageEvent{itemId=$itemId, outputIndex=$outputIndex, partialImageB64=$partialImageB64, partialImageIndex=$partialImageIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, background=$background, outputFormat=$outputFormat, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
 }

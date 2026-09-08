@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -42,7 +42,9 @@ private constructor(
     ) : this(item, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
-     * The output item that was added.
+     * The output item that was added. For reasoning items, `encrypted_content` may be incomplete
+     * while the item is in progress. Use the reasoning item from the corresponding
+     * `response.output_item.done` event when passing it as input to a subsequent request.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -146,7 +148,11 @@ private constructor(
             additionalProperties = responseOutputItemAddedEvent.additionalProperties.toMutableMap()
         }
 
-        /** The output item that was added. */
+        /**
+         * The output item that was added. For reasoning items, `encrypted_content` may be
+         * incomplete while the item is in progress. Use the reasoning item from the corresponding
+         * `response.output_item.done` event when passing it as input to a subsequent request.
+         */
         fun item(item: ResponseOutputItem) = item(JsonField.of(item))
 
         /**

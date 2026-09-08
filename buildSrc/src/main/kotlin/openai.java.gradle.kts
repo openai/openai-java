@@ -1,3 +1,4 @@
+import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.VersionSupportPolicy
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
@@ -11,7 +12,8 @@ repositories {
 
 val versionSupportPolicy =
     VersionSupportPolicy.load(rootProject.file("gradle/version-support.properties"))
-val runtimeFloor = versionSupportPolicy.runtimeFloor(project.name)
+val versionPolicyProject = CoreCompilationShards.versionPolicyProjectName(project.name)
+val runtimeFloor = versionSupportPolicy.runtimeFloor(versionPolicyProject)
 
 java {
     toolchain {
