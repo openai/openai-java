@@ -44,8 +44,7 @@ interface ImageServiceAsync {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, and
-     * `chatgpt-image-latest`) and `dall-e-2`.
+     * endpoint supports GPT Image models and `dall-e-2`.
      */
     fun edit(params: ImageEditParams): CompletableFuture<ImagesResponse> =
         edit(params, RequestOptions.none())
@@ -58,8 +57,7 @@ interface ImageServiceAsync {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, and
-     * `chatgpt-image-latest`) and `dall-e-2`.
+     * endpoint supports GPT Image models and `dall-e-2`.
      */
     fun editStreaming(params: ImageEditParams): AsyncStreamResponse<ImageEditStreamEvent> =
         editStreaming(params, RequestOptions.none())

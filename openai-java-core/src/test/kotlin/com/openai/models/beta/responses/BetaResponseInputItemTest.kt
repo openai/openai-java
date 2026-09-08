@@ -1772,6 +1772,8 @@ internal class BetaResponseInputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .quality(BetaResponseInputItem.ImageGenerationCall.Quality.LOW)
+                .size(BetaResponseInputItem.ImageGenerationCall.Size._1024X1024)
                 .build()
 
         val betaResponseInputItem = BetaResponseInputItem.ofImageGenerationCall(imageGenerationCall)
@@ -1828,6 +1830,8 @@ internal class BetaResponseInputItemTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .quality(BetaResponseInputItem.ImageGenerationCall.Quality.LOW)
+                    .size(BetaResponseInputItem.ImageGenerationCall.Size._1024X1024)
                     .build()
             )
 
