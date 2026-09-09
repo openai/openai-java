@@ -1010,7 +1010,7 @@ may make the process of function calling simpler to understand and implement.
 _Function Calling_ is also supported for the Responses API. The usage is the same as described
 except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
 class to `addTool(Class<T>)` when building the parameters. In the response, look for
-[`RepoonseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
+[`ResponseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
 instances that are function calls. Parse the parameters to each function call to an instance of the
 class using
 [`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
