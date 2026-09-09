@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.files
 
@@ -27,8 +27,8 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Create a vector store file by attaching a
- * [File](https://platform.openai.com/docs/api-reference/files) to a
- * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object).
+ * [File](https://developers.openai.com/api/reference/resources/files) to a
+ * [vector store](https://developers.openai.com/api/reference/resources/vector_stores).
  */
 class FileCreateParams
 private constructor(
@@ -41,10 +41,10 @@ private constructor(
     fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     /**
-     * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-     * should use. Useful for tools like `file_search` that can access files. For multi-file
+     * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+     * store should use. Useful for tools like `file_search` that can access files. For multi-file
      * ingestion, we recommend
-     * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+     * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
      * to minimize per-vector-store write requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -151,10 +151,10 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files. For multi-file
-         * ingestion, we recommend
-         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+         * store should use. Useful for tools like `file_search` that can access files. For
+         * multi-file ingestion, we recommend
+         * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
          * to minimize per-vector-store write requests.
          */
         fun fileId(fileId: String) = apply { body.fileId(fileId) }
@@ -402,10 +402,10 @@ private constructor(
         ) : this(fileId, attributes, chunkingStrategy, mutableMapOf())
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files. For multi-file
-         * ingestion, we recommend
-         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+         * store should use. Useful for tools like `file_search` that can access files. For
+         * multi-file ingestion, we recommend
+         * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
          * to minimize per-vector-store write requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -503,10 +503,10 @@ private constructor(
             }
 
             /**
-             * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector
-             * store should use. Useful for tools like `file_search` that can access files. For
-             * multi-file ingestion, we recommend
-             * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+             * A [File](https://developers.openai.com/api/reference/resources/files) ID that the
+             * vector store should use. Useful for tools like `file_search` that can access files.
+             * For multi-file ingestion, we recommend
+             * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
              * to minimize per-vector-store write requests.
              */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))

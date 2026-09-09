@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs
 
@@ -68,13 +68,13 @@ private constructor(
      * content.
      *
      * See the
-     * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
+     * [file search tool documentation](https://developers.openai.com/api/docs/guides/tools-file-search#retrieval-customization)
      * for more information.
      */
     fun include(): Optional<List<RunStepInclude>> = Optional.ofNullable(include)
 
     /**
-     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use
+     * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) to use
      * to execute this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -100,8 +100,7 @@ private constructor(
     fun additionalMessages(): Optional<List<AdditionalMessage>> = body.additionalMessages()
 
     /**
-     * Overrides the
-     * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant) of
+     * Overrides the [instructions](https://developers.openai.com/api/docs/assistants/migration) of
      * the assistant. This is useful for modifying the behavior on a per-run basis.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -145,9 +144,9 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to
-     * execute this run. If a value is provided here, it will override the model associated with the
-     * assistant. If not, the model associated with the assistant will be used.
+     * The ID of the [Model](https://developers.openai.com/api/reference/resources/models) to be
+     * used to execute this run. If a value is provided here, it will override the model associated
+     * with the assistant. If not, the model associated with the assistant will be used.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -156,7 +155,7 @@ private constructor(
 
     /**
      * Whether to enable
-     * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+     * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
      * during tool use.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -169,7 +168,7 @@ private constructor(
      * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
      * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
      * models support every value. See the
-     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for model-specific
      * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -179,13 +178,13 @@ private constructor(
 
     /**
      * Specifies the format that the model must output. Compatible with
-     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+     * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
      * models since `gpt-3.5-turbo-1106`.
      *
      * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
      * ensures the model will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
      *
      * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
      * generates is valid JSON.
@@ -423,7 +422,7 @@ private constructor(
          * search result content.
          *
          * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
+         * [file search tool documentation](https://developers.openai.com/api/docs/guides/tools-file-search#retrieval-customization)
          * for more information.
          */
         fun include(include: List<RunStepInclude>?) = apply {
@@ -457,7 +456,7 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) to
          * use to execute this run.
          */
         fun assistantId(assistantId: String) = apply { body.assistantId(assistantId) }
@@ -530,8 +529,7 @@ private constructor(
         }
 
         /**
-         * Overrides the
-         * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+         * Overrides the [instructions](https://developers.openai.com/api/docs/assistants/migration)
          * of the assistant. This is useful for modifying the behavior on a per-run basis.
          */
         fun instructions(instructions: String?) = apply { body.instructions(instructions) }
@@ -640,9 +638,10 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
-         * to execute this run. If a value is provided here, it will override the model associated
-         * with the assistant. If not, the model associated with the assistant will be used.
+         * The ID of the [Model](https://developers.openai.com/api/reference/resources/models) to be
+         * used to execute this run. If a value is provided here, it will override the model
+         * associated with the assistant. If not, the model associated with the assistant will be
+         * used.
          */
         fun model(model: ChatModel?) = apply { body.model(model) }
 
@@ -667,7 +666,7 @@ private constructor(
 
         /**
          * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
          * during tool use.
          */
         fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
@@ -690,8 +689,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -714,13 +713,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1184,7 +1183,7 @@ private constructor(
         )
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) to
          * use to execute this run.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -1213,8 +1212,7 @@ private constructor(
             additionalMessages.getOptional("additional_messages")
 
         /**
-         * Overrides the
-         * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+         * Overrides the [instructions](https://developers.openai.com/api/docs/assistants/migration)
          * of the assistant. This is useful for modifying the behavior on a per-run basis.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1259,9 +1257,10 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
-         * to execute this run. If a value is provided here, it will override the model associated
-         * with the assistant. If not, the model associated with the assistant will be used.
+         * The ID of the [Model](https://developers.openai.com/api/reference/resources/models) to be
+         * used to execute this run. If a value is provided here, it will override the model
+         * associated with the assistant. If not, the model associated with the assistant will be
+         * used.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1270,7 +1269,7 @@ private constructor(
 
         /**
          * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
          * during tool use.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1284,8 +1283,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1295,13 +1294,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1587,8 +1586,9 @@ private constructor(
             }
 
             /**
-             * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-             * to use to execute this run.
+             * The ID of the
+             * [assistant](https://developers.openai.com/api/docs/assistants/migration) to use to
+             * execute this run.
              */
             fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
 
@@ -1665,8 +1665,8 @@ private constructor(
 
             /**
              * Overrides the
-             * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
-             * of the assistant. This is useful for modifying the behavior on a per-run basis.
+             * [instructions](https://developers.openai.com/api/docs/assistants/migration) of the
+             * assistant. This is useful for modifying the behavior on a per-run basis.
              */
             fun instructions(instructions: String?) =
                 instructions(JsonField.ofNullable(instructions))
@@ -1776,10 +1776,10 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
-             * used to execute this run. If a value is provided here, it will override the model
-             * associated with the assistant. If not, the model associated with the assistant will
-             * be used.
+             * The ID of the [Model](https://developers.openai.com/api/reference/resources/models)
+             * to be used to execute this run. If a value is provided here, it will override the
+             * model associated with the assistant. If not, the model associated with the assistant
+             * will be used.
              */
             fun model(model: ChatModel?) = model(JsonField.ofNullable(model))
 
@@ -1806,7 +1806,7 @@ private constructor(
 
             /**
              * Whether to enable
-             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
              * during tool use.
              */
             fun parallelToolCalls(parallelToolCalls: Boolean) =
@@ -1828,7 +1828,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
@@ -1851,14 +1851,14 @@ private constructor(
 
             /**
              * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+             * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5
+             * Turbo models since `gpt-3.5-turbo-1106`.
              *
              * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
              * Outputs which ensures the model will match your supplied JSON schema. Learn more in
              * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
              *
              * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
              * the model generates is valid JSON.
@@ -2602,7 +2602,7 @@ private constructor(
             /**
              * An array of content parts with a defined type, each can be of type `text` or images
              * can be passed with `image_url` or `image_file`. Image types are only supported on
-             * [Vision-compatible models](https://platform.openai.com/docs/models).
+             * [Vision-compatible models](https://developers.openai.com/api/docs/models).
              */
             fun arrayOfContentParts(): Optional<List<MessageContentPartParam>> =
                 Optional.ofNullable(arrayOfContentParts)
@@ -2617,7 +2617,7 @@ private constructor(
             /**
              * An array of content parts with a defined type, each can be of type `text` or images
              * can be passed with `image_url` or `image_file`. Image types are only supported on
-             * [Vision-compatible models](https://platform.openai.com/docs/models).
+             * [Vision-compatible models](https://developers.openai.com/api/docs/models).
              */
             fun asArrayOfContentParts(): List<MessageContentPartParam> =
                 arrayOfContentParts.getOrThrow("arrayOfContentParts")
@@ -2750,7 +2750,8 @@ private constructor(
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
                  * images can be passed with `image_url` or `image_file`. Image types are only
-                 * supported on [Vision-compatible models](https://platform.openai.com/docs/models).
+                 * supported on
+                 * [Vision-compatible models](https://developers.openai.com/api/docs/models).
                  */
                 @JvmStatic
                 fun ofArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>) =
@@ -2769,7 +2770,8 @@ private constructor(
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
                  * images can be passed with `image_url` or `image_file`. Image types are only
-                 * supported on [Vision-compatible models](https://platform.openai.com/docs/models).
+                 * supported on
+                 * [Vision-compatible models](https://developers.openai.com/api/docs/models).
                  */
                 fun visitArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>): T
 

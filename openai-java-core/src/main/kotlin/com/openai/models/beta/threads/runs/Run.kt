@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs
 
@@ -33,7 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents an execution run on a
- * [thread](https://platform.openai.com/docs/api-reference/threads).
+ * [thread](https://developers.openai.com/api/docs/assistants/migration).
  */
 class Run
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -167,8 +167,8 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for
-     * execution of this run.
+     * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) used
+     * for execution of this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -226,7 +226,7 @@ private constructor(
 
     /**
      * The instructions that the
-     * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+     * [assistant](https://developers.openai.com/api/docs/assistants/migration) used for this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -273,7 +273,7 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+     * The model that the [assistant](https://developers.openai.com/api/docs/assistants/migration)
      * used for this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -296,7 +296,7 @@ private constructor(
 
     /**
      * Whether to enable
-     * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+     * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
      * during tool use.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -314,13 +314,13 @@ private constructor(
 
     /**
      * Specifies the format that the model must output. Compatible with
-     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+     * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
      * models since `gpt-3.5-turbo-1106`.
      *
      * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
      * ensures the model will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
      *
      * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
      * generates is valid JSON.
@@ -356,7 +356,7 @@ private constructor(
     fun status(): RunStatus = status.getRequired("status")
 
     /**
-     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
+     * The ID of the [thread](https://developers.openai.com/api/docs/assistants/migration) that was
      * executed on as a part of this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -379,7 +379,7 @@ private constructor(
 
     /**
      * The list of tools that the
-     * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+     * [assistant](https://developers.openai.com/api/docs/assistants/migration) used for this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -751,8 +751,8 @@ private constructor(
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used
-         * for execution of this run.
+         * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration)
+         * used for execution of this run.
          */
         fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
 
@@ -883,7 +883,8 @@ private constructor(
 
         /**
          * The instructions that the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         * [assistant](https://developers.openai.com/api/docs/assistants/migration) used for this
+         * run.
          */
         fun instructions(instructions: String) = instructions(JsonField.of(instructions))
 
@@ -997,8 +998,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-         * used for this run.
+         * The model that the
+         * [assistant](https://developers.openai.com/api/docs/assistants/migration) used for this
+         * run.
          */
         fun model(model: String) = model(JsonField.of(model))
 
@@ -1026,7 +1028,7 @@ private constructor(
 
         /**
          * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
          * during tool use.
          */
         fun parallelToolCalls(parallelToolCalls: Boolean) =
@@ -1067,13 +1069,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1168,8 +1170,8 @@ private constructor(
         fun status(status: JsonField<RunStatus>) = apply { this.status = status }
 
         /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * executed on as a part of this run.
+         * The ID of the [thread](https://developers.openai.com/api/docs/assistants/migration) that
+         * was executed on as a part of this run.
          */
         fun threadId(threadId: String) = threadId(JsonField.of(threadId))
 
@@ -1220,7 +1222,8 @@ private constructor(
 
         /**
          * The list of tools that the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         * [assistant](https://developers.openai.com/api/docs/assistants/migration) used for this
+         * run.
          */
         fun tools(tools: List<AssistantTool>) = tools(JsonField.of(tools))
 

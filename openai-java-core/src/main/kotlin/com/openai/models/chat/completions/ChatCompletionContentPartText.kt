@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -17,7 +17,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+/** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
 class ChatCompletionContentPartText
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

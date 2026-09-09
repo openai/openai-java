@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -34,7 +34,7 @@ private constructor(
 
     /**
      * An image input to the model. Learn about
-     * [image inputs](https://platform.openai.com/docs/guides/vision).
+     * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun inputImage(): Optional<BetaResponseInputImage> = Optional.ofNullable(inputImage)
 
@@ -52,7 +52,7 @@ private constructor(
 
     /**
      * An image input to the model. Learn about
-     * [image inputs](https://platform.openai.com/docs/guides/vision).
+     * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun asInputImage(): BetaResponseInputImage = inputImage.getOrThrow("inputImage")
 
@@ -190,7 +190,7 @@ private constructor(
 
         /**
          * An image input to the model. Learn about
-         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
         @JvmStatic
         fun ofInputImage(inputImage: BetaResponseInputImage) =
@@ -213,7 +213,7 @@ private constructor(
 
         /**
          * An image input to the model. Learn about
-         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
         fun visitInputImage(inputImage: BetaResponseInputImage): T
 

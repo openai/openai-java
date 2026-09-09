@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo

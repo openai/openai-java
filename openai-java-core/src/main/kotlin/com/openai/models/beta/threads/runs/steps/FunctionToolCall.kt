@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -277,7 +277,7 @@ private constructor(
 
         /**
          * The output of the function. This will be `null` if the outputs have not been
-         * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
+         * [submitted](https://developers.openai.com/api/docs/assistants/migration) yet.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -374,8 +374,7 @@ private constructor(
 
             /**
              * The output of the function. This will be `null` if the outputs have not been
-             * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
-             * yet.
+             * [submitted](https://developers.openai.com/api/docs/assistants/migration) yet.
              */
             fun output(output: String?) = output(JsonField.ofNullable(output))
 

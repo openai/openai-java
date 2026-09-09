@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -55,7 +55,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -97,6 +97,7 @@ internal class ResponseServiceTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
@@ -137,6 +138,7 @@ internal class ResponseServiceTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -188,7 +190,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -230,6 +232,7 @@ internal class ResponseServiceTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
@@ -270,6 +273,7 @@ internal class ResponseServiceTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -381,7 +385,7 @@ internal class ResponseServiceTest {
         val compactedResponse =
             responseService.compact(
                 ResponseCompactParams.builder()
-                    .model(ResponseCompactParams.Model.GPT_5_6_SOL)
+                    .model(ResponseCompactParams.Model.GPT_6_ASTRA)
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")

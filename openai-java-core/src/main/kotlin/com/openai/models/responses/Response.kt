@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -59,6 +59,7 @@ private constructor(
     private val moderation: JsonField<Moderation>,
     private val previousResponseId: JsonField<String>,
     private val prompt: JsonField<ResponsePrompt>,
+    private val promptCacheDiagnostics: JsonField<PromptCacheDiagnostics>,
     private val promptCacheKey: JsonField<String>,
     private val promptCacheOptions: JsonField<PromptCacheOptions>,
     private val promptCacheRetention: JsonField<PromptCacheRetention>,
@@ -126,6 +127,9 @@ private constructor(
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
+        @JsonProperty("prompt_cache_diagnostics")
+        @ExcludeMissing
+        promptCacheDiagnostics: JsonField<PromptCacheDiagnostics> = JsonMissing.of(),
         @JsonProperty("prompt_cache_key")
         @ExcludeMissing
         promptCacheKey: JsonField<String> = JsonMissing.of(),
@@ -181,6 +185,7 @@ private constructor(
         moderation,
         previousResponseId,
         prompt,
+        promptCacheDiagnostics,
         promptCacheKey,
         promptCacheOptions,
         promptCacheRetention,
@@ -255,10 +260,10 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -323,16 +328,16 @@ private constructor(
      *
      * We support the following categories of tools:
      * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's capabilities,
-     *   like [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
-     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+     *   like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn more
+     *   about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
      * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or predefined
      *   connectors such as Google Drive and SharePoint. Learn more about
-     *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+     *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code with strongly typed arguments and outputs. Learn more about
-     *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can also
-     *   use custom tools to call your own code.
+     *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You can
+     *   also use custom tools to call your own code.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -353,7 +358,7 @@ private constructor(
 
     /**
      * Whether to run the model response in the background.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -381,7 +386,7 @@ private constructor(
     /**
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
-     * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -410,8 +415,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
-     * used in conjunction with `conversation`.
+     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+     * Cannot be used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -421,7 +426,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -429,9 +434,18 @@ private constructor(
     fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
     /**
+     * Prompt cache diagnostics requested for this response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheDiagnostics(): Optional<PromptCacheDiagnostics> =
+        promptCacheDiagnostics.getOptional("prompt_cache_diagnostics")
+
+    /**
      * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
      * Replaces the `user` field.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -453,7 +467,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -472,10 +486,8 @@ private constructor(
         promptCacheRetention.getOptional("prompt_cache_retention")
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -487,7 +499,7 @@ private constructor(
      * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user, with
      * a maximum length of 64 characters. We recommend hashing their username or email address, in
      * order to avoid sending us any identifying information.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -500,12 +512,15 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -529,8 +544,8 @@ private constructor(
     /**
      * Configuration options for a text response from the model. Can be plain text or structured
      * JSON data. Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -574,7 +589,7 @@ private constructor(
      * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for your
      * end-users. Used to boost cache hit rates by better bucketing similar requests and to help
      * OpenAI detect and prevent abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -754,6 +769,16 @@ private constructor(
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
 
     /**
+     * Returns the raw JSON value of [promptCacheDiagnostics].
+     *
+     * Unlike [promptCacheDiagnostics], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("prompt_cache_diagnostics")
+    @ExcludeMissing
+    fun _promptCacheDiagnostics(): JsonField<PromptCacheDiagnostics> = promptCacheDiagnostics
+
+    /**
      * Returns the raw JSON value of [promptCacheKey].
      *
      * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
@@ -918,6 +943,7 @@ private constructor(
         private var moderation: JsonField<Moderation> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
+        private var promptCacheDiagnostics: JsonField<PromptCacheDiagnostics> = JsonMissing.of()
         private var promptCacheKey: JsonField<String> = JsonMissing.of()
         private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
         private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
@@ -956,6 +982,7 @@ private constructor(
             moderation = response.moderation
             previousResponseId = response.previousResponseId
             prompt = response.prompt
+            promptCacheDiagnostics = response.promptCacheDiagnostics
             promptCacheKey = response.promptCacheKey
             promptCacheOptions = response.promptCacheOptions
             promptCacheRetention = response.promptCacheRetention
@@ -1083,9 +1110,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         fun model(model: ResponsesModel) = model(JsonField.of(model))
@@ -1412,16 +1439,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          */
         fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
@@ -1588,7 +1615,7 @@ private constructor(
 
         /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          */
         fun background(background: Boolean?) = background(JsonField.ofNullable(background))
 
@@ -1661,7 +1688,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun maxOutputTokens(maxOutputTokens: Long?) =
             maxOutputTokens(JsonField.ofNullable(maxOutputTokens))
@@ -1735,8 +1762,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) =
             previousResponseId(JsonField.ofNullable(previousResponseId))
@@ -1760,7 +1787,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -1776,10 +1803,52 @@ private constructor(
          */
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
 
+        /** Prompt cache diagnostics requested for this response. */
+        fun promptCacheDiagnostics(promptCacheDiagnostics: PromptCacheDiagnostics) =
+            promptCacheDiagnostics(JsonField.of(promptCacheDiagnostics))
+
+        /**
+         * Sets [Builder.promptCacheDiagnostics] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheDiagnostics] with a well-typed
+         * [PromptCacheDiagnostics] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun promptCacheDiagnostics(promptCacheDiagnostics: JsonField<PromptCacheDiagnostics>) =
+            apply {
+                this.promptCacheDiagnostics = promptCacheDiagnostics
+            }
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with
+         * `PromptCacheDiagnostics.ofCacheMiss(cacheMiss)`.
+         */
+        fun promptCacheDiagnostics(cacheMiss: PromptCacheDiagnostics.CacheMiss) =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofCacheMiss(cacheMiss))
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with `PromptCacheDiagnostics.ofCacheHit()`.
+         */
+        fun promptCacheDiagnosticsCacheHit() =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofCacheHit())
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with
+         * `PromptCacheDiagnostics.ofComparisonResponseNotFound()`.
+         */
+        fun promptCacheDiagnosticsComparisonResponseNotFound() =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofComparisonResponseNotFound())
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with `PromptCacheDiagnostics.ofUnavailable()`.
+         */
+        fun promptCacheDiagnosticsUnavailable() =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofUnavailable())
+
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          */
         fun promptCacheKey(promptCacheKey: String?) =
             promptCacheKey(JsonField.ofNullable(promptCacheKey))
@@ -1822,7 +1891,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -1858,10 +1927,8 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun reasoning(reasoning: Reasoning?) = reasoning(JsonField.ofNullable(reasoning))
 
@@ -1882,7 +1949,7 @@ private constructor(
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
          * with a maximum length of 64 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         fun safetyIdentifier(safetyIdentifier: String?) =
             safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
@@ -1908,12 +1975,15 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -1954,8 +2024,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          */
         fun text(text: ResponseTextConfig) = text(JsonField.of(text))
 
@@ -2036,7 +2106,7 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
@@ -2115,6 +2185,7 @@ private constructor(
                 moderation,
                 previousResponseId,
                 prompt,
+                promptCacheDiagnostics,
                 promptCacheKey,
                 promptCacheOptions,
                 promptCacheRetention,
@@ -2172,6 +2243,7 @@ private constructor(
         moderation().ifPresent { it.validate() }
         previousResponseId()
         prompt().ifPresent { it.validate() }
+        promptCacheDiagnostics().ifPresent { it.validate() }
         promptCacheKey()
         promptCacheOptions().ifPresent { it.validate() }
         promptCacheRetention().ifPresent { it.validate() }
@@ -2224,6 +2296,7 @@ private constructor(
             (moderation.asKnown().getOrNull()?.validity() ?: 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (promptCacheDiagnostics.asKnown().getOrNull()?.validity() ?: 0) +
             (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
             (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
             (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2251,7 +2324,9 @@ private constructor(
         ) : this(reason, mutableMapOf())
 
         /**
-         * The reason why the response is incomplete.
+         * The reason why the response is incomplete. `steered` means the response stopped at a safe
+         * output boundary after a WebSocket `response.steer` event. The server can then create a
+         * successor response automatically with the queued input.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2295,7 +2370,11 @@ private constructor(
                 additionalProperties = incompleteDetails.additionalProperties.toMutableMap()
             }
 
-            /** The reason why the response is incomplete. */
+            /**
+             * The reason why the response is incomplete. `steered` means the response stopped at a
+             * safe output boundary after a WebSocket `response.steer` event. The server can then
+             * create a successor response automatically with the queued input.
+             */
             fun reason(reason: Reason) = reason(JsonField.of(reason))
 
             /**
@@ -2371,7 +2450,11 @@ private constructor(
          */
         @JvmSynthetic internal fun validity(): Int = (reason.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** The reason why the response is incomplete. */
+        /**
+         * The reason why the response is incomplete. `steered` means the response stopped at a safe
+         * output boundary after a WebSocket `response.steer` event. The server can then create a
+         * successor response automatically with the queued input.
+         */
         class Reason @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -2388,7 +2471,11 @@ private constructor(
 
                 @JvmField val MAX_OUTPUT_TOKENS = of("max_output_tokens")
 
+                @JvmField val MAX_MESSAGES = of("max_messages")
+
                 @JvmField val CONTENT_FILTER = of("content_filter")
+
+                @JvmField val STEERED = of("steered")
 
                 @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
             }
@@ -2396,7 +2483,9 @@ private constructor(
             /** An enum containing [Reason]'s known values. */
             enum class Known {
                 MAX_OUTPUT_TOKENS,
+                MAX_MESSAGES,
                 CONTENT_FILTER,
+                STEERED,
             }
 
             /**
@@ -2410,7 +2499,9 @@ private constructor(
              */
             enum class Value {
                 MAX_OUTPUT_TOKENS,
+                MAX_MESSAGES,
                 CONTENT_FILTER,
+                STEERED,
                 /**
                  * An enum member indicating that [Reason] was instantiated with an unknown value.
                  */
@@ -2427,7 +2518,9 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     MAX_OUTPUT_TOKENS -> Value.MAX_OUTPUT_TOKENS
+                    MAX_MESSAGES -> Value.MAX_MESSAGES
                     CONTENT_FILTER -> Value.CONTENT_FILTER
+                    STEERED -> Value.STEERED
                     else -> Value._UNKNOWN
                 }
 
@@ -2443,7 +2536,9 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     MAX_OUTPUT_TOKENS -> Known.MAX_OUTPUT_TOKENS
+                    MAX_MESSAGES -> Known.MAX_MESSAGES
                     CONTENT_FILTER -> Known.CONTENT_FILTER
+                    STEERED -> Known.STEERED
                     else -> throw OpenAIInvalidDataException("Unknown Reason: $value")
                 }
 
@@ -2916,7 +3011,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun types(): Optional<ToolChoiceTypes> = Optional.ofNullable(types)
 
@@ -2974,7 +3069,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun asTypes(): ToolChoiceTypes = types.getOrThrow("types")
 
@@ -3226,7 +3321,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             @JvmStatic fun ofTypes(types: ToolChoiceTypes) = ToolChoice(types = types)
 
@@ -3279,7 +3374,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             fun visitTypes(types: ToolChoiceTypes): T
 
@@ -6361,6 +6456,827 @@ private constructor(
             "Moderation{input=$input, output=$output, additionalProperties=$additionalProperties}"
     }
 
+    /** Prompt cache diagnostics requested for this response. */
+    @JsonDeserialize(using = PromptCacheDiagnostics.Deserializer::class)
+    @JsonSerialize(using = PromptCacheDiagnostics.Serializer::class)
+    class PromptCacheDiagnostics
+    private constructor(
+        private val cacheMiss: CacheMiss? = null,
+        private val cacheHit: JsonValue? = null,
+        private val comparisonResponseNotFound: JsonValue? = null,
+        private val unavailable: JsonValue? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun cacheMiss(): Optional<CacheMiss> = Optional.ofNullable(cacheMiss)
+
+        fun cacheHit(): Optional<JsonValue> = Optional.ofNullable(cacheHit)
+
+        fun comparisonResponseNotFound(): Optional<JsonValue> =
+            Optional.ofNullable(comparisonResponseNotFound)
+
+        fun unavailable(): Optional<JsonValue> = Optional.ofNullable(unavailable)
+
+        fun isCacheMiss(): Boolean = cacheMiss != null
+
+        fun isCacheHit(): Boolean = cacheHit != null
+
+        fun isComparisonResponseNotFound(): Boolean = comparisonResponseNotFound != null
+
+        fun isUnavailable(): Boolean = unavailable != null
+
+        fun asCacheMiss(): CacheMiss = cacheMiss.getOrThrow("cacheMiss")
+
+        fun asCacheHit(): JsonValue = cacheHit.getOrThrow("cacheHit")
+
+        fun asComparisonResponseNotFound(): JsonValue =
+            comparisonResponseNotFound.getOrThrow("comparisonResponseNotFound")
+
+        fun asUnavailable(): JsonValue = unavailable.getOrThrow("unavailable")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = promptCacheDiagnostics.accept(new PromptCacheDiagnostics.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitCacheMiss(CacheMiss cacheMiss) {
+         *         return Optional.of(cacheMiss.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                cacheMiss != null -> visitor.visitCacheMiss(cacheMiss)
+                cacheHit != null -> visitor.visitCacheHit(cacheHit)
+                comparisonResponseNotFound != null ->
+                    visitor.visitComparisonResponseNotFound(comparisonResponseNotFound)
+                unavailable != null -> visitor.visitUnavailable(unavailable)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheDiagnostics = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitCacheMiss(cacheMiss: CacheMiss) {
+                        cacheMiss.validate()
+                    }
+
+                    override fun visitCacheHit(cacheHit: JsonValue) {
+                        cacheHit.let {
+                            if (it != JsonValue.from(mapOf("type" to "cache_hit"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'cacheHit' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitComparisonResponseNotFound(
+                        comparisonResponseNotFound: JsonValue
+                    ) {
+                        comparisonResponseNotFound.let {
+                            if (
+                                it !=
+                                    JsonValue.from(mapOf("type" to "comparison_response_not_found"))
+                            ) {
+                                throw OpenAIInvalidDataException(
+                                    "'comparisonResponseNotFound' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitUnavailable(unavailable: JsonValue) {
+                        unavailable.let {
+                            if (it != JsonValue.from(mapOf("type" to "unavailable"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'unavailable' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitCacheMiss(cacheMiss: CacheMiss) = cacheMiss.validity()
+
+                    override fun visitCacheHit(cacheHit: JsonValue) =
+                        cacheHit.let {
+                            if (it == JsonValue.from(mapOf("type" to "cache_hit"))) 1 else 0
+                        }
+
+                    override fun visitComparisonResponseNotFound(
+                        comparisonResponseNotFound: JsonValue
+                    ) =
+                        comparisonResponseNotFound.let {
+                            if (
+                                it ==
+                                    JsonValue.from(mapOf("type" to "comparison_response_not_found"))
+                            )
+                                1
+                            else 0
+                        }
+
+                    override fun visitUnavailable(unavailable: JsonValue) =
+                        unavailable.let {
+                            if (it == JsonValue.from(mapOf("type" to "unavailable"))) 1 else 0
+                        }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheDiagnostics &&
+                cacheMiss == other.cacheMiss &&
+                cacheHit == other.cacheHit &&
+                comparisonResponseNotFound == other.comparisonResponseNotFound &&
+                unavailable == other.unavailable
+        }
+
+        override fun hashCode(): Int =
+            Objects.hash(cacheMiss, cacheHit, comparisonResponseNotFound, unavailable)
+
+        override fun toString(): String =
+            when {
+                cacheMiss != null -> "PromptCacheDiagnostics{cacheMiss=$cacheMiss}"
+                cacheHit != null -> "PromptCacheDiagnostics{cacheHit=$cacheHit}"
+                comparisonResponseNotFound != null ->
+                    "PromptCacheDiagnostics{comparisonResponseNotFound=$comparisonResponseNotFound}"
+                unavailable != null -> "PromptCacheDiagnostics{unavailable=$unavailable}"
+                _json != null -> "PromptCacheDiagnostics{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid PromptCacheDiagnostics")
+            }
+
+        companion object {
+
+            @JvmStatic
+            fun ofCacheMiss(cacheMiss: CacheMiss) = PromptCacheDiagnostics(cacheMiss = cacheMiss)
+
+            @JvmStatic
+            fun ofCacheHit() =
+                PromptCacheDiagnostics(cacheHit = JsonValue.from(mapOf("type" to "cache_hit")))
+
+            @JvmStatic
+            fun ofComparisonResponseNotFound() =
+                PromptCacheDiagnostics(
+                    comparisonResponseNotFound =
+                        JsonValue.from(mapOf("type" to "comparison_response_not_found"))
+                )
+
+            @JvmStatic
+            fun ofUnavailable() =
+                PromptCacheDiagnostics(unavailable = JsonValue.from(mapOf("type" to "unavailable")))
+        }
+
+        /**
+         * An interface that defines how to map each variant of [PromptCacheDiagnostics] to a value
+         * of type [T].
+         */
+        interface Visitor<out T> {
+
+            fun visitCacheMiss(cacheMiss: CacheMiss): T
+
+            fun visitCacheHit(cacheHit: JsonValue): T
+
+            fun visitComparisonResponseNotFound(comparisonResponseNotFound: JsonValue): T
+
+            fun visitUnavailable(unavailable: JsonValue): T
+
+            /**
+             * Maps an unknown variant of [PromptCacheDiagnostics] to a value of type [T].
+             *
+             * An instance of [PromptCacheDiagnostics] can contain an unknown variant if it was
+             * deserialized from data that doesn't match any known variant. For example, if the SDK
+             * is on an older version than the API, then the API may respond with new variants that
+             * the SDK is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown PromptCacheDiagnostics: $json")
+            }
+        }
+
+        internal class Deserializer :
+            BaseDeserializer<PromptCacheDiagnostics>(PromptCacheDiagnostics::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): PromptCacheDiagnostics {
+                val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                when (type) {
+                    "cache_miss" -> {
+                        return tryDeserialize(node, jacksonTypeRef<CacheMiss>())?.let {
+                            PromptCacheDiagnostics(cacheMiss = it, _json = json)
+                        } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                    "cache_hit" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { PromptCacheDiagnostics(cacheHit = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                    "comparison_response_not_found" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let {
+                                PromptCacheDiagnostics(
+                                    comparisonResponseNotFound = it,
+                                    _json = json,
+                                )
+                            }
+                            ?.takeIf { it.isValid() } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                    "unavailable" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { PromptCacheDiagnostics(unavailable = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                }
+
+                return PromptCacheDiagnostics(_json = json)
+            }
+        }
+
+        internal class Serializer :
+            BaseSerializer<PromptCacheDiagnostics>(PromptCacheDiagnostics::class) {
+
+            override fun serialize(
+                value: PromptCacheDiagnostics,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.cacheMiss != null -> generator.writeObject(value.cacheMiss)
+                    value.cacheHit != null -> generator.writeObject(value.cacheHit)
+                    value.comparisonResponseNotFound != null ->
+                        generator.writeObject(value.comparisonResponseNotFound)
+                    value.unavailable != null -> generator.writeObject(value.unavailable)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid PromptCacheDiagnostics")
+                }
+            }
+        }
+
+        class CacheMiss
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val cacheMissedTokens: JsonField<Long>,
+            private val reason: JsonField<Reason>,
+            private val type: JsonValue,
+            private val comparisonReusableTokens: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("cache_missed_tokens")
+                @ExcludeMissing
+                cacheMissedTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("reason")
+                @ExcludeMissing
+                reason: JsonField<Reason> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("comparison_reusable_tokens")
+                @ExcludeMissing
+                comparisonReusableTokens: JsonField<Long> = JsonMissing.of(),
+            ) : this(cacheMissedTokens, reason, type, comparisonReusableTokens, mutableMapOf())
+
+            /**
+             * The estimated number of input tokens affected after the first detected divergence.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun cacheMissedTokens(): Long = cacheMissedTokens.getRequired("cache_missed_tokens")
+
+            /**
+             * The reason prompt cache reuse did not occur.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun reason(): Reason = reason.getRequired("reason")
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("cache_miss")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * The raw token count of the reusable prefix in the compared response.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun comparisonReusableTokens(): Optional<Long> =
+                comparisonReusableTokens.getOptional("comparison_reusable_tokens")
+
+            /**
+             * Returns the raw JSON value of [cacheMissedTokens].
+             *
+             * Unlike [cacheMissedTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("cache_missed_tokens")
+            @ExcludeMissing
+            fun _cacheMissedTokens(): JsonField<Long> = cacheMissedTokens
+
+            /**
+             * Returns the raw JSON value of [reason].
+             *
+             * Unlike [reason], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
+
+            /**
+             * Returns the raw JSON value of [comparisonReusableTokens].
+             *
+             * Unlike [comparisonReusableTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("comparison_reusable_tokens")
+            @ExcludeMissing
+            fun _comparisonReusableTokens(): JsonField<Long> = comparisonReusableTokens
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [CacheMiss].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .cacheMissedTokens()
+                 * .reason()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [CacheMiss]. */
+            class Builder internal constructor() {
+
+                private var cacheMissedTokens: JsonField<Long>? = null
+                private var reason: JsonField<Reason>? = null
+                private var type: JsonValue = JsonValue.from("cache_miss")
+                private var comparisonReusableTokens: JsonField<Long> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(cacheMiss: CacheMiss) = apply {
+                    cacheMissedTokens = cacheMiss.cacheMissedTokens
+                    reason = cacheMiss.reason
+                    type = cacheMiss.type
+                    comparisonReusableTokens = cacheMiss.comparisonReusableTokens
+                    additionalProperties = cacheMiss.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * The estimated number of input tokens affected after the first detected
+                 * divergence.
+                 */
+                fun cacheMissedTokens(cacheMissedTokens: Long) =
+                    cacheMissedTokens(JsonField.of(cacheMissedTokens))
+
+                /**
+                 * Sets [Builder.cacheMissedTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cacheMissedTokens] with a well-typed [Long]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun cacheMissedTokens(cacheMissedTokens: JsonField<Long>) = apply {
+                    this.cacheMissedTokens = cacheMissedTokens
+                }
+
+                /** The reason prompt cache reuse did not occur. */
+                fun reason(reason: Reason) = reason(JsonField.of(reason))
+
+                /**
+                 * Sets [Builder.reason] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.reason] with a well-typed [Reason] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun reason(reason: JsonField<Reason>) = apply { this.reason = reason }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("cache_miss")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The raw token count of the reusable prefix in the compared response. */
+                fun comparisonReusableTokens(comparisonReusableTokens: Long) =
+                    comparisonReusableTokens(JsonField.of(comparisonReusableTokens))
+
+                /**
+                 * Sets [Builder.comparisonReusableTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.comparisonReusableTokens] with a well-typed
+                 * [Long] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
+                 */
+                fun comparisonReusableTokens(comparisonReusableTokens: JsonField<Long>) = apply {
+                    this.comparisonReusableTokens = comparisonReusableTokens
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [CacheMiss].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .cacheMissedTokens()
+                 * .reason()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): CacheMiss =
+                    CacheMiss(
+                        checkRequired("cacheMissedTokens", cacheMissedTokens),
+                        checkRequired("reason", reason),
+                        type,
+                        comparisonReusableTokens,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): CacheMiss = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                cacheMissedTokens()
+                reason().validate()
+                _type().let {
+                    if (it != JsonValue.from("cache_miss")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                comparisonReusableTokens()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (cacheMissedTokens.asKnown().isPresent) 1 else 0) +
+                    (reason.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("cache_miss")) 1 else 0 } +
+                    (if (comparisonReusableTokens.asKnown().isPresent) 1 else 0)
+
+            /** The reason prompt cache reuse did not occur. */
+            class Reason @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val MODEL_CHANGED = of("model_changed")
+
+                    @JvmField val PROMPT_CACHE_KEY_CHANGED = of("prompt_cache_key_changed")
+
+                    @JvmField val TOOLS_CHANGED = of("tools_changed")
+
+                    @JvmField val TEXT_FORMAT_CHANGED = of("text_format_changed")
+
+                    @JvmField val REASONING_EFFORT_CHANGED = of("reasoning_effort_changed")
+
+                    @JvmField val VERBOSITY_CHANGED = of("verbosity_changed")
+
+                    @JvmField val CONTEXT_COMPACTED = of("context_compacted")
+
+                    @JvmField val INPUT_CHANGED = of("input_changed")
+
+                    @JvmField val SERVICE_TIER_CHANGED = of("service_tier_changed")
+
+                    @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
+                }
+
+                /** An enum containing [Reason]'s known values. */
+                enum class Known {
+                    MODEL_CHANGED,
+                    PROMPT_CACHE_KEY_CHANGED,
+                    TOOLS_CHANGED,
+                    TEXT_FORMAT_CHANGED,
+                    REASONING_EFFORT_CHANGED,
+                    VERBOSITY_CHANGED,
+                    CONTEXT_COMPACTED,
+                    INPUT_CHANGED,
+                    SERVICE_TIER_CHANGED,
+                }
+
+                /**
+                 * An enum containing [Reason]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Reason] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    MODEL_CHANGED,
+                    PROMPT_CACHE_KEY_CHANGED,
+                    TOOLS_CHANGED,
+                    TEXT_FORMAT_CHANGED,
+                    REASONING_EFFORT_CHANGED,
+                    VERBOSITY_CHANGED,
+                    CONTEXT_COMPACTED,
+                    INPUT_CHANGED,
+                    SERVICE_TIER_CHANGED,
+                    /**
+                     * An enum member indicating that [Reason] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        MODEL_CHANGED -> Value.MODEL_CHANGED
+                        PROMPT_CACHE_KEY_CHANGED -> Value.PROMPT_CACHE_KEY_CHANGED
+                        TOOLS_CHANGED -> Value.TOOLS_CHANGED
+                        TEXT_FORMAT_CHANGED -> Value.TEXT_FORMAT_CHANGED
+                        REASONING_EFFORT_CHANGED -> Value.REASONING_EFFORT_CHANGED
+                        VERBOSITY_CHANGED -> Value.VERBOSITY_CHANGED
+                        CONTEXT_COMPACTED -> Value.CONTEXT_COMPACTED
+                        INPUT_CHANGED -> Value.INPUT_CHANGED
+                        SERVICE_TIER_CHANGED -> Value.SERVICE_TIER_CHANGED
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        MODEL_CHANGED -> Known.MODEL_CHANGED
+                        PROMPT_CACHE_KEY_CHANGED -> Known.PROMPT_CACHE_KEY_CHANGED
+                        TOOLS_CHANGED -> Known.TOOLS_CHANGED
+                        TEXT_FORMAT_CHANGED -> Known.TEXT_FORMAT_CHANGED
+                        REASONING_EFFORT_CHANGED -> Known.REASONING_EFFORT_CHANGED
+                        VERBOSITY_CHANGED -> Known.VERBOSITY_CHANGED
+                        CONTEXT_COMPACTED -> Known.CONTEXT_COMPACTED
+                        INPUT_CHANGED -> Known.INPUT_CHANGED
+                        SERVICE_TIER_CHANGED -> Known.SERVICE_TIER_CHANGED
+                        else -> throw OpenAIInvalidDataException("Unknown Reason: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Reason = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Reason && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CacheMiss &&
+                    cacheMissedTokens == other.cacheMissedTokens &&
+                    reason == other.reason &&
+                    type == other.type &&
+                    comparisonReusableTokens == other.comparisonReusableTokens &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    cacheMissedTokens,
+                    reason,
+                    type,
+                    comparisonReusableTokens,
+                    additionalProperties,
+                )
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "CacheMiss{cacheMissedTokens=$cacheMissedTokens, reason=$reason, type=$type, comparisonReusableTokens=$comparisonReusableTokens, additionalProperties=$additionalProperties}"
+        }
+    }
+
     /**
      * The prompt-caching options that were applied to the response. Supported for `gpt-5.6` and
      * later models.
@@ -6370,6 +7286,7 @@ private constructor(
     private constructor(
         private val mode: JsonField<Mode>,
         private val ttl: JsonField<Ttl>,
+        private val comparisonResponseId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -6377,7 +7294,10 @@ private constructor(
         private constructor(
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(mode, ttl, mutableMapOf())
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            comparisonResponseId: JsonField<String> = JsonMissing.of(),
+        ) : this(mode, ttl, comparisonResponseId, mutableMapOf())
 
         /**
          * Whether implicit prompt-cache breakpoints were enabled.
@@ -6396,6 +7316,15 @@ private constructor(
         fun ttl(): Ttl = ttl.getRequired("ttl")
 
         /**
+         * The response ID supplied as the prompt cache diagnostics comparison.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun comparisonResponseId(): Optional<String> =
+            comparisonResponseId.getOptional("comparison_response_id")
+
+        /**
          * Returns the raw JSON value of [mode].
          *
          * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
@@ -6408,6 +7337,16 @@ private constructor(
          * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        /**
+         * Returns the raw JSON value of [comparisonResponseId].
+         *
+         * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("comparison_response_id")
+        @ExcludeMissing
+        fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6440,12 +7379,14 @@ private constructor(
 
             private var mode: JsonField<Mode>? = null
             private var ttl: JsonField<Ttl>? = null
+            private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
                 mode = promptCacheOptions.mode
                 ttl = promptCacheOptions.ttl
+                comparisonResponseId = promptCacheOptions.comparisonResponseId
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
             }
 
@@ -6472,6 +7413,28 @@ private constructor(
              * value.
              */
             fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            /** The response ID supplied as the prompt cache diagnostics comparison. */
+            fun comparisonResponseId(comparisonResponseId: String?) =
+                comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+            /**
+             * Alias for calling [Builder.comparisonResponseId] with
+             * `comparisonResponseId.orElse(null)`.
+             */
+            fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                comparisonResponseId(comparisonResponseId.getOrNull())
+
+            /**
+             * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                this.comparisonResponseId = comparisonResponseId
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -6509,6 +7472,7 @@ private constructor(
                 PromptCacheOptions(
                     checkRequired("mode", mode),
                     checkRequired("ttl", ttl),
+                    comparisonResponseId,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6531,6 +7495,7 @@ private constructor(
 
             mode().validate()
             ttl().validate()
+            comparisonResponseId()
             validated = true
         }
 
@@ -6551,7 +7516,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (mode.asKnown().getOrNull()?.validity() ?: 0) +
-                (ttl.asKnown().getOrNull()?.validity() ?: 0)
+                (ttl.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (comparisonResponseId.asKnown().isPresent) 1 else 0)
 
         /** Whether implicit prompt-cache breakpoints were enabled. */
         class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -6831,15 +7797,18 @@ private constructor(
             return other is PromptCacheOptions &&
                 mode == other.mode &&
                 ttl == other.ttl &&
+                comparisonResponseId == other.comparisonResponseId &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(mode, ttl, comparisonResponseId, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{mode=$mode, ttl=$ttl, comparisonResponseId=$comparisonResponseId, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -6847,7 +7816,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -7005,12 +7974,15 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -7044,6 +8016,8 @@ private constructor(
 
             @JvmField val FAST = of("fast")
 
+            @JvmField val ULTRAFAST = of("ultrafast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -7055,6 +8029,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
         }
 
         /**
@@ -7073,6 +8048,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -7094,6 +8070,7 @@ private constructor(
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
                 FAST -> Value.FAST
+                ULTRAFAST -> Value.ULTRAFAST
                 else -> Value._UNKNOWN
             }
 
@@ -7114,6 +8091,7 @@ private constructor(
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
                 FAST -> Known.FAST
+                ULTRAFAST -> Known.ULTRAFAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -7350,6 +8328,7 @@ private constructor(
             moderation == other.moderation &&
             previousResponseId == other.previousResponseId &&
             prompt == other.prompt &&
+            promptCacheDiagnostics == other.promptCacheDiagnostics &&
             promptCacheKey == other.promptCacheKey &&
             promptCacheOptions == other.promptCacheOptions &&
             promptCacheRetention == other.promptCacheRetention &&
@@ -7389,6 +8368,7 @@ private constructor(
             moderation,
             previousResponseId,
             prompt,
+            promptCacheDiagnostics,
             promptCacheKey,
             promptCacheOptions,
             promptCacheRetention,
@@ -7408,5 +8388,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheDiagnostics=$promptCacheDiagnostics, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

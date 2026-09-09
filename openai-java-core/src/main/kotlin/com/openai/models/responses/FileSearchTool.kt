@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -35,7 +35,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A tool that searches for relevant content from uploaded files. Learn more about the
- * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+ * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
  */
 class FileSearchTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

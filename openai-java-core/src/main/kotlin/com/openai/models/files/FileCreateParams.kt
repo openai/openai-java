@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.files
 
@@ -28,16 +28,19 @@ import kotlin.io.path.name
  * limit. Uploads to this endpoint are rate-limited to 1,000 requests per minute per authenticated
  * user.
  * - The Assistants API supports files up to 2 million tokens and of specific file types. See the
- *   [Assistants Tools guide](https://platform.openai.com/docs/assistants/tools) for details.
+ *   [Assistants Tools guide](https://developers.openai.com/api/docs/guides/tools) for details.
  * - The Fine-tuning API only supports `.jsonl` files. The input also has certain required formats
- *   for fine-tuning [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input)
- *   or [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+ *   for fine-tuning
+ *   [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
+ *   or
+ *   [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
  *   models.
  * - The Batch API only supports `.jsonl` files up to 200 MB in size. The input also has a specific
- *   required [format](https://platform.openai.com/docs/api-reference/batch/request-input).
+ *   required
+ *   [format](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file).
  * - For Retrieval or `file_search` ingestion, upload files here first. If you need to attach
  *   multiple uploaded files to the same vector store, use
- *   [`/vector_stores/{vector_store_id}/file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+ *   [`/vector_stores/{vector_store_id}/file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
  *   instead of attaching them one by one. Vector store attachment has separate limits from file
  *   upload, including 2,000 attached files per minute per organization.
  *

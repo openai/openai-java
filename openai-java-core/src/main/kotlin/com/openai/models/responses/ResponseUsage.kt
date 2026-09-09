@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -376,7 +376,7 @@ private constructor(
 
         /**
          * The number of tokens that were retrieved from the cache.
-         * [More on prompt caching](https://platform.openai.com/docs/guides/prompt-caching).
+         * [More on prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -460,7 +460,7 @@ private constructor(
 
             /**
              * The number of tokens that were retrieved from the cache.
-             * [More on prompt caching](https://platform.openai.com/docs/guides/prompt-caching).
+             * [More on prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
              */
             fun cachedTokens(cachedTokens: Long) = cachedTokens(JsonField.of(cachedTokens))
 

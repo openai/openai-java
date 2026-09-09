@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -122,7 +122,7 @@ private constructor(
 
     /**
      * Annotations for the message, when applicable, as when using the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -132,7 +132,7 @@ private constructor(
 
     /**
      * If the audio output modality is requested, this object contains data about the audio response
-     * from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+     * from the model. [Learn more](https://developers.openai.com/api/docs/guides/audio).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -340,7 +340,7 @@ private constructor(
 
         /**
          * Annotations for the message, when applicable, as when using the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun annotations(annotations: List<ChatCompletionMessage.Annotation>) =
             annotations(JsonField.of(annotations))
@@ -370,7 +370,8 @@ private constructor(
 
         /**
          * If the audio output modality is requested, this object contains data about the audio
-         * response from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+         * response from the model.
+         * [Learn more](https://developers.openai.com/api/docs/guides/audio).
          */
         fun audio(audio: ChatCompletionAudio?) = audio(JsonField.ofNullable(audio))
 
@@ -613,7 +614,7 @@ private constructor(
             (if (id.asKnown().isPresent) 1 else 0) +
             (contentParts.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
-    /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+    /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
     @JsonDeserialize(using = ContentPart.Deserializer::class)
     @JsonSerialize(using = ContentPart.Serializer::class)
     class ContentPart
@@ -623,11 +624,13 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         fun chatCompletionContentPartText(): Optional<ChatCompletionContentPartText> =
             Optional.ofNullable(chatCompletionContentPartText)
 
-        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        /**
+         * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+         */
         fun chatCompletionContentPartImage(): Optional<ChatCompletionContentPartImage> =
             Optional.ofNullable(chatCompletionContentPartImage)
 
@@ -635,11 +638,13 @@ private constructor(
 
         fun isChatCompletionContentPartImage(): Boolean = chatCompletionContentPartImage != null
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
             chatCompletionContentPartText.getOrThrow("chatCompletionContentPartText")
 
-        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        /**
+         * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+         */
         fun asChatCompletionContentPartImage(): ChatCompletionContentPartImage =
             chatCompletionContentPartImage.getOrThrow("chatCompletionContentPartImage")
 
@@ -772,15 +777,16 @@ private constructor(
 
         companion object {
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             @JvmStatic
             fun ofChatCompletionContentPartText(
                 chatCompletionContentPartText: ChatCompletionContentPartText
             ) = ContentPart(chatCompletionContentPartText = chatCompletionContentPartText)
 
-            /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+            /**
+             * Learn about
+             * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+             */
             @JvmStatic
             fun ofChatCompletionContentPartImage(
                 chatCompletionContentPartImage: ChatCompletionContentPartImage
@@ -793,14 +799,15 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             fun visitChatCompletionContentPartText(
                 chatCompletionContentPartText: ChatCompletionContentPartText
             ): T
 
-            /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+            /**
+             * Learn about
+             * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+             */
             fun visitChatCompletionContentPartImage(
                 chatCompletionContentPartImage: ChatCompletionContentPartImage
             ): T

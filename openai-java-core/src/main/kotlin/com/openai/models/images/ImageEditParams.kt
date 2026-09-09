@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -33,8 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates an edited or extended image given one or more source images and a prompt. This endpoint
- * supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, and
- * `chatgpt-image-latest`) and `dall-e-2`.
+ * supports GPT Image models and `dall-e-2`.
  */
 class ImageEditParams
 private constructor(
@@ -47,8 +46,10 @@ private constructor(
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
      * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-     * `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should be a `png`, `webp`,
-     * or `jpg` file less than 50MB. You can provide up to 16 images.
+     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
+     * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
+     * images.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
      * than 4MB.
@@ -68,17 +69,14 @@ private constructor(
     fun prompt(): String = body.prompt()
 
     /**
-     * Allows to set transparency for the background of the generated image(s). This parameter is
-     * only supported for GPT image models that support transparent backgrounds. Must be one of
+     * Allows to set transparency for the background of the generated image(s). Must be one of
      * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
      * automatically determine the best background for the image.
      *
-     * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds. Requests
-     * with `background` set to `transparent` will return an error for these models; use `opaque` or
-     * `auto` instead.
-     *
-     * If `transparent`, the output format needs to support transparency, so it should be set to
-     * either `png` (default value) or `webp`.
+     * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots,
+     * support `opaque` and `transparent` backgrounds. Transparent backgrounds are available for
+     * supported GPT Image models. For `gpt-image-2` and `gpt-image-2-2026-04-21`, this support is
+     * in preview. When using `transparent`, set the output format to `png` or `webp`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -109,8 +107,9 @@ private constructor(
 
     /**
      * The model to use for image generation. One of `dall-e-2` or a GPT image model (`gpt-image-1`,
-     * `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, or
-     * `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+     * `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`,
+     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+     * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -157,7 +156,9 @@ private constructor(
     fun partialImages(): Optional<Long> = body.partialImages()
 
     /**
-     * The quality of the image that will be generated for GPT image models. Defaults to `auto`.
+     * The quality of the image that will be generated for GPT image models. The GPT image models
+     * support `low`, `medium`, and `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`,
+     * including their `2026-09-08` snapshots, also support `xhigh` and `max`. Defaults to `auto`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -176,15 +177,16 @@ private constructor(
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
-     * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary
-     * resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height
-     * must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
-     * Resolutions above `2560x1440` are experimental, and the maximum supported resolution is
-     * `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits.
-     * The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image
-     * models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one
-     * of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`,
-     * or `1024x1792`.
+     * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+     * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+     * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
+     * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
+     * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
+     * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
+     * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
+     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
+     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -194,7 +196,7 @@ private constructor(
     /**
      * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
      * abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -360,8 +362,10 @@ private constructor(
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
-         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -383,8 +387,10 @@ private constructor(
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
-         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -395,8 +401,10 @@ private constructor(
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
-         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -423,17 +431,15 @@ private constructor(
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+         * snapshots, support `opaque` and `transparent` backgrounds. Transparent backgrounds are
+         * available for supported GPT Image models. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * this support is in preview. When using `transparent`, set the output format to `png` or
+         * `webp`.
          */
         fun background(background: Background?) = apply { body.background(background) }
 
@@ -512,7 +518,9 @@ private constructor(
         /**
          * The model to use for image generation. One of `dall-e-2` or a GPT image model
          * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-         * `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+         * Defaults to `gpt-image-1.5`.
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -642,7 +650,10 @@ private constructor(
         }
 
         /**
-         * The quality of the image that will be generated for GPT image models. Defaults to `auto`.
+         * The quality of the image that will be generated for GPT image models. The GPT image
+         * models support `low`, `medium`, and `high`. `gpt-image-2.5-sunburst` and
+         * `gpt-image-2.5-flare`, including their `2026-09-08` snapshots, also support `xhigh` and
+         * `max`. Defaults to `auto`.
          */
         fun quality(quality: Quality?) = apply { body.quality(quality) }
 
@@ -683,15 +694,17 @@ private constructor(
         }
 
         /**
-         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
-         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
-         * Width and height must both be divisible by 16 and the requested aspect ratio must be
-         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
-         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
-         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
-         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
-         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+         * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+         * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+         * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+         * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
+         * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
+         * experimental, and the maximum supported resolution is `3840x2160`. The requested size
+         * must also satisfy the model's current pixel and edge limits. The standard sizes
+         * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
+         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
+         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
+         * `1792x1024`, or `1024x1792`.
          */
         fun size(size: Size?) = apply { body.size(size) }
 
@@ -717,7 +730,7 @@ private constructor(
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         fun user(user: String) = apply { body.user(user) }
 
@@ -909,8 +922,10 @@ private constructor(
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
          * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should
-         * be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
@@ -930,17 +945,15 @@ private constructor(
         fun prompt(): String = prompt.value.getRequired("prompt")
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+         * snapshots, support `opaque` and `transparent` backgrounds. Transparent backgrounds are
+         * available for supported GPT Image models. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * this support is in preview. When using `transparent`, set the output format to `png` or
+         * `webp`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -973,7 +986,9 @@ private constructor(
         /**
          * The model to use for image generation. One of `dall-e-2` or a GPT image model
          * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-         * `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+         * Defaults to `gpt-image-1.5`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1022,7 +1037,10 @@ private constructor(
         fun partialImages(): Optional<Long> = partialImages.value.getOptional("partial_images")
 
         /**
-         * The quality of the image that will be generated for GPT image models. Defaults to `auto`.
+         * The quality of the image that will be generated for GPT image models. The GPT image
+         * models support `low`, `medium`, and `high`. `gpt-image-2.5-sunburst` and
+         * `gpt-image-2.5-flare`, including their `2026-09-08` snapshots, also support `xhigh` and
+         * `max`. Defaults to `auto`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1042,15 +1060,17 @@ private constructor(
             responseFormat.value.getOptional("response_format")
 
         /**
-         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
-         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
-         * Width and height must both be divisible by 16 and the requested aspect ratio must be
-         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
-         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
-         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
-         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
-         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+         * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+         * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+         * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+         * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
+         * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
+         * experimental, and the maximum supported resolution is `3840x2160`. The requested size
+         * must also satisfy the model's current pixel and edge limits. The standard sizes
+         * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
+         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
+         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
+         * `1792x1024`, or `1024x1792`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1060,7 +1080,7 @@ private constructor(
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1252,9 +1272,10 @@ private constructor(
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
              * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image
-             * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-             * images.
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1283,9 +1304,10 @@ private constructor(
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
              * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image
-             * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-             * images.
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1296,9 +1318,10 @@ private constructor(
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
              * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image
-             * should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-             * images.
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1332,18 +1355,15 @@ private constructor(
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
             /**
-             * Allows to set transparency for the background of the generated image(s). This
-             * parameter is only supported for GPT image models that support transparent
-             * backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value). When
-             * `auto` is used, the model will automatically determine the best background for the
-             * image.
+             * Allows to set transparency for the background of the generated image(s). Must be one
+             * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+             * will automatically determine the best background for the image.
              *
-             * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-             * Requests with `background` set to `transparent` will return an error for these
-             * models; use `opaque` or `auto` instead.
-             *
-             * If `transparent`, the output format needs to support transparency, so it should be
-             * set to either `png` (default value) or `webp`.
+             * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+             * snapshots, support `opaque` and `transparent` backgrounds. Transparent backgrounds
+             * are available for supported GPT Image models. For `gpt-image-2` and
+             * `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set
+             * the output format to `png` or `webp`.
              */
             fun background(background: Background?) = background(MultipartField.of(background))
 
@@ -1427,7 +1447,10 @@ private constructor(
             /**
              * The model to use for image generation. One of `dall-e-2` or a GPT image model
              * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-             * `gpt-image-2-2026-04-21`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to
+             * `gpt-image-1.5`.
              */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
@@ -1564,8 +1587,10 @@ private constructor(
             }
 
             /**
-             * The quality of the image that will be generated for GPT image models. Defaults to
-             * `auto`.
+             * The quality of the image that will be generated for GPT image models. The GPT image
+             * models support `low`, `medium`, and `high`. `gpt-image-2.5-sunburst` and
+             * `gpt-image-2.5-flare`, including their `2026-09-08` snapshots, also support `xhigh`
+             * and `max`. Defaults to `auto`.
              */
             fun quality(quality: Quality?) = quality(MultipartField.of(quality))
 
@@ -1606,16 +1631,17 @@ private constructor(
             }
 
             /**
-             * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
-             * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example
-             * `1536x864`. Width and height must both be divisible by 16 and the requested aspect
-             * ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental,
-             * and the maximum supported resolution is `3840x2160`. The requested size must also
-             * satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
-             * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is
-             * supported for models that allow automatic sizing. For `dall-e-2`, use one of
-             * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-             * `1792x1024`, or `1024x1792`.
+             * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+             * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as
+             * `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be
+             * divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
+             * Resolutions above `2560x1440` are experimental, and the maximum supported resolution
+             * is `3840x2160`. The requested size must also satisfy the model's current pixel and
+             * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
+             * supported by the GPT image models; `auto` is supported for models that allow
+             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
+             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
              */
             fun size(size: Size?) = size(MultipartField.of(size))
 
@@ -1642,7 +1668,7 @@ private constructor(
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             fun user(user: String) = user(MultipartField.of(user))
 
@@ -1801,8 +1827,10 @@ private constructor(
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
      * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-     * `gpt-image-2-2026-04-21`, and `chatgpt-image-latest`), each image should be a `png`, `webp`,
-     * or `jpg` file less than 50MB. You can provide up to 16 images.
+     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
+     * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
+     * images.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
      * than 4MB.
@@ -1969,17 +1997,14 @@ private constructor(
     }
 
     /**
-     * Allows to set transparency for the background of the generated image(s). This parameter is
-     * only supported for GPT image models that support transparent backgrounds. Must be one of
+     * Allows to set transparency for the background of the generated image(s). Must be one of
      * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
      * automatically determine the best background for the image.
      *
-     * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds. Requests
-     * with `background` set to `transparent` will return an error for these models; use `opaque` or
-     * `auto` instead.
-     *
-     * If `transparent`, the output format needs to support transparency, so it should be set to
-     * either `png` (default value) or `webp`.
+     * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots,
+     * support `opaque` and `transparent` backgrounds. Transparent backgrounds are available for
+     * supported GPT Image models. For `gpt-image-2` and `gpt-image-2-2026-04-21`, this support is
+     * in preview. When using `transparent`, set the output format to `png` or `webp`.
      */
     class Background @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2414,7 +2439,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The quality of the image that will be generated for GPT image models. Defaults to `auto`. */
+    /**
+     * The quality of the image that will be generated for GPT image models. The GPT image models
+     * support `low`, `medium`, and `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`,
+     * including their `2026-09-08` snapshots, also support `xhigh` and `max`. Defaults to `auto`.
+     */
     class Quality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -2437,6 +2466,10 @@ private constructor(
 
             @JvmField val HIGH = of("high")
 
+            @JvmField val XHIGH = of("xhigh")
+
+            @JvmField val MAX = of("max")
+
             @JvmField val AUTO = of("auto")
 
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
@@ -2448,6 +2481,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             AUTO,
         }
 
@@ -2465,6 +2500,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             AUTO,
             /** An enum member indicating that [Quality] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -2483,6 +2520,8 @@ private constructor(
                 LOW -> Value.LOW
                 MEDIUM -> Value.MEDIUM
                 HIGH -> Value.HIGH
+                XHIGH -> Value.XHIGH
+                MAX -> Value.MAX
                 AUTO -> Value.AUTO
                 else -> Value._UNKNOWN
             }
@@ -2502,6 +2541,8 @@ private constructor(
                 LOW -> Known.LOW
                 MEDIUM -> Known.MEDIUM
                 HIGH -> Known.HIGH
+                XHIGH -> Known.XHIGH
+                MAX -> Known.MAX
                 AUTO -> Known.AUTO
                 else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
             }
@@ -2712,15 +2753,16 @@ private constructor(
     }
 
     /**
-     * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary
-     * resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height
-     * must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
-     * Resolutions above `2560x1440` are experimental, and the maximum supported resolution is
-     * `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits.
-     * The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image
-     * models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one
-     * of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`,
-     * or `1024x1792`.
+     * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+     * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+     * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
+     * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
+     * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
+     * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
+     * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
+     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
+     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
      */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

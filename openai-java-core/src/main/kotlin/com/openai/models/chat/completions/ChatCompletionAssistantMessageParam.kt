@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -74,7 +74,7 @@ private constructor(
 
     /**
      * Data about a previous audio response from the model.
-     * [Learn more](https://platform.openai.com/docs/guides/audio).
+     * [Learn more](https://developers.openai.com/api/docs/guides/audio).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -237,7 +237,7 @@ private constructor(
 
         /**
          * Data about a previous audio response from the model.
-         * [Learn more](https://platform.openai.com/docs/guides/audio).
+         * [Learn more](https://developers.openai.com/api/docs/guides/audio).
          */
         fun audio(audio: Audio?) = audio(JsonField.ofNullable(audio))
 
@@ -463,7 +463,7 @@ private constructor(
 
     /**
      * Data about a previous audio response from the model.
-     * [Learn more](https://platform.openai.com/docs/guides/audio).
+     * [Learn more](https://developers.openai.com/api/docs/guides/audio).
      */
     class Audio
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -880,7 +880,7 @@ private constructor(
             }
         }
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         @JsonDeserialize(
             using = ChatCompletionRequestAssistantMessageContentPart.Deserializer::class
         )
@@ -892,9 +892,7 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             fun text(): Optional<ChatCompletionContentPartText> = Optional.ofNullable(text)
 
             fun refusal(): Optional<ChatCompletionContentPartRefusal> = Optional.ofNullable(refusal)
@@ -903,9 +901,7 @@ private constructor(
 
             fun isRefusal(): Boolean = refusal != null
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             fun asText(): ChatCompletionContentPartText = text.getOrThrow("text")
 
             fun asRefusal(): ChatCompletionContentPartRefusal = refusal.getOrThrow("refusal")
@@ -1036,8 +1032,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Learn about
-                 * [text inputs](https://platform.openai.com/docs/guides/text-generation).
+                 * Learn about [text inputs](https://developers.openai.com/api/docs/guides/text).
                  */
                 @JvmStatic
                 fun ofText(text: ChatCompletionContentPartText) =
@@ -1055,8 +1050,7 @@ private constructor(
             interface Visitor<out T> {
 
                 /**
-                 * Learn about
-                 * [text inputs](https://platform.openai.com/docs/guides/text-generation).
+                 * Learn about [text inputs](https://developers.openai.com/api/docs/guides/text).
                  */
                 fun visitText(text: ChatCompletionContentPartText): T
 

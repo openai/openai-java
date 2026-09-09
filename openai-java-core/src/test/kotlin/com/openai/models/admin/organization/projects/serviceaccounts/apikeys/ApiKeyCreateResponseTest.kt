@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
 
@@ -17,12 +17,14 @@ internal class ApiKeyCreateResponseTest {
                 .createdAt(0L)
                 .name("name")
                 .value("value")
+                .expiresAt(0L)
                 .build()
 
         assertThat(apiKeyCreateResponse.id()).isEqualTo("id")
         assertThat(apiKeyCreateResponse.createdAt()).isEqualTo(0L)
         assertThat(apiKeyCreateResponse.name()).isEqualTo("name")
         assertThat(apiKeyCreateResponse.value()).isEqualTo("value")
+        assertThat(apiKeyCreateResponse.expiresAt()).contains(0L)
     }
 
     @Test
@@ -34,6 +36,7 @@ internal class ApiKeyCreateResponseTest {
                 .createdAt(0L)
                 .name("name")
                 .value("value")
+                .expiresAt(0L)
                 .build()
 
         val roundtrippedApiKeyCreateResponse =

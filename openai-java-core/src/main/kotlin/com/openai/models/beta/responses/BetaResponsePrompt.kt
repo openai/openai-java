@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Reference to a prompt template and its variables.
- * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+ * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
  */
 class BetaResponsePrompt
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

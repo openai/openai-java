@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -18,9 +18,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * **gpt-5 and o-series models only**
- *
- * Configuration options for [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+ * Configuration options for
+ * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
  */
 class Reasoning
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -64,7 +63,7 @@ private constructor(
      * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
      * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
      * models support every value. See the
-     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for model-specific
      * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -209,8 +208,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         fun effort(effort: ReasoningEffort?) = effort(JsonField.ofNullable(effort))
 

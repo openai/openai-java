@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -21,7 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Emitted when a diarized transcription returns a completed segment with speaker information. Only
  * emitted when you
- * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+ * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
  * with `stream` set to `true` and `response_format` set to `diarized_json`.
  */
 @JsonDeserialize(using = TranscriptionStreamEvent.Deserializer::class)
@@ -37,7 +37,7 @@ private constructor(
     /**
      * Emitted when a diarized transcription returns a completed segment with speaker information.
      * Only emitted when you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with `stream` set to `true` and `response_format` set to `diarized_json`.
      */
     fun transcriptTextSegment(): Optional<TranscriptionTextSegmentEvent> =
@@ -46,7 +46,7 @@ private constructor(
     /**
      * Emitted when there is an additional text delta. This is also the first event emitted when the
      * transcription starts. Only emitted when you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with the `Stream` parameter set to `true`.
      */
     fun transcriptTextDelta(): Optional<TranscriptionTextDeltaEvent> =
@@ -55,7 +55,7 @@ private constructor(
     /**
      * Emitted when the transcription is complete. Contains the complete transcription text. Only
      * emitted when you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with the `Stream` parameter set to `true`.
      */
     fun transcriptTextDone(): Optional<TranscriptionTextDoneEvent> =
@@ -70,7 +70,7 @@ private constructor(
     /**
      * Emitted when a diarized transcription returns a completed segment with speaker information.
      * Only emitted when you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with `stream` set to `true` and `response_format` set to `diarized_json`.
      */
     fun asTranscriptTextSegment(): TranscriptionTextSegmentEvent =
@@ -79,7 +79,7 @@ private constructor(
     /**
      * Emitted when there is an additional text delta. This is also the first event emitted when the
      * transcription starts. Only emitted when you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with the `Stream` parameter set to `true`.
      */
     fun asTranscriptTextDelta(): TranscriptionTextDeltaEvent =
@@ -88,7 +88,7 @@ private constructor(
     /**
      * Emitted when the transcription is complete. Contains the complete transcription text. Only
      * emitted when you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with the `Stream` parameter set to `true`.
      */
     fun asTranscriptTextDone(): TranscriptionTextDoneEvent =
@@ -237,7 +237,7 @@ private constructor(
         /**
          * Emitted when a diarized transcription returns a completed segment with speaker
          * information. Only emitted when you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with `stream` set to `true` and `response_format` set to `diarized_json`.
          */
         @JvmStatic
@@ -247,7 +247,7 @@ private constructor(
         /**
          * Emitted when there is an additional text delta. This is also the first event emitted when
          * the transcription starts. Only emitted when you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `Stream` parameter set to `true`.
          */
         @JvmStatic
@@ -257,7 +257,7 @@ private constructor(
         /**
          * Emitted when the transcription is complete. Contains the complete transcription text.
          * Only emitted when you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `Stream` parameter set to `true`.
          */
         @JvmStatic
@@ -274,7 +274,7 @@ private constructor(
         /**
          * Emitted when a diarized transcription returns a completed segment with speaker
          * information. Only emitted when you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with `stream` set to `true` and `response_format` set to `diarized_json`.
          */
         fun visitTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent): T
@@ -282,7 +282,7 @@ private constructor(
         /**
          * Emitted when there is an additional text delta. This is also the first event emitted when
          * the transcription starts. Only emitted when you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `Stream` parameter set to `true`.
          */
         fun visitTranscriptTextDelta(transcriptTextDelta: TranscriptionTextDeltaEvent): T
@@ -290,7 +290,7 @@ private constructor(
         /**
          * Emitted when the transcription is complete. Contains the complete transcription text.
          * Only emitted when you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `Stream` parameter set to `true`.
          */
         fun visitTranscriptTextDone(transcriptTextDone: TranscriptionTextDoneEvent): T

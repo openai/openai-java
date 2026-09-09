@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -280,8 +280,8 @@ private constructor(
 
         /**
          * An array of content parts with a defined type. Supported options differ based on the
-         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
-         * contain text, image, or audio inputs.
+         * [model](https://developers.openai.com/api/docs/models) being used to generate the
+         * response. Can contain text, image, or audio inputs.
          */
         fun arrayOfContentParts(): Optional<List<ChatCompletionContentPart>> =
             Optional.ofNullable(arrayOfContentParts)
@@ -295,8 +295,8 @@ private constructor(
 
         /**
          * An array of content parts with a defined type. Supported options differ based on the
-         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
-         * contain text, image, or audio inputs.
+         * [model](https://developers.openai.com/api/docs/models) being used to generate the
+         * response. Can contain text, image, or audio inputs.
          */
         fun asArrayOfContentParts(): List<ChatCompletionContentPart> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
@@ -424,8 +424,8 @@ private constructor(
 
             /**
              * An array of content parts with a defined type. Supported options differ based on the
-             * [model](https://platform.openai.com/docs/models) being used to generate the response.
-             * Can contain text, image, or audio inputs.
+             * [model](https://developers.openai.com/api/docs/models) being used to generate the
+             * response. Can contain text, image, or audio inputs.
              */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>) =
@@ -442,8 +442,8 @@ private constructor(
 
             /**
              * An array of content parts with a defined type. Supported options differ based on the
-             * [model](https://platform.openai.com/docs/models) being used to generate the response.
-             * Can contain text, image, or audio inputs.
+             * [model](https://developers.openai.com/api/docs/models) being used to generate the
+             * response. Can contain text, image, or audio inputs.
              */
             fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T
 

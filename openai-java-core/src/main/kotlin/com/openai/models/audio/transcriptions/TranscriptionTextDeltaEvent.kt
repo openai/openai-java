@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Emitted when there is an additional text delta. This is also the first event emitted when the
  * transcription starts. Only emitted when you
- * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+ * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
  * with the `Stream` parameter set to `true`.
  */
 class TranscriptionTextDeltaEvent
@@ -68,7 +68,7 @@ private constructor(
 
     /**
      * The log probabilities of the delta. Only included if you
-     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * with the `include[]` parameter set to `logprobs`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -176,7 +176,7 @@ private constructor(
 
         /**
          * The log probabilities of the delta. Only included if you
-         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `include[]` parameter set to `logprobs`.
          */
         fun logprobs(logprobs: List<Logprob>) = logprobs(JsonField.of(logprobs))

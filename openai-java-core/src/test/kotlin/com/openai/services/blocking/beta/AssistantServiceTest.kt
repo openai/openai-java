@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta
 
@@ -29,7 +29,7 @@ internal class AssistantServiceTest {
         val assistant =
             assistantService.create(
                 AssistantCreateParams.builder()
-                    .model(ChatModel.GPT_4O)
+                    .model(ChatModel.GPT_5)
                     .description("description")
                     .instructions("instructions")
                     .metadata(

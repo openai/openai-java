@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.uploads
 
@@ -23,10 +23,10 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Completes the [Upload](https://platform.openai.com/docs/api-reference/uploads/object).
+ * Completes the [Upload](https://developers.openai.com/api/reference/resources/uploads).
  *
  * Within the returned Upload object, there is a nested
- * [File](https://platform.openai.com/docs/api-reference/files/object) object that is ready to use
+ * [File](https://developers.openai.com/api/reference/resources/files) object that is ready to use
  * in the rest of the platform.
  *
  * You can specify the order of the Parts by passing in an ordered list of the Part IDs.

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.assistants
 
@@ -30,8 +30,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Occurs when a [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
- * created.
+ * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is created.
  */
 @JsonDeserialize(using = RunStepStreamEvent.Deserializer::class)
 @JsonSerialize(using = RunStepStreamEvent.Serializer::class)
@@ -48,53 +47,48 @@ private constructor(
 ) {
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
+     * created.
      */
     fun threadRunStepCreated(): Optional<ThreadRunStepCreated> =
         Optional.ofNullable(threadRunStepCreated)
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
-     * `in_progress` state.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) moves
+     * to an `in_progress` state.
      */
     fun threadRunStepInProgress(): Optional<ThreadRunStepInProgress> =
         Optional.ofNullable(threadRunStepInProgress)
 
     /**
      * Occurs when parts of a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
-     * streamed.
+     * [run step](https://developers.openai.com/api/docs/assistants/migration) are being streamed.
      */
     fun threadRunStepDelta(): Optional<ThreadRunStepDelta> = Optional.ofNullable(threadRunStepDelta)
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
      * completed.
      */
     fun threadRunStepCompleted(): Optional<ThreadRunStepCompleted> =
         Optional.ofNullable(threadRunStepCompleted)
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) fails.
      */
     fun threadRunStepFailed(): Optional<ThreadRunStepFailed> =
         Optional.ofNullable(threadRunStepFailed)
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
      * cancelled.
      */
     fun threadRunStepCancelled(): Optional<ThreadRunStepCancelled> =
         Optional.ofNullable(threadRunStepCancelled)
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+     * expires.
      */
     fun threadRunStepExpired(): Optional<ThreadRunStepExpired> =
         Optional.ofNullable(threadRunStepExpired)
@@ -114,54 +108,49 @@ private constructor(
     fun isThreadRunStepExpired(): Boolean = threadRunStepExpired != null
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
+     * created.
      */
     fun asThreadRunStepCreated(): ThreadRunStepCreated =
         threadRunStepCreated.getOrThrow("threadRunStepCreated")
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
-     * `in_progress` state.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) moves
+     * to an `in_progress` state.
      */
     fun asThreadRunStepInProgress(): ThreadRunStepInProgress =
         threadRunStepInProgress.getOrThrow("threadRunStepInProgress")
 
     /**
      * Occurs when parts of a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
-     * streamed.
+     * [run step](https://developers.openai.com/api/docs/assistants/migration) are being streamed.
      */
     fun asThreadRunStepDelta(): ThreadRunStepDelta =
         threadRunStepDelta.getOrThrow("threadRunStepDelta")
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
      * completed.
      */
     fun asThreadRunStepCompleted(): ThreadRunStepCompleted =
         threadRunStepCompleted.getOrThrow("threadRunStepCompleted")
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) fails.
      */
     fun asThreadRunStepFailed(): ThreadRunStepFailed =
         threadRunStepFailed.getOrThrow("threadRunStepFailed")
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
      * cancelled.
      */
     fun asThreadRunStepCancelled(): ThreadRunStepCancelled =
         threadRunStepCancelled.getOrThrow("threadRunStepCancelled")
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+     * expires.
      */
     fun asThreadRunStepExpired(): ThreadRunStepExpired =
         threadRunStepExpired.getOrThrow("threadRunStepExpired")
@@ -361,8 +350,7 @@ private constructor(
     companion object {
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
         @JvmStatic
@@ -370,9 +358,8 @@ private constructor(
             RunStepStreamEvent(threadRunStepCreated = threadRunStepCreated)
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to
-         * an `in_progress` state.
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+         * moves to an `in_progress` state.
          */
         @JvmStatic
         fun ofThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress) =
@@ -380,16 +367,15 @@ private constructor(
 
         /**
          * Occurs when parts of a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are
-         * being streamed.
+         * [run step](https://developers.openai.com/api/docs/assistants/migration) are being
+         * streamed.
          */
         @JvmStatic
         fun ofThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta) =
             RunStepStreamEvent(threadRunStepDelta = threadRunStepDelta)
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
         @JvmStatic
@@ -397,16 +383,15 @@ private constructor(
             RunStepStreamEvent(threadRunStepCompleted = threadRunStepCompleted)
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+         * fails.
          */
         @JvmStatic
         fun ofThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed) =
             RunStepStreamEvent(threadRunStepFailed = threadRunStepFailed)
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * cancelled.
          */
         @JvmStatic
@@ -414,8 +399,8 @@ private constructor(
             RunStepStreamEvent(threadRunStepCancelled = threadRunStepCancelled)
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+         * expires.
          */
         @JvmStatic
         fun ofThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired) =
@@ -429,49 +414,45 @@ private constructor(
     interface Visitor<out T> {
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
         fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to
-         * an `in_progress` state.
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+         * moves to an `in_progress` state.
          */
         fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T
 
         /**
          * Occurs when parts of a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are
-         * being streamed.
+         * [run step](https://developers.openai.com/api/docs/assistants/migration) are being
+         * streamed.
          */
         fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
         fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+         * fails.
          */
         fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * cancelled.
          */
         fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T
 
         /**
-         * Occurs when a
-         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+         * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+         * expires.
          */
         fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T
 
@@ -566,8 +547,8 @@ private constructor(
     }
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
+     * created.
      */
     class ThreadRunStepCreated
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -777,9 +758,8 @@ private constructor(
     }
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
-     * `in_progress` state.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) moves
+     * to an `in_progress` state.
      */
     class ThreadRunStepInProgress
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -990,8 +970,7 @@ private constructor(
 
     /**
      * Occurs when parts of a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
-     * streamed.
+     * [run step](https://developers.openai.com/api/docs/assistants/migration) are being streamed.
      */
     class ThreadRunStepDelta
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1205,8 +1184,7 @@ private constructor(
     }
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
      * completed.
      */
     class ThreadRunStepCompleted
@@ -1417,8 +1395,7 @@ private constructor(
     }
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) fails.
      */
     class ThreadRunStepFailed
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1628,8 +1605,7 @@ private constructor(
     }
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
      * cancelled.
      */
     class ThreadRunStepCancelled
@@ -1840,8 +1816,8 @@ private constructor(
     }
 
     /**
-     * Occurs when a
-     * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+     * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
+     * expires.
      */
     class ThreadRunStepExpired
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

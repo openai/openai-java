@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -331,7 +331,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This event
      * is emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun outputAudioBufferStarted(): Optional<OutputAudioBufferStarted> =
         Optional.ofNullable(outputAudioBufferStarted)
@@ -340,7 +340,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on the
      * server, and no more audio is forthcoming. This event is emitted after the full response data
      * has been sent to the client (`response.done`).
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun outputAudioBufferStopped(): Optional<OutputAudioBufferStopped> =
         Optional.ofNullable(outputAudioBufferStopped)
@@ -350,7 +350,7 @@ private constructor(
      * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
      * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
      * audio response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun outputAudioBufferCleared(): Optional<OutputAudioBufferCleared> =
         Optional.ofNullable(outputAudioBufferCleared)
@@ -779,7 +779,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This event
      * is emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun asOutputAudioBufferStarted(): OutputAudioBufferStarted =
         outputAudioBufferStarted.getOrThrow("outputAudioBufferStarted")
@@ -788,7 +788,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on the
      * server, and no more audio is forthcoming. This event is emitted after the full response data
      * has been sent to the client (`response.done`).
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun asOutputAudioBufferStopped(): OutputAudioBufferStopped =
         outputAudioBufferStopped.getOrThrow("outputAudioBufferStopped")
@@ -798,7 +798,7 @@ private constructor(
      * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
      * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
      * audio response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun asOutputAudioBufferCleared(): OutputAudioBufferCleared =
         outputAudioBufferCleared.getOrThrow("outputAudioBufferCleared")
@@ -2016,7 +2016,7 @@ private constructor(
          * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This
          * event is emitted after an audio content part has been added
          * (`response.content_part.added`) to the response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
         fun ofOutputAudioBufferStarted(outputAudioBufferStarted: OutputAudioBufferStarted) =
@@ -2026,7 +2026,7 @@ private constructor(
          * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on
          * the server, and no more audio is forthcoming. This event is emitted after the full
          * response data has been sent to the client (`response.done`).
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
         fun ofOutputAudioBufferStopped(outputAudioBufferStopped: OutputAudioBufferStopped) =
@@ -2037,7 +2037,7 @@ private constructor(
          * in VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when
          * the client has emitted the `output_audio_buffer.clear` event to manually cut off the
          * current audio response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
         fun ofOutputAudioBufferCleared(outputAudioBufferCleared: OutputAudioBufferCleared) =
@@ -2398,7 +2398,7 @@ private constructor(
          * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This
          * event is emitted after an audio content part has been added
          * (`response.content_part.added`) to the response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferStarted(outputAudioBufferStarted: OutputAudioBufferStarted): T
 
@@ -2406,7 +2406,7 @@ private constructor(
          * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on
          * the server, and no more audio is forthcoming. This event is emitted after the full
          * response data has been sent to the client (`response.done`).
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferStopped(outputAudioBufferStopped: OutputAudioBufferStopped): T
 
@@ -2415,7 +2415,7 @@ private constructor(
          * in VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when
          * the client has emitted the `output_audio_buffer.clear` event to manually cut off the
          * current audio response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferCleared(outputAudioBufferCleared: OutputAudioBufferCleared): T
 
@@ -3288,7 +3288,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This event
      * is emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferStarted
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -3546,7 +3546,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on the
      * server, and no more audio is forthcoming. This event is emitted after the full response data
      * has been sent to the client (`response.done`).
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferStopped
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -3805,7 +3805,7 @@ private constructor(
      * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
      * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
      * audio response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferCleared
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

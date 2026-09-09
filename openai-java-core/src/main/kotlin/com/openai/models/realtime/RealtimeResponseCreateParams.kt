@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -195,7 +195,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -682,7 +682,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -1784,7 +1784,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     @JsonDeserialize(using = Tool.Deserializer::class)
     @JsonSerialize(using = Tool.Serializer::class)
@@ -1801,7 +1801,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun realtimeResponseCreateMcp(): Optional<RealtimeResponseCreateMcpTool> =
             Optional.ofNullable(realtimeResponseCreateMcp)
@@ -1816,7 +1816,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun asRealtimeResponseCreateMcp(): RealtimeResponseCreateMcpTool =
             realtimeResponseCreateMcp.getOrThrow("realtimeResponseCreateMcp")
@@ -1951,7 +1951,7 @@ private constructor(
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
              * servers.
-             * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+             * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              */
             @JvmStatic
             fun ofRealtimeResponseCreateMcp(
@@ -1967,7 +1967,7 @@ private constructor(
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
              * servers.
-             * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+             * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              */
             fun visitRealtimeResponseCreateMcp(
                 realtimeResponseCreateMcp: RealtimeResponseCreateMcpTool

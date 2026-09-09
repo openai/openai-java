@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads
 
@@ -54,7 +54,7 @@ private constructor(
 ) : Params {
 
     /**
-     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use
+     * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) to use
      * to execute this run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -107,9 +107,9 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to
-     * execute this run. If a value is provided here, it will override the model associated with the
-     * assistant. If not, the model associated with the assistant will be used.
+     * The ID of the [Model](https://developers.openai.com/api/reference/resources/models) to be
+     * used to execute this run. If a value is provided here, it will override the model associated
+     * with the assistant. If not, the model associated with the assistant will be used.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -118,7 +118,7 @@ private constructor(
 
     /**
      * Whether to enable
-     * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+     * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
      * during tool use.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -128,13 +128,13 @@ private constructor(
 
     /**
      * Specifies the format that the model must output. Compatible with
-     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+     * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
      * models since `gpt-3.5-turbo-1106`.
      *
      * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
      * ensures the model will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
      *
      * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
      * generates is valid JSON.
@@ -382,7 +382,7 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) to
          * use to execute this run.
          */
         fun assistantId(assistantId: String) = apply { body.assistantId(assistantId) }
@@ -506,9 +506,10 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
-         * to execute this run. If a value is provided here, it will override the model associated
-         * with the assistant. If not, the model associated with the assistant will be used.
+         * The ID of the [Model](https://developers.openai.com/api/reference/resources/models) to be
+         * used to execute this run. If a value is provided here, it will override the model
+         * associated with the assistant. If not, the model associated with the assistant will be
+         * used.
          */
         fun model(model: ChatModel?) = apply { body.model(model) }
 
@@ -533,7 +534,7 @@ private constructor(
 
         /**
          * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
          * during tool use.
          */
         fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
@@ -553,13 +554,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1040,7 +1041,7 @@ private constructor(
         )
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration) to
          * use to execute this run.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -1094,9 +1095,10 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
-         * to execute this run. If a value is provided here, it will override the model associated
-         * with the assistant. If not, the model associated with the assistant will be used.
+         * The ID of the [Model](https://developers.openai.com/api/reference/resources/models) to be
+         * used to execute this run. If a value is provided here, it will override the model
+         * associated with the assistant. If not, the model associated with the assistant will be
+         * used.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1105,7 +1107,7 @@ private constructor(
 
         /**
          * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
          * during tool use.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1116,13 +1118,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1412,8 +1414,9 @@ private constructor(
             }
 
             /**
-             * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-             * to use to execute this run.
+             * The ID of the
+             * [assistant](https://developers.openai.com/api/docs/assistants/migration) to use to
+             * execute this run.
              */
             fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
 
@@ -1540,10 +1543,10 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
-             * used to execute this run. If a value is provided here, it will override the model
-             * associated with the assistant. If not, the model associated with the assistant will
-             * be used.
+             * The ID of the [Model](https://developers.openai.com/api/reference/resources/models)
+             * to be used to execute this run. If a value is provided here, it will override the
+             * model associated with the assistant. If not, the model associated with the assistant
+             * will be used.
              */
             fun model(model: ChatModel?) = model(JsonField.ofNullable(model))
 
@@ -1570,7 +1573,7 @@ private constructor(
 
             /**
              * Whether to enable
-             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling)
              * during tool use.
              */
             fun parallelToolCalls(parallelToolCalls: Boolean) =
@@ -1589,14 +1592,14 @@ private constructor(
 
             /**
              * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+             * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5
+             * Turbo models since `gpt-3.5-turbo-1106`.
              *
              * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
              * Outputs which ensures the model will match your supplied JSON schema. Learn more in
              * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
              *
              * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
              * the model generates is valid JSON.
@@ -2184,8 +2187,8 @@ private constructor(
         ) : this(messages, metadata, toolResources, mutableMapOf())
 
         /**
-         * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start
-         * the thread with.
+         * A list of [messages](https://developers.openai.com/api/docs/assistants/migration) to
+         * start the thread with.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2277,7 +2280,7 @@ private constructor(
             }
 
             /**
-             * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to
+             * A list of [messages](https://developers.openai.com/api/docs/assistants/migration) to
              * start the thread with.
              */
             fun messages(messages: List<Message>) = messages(JsonField.of(messages))
@@ -2773,7 +2776,8 @@ private constructor(
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
                  * images can be passed with `image_url` or `image_file`. Image types are only
-                 * supported on [Vision-compatible models](https://platform.openai.com/docs/models).
+                 * supported on
+                 * [Vision-compatible models](https://developers.openai.com/api/docs/models).
                  */
                 fun arrayOfContentParts(): Optional<List<MessageContentPartParam>> =
                     Optional.ofNullable(arrayOfContentParts)
@@ -2788,7 +2792,8 @@ private constructor(
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
                  * images can be passed with `image_url` or `image_file`. Image types are only
-                 * supported on [Vision-compatible models](https://platform.openai.com/docs/models).
+                 * supported on
+                 * [Vision-compatible models](https://developers.openai.com/api/docs/models).
                  */
                 fun asArrayOfContentParts(): List<MessageContentPartParam> =
                     arrayOfContentParts.getOrThrow("arrayOfContentParts")
@@ -2922,7 +2927,7 @@ private constructor(
                      * An array of content parts with a defined type, each can be of type `text` or
                      * images can be passed with `image_url` or `image_file`. Image types are only
                      * supported on
-                     * [Vision-compatible models](https://platform.openai.com/docs/models).
+                     * [Vision-compatible models](https://developers.openai.com/api/docs/models).
                      */
                     @JvmStatic
                     fun ofArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>) =
@@ -2942,7 +2947,7 @@ private constructor(
                      * An array of content parts with a defined type, each can be of type `text` or
                      * images can be passed with `image_url` or `image_file`. Image types are only
                      * supported on
-                     * [Vision-compatible models](https://platform.openai.com/docs/models).
+                     * [Vision-compatible models](https://developers.openai.com/api/docs/models).
                      */
                     fun visitArrayOfContentParts(
                         arrayOfContentParts: List<MessageContentPartParam>
@@ -4090,8 +4095,8 @@ private constructor(
                 ) : this(fileIds, mutableMapOf())
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * made available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
@@ -4142,9 +4147,9 @@ private constructor(
                     }
 
                     /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs
-                     * made available to the `code_interpreter` tool. There can be a maximum of 20
-                     * files associated with the tool.
+                     * A list of [file](https://developers.openai.com/api/reference/resources/files)
+                     * IDs made available to the `code_interpreter` tool. There can be a maximum of
+                     * 20 files associated with the tool.
                      */
                     fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
@@ -4281,7 +4286,7 @@ private constructor(
 
                 /**
                  * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * attached to this thread. There can be a maximum of 1 vector store attached to the
                  * thread.
                  *
@@ -4293,7 +4298,7 @@ private constructor(
 
                 /**
                  * A helper to create a
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * with file_ids and attach it to this thread. There can be a maximum of 1 vector
                  * store attached to the thread.
                  *
@@ -4357,7 +4362,7 @@ private constructor(
 
                     /**
                      * The
-                     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                     * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                      * attached to this thread. There can be a maximum of 1 vector store attached to
                      * the thread.
                      */
@@ -4389,7 +4394,7 @@ private constructor(
 
                     /**
                      * A helper to create a
-                     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                     * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                      * with file_ids and attach it to this thread. There can be a maximum of 1
                      * vector store attached to the thread.
                      */
@@ -4528,10 +4533,10 @@ private constructor(
                         chunkingStrategy.getOptional("chunking_strategy")
 
                     /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. For vector stores created before Nov 2025, there can
-                     * be a maximum of 10,000 files in a vector store. For vector stores created
-                     * starting in Nov 2025, the limit is 100,000,000 files.
+                     * A list of [file](https://developers.openai.com/api/reference/resources/files)
+                     * IDs to add to the vector store. For vector stores created before Nov 2025,
+                     * there can be a maximum of 10,000 files in a vector store. For vector stores
+                     * created starting in Nov 2025, the limit is 100,000,000 files.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
@@ -4663,11 +4668,11 @@ private constructor(
                             )
 
                         /**
-                         * A list of [file](https://platform.openai.com/docs/api-reference/files)
-                         * IDs to add to the vector store. For vector stores created before Nov
-                         * 2025, there can be a maximum of 10,000 files in a vector store. For
-                         * vector stores created starting in Nov 2025, the limit is 100,000,000
-                         * files.
+                         * A list of
+                         * [file](https://developers.openai.com/api/reference/resources/files) IDs
+                         * to add to the vector store. For vector stores created before Nov 2025,
+                         * there can be a maximum of 10,000 files in a vector store. For vector
+                         * stores created starting in Nov 2025, the limit is 100,000,000 files.
                          */
                         fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
@@ -5956,8 +5961,8 @@ private constructor(
             ) : this(fileIds, mutableMapOf())
 
             /**
-             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-             * available to the `code_interpreter` tool. There can be a maximum of 20 files
+             * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+             * made available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -6005,8 +6010,8 @@ private constructor(
                 }
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * made available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
                 fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
@@ -6139,7 +6144,7 @@ private constructor(
 
             /**
              * The ID of the
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
              *
@@ -6191,7 +6196,7 @@ private constructor(
 
                 /**
                  * The ID of the
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */

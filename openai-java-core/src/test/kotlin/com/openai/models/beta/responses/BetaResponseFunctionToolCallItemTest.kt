@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -18,6 +18,7 @@ internal class BetaResponseFunctionToolCallItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -30,6 +31,7 @@ internal class BetaResponseFunctionToolCallItemTest {
         assertThat(betaResponseFunctionToolCallItem.id()).contains("id")
         assertThat(betaResponseFunctionToolCallItem.agent())
             .contains(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+        assertThat(betaResponseFunctionToolCallItem.async()).contains(true)
         assertThat(betaResponseFunctionToolCallItem.caller())
             .contains(BetaResponseFunctionToolCall.Caller.ofDirect())
         assertThat(betaResponseFunctionToolCallItem.namespace()).contains("namespace")
@@ -48,6 +50,7 @@ internal class BetaResponseFunctionToolCallItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -335,8 +335,8 @@ private constructor(
         ) : this(sessionId, sipHeaders, mutableMapOf())
 
         /**
-         * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-         * `call_id` in `realtime.call.incoming`.
+         * The `live_...` ID of the pending SIP session. Forward this value unchanged when accepting
+         * or rejecting the call through the Live API.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -344,7 +344,8 @@ private constructor(
         fun sessionId(): String = sessionId.getRequired("session_id")
 
         /**
-         * Headers from the SIP Invite.
+         * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names, values,
+         * repeated entries, and order are preserved. Treat these values as untrusted call metadata.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -408,8 +409,8 @@ private constructor(
             }
 
             /**
-             * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-             * `call_id` in `realtime.call.incoming`.
+             * The `live_...` ID of the pending SIP session. Forward this value unchanged when
+             * accepting or rejecting the call through the Live API.
              */
             fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
 
@@ -422,7 +423,11 @@ private constructor(
              */
             fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
 
-            /** Headers from the SIP Invite. */
+            /**
+             * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names,
+             * values, repeated entries, and order are preserved. Treat these values as untrusted
+             * call metadata.
+             */
             fun sipHeaders(sipHeaders: List<SipHeader>) = sipHeaders(JsonField.of(sipHeaders))
 
             /**

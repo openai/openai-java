@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -19,8 +19,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * References an image [File](https://platform.openai.com/docs/api-reference/files) in the content
- * of a message.
+ * References an image [File](https://developers.openai.com/api/reference/resources/files) in the
+ * content of a message.
  */
 @JsonDeserialize(using = MessageContentDelta.Deserializer::class)
 @JsonSerialize(using = MessageContentDelta.Serializer::class)
@@ -34,8 +34,8 @@ private constructor(
 ) {
 
     /**
-     * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-     * content of a message.
+     * References an image [File](https://developers.openai.com/api/reference/resources/files) in
+     * the content of a message.
      */
     fun imageFile(): Optional<ImageFileDeltaBlock> = Optional.ofNullable(imageFile)
 
@@ -57,8 +57,8 @@ private constructor(
     fun isImageUrl(): Boolean = imageUrl != null
 
     /**
-     * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-     * content of a message.
+     * References an image [File](https://developers.openai.com/api/reference/resources/files) in
+     * the content of a message.
      */
     fun asImageFile(): ImageFileDeltaBlock = imageFile.getOrThrow("imageFile")
 
@@ -204,8 +204,8 @@ private constructor(
     companion object {
 
         /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
+         * References an image [File](https://developers.openai.com/api/reference/resources/files)
+         * in the content of a message.
          */
         @JvmStatic
         fun ofImageFile(imageFile: ImageFileDeltaBlock) = MessageContentDelta(imageFile = imageFile)
@@ -229,8 +229,8 @@ private constructor(
     interface Visitor<out T> {
 
         /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
+         * References an image [File](https://developers.openai.com/api/reference/resources/files)
+         * in the content of a message.
          */
         fun visitImageFile(imageFile: ImageFileDeltaBlock): T
 

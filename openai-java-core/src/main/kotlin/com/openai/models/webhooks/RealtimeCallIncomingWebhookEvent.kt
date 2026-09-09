@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -336,8 +336,9 @@ private constructor(
         ) : this(callId, sipHeaders, mutableMapOf())
 
         /**
-         * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-         * `session_id` in `live.call.incoming`.
+         * The Transceiver `rtc_...` ID of the pending SIP session. The paired `live.call.incoming`
+         * event derives its `session_id` by replacing the `rtc_` prefix with `live_`. Use the ID
+         * returned by the event with the corresponding Realtime or Live API.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -345,7 +346,8 @@ private constructor(
         fun callId(): String = callId.getRequired("call_id")
 
         /**
-         * Headers from the SIP Invite.
+         * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names, values,
+         * repeated entries, and order are preserved. Treat these values as untrusted call metadata.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -409,8 +411,10 @@ private constructor(
             }
 
             /**
-             * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-             * `session_id` in `live.call.incoming`.
+             * The Transceiver `rtc_...` ID of the pending SIP session. The paired
+             * `live.call.incoming` event derives its `session_id` by replacing the `rtc_` prefix
+             * with `live_`. Use the ID returned by the event with the corresponding Realtime or
+             * Live API.
              */
             fun callId(callId: String) = callId(JsonField.of(callId))
 
@@ -423,7 +427,11 @@ private constructor(
              */
             fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
-            /** Headers from the SIP Invite. */
+            /**
+             * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names,
+             * values, repeated entries, and order are preserved. Treat these values as untrusted
+             * call metadata.
+             */
             fun sipHeaders(sipHeaders: List<SipHeader>) = sipHeaders(JsonField.of(sipHeaders))
 
             /**

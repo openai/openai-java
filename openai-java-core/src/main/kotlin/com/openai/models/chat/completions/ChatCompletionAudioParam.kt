@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -31,7 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Parameters for audio output. Required when audio output is requested with `modalities:
- * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
+ * ["audio"]`. [Learn more](https://developers.openai.com/api/docs/guides/audio).
  */
 class ChatCompletionAudioParam
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

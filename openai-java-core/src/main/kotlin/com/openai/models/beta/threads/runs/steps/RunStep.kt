@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -109,7 +109,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+     * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration)
      * associated with the run step.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -193,8 +193,8 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
-     * is a part of.
+     * The ID of the [run](https://developers.openai.com/api/docs/assistants/migration) that this
+     * run step is a part of.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -219,7 +219,8 @@ private constructor(
     fun stepDetails(): StepDetails = stepDetails.getRequired("step_details")
 
     /**
-     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+     * The ID of the [thread](https://developers.openai.com/api/docs/assistants/migration) that was
+     * run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -445,7 +446,7 @@ private constructor(
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+         * The ID of the [assistant](https://developers.openai.com/api/docs/assistants/migration)
          * associated with the run step.
          */
         fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
@@ -611,8 +612,8 @@ private constructor(
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
-         * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run
-         * step is a part of.
+         * The ID of the [run](https://developers.openai.com/api/docs/assistants/migration) that
+         * this run step is a part of.
          */
         fun runId(runId: String) = runId(JsonField.of(runId))
 
@@ -689,8 +690,8 @@ private constructor(
             stepDetails(ToolCallsStepDetails.builder().toolCalls(toolCalls).build())
 
         /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * run.
+         * The ID of the [thread](https://developers.openai.com/api/docs/assistants/migration) that
+         * was run.
          */
         fun threadId(threadId: String) = threadId(JsonField.of(threadId))
 

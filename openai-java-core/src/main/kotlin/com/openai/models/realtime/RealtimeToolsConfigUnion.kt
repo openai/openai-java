@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -33,7 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
- * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+ * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
  */
 @JsonDeserialize(using = RealtimeToolsConfigUnion.Deserializer::class)
 @JsonSerialize(using = RealtimeToolsConfigUnion.Serializer::class)
@@ -48,7 +48,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun mcp(): Optional<Mcp> = Optional.ofNullable(mcp)
 
@@ -60,7 +60,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun asMcp(): Mcp = mcp.getOrThrow("mcp")
 
@@ -183,7 +183,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         @JvmStatic fun ofMcp(mcp: Mcp) = RealtimeToolsConfigUnion(mcp = mcp)
     }
@@ -199,7 +199,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun visitMcp(mcp: Mcp): T
 
@@ -261,7 +261,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     class Mcp
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -382,7 +382,7 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -719,7 +719,7 @@ private constructor(
              * Identifier for service connectors, like those available in ChatGPT. One of
              * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
              * service connectors
-             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
              *
              * Currently supported `connector_id` values are:
              * - Dropbox: `connector_dropbox`
@@ -1569,7 +1569,7 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`

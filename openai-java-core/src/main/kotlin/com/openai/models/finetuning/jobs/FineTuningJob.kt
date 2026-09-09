@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.jobs
 
@@ -207,7 +207,7 @@ private constructor(
 
     /**
      * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with
-     * the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     * the [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -242,7 +242,7 @@ private constructor(
 
     /**
      * The file ID used for training. You can retrieve the training data with the
-     * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -251,7 +251,7 @@ private constructor(
 
     /**
      * The file ID used for validation. You can retrieve the validation results with the
-     * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -673,7 +673,7 @@ private constructor(
         /**
          * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results
          * with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
          */
         fun resultFiles(resultFiles: List<String>) = resultFiles(JsonField.of(resultFiles))
 
@@ -754,7 +754,7 @@ private constructor(
 
         /**
          * The file ID used for training. You can retrieve the training data with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
          */
         fun trainingFile(trainingFile: String) = trainingFile(JsonField.of(trainingFile))
 
@@ -771,7 +771,7 @@ private constructor(
 
         /**
          * The file ID used for validation. You can retrieve the validation results with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
          */
         fun validationFile(validationFile: String?) =
             validationFile(JsonField.ofNullable(validationFile))

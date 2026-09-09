@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -27,7 +27,7 @@ interface ModerationService {
 
     /**
      * Classifies if text and/or image inputs are potentially harmful. Learn more in the
-     * [moderation guide](https://platform.openai.com/docs/guides/moderation).
+     * [moderation guide](https://developers.openai.com/api/docs/guides/moderation).
      */
     fun create(params: ModerationCreateParams): ModerationCreateResponse =
         create(params, RequestOptions.none())

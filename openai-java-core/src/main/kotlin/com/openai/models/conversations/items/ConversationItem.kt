@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations.items
 
@@ -33,6 +33,7 @@ import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionShellTool
 import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.McpToolCallError
 import com.openai.models.responses.NamespaceTool
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
@@ -40,6 +41,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -63,7 +65,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * A single item within a conversation. The set of possible types are the same as the `output` type
  * of a
- * [Response object](https://platform.openai.com/docs/api-reference/responses/object#responses/object-output).
+ * [Response object](https://developers.openai.com/api/reference/resources/responses#%28resource%29%20responses%20%3E%20%28model%29%20response%20%3E%20%28schema%29%20%3E%20%28property%29%20output).
  */
 @JsonDeserialize(using = ConversationItem.Deserializer::class)
 @JsonSerialize(using = ConversationItem.Serializer::class)
@@ -80,6 +82,7 @@ private constructor(
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -105,8 +108,8 @@ private constructor(
 
     /**
      * A tool call to run a function. See the
-     * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for more
-     * information.
+     * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling) for
+     * more information.
      */
     fun functionCall(): Optional<ResponseFunctionToolCallItem> = Optional.ofNullable(functionCall)
 
@@ -115,14 +118,14 @@ private constructor(
 
     /**
      * The results of a file search tool call. See the
-     * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
+     * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for more
      * information.
      */
     fun fileSearchCall(): Optional<ResponseFileSearchToolCall> = Optional.ofNullable(fileSearchCall)
 
     /**
      * The results of a web search tool call. See the
-     * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
+     * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for more
      * information.
      */
     fun webSearchCall(): Optional<ResponseFunctionWebSearch> = Optional.ofNullable(webSearchCall)
@@ -133,8 +136,8 @@ private constructor(
 
     /**
      * A tool call to a computer use tool. See the
-     * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-     * information.
+     * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use) for
+     * more information.
      */
     fun computerCall(): Optional<ResponseComputerToolCall> = Optional.ofNullable(computerCall)
 
@@ -149,10 +152,17 @@ private constructor(
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItem> =
+        Optional.ofNullable(configurationUpdate)
+
+    /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
      * conversation if you are manually
-     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+     * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
      */
     fun reasoning(): Optional<ResponseReasoningItem> = Optional.ofNullable(reasoning)
 
@@ -162,7 +172,7 @@ private constructor(
 
     /**
      * A compaction item generated by the
-     * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+     * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
      */
     fun compaction(): Optional<ResponseCompactionItem> = Optional.ofNullable(compaction)
 
@@ -233,6 +243,8 @@ private constructor(
 
     fun isAdditionalTools(): Boolean = additionalTools != null
 
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isProgram(): Boolean = program != null
@@ -272,8 +284,8 @@ private constructor(
 
     /**
      * A tool call to run a function. See the
-     * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for more
-     * information.
+     * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling) for
+     * more information.
      */
     fun asFunctionCall(): ResponseFunctionToolCallItem = functionCall.getOrThrow("functionCall")
 
@@ -282,14 +294,14 @@ private constructor(
 
     /**
      * The results of a file search tool call. See the
-     * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
+     * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for more
      * information.
      */
     fun asFileSearchCall(): ResponseFileSearchToolCall = fileSearchCall.getOrThrow("fileSearchCall")
 
     /**
      * The results of a web search tool call. See the
-     * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
+     * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for more
      * information.
      */
     fun asWebSearchCall(): ResponseFunctionWebSearch = webSearchCall.getOrThrow("webSearchCall")
@@ -300,8 +312,8 @@ private constructor(
 
     /**
      * A tool call to a computer use tool. See the
-     * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-     * information.
+     * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use) for
+     * more information.
      */
     fun asComputerCall(): ResponseComputerToolCall = computerCall.getOrThrow("computerCall")
 
@@ -316,10 +328,17 @@ private constructor(
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItem =
+        configurationUpdate.getOrThrow("configurationUpdate")
+
+    /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
      * conversation if you are manually
-     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+     * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
      */
     fun asReasoning(): ResponseReasoningItem = reasoning.getOrThrow("reasoning")
 
@@ -329,7 +348,7 @@ private constructor(
 
     /**
      * A compaction item generated by the
-     * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+     * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
      */
     fun asCompaction(): ResponseCompactionItem = compaction.getOrThrow("compaction")
 
@@ -423,6 +442,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             program != null -> visitor.visitProgram(program)
             programOutput != null -> visitor.visitProgramOutput(programOutput)
@@ -506,6 +526,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -639,6 +665,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitProgram(program: Program) = program.validity()
@@ -711,6 +741,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             program == other.program &&
             programOutput == other.programOutput &&
@@ -743,6 +774,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             program,
             programOutput,
@@ -776,6 +808,8 @@ private constructor(
             toolSearchCall != null -> "ConversationItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ConversationItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ConversationItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "ConversationItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ConversationItem{reasoning=$reasoning}"
             program != null -> "ConversationItem{program=$program}"
             programOutput != null -> "ConversationItem{programOutput=$programOutput}"
@@ -809,8 +843,8 @@ private constructor(
 
         /**
          * A tool call to run a function. See the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for
-         * more information.
+         * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling)
+         * for more information.
          */
         @JvmStatic
         fun ofFunctionCall(functionCall: ResponseFunctionToolCallItem) =
@@ -822,8 +856,8 @@ private constructor(
 
         /**
          * The results of a file search tool call. See the
-         * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
-         * information.
+         * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for
+         * more information.
          */
         @JvmStatic
         fun ofFileSearchCall(fileSearchCall: ResponseFileSearchToolCall) =
@@ -831,8 +865,8 @@ private constructor(
 
         /**
          * The results of a web search tool call. See the
-         * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
-         * information.
+         * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for
+         * more information.
          */
         @JvmStatic
         fun ofWebSearchCall(webSearchCall: ResponseFunctionWebSearch) =
@@ -845,8 +879,8 @@ private constructor(
 
         /**
          * A tool call to a computer use tool. See the
-         * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-         * information.
+         * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use)
+         * for more information.
          */
         @JvmStatic
         fun ofComputerCall(computerCall: ResponseComputerToolCall) =
@@ -869,10 +903,18 @@ private constructor(
             ConversationItem(additionalTools = additionalTools)
 
         /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem) =
+            ConversationItem(configurationUpdate = configurationUpdate)
+
+        /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
          * subsequent turns of a conversation if you are manually
-         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+         * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
          */
         @JvmStatic
         fun ofReasoning(reasoning: ResponseReasoningItem) = ConversationItem(reasoning = reasoning)
@@ -885,7 +927,7 @@ private constructor(
 
         /**
          * A compaction item generated by the
-         * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+         * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
          */
         @JvmStatic
         fun ofCompaction(compaction: ResponseCompactionItem) =
@@ -966,8 +1008,8 @@ private constructor(
 
         /**
          * A tool call to run a function. See the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for
-         * more information.
+         * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling)
+         * for more information.
          */
         fun visitFunctionCall(functionCall: ResponseFunctionToolCallItem): T
 
@@ -975,15 +1017,15 @@ private constructor(
 
         /**
          * The results of a file search tool call. See the
-         * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
-         * information.
+         * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for
+         * more information.
          */
         fun visitFileSearchCall(fileSearchCall: ResponseFileSearchToolCall): T
 
         /**
          * The results of a web search tool call. See the
-         * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
-         * information.
+         * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for
+         * more information.
          */
         fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch): T
 
@@ -992,8 +1034,8 @@ private constructor(
 
         /**
          * A tool call to a computer use tool. See the
-         * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-         * information.
+         * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use)
+         * for more information.
          */
         fun visitComputerCall(computerCall: ResponseComputerToolCall): T
 
@@ -1006,10 +1048,16 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem): T
+
+        /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
          * subsequent turns of a conversation if you are manually
-         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+         * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
          */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
 
@@ -1019,7 +1067,7 @@ private constructor(
 
         /**
          * A compaction item generated by the
-         * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+         * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
          */
         fun visitCompaction(compaction: ResponseCompactionItem): T
 
@@ -1145,6 +1193,11 @@ private constructor(
                         ConversationItem(additionalTools = it, _json = json)
                     } ?: ConversationItem(_json = json)
                 }
+                "configuration_update" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseConfigurationUpdateItem>())
+                        ?.let { ConversationItem(configurationUpdate = it, _json = json) }
+                        ?: ConversationItem(_json = json)
+                }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
                         ConversationItem(reasoning = it, _json = json)
@@ -1259,6 +1312,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.program != null -> generator.writeObject(value.program)
                 value.programOutput != null -> generator.writeObject(value.programOutput)
@@ -1295,6 +1350,8 @@ private constructor(
         private val result: JsonField<String>,
         private val status: JsonField<Status>,
         private val type: JsonValue,
+        private val quality: JsonField<Quality>,
+        private val size: JsonField<Size>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -1304,7 +1361,9 @@ private constructor(
             @JsonProperty("result") @ExcludeMissing result: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(id, result, status, type, mutableMapOf())
+            @JsonProperty("quality") @ExcludeMissing quality: JsonField<Quality> = JsonMissing.of(),
+            @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
+        ) : this(id, result, status, type, quality, size, mutableMapOf())
 
         /**
          * The unique ID of the image generation call.
@@ -1344,6 +1403,23 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * The quality of the image generated by the image generation tool call. One of `low`,
+         * `medium`, `high`, `xhigh`, `max`, or `auto`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun quality(): Optional<Quality> = quality.getOptional("quality")
+
+        /**
+         * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun size(): Optional<Size> = size.getOptional("size")
+
+        /**
          * Returns the raw JSON value of [id].
          *
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -1363,6 +1439,20 @@ private constructor(
          * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        /**
+         * Returns the raw JSON value of [quality].
+         *
+         * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<Quality> = quality
+
+        /**
+         * Returns the raw JSON value of [size].
+         *
+         * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1398,6 +1488,8 @@ private constructor(
             private var result: JsonField<String>? = null
             private var status: JsonField<Status>? = null
             private var type: JsonValue = JsonValue.from("image_generation_call")
+            private var quality: JsonField<Quality> = JsonMissing.of()
+            private var size: JsonField<Size> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1406,6 +1498,8 @@ private constructor(
                 result = imageGenerationCall.result
                 status = imageGenerationCall.status
                 type = imageGenerationCall.type
+                quality = imageGenerationCall.quality
+                size = imageGenerationCall.size
                 additionalProperties = imageGenerationCall.additionalProperties.toMutableMap()
             }
 
@@ -1462,6 +1556,47 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /**
+             * The quality of the image generated by the image generation tool call. One of `low`,
+             * `medium`, `high`, `xhigh`, `max`, or `auto`.
+             */
+            fun quality(quality: Quality?) = quality(JsonField.ofNullable(quality))
+
+            /** Alias for calling [Builder.quality] with `quality.orElse(null)`. */
+            fun quality(quality: Optional<Quality>) = quality(quality.getOrNull())
+
+            /**
+             * Sets [Builder.quality] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.quality] with a well-typed [Quality] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
+
+            /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
+            fun size(size: Size?) = size(JsonField.ofNullable(size))
+
+            /** Alias for calling [Builder.size] with `size.orElse(null)`. */
+            fun size(size: Optional<Size>) = size(size.getOrNull())
+
+            /**
+             * Sets [Builder.size] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun size(size: JsonField<Size>) = apply { this.size = size }
+
+            /**
+             * Sets [size] to an arbitrary [String].
+             *
+             * You should usually call [size] with a well-typed [Size] constant instead. This method
+             * is primarily for setting the field to an undocumented or not yet supported value.
+             */
+            fun size(value: String) = size(Size.of(value))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1501,6 +1636,8 @@ private constructor(
                     checkRequired("result", result),
                     checkRequired("status", status),
                     type,
+                    quality,
+                    size,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1529,6 +1666,8 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            quality().ifPresent { it.validate() }
+            size()
             validated = true
         }
 
@@ -1551,7 +1690,9 @@ private constructor(
             (if (id.asKnown().isPresent) 1 else 0) +
                 (if (result.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0) +
-                type.let { if (it == JsonValue.from("image_generation_call")) 1 else 0 }
+                type.let { if (it == JsonValue.from("image_generation_call")) 1 else 0 } +
+                (quality.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (size.asKnown().isPresent) 1 else 0)
 
         /** The status of the image generation call. */
         class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1705,6 +1846,318 @@ private constructor(
             override fun toString() = value.toString()
         }
 
+        /**
+         * The quality of the image generated by the image generation tool call. One of `low`,
+         * `medium`, `high`, `xhigh`, `max`, or `auto`.
+         */
+        class Quality @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LOW = of("low")
+
+                @JvmField val MEDIUM = of("medium")
+
+                @JvmField val HIGH = of("high")
+
+                @JvmField val XHIGH = of("xhigh")
+
+                @JvmField val MAX = of("max")
+
+                @JvmField val AUTO = of("auto")
+
+                @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
+            }
+
+            /** An enum containing [Quality]'s known values. */
+            enum class Known {
+                LOW,
+                MEDIUM,
+                HIGH,
+                XHIGH,
+                MAX,
+                AUTO,
+            }
+
+            /**
+             * An enum containing [Quality]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Quality] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                LOW,
+                MEDIUM,
+                HIGH,
+                XHIGH,
+                MAX,
+                AUTO,
+                /**
+                 * An enum member indicating that [Quality] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    LOW -> Value.LOW
+                    MEDIUM -> Value.MEDIUM
+                    HIGH -> Value.HIGH
+                    XHIGH -> Value.XHIGH
+                    MAX -> Value.MAX
+                    AUTO -> Value.AUTO
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    LOW -> Known.LOW
+                    MEDIUM -> Known.MEDIUM
+                    HIGH -> Known.HIGH
+                    XHIGH -> Known.XHIGH
+                    MAX -> Known.MAX
+                    AUTO -> Known.AUTO
+                    else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Quality = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Quality && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
+        class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _1024X1024 = of("1024x1024")
+
+                @JvmField val _1024X1536 = of("1024x1536")
+
+                @JvmField val _1536X1024 = of("1536x1024")
+
+                @JvmStatic fun of(value: String) = Size(JsonField.of(value))
+            }
+
+            /** An enum containing [Size]'s known values. */
+            enum class Known {
+                _1024X1024,
+                _1024X1536,
+                _1536X1024,
+            }
+
+            /**
+             * An enum containing [Size]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Size] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _1024X1024,
+                _1024X1536,
+                _1536X1024,
+                /** An enum member indicating that [Size] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _1024X1024 -> Value._1024X1024
+                    _1024X1536 -> Value._1024X1536
+                    _1536X1024 -> Value._1536X1024
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _1024X1024 -> Known._1024X1024
+                    _1024X1536 -> Known._1024X1536
+                    _1536X1024 -> Known._1536X1024
+                    else -> throw OpenAIInvalidDataException("Unknown Size: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Size = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Size && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1715,17 +2168,19 @@ private constructor(
                 result == other.result &&
                 status == other.status &&
                 type == other.type &&
+                quality == other.quality &&
+                size == other.size &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(id, result, status, type, additionalProperties)
+            Objects.hash(id, result, status, type, quality, size, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, additionalProperties=$additionalProperties}"
+            "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
     }
 
     class AdditionalTools
@@ -5833,7 +6288,7 @@ private constructor(
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
         private val approvalRequestId: JsonField<String>,
-        private val error: JsonField<String>,
+        private val error: JsonField<McpToolCallError>,
         private val output: JsonField<String>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -5853,7 +6308,9 @@ private constructor(
             @JsonProperty("approval_request_id")
             @ExcludeMissing
             approvalRequestId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<McpToolCallError> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         ) : this(
@@ -5931,7 +6388,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun error(): Optional<String> = error.getOptional("error")
+        fun error(): Optional<McpToolCallError> = error.getOptional("error")
 
         /**
          * The output from the tool call.
@@ -5995,7 +6452,7 @@ private constructor(
          *
          * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<McpToolCallError> = error
 
         /**
          * Returns the raw JSON value of [output].
@@ -6048,7 +6505,7 @@ private constructor(
             private var serverLabel: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp_call")
             private var approvalRequestId: JsonField<String> = JsonMissing.of()
-            private var error: JsonField<String> = JsonMissing.of()
+            private var error: JsonField<McpToolCallError> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -6157,19 +6614,41 @@ private constructor(
             }
 
             /** The error from the tool call, if any. */
-            fun error(error: String?) = error(JsonField.ofNullable(error))
+            fun error(error: McpToolCallError?) = error(JsonField.ofNullable(error))
 
             /** Alias for calling [Builder.error] with `error.orElse(null)`. */
-            fun error(error: Optional<String>) = error(error.getOrNull())
+            fun error(error: Optional<McpToolCallError>) = error(error.getOrNull())
 
             /**
              * Sets [Builder.error] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.error] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.error] with a well-typed [McpToolCallError] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun error(error: JsonField<String>) = apply { this.error = error }
+            fun error(error: JsonField<McpToolCallError>) = apply { this.error = error }
+
+            /** Alias for calling [error] with `McpToolCallError.ofProtocol(protocol)`. */
+            fun error(protocol: McpToolCallError.McpProtocolError) =
+                error(McpToolCallError.ofProtocol(protocol))
+
+            /** Alias for calling [error] with `McpToolCallError.ofToolExecution(toolExecution)`. */
+            fun error(toolExecution: McpToolCallError.McpToolExecutionError) =
+                error(McpToolCallError.ofToolExecution(toolExecution))
+
+            /**
+             * Alias for calling [error] with the following:
+             * ```java
+             * McpToolCallError.McpToolExecutionError.builder()
+             *     .content(content)
+             *     .build()
+             * ```
+             */
+            fun toolExecutionError(content: JsonValue) =
+                error(McpToolCallError.McpToolExecutionError.builder().content(content).build())
+
+            /** Alias for calling [error] with `McpToolCallError.ofHttp(http)`. */
+            fun error(http: McpToolCallError.HttpError) = error(McpToolCallError.ofHttp(http))
 
             /** The output from the tool call. */
             fun output(output: String?) = output(JsonField.ofNullable(output))
@@ -6276,7 +6755,7 @@ private constructor(
                 }
             }
             approvalRequestId()
-            error()
+            error().ifPresent { it.validate() }
             output()
             status().ifPresent { it.validate() }
             validated = true
@@ -6304,7 +6783,7 @@ private constructor(
                 (if (serverLabel.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
                 (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
-                (if (error.asKnown().isPresent) 1 else 0) +
+                (error.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (output.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 

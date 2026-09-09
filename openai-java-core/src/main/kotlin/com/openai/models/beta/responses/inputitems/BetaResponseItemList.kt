@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses.inputitems
 
@@ -20,6 +20,7 @@ import com.openai.models.beta.responses.BetaResponseCodeInterpreterToolCall
 import com.openai.models.beta.responses.BetaResponseCompactionItem
 import com.openai.models.beta.responses.BetaResponseComputerToolCall
 import com.openai.models.beta.responses.BetaResponseComputerToolCallOutputItem
+import com.openai.models.beta.responses.BetaResponseConfigurationUpdateItem
 import com.openai.models.beta.responses.BetaResponseCustomToolCallItem
 import com.openai.models.beta.responses.BetaResponseCustomToolCallOutputItem
 import com.openai.models.beta.responses.BetaResponseFileSearchToolCall
@@ -282,6 +283,24 @@ private constructor(
          */
         fun addData(additionalTools: BetaResponseItem.AdditionalTools) =
             addData(BetaResponseItem.ofAdditionalTools(additionalTools))
+
+        /**
+         * Alias for calling [addData] with
+         * `BetaResponseItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addData(configurationUpdate: BetaResponseConfigurationUpdateItem) =
+            addData(BetaResponseItem.ofConfigurationUpdate(configurationUpdate))
+
+        /**
+         * Alias for calling [addData] with the following:
+         * ```java
+         * BetaResponseConfigurationUpdateItem.builder()
+         *     .id(id)
+         *     .build()
+         * ```
+         */
+        fun addConfigurationUpdateData(id: String) =
+            addData(BetaResponseConfigurationUpdateItem.builder().id(id).build())
 
         /** Alias for calling [addData] with `BetaResponseItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: BetaResponseReasoningItem) =

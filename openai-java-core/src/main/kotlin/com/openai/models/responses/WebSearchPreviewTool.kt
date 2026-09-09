@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * This tool searches the web for relevant results to use in a response. Learn more about the
- * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+ * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
  */
 class WebSearchPreviewTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

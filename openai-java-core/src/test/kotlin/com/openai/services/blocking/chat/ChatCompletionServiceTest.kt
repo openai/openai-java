@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.chat
 
@@ -43,7 +43,7 @@ internal class ChatCompletionServiceTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
@@ -195,7 +195,7 @@ internal class ChatCompletionServiceTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.GPT_5_4)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -182,7 +182,7 @@ private constructor(
      * Configuration for input audio transcription, defaults to off and can be set to `null` to turn
      * off once on. Input audio transcription is not native to the model, since the model consumes
      * audio directly. Transcription runs asynchronously through
-     * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+     * [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * and should be treated as guidance of input audio content rather than precisely what the model
      * heard. The client can optionally set the language and prompt for transcription, these offer
      * additional guidance to the transcription service.
@@ -256,7 +256,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -670,7 +670,7 @@ private constructor(
          * Configuration for input audio transcription, defaults to off and can be set to `null` to
          * turn off once on. Input audio transcription is not native to the model, since the model
          * consumes audio directly. Transcription runs asynchronously through
-         * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+         * [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * and should be treated as guidance of input audio content rather than precisely what the
          * model heard. The client can optionally set the language and prompt for transcription,
          * these offer additional guidance to the transcription service.
@@ -830,7 +830,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
