@@ -33,7 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents a streamed chunk of a chat completion response returned by the model, based on the
- * provided input. [Learn more](https://platform.openai.com/docs/guides/streaming-responses).
+ * provided input. [Learn more](https://developers.openai.com/api/docs/guides/streaming-responses).
  */
 class ChatCompletionChunk
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -160,12 +160,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -450,12 +450,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -6097,12 +6097,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`

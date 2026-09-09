@@ -38,7 +38,7 @@ private constructor(
 
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
-     * listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+     * listed in the [embedding guide](https://developers.openai.com/api/docs/guides/embeddings).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -150,7 +150,7 @@ private constructor(
         /**
          * The embedding vector, which is a list of floats. The length of vector depends on the
          * model as listed in the
-         * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         * [embedding guide](https://developers.openai.com/api/docs/guides/embeddings).
          */
         fun embedding(floats: List<Float>) = embedding(EmbeddingValue.ofFloats(floats))
 

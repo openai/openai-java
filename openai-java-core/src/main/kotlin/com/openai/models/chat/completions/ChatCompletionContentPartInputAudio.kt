@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
+/** Learn about [audio inputs](https://developers.openai.com/api/docs/guides/audio). */
 class ChatCompletionContentPartInputAudio
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

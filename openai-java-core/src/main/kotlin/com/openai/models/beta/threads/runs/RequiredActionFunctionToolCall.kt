@@ -35,8 +35,7 @@ private constructor(
 
     /**
      * The ID of the tool call. This ID must be referenced when you submit the tool outputs in using
-     * the
-     * [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
+     * the [Submit tool outputs to run](https://developers.openai.com/api/docs/assistants/migration)
      * endpoint.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -126,7 +125,7 @@ private constructor(
         /**
          * The ID of the tool call. This ID must be referenced when you submit the tool outputs in
          * using the
-         * [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
+         * [Submit tool outputs to run](https://developers.openai.com/api/docs/assistants/migration)
          * endpoint.
          */
         fun id(id: String) = id(JsonField.of(id))
