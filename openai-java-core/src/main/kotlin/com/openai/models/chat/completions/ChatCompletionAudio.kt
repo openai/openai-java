@@ -17,7 +17,7 @@ import java.util.Objects
 
 /**
  * If the audio output modality is requested, this object contains data about the audio response
- * from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+ * from the model. [Learn more](https://developers.openai.com/api/docs/guides/audio).
  */
 class ChatCompletionAudio
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

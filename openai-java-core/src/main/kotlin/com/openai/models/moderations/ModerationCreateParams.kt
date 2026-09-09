@@ -33,8 +33,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Classifies if text and/or image inputs are potentially harmful. Learn more in the
- * [moderation guide](https://platform.openai.com/docs/guides/moderation).
+ * Classifies if text and/or image inputs are potentially harmful. Learn more in
+ * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation).
  */
 class ModerationCreateParams
 private constructor(
@@ -54,8 +54,7 @@ private constructor(
 
     /**
      * The content moderation model you would like to use. Learn more in
-     * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn about
-     * available models [here](https://platform.openai.com/docs/models#moderation).
+     * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -153,8 +152,7 @@ private constructor(
 
         /**
          * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation).
          */
         fun model(model: ModerationModel) = apply { body.model(model) }
 
@@ -346,8 +344,7 @@ private constructor(
 
         /**
          * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -438,8 +435,7 @@ private constructor(
 
             /**
              * The content moderation model you would like to use. Learn more in
-             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation).
              */
             fun model(model: ModerationModel) = model(JsonField.of(model))
 

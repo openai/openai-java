@@ -57,38 +57,38 @@ private constructor(
 
     /**
      * Defines a function in your own code the model can choose to call. Learn more about
-     * [function calling](https://platform.openai.com/docs/guides/function-calling).
+     * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
      */
     fun function(): Optional<BetaFunctionTool> = Optional.ofNullable(function)
 
     /**
      * A tool that searches for relevant content from uploaded files. Learn more about the
-     * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+     * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
      */
     fun fileSearch(): Optional<BetaFileSearchTool> = Optional.ofNullable(fileSearch)
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun computer(): Optional<BetaComputerTool> = Optional.ofNullable(computer)
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun computerUsePreview(): Optional<BetaComputerUsePreviewTool> =
         Optional.ofNullable(computerUsePreview)
 
     /**
      * Search the Internet for sources related to the prompt. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun webSearch(): Optional<BetaWebSearchTool> = Optional.ofNullable(webSearch)
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun mcp(): Optional<Mcp> = Optional.ofNullable(mcp)
 
@@ -109,7 +109,7 @@ private constructor(
 
     /**
      * A custom tool that processes input using a specified format. Learn more about
-     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+     * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
      */
     fun custom(): Optional<BetaCustomTool> = Optional.ofNullable(custom)
 
@@ -121,7 +121,7 @@ private constructor(
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun webSearchPreview(): Optional<BetaWebSearchPreviewTool> =
         Optional.ofNullable(webSearchPreview)
@@ -163,38 +163,38 @@ private constructor(
 
     /**
      * Defines a function in your own code the model can choose to call. Learn more about
-     * [function calling](https://platform.openai.com/docs/guides/function-calling).
+     * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
      */
     fun asFunction(): BetaFunctionTool = function.getOrThrow("function")
 
     /**
      * A tool that searches for relevant content from uploaded files. Learn more about the
-     * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+     * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
      */
     fun asFileSearch(): BetaFileSearchTool = fileSearch.getOrThrow("fileSearch")
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun asComputer(): BetaComputerTool = computer.getOrThrow("computer")
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun asComputerUsePreview(): BetaComputerUsePreviewTool =
         computerUsePreview.getOrThrow("computerUsePreview")
 
     /**
      * Search the Internet for sources related to the prompt. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun asWebSearch(): BetaWebSearchTool = webSearch.getOrThrow("webSearch")
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun asMcp(): Mcp = mcp.getOrThrow("mcp")
 
@@ -215,7 +215,7 @@ private constructor(
 
     /**
      * A custom tool that processes input using a specified format. Learn more about
-     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+     * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
      */
     fun asCustom(): BetaCustomTool = custom.getOrThrow("custom")
 
@@ -227,7 +227,7 @@ private constructor(
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun asWebSearchPreview(): BetaWebSearchPreviewTool =
         webSearchPreview.getOrThrow("webSearchPreview")
@@ -523,26 +523,26 @@ private constructor(
 
         /**
          * Defines a function in your own code the model can choose to call. Learn more about
-         * [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
          */
         @JvmStatic fun ofFunction(function: BetaFunctionTool) = BetaTool(function = function)
 
         /**
          * A tool that searches for relevant content from uploaded files. Learn more about the
-         * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+         * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
          */
         @JvmStatic
         fun ofFileSearch(fileSearch: BetaFileSearchTool) = BetaTool(fileSearch = fileSearch)
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         @JvmStatic fun ofComputer(computer: BetaComputerTool) = BetaTool(computer = computer)
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         @JvmStatic
         fun ofComputerUsePreview(computerUsePreview: BetaComputerUsePreviewTool) =
@@ -550,14 +550,14 @@ private constructor(
 
         /**
          * Search the Internet for sources related to the prompt. Learn more about the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         @JvmStatic fun ofWebSearch(webSearch: BetaWebSearchTool) = BetaTool(webSearch = webSearch)
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         @JvmStatic fun ofMcp(mcp: Mcp) = BetaTool(mcp = mcp)
 
@@ -587,7 +587,7 @@ private constructor(
 
         /**
          * A custom tool that processes input using a specified format. Learn more about
-         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+         * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
          */
         @JvmStatic fun ofCustom(custom: BetaCustomTool) = BetaTool(custom = custom)
 
@@ -600,7 +600,7 @@ private constructor(
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
-         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         @JvmStatic
         fun ofWebSearchPreview(webSearchPreview: BetaWebSearchPreviewTool) =
@@ -616,38 +616,38 @@ private constructor(
 
         /**
          * Defines a function in your own code the model can choose to call. Learn more about
-         * [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
          */
         fun visitFunction(function: BetaFunctionTool): T
 
         /**
          * A tool that searches for relevant content from uploaded files. Learn more about the
-         * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+         * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
          */
         fun visitFileSearch(fileSearch: BetaFileSearchTool): T
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         fun visitComputer(computer: BetaComputerTool): T
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         fun visitComputerUsePreview(computerUsePreview: BetaComputerUsePreviewTool): T
 
         /**
          * Search the Internet for sources related to the prompt. Learn more about the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun visitWebSearch(webSearch: BetaWebSearchTool): T
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun visitMcp(mcp: Mcp): T
 
@@ -667,7 +667,7 @@ private constructor(
 
         /**
          * A custom tool that processes input using a specified format. Learn more about
-         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+         * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
          */
         fun visitCustom(custom: BetaCustomTool): T
 
@@ -679,7 +679,7 @@ private constructor(
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
-         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun visitWebSearchPreview(webSearchPreview: BetaWebSearchPreviewTool): T
 
@@ -836,7 +836,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     class Mcp
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -957,7 +957,7 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -1294,7 +1294,7 @@ private constructor(
              * Identifier for service connectors, like those available in ChatGPT. One of
              * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
              * service connectors
-             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
              *
              * Currently supported `connector_id` values are:
              * - Dropbox: `connector_dropbox`
@@ -2144,7 +2144,7 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`

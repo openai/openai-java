@@ -2657,8 +2657,8 @@ private constructor(
                      * Reducing reasoning effort can result in faster responses and fewer tokens
                      * used on reasoning in a response. Not all reasoning models support every
                      * value. See the
-                     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
-                     * model-specific support.
+                     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning)
+                     * for model-specific support.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
@@ -2972,8 +2972,8 @@ private constructor(
                          * `max`. Reducing reasoning effort can result in faster responses and fewer
                          * tokens used on reasoning in a response. Not all reasoning models support
                          * every value. See the
-                         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
-                         * model-specific support.
+                         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning)
+                         * for model-specific support.
                          */
                         fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                             reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -6295,7 +6295,7 @@ private constructor(
                  * are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
                  * reasoning effort can result in faster responses and fewer tokens used on
                  * reasoning in a response. Not all reasoning models support every value. See the
-                 * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+                 * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
                  * model-specific support.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
@@ -6323,9 +6323,9 @@ private constructor(
                 /**
                  * Configuration options for a text response from the model. Can be plain text or
                  * structured JSON data. Learn more:
-                 * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+                 * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
                  * - [Structured
-                 *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+                 *   Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -6339,12 +6339,13 @@ private constructor(
                  * The two categories of tools you can provide the model are:
                  * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
                  *   capabilities, like
-                 *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-                 *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
-                 *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
+                 *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+                 *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search).
+                 *   Learn more about
+                 *   [built-in tools](https://developers.openai.com/api/docs/guides/tools).
                  * - **Function calls (custom tools)**: Functions that are defined by you, enabling
                  *   the model to call your own code. Learn more about
-                 *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+                 *   [function calling](https://developers.openai.com/api/docs/guides/function-calling).
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -6486,8 +6487,8 @@ private constructor(
                      * Reducing reasoning effort can result in faster responses and fewer tokens
                      * used on reasoning in a response. Not all reasoning models support every
                      * value. See the
-                     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
-                     * model-specific support.
+                     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning)
+                     * for model-specific support.
                      */
                     fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                         reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -6539,9 +6540,10 @@ private constructor(
                     /**
                      * Configuration options for a text response from the model. Can be plain text
                      * or structured JSON data. Learn more:
-                     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+                     * - [Text inputs and
+                     *   outputs](https://developers.openai.com/api/docs/guides/text)
                      * - [Structured
-                     *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+                     *   Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
                      */
                     fun text(text: Text) = text(JsonField.of(text))
 
@@ -6561,13 +6563,14 @@ private constructor(
                      * The two categories of tools you can provide the model are:
                      * - **Built-in tools**: Tools that are provided by OpenAI that extend the
                      *   model's capabilities, like
-                     *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-                     *   [file search](https://platform.openai.com/docs/guides/tools-file-search).
+                     *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search)
+                     *   or
+                     *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search).
                      *   Learn more about
-                     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+                     *   [built-in tools](https://developers.openai.com/api/docs/guides/tools).
                      * - **Function calls (custom tools)**: Functions that are defined by you,
                      *   enabling the model to call your own code. Learn more about
-                     *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+                     *   [function calling](https://developers.openai.com/api/docs/guides/function-calling).
                      */
                     fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
@@ -6828,9 +6831,9 @@ private constructor(
                 /**
                  * Configuration options for a text response from the model. Can be plain text or
                  * structured JSON data. Learn more:
-                 * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+                 * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
                  * - [Structured
-                 *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+                 *   Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
                  */
                 class Text
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -6851,7 +6854,7 @@ private constructor(
                      *
                      * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which
                      * ensures the model will match your supplied JSON schema. Learn more in the
-                     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+                     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
                      *
                      * The default format is `{ "type": "text" }` with no additional options.
                      *
@@ -6912,7 +6915,7 @@ private constructor(
                          *
                          * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which
                          * ensures the model will match your supplied JSON schema. Learn more in the
-                         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+                         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
                          *
                          * The default format is `{ "type": "text" }` with no additional options.
                          *
