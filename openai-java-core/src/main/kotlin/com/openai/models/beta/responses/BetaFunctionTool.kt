@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Defines a function in your own code the model can choose to call. Learn more about
- * [function calling](https://platform.openai.com/docs/guides/function-calling).
+ * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
  */
 class BetaFunctionTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

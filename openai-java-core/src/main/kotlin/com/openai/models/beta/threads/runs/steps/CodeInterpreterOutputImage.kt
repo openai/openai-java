@@ -247,7 +247,7 @@ private constructor(
         ) : this(fileId, mutableMapOf())
 
         /**
-         * The [file](https://platform.openai.com/docs/api-reference/files) ID of the image.
+         * The [file](https://developers.openai.com/api/reference/resources/files) ID of the image.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -291,7 +291,10 @@ private constructor(
                 additionalProperties = image.additionalProperties.toMutableMap()
             }
 
-            /** The [file](https://platform.openai.com/docs/api-reference/files) ID of the image. */
+            /**
+             * The [file](https://developers.openai.com/api/reference/resources/files) ID of the
+             * image.
+             */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
             /**
