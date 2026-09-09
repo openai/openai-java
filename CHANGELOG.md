@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.61.0](https://github.com/openai/openai-java/compare/v4.60.0...v4.61.0) (2026-09-09)
+
+
+### Features
+
+* **api:** Support API key expiration metadata ([#984](https://github.com/openai/openai-java/issues/984)) ([e8ca958](https://github.com/openai/openai-java/commit/e8ca958a72e92b96d15818bb0b08f7616b36d5cc))
+
+
+### Documentation
+
+* fix async pagination examples ([#848](https://github.com/openai/openai-java/issues/848)) ([ce3b151](https://github.com/openai/openai-java/commit/ce3b15102052d223af71ffd0291c0bbd1a7a42d0)), closes [#849](https://github.com/openai/openai-java/issues/849)
+* fix ResponseOutputItem typo in README ([#986](https://github.com/openai/openai-java/issues/986)) ([3ae2730](https://github.com/openai/openai-java/commit/3ae2730ac13f70aacdc32b4b7a1a4d621c2ef858))
+
 ## [4.60.0](https://github.com/openai/openai-java/compare/v4.59.0...v4.60.0) (2026-09-08)
 
 
