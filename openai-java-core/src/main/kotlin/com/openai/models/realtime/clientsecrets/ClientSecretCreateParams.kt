@@ -44,7 +44,7 @@ import kotlin.jvm.optionals.getOrNull
  * connection.
  *
  * [Learn more about authentication with client secrets over
- * WebRTC](https://platform.openai.com/docs/guides/realtime-webrtc).
+ * WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc).
  *
  * Returns the created client secret and the effective session object. The client secret is a string
  * that looks like `ek_1234`.
@@ -312,7 +312,7 @@ private constructor(
     /**
      * Create a session and client secret for the Realtime API. The request can specify either a
      * realtime or a transcription session configuration.
-     * [Learn more about the Realtime API](https://platform.openai.com/docs/guides/realtime).
+     * [Learn more about the Realtime API](https://developers.openai.com/api/docs/guides/realtime).
      */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

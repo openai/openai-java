@@ -15,8 +15,8 @@ import java.util.Objects
 
 /**
  * Configure the model to generate valid Python code. See the
- * [custom grammars guide](https://platform.openai.com/docs/guides/custom-grammars) for more
- * details.
+ * [custom grammars guide](https://developers.openai.com/api/docs/guides/function-calling#context-free-grammars)
+ * for more details.
  */
 class ResponseFormatTextPython
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

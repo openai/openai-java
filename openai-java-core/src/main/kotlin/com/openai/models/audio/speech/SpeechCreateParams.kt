@@ -53,7 +53,8 @@ private constructor(
     fun input(): String = body.input()
 
     /**
-     * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+     * One of the available
+     * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
      * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -66,7 +67,7 @@ private constructor(
      * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
      * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
      * "voice_1234" }`. Previews of the voices are available in the
-     * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+     * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -221,7 +222,8 @@ private constructor(
         fun input(input: JsonField<String>) = apply { body.input(input) }
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+         * One of the available
+         * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
          * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
          */
         fun model(model: SpeechModel) = apply { body.model(model) }
@@ -248,7 +250,7 @@ private constructor(
          * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
-         * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
          */
         fun voice(voice: Voice) = apply { body.voice(voice) }
 
@@ -529,7 +531,8 @@ private constructor(
         fun input(): String = input.getRequired("input")
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+         * One of the available
+         * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
          * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -542,7 +545,7 @@ private constructor(
          * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
-         * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -708,8 +711,9 @@ private constructor(
             fun input(input: JsonField<String>) = apply { this.input = input }
 
             /**
-             * One of the available [TTS models](https://platform.openai.com/docs/models#tts):
-             * `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
+             * One of the available
+             * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
+             * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
              */
             fun model(model: SpeechModel) = model(JsonField.of(model))
 
@@ -737,7 +741,7 @@ private constructor(
              * `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an
              * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
              * the
-             * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+             * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -962,7 +966,7 @@ private constructor(
      * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
      * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
      * "voice_1234" }`. Previews of the voices are available in the
-     * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+     * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
      */
     @JsonDeserialize(using = Voice.Deserializer::class)
     @JsonSerialize(using = Voice.Serializer::class)

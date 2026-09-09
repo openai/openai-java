@@ -533,7 +533,7 @@ private constructor(
 
         /**
          * An image input to the model. Learn about
-         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
         fun inputImage(): Optional<ResponseInputImage> = Optional.ofNullable(inputImage)
 
@@ -582,7 +582,7 @@ private constructor(
 
         /**
          * An image input to the model. Learn about
-         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
         fun asInputImage(): ResponseInputImage = inputImage.getOrThrow("inputImage")
 
@@ -816,7 +816,7 @@ private constructor(
 
             /**
              * An image input to the model. Learn about
-             * [image inputs](https://platform.openai.com/docs/guides/vision).
+             * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
              */
             @JvmStatic
             fun ofInputImage(inputImage: ResponseInputImage) = Content(inputImage = inputImage)
@@ -856,7 +856,7 @@ private constructor(
 
             /**
              * An image input to the model. Learn about
-             * [image inputs](https://platform.openai.com/docs/guides/vision).
+             * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
              */
             fun visitInputImage(inputImage: ResponseInputImage): T
 

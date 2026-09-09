@@ -103,7 +103,7 @@ private constructor(
 
     /**
      * Annotations for the message, when applicable, as when using the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -112,7 +112,7 @@ private constructor(
 
     /**
      * If the audio output modality is requested, this object contains data about the audio response
-     * from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+     * from the model. [Learn more](https://developers.openai.com/api/docs/guides/audio).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -281,7 +281,7 @@ private constructor(
 
         /**
          * Annotations for the message, when applicable, as when using the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun annotations(annotations: List<Annotation>) = annotations(JsonField.of(annotations))
 
@@ -310,7 +310,8 @@ private constructor(
 
         /**
          * If the audio output modality is requested, this object contains data about the audio
-         * response from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+         * response from the model.
+         * [Learn more](https://developers.openai.com/api/docs/guides/audio).
          */
         fun audio(audio: ChatCompletionAudio?) = audio(JsonField.ofNullable(audio))
 
