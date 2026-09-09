@@ -145,8 +145,8 @@ private constructor(
 
     /**
      * An optional text to guide the model's style or continue a previous audio segment. The
-     * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match the
-     * audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+     * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should match
+     * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -580,8 +580,9 @@ private constructor(
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+         * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should
+         * match the audio language. This field is not supported when using
+         * `gpt-4o-transcribe-diarize`.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -946,8 +947,9 @@ private constructor(
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+         * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should
+         * match the audio language. This field is not supported when using
+         * `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1451,8 +1453,8 @@ private constructor(
 
             /**
              * An optional text to guide the model's style or continue a previous audio segment. The
-             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should
-             * match the audio language. This field is not supported when using
+             * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting)
+             * should match the audio language. This field is not supported when using
              * `gpt-4o-transcribe-diarize`.
              */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))

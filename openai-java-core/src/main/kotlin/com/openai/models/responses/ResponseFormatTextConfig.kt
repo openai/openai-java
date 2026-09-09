@@ -25,7 +25,7 @@ import kotlin.jvm.optionals.getOrNull
  *
  * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the model will
  * match your supplied JSON schema. Learn more in the
- * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+ * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
  *
  * The default format is `{ "type": "text" }` with no additional options.
  *
@@ -49,7 +49,7 @@ private constructor(
 
     /**
      * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-     * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
      */
     fun jsonSchema(): Optional<ResponseFormatTextJsonSchemaConfig> = Optional.ofNullable(jsonSchema)
 
@@ -71,7 +71,7 @@ private constructor(
 
     /**
      * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-     * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
      */
     fun asJsonSchema(): ResponseFormatTextJsonSchemaConfig = jsonSchema.getOrThrow("jsonSchema")
 
@@ -212,7 +212,7 @@ private constructor(
 
         /**
          * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
          */
         @JvmStatic
         fun ofJsonSchema(jsonSchema: ResponseFormatTextJsonSchemaConfig) =
@@ -239,7 +239,7 @@ private constructor(
 
         /**
          * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
          */
         fun visitJsonSchema(jsonSchema: ResponseFormatTextJsonSchemaConfig): T
 

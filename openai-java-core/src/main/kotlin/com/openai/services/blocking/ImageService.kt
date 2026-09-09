@@ -69,7 +69,7 @@ interface ImageService {
 
     /**
      * Creates an image given a prompt.
-     * [Learn more](https://platform.openai.com/docs/guides/images).
+     * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generate(params: ImageGenerateParams): ImagesResponse =
         generate(params, RequestOptions.none())
@@ -82,7 +82,7 @@ interface ImageService {
 
     /**
      * Creates an image given a prompt.
-     * [Learn more](https://platform.openai.com/docs/guides/images).
+     * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     @MustBeClosed
     fun generateStreaming(params: ImageGenerateParams): StreamResponse<ImageGenStreamEvent> =

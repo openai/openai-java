@@ -344,7 +344,8 @@ private constructor(
         fun sessionId(): String = sessionId.getRequired("session_id")
 
         /**
-         * Headers from the SIP Invite.
+         * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names, values,
+         * repeated entries, and order are preserved. Treat these values as untrusted call metadata.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -422,7 +423,11 @@ private constructor(
              */
             fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
 
-            /** Headers from the SIP Invite. */
+            /**
+             * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names,
+             * values, repeated entries, and order are preserved. Treat these values as untrusted
+             * call metadata.
+             */
             fun sipHeaders(sipHeaders: List<SipHeader>) = sipHeaders(JsonField.of(sipHeaders))
 
             /**
