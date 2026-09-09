@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.60.0](https://github.com/openai/openai-java/compare/v4.59.0...v4.60.0) (2026-09-08)
+
+
+### Features
+
+* **api:** add GPT Image 2.5 models and image options ([#982](https://github.com/openai/openai-java/issues/982)) ([279ec25](https://github.com/openai/openai-java/commit/279ec2586b5fe90349ac4a4ab7ec2a04c744f993))
+
 ## [4.59.0](https://github.com/openai/openai-java/compare/v4.58.0...v4.59.0) (2026-09-08)
 
 

@@ -449,6 +449,8 @@ internal class ConversationItemTest {
                 .id("id")
                 .result("result")
                 .status(ConversationItem.ImageGenerationCall.Status.IN_PROGRESS)
+                .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
+                .size(ConversationItem.ImageGenerationCall.Size._1024X1024)
                 .build()
 
         val conversationItem = ConversationItem.ofImageGenerationCall(imageGenerationCall)
@@ -493,6 +495,8 @@ internal class ConversationItemTest {
                     .id("id")
                     .result("result")
                     .status(ConversationItem.ImageGenerationCall.Status.IN_PROGRESS)
+                    .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
+                    .size(ConversationItem.ImageGenerationCall.Size._1024X1024)
                     .build()
             )
 
