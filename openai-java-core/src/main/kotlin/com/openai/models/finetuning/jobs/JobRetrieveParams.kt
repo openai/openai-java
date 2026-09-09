@@ -12,7 +12,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Get info about a fine-tuning job.
  *
- * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
+ * [Learn more about fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
  */
 class JobRetrieveParams
 private constructor(

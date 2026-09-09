@@ -12,7 +12,8 @@ internal class ServiceAccountCreateParamsTest {
         ServiceAccountCreateParams.builder()
             .projectId("project_id")
             .name("name")
-            .createServiceAccountOnly(true)
+            .createServiceAccountOnly(false)
+            .expiresInSeconds(1L)
             .build()
     }
 
@@ -32,13 +33,15 @@ internal class ServiceAccountCreateParamsTest {
             ServiceAccountCreateParams.builder()
                 .projectId("project_id")
                 .name("name")
-                .createServiceAccountOnly(true)
+                .createServiceAccountOnly(false)
+                .expiresInSeconds(1L)
                 .build()
 
         val body = params._body()
 
         assertThat(body.name()).isEqualTo("name")
-        assertThat(body.createServiceAccountOnly()).contains(true)
+        assertThat(body.createServiceAccountOnly()).contains(false)
+        assertThat(body.expiresInSeconds()).contains(1L)
     }
 
     @Test

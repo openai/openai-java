@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * JSON Schema response format. Used to generate structured JSON responses. Learn more about
- * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+ * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
  */
 class ResponseFormatJsonSchema
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -266,7 +266,7 @@ private constructor(
          * Whether to enable strict schema adherence when generating the output. If set to true, the
          * model will always follow the exact schema defined in the `schema` field. Only a subset of
          * JSON Schema is supported when `strict` is `true`. To learn more, read the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -397,7 +397,7 @@ private constructor(
              * Whether to enable strict schema adherence when generating the output. If set to true,
              * the model will always follow the exact schema defined in the `schema` field. Only a
              * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
              */
             fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
 

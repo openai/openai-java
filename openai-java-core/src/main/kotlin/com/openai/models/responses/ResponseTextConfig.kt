@@ -22,8 +22,8 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Configuration options for a text response from the model. Can be plain text or structured JSON
  * data. Learn more:
- * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
- * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+ * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+ * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
  */
 class ResponseTextConfig
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -48,7 +48,7 @@ private constructor(
      *
      * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the model
      * will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
      *
      * The default format is `{ "type": "text" }` with no additional options.
      *
@@ -126,7 +126,7 @@ private constructor(
          *
          * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the
          * model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * The default format is `{ "type": "text" }` with no additional options.
          *

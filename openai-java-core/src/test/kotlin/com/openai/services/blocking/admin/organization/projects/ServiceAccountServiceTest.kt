@@ -29,7 +29,8 @@ internal class ServiceAccountServiceTest {
                 ServiceAccountCreateParams.builder()
                     .projectId("project_id")
                     .name("name")
-                    .createServiceAccountOnly(true)
+                    .createServiceAccountOnly(false)
+                    .expiresInSeconds(1L)
                     .build()
             )
 

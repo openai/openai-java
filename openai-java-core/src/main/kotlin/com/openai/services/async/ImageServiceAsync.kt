@@ -70,7 +70,7 @@ interface ImageServiceAsync {
 
     /**
      * Creates an image given a prompt.
-     * [Learn more](https://platform.openai.com/docs/guides/images).
+     * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generate(params: ImageGenerateParams): CompletableFuture<ImagesResponse> =
         generate(params, RequestOptions.none())
@@ -83,7 +83,7 @@ interface ImageServiceAsync {
 
     /**
      * Creates an image given a prompt.
-     * [Learn more](https://platform.openai.com/docs/guides/images).
+     * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generateStreaming(params: ImageGenerateParams): AsyncStreamResponse<ImageGenStreamEvent> =
         generateStreaming(params, RequestOptions.none())
