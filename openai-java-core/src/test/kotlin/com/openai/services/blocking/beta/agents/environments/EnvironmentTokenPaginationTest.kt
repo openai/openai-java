@@ -11,6 +11,10 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class EnvironmentTokenPaginationTest {
+    private companion object {
+        const val ASYNC_TIMEOUT_SECONDS = 30L
+    }
+
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
     fun followsOpaqueTokenWithFilters(async: Boolean) {
@@ -41,40 +45,44 @@ internal class EnvironmentTokenPaginationTest {
                 .maxRetries(0)
                 .build()
                 .let { client ->
-                    val params =
-                        FileListParams.builder()
-                            .environmentId("env_test")
-                            .path("/workspace/test")
-                            .order(FileListParams.Order.ASC)
-                            .limit(1)
-                            .putAdditionalHeader("x-pagination-test", "preserved")
-                            .build()
-                    val paths = mutableListOf<String>()
-                    if (async) {
-                        client
-                            .async()
-                            .beta()
-                            .agents()
-                            .environments()
-                            .files()
-                            .list(params)
-                            .get(30, TimeUnit.SECONDS)
-                            .autoPager()
-                            .subscribe { file -> paths.add(file.path()) }
-                            .onCompleteFuture()
-                            .get(30, TimeUnit.SECONDS)
-                    } else {
-                        client
-                            .beta()
-                            .agents()
-                            .environments()
-                            .files()
-                            .list(params)
-                            .autoPager()
-                            .forEach { file -> paths.add(file.path()) }
+                    try {
+                        val params =
+                            FileListParams.builder()
+                                .environmentId("env_test")
+                                .path("/workspace/test")
+                                .order(FileListParams.Order.ASC)
+                                .limit(1)
+                                .putAdditionalHeader("x-pagination-test", "preserved")
+                                .build()
+                        val paths = mutableListOf<String>()
+                        if (async) {
+                            client
+                                .async()
+                                .beta()
+                                .agents()
+                                .environments()
+                                .files()
+                                .list(params)
+                                .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                .autoPager()
+                                .subscribe { file -> paths.add(file.path()) }
+                                .onCompleteFuture()
+                                .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        } else {
+                            client
+                                .beta()
+                                .agents()
+                                .environments()
+                                .files()
+                                .list(params)
+                                .autoPager()
+                                .forEach { file -> paths.add(file.path()) }
+                        }
+                        assertThat(paths)
+                            .containsExactly("/workspace/test/0.txt", "/workspace/test/1.txt")
+                    } finally {
+                        client.close()
                     }
-                    assertThat(paths)
-                        .containsExactly("/workspace/test/0.txt", "/workspace/test/1.txt")
                 }
             server.verify(
                 2,

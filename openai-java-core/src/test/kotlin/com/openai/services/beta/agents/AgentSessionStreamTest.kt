@@ -15,13 +15,28 @@ import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class AgentSessionStreamTest {
+    private companion object {
+        const val ASYNC_TIMEOUT_SECONDS = 30L
+    }
+
     private val mapper = jsonMapper()
     private val direct = Executor { it.run() }
+    private val clients = mutableListOf<OpenAIClientImpl>()
+
+    @AfterEach
+    fun closeClients() {
+        clients.toList().forEach { closeClient(it) }
+    }
+
+    private fun closeClient(client: OpenAIClientImpl) {
+        if (clients.remove(client)) client.close()
+    }
 
     private fun turn(kind: String, id: String = "root", subagent: String? = null) =
         """{"type":"agent.session.turn.$kind","event_id":"$kind-$id","session_id":"s","turn_id":"$id","turn":{"id":"$id","subagent_id":${subagent?.let { "\"$it\"" } ?: "null"}}}"""
@@ -41,6 +56,8 @@ internal class AgentSessionStreamTest {
     private inner class Transport(
         var events: List<String> = listOf(turn("created"), turn("completed"), idle())
     ) : HttpClient {
+        private val responseLifecycleLock = Any()
+        private var responsesDrained = CompletableFuture.completedFuture(Unit)
         val liveResponses = AtomicInteger()
         val retrieveStarted = java.util.concurrent.CountDownLatch(1)
         val inputStarted = java.util.concurrent.CountDownLatch(1)
@@ -74,15 +91,14 @@ internal class AgentSessionStreamTest {
                 val bytes =
                     object : ByteArrayInputStream(body.toByteArray()) {
                         override fun close() {
-                            if (bodyIsClosed.compareAndSet(false, true))
-                                liveResponses.decrementAndGet()
+                            if (bodyIsClosed.compareAndSet(false, true)) markResponseClosed()
                             super.close()
                         }
                     }
                 val responseIsClosed = java.util.concurrent.atomic.AtomicBoolean()
 
                 init {
-                    liveResponses.incrementAndGet()
+                    markResponseOpened()
                 }
 
                 override fun statusCode() = code
@@ -99,14 +115,39 @@ internal class AgentSessionStreamTest {
 
                 override fun close() {
                     if (!responseIsClosed.compareAndSet(false, true)) return
-                    bytes.close()
-                    if (stream) {
-                        streamBody?.close()
-                        streamClosed = true
-                        responseClosed.countDown()
+                    try {
+                        if (stream) streamBody?.close()
+                    } finally {
+                        if (stream) streamClosed = true
+                        bytes.close()
+                        if (stream) responseClosed.countDown()
                     }
                 }
             }
+
+        private fun markResponseOpened() {
+            synchronized(responseLifecycleLock) {
+                if (liveResponses.incrementAndGet() == 1) {
+                    responsesDrained = CompletableFuture()
+                }
+            }
+        }
+
+        private fun markResponseClosed() {
+            synchronized(responseLifecycleLock) {
+                if (liveResponses.decrementAndGet() == 0) {
+                    responsesDrained.complete(Unit)
+                }
+            }
+        }
+
+        fun awaitResponsesDrained() {
+            val pending =
+                synchronized(responseLifecycleLock) {
+                    if (liveResponses.get() == 0) null else responsesDrained
+                }
+            pending?.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        }
 
         override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
             requests.add(request)
@@ -119,7 +160,7 @@ internal class AgentSessionStreamTest {
                     posts.add(mapper.readTree(bytes.toByteArray()))
                     if (posts.size == blockedPost) {
                         postStarted.countDown()
-                        check(releasePost.await(30, TimeUnit.SECONDS))
+                        check(releasePost.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS))
                     }
                     if (posts.size >= ambiguousFromPost && ambiguousRemaining-- > 0) {
                         if (ambiguousIOException)
@@ -184,12 +225,13 @@ internal class AgentSessionStreamTest {
 
         fun client() =
             OpenAIClientImpl(
-                ClientOptions.builder()
-                    .httpClient(this)
-                    .apiKey("synthetic")
-                    .streamHandlerExecutor(direct)
-                    .build()
-            )
+                    ClientOptions.builder()
+                        .httpClient(this)
+                        .apiKey("synthetic")
+                        .streamHandlerExecutor(direct)
+                        .build()
+                )
+                .also { clients.add(it) }
     }
 
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
@@ -198,7 +240,7 @@ internal class AgentSessionStreamTest {
         t: Transport,
         async: Boolean,
         params: AgentSessionStreamParams = params().build(),
-        completionTimeoutSeconds: Long = 10,
+        completionTimeoutSeconds: Long = ASYNC_TIMEOUT_SECONDS,
         action: (AgentSessionEvent) -> Unit = {},
     ): List<AgentSessionEvent> {
         val events = mutableListOf<AgentSessionEvent>()
@@ -208,28 +250,32 @@ internal class AgentSessionStreamTest {
                 .responseValidation(false)
                 .build()
         val client = t.client()
-        if (async)
-            client
-                .async()
-                .beta()
-                .agents()
-                .sessions()
-                .stream(params, options)
-                .subscribe {
-                    events.add(it)
-                    action(it)
+        try {
+            if (async)
+                client
+                    .async()
+                    .beta()
+                    .agents()
+                    .sessions()
+                    .stream(params, options)
+                    .subscribe {
+                        events.add(it)
+                        action(it)
+                    }
+                    .onCompleteFuture()
+                    .get(completionTimeoutSeconds, TimeUnit.SECONDS)
+            else
+                client.beta().agents().sessions().stream(params, options).use {
+                    it.stream().forEach {
+                        events.add(it)
+                        action(it)
+                    }
                 }
-                .onCompleteFuture()
-                .get(completionTimeoutSeconds, TimeUnit.SECONDS)
-        else
-            client.beta().agents().sessions().stream(params, options).use {
-                it.stream().forEach {
-                    events.add(it)
-                    action(it)
-                }
-            }
-        assertThat(t.liveResponses.get()).isZero()
-        return events
+            assertThat(t.liveResponses.get()).isZero()
+            return events
+        } finally {
+            closeClient(client)
+        }
     }
 
     @ParameterizedTest
@@ -410,24 +456,34 @@ internal class AgentSessionStreamTest {
             Transport(
                 listOf(turn("created"), call(), call(id = "second"), turn("completed"), idle())
             )
-        val result = CompletableFuture<String>()
+        val resultCancelled = java.util.concurrent.CountDownLatch(1)
+        val result =
+            object : CompletableFuture<String>() {
+                override fun cancel(mayInterruptIfRunning: Boolean): Boolean =
+                    super.cancel(mayInterruptIfRunning).also { cancelled ->
+                        if (cancelled) resultCancelled.countDown()
+                    }
+            }
+        val handlerStarted = java.util.concurrent.CountDownLatch(1)
         val invoked = AtomicInteger()
         val p =
             params()
                 .asyncToolHandler("tool") {
                     invoked.incrementAndGet()
+                    handlerStarted.countDown()
                     result
                 }
                 .build()
         val stream = t.client().async().beta().agents().sessions().stream(p)
         val events = java.util.Collections.synchronizedList(mutableListOf<AgentSessionEvent>())
         stream.subscribe { events.add(it) }
-        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30)
-        while (invoked.get() == 0 && System.nanoTime() < deadline) Thread.yield()
+        assertThat(handlerStarted.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         assertThat(invoked.get()).isEqualTo(1)
         assertThat(events).hasSize(2)
         stream.onCompleteFuture().cancel(true)
+        assertThat(t.responseClosed.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         assertThat(t.streamClosed).isTrue()
+        assertThat(resultCancelled.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         assertThat(result.isCancelled).isTrue()
         assertThat(t.posts).hasSize(1)
     }
@@ -437,10 +493,10 @@ internal class AgentSessionStreamTest {
         val t = Transport().apply { deferredOpen = CompletableFuture() }
         val stream = t.client().async().beta().agents().sessions().stream(params().build())
         stream.subscribe { fail<Unit>("No events expected") }
-        assertThat(t.openStarted.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(t.openStarted.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         stream.close()
         t.deferredOpen!!.complete(t.response("", stream = true))
-        assertThat(t.responseClosed.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(t.responseClosed.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         assertThat(t.streamClosed).isTrue()
         assertThat(t.posts).isEmpty()
     }
@@ -464,7 +520,7 @@ internal class AgentSessionStreamTest {
                 else deferredInput = CompletableFuture()
             }
         val notifications = AtomicInteger()
-        val notified = java.util.concurrent.CountDownLatch(1)
+        val completion = CompletableFuture<java.util.Optional<Throwable>>()
         val stream = t.client().async().beta().agents().sessions().stream(params().build())
         stream.subscribe(
             object : AsyncStreamResponse.Handler<AgentSessionEvent> {
@@ -473,28 +529,26 @@ internal class AgentSessionStreamTest {
                 }
 
                 override fun onComplete(error: java.util.Optional<Throwable>) {
-                    assertThat(error).isEmpty()
                     notifications.incrementAndGet()
-                    notified.countDown()
+                    completion.complete(error)
                 }
             }
         )
         assertThat(
                 (if (stage == "retrieve") t.retrieveStarted else t.inputStarted).await(
-                    30,
+                    ASYNC_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS,
                 )
             )
             .isTrue()
         stream.close()
-        assertThat(notified.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(completion.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isEmpty()
         if (stage == "retrieve") t.deferredRetrieve!!.complete(t.response("""{"status":"idle"}"""))
         else {
             assertThat(t.streamClosed).isTrue()
             t.deferredInput!!.complete(t.inputResponse!!)
         }
-        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30)
-        while (t.liveResponses.get() != 0 && System.nanoTime() < deadline) Thread.yield()
+        t.awaitResponsesDrained()
         assertThat(t.liveResponses.get()).isZero()
         assertThat(notifications.get()).isEqualTo(1)
         assertThat(t.posts).hasSize(if (stage == "retrieve") 0 else 1)
@@ -534,9 +588,14 @@ internal class AgentSessionStreamTest {
             consumed = CompletableFuture.runAsync({ syncStream.stream().forEach {} }, executor)
         }
         try {
-            assertThat((if (async) t.inputStarted else t.postStarted).await(30, TimeUnit.SECONDS))
+            assertThat(
+                    (if (async) t.inputStarted else t.postStarted).await(
+                        ASYNC_TIMEOUT_SECONDS,
+                        TimeUnit.SECONDS,
+                    )
+                )
                 .isTrue()
-            executor.submit { stream.close() }.get(30, TimeUnit.SECONDS)
+            executor.submit { stream.close() }.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             assertThat(t.streamClosed).isTrue()
             assertThat(invoked.get()).isEqualTo(1)
             assertThat(t.posts).hasSize(2)
@@ -545,10 +604,9 @@ internal class AgentSessionStreamTest {
                 t.deferredInput!!.complete(t.inputResponse!!)
             } else {
                 t.releasePost.countDown()
-                consumed!!.get(30, TimeUnit.SECONDS)
+                consumed!!.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             }
-            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30)
-            while (t.liveResponses.get() != 0 && System.nanoTime() < deadline) Thread.yield()
+            t.awaitResponsesDrained()
             assertThat(t.liveResponses.get()).isZero()
             assertThat(invoked.get()).isEqualTo(1)
             assertThat(t.posts).hasSize(2)
@@ -556,14 +614,15 @@ internal class AgentSessionStreamTest {
             t.releasePost.countDown()
             stream.close()
             executor.shutdownNow()
-            client.close()
+            assertThat(executor.awaitTermination(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
+            closeClient(client)
         }
     }
 
     @Test
     fun closingHungOpenNotifiesSubscriberWithoutWaitingForNetwork() {
         val t = Transport().apply { deferredOpen = CompletableFuture() }
-        val completed = java.util.concurrent.CountDownLatch(1)
+        val completion = CompletableFuture<java.util.Optional<Throwable>>()
         val stream = t.client().async().beta().agents().sessions().stream(params().build())
         stream.subscribe(
             object : AsyncStreamResponse.Handler<AgentSessionEvent> {
@@ -572,17 +631,16 @@ internal class AgentSessionStreamTest {
                 }
 
                 override fun onComplete(error: java.util.Optional<Throwable>) {
-                    assertThat(error).isEmpty()
-                    completed.countDown()
+                    completion.complete(error)
                 }
             }
         )
-        assertThat(t.openStarted.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(t.openStarted.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         stream.close()
-        assertThat(completed.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(completion.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isEmpty()
         assertThat(t.deferredOpen!!.isDone).isFalse()
         t.deferredOpen!!.complete(t.response("", stream = true))
-        assertThat(t.responseClosed.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(t.responseClosed.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
     }
 
     @ParameterizedTest
@@ -738,11 +796,11 @@ internal class AgentSessionStreamTest {
                 .build()
         val stream = t.client().async().beta().agents().sessions().stream(p)
         stream.subscribe {}
-        assertThat(started.await(30, TimeUnit.SECONDS)).isTrue()
+        assertThat(started.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         assertThat(invoked.get()).isEqualTo(1)
         assertThat(t.posts).hasSize(1)
         result.complete("first")
-        stream.onCompleteFuture().get(30, TimeUnit.SECONDS)
+        stream.onCompleteFuture().get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         assertThat(invoked.get()).isEqualTo(2)
         assertThat(t.posts.drop(1).map { it.path("events").first().path("output").asText() })
             .containsExactly("first", "second")
@@ -841,14 +899,14 @@ internal class AgentSessionStreamTest {
     fun asyncCloseUnblocksReadWithoutReportingEofError() {
         val reading = java.util.concurrent.CountDownLatch(1)
         val released = java.util.concurrent.CountDownLatch(1)
-        val finished = java.util.concurrent.CountDownLatch(1)
+        val completion = CompletableFuture<java.util.Optional<Throwable>>()
         val t =
             Transport().apply {
                 streamBody =
                     object : java.io.InputStream() {
                         override fun read(): Int {
                             reading.countDown()
-                            check(released.await(30, TimeUnit.SECONDS))
+                            check(released.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS))
                             return -1
                         }
 
@@ -860,7 +918,6 @@ internal class AgentSessionStreamTest {
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
         try {
             val stream = t.client().async().beta().agents().sessions().stream(params().build())
-            var completionError: Throwable? = null
             stream.subscribe(
                 object : AsyncStreamResponse.Handler<AgentSessionEvent> {
                     override fun onNext(value: AgentSessionEvent) {
@@ -868,20 +925,19 @@ internal class AgentSessionStreamTest {
                     }
 
                     override fun onComplete(error: java.util.Optional<Throwable>) {
-                        completionError = error.orElse(null)
-                        finished.countDown()
+                        completion.complete(error)
                     }
                 },
                 executor,
             )
-            assertThat(reading.await(30, TimeUnit.SECONDS)).isTrue()
+            assertThat(reading.await(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
             stream.close()
-            assertThat(finished.await(30, TimeUnit.SECONDS)).isTrue()
-            assertThat(completionError).isNull()
+            assertThat(completion.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isEmpty()
             assertThat(t.streamClosed).isTrue()
         } finally {
             released.countDown()
             executor.shutdownNow()
+            assertThat(executor.awaitTermination(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         }
     }
 
@@ -911,7 +967,7 @@ internal class AgentSessionStreamTest {
                 val client = t.client()
                 val stream = client.async().beta().agents().sessions().stream(params().build())
                 val start = java.util.concurrent.CountDownLatch(1)
-                val notified = java.util.concurrent.CountDownLatch(1)
+                val completion = CompletableFuture<java.util.Optional<Throwable>>()
                 val notifications = AtomicInteger()
                 val callback =
                     object : AsyncStreamResponse.Handler<AgentSessionEvent> {
@@ -921,7 +977,7 @@ internal class AgentSessionStreamTest {
 
                         override fun onComplete(error: java.util.Optional<Throwable>) {
                             notifications.incrementAndGet()
-                            notified.countDown()
+                            completion.complete(error)
                         }
                     }
                 try {
@@ -947,10 +1003,11 @@ internal class AgentSessionStreamTest {
                             threads,
                         )
                     start.countDown()
-                    val accepted = subscribing.get(30, TimeUnit.SECONDS)
-                    closing.get(30, TimeUnit.SECONDS)
+                    val accepted = subscribing.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    closing.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     if (accepted) {
-                        assertThat(notified.await(30, TimeUnit.SECONDS)).isTrue()
+                        assertThat(completion.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                            .isEmpty()
                         assertThat(notifications.get()).isEqualTo(1)
                     }
                     assertThat(stream.onCompleteFuture().isDone).isTrue()
@@ -959,11 +1016,12 @@ internal class AgentSessionStreamTest {
                     assertThat(t.posts).isEmpty()
                 } finally {
                     stream.close()
-                    client.close()
+                    closeClient(client)
                 }
             }
         } finally {
             threads.shutdownNow()
+            assertThat(threads.awaitTermination(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
         }
     }
 
