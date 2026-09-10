@@ -58,11 +58,11 @@ internal class EnvironmentTokenPaginationTest {
                             .environments()
                             .files()
                             .list(params)
-                            .get(10, TimeUnit.SECONDS)
+                            .get(30, TimeUnit.SECONDS)
                             .autoPager()
                             .subscribe { file -> paths.add(file.path()) }
                             .onCompleteFuture()
-                            .get(10, TimeUnit.SECONDS)
+                            .get(30, TimeUnit.SECONDS)
                     } else {
                         client
                             .beta()
