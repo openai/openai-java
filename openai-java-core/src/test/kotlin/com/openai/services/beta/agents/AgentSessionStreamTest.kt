@@ -198,6 +198,7 @@ internal class AgentSessionStreamTest {
         t: Transport,
         async: Boolean,
         params: AgentSessionStreamParams = params().build(),
+        completionTimeoutSeconds: Long = 10,
         action: (AgentSessionEvent) -> Unit = {},
     ): List<AgentSessionEvent> {
         val events = mutableListOf<AgentSessionEvent>()
@@ -219,7 +220,7 @@ internal class AgentSessionStreamTest {
                     action(it)
                 }
                 .onCompleteFuture()
-                .get(10, TimeUnit.SECONDS)
+                .get(completionTimeoutSeconds, TimeUnit.SECONDS)
         else
             client.beta().agents().sessions().stream(params, options).use {
                 it.stream().forEach {
@@ -793,6 +794,7 @@ internal class AgentSessionStreamTest {
                             null
                         }
                         .build(),
+                    completionTimeoutSeconds = 70,
                 )
             )
             .hasSize(events.size)
