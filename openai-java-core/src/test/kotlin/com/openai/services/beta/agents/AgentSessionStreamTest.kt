@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.ValueSource
 internal class AgentSessionStreamTest {
     private companion object {
         const val ASYNC_TIMEOUT_SECONDS = 30L
+        const val NON_BLOCKING_CLOSE_TIMEOUT_SECONDS = 1L
     }
 
     private val mapper = jsonMapper()
@@ -595,7 +596,9 @@ internal class AgentSessionStreamTest {
                     )
                 )
                 .isTrue()
-            executor.submit { stream.close() }.get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            executor
+                .submit { stream.close() }
+                .get(NON_BLOCKING_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             assertThat(t.streamClosed).isTrue()
             assertThat(invoked.get()).isEqualTo(1)
             assertThat(t.posts).hasSize(2)
