@@ -143,7 +143,7 @@ private constructor(
 
         /**
          * The embedding vector. The length of vector depends on the model as listed in the
-         * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         * [embedding guide](https://developers.openai.com/api/docs/guides/embeddings).
          */
         fun embedding(embedding: EmbeddingValue) = embedding(JsonField.of(embedding))
 
