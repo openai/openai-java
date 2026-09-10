@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.1](https://github.com/openai/openai-java/compare/v4.63.0...v4.63.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* allow longer timeout for large Agents stream test ([#995](https://github.com/openai/openai-java/issues/995)) ([e2ac169](https://github.com/openai/openai-java/commit/e2ac1691d0b313582de19ca688822ef0e1ee31b0))
+
 ## [4.63.0](https://github.com/openai/openai-java/compare/v4.62.0...v4.63.0) (2026-09-10)
 
 
