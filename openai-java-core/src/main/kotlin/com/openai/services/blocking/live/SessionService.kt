@@ -30,7 +30,13 @@ interface SessionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService
 
-    /** Accept an incoming SIP call with Live startup configuration. */
+    /**
+     * Accept an incoming SIP call. Supply session with type live, the model, and startup
+     * configuration. Before accepting calls, follow the
+     * [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) to write
+     * frontend conversation instructions and a separate backend prompt. SIP media format is
+     * negotiated; omit audio.format.
+     */
     fun accept(sessionId: String, params: SessionAcceptParams) =
         accept(sessionId, params, RequestOptions.none())
 
@@ -105,7 +111,7 @@ interface SessionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SessionForkResponse
 
-    /** Hang up a Live session. */
+    /** End a SIP call identified by session_id. */
     fun hangup(sessionId: String) = hangup(sessionId, SessionHangupParams.none())
 
     /** @see hangup */
@@ -129,7 +135,10 @@ interface SessionService {
     fun hangup(sessionId: String, requestOptions: RequestOptions) =
         hangup(sessionId, SessionHangupParams.none(), requestOptions)
 
-    /** Transfer a Live SIP call to another destination. */
+    /**
+     * Transfer a SIP call to another destination. Supply a nonblank target_uri for the SIP Refer-To
+     * header.
+     */
     fun refer(sessionId: String, params: SessionReferParams) =
         refer(sessionId, params, RequestOptions.none())
 
@@ -146,7 +155,9 @@ interface SessionService {
     /** @see refer */
     fun refer(params: SessionReferParams, requestOptions: RequestOptions = RequestOptions.none())
 
-    /** Reject an incoming SIP call. */
+    /**
+     * Reject an incoming SIP call. Send a required SIP rejection status_code between 300 and 699.
+     */
     fun reject(sessionId: String, params: SessionRejectParams) =
         reject(sessionId, params, RequestOptions.none())
 

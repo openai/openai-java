@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AgentService
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.ResponseService
@@ -22,6 +23,8 @@ interface BetaService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService
+
+    fun agents(): AgentService
 
     fun responses(): ResponseService
 
@@ -43,6 +46,8 @@ interface BetaService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
+
+        fun agents(): AgentService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
 

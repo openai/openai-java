@@ -3,6 +3,8 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AgentService
+import com.openai.services.blocking.beta.AgentServiceImpl
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.AssistantServiceImpl
 import com.openai.services.blocking.beta.ChatKitService
@@ -19,6 +21,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
         WithRawResponseImpl(clientOptions)
     }
 
+    private val agents: AgentService by lazy { AgentServiceImpl(clientOptions) }
+
     private val responses: ResponseService by lazy { ResponseServiceImpl(clientOptions) }
 
     private val chatkit: ChatKitService by lazy { ChatKitServiceImpl(clientOptions) }
@@ -31,6 +35,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
         BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun agents(): AgentService = agents
 
     override fun responses(): ResponseService = responses
 
@@ -45,6 +51,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaService.WithRawResponse {
+
+        private val agents: AgentService.WithRawResponse by lazy {
+            AgentServiceImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val responses: ResponseService.WithRawResponse by lazy {
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
@@ -68,6 +78,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
             BetaServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun agents(): AgentService.WithRawResponse = agents
 
         override fun responses(): ResponseService.WithRawResponse = responses
 

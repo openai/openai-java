@@ -3,6 +3,7 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.beta.AgentServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.ResponseServiceAsync
@@ -22,6 +23,8 @@ interface BetaServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync
+
+    fun agents(): AgentServiceAsync
 
     fun responses(): ResponseServiceAsync
 
@@ -43,6 +46,8 @@ interface BetaServiceAsync {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync.WithRawResponse
+
+        fun agents(): AgentServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
 

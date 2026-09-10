@@ -3,6 +3,8 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.beta.AgentServiceAsync
+import com.openai.services.async.beta.AgentServiceAsyncImpl
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsyncImpl
 import com.openai.services.async.beta.ChatKitServiceAsync
@@ -20,6 +22,8 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
         WithRawResponseImpl(clientOptions)
     }
 
+    private val agents: AgentServiceAsync by lazy { AgentServiceAsyncImpl(clientOptions) }
+
     private val responses: ResponseServiceAsync by lazy { ResponseServiceAsyncImpl(clientOptions) }
 
     private val chatkit: ChatKitServiceAsync by lazy { ChatKitServiceAsyncImpl(clientOptions) }
@@ -35,6 +39,8 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync =
         BetaServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun agents(): AgentServiceAsync = agents
+
     override fun responses(): ResponseServiceAsync = responses
 
     override fun chatkit(): ChatKitServiceAsync = chatkit
@@ -48,6 +54,10 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaServiceAsync.WithRawResponse {
+
+        private val agents: AgentServiceAsync.WithRawResponse by lazy {
+            AgentServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val responses: ResponseServiceAsync.WithRawResponse by lazy {
             ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -71,6 +81,8 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
             BetaServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun agents(): AgentServiceAsync.WithRawResponse = agents
 
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 
