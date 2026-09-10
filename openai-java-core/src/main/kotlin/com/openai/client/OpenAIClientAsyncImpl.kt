@@ -34,6 +34,8 @@ import com.openai.services.async.GraderServiceAsync
 import com.openai.services.async.GraderServiceAsyncImpl
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ImageServiceAsyncImpl
+import com.openai.services.async.LiveServiceAsync
+import com.openai.services.async.LiveServiceAsyncImpl
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModelServiceAsyncImpl
 import com.openai.services.async.ModerationServiceAsync
@@ -143,6 +145,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         ResponseServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val live: LiveServiceAsync by lazy { LiveServiceAsyncImpl(clientOptionsWithUserAgent) }
+
     private val realtime: RealtimeServiceAsync by lazy {
         RealtimeServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -227,6 +231,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun admin(): AdminServiceAsync = admin
 
     override fun responses(): ResponseServiceAsync = responses
+
+    override fun live(): LiveServiceAsync = live
 
     override fun realtime(): RealtimeServiceAsync = realtime
 
@@ -324,6 +330,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val live: LiveServiceAsync.WithRawResponse by lazy {
+            LiveServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val realtime: RealtimeServiceAsync.WithRawResponse by lazy {
             RealtimeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -410,6 +420,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun admin(): AdminServiceAsync.WithRawResponse = admin
 
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
+
+        override fun live(): LiveServiceAsync.WithRawResponse = live
 
         override fun realtime(): RealtimeServiceAsync.WithRawResponse = realtime
 

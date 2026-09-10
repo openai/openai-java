@@ -37,6 +37,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -91,6 +92,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -145,6 +147,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -199,6 +202,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -253,6 +257,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -307,6 +312,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -361,6 +367,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -415,6 +422,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -469,6 +477,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).contains(fineTuningJobFailed)
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -523,6 +532,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).contains(fineTuningJobSucceeded)
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -587,6 +597,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).contains(liveCallIncoming)
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -616,6 +627,81 @@ internal class UnwrapWebhookEventTest {
                             .build()
                     )
                     .object_(LiveCallIncomingWebhookEvent.Object.EVENT)
+                    .build()
+            )
+
+        val roundtrippedUnwrapWebhookEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(unwrapWebhookEvent),
+                jacksonTypeRef<UnwrapWebhookEvent>(),
+            )
+
+        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
+    }
+
+    @Test
+    fun ofLiveTransportIncoming() {
+        val liveTransportIncoming =
+            LiveTransportIncomingWebhookEvent.builder()
+                .id("id")
+                .createdAt(0L)
+                .data(
+                    LiveTransportIncomingWebhookEvent.Data.builder()
+                        .sessionId("session_id")
+                        .addSipHeader(
+                            LiveTransportIncomingWebhookEvent.Data.SipHeader.builder()
+                                .name("name")
+                                .value("value")
+                                .build()
+                        )
+                        .build()
+                )
+                .object_(LiveTransportIncomingWebhookEvent.Object.EVENT)
+                .build()
+
+        val unwrapWebhookEvent = UnwrapWebhookEvent.ofLiveTransportIncoming(liveTransportIncoming)
+
+        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
+        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
+        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
+        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
+        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
+        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
+        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
+        assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).contains(liveTransportIncoming)
+        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
+        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
+        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
+        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyAlertCreated()).isEmpty
+        assertThat(unwrapWebhookEvent.safetyOrgAlertCreated()).isEmpty
+    }
+
+    @Test
+    fun ofLiveTransportIncomingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val unwrapWebhookEvent =
+            UnwrapWebhookEvent.ofLiveTransportIncoming(
+                LiveTransportIncomingWebhookEvent.builder()
+                    .id("id")
+                    .createdAt(0L)
+                    .data(
+                        LiveTransportIncomingWebhookEvent.Data.builder()
+                            .sessionId("session_id")
+                            .addSipHeader(
+                                LiveTransportIncomingWebhookEvent.Data.SipHeader.builder()
+                                    .name("name")
+                                    .value("value")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .object_(LiveTransportIncomingWebhookEvent.Object.EVENT)
                     .build()
             )
 
@@ -661,6 +747,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).contains(realtimeCallIncoming)
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -725,6 +812,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).contains(responseCancelled)
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -779,6 +867,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).contains(responseCompleted)
@@ -833,6 +922,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -887,6 +977,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -944,6 +1035,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
@@ -1004,6 +1096,7 @@ internal class UnwrapWebhookEventTest {
         assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
         assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
         assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
+        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
         assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
