@@ -13,6 +13,8 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.skills.content.ContentRetrieveParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -71,8 +73,10 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response -> errorHandler.handle(response) }
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response -> errorHandler.handle(response) }
         }
     }
 }

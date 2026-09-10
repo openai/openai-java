@@ -18,6 +18,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.beta.chatkit.sessions.SessionCancelParams
 import com.openai.models.beta.chatkit.sessions.SessionCreateParams
 import com.openai.models.beta.chatkit.threads.ChatSession
@@ -48,14 +50,18 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatSession> =
         // post /chatkit/sessions
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun cancel(
         params: SessionCancelParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ChatSession> =
         // post /chatkit/sessions/{session_id}/cancel
-        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().cancel(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SessionServiceAsync.WithRawResponse {
@@ -92,8 +98,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -131,8 +139,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }

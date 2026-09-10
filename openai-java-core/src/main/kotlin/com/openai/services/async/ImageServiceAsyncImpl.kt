@@ -25,6 +25,8 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageEditStreamEvent
@@ -52,14 +54,18 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/variations
-        withRawResponse().createVariation(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().createVariation(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/edits
-        withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().edit(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun editStreaming(
         params: ImageEditParams,
@@ -68,7 +74,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // post /images/edits
         withRawResponse()
             .editStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun generate(
@@ -76,7 +82,9 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/generations
-        withRawResponse().generate(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().generate(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun generateStreaming(
         params: ImageGenerateParams,
@@ -85,7 +93,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // post /images/generations
         withRawResponse()
             .generateStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApplyPropagatingCancellation { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -122,8 +130,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createVariationHandler.handle(it) }
@@ -157,8 +167,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { editHandler.handle(it) }
@@ -198,8 +210,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { editStreamingHandler.handle(it) }
@@ -235,8 +249,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { generateHandler.handle(it) }
@@ -280,8 +296,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { generateStreamingHandler.handle(it) }

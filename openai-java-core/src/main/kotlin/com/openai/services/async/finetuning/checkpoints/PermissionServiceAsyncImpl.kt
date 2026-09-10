@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageAsync
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
@@ -49,7 +51,9 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionCreatePageAsync> =
         // post /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     @Deprecated("Retrieve is deprecated. Please swap to the paginated list method instead.")
     override fun retrieve(
@@ -57,21 +61,27 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionRetrieveResponse> =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: PermissionListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionListPageAsync> =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun delete(
         params: PermissionDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionDeleteResponse> =
         // delete /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}
-        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().delete(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         PermissionServiceAsync.WithRawResponse {
@@ -115,8 +125,10 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -166,8 +178,10 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -208,8 +222,10 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -260,8 +276,10 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }

@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.admin.organization.projects.hostedtoolpermissions.HostedToolPermissionRetrieveParams
 import com.openai.models.admin.organization.projects.hostedtoolpermissions.HostedToolPermissionUpdateParams
 import com.openai.models.admin.organization.projects.hostedtoolpermissions.ProjectHostedToolPermissions
@@ -46,14 +48,18 @@ internal constructor(private val clientOptions: ClientOptions) : HostedToolPermi
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectHostedToolPermissions> =
         // get /organization/projects/{project_id}/hosted_tool_permissions
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun update(
         params: HostedToolPermissionUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ProjectHostedToolPermissions> =
         // post /organization/projects/{project_id}/hosted_tool_permissions
-        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().update(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         HostedToolPermissionServiceAsync.WithRawResponse {
@@ -96,8 +102,10 @@ internal constructor(private val clientOptions: ClientOptions) : HostedToolPermi
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -139,8 +147,10 @@ internal constructor(private val clientOptions: ClientOptions) : HostedToolPermi
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }

@@ -17,6 +17,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.finetuning.jobs.FineTuningJob
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
@@ -60,49 +62,63 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
         requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> =
         // post /fine_tuning/jobs
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun retrieve(
         params: JobRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> =
         // get /fine_tuning/jobs/{fine_tuning_job_id}
-        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().retrieve(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun list(
         params: JobListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<JobListPageAsync> =
         // get /fine_tuning/jobs
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun cancel(
         params: JobCancelParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> =
         // post /fine_tuning/jobs/{fine_tuning_job_id}/cancel
-        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().cancel(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun listEvents(
         params: JobListEventsParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<JobListEventsPageAsync> =
         // get /fine_tuning/jobs/{fine_tuning_job_id}/events
-        withRawResponse().listEvents(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().listEvents(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun pause(
         params: JobPauseParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> =
         // post /fine_tuning/jobs/{fine_tuning_job_id}/pause
-        withRawResponse().pause(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().pause(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     override fun resume(
         params: JobResumeParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> =
         // post /fine_tuning/jobs/{fine_tuning_job_id}/resume
-        withRawResponse().resume(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().resume(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         JobServiceAsync.WithRawResponse {
@@ -145,8 +161,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -182,8 +200,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
@@ -216,8 +236,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
@@ -262,8 +284,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
@@ -299,8 +323,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listEventsHandler.handle(it) }
@@ -345,8 +371,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { pauseHandler.handle(it) }
@@ -383,8 +411,10 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { resumeHandler.handle(it) }

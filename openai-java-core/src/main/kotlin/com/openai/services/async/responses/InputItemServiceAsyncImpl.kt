@@ -16,6 +16,8 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.responses.inputitems.InputItemListPageAsync
 import com.openai.models.responses.inputitems.InputItemListParams
 import com.openai.models.responses.inputitems.ResponseItemList
@@ -40,7 +42,9 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
         requestOptions: RequestOptions,
     ): CompletableFuture<InputItemListPageAsync> =
         // get /responses/{response_id}/input_items
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         InputItemServiceAsync.WithRawResponse {
@@ -78,8 +82,10 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }

@@ -16,6 +16,8 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageAsync
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageResponse
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
@@ -41,7 +43,9 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<CheckpointListPageAsync> =
         // get /fine_tuning/jobs/{fine_tuning_job_id}/checkpoints
-        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().list(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CheckpointServiceAsync.WithRawResponse {
@@ -79,8 +83,10 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }

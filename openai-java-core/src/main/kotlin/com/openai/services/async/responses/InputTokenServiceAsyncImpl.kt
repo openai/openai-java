@@ -16,6 +16,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.thenApplyPropagatingCancellation
+import com.openai.core.thenComposeAsyncPropagatingCancellation
 import com.openai.models.responses.inputtokens.InputTokenCountParams
 import com.openai.models.responses.inputtokens.InputTokenCountResponse
 import java.util.concurrent.CompletableFuture
@@ -38,7 +40,9 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
         requestOptions: RequestOptions,
     ): CompletableFuture<InputTokenCountResponse> =
         // post /responses/input_tokens
-        withRawResponse().count(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().count(params, requestOptions).thenApplyPropagatingCancellation {
+            it.parse()
+        }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         InputTokenServiceAsync.WithRawResponse {
@@ -74,8 +78,10 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .thenComposeAsyncPropagatingCancellation {
+                    clientOptions.httpClient.executeAsync(it, requestOptions)
+                }
+                .thenApplyPropagatingCancellation { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { countHandler.handle(it) }
