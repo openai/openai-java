@@ -20,7 +20,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Reject an incoming SIP call. */
+/** Reject an incoming SIP call. Send a required SIP rejection status_code between 300 and 699. */
 class SessionRejectParams
 private constructor(
     private val sessionId: String?,

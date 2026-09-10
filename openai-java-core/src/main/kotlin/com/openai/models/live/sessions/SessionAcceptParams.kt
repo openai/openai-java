@@ -39,7 +39,13 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Accept an incoming SIP call with Live startup configuration. */
+/**
+ * Accept an incoming SIP call. Supply session with type live, the model, and startup configuration.
+ * Before accepting calls, follow the
+ * [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) to write
+ * frontend conversation instructions and a separate backend prompt. SIP media format is negotiated;
+ * omit audio.format.
+ */
 class SessionAcceptParams
 private constructor(
     private val sessionId: String?,

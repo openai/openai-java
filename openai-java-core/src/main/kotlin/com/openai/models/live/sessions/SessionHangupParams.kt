@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Hang up a Live session. */
+/** End a SIP call identified by session_id. */
 class SessionHangupParams
 private constructor(
     private val sessionId: String?,

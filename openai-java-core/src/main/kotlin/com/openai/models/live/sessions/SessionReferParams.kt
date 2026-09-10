@@ -20,7 +20,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Transfer a Live SIP call to another destination. */
+/**
+ * Transfer a SIP call to another destination. Supply a nonblank target_uri for the SIP Refer-To
+ * header.
+ */
 class SessionReferParams
 private constructor(
     private val sessionId: String?,
