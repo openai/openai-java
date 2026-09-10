@@ -1,0 +1,216 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.live
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
+import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/**
+ * Mute audio input to the Live model without closing the session. The server acknowledges with
+ * `session.input_audio.muted`.
+ */
+class InputAudioMuteEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
+private constructor(
+    private val type: JsonValue,
+    private val eventId: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
+) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
+    ) : this(type, eventId, mutableMapOf())
+
+    /**
+     * The Live client event type. Always `session.input_audio.mute`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("session.input_audio.mute")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * Optional client identifier for correlating this command with a server event's client_event_id
+     * or error.client_event_id.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the raw JSON value of [eventId].
+     *
+     * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
+    @JsonAnyGetter
+    @ExcludeMissing
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /** Returns a mutable builder for constructing an instance of [InputAudioMuteEvent]. */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [InputAudioMuteEvent]. */
+    class Builder internal constructor() {
+
+        private var type: JsonValue = JsonValue.from("session.input_audio.mute")
+        private var eventId: JsonField<String> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        @JvmSynthetic
+        internal fun from(inputAudioMuteEvent: InputAudioMuteEvent) = apply {
+            type = inputAudioMuteEvent.type
+            eventId = inputAudioMuteEvent.eventId
+            additionalProperties = inputAudioMuteEvent.additionalProperties.toMutableMap()
+        }
+
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("session.input_audio.mute")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun type(type: JsonValue) = apply { this.type = type }
+
+        /**
+         * Optional client identifier for correlating this command with a server event's
+         * client_event_id or error.client_event_id.
+         */
+        fun eventId(eventId: String?) = eventId(JsonField.ofNullable(eventId))
+
+        /** Alias for calling [Builder.eventId] with `eventId.orElse(null)`. */
+        fun eventId(eventId: Optional<String>) = eventId(eventId.getOrNull())
+
+        /**
+         * Sets [Builder.eventId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.eventId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [InputAudioMuteEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): InputAudioMuteEvent =
+            InputAudioMuteEvent(type, eventId, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    /**
+     * Validates that the types of all values in this object match their expected types recursively.
+     *
+     * This method is _not_ forwards compatible with new types from the API for existing fields.
+     *
+     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+     *   expected type.
+     */
+    fun validate(): InputAudioMuteEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        _type().let {
+            if (it != JsonValue.from("session.input_audio.mute")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        eventId()
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        type.let { if (it == JsonValue.from("session.input_audio.mute")) 1 else 0 } +
+            (if (eventId.asKnown().isPresent) 1 else 0)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is InputAudioMuteEvent &&
+            type == other.type &&
+            eventId == other.eventId &&
+            additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy { Objects.hash(type, eventId, additionalProperties) }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() =
+        "InputAudioMuteEvent{type=$type, eventId=$eventId, additionalProperties=$additionalProperties}"
+}

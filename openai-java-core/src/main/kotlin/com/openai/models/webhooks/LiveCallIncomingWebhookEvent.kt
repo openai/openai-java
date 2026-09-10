@@ -21,10 +21,12 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Sent when an incoming API SIP session is available for Live acceptance. The same pending session
- * can also emit `realtime.call.incoming`; the first successful Realtime or Live accept endpoint
- * selects the runtime surface.
+ * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during migration;
+ * new subscriptions to this event are not allowed. Sent when an incoming API SIP session is
+ * available for Live acceptance. The same pending session can also emit `realtime.call.incoming`;
+ * the first successful Realtime or Live accept endpoint selects the runtime surface.
  */
+@Deprecated("deprecated")
 class LiveCallIncomingWebhookEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -335,8 +337,9 @@ private constructor(
         ) : this(sessionId, sipHeaders, mutableMapOf())
 
         /**
-         * The `live_...` ID of the pending SIP session. Forward this value unchanged when accepting
-         * or rejecting the call through the Live API.
+         * The `live_...` ID of the pending SIP session. Pass this value unchanged to Live call
+         * controls and sideband connections. The corresponding `realtime.call.incoming` event uses
+         * a separate `rtc_...` call ID.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -409,8 +412,9 @@ private constructor(
             }
 
             /**
-             * The `live_...` ID of the pending SIP session. Forward this value unchanged when
-             * accepting or rejecting the call through the Live API.
+             * The `live_...` ID of the pending SIP session. Pass this value unchanged to Live call
+             * controls and sideband connections. The corresponding `realtime.call.incoming` event
+             * uses a separate `rtc_...` call ID.
              */
             fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
 

@@ -18,6 +18,7 @@ import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FineTuningServiceAsync
 import com.openai.services.async.GraderServiceAsync
 import com.openai.services.async.ImageServiceAsync
+import com.openai.services.async.LiveServiceAsync
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.RealtimeServiceAsync
@@ -121,6 +122,8 @@ interface OpenAIClientAsync {
 
     fun responses(): ResponseServiceAsync
 
+    fun live(): LiveServiceAsync
+
     fun realtime(): RealtimeServiceAsync
 
     /** Manage conversations and conversation items. */
@@ -214,6 +217,8 @@ interface OpenAIClientAsync {
         fun admin(): AdminServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
+
+        fun live(): LiveServiceAsync.WithRawResponse
 
         fun realtime(): RealtimeServiceAsync.WithRawResponse
 
