@@ -198,13 +198,15 @@ internal class AgentSessionStreamTest {
         t: Transport,
         async: Boolean,
         params: AgentSessionStreamParams = params().build(),
-        requestTimeout: Duration = Duration.ofSeconds(9),
         completionTimeoutSeconds: Long = 10,
         action: (AgentSessionEvent) -> Unit = {},
     ): List<AgentSessionEvent> {
         val events = mutableListOf<AgentSessionEvent>()
         val options =
-            RequestOptions.builder().timeout(requestTimeout).responseValidation(false).build()
+            RequestOptions.builder()
+                .timeout(Duration.ofSeconds(9))
+                .responseValidation(false)
+                .build()
         val client = t.client()
         if (async)
             client
@@ -792,7 +794,6 @@ internal class AgentSessionStreamTest {
                             null
                         }
                         .build(),
-                    requestTimeout = Duration.ofSeconds(60),
                     completionTimeoutSeconds = 70,
                 )
             )
