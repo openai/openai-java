@@ -3,6 +3,8 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AgentService
+import com.openai.services.blocking.beta.AgentServiceImpl
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.AssistantServiceImpl
 import com.openai.services.blocking.beta.ChatKitService
@@ -23,6 +25,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     private val realtime: RealtimeService by lazy { RealtimeServiceImpl(clientOptions) }
 
+    private val agents: AgentService by lazy { AgentServiceImpl(clientOptions) }
+
     private val responses: ResponseService by lazy { ResponseServiceImpl(clientOptions) }
 
     private val chatkit: ChatKitService by lazy { ChatKitServiceImpl(clientOptions) }
@@ -41,6 +45,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     )
     override fun realtime(): RealtimeService = realtime
 
+    override fun agents(): AgentService = agents
+
     override fun responses(): ResponseService = responses
 
     override fun chatkit(): ChatKitService = chatkit
@@ -57,6 +63,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val realtime: RealtimeService.WithRawResponse by lazy {
             RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val agents: AgentService.WithRawResponse by lazy {
+            AgentServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val responses: ResponseService.WithRawResponse by lazy {
@@ -86,6 +96,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         override fun realtime(): RealtimeService.WithRawResponse = realtime
+
+        override fun agents(): AgentService.WithRawResponse = agents
 
         override fun responses(): ResponseService.WithRawResponse = responses
 

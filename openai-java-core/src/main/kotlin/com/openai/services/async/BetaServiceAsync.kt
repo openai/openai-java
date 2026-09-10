@@ -3,6 +3,7 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.beta.AgentServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsync
@@ -29,6 +30,8 @@ interface BetaServiceAsync {
     )
     fun realtime(): RealtimeServiceAsync
 
+    fun agents(): AgentServiceAsync
+
     fun responses(): ResponseServiceAsync
 
     fun chatkit(): ChatKitServiceAsync
@@ -54,6 +57,8 @@ interface BetaServiceAsync {
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         fun realtime(): RealtimeServiceAsync.WithRawResponse
+
+        fun agents(): AgentServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
 
