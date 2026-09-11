@@ -4,10 +4,90 @@ package com.openai.models.admin.organization.usage
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class UsageCostsResponseTest {
+
+    @Test
+    fun parsesStringEncodedCostAmounts() {
+        val response =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "data": [
+                        {
+                          "end_time": 1,
+                          "results": [
+                            {
+                              "object": "organization.costs.result",
+                              "amount": {"value": "0E-6176", "currency": "usd"}
+                            },
+                            {
+                              "object": "organization.costs.result",
+                              "amount": {
+                                "value": "0.003627500000000000000000000000000000",
+                                "currency": "usd"
+                              }
+                            }
+                          ],
+                          "start_time": 0
+                        }
+                      ],
+                      "has_more": false,
+                      "object": "page"
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<UsageCostsResponse>(),
+                )
+
+        val amounts =
+            response.data().single().results().map {
+                it.asOrganizationCosts().amount().get().value().get()
+            }
+
+        assertThat(amounts).containsExactly(0.0, 0.0036275)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["not-a-number", "1f", "0x1.0p0", " 1 ", "01", "+1"])
+    fun rejectsInvalidStringEncodedCostAmount(invalidValue: String) {
+        val response =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "data": [
+                        {
+                          "end_time": 1,
+                          "results": [
+                            {
+                              "object": "organization.costs.result",
+                              "amount": {"value": "$invalidValue", "currency": "usd"}
+                            }
+                          ],
+                          "start_time": 0
+                        }
+                      ],
+                      "has_more": false,
+                      "object": "page"
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<UsageCostsResponse>(),
+                )
+
+        val amount =
+            response.data().single().results().single().asOrganizationCosts().amount().get()
+
+        assertThatThrownBy { amount.value() }.isInstanceOf(OpenAIInvalidDataException::class.java)
+    }
 
     @Test
     fun create() {
