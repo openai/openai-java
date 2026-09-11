@@ -3,6 +3,7 @@
 package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -10,10 +11,15 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionDiarizedTest {
 
     @Test
+    fun durationGetterKeepsItsBinaryCompatibleReturnType() {
+        assertThat(TranscriptionDiarized::class.java.getMethod("duration").returnType)
+            .isEqualTo(Double::class.javaPrimitiveType)
+    }
+
+    @Test
     fun create() {
         val transcriptionDiarized =
             TranscriptionDiarized.builder()
-                .duration(0.0)
                 .addSegment(
                     TranscriptionDiarizedSegment.builder()
                         .id("id")
@@ -39,7 +45,7 @@ internal class TranscriptionDiarizedTest {
                 )
                 .build()
 
-        assertThat(transcriptionDiarized.duration()).isEqualTo(0.0)
+        assertThat(transcriptionDiarized.durationOptional()).isEmpty
         assertThat(transcriptionDiarized.segments())
             .containsExactly(
                 TranscriptionDiarizedSegment.builder()
@@ -67,6 +73,112 @@ internal class TranscriptionDiarizedTest {
                         .build()
                 )
             )
+    }
+
+    @Test
+    fun deserializeWithoutOptionalFields() {
+        val transcriptionDiarized =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "text": "text",
+                      "segments": [
+                        {
+                          "type": "transcript.text.segment",
+                          "id": "id",
+                          "end": 1.0,
+                          "speaker": "speaker",
+                          "start": 0.0,
+                          "text": "text"
+                        }
+                      ]
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionDiarized>(),
+                )
+
+        assertThat(transcriptionDiarized.durationOptional()).isEmpty
+        assertThat(transcriptionDiarized.isValid()).isTrue()
+    }
+
+    @Test
+    fun rejectsInvalidDuration() {
+        val transcriptionDiarized =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "duration": "invalid",
+                      "text": "text",
+                      "segments": [
+                        {
+                          "type": "transcript.text.segment",
+                          "id": "id",
+                          "end": 1.0,
+                          "speaker": "speaker",
+                          "start": 0.0,
+                          "text": "text"
+                        }
+                      ]
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionDiarized>(),
+                )
+
+        assertThat(transcriptionDiarized.isValid()).isFalse()
+    }
+
+    @Test
+    fun rejectsUnexpectedTask() {
+        val transcriptionDiarized =
+            TranscriptionDiarized.builder()
+                .addSegment(
+                    TranscriptionDiarizedSegment.builder()
+                        .id("id")
+                        .end(1.0)
+                        .speaker("speaker")
+                        .start(0.0)
+                        .text("text")
+                        .build()
+                )
+                .task(JsonValue.from("translate"))
+                .text("text")
+                .build()
+
+        assertThat(transcriptionDiarized.isValid()).isFalse()
+    }
+
+    @Test
+    fun acceptsMissingAndNullTask() {
+        val json =
+            """
+            {
+              "text": "text",
+              %s
+              "segments": []
+            }
+            """
+                .trimIndent()
+
+        val missingTask =
+            jsonMapper().readValue(json.format(""), jacksonTypeRef<TranscriptionDiarized>())
+        val nullTask =
+            jsonMapper()
+                .readValue(json.format("\"task\": null,"), jacksonTypeRef<TranscriptionDiarized>())
+        val explicitTask =
+            jsonMapper()
+                .readValue(
+                    json.format("\"task\": \"transcribe\","),
+                    jacksonTypeRef<TranscriptionDiarized>(),
+                )
+
+        assertThat(missingTask.isValid()).isTrue()
+        assertThat(nullTask.isValid()).isTrue()
+        assertThat(missingTask.validity()).isEqualTo(nullTask.validity())
+        assertThat(explicitTask.validity()).isEqualTo(missingTask.validity() + 1)
     }
 
     @Test
@@ -107,5 +219,7 @@ internal class TranscriptionDiarizedTest {
             )
 
         assertThat(roundtrippedTranscriptionDiarized).isEqualTo(transcriptionDiarized)
+        assertThat(roundtrippedTranscriptionDiarized.duration()).isEqualTo(0.0)
+        assertThat(roundtrippedTranscriptionDiarized.durationOptional()).contains(0.0)
     }
 }
