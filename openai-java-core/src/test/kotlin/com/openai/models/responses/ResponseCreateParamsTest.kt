@@ -15,6 +15,15 @@ import org.junit.jupiter.api.Test
 internal class ResponseCreateParamsTest {
 
     @Test
+    fun metadataPropertyUsesAStringJsonValue() {
+        val metadata =
+            ResponseCreateParams.Metadata.builder().putProperty("someNumericId", "123").build()
+
+        assertThat(metadata._additionalProperties())
+            .containsEntry("someNumericId", JsonValue.from("123"))
+    }
+
+    @Test
     fun create() {
         ResponseCreateParams.builder()
             .background(true)
