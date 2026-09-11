@@ -51,7 +51,7 @@ The SDK's primary artifacts are:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
+  - Uses [OkHttp's HTTP URL builder](https://lysine.dev/okhttp/) for shared URL construction, while allowing any HTTP transport
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
   - Depends on [OkHttp](https://lysine.dev/okhttp/)

@@ -2,7 +2,7 @@ package com.openai.core.http
 
 import com.openai.core.checkRequired
 import com.openai.core.toImmutable
-import java.net.URLEncoder
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 class HttpRequest
 private constructor(
@@ -14,33 +14,16 @@ private constructor(
     @get:JvmName("body") val body: HttpRequestBody?,
 ) {
 
-    fun url(): String = buildString {
-        append(baseUrl)
-
-        pathSegments.forEach { segment ->
-            if (!endsWith("/")) {
-                append("/")
-            }
-            append(URLEncoder.encode(segment, "UTF-8"))
-        }
-
-        if (queryParams.isEmpty()) {
-            return@buildString
-        }
-
-        append("?")
-        var isFirst = true
+    /**
+     * Returns the HTTP URL used by the default transport, with raw path and query values encoded.
+     */
+    fun url(): String {
+        val builder = baseUrl.toHttpUrl().newBuilder()
+        pathSegments.forEach(builder::addPathSegment)
         queryParams.keys().forEach { key ->
-            queryParams.values(key).forEach { value ->
-                if (!isFirst) {
-                    append("&")
-                }
-                append(URLEncoder.encode(key, "UTF-8"))
-                append("=")
-                append(URLEncoder.encode(value, "UTF-8"))
-                isFirst = false
-            }
+            queryParams.values(key).forEach { builder.addQueryParameter(key, it) }
         }
+        return builder.build().toString()
     }
 
     fun toBuilder(): Builder = Builder().from(this)

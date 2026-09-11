@@ -3,8 +3,12 @@ package com.openai.client.okhttp
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
+import com.openai.core.ClientOptions
+import com.openai.core.LogLevel
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import okhttp3.Call
@@ -32,6 +36,52 @@ internal class OkHttpClientTest {
     fun beforeEach(wmRuntimeInfo: WireMockRuntimeInfo) {
         baseUrl = wmRuntimeInfo.httpBaseUrl
         httpClient = OkHttpClient.builder().build()
+    }
+
+    @Test
+    @ResourceLock("stderr")
+    fun requestUrlAndLoggedUrl_matchSentUrl() = assertUrlMatchesSentUrl(async = false)
+
+    @Test
+    @ResourceLock("stderr")
+    fun requestUrlAndLoggedUrlAsync_matchSentUrl() = assertUrlMatchesSentUrl(async = true)
+
+    private fun assertUrlMatchesSentUrl(async: Boolean) {
+        stubFor(get(anyUrl()).willReturn(ok()))
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("$baseUrl/v1/?existing=base%20value")
+                .addPathSegment("user name+%/?#雪~@")
+                .putQueryParams("filter", listOf("a+b c/%?#雪", "second value"))
+                .build()
+        val expectedUrl =
+            "$baseUrl/v1/user%20name+%25%2F%3F%23%E9%9B%AA~@" +
+                "?existing=base%20value" +
+                "&filter=a%2Bb%20c%2F%25%3F%23%E9%9B%AA&filter=second%20value"
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("fake-api-key")
+                .logLevel(LogLevel.INFO)
+                .build()
+        val output = ByteArrayOutputStream()
+        val originalErr = System.err
+        try {
+            System.setErr(PrintStream(output, true, "UTF-8"))
+            val response =
+                if (async) clientOptions.httpClient.executeAsync(request).get(5, TimeUnit.SECONDS)
+                else clientOptions.httpClient.execute(request)
+            response.use { assertThat(it.statusCode()).isEqualTo(200) }
+        } finally {
+            System.setErr(originalErr)
+            clientOptions.close()
+        }
+
+        val sentUrl = baseUrl + findAll(getRequestedFor(anyUrl())).single().url
+        assertThat(request.url()).isEqualTo(expectedUrl)
+        assertThat(sentUrl).isEqualTo(expectedUrl)
+        assertThat(output.toString("UTF-8")).contains("--> GET $expectedUrl\n")
     }
 
     @Test

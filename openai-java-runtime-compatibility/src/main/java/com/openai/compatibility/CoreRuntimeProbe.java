@@ -1,6 +1,8 @@
 package com.openai.compatibility;
 
 import com.openai.core.JsonValue;
+import com.openai.core.http.HttpMethod;
+import com.openai.core.http.HttpRequest;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 import java.util.Collections;
@@ -10,6 +12,17 @@ public final class CoreRuntimeProbe {
     private CoreRuntimeProbe() {}
 
     public static void main(String[] args) {
+        String url = HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://example.test/v1/?existing=base%20value")
+                .addPathSegment("user name+")
+                .putQueryParam("q", "a+b c")
+                .build()
+                .url();
+        if (!"https://example.test/v1/user%20name+?existing=base%20value&q=a%2Bb%20c".equals(url)) {
+            throw new IllegalStateException("Core URL construction failed");
+        }
+
         Map<String, String> input = Collections.singletonMap("probe", "runtime");
         Map<?, ?> converted = JsonValue.from(input).convert(Map.class);
 

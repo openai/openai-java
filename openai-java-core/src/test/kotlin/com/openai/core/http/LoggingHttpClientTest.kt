@@ -57,6 +57,40 @@ internal class LoggingHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun invalidBaseStopsCustomTransportOnlyWhenLoggingIsEnabled(async: Boolean) {
+        var dispatched = 0
+        val transport =
+            object : HttpClient by fakeHttpClient() {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    dispatched++
+                    return fakeResponse(200, Headers.builder().build(), ByteArray(0))
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+            }
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("custom://logical-endpoint")
+                .build()
+
+        assertThatThrownBy { loggingClient(transport, LogLevel.INFO).execute(request, async) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(dispatched).isZero()
+
+        loggingClient(transport, LogLevel.OFF).execute(request, async).close()
+        assertThat(dispatched).isEqualTo(1)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun infoLevel_logsGetRequest(async: Boolean) {
         val client = loggingClient(fakeHttpClient(), LogLevel.INFO)
 

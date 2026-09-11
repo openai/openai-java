@@ -3,6 +3,7 @@ package com.openai.gradle
 /** The canonical external compiler classpath for the core artifact and its internal shards. */
 object CoreCompilationDependencies {
     const val JACKSON_COMPATIBILITY_VERSION = "2.14.0"
+    const val OKHTTP_DEPENDENCY = "com.squareup.okhttp3:okhttp:4.12.0"
 
     private val jacksonModules =
         listOf(
@@ -27,6 +28,7 @@ object CoreCompilationDependencies {
 
     fun publishedImplementationDependencies(jacksonPublishedVersion: String) =
         listOf(
+            OKHTTP_DEPENDENCY,
             "org.jetbrains.kotlin:kotlin-reflect:1.8.20",
             "com.fasterxml.jackson.core:jackson-annotations:$jacksonPublishedVersion",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonPublishedVersion",

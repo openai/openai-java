@@ -28,7 +28,6 @@ import okhttp3.Callback
 import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -249,7 +248,7 @@ private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient?): Request {
         body = "".toRequestBody()
     }
 
-    val builder = Request.Builder().url(toUrl()).method(method.name, body)
+    val builder = Request.Builder().url(url()).method(method.name, body)
     headers.names().forEach { name -> headers.values(name).forEach { builder.addHeader(name, it) } }
 
     if (client != null) {
@@ -280,16 +279,6 @@ private fun requiresBody(method: HttpMethod): Boolean =
         HttpMethod.PATCH -> true
         else -> false
     }
-
-private fun HttpRequest.toUrl(): String {
-    val builder = baseUrl.toHttpUrl().newBuilder()
-    pathSegments.forEach(builder::addPathSegment)
-    queryParams.keys().forEach { key ->
-        queryParams.values(key).forEach { builder.addQueryParameter(key, it) }
-    }
-
-    return builder.toString()
-}
 
 private fun HttpRequestBody.toRequestBody(): RequestBody {
     val mediaType = contentType()?.toMediaType()

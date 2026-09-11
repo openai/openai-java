@@ -1,3 +1,5 @@
+import com.openai.gradle.CoreCompilationDependencies
+
 plugins {
     id("openai.kotlin")
     id("openai.wiremock-test")
@@ -23,7 +25,7 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
 dependencies {
     api(project(":openai-java-core"))
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(CoreCompilationDependencies.OKHTTP_DEPENDENCY)
 
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.27.7")

@@ -9,7 +9,7 @@ internal class HttpRequestTest {
     enum class UrlTestCase(val request: HttpRequest, val expectedUrl: String) {
         BASE_URL_ONLY(
             HttpRequest.builder().method(HttpMethod.GET).baseUrl("https://api.example.com").build(),
-            expectedUrl = "https://api.example.com",
+            expectedUrl = "https://api.example.com/",
         ),
         BASE_URL_WITH_TRAILING_SLASH(
             HttpRequest.builder()
@@ -40,7 +40,23 @@ internal class HttpRequestTest {
                 .baseUrl("https://api.example.com")
                 .addPathSegment("user name")
                 .build(),
-            expectedUrl = "https://api.example.com/user+name",
+            expectedUrl = "https://api.example.com/user%20name",
+        ),
+        PATH_SEGMENT_WITH_PLUS_AND_RESERVED_CHARS(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com")
+                .addPathSegment("a+b %/?#雪~@")
+                .build(),
+            expectedUrl = "https://api.example.com/a+b%20%25%2F%3F%23%E9%9B%AA~@",
+        ),
+        PATH_SEGMENT_WITH_LITERAL_PERCENT_ESCAPE(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com")
+                .addPathSegment("user%20name")
+                .build(),
+            expectedUrl = "https://api.example.com/user%2520name",
         ),
         SINGLE_QUERY_PARAM(
             HttpRequest.builder()
@@ -68,7 +84,17 @@ internal class HttpRequestTest {
                 .addPathSegment("search")
                 .putQueryParam("q", "hello world")
                 .build(),
-            expectedUrl = "https://api.example.com/search?q=hello+world",
+            expectedUrl = "https://api.example.com/search?q=hello%20world",
+        ),
+        QUERY_KEY_AND_VALUE_WITH_RESERVED_CHARS(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com")
+                .addPathSegment("search")
+                .putQueryParam("q +&=", "a+b /%?#雪~@")
+                .build(),
+            expectedUrl =
+                "https://api.example.com/search?q%20%2B%26%3D=a%2Bb%20%2F%25%3F%23%E9%9B%AA%7E%40",
         ),
         MULTIPLE_VALUES_SAME_PARAM(
             HttpRequest.builder()
@@ -84,6 +110,41 @@ internal class HttpRequestTest {
                 .method(HttpMethod.GET)
                 .baseUrl("https://api.example.com/")
                 .addPathSegment("users")
+                .build(),
+            expectedUrl = "https://api.example.com/users",
+        ),
+        BASE_URL_WITH_EXISTING_PATH_AND_QUERY(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com/v1/?existing=base%20value")
+                .addPathSegment("users")
+                .putQueryParams("q", listOf("first value", "second+value"))
+                .build(),
+            expectedUrl =
+                "https://api.example.com/v1/users?existing=base%20value&q=first%20value&q=second%2Bvalue",
+        ),
+        BASE_URL_WITH_FRAGMENT(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com/v1?existing=base#section")
+                .addPathSegment("users")
+                .putQueryParam("q", "next value")
+                .build(),
+            expectedUrl = "https://api.example.com/v1/users?existing=base&q=next%20value#section",
+        ),
+        BASE_URL_CANONICALIZATION(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://API.EXAMPLE.COM:443/v1")
+                .addPathSegment("users")
+                .build(),
+            expectedUrl = "https://api.example.com/v1/users",
+        ),
+        DOT_SEGMENTS_FOLLOW_TRANSPORT_NORMALIZATION(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com/v1/")
+                .addPathSegments(".", "..", "users")
                 .build(),
             expectedUrl = "https://api.example.com/users",
         ),
