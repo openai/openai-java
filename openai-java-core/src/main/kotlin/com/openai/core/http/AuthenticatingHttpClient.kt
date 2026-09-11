@@ -11,12 +11,28 @@ internal class AuthenticatingHttpClient(
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
         delegate.execute(authenticator.authenticate(request), requestOptions)
 
+    override fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): HttpResponse =
+        delegate.execute(authenticator.authenticate(request), requestOptions, observer)
+
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         authenticator.authenticateAsync(request).thenCompose { authenticated ->
             delegate.executeAsync(authenticated, requestOptions)
+        }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): CompletableFuture<HttpResponse> =
+        authenticator.authenticateAsync(request).thenCompose { authenticated ->
+            delegate.executeAsync(authenticated, requestOptions, observer)
         }
 
     override fun close() {

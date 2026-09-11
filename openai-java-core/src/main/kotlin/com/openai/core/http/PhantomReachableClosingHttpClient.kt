@@ -17,10 +17,22 @@ internal class PhantomReachableClosingHttpClient(private val httpClient: HttpCli
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
         httpClient.execute(request, requestOptions)
 
+    override fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): HttpResponse = httpClient.execute(request, requestOptions, observer)
+
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> = httpClient.executeAsync(request, requestOptions)
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): CompletableFuture<HttpResponse> = httpClient.executeAsync(request, requestOptions, observer)
 
     override fun close() = httpClient.close()
 }

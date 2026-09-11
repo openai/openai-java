@@ -19,9 +19,15 @@ import java.time.OffsetDateTime
 import java.util.SortedSet
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.toKotlinDuration
 
-/** A wrapper [HttpClient] around [httpClient] that logs request and response information. */
+/**
+ * A wrapper [HttpClient] around [httpClient] that logs request and response information.
+ *
+ * Request URLs come from the transport's [RequestObserver] callback. Transports that only implement
+ * the original execution overloads are logged with `<URL unavailable>`.
+ */
 class LoggingHttpClient
 private constructor(
     /** The underlying [HttpClient] for making requests. */
@@ -48,13 +54,30 @@ private constructor(
     @get:JvmName("level") val level: LogLevel,
 ) : HttpClient {
 
+    private val missingUrlWarningLogged = AtomicBoolean()
+
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
-        val loggingRequest = logRequest(request)
+        if (!level.shouldLog(LogLevel.INFO)) {
+            return httpClient.execute(request, requestOptions)
+        }
+        return execute(request, requestOptions, RequestObserver { _, _ -> })
+    }
+
+    override fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): HttpResponse {
+        val loggingRequest = prepareLoggingRequest(request)
 
         val before = OffsetDateTime.now(clock)
         val response =
             try {
-                httpClient.execute(loggingRequest, requestOptions)
+                httpClient.execute(
+                    loggingRequest,
+                    requestOptions,
+                    loggingObserver(request, observer),
+                )
             } catch (e: Throwable) {
                 logFailure(e, Duration.between(before, OffsetDateTime.now(clock)))
                 throw e
@@ -68,12 +91,27 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
-        val loggingRequest = logRequest(request)
+        if (!level.shouldLog(LogLevel.INFO)) {
+            return httpClient.executeAsync(request, requestOptions)
+        }
+        return executeAsync(request, requestOptions, RequestObserver { _, _ -> })
+    }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): CompletableFuture<HttpResponse> {
+        val loggingRequest = prepareLoggingRequest(request)
 
         val before = OffsetDateTime.now(clock)
         val future =
             try {
-                httpClient.executeAsync(loggingRequest, requestOptions)
+                httpClient.executeAsync(
+                    loggingRequest,
+                    requestOptions,
+                    loggingObserver(request, observer),
+                )
             } catch (e: Throwable) {
                 logFailure(e, Duration.between(before, OffsetDateTime.now(clock)))
                 throw e
@@ -88,14 +126,29 @@ private constructor(
         }
     }
 
-    private fun logRequest(request: HttpRequest): HttpRequest {
+    private fun prepareLoggingRequest(request: HttpRequest): HttpRequest {
+        val body = request.body
+        return if (level.shouldLog(LogLevel.DEBUG) && body != null) {
+            request.toBuilder().body(LoggingHttpRequestBody(request.method, body)).build()
+        } else {
+            request
+        }
+    }
+
+    private fun loggingObserver(request: HttpRequest, observer: RequestObserver): RequestObserver =
+        RequestObserver { method, url ->
+            logRequest(request, method, url)
+            observer.onRequestStart(method, url)
+        }
+
+    private fun logRequest(request: HttpRequest, method: HttpMethod, url: String?) {
         if (!level.shouldLog(LogLevel.INFO)) {
-            return request
+            return
         }
 
         System.err.println(
             buildString {
-                append("--> ${request.method} ${request.url()}")
+                append("--> $method ${url ?: "<URL unavailable>"}")
                 request.body?.let {
                     val length = it.contentLength()
                     append(if (length >= 0) " ($length-byte body)" else " (unknown-length body)")
@@ -103,20 +156,23 @@ private constructor(
             }
         )
 
+        if (url == null && missingUrlWarningLogged.compareAndSet(false, true)) {
+            System.err.println(
+                "OpenAI SDK: HTTP client or wrapper did not report its prepared URL. " +
+                    "Implement and forward RequestObserver in execute and executeAsync to enable URL logging."
+            )
+        }
+
         if (!level.shouldLog(LogLevel.DEBUG)) {
-            return request
+            return
         }
 
         logHeaders(request.headers)
 
-        val requestBody = request.body
-        if (requestBody == null) {
-            System.err.println("--> END ${request.method}")
+        if (request.body == null) {
+            System.err.println("--> END $method")
             System.err.println()
-            return request
         }
-
-        return request.toBuilder().body(LoggingHttpRequestBody(request.method, requestBody)).build()
     }
 
     private fun logResponse(response: HttpResponse, took: Duration): HttpResponse {

@@ -9,6 +9,7 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.ProxyAuthenticator
+import com.openai.core.http.RequestObserver
 import com.openai.errors.OpenAIIoException
 import java.io.IOException
 import java.io.InputStream
@@ -42,10 +43,18 @@ import okio.sink
 class OkHttpClient
 internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) : HttpClient {
 
-    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        execute(request, requestOptions, RequestObserver { _, _ -> })
+
+    override fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): HttpResponse {
         val call = newCall(request, requestOptions)
 
         return try {
+            notifyRequestStart(call, observer)
             call.execute().toHttpResponse()
         } catch (e: IOException) {
             throw OpenAIIoException("Request failed", e)
@@ -57,10 +66,18 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> =
+        executeAsync(request, requestOptions, RequestObserver { _, _ -> })
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
     ): CompletableFuture<HttpResponse> {
         val future = CompletableFuture<HttpResponse>()
 
         val call = newCall(request, requestOptions)
+        notifyRequestStart(call, observer)
         call.enqueue(
             object : Callback {
                 override fun onResponse(call: Call, response: Response) {
@@ -84,6 +101,15 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         }
 
         return future
+    }
+
+    private fun notifyRequestStart(call: Call, observer: RequestObserver) {
+        try {
+            val request = call.request()
+            observer.onRequestStart(HttpMethod.valueOf(request.method), request.url.toString())
+        } catch (_: RuntimeException) {
+            // Observation must not prevent dispatch.
+        }
     }
 
     override fun close() {
