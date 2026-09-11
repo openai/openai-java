@@ -65,8 +65,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- 200 (0s)
                 |"""
                     .trimMargin()
@@ -76,12 +75,15 @@ internal class LoggingHttpClientTest {
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
     fun unavailableUrlGuidance_isPrintedOncePerLoggingClient(async: Boolean) {
-        val client = loggingClient(fakeHttpClient(), LogLevel.INFO)
+        val client = loggingClient(legacyHttpClient(), LogLevel.INFO)
 
         repeat(2) { client.execute(simpleGetRequest(), async).close() }
 
         assertThat(stderrOutput())
-            .containsOnlyOnce("OpenAI SDK: HTTP client or wrapper did not report")
+            .containsOnlyOnce(
+                "OpenAI SDK: HTTP client or wrapper did not report its prepared URL. " +
+                    "Implement and forward RequestObserver in execute and executeAsync to enable URL logging."
+            )
         assertThat(stderrOutput()).contains("--> GET <URL unavailable>")
     }
 
@@ -95,8 +97,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> POST <URL unavailable> (15-byte body)
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> POST https://api.example.com/v1/resources (15-byte body)
                 |<-- 200 (0s)
                 |"""
                     .trimMargin()
@@ -116,8 +117,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> POST <URL unavailable> (unknown-length body)
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> POST https://api.example.com/v1/resources (unknown-length body)
                 |<-- 200 (0s)
                 |"""
                     .trimMargin()
@@ -139,8 +139,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- 201 (1s 234ms)
                 |"""
                     .trimMargin()
@@ -159,8 +158,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- 200 (0s, 42-byte body)
                 |"""
                     .trimMargin()
@@ -189,8 +187,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1
                 |<-- 200 (0s)
                 |"""
                     .trimMargin()
@@ -207,8 +204,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -246,8 +242,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/test
                 |X-Custom: my-value
                 |--> END GET
                 |
@@ -290,8 +285,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/test
                 |Authorization: ██
                 |X-Amz-Security-Token: ██
                 |X-Public: public-value
@@ -332,8 +326,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/test
                 |authorization: ██
                 |--> END GET
                 |
@@ -356,8 +349,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> POST <URL unavailable> (26-byte body)
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> POST https://api.example.com/v1/resources (26-byte body)
                 |
                 |{"name":"test","value":42}
                 |--> END POST (26-byte body)
@@ -391,8 +383,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -417,8 +408,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -450,8 +440,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -486,8 +475,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -516,8 +504,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -540,8 +527,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -573,8 +559,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -607,8 +592,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -641,8 +625,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -675,8 +658,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- 200 (0s)
@@ -706,8 +688,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- !! IOException: Connection refused (1s 234ms)
                 |"""
                     .trimMargin()
@@ -725,8 +706,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |"""
                     .trimMargin()
             )
@@ -743,8 +723,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |--> END GET
                 |
                 |<-- !! IOException: Connection refused (0s)
@@ -763,8 +742,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- !! IOException (0s)
                 |"""
                     .trimMargin()
@@ -798,6 +776,15 @@ internal class LoggingHttpClientTest {
                         requestOptions: RequestOptions,
                     ): CompletableFuture<HttpResponse> = throw error
 
+                    override fun executeAsync(
+                        request: HttpRequest,
+                        requestOptions: RequestOptions,
+                        observer: RequestObserver,
+                    ): CompletableFuture<HttpResponse> {
+                        observer.onRequestStart(request.method, request.url())
+                        return executeAsync(request, requestOptions)
+                    }
+
                     override fun close() {}
                 },
                 LogLevel.ERROR,
@@ -808,8 +795,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- !! IOException: Connection refused (0s)
                 |"""
                     .trimMargin()
@@ -831,8 +817,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- 200 (2s 500ms)
                 |"""
                     .trimMargin()
@@ -854,8 +839,7 @@ internal class LoggingHttpClientTest {
         assertThat(stderrOutput())
             .isEqualTo(
                 """
-                |--> GET <URL unavailable>
-                |OpenAI SDK: HTTP client or wrapper did not report its prepared URL. Implement and forward RequestObserver in execute and executeAsync to enable URL logging.
+                |--> GET https://api.example.com/v1/resources
                 |<-- 200 (1m 40s 467ms)
                 |"""
                     .trimMargin()
@@ -964,7 +948,7 @@ internal class LoggingHttpClientTest {
             }
         response.close()
 
-        assertThat(observed).containsExactly(HttpMethod.GET to null)
+        assertThat(observed).containsExactly(HttpMethod.GET to simpleGetRequest().url())
         assertThat(stderrOutput()).isEmpty()
     }
 
@@ -1050,6 +1034,39 @@ internal class LoggingHttpClientTest {
             ): CompletableFuture<HttpResponse> =
                 CompletableFuture.completedFuture(execute(request, requestOptions))
 
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): HttpResponse {
+                // This fake reports its own chosen URL; OkHttp's native URL is tested separately.
+                observer.onRequestStart(request.method, request.url())
+                return execute(request, requestOptions)
+            }
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): CompletableFuture<HttpResponse> =
+                CompletableFuture.completedFuture(execute(request, requestOptions, observer))
+
+            override fun close() {}
+        }
+
+    private fun legacyHttpClient(): HttpClient =
+        object : HttpClient {
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): HttpResponse = fakeResponse(200, Headers.builder().build(), ByteArray(0))
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): CompletableFuture<HttpResponse> =
+                CompletableFuture.completedFuture(execute(request, requestOptions))
+
             override fun close() {}
         }
 
@@ -1073,6 +1090,24 @@ internal class LoggingHttpClientTest {
                 val future = CompletableFuture<HttpResponse>()
                 future.completeExceptionally(error)
                 return future
+            }
+
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): HttpResponse {
+                observer.onRequestStart(request.method, request.url())
+                return execute(request, requestOptions)
+            }
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): CompletableFuture<HttpResponse> {
+                observer.onRequestStart(request.method, request.url())
+                return executeAsync(request, requestOptions)
             }
 
             override fun close() {}
