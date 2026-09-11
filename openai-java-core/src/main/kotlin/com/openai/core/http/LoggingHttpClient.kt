@@ -57,9 +57,6 @@ private constructor(
     private val missingUrlWarningLogged = AtomicBoolean()
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
-        if (!level.shouldLog(LogLevel.INFO)) {
-            return httpClient.execute(request, requestOptions)
-        }
         return execute(request, requestOptions, RequestObserver { _, _ -> })
     }
 
@@ -91,9 +88,6 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
-        if (!level.shouldLog(LogLevel.INFO)) {
-            return httpClient.executeAsync(request, requestOptions)
-        }
         return executeAsync(request, requestOptions, RequestObserver { _, _ -> })
     }
 

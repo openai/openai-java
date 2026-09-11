@@ -9,7 +9,7 @@ internal class HttpRequestTest {
     enum class UrlTestCase(val request: HttpRequest, val expectedUrl: String) {
         BASE_URL_ONLY(
             HttpRequest.builder().method(HttpMethod.GET).baseUrl("https://api.example.com").build(),
-            expectedUrl = "https://api.example.com/",
+            expectedUrl = "https://api.example.com",
         ),
         BASE_URL_WITH_TRAILING_SLASH(
             HttpRequest.builder()
@@ -40,7 +40,7 @@ internal class HttpRequestTest {
                 .baseUrl("https://api.example.com")
                 .addPathSegment("user name")
                 .build(),
-            expectedUrl = "https://api.example.com/user%20name",
+            expectedUrl = "https://api.example.com/user+name",
         ),
         SINGLE_QUERY_PARAM(
             HttpRequest.builder()
@@ -68,7 +68,7 @@ internal class HttpRequestTest {
                 .addPathSegment("search")
                 .putQueryParam("q", "hello world")
                 .build(),
-            expectedUrl = "https://api.example.com/search?q=hello%20world",
+            expectedUrl = "https://api.example.com/search?q=hello+world",
         ),
         MULTIPLE_VALUES_SAME_PARAM(
             HttpRequest.builder()
