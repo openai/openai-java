@@ -74,6 +74,21 @@ internal class LoggingHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun unavailableUrlGuidance_isPrintedOncePerLoggingClient(async: Boolean) {
+        val client = loggingClient(legacyHttpClient(), LogLevel.INFO)
+
+        repeat(2) { client.execute(simpleGetRequest(), async).close() }
+
+        assertThat(stderrOutput())
+            .containsOnlyOnce(
+                "OpenAI SDK: HTTP client or wrapper did not report its prepared URL. " +
+                    "Implement and forward RequestObserver in execute and executeAsync to enable URL logging."
+            )
+        assertThat(stderrOutput()).contains("--> GET <URL unavailable>")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun infoLevel_logsPostRequestWithBodySize(async: Boolean) {
         val client = loggingClient(fakeHttpClient(), LogLevel.INFO)
 
@@ -761,6 +776,15 @@ internal class LoggingHttpClientTest {
                         requestOptions: RequestOptions,
                     ): CompletableFuture<HttpResponse> = throw error
 
+                    override fun executeAsync(
+                        request: HttpRequest,
+                        requestOptions: RequestOptions,
+                        observer: RequestObserver,
+                    ): CompletableFuture<HttpResponse> {
+                        observer.onRequestStart(request.method, request.url())
+                        return executeAsync(request, requestOptions)
+                    }
+
                     override fun close() {}
                 },
                 LogLevel.ERROR,
@@ -870,6 +894,64 @@ internal class LoggingHttpClientTest {
 
     private fun stderrOutput(): String = errContent.toString("UTF-8")
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun preparedRequest_isReportedThroughNestedLoggers(async: Boolean) {
+        val preparedUrl = "https://transport.example.com/user+name%20one?q=a%20b"
+        val delegate =
+            object : HttpClient by fakeHttpClient() {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                    observer: RequestObserver,
+                ): HttpResponse {
+                    observer.onRequestStart(HttpMethod.POST, preparedUrl)
+                    return fakeResponse(200, Headers.builder().build(), ByteArray(0))
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                    observer: RequestObserver,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions, observer))
+            }
+        val client = loggingClient(loggingClient(delegate, LogLevel.INFO), LogLevel.INFO)
+        val observed = mutableListOf<Pair<HttpMethod, String?>>()
+        val observer = RequestObserver { method, url -> observed.add(method to url) }
+
+        val response =
+            if (async) {
+                client.executeAsync(simpleGetRequest(), RequestOptions.none(), observer).get()
+            } else {
+                client.execute(simpleGetRequest(), RequestOptions.none(), observer)
+            }
+        response.close()
+
+        assertThat(observed).containsExactly(HttpMethod.POST to preparedUrl)
+        assertThat(stderrOutput().lineSequence().filter { it.startsWith("-->") }.toList())
+            .containsExactly("--> POST $preparedUrl", "--> POST $preparedUrl")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun offLevel_forwardsObserver(async: Boolean) {
+        val client = loggingClient(fakeHttpClient(), LogLevel.OFF)
+        val observed = mutableListOf<Pair<HttpMethod, String?>>()
+        val observer = RequestObserver { method, url -> observed.add(method to url) }
+
+        val response =
+            if (async) {
+                client.executeAsync(simpleGetRequest(), RequestOptions.none(), observer).get()
+            } else {
+                client.execute(simpleGetRequest(), RequestOptions.none(), observer)
+            }
+        response.close()
+
+        assertThat(observed).containsExactly(HttpMethod.GET to simpleGetRequest().url())
+        assertThat(stderrOutput()).isEmpty()
+    }
+
     private fun loggingClient(
         httpClient: HttpClient,
         level: LogLevel,
@@ -952,6 +1034,39 @@ internal class LoggingHttpClientTest {
             ): CompletableFuture<HttpResponse> =
                 CompletableFuture.completedFuture(execute(request, requestOptions))
 
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): HttpResponse {
+                // This fake reports its own chosen URL; OkHttp's native URL is tested separately.
+                observer.onRequestStart(request.method, request.url())
+                return execute(request, requestOptions)
+            }
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): CompletableFuture<HttpResponse> =
+                CompletableFuture.completedFuture(execute(request, requestOptions, observer))
+
+            override fun close() {}
+        }
+
+    private fun legacyHttpClient(): HttpClient =
+        object : HttpClient {
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): HttpResponse = fakeResponse(200, Headers.builder().build(), ByteArray(0))
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+            ): CompletableFuture<HttpResponse> =
+                CompletableFuture.completedFuture(execute(request, requestOptions))
+
             override fun close() {}
         }
 
@@ -975,6 +1090,24 @@ internal class LoggingHttpClientTest {
                 val future = CompletableFuture<HttpResponse>()
                 future.completeExceptionally(error)
                 return future
+            }
+
+            override fun execute(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): HttpResponse {
+                observer.onRequestStart(request.method, request.url())
+                return execute(request, requestOptions)
+            }
+
+            override fun executeAsync(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                observer: RequestObserver,
+            ): CompletableFuture<HttpResponse> {
+                observer.onRequestStart(request.method, request.url())
+                return executeAsync(request, requestOptions)
             }
 
             override fun close() {}

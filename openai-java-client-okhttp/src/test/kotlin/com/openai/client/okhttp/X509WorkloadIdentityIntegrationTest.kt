@@ -1,11 +1,15 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.openai.core.ClientOptions
+import com.openai.core.LogLevel
 import com.openai.core.RequestOptions
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.RequestObserver
 import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.ByteArrayInputStream
@@ -97,6 +101,79 @@ internal class X509WorkloadIdentityIntegrationTest {
     @Test
     fun asynchronousPublicClientRefreshesAndRetriesRejectedAccessTokens() {
         verifyRejectedTokenRecovery(async = true)
+    }
+
+    @Test
+    fun synchronousRequestObservationSurvivesTokenRefreshAndMatchesTheMutualTlsTarget() {
+        verifyRequestObservationSurvivesTokenRefresh(async = false)
+    }
+
+    @Test
+    fun asynchronousRequestObservationSurvivesTokenRefreshAndMatchesTheMutualTlsTarget() {
+        verifyRequestObservationSurvivesTokenRefresh(async = true)
+    }
+
+    private fun verifyRequestObservationSurvivesTokenRefresh(async: Boolean) {
+        val identity = X509TestIdentity.create("observed certificate identity")
+        X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+            X509TestPeer(API_HOST, identity.root.certificate).use { apiPeer ->
+                authPeer.enqueue(tokenResponse("rejected-test-token"))
+                authPeer.server.enqueue(tokenResponse("refreshed-test-token"))
+                apiPeer.enqueue(MockResponse().setResponseCode(401))
+                apiPeer.server.enqueue(MockResponse().setResponseCode(200))
+                val configuration =
+                    configuration(
+                            identity,
+                            listOf(authPeer.serverRootCertificate, apiPeer.serverRootCertificate),
+                        )
+                        .withTestProxies(authPeer.proxy, apiPeer.proxy)
+                val options =
+                    x509ClientOptions(
+                        ClientOptions.builder().maxRetries(1).logLevel(LogLevel.OFF),
+                        configuration,
+                        baseUrl = null,
+                    )
+                val request =
+                    HttpRequest.builder()
+                        .method(HttpMethod.GET)
+                        .baseUrl("https://$API_HOST/v1")
+                        .addPathSegment("user name")
+                        .build()
+                val observedUrls = mutableListOf<String?>()
+                val observer = RequestObserver { method, url ->
+                    assertThat(method).isEqualTo(HttpMethod.GET)
+                    observedUrls.add(url)
+                }
+
+                try {
+                    val response =
+                        if (async) {
+                            options.httpClient
+                                .executeAsync(request, RequestOptions.none(), observer)
+                                .get(5, TimeUnit.SECONDS)
+                        } else {
+                            options.httpClient.execute(request, RequestOptions.none(), observer)
+                        }
+                    response.use { assertThat(it.statusCode()).isEqualTo(200) }
+                } finally {
+                    options.close()
+                }
+
+                assertThat(observedUrls)
+                    .containsExactly(
+                        "https://$API_HOST/v1/user%20name",
+                        "https://$API_HOST/v1/user%20name",
+                    )
+                apiPeer.takeRequest()
+                val first = apiPeer.takeRequest()
+                val second = apiPeer.takeRequest()
+                assertThat(first.path).isEqualTo("/v1/user%20name")
+                assertThat(second.path).isEqualTo(first.path)
+                assertThat(first.getHeader("Authorization")).isEqualTo("Bearer rejected-test-token")
+                assertThat(second.getHeader("Authorization"))
+                    .isEqualTo("Bearer refreshed-test-token")
+            }
+        }
     }
 
     @Test

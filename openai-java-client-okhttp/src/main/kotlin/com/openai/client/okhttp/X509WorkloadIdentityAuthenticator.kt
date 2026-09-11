@@ -7,6 +7,7 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.RequestObserver
 import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import java.time.DateTimeException
@@ -189,12 +190,35 @@ private class X509RefreshingHttpClient(
         return checkResponse(authenticated, delegate.execute(authenticated, requestOptions))
     }
 
+    override fun execute(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): HttpResponse {
+        val authenticated = authenticator.authenticateForBoundTransport(request)
+        return checkResponse(
+            authenticated,
+            delegate.execute(authenticated, requestOptions, observer),
+        )
+    }
+
     override fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         authenticator.authenticateForBoundTransportAsync(request).thenCompose { authenticated ->
             delegate.executeAsync(authenticated, requestOptions).thenApply { response ->
+                checkResponse(authenticated, response)
+            }
+        }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        observer: RequestObserver,
+    ): CompletableFuture<HttpResponse> =
+        authenticator.authenticateForBoundTransportAsync(request).thenCompose { authenticated ->
+            delegate.executeAsync(authenticated, requestOptions, observer).thenApply { response ->
                 checkResponse(authenticated, response)
             }
         }
