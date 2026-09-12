@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         constraints {
             val dokkaJacksonVersion =
-                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.18.9"))
+                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.22.1"))
                     .versionConstraint
                     .requiredVersion
 
