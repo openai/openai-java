@@ -23,6 +23,22 @@ internal class StreamHandlerTest {
     }
 
     @Test
+    fun streamHandler_exposesRequestIdAfterClose() {
+        val handler = streamHandler { _, lines -> yieldAll(lines) }
+        val streamResponse =
+            handler.handle(
+                httpResponse(
+                    "a\n".byteInputStream(),
+                    Headers.builder().put("x-request-id", "req_123").build(),
+                )
+            )
+
+        assertThat(streamResponse.requestId()).contains("req_123")
+        streamResponse.close()
+        assertThat(streamResponse.requestId()).contains("req_123")
+    }
+
+    @Test
     fun streamHandler_whenClosedEarly_stopsYielding() {
         val handler = streamHandler { _, lines -> yieldAll(lines) }
         val streamResponse = handler.handle(httpResponse("a\nbb\nccc\ndddd".byteInputStream()))
@@ -68,12 +84,15 @@ internal class StreamHandlerTest {
         assertThat(e).isSameAs(ioException)
     }
 
-    private fun httpResponse(body: InputStream): HttpResponse =
+    private fun httpResponse(
+        body: InputStream,
+        headers: Headers = Headers.builder().build(),
+    ): HttpResponse =
         object : HttpResponse {
 
             override fun statusCode(): Int = 0
 
-            override fun headers(): Headers = Headers.builder().build()
+            override fun headers(): Headers = headers
 
             override fun body(): InputStream = body
 

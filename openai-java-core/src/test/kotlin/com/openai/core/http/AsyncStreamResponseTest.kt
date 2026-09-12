@@ -1,7 +1,9 @@
 package com.openai.core.http
 
+import com.openai.errors.BadRequestException
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import java.util.concurrent.Executor
 import java.util.stream.Stream
 import kotlin.streams.asStream
@@ -44,6 +46,78 @@ internal class AsyncStreamResponseTest {
                 .execute(any())
         }
     private val handler = mock<AsyncStreamResponse.Handler<String>>()
+
+    @Test
+    fun requestId_whenStreamFutureIsIncomplete_isEmpty() {
+        val asyncStreamResponse = CompletableFuture<StreamResponse<String>>().toAsync(executor)
+
+        assertThat(asyncStreamResponse.requestId()).isEmpty
+    }
+
+    @Test
+    fun requestId_whenStreamFutureCompletes_isAvailable() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        doReturn(Optional.of("req_123")).whenever(streamResponse).requestId()
+
+        future.complete(streamResponse)
+
+        assertThat(asyncStreamResponse.requestId()).contains("req_123")
+    }
+
+    @Test
+    fun requestId_whenHandlerRuns_isAvailable() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        val requestIds = mutableListOf<Optional<String>>()
+        doReturn(Optional.of("req_123")).whenever(streamResponse).requestId()
+        asyncStreamResponse.subscribe { requestIds.add(asyncStreamResponse.requestId()) }
+
+        future.complete(streamResponse)
+
+        assertThat(requestIds).containsOnly(Optional.of("req_123"))
+    }
+
+    @Test
+    fun requestId_whenStreamFutureFailsWithServiceException_isAvailableInExceptionally() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        val requestIds = mutableListOf<Optional<String>>()
+        val error =
+            BadRequestException.builder()
+                .headers(Headers.builder().put("x-request-id", "req_error").build())
+                .build()
+        val assertion =
+            asyncStreamResponse.onCompleteFuture().exceptionally {
+                requestIds.add(asyncStreamResponse.requestId())
+                null
+            }
+
+        future.completeExceptionally(CompletionException(error))
+
+        assertion.join()
+        assertThat(requestIds).containsExactly(Optional.of("req_error"))
+    }
+
+    @Test
+    fun requestId_whenStreamFutureFailsBeforeResponse_isEmpty() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+
+        future.completeExceptionally(ERROR)
+
+        assertThat(asyncStreamResponse.requestId()).isEmpty
+    }
+
+    @Test
+    fun requestId_whenStreamFutureIsCancelled_isEmpty() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+
+        future.cancel(false)
+
+        assertThat(asyncStreamResponse.requestId()).isEmpty
+    }
 
     @Test
     fun subscribe_whenAlreadySubscribed_throws() {

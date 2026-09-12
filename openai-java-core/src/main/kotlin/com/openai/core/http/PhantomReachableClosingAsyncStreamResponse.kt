@@ -25,6 +25,8 @@ internal class PhantomReachableClosingAsyncStreamResponse<T>(
         closeWhenPhantomReachable(reachabilityTracker, asyncStreamResponse::close)
     }
 
+    override fun requestId(): Optional<String> = asyncStreamResponse.requestId()
+
     override fun subscribe(handler: Handler<T>): AsyncStreamResponse<T> = apply {
         asyncStreamResponse.subscribe(TrackedHandler(handler, reachabilityTracker))
     }
