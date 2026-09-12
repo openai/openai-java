@@ -86,7 +86,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
 
     override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
         // delete /responses/{response_id}
-        withRawResponse().delete(params, requestOptions)
+        withRawResponse().delete(params, requestOptions).close()
     }
 
     override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions): Response =
