@@ -28,6 +28,7 @@ private constructor(
     private val clock: Clock,
     private val maxRetries: Int,
     private val idempotencyHeader: String?,
+    private val sendStainlessHeaders: Boolean,
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
@@ -35,7 +36,8 @@ private constructor(
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
-            !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
+            sendStainlessHeaders &&
+                !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
 
@@ -79,7 +81,8 @@ private constructor(
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
-            !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
+            sendStainlessHeaders &&
+                !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
 
@@ -237,6 +240,7 @@ private constructor(
         private var clock: Clock = Clock.systemUTC()
         private var maxRetries: Int = 2
         private var idempotencyHeader: String? = null
+        private var sendStainlessHeaders: Boolean = true
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
@@ -248,6 +252,10 @@ private constructor(
 
         fun idempotencyHeader(header: String) = apply { this.idempotencyHeader = header }
 
+        fun sendStainlessHeaders(sendStainlessHeaders: Boolean) = apply {
+            this.sendStainlessHeaders = sendStainlessHeaders
+        }
+
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
@@ -255,6 +263,7 @@ private constructor(
                 clock,
                 maxRetries,
                 idempotencyHeader,
+                sendStainlessHeaders,
             )
     }
 }
