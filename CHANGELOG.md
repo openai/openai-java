@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.2](https://github.com/openai/openai-java/compare/v4.63.1...v4.63.2) (2026-09-14)
+
+
+### Build System
+
+* **deps:** bump graalvm/setup-graalvm from 1.6.4 to 1.6.6 ([#1000](https://github.com/openai/openai-java/issues/1000)) ([6aedba1](https://github.com/openai/openai-java/commit/6aedba105c75f3166419112b359adea48f7f0844))
+
 ## [4.63.1](https://github.com/openai/openai-java/compare/v4.63.0...v4.63.1) (2026-09-10)
 
 
