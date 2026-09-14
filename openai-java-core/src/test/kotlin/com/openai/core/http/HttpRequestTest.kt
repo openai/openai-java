@@ -34,13 +34,21 @@ internal class HttpRequestTest {
                 .build(),
             expectedUrl = "https://api.example.com/users/123/profile",
         ),
-        PATH_SEGMENT_WITH_SPECIAL_CHARS(
+        PATH_SEGMENT_WITH_SPACE(
             HttpRequest.builder()
                 .method(HttpMethod.GET)
                 .baseUrl("https://api.example.com")
                 .addPathSegment("user name")
                 .build(),
-            expectedUrl = "https://api.example.com/user+name",
+            expectedUrl = "https://api.example.com/user%20name",
+        ),
+        PATH_SEGMENT_WITH_LITERAL_PLUS(
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .baseUrl("https://api.example.com")
+                .addPathSegment("a+b")
+                .build(),
+            expectedUrl = "https://api.example.com/a%2Bb",
         ),
         SINGLE_QUERY_PARAM(
             HttpRequest.builder()
