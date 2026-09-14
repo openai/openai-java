@@ -905,12 +905,13 @@ internal class StructuredOutputsTest {
     @Test
     fun schemaTest_stringEnum250ValueOverSizeLimit() {
         // OpenAI specification: "For a single enum property with string values, the total string
-        // length of all enum values cannot exceed 7,500 characters when there are more than 250
+        // length of all enum values cannot exceed 15,000 characters when there are more than 250
         // enum values."
 
-        // This test creates an enum with exactly 250 string values with more than 7,500 characters
-        // in total (31 characters per value for a total of 7,750 characters). No error is expected.
-        val values = (1..250).joinToString(", ") { "\"%s%03d\"".format("x".repeat(28), it) }
+        // This test creates an enum with exactly 250 string values with more than 15,000 characters
+        // in total (61 characters per value for a total of 15,250 characters). No error is
+        // expected.
+        val values = (1..250).joinToString(", ") { "\"%s%03d\"".format("x".repeat(58), it) }
 
         schema =
             parseJson(
@@ -928,10 +929,13 @@ internal class StructuredOutputsTest {
     }
 
     @Test
-    fun schemaTest_stringEnum251ValueUnderSizeLimit() {
-        // This test creates an enum with exactly 251 string values with fewer than 7,500 characters
-        // in total (29 characters per value for a total of 7,279 characters). No error is expected.
-        val values = (1..251).joinToString(", ") { "\"%s%03d\"".format("x".repeat(26), it) }
+    fun schemaTest_stringEnum251ValueAtSizeLimit() {
+        // One 250-character value and 250 59-character values total exactly 15,000 characters.
+        val values =
+            (1..251).joinToString(", ") {
+                val valueLength = if (it == 1) 250 else 59
+                "\"%s%03d\"".format("x".repeat(valueLength - 3), it)
+            }
 
         schema =
             parseJson(
@@ -950,9 +954,12 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_stringEnum251ValueOverSizeLimit() {
-        // This test creates an enum with exactly 251 string values with fewer than 7,500 characters
-        // in total (30 characters per value for a total of 7,530 characters). An error is expected.
-        val values = (1..251).joinToString(", ") { "\"%s%03d\"".format("x".repeat(27), it) }
+        // One 251-character value and 250 59-character values exceed the limit by one character.
+        val values =
+            (1..251).joinToString(", ") {
+                val valueLength = if (it == 1) 251 else 59
+                "\"%s%03d\"".format("x".repeat(valueLength - 3), it)
+            }
 
         schema =
             parseJson(
@@ -969,20 +976,20 @@ internal class StructuredOutputsTest {
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
             .isEqualTo(
-                "#/enum: Total string length (7530) of values of an enum " +
-                    "with 251 values exceeds limit of 7500."
+                "#/enum: Total string length (15001) of values of an enum " +
+                    "with 251 values exceeds limit of 15000."
             )
     }
 
     @Test
     fun schemaTest_totalEnumValuesAtLimit() {
-        // OpenAI specification: "A schema may have up to 500 enum values across all enum
+        // OpenAI specification: "A schema may have up to 1000 enum values across all enum
         // properties."
 
-        // This test creates two enums with a total of 500 values. The total string length of the
-        // values is well within the limits (2,000 characters).
-        val valuesA = (1..250).joinToString(", ") { "\"a%03d\"".format(it) }
-        val valuesB = (1..250).joinToString(", ") { "\"b%03d\"".format(it) }
+        // This test creates two enums with a total of 1000 values. The total string length of the
+        // values is well within the limits (4,000 characters).
+        val valuesA = (1..500).joinToString(", ") { "\"a%03d\"".format(it) }
+        val valuesB = (1..500).joinToString(", ") { "\"b%03d\"".format(it) }
 
         schema =
             parseJson(
@@ -1012,10 +1019,10 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_totalEnumValuesOverLimit() {
-        // This test creates two enums with a total of 501 values. The total string length of the
-        // values is well within the limits (2,004 characters).
-        val valuesA = (1..250).joinToString(", ") { "\"a%03d\"".format(it) }
-        val valuesB = (1..251).joinToString(", ") { "\"b%03d\"".format(it) }
+        // This test creates two enums with a total of 1001 values. The total string length of the
+        // values is well within the limits (4,004 characters).
+        val valuesA = (1..500).joinToString(", ") { "\"a%03d\"".format(it) }
+        val valuesB = (1..501).joinToString(", ") { "\"b%03d\"".format(it) }
 
         schema =
             parseJson(
@@ -1042,19 +1049,19 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: Total number of enum values (501) exceeds limit of 500.")
+            .isEqualTo("#: Total number of enum values (1001) exceeds limit of 1000.")
     }
 
     @Test
     fun schemaTest_maxObjectPropertiesAtLimit() {
-        // This test creates two object schemas with a total of 100 object properties. OpenAI does
-        // not support more than 100 properties total in the whole schema. Two objects are used to
+        // This test creates two object schemas with a total of 5000 object properties. OpenAI does
+        // not support more than 5000 properties total in the whole schema. Two objects are used to
         // ensure that counting is not done per object, but across all objects. Note that each
-        // object schema is itself a property, so there are two properties at the top level and 49
+        // object schema is itself a property, so there are two properties at the top level and 2499
         // properties each at the next level. No error is expected, as the limit is not exceeded.
         val propUses =
-            (1..49).joinToString(", ") { "\"x%02d\" : { \"type\" : \"string\" }".format(it) }
-        val propNames = (1..49).joinToString(", ") { "\"x%02d\"".format(it) }
+            (1..2499).joinToString(", ") { "\"x%04d\" : { \"type\" : \"string\" }".format(it) }
+        val propNames = (1..2499).joinToString(", ") { "\"x%04d\"".format(it) }
 
         schema =
             parseJson(
@@ -1092,11 +1099,11 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_maxObjectPropertiesOverLimit() {
-        // This test creates two object schemas with a total of 101 object properties. OpenAI does
-        // not support more than 100 properties total in the whole schema. Expect an error.
+        // This test creates two object schemas with a total of 5001 object properties. OpenAI does
+        // not support more than 5000 properties total in the whole schema. Expect an error.
         val propUses =
-            (1..49).joinToString(", ") { "\"x_%02d\" : { \"type\" : \"string\" }".format(it) }
-        val propNames = (1..49).joinToString(", ") { "\"x_%02d\"".format(it) }
+            (1..2499).joinToString(", ") { "\"x_%04d\" : { \"type\" : \"string\" }".format(it) }
+        val propNames = (1..2499).joinToString(", ") { "\"x_%04d\"".format(it) }
 
         schema =
             parseJson(
@@ -1117,9 +1124,9 @@ internal class StructuredOutputsTest {
                             "type" : "object",
                             "properties" : {
                                 $propUses,
-                                "property_101" : { "type" : "string" }
+                                "property_5001" : { "type" : "string" }
                             },
-                            "required" : [ $propNames, "property_101" ],
+                            "required" : [ $propNames, "property_5001" ],
                             "additionalProperties" : false
                         }
                     },
@@ -1132,20 +1139,20 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: Total number of object properties (101) exceeds limit of 100.")
+            .isEqualTo("#: Total number of object properties (5001) exceeds limit of 5000.")
     }
 
     @Test
     fun schemaTest_maxStringLengthAtLimit() {
         // OpenAI specification: "In a schema, total string length of all property names, definition
-        // names, enum values, and const values cannot exceed 15,000 characters."
+        // names, enum values, and const values cannot exceed 120,000 characters."
         //
         // This test creates a schema with many property names, definition names, enum values, and
-        // const values calculated to have a total string length of 15,000 characters. No error is
+        // const values calculated to have a total string length of 120,000 characters. No error is
         // expected.
         //
         // The test creates a schema that looks like the following, with the numbers adjusted to
-        // achieve a total of 15,000 characters for the relevant elements.
+        // achieve a total of 120,000 characters for the relevant elements.
         //
         //    {
         //        "$schema" : "...",
@@ -1179,13 +1186,15 @@ internal class StructuredOutputsTest {
         val numDefs = 65 // Each also has one "const" value.
         val numProps = 70 // Each also has "numEnumValues" enum values.
         val nameLen = 5 // Length of names of definitions, properties and const values.
-        val numEnumValues = 5 // numProps * numEnumValues <= 500 limit (OpenAI)
-        val enumValueLen = 40 // Length of enum values.
+        val numEnumValues = 5 // numProps * numEnumValues <= 1000 limit (OpenAI)
+        val enumValueLen = 340 // Length of enum values.
         val expectedTotalStringLength =
             nameLen * (numProps + numDefs * 2) + numProps * enumValueLen * numEnumValues
 
         val enumValues =
-            (1..numEnumValues).joinToString(", ") { "\"%s_%03d\"".format("e".repeat(36), it) }
+            (1..numEnumValues).joinToString(", ") {
+                "\"%s_%03d\"".format("e".repeat(enumValueLen - 4), it)
+            }
         val defs =
             (1..numDefs).joinToString(", ") {
                 "\"d_%03d\" : { \"type\" : \"string\", \"const\" : \"c_%03d\" }".format(it, it)
@@ -1211,29 +1220,31 @@ internal class StructuredOutputsTest {
             )
         validator.validate(schema)
 
-        assertThat(expectedTotalStringLength).isEqualTo(15_000) // Exactly on the limit.
+        assertThat(expectedTotalStringLength).isEqualTo(120_000) // Exactly on the limit.
         assertThat(validator.isValid()).isTrue
     }
 
     @Test
     fun schemaTest_maxStringLengthOverLimit() {
         // OpenAI specification: "In a schema, total string length of all property names, definition
-        // names, enum values, and const values cannot exceed 15,000 characters."
+        // names, enum values, and const values cannot exceed 120,000 characters."
         //
         // This test creates a schema with many property names, definition names, enum values, and
-        // const values calculated to have a total string length of just over 15,000 characters. An
+        // const values calculated to have a total string length of just over 120,000 characters. An
         // error is expected.
 
         val numDefs = 66 // Each also has one "const" value.
         val numProps = 70 // Each also has "numEnumValues" enum values.
-        val numEnumValues = 5 // numProps * numEnumValues <= 500 limit (OpenAI)
+        val numEnumValues = 5 // numProps * numEnumValues <= 1000 limit (OpenAI)
         val nameLen = 5 // Length of names of definitions, properties and const values.
-        val enumValueLen = 40 // Length of enum values.
+        val enumValueLen = 340 // Length of enum values.
         val expectedTotalStringLength =
             nameLen * (numProps + numDefs * 2) + numProps * enumValueLen * numEnumValues
 
         val enumValues =
-            (1..numEnumValues).joinToString(", ") { "\"%s_%03d\"".format("e".repeat(36), it) }
+            (1..numEnumValues).joinToString(", ") {
+                "\"%s_%03d\"".format("e".repeat(enumValueLen - 4), it)
+            }
         val defs =
             (1..numDefs).joinToString(", ") {
                 "\"d_%03d\" : { \"type\" : \"string\", \"const\" : \"c_%03d\" }".format(it, it)
@@ -1259,10 +1270,10 @@ internal class StructuredOutputsTest {
             )
         validator.validate(schema)
 
-        assertThat(expectedTotalStringLength).isGreaterThan(15_000)
+        assertThat(expectedTotalStringLength).isGreaterThan(120_000)
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: Total string length of all values (15010) exceeds limit of 15000.")
+            .isEqualTo("#: Total string length of all values (120010) exceeds limit of 120000.")
     }
 
     @Test
