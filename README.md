@@ -1825,6 +1825,9 @@ To use a customized `OkHttpClient`:
 2. Copy `openai-java-client-okhttp`'s [`OkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt) class into your code and customize it
 3. Construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) or [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), similarly to [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) or [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), using your customized client
 
+If you copied the transport before it supported prepared URL logging, see
+[prepared URL logging in custom clients](#prepared-url-logging-in-custom-clients).
+
 ### Completely custom HTTP client
 
 To use a completely custom HTTP client:
@@ -1832,6 +1835,48 @@ To use a completely custom HTTP client:
 1. Replace your [`openai-java` dependency](#installation) with `openai-java-core`
 2. Write a class that implements the [`HttpClient`](openai-java-core/src/main/kotlin/com/openai/core/http/HttpClient.kt) interface
 3. Construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) or [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), similarly to [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) or [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), using your new client class
+
+#### Prepared URL logging in custom clients
+
+Existing custom HTTP clients still send requests without changes. At `INFO` level, the SDK logs
+`<URL unavailable>` for a client that does not report its prepared URL. To include the URL, call
+`requestOptions.getRequestObserver().onRequestStart(...)` when an observer is present, after your
+transport prepares each request and before it sends it. Inside a custom Java `HttpClient`, report
+the prepared URL in both synchronous and asynchronous methods:
+
+```java
+private void reportPreparedRequest(RequestOptions options, HttpMethod method, String url) {
+    RequestObserver observer = options.getRequestObserver();
+    if (observer != null) {
+        try {
+            observer.onRequestStart(method, url);
+        } catch (RuntimeException ignored) {
+            // Optional logging must not prevent the request from being sent.
+        }
+    }
+}
+
+@Override
+public HttpResponse execute(HttpRequest request, RequestOptions options) {
+    PreparedRequest prepared = prepare(request, options);
+    reportPreparedRequest(options, prepared.method(), prepared.url().toString());
+    return send(prepared);
+}
+
+@Override
+public CompletableFuture<HttpResponse> executeAsync(HttpRequest request, RequestOptions options) {
+    PreparedRequest prepared = prepare(request, options);
+    reportPreparedRequest(options, prepared.method(), prepared.url().toString());
+    return sendAsync(prepared);
+}
+```
+
+Here `PreparedRequest`, `prepare`, `send`, and `sendAsync` stand for your transport's own types and
+methods; convert the prepared method to `HttpMethod` if necessary. If your transport retries
+internally, report each prepared attempt. Use its prepared URL: `HttpRequest.url()` is the
+SDK-rendered URL and may differ from the URL your transport sends. The default
+[OkHttp transport](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt)
+shows where to notify the observer in both paths.
 
 ## Undocumented API functionality
 
