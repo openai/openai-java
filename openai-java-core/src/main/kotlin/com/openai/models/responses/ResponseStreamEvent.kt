@@ -33,6 +33,7 @@ private constructor(
     private val codeInterpreterCallInProgress: ResponseCodeInterpreterCallInProgressEvent? = null,
     private val codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent? =
         null,
+    private val compactionCompacting: ResponseCompactionCompactingEvent? = null,
     private val completed: ResponseCompletedEvent? = null,
     private val contentPartAdded: ResponseContentPartAddedEvent? = null,
     private val contentPartDone: ResponseContentPartDoneEvent? = null,
@@ -118,6 +119,13 @@ private constructor(
     /** Emitted when the code interpreter is actively interpreting the code snippet. */
     fun codeInterpreterCallInterpreting(): Optional<ResponseCodeInterpreterCallInterpretingEvent> =
         Optional.ofNullable(codeInterpreterCallInterpreting)
+
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun compactionCompacting(): Optional<ResponseCompactionCompactingEvent> =
+        Optional.ofNullable(compactionCompacting)
 
     /** Emitted when the model response is complete. */
     fun completed(): Optional<ResponseCompletedEvent> = Optional.ofNullable(completed)
@@ -332,6 +340,8 @@ private constructor(
 
     fun isCodeInterpreterCallInterpreting(): Boolean = codeInterpreterCallInterpreting != null
 
+    fun isCompactionCompacting(): Boolean = compactionCompacting != null
+
     fun isCompleted(): Boolean = completed != null
 
     fun isContentPartAdded(): Boolean = contentPartAdded != null
@@ -463,6 +473,13 @@ private constructor(
     /** Emitted when the code interpreter is actively interpreting the code snippet. */
     fun asCodeInterpreterCallInterpreting(): ResponseCodeInterpreterCallInterpretingEvent =
         codeInterpreterCallInterpreting.getOrThrow("codeInterpreterCallInterpreting")
+
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun asCompactionCompacting(): ResponseCompactionCompactingEvent =
+        compactionCompacting.getOrThrow("compactionCompacting")
 
     /** Emitted when the model response is complete. */
     fun asCompleted(): ResponseCompletedEvent = completed.getOrThrow("completed")
@@ -706,6 +723,7 @@ private constructor(
                 visitor.visitCodeInterpreterCallInProgress(codeInterpreterCallInProgress)
             codeInterpreterCallInterpreting != null ->
                 visitor.visitCodeInterpreterCallInterpreting(codeInterpreterCallInterpreting)
+            compactionCompacting != null -> visitor.visitCompactionCompacting(compactionCompacting)
             completed != null -> visitor.visitCompleted(completed)
             contentPartAdded != null -> visitor.visitContentPartAdded(contentPartAdded)
             contentPartDone != null -> visitor.visitContentPartDone(contentPartDone)
@@ -849,6 +867,12 @@ private constructor(
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
                 ) {
                     codeInterpreterCallInterpreting.validate()
+                }
+
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
+                ) {
+                    compactionCompacting.validate()
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
@@ -1170,6 +1194,10 @@ private constructor(
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
                 ) = codeInterpreterCallInterpreting.validity()
 
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
+                ) = compactionCompacting.validity()
+
                 override fun visitCompleted(completed: ResponseCompletedEvent) =
                     completed.validity()
 
@@ -1366,6 +1394,7 @@ private constructor(
             codeInterpreterCallCompleted == other.codeInterpreterCallCompleted &&
             codeInterpreterCallInProgress == other.codeInterpreterCallInProgress &&
             codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting &&
+            compactionCompacting == other.compactionCompacting &&
             completed == other.completed &&
             contentPartAdded == other.contentPartAdded &&
             contentPartDone == other.contentPartDone &&
@@ -1428,6 +1457,7 @@ private constructor(
             codeInterpreterCallCompleted,
             codeInterpreterCallInProgress,
             codeInterpreterCallInterpreting,
+            compactionCompacting,
             completed,
             contentPartAdded,
             contentPartDone,
@@ -1497,6 +1527,8 @@ private constructor(
                 "ResponseStreamEvent{codeInterpreterCallInProgress=$codeInterpreterCallInProgress}"
             codeInterpreterCallInterpreting != null ->
                 "ResponseStreamEvent{codeInterpreterCallInterpreting=$codeInterpreterCallInterpreting}"
+            compactionCompacting != null ->
+                "ResponseStreamEvent{compactionCompacting=$compactionCompacting}"
             completed != null -> "ResponseStreamEvent{completed=$completed}"
             contentPartAdded != null -> "ResponseStreamEvent{contentPartAdded=$contentPartAdded}"
             contentPartDone != null -> "ResponseStreamEvent{contentPartDone=$contentPartDone}"
@@ -1631,6 +1663,14 @@ private constructor(
         fun ofCodeInterpreterCallInterpreting(
             codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
         ) = ResponseStreamEvent(codeInterpreterCallInterpreting = codeInterpreterCallInterpreting)
+
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         */
+        @JvmStatic
+        fun ofCompactionCompacting(compactionCompacting: ResponseCompactionCompactingEvent) =
+            ResponseStreamEvent(compactionCompacting = compactionCompacting)
 
         /** Emitted when the model response is complete. */
         @JvmStatic
@@ -1947,6 +1987,15 @@ private constructor(
             codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
         ): T
 
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         *
+         * Defaults to [unknown] so existing visitors can handle newly added progress events.
+         */
+        fun visitCompactionCompacting(compactionCompacting: ResponseCompactionCompactingEvent): T =
+            unknown(JsonValue.from(compactionCompacting))
+
         /** Emitted when the model response is complete. */
         fun visitCompleted(completed: ResponseCompletedEvent): T
 
@@ -2239,6 +2288,11 @@ private constructor(
                         ?.let {
                             ResponseStreamEvent(codeInterpreterCallInterpreting = it, _json = json)
                         } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.compaction.compacting" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCompactionCompactingEvent>())
+                        ?.let { ResponseStreamEvent(compactionCompacting = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.completed" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseCompletedEvent>())?.let {
@@ -2598,6 +2652,8 @@ private constructor(
                     generator.writeObject(value.codeInterpreterCallInProgress)
                 value.codeInterpreterCallInterpreting != null ->
                     generator.writeObject(value.codeInterpreterCallInterpreting)
+                value.compactionCompacting != null ->
+                    generator.writeObject(value.compactionCompacting)
                 value.completed != null -> generator.writeObject(value.completed)
                 value.contentPartAdded != null -> generator.writeObject(value.contentPartAdded)
                 value.contentPartDone != null -> generator.writeObject(value.contentPartDone)

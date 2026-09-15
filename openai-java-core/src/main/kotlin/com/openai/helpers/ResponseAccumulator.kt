@@ -12,6 +12,7 @@ import com.openai.models.responses.ResponseCodeInterpreterCallCodeDoneEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallCompletedEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallInProgressEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallInterpretingEvent
+import com.openai.models.responses.ResponseCompactionCompactingEvent
 import com.openai.models.responses.ResponseCompletedEvent
 import com.openai.models.responses.ResponseContentPartAddedEvent
 import com.openai.models.responses.ResponseContentPartDoneEvent
@@ -204,6 +205,10 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitCodeInterpreterCallInterpreting(
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
+                ) {}
+
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
                 ) {}
 
                 override fun visitContentPartAdded(
