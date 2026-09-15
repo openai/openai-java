@@ -26,6 +26,13 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .files(
+            layout.projectDirectory.file("../scripts/java-format"),
+            layout.projectDirectory.file("../scripts/lint"),
+            layout.projectDirectory.file("../scripts/format"),
+        )
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .files(
             fileTree(layout.projectDirectory.dir("../openai-java-core/src/main/kotlin")) {
                 include("**/*.kt")
             }
