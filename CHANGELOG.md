@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.3](https://github.com/openai/openai-java/compare/v4.63.2...v4.63.3) (2026-09-15)
+
+
+### Bug Fixes
+
+* correct Java formatter lint mode ([#1003](https://github.com/openai/openai-java/issues/1003)) ([2143367](https://github.com/openai/openai-java/commit/21433670486cdfda0a80256891ebf10d4089c9d0))
+
 ## [4.63.2](https://github.com/openai/openai-java/compare/v4.63.1...v4.63.2) (2026-09-14)
 
 
