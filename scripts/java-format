@@ -4,4 +4,28 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-find . -name "*.java" -not -path "./buildSrc/build/*" -print0 | xargs -0 -r palantir-java-format --palantir --replace "$@"
+dry_run=false
+explicit_replace=false
+# Response files can hide options from this mode selection.
+for arg in "$@"; do
+    case "$arg" in
+        @*)
+            echo "Response files are unsupported by scripts/java-format; pass options directly" >&2
+            exit 2
+            ;;
+        --dry-run|-n) dry_run=true ;;
+        --replace|-replace|-r|-i) explicit_replace=true ;;
+    esac
+done
+
+if "$dry_run" && "$explicit_replace"; then
+    echo "Cannot combine --dry-run and --replace" >&2
+    exit 2
+fi
+
+formatter_args=(--palantir)
+if ! "$dry_run"; then
+    formatter_args+=(--replace)
+fi
+
+find . -name "*.java" -not -path "./buildSrc/build/*" -print0 | xargs -0 -r palantir-java-format "${formatter_args[@]}" "$@"
