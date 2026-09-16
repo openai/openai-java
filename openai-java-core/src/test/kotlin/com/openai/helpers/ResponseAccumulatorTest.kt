@@ -7,6 +7,7 @@ import com.openai.core.http.map
 import com.openai.core.jsonMapper
 import com.openai.models.ResponsesModel
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseCompletedEvent
 import com.openai.models.responses.ResponseCreatedEvent
 import com.openai.models.responses.ResponseFailedEvent
@@ -21,6 +22,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class ResponseAccumulatorTest {
 
@@ -127,6 +130,46 @@ internal class ResponseAccumulatorTest {
         val response = accumulator.response()
 
         assertThat(response.id()).isEqualTo("response-id")
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [0, 2])
+    fun compactionProgressPreservesFinalOutput(progressCount: Int) {
+        val accumulator = ResponseAccumulator.create()
+        accumulator.accumulate(ResponseStreamEvent.ofCreated(responseCreatedEvent()))
+
+        repeat(progressCount) { index ->
+            val progress =
+                jsonMapper()
+                    .readValue(
+                        """{"type":"response.compaction.compacting","item_id":"cmp_test","output_index":0,"sequence_number":${index + 2}}""",
+                        jacksonTypeRef<ResponseStreamEvent>(),
+                    )
+                    .validate()
+            assertThat(accumulator.accumulate(progress)).isSameAs(progress)
+        }
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+
+        val compaction =
+            ResponseCompactionItem.builder()
+                .id("cmp_test")
+                .encryptedContent("synthetic-encrypted-content")
+                .build()
+        val completed =
+            response()
+                .toBuilder()
+                .output(listOf(ResponseOutputItem.ofCompaction(compaction)))
+                .build()
+        accumulator.accumulate(
+            ResponseStreamEvent.ofCompleted(
+                ResponseCompletedEvent.builder().response(completed).sequenceNumber(4L).build()
+            )
+        )
+
+        assertThat(accumulator.response()).isSameAs(completed)
+        assertThat(accumulator.response().output())
+            .containsExactly(ResponseOutputItem.ofCompaction(compaction))
     }
 
     @Test
