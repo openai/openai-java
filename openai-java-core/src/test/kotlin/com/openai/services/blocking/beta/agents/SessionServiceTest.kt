@@ -194,6 +194,17 @@ internal class SessionServiceTest {
             sessionService.update(
                 SessionUpdateParams.builder()
                     .sessionId("session_id")
+                    .agent(
+                        SessionUpdateParams.Agent.builder()
+                            .model("model")
+                            .reasoning(
+                                SessionUpdateParams.Agent.Reasoning.builder()
+                                    .effort(SessionUpdateParams.Agent.Reasoning.Effort.NONE)
+                                    .build()
+                            )
+                            .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
+                            .build()
+                    )
                     .metadata(
                         SessionUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
