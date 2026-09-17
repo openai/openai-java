@@ -336,10 +336,9 @@ private constructor(
         ) : this(callId, sipHeaders, mutableMapOf())
 
         /**
-         * The Transceiver `rtc_...` ID of the pending SIP session. The paired
-         * `live.transport.incoming` event derives its `session_id` by replacing the `rtc_` prefix
-         * with `live_`. Use the ID returned by the event with the corresponding Realtime or Live
-         * API.
+         * The ID of the pending SIP call. Pass this value unchanged when accepting or rejecting the
+         * call through the Realtime API. For the Live API, use the `session_id` from
+         * `live.transport.incoming` instead.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -412,10 +411,9 @@ private constructor(
             }
 
             /**
-             * The Transceiver `rtc_...` ID of the pending SIP session. The paired
-             * `live.transport.incoming` event derives its `session_id` by replacing the `rtc_`
-             * prefix with `live_`. Use the ID returned by the event with the corresponding Realtime
-             * or Live API.
+             * The ID of the pending SIP call. Pass this value unchanged when accepting or rejecting
+             * the call through the Realtime API. For the Live API, use the `session_id` from
+             * `live.transport.incoming` instead.
              */
             fun callId(callId: String) = callId(JsonField.of(callId))
 
