@@ -24,6 +24,90 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  compiler_benchmark:
+    name: Compiler benchmark / ${{ matrix.label }}
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: daemon-incremental
+            strategy: daemon
+            incremental: 'true'
+          - label: daemon-full
+            strategy: daemon
+            incremental: 'false'
+          - label: in-process-full
+            strategy: in-process
+            incremental: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: true
+      - name: Compile every class without cache reuse
+        env:
+          COMPILER_STRATEGY: ${{ matrix.strategy }}
+          KOTLIN_INCREMENTAL: ${{ matrix.incremental }}
+        run: |
+          set -euo pipefail
+          nproc
+          free -m
+          cat > "$RUNNER_TEMP/compiler-strategy.gradle" <<'GROOVY'
+          gradle.projectsEvaluated {
+              def core = rootProject.findProject(':openai-java-core')
+              if (core == null) return
+              println('Observed Kotlin compiler strategy: ' + core.tasks.named('compileKotlin').get().compilerExecutionStrategy.get())
+              println('Kotlin incremental property: ' + core.findProperty('kotlin.incremental'))
+          }
+          GROOVY
+          mkdir -p build/compiler-benchmark
+          /usr/bin/time -v ./scripts/gradle classes testClasses \
+            --no-build-cache --rerun-tasks "-Pkotlin.incremental=$KOTLIN_INCREMENTAL" \
+            -Pkotlin.daemon.useFallbackStrategy=false \
+            "-Pkotlin.compiler.execution.strategy=$COMPILER_STRATEGY" \
+            --max-workers=4 --profile --no-configuration-cache \
+            -Pkotlin.build.report.output=file \
+            -I "$RUNNER_TEMP/compiler-strategy.gradle" \
+            2>&1 | tee build/compiler-benchmark/compile.log
+      - name: Record compiled class and metadata hashes
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          from pathlib import Path
+          hashes = {}
+          for module in sorted(Path('.').glob('openai-java*')):
+              for path in sorted((module / 'build/classes').rglob('*')):
+                  if path.is_file():
+                      hashes[str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
+          if not hashes:
+              raise SystemExit('No compiled outputs found')
+          Path('build/compiler-benchmark/classes.json').write_text(json.dumps(hashes, indent=2) + '\n')
+          print(f'Hashed {len(hashes)} compiled outputs')
+          PYTHON
+      - name: Upload compiler measurements
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: compiler-benchmark-${{ matrix.label }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/compiler-benchmark
+            build/reports/profile
+            build/reports/kotlin-build
+          if-no-files-found: error
+          retention-days: 3
+
   lint:
     name: CI / lint
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
