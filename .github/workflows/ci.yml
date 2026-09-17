@@ -25,23 +25,14 @@ concurrency:
 
 jobs:
   compiler_benchmark:
-    name: Compiler benchmark / ${{ matrix.label }}
+    name: Compiler comparison / incremental first ${{ matrix.first_incremental }}
     if: github.event_name == 'workflow_dispatch'
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - label: daemon-incremental
-            strategy: daemon
-            incremental: 'true'
-          - label: daemon-full
-            strategy: daemon
-            incremental: 'false'
-          - label: in-process-full
-            strategy: in-process
-            incremental: 'false'
+        first_incremental: ['true', 'false']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
@@ -55,14 +46,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
         with:
           cache-read-only: true
-      - name: Compile every class without cache reuse
+      - name: Compare full recompilation on the same runner
         env:
-          COMPILER_STRATEGY: ${{ matrix.strategy }}
-          KOTLIN_INCREMENTAL: ${{ matrix.incremental }}
+          FIRST_INCREMENTAL: ${{ matrix.first_incremental }}
+          BENCHMARK_DIR: ${{ runner.temp }}/compiler-comparison
         run: |
           set -euo pipefail
           nproc
           free -m
+          lscpu
           cat > "$RUNNER_TEMP/compiler-strategy.gradle" <<'GROOVY'
           gradle.projectsEvaluated {
               def core = rootProject.findProject(':openai-java-core')
@@ -71,20 +63,30 @@ jobs:
               println('Kotlin incremental property: ' + core.findProperty('kotlin.incremental'))
           }
           GROOVY
-          mkdir -p build/compiler-benchmark
-          /usr/bin/time -v ./scripts/gradle classes testClasses \
-            --no-build-cache --rerun-tasks "-Pkotlin.incremental=$KOTLIN_INCREMENTAL" \
-            -Pkotlin.daemon.useFallbackStrategy=false \
-            "-Pkotlin.compiler.execution.strategy=$COMPILER_STRATEGY" \
-            --max-workers=4 --profile --no-configuration-cache \
-            -Pkotlin.build.report.output=file \
-            -I "$RUNNER_TEMP/compiler-strategy.gradle" \
-            2>&1 | tee build/compiler-benchmark/compile.log
-      - name: Record compiled class and metadata hashes
-        run: |
-          python3 - <<'PYTHON'
+          if [ "$FIRST_INCREMENTAL" = true ]; then
+            second=false
+          else
+            second=true
+          fi
+          index=0
+          for incremental in "$FIRST_INCREMENTAL" "$second" "$FIRST_INCREMENTAL"; do
+            index=$((index + 1))
+            trial_dir="$BENCHMARK_DIR/$index-$incremental"
+            mkdir -p "$trial_dir"
+            ./scripts/gradle clean --no-configuration-cache \
+              "-Pkotlin.incremental=$incremental" > "$trial_dir/clean.log" 2>&1
+            /usr/bin/time -v ./scripts/gradle classes testClasses \
+              --no-build-cache --rerun-tasks "-Pkotlin.incremental=$incremental" \
+              -Pkotlin.daemon.useFallbackStrategy=false \
+              -Pkotlin.compiler.execution.strategy=daemon \
+              --max-workers=4 --profile --no-configuration-cache \
+              -Pkotlin.build.report.output=file \
+              -I "$RUNNER_TEMP/compiler-strategy.gradle" \
+              2>&1 | tee "$trial_dir/compile.log"
+            MEASUREMENT_DIR="$trial_dir" python3 - <<'PYTHON'
           import hashlib
           import json
+          import os
           from pathlib import Path
           hashes = {}
           for module in sorted(Path('.').glob('openai-java*')):
@@ -93,18 +95,18 @@ jobs:
                       hashes[str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
           if not hashes:
               raise SystemExit('No compiled outputs found')
-          Path('build/compiler-benchmark/classes.json').write_text(json.dumps(hashes, indent=2) + '\n')
+          (Path(os.environ['MEASUREMENT_DIR']) / 'classes.json').write_text(json.dumps(hashes, indent=2) + '\n')
           print(f'Hashed {len(hashes)} compiled outputs')
           PYTHON
+            cp -R build/reports/profile "$trial_dir/profile"
+            cp -R build/reports/kotlin-build "$trial_dir/kotlin-build"
+          done
       - name: Upload compiler measurements
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compiler-benchmark-${{ matrix.label }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            build/compiler-benchmark
-            build/reports/profile
-            build/reports/kotlin-build
+          name: compiler-comparison-${{ matrix.first_incremental }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compiler-comparison
           if-no-files-found: error
           retention-days: 3
 
