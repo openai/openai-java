@@ -174,7 +174,7 @@ jobs:
     needs: build
     if: >-
       needs.build.result == 'success' &&
-      (github.event_name == 'pull_request' || github.event_name == 'merge_group')
+      (github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
       pull-requests: read
@@ -210,7 +210,7 @@ jobs:
 
       - name: Compile previous tests against the proposed SDK
         env:
-          BASE_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          BASE_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event_name == 'merge_group' && github.event.merge_group.base_sha || '44e42aeb256f9abb643a2a940f19bef7930bc3b3' }}
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: |
           set -euo pipefail
@@ -223,13 +223,13 @@ jobs:
           # Always enforce the trusted baseline policy so a PR cannot weaken the detector to hide
           # an SDK break. The proposed detector is identical on most PRs, so only run its duplicate
           # compilation when the PR actually changes the detector.
-          "$BASE_DETECTOR" "$BASE_COMMIT"
+          /usr/bin/time -p "$BASE_DETECTOR" "$BASE_COMMIT"
 
           if git diff --quiet "$BASE_COMMIT" -- scripts/detect-breaking-changes; then
             echo "API compatibility detector is unchanged; skipping duplicate validation."
           else
             echo "API compatibility detector changed; validating the proposed detector."
-            ./scripts/detect-breaking-changes "$BASE_COMMIT"
+            /usr/bin/time -p ./scripts/detect-breaking-changes "$BASE_COMMIT"
           fi
 
   version_support_matrix:

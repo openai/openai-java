@@ -29,7 +29,7 @@ class MergeQueuePolicyTest {
         val api = job(workflow("ci"), "api_compatibility")
         assertEquals(
             "needs.build.result == 'success' && " +
-                "(github.event_name == 'pull_request' || github.event_name == 'merge_group')",
+                "(github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'workflow_dispatch')",
             (api["if"] as String).trim(),
         )
         val comparison =
@@ -37,7 +37,7 @@ class MergeQueuePolicyTest {
         val environment = comparison["env"] as Map<*, *>
         assertEquals(
             "\${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || " +
-                "github.event.merge_group.base_sha }}",
+                "github.event_name == 'merge_group' && github.event.merge_group.base_sha || '44e42aeb256f9abb643a2a940f19bef7930bc3b3' }}",
             environment["BASE_COMMIT"],
         )
         assertContains(comparison["run"] as String, "\"\$BASE_DETECTOR\" \"\$BASE_COMMIT\"")
