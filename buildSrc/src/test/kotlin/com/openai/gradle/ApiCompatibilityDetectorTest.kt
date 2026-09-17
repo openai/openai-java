@@ -44,10 +44,10 @@ class ApiCompatibilityDetectorTest {
                 "openai-java-core/src/proposedApiCompatibility/kotlin/Extra.kt",
             )
         changedInputs.forEachIndexed { index, path ->
-            val root = prepare("changed-$index")
+            val root = prepare("changed-$index", stopAtCompilation = true)
             write(root, path, "// Changed compiler input\n")
             val result = detect(root)
-            assertEquals(0, result.exitCode, "$path: ${result.output}")
+            assertEquals(COMPILATION_REACHED, result.exitCode, "$path: ${result.output}")
             assertEquals(listOf(BASELINE_TASK, PROPOSED_TASK), compilationTasks(root), path)
         }
     }
@@ -62,19 +62,20 @@ class ApiCompatibilityDetectorTest {
         assertFalse(root.resolve("gradle-arguments.txt").toFile().exists())
     }
 
-    private fun prepare(name: String): Path {
+    private fun prepare(name: String, stopAtCompilation: Boolean = false): Path {
         val root = directory.resolve(name).createDirectories()
         write(
             root,
             "scripts/detect-breaking-changes",
             Path.of("../scripts/detect-breaking-changes").readText(),
         )
-        // Intercept only the expensive Gradle invocation; Git extraction and javap checks are real.
+        // Task-selection cases stop here; the manifest test also exercises real javap checks.
+        val compilationExit = if (stopAtCompilation) COMPILATION_REACHED else 0
         val gradle =
             write(
                 root,
                 "scripts/gradle",
-                "#!/usr/bin/env bash\nprintf '%s\\n' \"${'$'}@\" > gradle-arguments.txt\n",
+                "#!/usr/bin/env bash\nprintf '%s\\n' \"${'$'}@\" > gradle-arguments.txt\nexit $compilationExit\n",
             )
         assertTrue(gradle.toFile().setExecutable(true))
         write(root, "$TEST_ROOT/models/Model.kt", "class Model\n")
@@ -141,6 +142,7 @@ class ApiCompatibilityDetectorTest {
     private data class Result(val exitCode: Int, val output: String)
 
     private companion object {
+        const val COMPILATION_REACHED = 42
         const val TEST_ROOT = "openai-java-core/src/test/kotlin/com/openai"
         const val POLICY = "openai-java-core/src/apiCompatibility"
         const val BASELINE_TASK = ":openai-java-core:compileExternalApiCompatibilityKotlin"
