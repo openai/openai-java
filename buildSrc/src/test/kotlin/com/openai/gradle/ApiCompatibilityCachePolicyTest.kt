@@ -31,13 +31,17 @@ class ApiCompatibilityCachePolicyTest {
 
         assertContains(testJob, "needs: build")
         assertContains(testJob, "if: needs.build.result == 'success'")
-        assertContains(testJob, "cache-read-only: true")
+        assertContains(
+            testJob,
+            "cache-read-only: \${{ github.ref_name != github.event.repository.default_branch }}",
+        )
         assertContains(testJob, "name: Restore exact-run Gradle build cache")
         assertContains(
             testJob,
             "artifact-ids: \${{ needs.build.outputs.gradle-cache-artifact-id }}",
         )
         assertContains(testJob, "digest-mismatch: error")
+        assertContains(testJob, "run: ./scripts/test --rerun\n")
     }
 
     @Test
