@@ -184,6 +184,21 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                     .retryOnConnectionFailure(false)
                     .followRedirects(followRedirects)
                     .followSslRedirects(followRedirects)
+                    .addNetworkInterceptor { chain ->
+                        val request = chain.request()
+                        val originalUrl = chain.call().request().url
+                        val url = request.url
+                        val sameOrigin =
+                            originalUrl.scheme == url.scheme &&
+                                originalUrl.host == url.host &&
+                                originalUrl.port == url.port
+                        // OkHttp strips Authorization on cross-origin redirects, but does not
+                        // recognize the Azure API-key header as a credential.
+                        chain.proceed(
+                            if (sameOrigin) request
+                            else request.newBuilder().removeHeader("api-key").build()
+                        )
+                    }
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
