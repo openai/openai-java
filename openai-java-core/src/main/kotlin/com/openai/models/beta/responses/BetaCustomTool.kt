@@ -32,7 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A custom tool that processes input using a specified format. Learn more about
- * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+ * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
  */
 class BetaCustomTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

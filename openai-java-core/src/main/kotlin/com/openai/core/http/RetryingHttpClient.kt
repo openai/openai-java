@@ -213,7 +213,7 @@ private constructor(
             }
             ?.let { retryAfterNanos ->
                 // If the API asks us to wait a certain amount of time, do what it says.
-                return Duration.ofNanos(retryAfterNanos.toLong())
+                return Duration.ofNanos(retryAfterNanos.toLong().coerceAtLeast(0))
             }
 
         // Apply exponential backoff, but not more than the max.

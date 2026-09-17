@@ -34,6 +34,8 @@ import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.GraderServiceImpl
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ImageServiceImpl
+import com.openai.services.blocking.LiveService
+import com.openai.services.blocking.LiveServiceImpl
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModelServiceImpl
 import com.openai.services.blocking.ModerationService
@@ -125,6 +127,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         ResponseServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val live: LiveService by lazy { LiveServiceImpl(clientOptionsWithUserAgent) }
+
     private val realtime: RealtimeService by lazy {
         RealtimeServiceImpl(clientOptionsWithUserAgent)
     }
@@ -204,6 +208,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun admin(): AdminService = admin
 
     override fun responses(): ResponseService = responses
+
+    override fun live(): LiveService = live
 
     override fun realtime(): RealtimeService = realtime
 
@@ -300,6 +306,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val live: LiveService.WithRawResponse by lazy {
+            LiveServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val realtime: RealtimeService.WithRawResponse by lazy {
             RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -386,6 +396,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun admin(): AdminService.WithRawResponse = admin
 
         override fun responses(): ResponseService.WithRawResponse = responses
+
+        override fun live(): LiveService.WithRawResponse = live
 
         override fun realtime(): RealtimeService.WithRawResponse = realtime
 

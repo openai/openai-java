@@ -34,6 +34,7 @@ private constructor(
     private val fineTuningJobFailed: FineTuningJobFailedWebhookEvent? = null,
     private val fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent? = null,
     private val liveCallIncoming: LiveCallIncomingWebhookEvent? = null,
+    private val liveTransportIncoming: LiveTransportIncomingWebhookEvent? = null,
     private val realtimeCallIncoming: RealtimeCallIncomingWebhookEvent? = null,
     private val responseCancelled: ResponseCancelledWebhookEvent? = null,
     private val responseCompleted: ResponseCompletedWebhookEvent? = null,
@@ -80,16 +81,27 @@ private constructor(
         Optional.ofNullable(fineTuningJobSucceeded)
 
     /**
-     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
-     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
-     * endpoint selects the runtime surface.
+     * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+     * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+     * session is available for Live acceptance. The same pending session can also emit
+     * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects the
+     * runtime surface.
      */
+    @Deprecated("deprecated")
     fun liveCallIncoming(): Optional<LiveCallIncomingWebhookEvent> =
         Optional.ofNullable(liveCallIncoming)
 
     /**
+     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
+    fun liveTransportIncoming(): Optional<LiveTransportIncomingWebhookEvent> =
+        Optional.ofNullable(liveTransportIncoming)
+
+    /**
      * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
-     * session can also emit `live.call.incoming`; the first successful Realtime or Live accept
+     * session can also emit `live.transport.incoming`; the first successful Realtime or Live accept
      * endpoint selects the runtime surface.
      */
     fun realtimeCallIncoming(): Optional<RealtimeCallIncomingWebhookEvent> =
@@ -138,7 +150,9 @@ private constructor(
 
     fun isFineTuningJobSucceeded(): Boolean = fineTuningJobSucceeded != null
 
-    fun isLiveCallIncoming(): Boolean = liveCallIncoming != null
+    @Deprecated("deprecated") fun isLiveCallIncoming(): Boolean = liveCallIncoming != null
+
+    fun isLiveTransportIncoming(): Boolean = liveTransportIncoming != null
 
     fun isRealtimeCallIncoming(): Boolean = realtimeCallIncoming != null
 
@@ -190,16 +204,27 @@ private constructor(
         fineTuningJobSucceeded.getOrThrow("fineTuningJobSucceeded")
 
     /**
-     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
-     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
-     * endpoint selects the runtime surface.
+     * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+     * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+     * session is available for Live acceptance. The same pending session can also emit
+     * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects the
+     * runtime surface.
      */
+    @Deprecated("deprecated")
     fun asLiveCallIncoming(): LiveCallIncomingWebhookEvent =
         liveCallIncoming.getOrThrow("liveCallIncoming")
 
     /**
+     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
+    fun asLiveTransportIncoming(): LiveTransportIncomingWebhookEvent =
+        liveTransportIncoming.getOrThrow("liveTransportIncoming")
+
+    /**
      * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
-     * session can also emit `live.call.incoming`; the first successful Realtime or Live accept
+     * session can also emit `live.transport.incoming`; the first successful Realtime or Live accept
      * endpoint selects the runtime surface.
      */
     fun asRealtimeCallIncoming(): RealtimeCallIncomingWebhookEvent =
@@ -274,6 +299,8 @@ private constructor(
             fineTuningJobSucceeded != null ->
                 visitor.visitFineTuningJobSucceeded(fineTuningJobSucceeded)
             liveCallIncoming != null -> visitor.visitLiveCallIncoming(liveCallIncoming)
+            liveTransportIncoming != null ->
+                visitor.visitLiveTransportIncoming(liveTransportIncoming)
             realtimeCallIncoming != null -> visitor.visitRealtimeCallIncoming(realtimeCallIncoming)
             responseCancelled != null -> visitor.visitResponseCancelled(responseCancelled)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
@@ -350,6 +377,12 @@ private constructor(
 
                 override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) {
                     liveCallIncoming.validate()
+                }
+
+                override fun visitLiveTransportIncoming(
+                    liveTransportIncoming: LiveTransportIncomingWebhookEvent
+                ) {
+                    liveTransportIncoming.validate()
                 }
 
                 override fun visitRealtimeCallIncoming(
@@ -449,6 +482,10 @@ private constructor(
                 override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
                     liveCallIncoming.validity()
 
+                override fun visitLiveTransportIncoming(
+                    liveTransportIncoming: LiveTransportIncomingWebhookEvent
+                ) = liveTransportIncoming.validity()
+
                 override fun visitRealtimeCallIncoming(
                     realtimeCallIncoming: RealtimeCallIncomingWebhookEvent
                 ) = realtimeCallIncoming.validity()
@@ -497,6 +534,7 @@ private constructor(
             fineTuningJobFailed == other.fineTuningJobFailed &&
             fineTuningJobSucceeded == other.fineTuningJobSucceeded &&
             liveCallIncoming == other.liveCallIncoming &&
+            liveTransportIncoming == other.liveTransportIncoming &&
             realtimeCallIncoming == other.realtimeCallIncoming &&
             responseCancelled == other.responseCancelled &&
             responseCompleted == other.responseCompleted &&
@@ -519,6 +557,7 @@ private constructor(
             fineTuningJobFailed,
             fineTuningJobSucceeded,
             liveCallIncoming,
+            liveTransportIncoming,
             realtimeCallIncoming,
             responseCancelled,
             responseCompleted,
@@ -544,6 +583,8 @@ private constructor(
             fineTuningJobSucceeded != null ->
                 "UnwrapWebhookEvent{fineTuningJobSucceeded=$fineTuningJobSucceeded}"
             liveCallIncoming != null -> "UnwrapWebhookEvent{liveCallIncoming=$liveCallIncoming}"
+            liveTransportIncoming != null ->
+                "UnwrapWebhookEvent{liveTransportIncoming=$liveTransportIncoming}"
             realtimeCallIncoming != null ->
                 "UnwrapWebhookEvent{realtimeCallIncoming=$realtimeCallIncoming}"
             responseCancelled != null -> "UnwrapWebhookEvent{responseCancelled=$responseCancelled}"
@@ -612,18 +653,30 @@ private constructor(
             UnwrapWebhookEvent(fineTuningJobSucceeded = fineTuningJobSucceeded)
 
         /**
-         * Sent when an incoming API SIP session is available for Live acceptance. The same pending
-         * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
-         * accept endpoint selects the runtime surface.
+         * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+         * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+         * session is available for Live acceptance. The same pending session can also emit
+         * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects
+         * the runtime surface.
          */
+        @Deprecated("deprecated")
         @JvmStatic
         fun ofLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
             UnwrapWebhookEvent(liveCallIncoming = liveCallIncoming)
 
         /**
-         * Sent when an incoming API SIP session is available for Realtime acceptance. The same
-         * pending session can also emit `live.call.incoming`; the first successful Realtime or Live
+         * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+         * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
          * accept endpoint selects the runtime surface.
+         */
+        @JvmStatic
+        fun ofLiveTransportIncoming(liveTransportIncoming: LiveTransportIncomingWebhookEvent) =
+            UnwrapWebhookEvent(liveTransportIncoming = liveTransportIncoming)
+
+        /**
+         * Sent when an incoming API SIP session is available for Realtime acceptance. The same
+         * pending session can also emit `live.transport.incoming`; the first successful Realtime or
+         * Live accept endpoint selects the runtime surface.
          */
         @JvmStatic
         fun ofRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent) =
@@ -701,16 +754,26 @@ private constructor(
         ): T
 
         /**
+         * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+         * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+         * session is available for Live acceptance. The same pending session can also emit
+         * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects
+         * the runtime surface.
+         */
+        @Deprecated("deprecated")
+        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+
+        /**
          * Sent when an incoming API SIP session is available for Live acceptance. The same pending
          * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
          * accept endpoint selects the runtime surface.
          */
-        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+        fun visitLiveTransportIncoming(liveTransportIncoming: LiveTransportIncomingWebhookEvent): T
 
         /**
          * Sent when an incoming API SIP session is available for Realtime acceptance. The same
-         * pending session can also emit `live.call.incoming`; the first successful Realtime or Live
-         * accept endpoint selects the runtime surface.
+         * pending session can also emit `live.transport.incoming`; the first successful Realtime or
+         * Live accept endpoint selects the runtime surface.
          */
         fun visitRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent): T
 
@@ -815,6 +878,11 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(liveCallIncoming = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "live.transport.incoming" -> {
+                    return tryDeserialize(node, jacksonTypeRef<LiveTransportIncomingWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(liveTransportIncoming = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "realtime.call.incoming" -> {
                     return tryDeserialize(node, jacksonTypeRef<RealtimeCallIncomingWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(realtimeCallIncoming = it, _json = json) }
@@ -878,6 +946,8 @@ private constructor(
                 value.fineTuningJobSucceeded != null ->
                     generator.writeObject(value.fineTuningJobSucceeded)
                 value.liveCallIncoming != null -> generator.writeObject(value.liveCallIncoming)
+                value.liveTransportIncoming != null ->
+                    generator.writeObject(value.liveTransportIncoming)
                 value.realtimeCallIncoming != null ->
                     generator.writeObject(value.realtimeCallIncoming)
                 value.responseCancelled != null -> generator.writeObject(value.responseCancelled)

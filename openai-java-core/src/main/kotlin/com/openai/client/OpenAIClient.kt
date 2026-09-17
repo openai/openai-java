@@ -18,6 +18,7 @@ import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.ImageService
+import com.openai.services.blocking.LiveService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.RealtimeService
@@ -121,6 +122,8 @@ interface OpenAIClient {
 
     fun responses(): ResponseService
 
+    fun live(): LiveService
+
     fun realtime(): RealtimeService
 
     /** Manage conversations and conversation items. */
@@ -212,6 +215,8 @@ interface OpenAIClient {
         fun admin(): AdminService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
+
+        fun live(): LiveService.WithRawResponse
 
         fun realtime(): RealtimeService.WithRawResponse
 

@@ -1613,11 +1613,17 @@ internal class BetaResponseOutputItemTest {
                 .id("id")
                 .result("result")
                 .status(BetaResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                .action(BetaResponseOutputItem.ImageGenerationCall.Action.GENERATE)
                 .agent(
                     BetaResponseOutputItem.ImageGenerationCall.Agent.builder()
                         .agentName("agent_name")
                         .build()
                 )
+                .background(BetaResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                .outputFormat(BetaResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
+                .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                .revisedPrompt("revised_prompt")
+                .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                 .build()
 
         val betaResponseOutputItem =
@@ -1665,11 +1671,17 @@ internal class BetaResponseOutputItemTest {
                     .id("id")
                     .result("result")
                     .status(BetaResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                    .action(BetaResponseOutputItem.ImageGenerationCall.Action.GENERATE)
                     .agent(
                         BetaResponseOutputItem.ImageGenerationCall.Agent.builder()
                             .agentName("agent_name")
                             .build()
                     )
+                    .background(BetaResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                    .outputFormat(BetaResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
+                    .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                    .revisedPrompt("revised_prompt")
+                    .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                     .build()
             )
 

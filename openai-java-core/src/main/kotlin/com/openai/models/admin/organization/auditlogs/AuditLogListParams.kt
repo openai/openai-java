@@ -60,7 +60,7 @@ private constructor(
     /**
      * Return only events with a `type` in one of these values. For example, `project.created`. For
      * all options, see the documentation for the
-     * [audit log object](https://platform.openai.com/docs/api-reference/audit-logs/object).
+     * [audit log object](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/audit_logs).
      */
     fun eventTypes(): Optional<List<EventType>> = Optional.ofNullable(eventTypes)
 
@@ -201,7 +201,7 @@ private constructor(
         /**
          * Return only events with a `type` in one of these values. For example, `project.created`.
          * For all options, see the documentation for the
-         * [audit log object](https://platform.openai.com/docs/api-reference/audit-logs/object).
+         * [audit log object](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/audit_logs).
          */
         fun eventTypes(eventTypes: List<EventType>?) = apply {
             this.eventTypes = eventTypes?.toMutableList()

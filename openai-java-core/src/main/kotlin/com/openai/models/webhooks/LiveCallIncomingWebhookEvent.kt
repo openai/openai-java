@@ -21,10 +21,12 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Sent when an incoming API SIP session is available for Live acceptance. The same pending session
- * can also emit `realtime.call.incoming`; the first successful Realtime or Live accept endpoint
- * selects the runtime surface.
+ * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during migration;
+ * new subscriptions to this event are not allowed. Sent when an incoming API SIP session is
+ * available for Live acceptance. The same pending session can also emit `realtime.call.incoming`;
+ * the first successful Realtime or Live accept endpoint selects the runtime surface.
  */
+@Deprecated("deprecated")
 class LiveCallIncomingWebhookEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -335,8 +337,9 @@ private constructor(
         ) : this(sessionId, sipHeaders, mutableMapOf())
 
         /**
-         * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-         * `call_id` in `realtime.call.incoming`.
+         * The `live_...` ID of the pending SIP session. Pass this value unchanged to Live call
+         * controls and sideband connections. The corresponding `realtime.call.incoming` event uses
+         * a separate `rtc_...` call ID.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -344,7 +347,8 @@ private constructor(
         fun sessionId(): String = sessionId.getRequired("session_id")
 
         /**
-         * Headers from the SIP Invite.
+         * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names, values,
+         * repeated entries, and order are preserved. Treat these values as untrusted call metadata.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -408,8 +412,9 @@ private constructor(
             }
 
             /**
-             * The Transceiver `rtc_...` ID of the pending SIP session. The same value appears as
-             * `call_id` in `realtime.call.incoming`.
+             * The `live_...` ID of the pending SIP session. Pass this value unchanged to Live call
+             * controls and sideband connections. The corresponding `realtime.call.incoming` event
+             * uses a separate `rtc_...` call ID.
              */
             fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
 
@@ -422,7 +427,11 @@ private constructor(
              */
             fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
 
-            /** Headers from the SIP Invite. */
+            /**
+             * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names,
+             * values, repeated entries, and order are preserved. Treat these values as untrusted
+             * call metadata.
+             */
             fun sipHeaders(sipHeaders: List<SipHeader>) = sipHeaders(JsonField.of(sipHeaders))
 
             /**

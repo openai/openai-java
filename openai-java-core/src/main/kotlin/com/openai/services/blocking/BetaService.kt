@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AgentService
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.RealtimeService
@@ -29,6 +30,8 @@ interface BetaService {
     )
     fun realtime(): RealtimeService
 
+    fun agents(): AgentService
+
     fun responses(): ResponseService
 
     fun chatkit(): ChatKitService
@@ -54,6 +57,8 @@ interface BetaService {
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         fun realtime(): RealtimeService.WithRawResponse
+
+        fun agents(): AgentService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
 

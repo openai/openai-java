@@ -271,7 +271,7 @@ private constructor(
     /**
      * Model ID used to process the batch, like `gpt-6-astra`. OpenAI offers a wide range of models
      * with different capabilities, performance characteristics, and price points. Refer to the
-     * [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * [model guide](https://developers.openai.com/api/docs/models) to browse and compare available
      * models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -776,7 +776,7 @@ private constructor(
         /**
          * Model ID used to process the batch, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
-         * to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         fun model(model: String) = model(JsonField.of(model))

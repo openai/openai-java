@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.58.0")
+implementation("com.openai:openai-java:4.63.3")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.58.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.58.0</version>
+  <version>4.63.3</version>
 </dependency>
 ```
 
@@ -87,7 +87,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.58.0")
+implementation("com.openai:openai-java-bedrock:4.63.3")
 ```
 
 <!-- x-release-please-end -->
@@ -1010,7 +1010,7 @@ may make the process of function calling simpler to understand and implement.
 _Function Calling_ is also supported for the Responses API. The usage is the same as described
 except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
 class to `addTool(Class<T>)` when building the parameters. In the response, look for
-[`RepoonseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
+[`ResponseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
 instances that are function calls. Parse the parameters to each function call to an instance of the
 class using
 [`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
@@ -1344,7 +1344,9 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`InvalidResourceIdException`](openai-java-core/src/main/kotlin/com/openai/errors/InvalidResourceIdException.kt): Local rejection of an empty resource ID or one exactly equal to `.` or `..`. Extends `IllegalArgumentException`, not `OpenAIException`; no HTTP request is sent.
+
+- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for SDK service, I/O, and data exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -1385,12 +1387,12 @@ import java.util.concurrent.CompletableFuture;
 
 CompletableFuture<JobListPageAsync> pageFuture = client.async().fineTuning().jobs().list();
 
-pageFuture.thenRun(page -> page.autoPager().subscribe(job -> {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(job -> {
     System.out.println(job);
 }));
 
 // If you need to handle errors or completion of the stream
-pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
     public void onNext(FineTuningJob job) {
         System.out.println(job);
@@ -1408,7 +1410,7 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Ha
 }));
 
 // Or use futures
-pageFuture.thenRun(page -> page.autoPager()
+pageFuture.thenAccept(page -> page.autoPager()
     .subscribe(job -> {
         System.out.println(job);
     })
