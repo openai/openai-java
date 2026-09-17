@@ -167,7 +167,7 @@ class GradleCacheTrustPolicyTest {
 
         val restoreSteps = artifactRestoreActions(workflow)
 
-        assertEquals(3, restoreSteps.size, "All exact-run cache consumers must remain protected.")
+        assertEquals(4, restoreSteps.size, "All exact-run cache consumers must remain protected.")
         restoreSteps.forEach { restoreStep ->
             assertEquals(
                 "\${{ needs.build.outputs.gradle-cache-artifact-id }}",
@@ -193,7 +193,7 @@ class GradleCacheTrustPolicyTest {
         val cacheEntry = temporaryDirectory.resolve(cacheKey).apply { writeText("cached classes") }
         val restoreSteps = artifactRestoreActions(workflow)
 
-        assertEquals(3, restoreSteps.size)
+        assertEquals(4, restoreSteps.size)
         restoreSteps.forEachIndexed { index, restoreStep ->
             val mergeMultiple =
                 restoreStep.inputs["merge-multiple"].equals("true", ignoreCase = true)

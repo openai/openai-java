@@ -51,7 +51,14 @@ class MergeQueuePolicyTest {
         val required = job(workflow("ci"), "required")
         assertEquals("always()", required["if"])
         assertEquals(
-            setOf("lint", "build", "test", "api_compatibility", "runtime_compatibility"),
+            setOf(
+                "lint",
+                "build",
+                "test",
+                "jackson_compatibility",
+                "api_compatibility",
+                "runtime_compatibility",
+            ),
             (required["needs"] as List<*>).toSet(),
         )
         val gate = steps(required).single { it["name"] == "Verify required jobs succeeded" }
@@ -61,6 +68,7 @@ class MergeQueuePolicyTest {
                 "LINT_RESULT" to "lint",
                 "BUILD_RESULT" to "build",
                 "TEST_RESULT" to "test",
+                "JACKSON_COMPATIBILITY_RESULT" to "jackson_compatibility",
                 "API_COMPATIBILITY_RESULT" to "api_compatibility",
                 "RUNTIME_COMPATIBILITY_RESULT" to "runtime_compatibility",
             )
@@ -79,7 +87,42 @@ class MergeQueuePolicyTest {
             }
         }
         for (event in listOf("push", "workflow_dispatch")) {
-            assertGate(script, event, success + ("API_COMPATIBILITY_RESULT" to "skipped"), 0)
+            val results = success + ("API_COMPATIBILITY_RESULT" to "skipped")
+            assertGate(script, event, results, 0)
+            for (result in listOf("failure", "cancelled", "skipped", "")) {
+                assertGate(script, event, results + ("JACKSON_COMPATIBILITY_RESULT" to result), 1)
+            }
+        }
+    }
+
+    @Test
+    fun `Jackson suite runs alongside downstream jobs with compiled outputs from build`() {
+        val workflow = workflow("ci")
+        val build = job(workflow, "build")
+        val buildCommand = steps(build).single { it["name"] == "Build SDK" }["run"]
+        assertEquals("./scripts/build -x :openai-java-core:testJacksonCompatibility", buildCommand)
+
+        val jackson = job(workflow, "jackson_compatibility")
+        assertEquals("build", jackson["needs"])
+        assertEquals("needs.build.result == 'success'", jackson["if"])
+        val test = steps(jackson).single { it["name"] == "Test older Jackson compatibility" }
+        assertEquals("./scripts/gradle :openai-java-core:testJacksonCompatibility", test["run"])
+        assertEquals(
+            (steps(build).single { it["name"] == "Build SDK" }["env"] as Map<*, *>)["GRADLE_OPTS"],
+            (test["env"] as Map<*, *>)["GRADLE_OPTS"],
+        )
+        assertEquals(
+            steps(build).single { it["name"] == "Set up Java" }["with"],
+            steps(jackson).single { it["name"] == "Set up Java" }["with"],
+        )
+        val restore = steps(jackson).single { it["name"] == "Restore exact-run Gradle build cache" }
+        assertEquals(
+            "\${{ needs.build.outputs.gradle-cache-artifact-id }}",
+            (restore["with"] as Map<*, *>)["artifact-ids"],
+        )
+        assertEquals("error", (restore["with"] as Map<*, *>)["digest-mismatch"])
+        for (consumer in listOf("test", "api_compatibility")) {
+            assertEquals("build", job(workflow, consumer)["needs"])
         }
     }
 
