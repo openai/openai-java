@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.64.0](https://github.com/openai/openai-java/compare/v4.63.3...v4.64.0) (2026-09-17)
+
+
+### Features
+
+* **api:** add compaction progress events ([#1005](https://github.com/openai/openai-java/issues/1005)) ([5014c02](https://github.com/openai/openai-java/commit/5014c025f88086026b4b1d44dd79428117b19b69))
+* reject unsafe resource IDs before transport ([#1007](https://github.com/openai/openai-java/issues/1007)) ([d6409aa](https://github.com/openai/openai-java/commit/d6409aaaf55c65bbe260b2b73dbbe581a581fb17))
+
 ## [4.63.3](https://github.com/openai/openai-java/compare/v4.63.2...v4.63.3) (2026-09-15)
 
 
