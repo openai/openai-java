@@ -88,13 +88,7 @@ val coreJar = tasks.named<Jar>("jar") {
 
 val coreSourcesJar = tasks.named<Jar>("kotlinSourcesJar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
-    from(
-        fileTree("src/main/kotlin").matching {
-            include(CoreCompilationClaimedSourceIncludeSpec())
-        }
-    ) {
-        into("main")
-    }
+    from(fileTree("src/main/kotlin").matching { include(CoreCompilationClaimedSourceIncludeSpec()) })
 }
 
 val verifyCoreCompilationArtifact =
