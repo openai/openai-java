@@ -19,6 +19,11 @@ on:
 permissions:
   contents: read
 
+# Skip incremental-compiler bookkeeping in fresh CI checkouts. Keep Gradle's build cache enabled
+# and use the same compiler mode in every job so compiled outputs share cache keys.
+env:
+  JAVA_OPTS: -Dorg.gradle.project.kotlin.incremental=false
+
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
