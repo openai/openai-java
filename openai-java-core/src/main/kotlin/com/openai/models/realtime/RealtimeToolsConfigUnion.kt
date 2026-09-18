@@ -384,6 +384,9 @@ private constructor(
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
          * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
+         *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
          * - Gmail: `connector_gmail`
@@ -397,6 +400,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
         /**
@@ -496,6 +500,7 @@ private constructor(
          *
          * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("connector_id")
         @ExcludeMissing
         fun _connectorId(): JsonField<ConnectorId> = connectorId
@@ -721,6 +726,10 @@ private constructor(
              * service connectors
              * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
              *
+             * This field is deprecated for models released after September 1, 2026. Use
+             * `server_url` to connect to a remote MCP server, or `tunnel_id` to connect through a
+             * Secure MCP Tunnel.
+             *
              * Currently supported `connector_id` values are:
              * - Dropbox: `connector_dropbox`
              * - Gmail: `connector_gmail`
@@ -731,6 +740,7 @@ private constructor(
              * - Outlook Email: `connector_outlookemail`
              * - SharePoint: `connector_sharepoint`
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
 
             /**
@@ -740,6 +750,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
                 this.connectorId = connectorId
             }
@@ -1571,6 +1582,9 @@ private constructor(
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
          * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
+         *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
          * - Gmail: `connector_gmail`
@@ -1581,6 +1595,7 @@ private constructor(
          * - Outlook Email: `connector_outlookemail`
          * - SharePoint: `connector_sharepoint`
          */
+        @Deprecated("deprecated")
         class ConnectorId @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
