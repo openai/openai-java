@@ -166,7 +166,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -203,7 +203,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -238,7 +238,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -285,7 +285,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -321,7 +321,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -357,7 +357,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response -> errorHandler.handle(response) }
         }
 
@@ -382,7 +382,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -417,7 +417,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -455,7 +455,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -493,7 +493,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response

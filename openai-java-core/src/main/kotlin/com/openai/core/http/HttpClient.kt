@@ -13,6 +13,11 @@ interface HttpClient : AutoCloseable {
 
     fun execute(request: HttpRequest): HttpResponse = execute(request, RequestOptions.none())
 
+    /**
+     * Starts an asynchronous request on the request-preparation completion thread.
+     *
+     * The transport is responsible for dispatching any blocking I/O to its executor.
+     */
     fun executeAsync(
         request: HttpRequest,
         requestOptions: RequestOptions = RequestOptions.none(),
