@@ -578,12 +578,14 @@ class ResponsesWebSocketTest {
 
     @Test
     fun `oversized complete messages are rejected before event delivery`() {
-        rejectedFrame { socket -> send(socket, "x".repeat(4096)) }
+        rejectedFrame("WebSocket message exceeds maxMessageBytes") { socket ->
+            send(socket, "x".repeat(4096))
+        }
     }
 
     @Test
     fun `fragmented message aggregate is bounded before event delivery`() {
-        rejectedFrame { socket ->
+        rejectedFrame("WebSocket message exceeds maxMessageBytes") { socket ->
             send(socket, "x".repeat(800), 1)
             send(socket, "x".repeat(800), 0x80)
         }
@@ -1248,14 +1250,21 @@ class ResponsesWebSocketTest {
 
     @Test
     fun `queued pong does not consume the application write budget`() {
-        val firstSent = CountDownLatch(1)
         val secondSent = CountDownLatch(1)
         Peer { socket, _ ->
-                assertThat(firstSent.await(5, TimeUnit.SECONDS)).isTrue()
+                // Establish frame order before queuing a pong behind the blocked write.
+                val firstByte = DataInputStream(socket.getInputStream()).readUnsignedByte()
+                assertThat(firstByte).isEqualTo(0x81)
                 send(socket, "p", 0x89)
                 send(socket, """{"type":"response.ping_processed"}""")
                 assertThat(secondSent.await(5, TimeUnit.SECONDS)).isTrue()
-                assertThat(mapper.readTree(readMessage(socket)).path("input").asText().length)
+                assertThat(
+                        mapper
+                            .readTree(readMessage(socket, firstByte = firstByte))
+                            .path("input")
+                            .asText()
+                            .length
+                    )
                     .isEqualTo(8 * 1024 * 1024)
                 val input = DataInputStream(socket.getInputStream())
                 assertThat(input.readUnsignedByte()).isEqualTo(0x8a)
@@ -1282,7 +1291,6 @@ class ResponsesWebSocketTest {
                                     .build()
                             )
                         )
-                        firstSent.countDown()
                         connection.receive().get(5, TimeUnit.SECONDS)
                         assertThatThrownBy { connection.send(command()) }
                             .isInstanceOf(IllegalStateException::class.java)
@@ -1555,20 +1563,20 @@ class ResponsesWebSocketTest {
 
     @Test
     fun `compressed frames are rejected when the server did not negotiate compression`() {
-        rejectedFrame { socket -> send(socket, "compressed", 0xc1) }
+        rejectedFrame("Unexpected rsv1 flag") { socket -> send(socket, "compressed", 0xc1) }
     }
 
-    private fun rejectedFrame(write: (Socket) -> Unit) {
+    private fun rejectedFrame(expectedMessage: String, write: (Socket) -> Unit) {
         val emit = CountDownLatch(1)
         Peer { socket, headers ->
                 assertThat(headers["sec-websocket-extensions"]).isNull()
                 assertThat(emit.await(5, TimeUnit.SECONDS)).isTrue()
-                write(socket)
-                // Protocol rejection may close gracefully or reset the connection.
+                // Rejection can close the connection before the peer finishes sending.
                 try {
+                    write(socket)
                     while (socket.getInputStream().read() != -1) {}
                 } catch (_: java.net.SocketException) {
-                    // The receive assertion below independently verifies rejection.
+                    // The receive assertion below independently verifies protocol rejection.
                 }
             }
             .use { peer ->
@@ -1586,6 +1594,7 @@ class ResponsesWebSocketTest {
                         emit.countDown()
                         assertThatThrownBy { it.receive().get(5, TimeUnit.SECONDS) }
                             .hasCauseInstanceOf(java.io.IOException::class.java)
+                            .hasRootCauseMessage(expectedMessage)
                     }
                     peer.await()
                 } finally {
