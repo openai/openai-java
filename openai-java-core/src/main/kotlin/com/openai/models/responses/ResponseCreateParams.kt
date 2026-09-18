@@ -5689,6 +5689,7 @@ private constructor(
     private constructor(
         private val comparisonResponseId: JsonField<String>,
         private val mode: JsonField<Mode>,
+        private val prewarm: JsonField<Boolean>,
         private val ttl: JsonField<Ttl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -5699,8 +5700,9 @@ private constructor(
             @ExcludeMissing
             comparisonResponseId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("prewarm") @ExcludeMissing prewarm: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(comparisonResponseId, mode, ttl, mutableMapOf())
+        ) : this(comparisonResponseId, mode, prewarm, ttl, mutableMapOf())
 
         /**
          * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this field
@@ -5723,6 +5725,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+        /**
+         * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+         * `true`, overrides the `generate` field to `false`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prewarm(): Optional<Boolean> = prewarm.getOptional("prewarm")
 
         /**
          * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
@@ -5750,6 +5761,13 @@ private constructor(
          * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [prewarm].
+         *
+         * Unlike [prewarm], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prewarm") @ExcludeMissing fun _prewarm(): JsonField<Boolean> = prewarm
 
         /**
          * Returns the raw JSON value of [ttl].
@@ -5781,6 +5799,7 @@ private constructor(
 
             private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var mode: JsonField<Mode> = JsonMissing.of()
+            private var prewarm: JsonField<Boolean> = JsonMissing.of()
             private var ttl: JsonField<Ttl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5788,6 +5807,7 @@ private constructor(
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
                 comparisonResponseId = promptCacheOptions.comparisonResponseId
                 mode = promptCacheOptions.mode
+                prewarm = promptCacheOptions.prewarm
                 ttl = promptCacheOptions.ttl
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
             }
@@ -5837,6 +5857,21 @@ private constructor(
             fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
 
             /**
+             * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+             * `true`, overrides the `generate` field to `false`.
+             */
+            fun prewarm(prewarm: Boolean) = prewarm(JsonField.of(prewarm))
+
+            /**
+             * Sets [Builder.prewarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prewarm] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prewarm(prewarm: JsonField<Boolean>) = apply { this.prewarm = prewarm }
+
+            /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
              * by the request. Defaults to `30m`, which is currently the only supported value. The
              * backend may retain cache entries for longer.
@@ -5880,6 +5915,7 @@ private constructor(
                 PromptCacheOptions(
                     comparisonResponseId,
                     mode,
+                    prewarm,
                     ttl,
                     additionalProperties.toMutableMap(),
                 )
@@ -5903,6 +5939,7 @@ private constructor(
 
             comparisonResponseId()
             mode().ifPresent { it.validate() }
+            prewarm()
             ttl().ifPresent { it.validate() }
             validated = true
         }
@@ -5925,6 +5962,7 @@ private constructor(
         internal fun validity(): Int =
             (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
                 (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (prewarm.asKnown().isPresent) 1 else 0) +
                 (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
@@ -6215,18 +6253,19 @@ private constructor(
             return other is PromptCacheOptions &&
                 comparisonResponseId == other.comparisonResponseId &&
                 mode == other.mode &&
+                prewarm == other.prewarm &&
                 ttl == other.ttl &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(comparisonResponseId, mode, ttl, additionalProperties)
+            Objects.hash(comparisonResponseId, mode, prewarm, ttl, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, prewarm=$prewarm, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     /**
