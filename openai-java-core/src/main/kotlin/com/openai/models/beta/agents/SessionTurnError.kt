@@ -225,9 +225,6 @@ private constructor(
             /** The organization has reached a usage, plan, or billing limit. */
             @JvmField val USAGE_LIMIT_EXCEEDED = of("usage_limit_exceeded")
 
-            /** The organization has no API credits remaining. */
-            @JvmField val CREDIT_BALANCE_EXHAUSTED = of("credit_balance_exhausted")
-
             /** The request exceeds the available rate limit. */
             @JvmField val RATE_LIMIT_EXCEEDED = of("rate_limit_exceeded")
 
@@ -278,8 +275,6 @@ private constructor(
             SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
-            /** The organization has no API credits remaining. */
-            CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
             RATE_LIMIT_EXCEEDED,
             /** The model service is temporarily overloaded. */
@@ -324,8 +319,6 @@ private constructor(
             SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
-            /** The organization has no API credits remaining. */
-            CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
             RATE_LIMIT_EXCEEDED,
             /** The model service is temporarily overloaded. */
@@ -368,7 +361,6 @@ private constructor(
                 CONTEXT_LENGTH_EXCEEDED -> Value.CONTEXT_LENGTH_EXCEEDED
                 SESSION_BUDGET_EXCEEDED -> Value.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Value.USAGE_LIMIT_EXCEEDED
-                CREDIT_BALANCE_EXHAUSTED -> Value.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
                 SERVER_OVERLOADED -> Value.SERVER_OVERLOADED
                 CYBER_POLICY -> Value.CYBER_POLICY
@@ -399,7 +391,6 @@ private constructor(
                 CONTEXT_LENGTH_EXCEEDED -> Known.CONTEXT_LENGTH_EXCEEDED
                 SESSION_BUDGET_EXCEEDED -> Known.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Known.USAGE_LIMIT_EXCEEDED
-                CREDIT_BALANCE_EXHAUSTED -> Known.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
                 SERVER_OVERLOADED -> Known.SERVER_OVERLOADED
                 CYBER_POLICY -> Known.CYBER_POLICY

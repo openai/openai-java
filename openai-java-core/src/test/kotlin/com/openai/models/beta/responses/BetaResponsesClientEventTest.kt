@@ -96,7 +96,6 @@ internal class BetaResponsesClientEventTest {
                         .mode(
                             BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
                         )
-                        .prewarm(true)
                         .ttl(BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
@@ -252,7 +251,6 @@ internal class BetaResponsesClientEventTest {
                                 BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode
                                     .IMPLICIT
                             )
-                            .prewarm(true)
                             .ttl(
                                 BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M
                             )

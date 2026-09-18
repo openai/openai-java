@@ -12,17 +12,6 @@ internal class SessionUpdateParamsTest {
     fun create() {
         SessionUpdateParams.builder()
             .sessionId("session_id")
-            .agent(
-                SessionUpdateParams.Agent.builder()
-                    .model("model")
-                    .reasoning(
-                        SessionUpdateParams.Agent.Reasoning.builder()
-                            .effort(SessionUpdateParams.Agent.Reasoning.Effort.NONE)
-                            .build()
-                    )
-                    .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
-                    .build()
-            )
             .metadata(
                 SessionUpdateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -45,17 +34,6 @@ internal class SessionUpdateParamsTest {
         val params =
             SessionUpdateParams.builder()
                 .sessionId("session_id")
-                .agent(
-                    SessionUpdateParams.Agent.builder()
-                        .model("model")
-                        .reasoning(
-                            SessionUpdateParams.Agent.Reasoning.builder()
-                                .effort(SessionUpdateParams.Agent.Reasoning.Effort.NONE)
-                                .build()
-                        )
-                        .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
-                        .build()
-                )
                 .metadata(
                     SessionUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -65,18 +43,6 @@ internal class SessionUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.agent())
-            .contains(
-                SessionUpdateParams.Agent.builder()
-                    .model("model")
-                    .reasoning(
-                        SessionUpdateParams.Agent.Reasoning.builder()
-                            .effort(SessionUpdateParams.Agent.Reasoning.Effort.NONE)
-                            .build()
-                    )
-                    .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
-                    .build()
-            )
         assertThat(body.metadata())
             .contains(
                 SessionUpdateParams.Metadata.builder()

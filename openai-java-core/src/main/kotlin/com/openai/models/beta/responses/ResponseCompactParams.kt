@@ -1313,6 +1313,8 @@ private constructor(
 
             @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
 
+            @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
+
             @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
 
             @JvmField val GPT_5 = of("gpt-5")
@@ -1372,10 +1374,6 @@ private constructor(
             @JvmField val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
 
             @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
-
-            @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
-
-            @JvmField val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
 
             @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
@@ -1445,8 +1443,6 @@ private constructor(
 
             @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
-            @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
-
             @JvmField val O1_PRO = of("o1-pro")
 
             @JvmField val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
@@ -1510,6 +1506,7 @@ private constructor(
             GPT_5_1,
             GPT_5_1_2025_11_13,
             GPT_5_1_CODEX,
+            GPT_5_1_MINI,
             GPT_5_1_CHAT_LATEST,
             GPT_5,
             GPT_5_MINI,
@@ -1540,8 +1537,6 @@ private constructor(
             GPT_4O_2024_11_20,
             GPT_4O_2024_08_06,
             GPT_4O_2024_05_13,
-            GPT_AUDIO_MINI,
-            GPT_AUDIO_MINI_2025_12_15,
             GPT_4O_AUDIO_PREVIEW,
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -1575,7 +1570,6 @@ private constructor(
             GPT_3_5_TURBO_1106,
             GPT_3_5_TURBO_0125,
             GPT_3_5_TURBO_16K_0613,
-            GPT_5_1_MINI,
             O1_PRO,
             O1_PRO_2025_03_19,
             O3_PRO,
@@ -1627,6 +1621,7 @@ private constructor(
             GPT_5_1,
             GPT_5_1_2025_11_13,
             GPT_5_1_CODEX,
+            GPT_5_1_MINI,
             GPT_5_1_CHAT_LATEST,
             GPT_5,
             GPT_5_MINI,
@@ -1657,8 +1652,6 @@ private constructor(
             GPT_4O_2024_11_20,
             GPT_4O_2024_08_06,
             GPT_4O_2024_05_13,
-            GPT_AUDIO_MINI,
-            GPT_AUDIO_MINI_2025_12_15,
             GPT_4O_AUDIO_PREVIEW,
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -1692,7 +1685,6 @@ private constructor(
             GPT_3_5_TURBO_1106,
             GPT_3_5_TURBO_0125,
             GPT_3_5_TURBO_16K_0613,
-            GPT_5_1_MINI,
             O1_PRO,
             O1_PRO_2025_03_19,
             O3_PRO,
@@ -1745,6 +1737,7 @@ private constructor(
                 GPT_5_1 -> Value.GPT_5_1
                 GPT_5_1_2025_11_13 -> Value.GPT_5_1_2025_11_13
                 GPT_5_1_CODEX -> Value.GPT_5_1_CODEX
+                GPT_5_1_MINI -> Value.GPT_5_1_MINI
                 GPT_5_1_CHAT_LATEST -> Value.GPT_5_1_CHAT_LATEST
                 GPT_5 -> Value.GPT_5
                 GPT_5_MINI -> Value.GPT_5_MINI
@@ -1775,8 +1768,6 @@ private constructor(
                 GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
-                GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
-                GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -1810,7 +1801,6 @@ private constructor(
                 GPT_3_5_TURBO_1106 -> Value.GPT_3_5_TURBO_1106
                 GPT_3_5_TURBO_0125 -> Value.GPT_3_5_TURBO_0125
                 GPT_3_5_TURBO_16K_0613 -> Value.GPT_3_5_TURBO_16K_0613
-                GPT_5_1_MINI -> Value.GPT_5_1_MINI
                 O1_PRO -> Value.O1_PRO
                 O1_PRO_2025_03_19 -> Value.O1_PRO_2025_03_19
                 O3_PRO -> Value.O3_PRO
@@ -1864,6 +1854,7 @@ private constructor(
                 GPT_5_1 -> Known.GPT_5_1
                 GPT_5_1_2025_11_13 -> Known.GPT_5_1_2025_11_13
                 GPT_5_1_CODEX -> Known.GPT_5_1_CODEX
+                GPT_5_1_MINI -> Known.GPT_5_1_MINI
                 GPT_5_1_CHAT_LATEST -> Known.GPT_5_1_CHAT_LATEST
                 GPT_5 -> Known.GPT_5
                 GPT_5_MINI -> Known.GPT_5_MINI
@@ -1894,8 +1885,6 @@ private constructor(
                 GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
-                GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
-                GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -1929,7 +1918,6 @@ private constructor(
                 GPT_3_5_TURBO_1106 -> Known.GPT_3_5_TURBO_1106
                 GPT_3_5_TURBO_0125 -> Known.GPT_3_5_TURBO_0125
                 GPT_3_5_TURBO_16K_0613 -> Known.GPT_3_5_TURBO_16K_0613
-                GPT_5_1_MINI -> Known.GPT_5_1_MINI
                 O1_PRO -> Known.O1_PRO
                 O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
                 O3_PRO -> Known.O3_PRO

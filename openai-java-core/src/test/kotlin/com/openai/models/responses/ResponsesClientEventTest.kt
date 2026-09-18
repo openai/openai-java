@@ -90,7 +90,6 @@ internal class ResponsesClientEventTest {
                     ResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
                         .comparisonResponseId("resp_123")
                         .mode(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT)
-                        .prewarm(true)
                         .ttl(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
@@ -234,7 +233,6 @@ internal class ResponsesClientEventTest {
                             .mode(
                                 ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
                             )
-                            .prewarm(true)
                             .ttl(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
