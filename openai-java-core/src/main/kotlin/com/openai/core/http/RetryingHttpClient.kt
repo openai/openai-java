@@ -64,9 +64,12 @@ private constructor(
                     null
                 }
 
-            val backoffDuration = getRetryBackoffDuration(retries, response)
-            // All responses must be closed, so close the failed one before retrying.
-            response?.close()
+            val backoffDuration =
+                try {
+                    getRetryBackoffDuration(retries, response)
+                } finally {
+                    response?.close()
+                }
             sleeper.sleep(backoffDuration)
         }
     }
@@ -113,9 +116,12 @@ private constructor(
                             }
                         }
 
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
+                        val backoffDuration =
+                            try {
+                                getRetryBackoffDuration(retries, response)
+                            } finally {
+                                response?.close()
+                            }
                         return sleeper.sleepAsync(backoffDuration).thenCompose {
                             executeWithRetries(requestWithRetryCount, requestOptions)
                         }
@@ -207,6 +213,8 @@ private constructor(
                                     ),
                                 )
                             } catch (e: DateTimeParseException) {
+                                null
+                            } catch (e: ArithmeticException) {
                                 null
                             }
                     }
