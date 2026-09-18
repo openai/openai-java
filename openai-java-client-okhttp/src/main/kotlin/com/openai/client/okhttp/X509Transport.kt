@@ -37,7 +37,6 @@ private constructor(
 
         private const val ISSUER_HOST = "mtls.auth.openai.com"
         private val API_HOSTS = setOf("mtls.api.openai.com", "mtls-eu.api.openai.com")
-        private const val HTTPS_PORT = 443
     }
 
     /** A builder for [X509Transport]. */
@@ -121,20 +120,7 @@ private constructor(
             return OkHttpClient(
                 client.okHttpClient
                     .newBuilder()
-                    .addInterceptor { chain ->
-                        val request = chain.request()
-                        val url = request.url
-                        if (
-                            url.scheme != "https" ||
-                                url.host !in allowedHosts ||
-                                url.port != HTTPS_PORT ||
-                                url.encodedUsername.isNotEmpty() ||
-                                url.encodedPassword.isNotEmpty()
-                        ) {
-                            throw IOException("X.509 request destination is not authorized")
-                        }
-                        chain.proceed(request)
-                    }
+                    .addInterceptor(X509OriginInterceptor(allowedHosts))
                     .build()
             )
         }
@@ -152,6 +138,26 @@ private constructor(
             }
             throw error
         }
+    }
+}
+
+/** The same owned origin boundary applies before either an HTTP request or WebSocket upgrade. */
+internal class X509OriginInterceptor(private val allowedHosts: Set<String>) : okhttp3.Interceptor {
+    fun check(url: okhttp3.HttpUrl) {
+        if (
+            url.scheme != "https" ||
+                url.host !in allowedHosts ||
+                url.port != 443 ||
+                url.encodedUsername.isNotEmpty() ||
+                url.encodedPassword.isNotEmpty()
+        ) {
+            throw IOException("X.509 request destination is not authorized")
+        }
+    }
+
+    override fun intercept(chain: okhttp3.Interceptor.Chain): okhttp3.Response {
+        check(chain.request().url)
+        return chain.proceed(chain.request())
     }
 }
 

@@ -55,6 +55,12 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService =
         ResponseServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): com.openai.core.http.ResponseConnection =
+        com.openai.core.http.ResponseConnection.connect(clientOptions, options, requestOptions)
+
     override fun inputItems(): InputItemService = inputItems
 
     override fun inputTokens(): InputTokenService = inputTokens

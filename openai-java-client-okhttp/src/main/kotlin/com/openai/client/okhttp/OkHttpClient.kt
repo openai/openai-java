@@ -40,7 +40,68 @@ import okio.buffer
 import okio.sink
 
 class OkHttpClient
-internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) : HttpClient {
+internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) :
+    HttpClient, com.openai.core.http.WebSocketClient {
+
+    private val webSockets =
+        java.util.concurrent.ConcurrentHashMap.newKeySet<
+            com.openai.core.http.WebSocketClient.Connection
+        >()
+    private val closed = java.util.concurrent.atomic.AtomicBoolean()
+    private val pendingWebSockets =
+        java.util.concurrent.ConcurrentHashMap.newKeySet<
+            CompletableFuture<com.openai.core.http.WebSocketClient.Connection>
+        >()
+
+    override fun connectWebSocket(
+        request: HttpRequest,
+        options: RequestOptions,
+        maxMessageBytes: Int,
+        listener: com.openai.core.http.WebSocketClient.Listener,
+    ): CompletableFuture<com.openai.core.http.WebSocketClient.Connection> {
+        check(!closed.get()) { "Client is closed" }
+        val finished = java.util.concurrent.atomic.AtomicBoolean()
+        val current =
+            java.util.concurrent.atomic.AtomicReference<
+                com.openai.core.http.WebSocketClient.Connection
+            >()
+        val result =
+            BoundedWebSocket.connect(
+                okHttpClient,
+                request.toRequest(okHttpClient, options.timeout),
+                options,
+                maxMessageBytes,
+                object : com.openai.core.http.WebSocketClient.Listener {
+                    override fun onMessage(text: String) = listener.onMessage(text)
+
+                    override fun onClosed(code: Int) {
+                        finished.set(true)
+                        current.get()?.let { webSockets.remove(it) }
+                        listener.onClosed(code)
+                    }
+
+                    override fun onFailure(error: Throwable) {
+                        finished.set(true)
+                        current.get()?.let { webSockets.remove(it) }
+                        listener.onFailure(error)
+                    }
+                },
+            )
+        pendingWebSockets.add(result)
+        if (closed.get()) result.cancel(true)
+        result.whenComplete { connection, error ->
+            pendingWebSockets.remove(result)
+            if (error == null) {
+                current.set(connection)
+                webSockets.add(connection)
+                if (closed.get() || finished.get()) {
+                    webSockets.remove(connection)
+                    connection.close()
+                }
+            }
+        }
+        return result
+    }
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
@@ -87,6 +148,11 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     }
 
     override fun close() {
+        closed.set(true)
+        pendingWebSockets.forEach { it.cancel(true) }
+        pendingWebSockets.clear()
+        webSockets.forEach { it.close() }
+        webSockets.clear()
         okHttpClient.dispatcher.executorService.shutdown()
         okHttpClient.connectionPool.evictAll()
         okHttpClient.cache?.close()
@@ -108,6 +174,24 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     }
 
     companion object {
+        @get:JvmSynthetic
+        internal val apiKeyRedirectInterceptor =
+            okhttp3.Interceptor { chain ->
+                val request = chain.request()
+                val originalUrl = chain.call().request().url
+                val url = request.url
+                val sameOrigin =
+                    originalUrl.scheme == url.scheme &&
+                        originalUrl.host == url.host &&
+                        originalUrl.port == url.port
+                // OkHttp strips Authorization on cross-origin redirects, but does not
+                // recognize the Azure API-key header as a credential.
+                chain.proceed(
+                    if (sameOrigin) request
+                    else request.newBuilder().removeHeader("api-key").build()
+                )
+            }
+
         @JvmStatic fun builder() = Builder()
     }
 
@@ -184,21 +268,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                     .retryOnConnectionFailure(false)
                     .followRedirects(followRedirects)
                     .followSslRedirects(followRedirects)
-                    .addNetworkInterceptor { chain ->
-                        val request = chain.request()
-                        val originalUrl = chain.call().request().url
-                        val url = request.url
-                        val sameOrigin =
-                            originalUrl.scheme == url.scheme &&
-                                originalUrl.host == url.host &&
-                                originalUrl.port == url.port
-                        // OkHttp strips Authorization on cross-origin redirects, but does not
-                        // recognize the Azure API-key header as a credential.
-                        chain.proceed(
-                            if (sameOrigin) request
-                            else request.newBuilder().removeHeader("api-key").build()
-                        )
-                    }
+                    .addNetworkInterceptor(apiKeyRedirectInterceptor)
                     .connectTimeout(timeout.connect())
                     .readTimeout(timeout.read())
                     .writeTimeout(timeout.write())
@@ -258,7 +328,10 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     }
 }
 
-private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient?): Request {
+private fun HttpRequest.toRequest(
+    client: okhttp3.OkHttpClient?,
+    timeout: Timeout? = null,
+): Request {
     var body: RequestBody? = body?.toRequestBody()
     if (body == null && requiresBody(method)) {
         body = "".toRequestBody()
@@ -268,19 +341,14 @@ private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient?): Request {
     headers.names().forEach { name -> headers.values(name).forEach { builder.addHeader(name, it) } }
 
     if (client != null) {
-        if (
-            !headers.names().contains("X-Stainless-Read-Timeout") && client.readTimeoutMillis != 0
-        ) {
-            builder.addHeader(
-                "X-Stainless-Read-Timeout",
-                Duration.ofMillis(client.readTimeoutMillis.toLong()).seconds.toString(),
-            )
+        val readTimeout = timeout?.read() ?: Duration.ofMillis(client.readTimeoutMillis.toLong())
+        val requestTimeout =
+            timeout?.request() ?: Duration.ofMillis(client.callTimeoutMillis.toLong())
+        if (!headers.names().contains("X-Stainless-Read-Timeout") && !readTimeout.isZero) {
+            builder.addHeader("X-Stainless-Read-Timeout", readTimeout.seconds.toString())
         }
-        if (!headers.names().contains("X-Stainless-Timeout") && client.callTimeoutMillis != 0) {
-            builder.addHeader(
-                "X-Stainless-Timeout",
-                Duration.ofMillis(client.callTimeoutMillis.toLong()).seconds.toString(),
-            )
+        if (!headers.names().contains("X-Stainless-Timeout") && !requestTimeout.isZero) {
+            builder.addHeader("X-Stainless-Timeout", requestTimeout.seconds.toString())
         }
     }
 

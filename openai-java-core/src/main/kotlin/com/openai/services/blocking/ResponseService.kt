@@ -36,6 +36,27 @@ interface ResponseService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
+    /** Opens a managed Responses WebSocket. Close the returned connection when finished. */
+    @MustBeClosed
+    fun connect(): com.openai.core.http.ResponseConnection =
+        connect(com.openai.core.http.ResponseWebSocketOptions.defaults(), RequestOptions.none())
+
+    /** @see connect */
+    @MustBeClosed
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions
+    ): com.openai.core.http.ResponseConnection = connect(options, RequestOptions.none())
+
+    /** @see connect */
+    @MustBeClosed
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): com.openai.core.http.ResponseConnection =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
     fun inputItems(): InputItemService
 
     fun inputTokens(): InputTokenService

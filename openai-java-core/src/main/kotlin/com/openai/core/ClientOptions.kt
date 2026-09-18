@@ -140,12 +140,24 @@ private constructor(
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
+    private val webSocketLifecycle: WebSocketLifecycle,
 ) {
 
     init {
         if (checkJacksonVersionCompatibility) {
             checkJacksonVersionCompatibility()
         }
+    }
+
+    // Derived client options share the transport owner, including openings awaiting authentication.
+    private class WebSocketLifecycle {
+        val pending =
+            java.util.concurrent.ConcurrentHashMap.newKeySet<
+                java.util.concurrent.CompletableFuture<
+                    com.openai.core.http.WebSocketClient.Connection
+                >
+            >()
+        val closed = java.util.concurrent.atomic.AtomicBoolean()
     }
 
     /**
@@ -164,6 +176,102 @@ private constructor(
     fun project(): Optional<String> = Optional.ofNullable(project)
 
     fun webhookSecret(): Optional<String> = Optional.ofNullable(webhookSecret)
+
+    @JvmSynthetic
+    internal fun requireWebSocketTransport(): com.openai.core.http.WebSocketClient =
+        originalHttpClient as? com.openai.core.http.WebSocketClient
+            ?: throw UnsupportedOperationException(
+                "The configured HTTP client does not support WebSockets"
+            )
+
+    @JvmSynthetic internal fun isWebSocketClosed(): Boolean = webSocketLifecycle.closed.get()
+
+    @JvmSynthetic
+    internal fun connectWebSocket(
+        request: com.openai.core.http.HttpRequest,
+        options: RequestOptions,
+        maxMessageBytes: Int,
+        listener: com.openai.core.http.WebSocketClient.Listener,
+    ): java.util.concurrent.CompletableFuture<com.openai.core.http.WebSocketClient.Connection> {
+        val transport = requireWebSocketTransport()
+        check(!webSocketLifecycle.closed.get()) { "Client is closed" }
+        val result =
+            java.util.concurrent.CompletableFuture<
+                com.openai.core.http.WebSocketClient.Connection
+            >()
+        webSocketLifecycle.pending.add(result)
+        result.whenComplete { _, _ -> webSocketLifecycle.pending.remove(result) }
+        if (webSocketLifecycle.closed.get()) {
+            result.cancel(true)
+            return result
+        }
+        val authenticated =
+            try {
+                when {
+                    httpRequestAuthenticator != null ->
+                        httpRequestAuthenticator.authenticateAsync(request)
+                    credential is WorkloadIdentityCredential ->
+                        credential.getAuth().getTokenAsync().thenApply {
+                            request
+                                .toBuilder()
+                                .replaceHeaders("Authorization", "Bearer $it")
+                                .build()
+                        }
+                    else -> java.util.concurrent.CompletableFuture.completedFuture(request)
+                }
+            } catch (error: Exception) {
+                result.completeExceptionally(error)
+                return result
+            }
+        val opening =
+            java.util.concurrent.atomic.AtomicReference<
+                java.util.concurrent.CompletableFuture<
+                    com.openai.core.http.WebSocketClient.Connection
+                >
+            >()
+        result.whenComplete { _, _ ->
+            if (result.isCancelled) {
+                authenticated.cancel(true)
+                opening.get()?.cancel(true)
+            }
+        }
+        authenticated.whenComplete { prepared, failure ->
+            if (failure != null) result.completeExceptionally(failure)
+            else if (!result.isDone) {
+                try {
+                    val pending =
+                        transport.connectWebSocket(
+                            prepared,
+                            options.applyDefaults(RequestOptions.from(this)),
+                            maxMessageBytes,
+                            listener,
+                        )
+                    opening.set(pending)
+                    if (result.isCancelled) pending.cancel(true)
+                    pending.whenComplete { connection, error ->
+                        if (error != null) {
+                            if (
+                                httpRequestAuthenticator == null &&
+                                    credential is WorkloadIdentityCredential &&
+                                    error is com.openai.core.http.WebSocketHandshakeException &&
+                                    error.statusCode == 401
+                            ) {
+                                credential
+                                    .getAuth()
+                                    .invalidateToken(
+                                        prepared.headers.values("Authorization").singleOrNull()
+                                    )
+                            }
+                            result.completeExceptionally(error)
+                        } else if (!result.complete(connection)) connection.close()
+                    }
+                } catch (error: Exception) {
+                    result.completeExceptionally(error)
+                }
+            }
+        }
+        return result
+    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -194,6 +302,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
+        private var webSocketLifecycle = WebSocketLifecycle()
         private var httpRequestAuthenticator: HttpRequestAuthenticator? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
@@ -225,6 +334,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
+            webSocketLifecycle = clientOptions.webSocketLifecycle
             httpRequestAuthenticator = clientOptions.httpRequestAuthenticator
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
@@ -264,7 +374,8 @@ private constructor(
          * This class takes ownership of the client and closes it when closed.
          */
         fun httpClient(httpClient: HttpClient) = apply {
-            this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+            this.httpClient = PhantomReachableClosingHttpClient.wrap(httpClient)
+            webSocketLifecycle = WebSocketLifecycle()
         }
 
         /**
@@ -805,6 +916,7 @@ private constructor(
                 organization,
                 project,
                 webhookSecret,
+                webSocketLifecycle,
             )
         }
     }
@@ -820,6 +932,9 @@ private constructor(
      * that needs to aggressively release unused resources, then you may call this method.
      */
     fun close() {
+        webSocketLifecycle.closed.set(true)
+        webSocketLifecycle.pending.forEach { it.cancel(true) }
+        webSocketLifecycle.pending.clear()
         httpClient.close()
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
         sleeper.close()
