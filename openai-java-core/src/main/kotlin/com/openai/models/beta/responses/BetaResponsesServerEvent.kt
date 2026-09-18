@@ -52,7 +52,6 @@ private constructor(
     private val responseCodeInterpreterCallInterpreting:
         BetaResponseCodeInterpreterCallInterpretingEvent? =
         null,
-    private val responseCompactionCompacting: BetaResponseCompactionCompactingEvent? = null,
     private val responseCompleted: BetaResponseCompletedEvent? = null,
     private val responseContentPartAdded: BetaResponseContentPartAddedEvent? = null,
     private val responseContentPartDone: BetaResponseContentPartDoneEvent? = null,
@@ -162,13 +161,6 @@ private constructor(
     fun responseCodeInterpreterCallInterpreting():
         Optional<BetaResponseCodeInterpreterCallInterpretingEvent> =
         Optional.ofNullable(responseCodeInterpreterCallInterpreting)
-
-    /**
-     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
-     * content.
-     */
-    fun responseCompactionCompacting(): Optional<BetaResponseCompactionCompactingEvent> =
-        Optional.ofNullable(responseCompactionCompacting)
 
     /** Emitted when the model response is complete. */
     fun responseCompleted(): Optional<BetaResponseCompletedEvent> =
@@ -483,10 +475,6 @@ private constructor(
                     responseCodeInterpreterCallInterpreting._additionalProperties()["stream_id"]
                         ?: JsonMissing.of()
 
-                responseCompactionCompacting != null ->
-                    responseCompactionCompacting._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
-
                 responseCompleted != null ->
                     responseCompleted._additionalProperties()["stream_id"] ?: JsonMissing.of()
 
@@ -703,8 +691,6 @@ private constructor(
     fun isResponseCodeInterpreterCallInterpreting(): Boolean =
         responseCodeInterpreterCallInterpreting != null
 
-    fun isResponseCompactionCompacting(): Boolean = responseCompactionCompacting != null
-
     fun isResponseCompleted(): Boolean = responseCompleted != null
 
     fun isResponseContentPartAdded(): Boolean = responseContentPartAdded != null
@@ -856,13 +842,6 @@ private constructor(
         responseCodeInterpreterCallInterpreting.getOrThrow(
             "responseCodeInterpreterCallInterpreting"
         )
-
-    /**
-     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
-     * content.
-     */
-    fun asResponseCompactionCompacting(): BetaResponseCompactionCompactingEvent =
-        responseCompactionCompacting.getOrThrow("responseCompactionCompacting")
 
     /** Emitted when the model response is complete. */
     fun asResponseCompleted(): BetaResponseCompletedEvent =
@@ -1188,8 +1167,6 @@ private constructor(
                 visitor.visitResponseCodeInterpreterCallInterpreting(
                     responseCodeInterpreterCallInterpreting
                 )
-            responseCompactionCompacting != null ->
-                visitor.visitResponseCompactionCompacting(responseCompactionCompacting)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
             responseContentPartAdded != null ->
                 visitor.visitResponseContentPartAdded(responseContentPartAdded)
@@ -1371,12 +1348,6 @@ private constructor(
                         BetaResponseCodeInterpreterCallInterpretingEvent
                 ) {
                     responseCodeInterpreterCallInterpreting.validate()
-                }
-
-                override fun visitResponseCompactionCompacting(
-                    responseCompactionCompacting: BetaResponseCompactionCompactingEvent
-                ) {
-                    responseCompactionCompacting.validate()
                 }
 
                 override fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent) {
@@ -1757,10 +1728,6 @@ private constructor(
                         BetaResponseCodeInterpreterCallInterpretingEvent
                 ) = responseCodeInterpreterCallInterpreting.validity()
 
-                override fun visitResponseCompactionCompacting(
-                    responseCompactionCompacting: BetaResponseCompactionCompactingEvent
-                ) = responseCompactionCompacting.validity()
-
                 override fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent) =
                     responseCompleted.validity()
 
@@ -1993,7 +1960,6 @@ private constructor(
             responseCodeInterpreterCallInProgress == other.responseCodeInterpreterCallInProgress &&
             responseCodeInterpreterCallInterpreting ==
                 other.responseCodeInterpreterCallInterpreting &&
-            responseCompactionCompacting == other.responseCompactionCompacting &&
             responseCompleted == other.responseCompleted &&
             responseContentPartAdded == other.responseContentPartAdded &&
             responseContentPartDone == other.responseContentPartDone &&
@@ -2062,7 +2028,6 @@ private constructor(
             responseCodeInterpreterCallCompleted,
             responseCodeInterpreterCallInProgress,
             responseCodeInterpreterCallInterpreting,
-            responseCompactionCompacting,
             responseCompleted,
             responseContentPartAdded,
             responseContentPartDone,
@@ -2139,8 +2104,6 @@ private constructor(
                 "BetaResponsesServerEvent{responseCodeInterpreterCallInProgress=$responseCodeInterpreterCallInProgress}"
             responseCodeInterpreterCallInterpreting != null ->
                 "BetaResponsesServerEvent{responseCodeInterpreterCallInterpreting=$responseCodeInterpreterCallInterpreting}"
-            responseCompactionCompacting != null ->
-                "BetaResponsesServerEvent{responseCompactionCompacting=$responseCompactionCompacting}"
             responseCompleted != null ->
                 "BetaResponsesServerEvent{responseCompleted=$responseCompleted}"
             responseContentPartAdded != null ->
@@ -2318,15 +2281,6 @@ private constructor(
             BetaResponsesServerEvent(
                 responseCodeInterpreterCallInterpreting = responseCodeInterpreterCallInterpreting
             )
-
-        /**
-         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
-         * content.
-         */
-        @JvmStatic
-        fun ofResponseCompactionCompacting(
-            responseCompactionCompacting: BetaResponseCompactionCompactingEvent
-        ) = BetaResponsesServerEvent(responseCompactionCompacting = responseCompactionCompacting)
 
         /** Emitted when the model response is complete. */
         @JvmStatic
@@ -2799,14 +2753,6 @@ private constructor(
                 BetaResponseCodeInterpreterCallInterpretingEvent
         ): T
 
-        /**
-         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
-         * content.
-         */
-        fun visitResponseCompactionCompacting(
-            responseCompactionCompacting: BetaResponseCompactionCompactingEvent
-        ): T
-
         /** Emitted when the model response is complete. */
         fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent): T
 
@@ -3205,18 +3151,6 @@ private constructor(
                         ?.let {
                             BetaResponsesServerEvent(
                                 responseCodeInterpreterCallInterpreting = it,
-                                _json = json,
-                            )
-                        } ?: BetaResponsesServerEvent(_json = json)
-                }
-                "response.compaction.compacting" -> {
-                    return tryDeserialize(
-                            node,
-                            jacksonTypeRef<BetaResponseCompactionCompactingEvent>(),
-                        )
-                        ?.let {
-                            BetaResponsesServerEvent(
-                                responseCompactionCompacting = it,
                                 _json = json,
                             )
                         } ?: BetaResponsesServerEvent(_json = json)
@@ -3739,8 +3673,6 @@ private constructor(
                     generator.writeObject(value.responseCodeInterpreterCallInProgress)
                 value.responseCodeInterpreterCallInterpreting != null ->
                     generator.writeObject(value.responseCodeInterpreterCallInterpreting)
-                value.responseCompactionCompacting != null ->
-                    generator.writeObject(value.responseCompactionCompacting)
                 value.responseCompleted != null -> generator.writeObject(value.responseCompleted)
                 value.responseContentPartAdded != null ->
                     generator.writeObject(value.responseContentPartAdded)
