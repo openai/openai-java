@@ -62,6 +62,12 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync =
         ResponseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        com.openai.core.http.AsyncResponseConnection.connect(clientOptions, options, requestOptions)
+
     override fun inputItems(): InputItemServiceAsync = inputItems
 
     override fun inputTokens(): InputTokenServiceAsync = inputTokens
