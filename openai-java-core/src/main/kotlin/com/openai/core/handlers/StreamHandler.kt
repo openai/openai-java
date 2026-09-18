@@ -8,6 +8,7 @@ import com.openai.core.http.PhantomReachableClosingStreamResponse
 import com.openai.core.http.StreamResponse
 import com.openai.errors.OpenAIIoException
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
@@ -18,6 +19,17 @@ internal fun <T> streamHandler(
     object : Handler<StreamResponse<T>> {
 
         override fun handle(response: HttpResponse): StreamResponse<T> {
+            // Terminal events and caller cleanup share ownership of the transport response.
+            val closeOnceResponse =
+                object : HttpResponse by response {
+                    private val closed = AtomicBoolean()
+
+                    override fun close() {
+                        if (closed.compareAndSet(false, true)) {
+                            response.close()
+                        }
+                    }
+                }
             val reader = response.body().bufferedReader()
             val sequence =
                 // Wrap in a `CloseableSequence` to avoid performing a read on the `reader`
@@ -26,7 +38,7 @@ internal fun <T> streamHandler(
                     sequence {
                             reader.useLines { lines ->
                                 block(
-                                    response,
+                                    closeOnceResponse,
                                     // We wrap the `lines` instead of the top-level sequence because
                                     // we only want to catch `IOException` from the reader; not from
                                     // the user's own code.
@@ -44,8 +56,11 @@ internal fun <T> streamHandler(
 
                     override fun close() {
                         sequence.close()
-                        reader.close()
-                        response.close()
+                        try {
+                            closeOnceResponse.close()
+                        } finally {
+                            reader.close()
+                        }
                     }
                 }
             )
