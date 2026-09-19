@@ -5,6 +5,7 @@ package com.openai.models.admin.organization.auditlogs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.admin.organization.externalstorage.AwsExternalStorageProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -126,6 +127,28 @@ internal class AuditLogListResponseTest {
                 )
                 .externalKeyRemoved(
                     AuditLogListResponse.ExternalKeyRemoved.builder().id("id").build()
+                )
+                .externalStorageRegistered(
+                    AuditLogListResponse.ExternalStorageRegistered.builder()
+                        .id("id")
+                        .data(
+                            AuditLogListResponse.ExternalStorageRegistered.Data.builder()
+                                .geography("geography")
+                                .provider(
+                                    AwsExternalStorageProvider.builder()
+                                        .accountId("account_id")
+                                        .bucket("bucket")
+                                        .externalId("external_id")
+                                        .region("region")
+                                        .roleArn("role_arn")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .externalStorageRemoved(
+                    AuditLogListResponse.ExternalStorageRemoved.builder().id("id").build()
                 )
                 .groupCreated(
                     AuditLogListResponse.GroupCreated.builder()
@@ -547,6 +570,28 @@ internal class AuditLogListResponseTest {
             )
         assertThat(auditLogListResponse.externalKeyRemoved())
             .contains(AuditLogListResponse.ExternalKeyRemoved.builder().id("id").build())
+        assertThat(auditLogListResponse.externalStorageRegistered())
+            .contains(
+                AuditLogListResponse.ExternalStorageRegistered.builder()
+                    .id("id")
+                    .data(
+                        AuditLogListResponse.ExternalStorageRegistered.Data.builder()
+                            .geography("geography")
+                            .provider(
+                                AwsExternalStorageProvider.builder()
+                                    .accountId("account_id")
+                                    .bucket("bucket")
+                                    .externalId("external_id")
+                                    .region("region")
+                                    .roleArn("role_arn")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+        assertThat(auditLogListResponse.externalStorageRemoved())
+            .contains(AuditLogListResponse.ExternalStorageRemoved.builder().id("id").build())
         assertThat(auditLogListResponse.groupCreated())
             .contains(
                 AuditLogListResponse.GroupCreated.builder()
@@ -1006,6 +1051,28 @@ internal class AuditLogListResponseTest {
                 )
                 .externalKeyRemoved(
                     AuditLogListResponse.ExternalKeyRemoved.builder().id("id").build()
+                )
+                .externalStorageRegistered(
+                    AuditLogListResponse.ExternalStorageRegistered.builder()
+                        .id("id")
+                        .data(
+                            AuditLogListResponse.ExternalStorageRegistered.Data.builder()
+                                .geography("geography")
+                                .provider(
+                                    AwsExternalStorageProvider.builder()
+                                        .accountId("account_id")
+                                        .bucket("bucket")
+                                        .externalId("external_id")
+                                        .region("region")
+                                        .roleArn("role_arn")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .externalStorageRemoved(
+                    AuditLogListResponse.ExternalStorageRemoved.builder().id("id").build()
                 )
                 .groupCreated(
                     AuditLogListResponse.GroupCreated.builder()
