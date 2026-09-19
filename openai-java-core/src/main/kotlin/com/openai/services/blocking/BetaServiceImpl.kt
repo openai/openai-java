@@ -47,6 +47,7 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun agents(): AgentService = agents
 
+    /** Create and manage model responses. */
     override fun responses(): ResponseService = responses
 
     override fun chatkit(): ChatKitService = chatkit
@@ -99,6 +100,7 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         override fun agents(): AgentService.WithRawResponse = agents
 
+        /** Create and manage model responses. */
         override fun responses(): ResponseService.WithRawResponse = responses
 
         override fun chatkit(): ChatKitService.WithRawResponse = chatkit

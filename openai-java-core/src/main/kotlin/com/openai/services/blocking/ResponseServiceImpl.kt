@@ -39,6 +39,7 @@ import com.openai.services.validateForStream
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create and manage model responses. */
 class ResponseServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ResponseService {
 
@@ -61,8 +62,10 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     ): com.openai.core.http.ResponseConnection =
         com.openai.core.http.ResponseConnection.connect(clientOptions, options, requestOptions)
 
+    /** Create and manage model responses. */
     override fun inputItems(): InputItemService = inputItems
 
+    /** Create and manage model responses. */
     override fun inputTokens(): InputTokenService = inputTokens
 
     override fun create(params: ResponseCreateParams, requestOptions: RequestOptions): Response =
@@ -127,8 +130,10 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Create and manage model responses. */
         override fun inputItems(): InputItemService.WithRawResponse = inputItems
 
+        /** Create and manage model responses. */
         override fun inputTokens(): InputTokenService.WithRawResponse = inputTokens
 
         private val createHandler: Handler<Response> =

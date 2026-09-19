@@ -22,6 +22,7 @@ import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputTokenService
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseService {
 
     /**
@@ -57,8 +58,10 @@ interface ResponseService {
             "This service implementation does not support WebSockets"
         )
 
+    /** Create and manage model responses. */
     fun inputItems(): InputItemService
 
+    /** Create and manage model responses. */
     fun inputTokens(): InputTokenService
 
     /**
@@ -321,8 +324,10 @@ interface ResponseService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputItems(): InputItemService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputTokens(): InputTokenService.WithRawResponse
 
         /**

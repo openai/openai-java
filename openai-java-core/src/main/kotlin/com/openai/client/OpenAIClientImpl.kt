@@ -207,6 +207,7 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     override fun admin(): AdminService = admin
 
+    /** Create and manage model responses. */
     override fun responses(): ResponseService = responses
 
     override fun live(): LiveService = live
@@ -395,6 +396,7 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         override fun admin(): AdminService.WithRawResponse = admin
 
+        /** Create and manage model responses. */
         override fun responses(): ResponseService.WithRawResponse = responses
 
         override fun live(): LiveService.WithRawResponse = live
