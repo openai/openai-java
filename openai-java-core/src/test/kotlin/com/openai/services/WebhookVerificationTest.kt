@@ -187,6 +187,48 @@ internal class WebhookVerificationTest {
 
     @ParameterizedTest
     @EnumSource(ServiceMode::class)
+    fun unwrapPreservesSignedSafetyEvents(mode: ServiceMode) = withOptions { options ->
+        val mapper = jsonMapper()
+        for (type in listOf("safety.warning_issued", "safety.deactivation_issued")) {
+            val payload =
+                """{
+                    "id": "evt-safety-test", "created_at": 123, "object": "event",
+                    "type": "$type",
+                    "data": {"id": "safety-case-test", "future_data": {"enabled": true}},
+                    "future_event": ["preserved"]
+                }"""
+            val event = mode.unwrap(options, params(payload = payload))
+            val caseId =
+                when (type) {
+                    "safety.warning_issued" -> event.asSafetyWarningIssued().data().id()
+                    else -> event.asSafetyDeactivationIssued().data().id()
+                }
+            assertThat(caseId).isEqualTo("safety-case-test")
+            val serialized = mapper.writeValueAsString(event)
+            assertThat(mapper.readTree(serialized)).isEqualTo(mapper.readTree(payload))
+            assertThat(mode.unwrap(options, params(payload = serialized))).isEqualTo(event)
+
+            val originalSignature = signature(payload, NOW, CLIENT_SECRET)
+            for (unverified in
+                listOf(
+                    params(
+                        payload = payload.replace("safety-case-test", "tampered-case"),
+                        signature = originalSignature,
+                    ),
+                    params(payload = payload, secret = "wrong-test-secret"),
+                    params(payload = "not-json", signature = originalSignature),
+                )) {
+                val error =
+                    assertThrows<InvalidWebhookSignatureException> {
+                        mode.unwrap(options, unverified)
+                    }
+                assertThat(error).hasMessage(SIGNATURE_MISMATCH)
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ServiceMode::class)
     fun withOptionsUsesUpdatedClock(mode: ServiceMode) = withOptions { options ->
         val error =
             assertThrows<InvalidWebhookSignatureException> {
