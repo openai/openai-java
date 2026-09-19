@@ -282,7 +282,7 @@ private constructor(
         fun mcpServerUrl(): String = mcpServerUrl.getRequired("mcp_server_url")
 
         /**
-         * Configuration used to refresh an MCP OAuth access token, excluding secret values.
+         * Public refresh metadata without refresh tokens or OAuth client secrets.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -400,7 +400,7 @@ private constructor(
                 this.mcpServerUrl = mcpServerUrl
             }
 
-            /** Configuration used to refresh an MCP OAuth access token, excluding secret values. */
+            /** Public refresh metadata without refresh tokens or OAuth client secrets. */
             fun refresh(refresh: Refresh?) = refresh(JsonField.ofNullable(refresh))
 
             /** Alias for calling [Builder.refresh] with `refresh.orElse(null)`. */
@@ -520,7 +520,7 @@ private constructor(
                 (refresh.asKnown().getOrNull()?.validity() ?: 0) +
                 type.let { if (it == JsonValue.from("mcp_oauth")) 1 else 0 }
 
-        /** Configuration used to refresh an MCP OAuth access token, excluding secret values. */
+        /** Public refresh metadata without refresh tokens or OAuth client secrets. */
         class Refresh
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(

@@ -743,7 +743,7 @@ private constructor(
         fun error(): Optional<String> = error.getOptional("error")
 
         /**
-         * The text or model-input content supplied as a function result.
+         * The function result, if the call succeeded.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -918,7 +918,7 @@ private constructor(
              */
             fun error(error: JsonField<String>) = apply { this.error = error }
 
-            /** The text or model-input content supplied as a function result. */
+            /** The function result, if the call succeeded. */
             fun output(output: AgentFunctionCallOutput?) = output(JsonField.ofNullable(output))
 
             /** Alias for calling [Builder.output] with `output.orElse(null)`. */

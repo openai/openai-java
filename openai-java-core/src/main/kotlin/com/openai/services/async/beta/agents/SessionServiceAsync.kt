@@ -173,8 +173,10 @@ interface SessionServiceAsync {
         list(SessionListParams.none(), requestOptions)
 
     /**
-     * Removes a managed agent session from the public API and returns a deletion confirmation.
-     * Physical cleanup may continue asynchronously. See
+     * Removes a managed agent session from the public API and returns a deletion confirmation. If
+     * backend execution has ended, deletion can cancel a still-open public turn and abandon
+     * unpublished outputs. Running execution must be cancelled first. Physical cleanup may continue
+     * asynchronously. See
      * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
      */
     fun delete(sessionId: String): CompletableFuture<AgentSessionDeleted> =

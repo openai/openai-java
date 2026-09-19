@@ -246,8 +246,11 @@ private constructor(
     fun parallelToolCalls(): Optional<Boolean> = body.parallelToolCalls()
 
     /**
-     * Static predicted output content, such as the content of a text file that is being
-     * regenerated.
+     * Configuration for a
+     * [Predicted Output](https://developers.openai.com/api/docs/guides/predicted-outputs), which
+     * can greatly improve response times when large parts of the model response are known ahead of
+     * time. This is most common when you are regenerating a file with only minor changes to most of
+     * the content.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1363,8 +1366,11 @@ private constructor(
         }
 
         /**
-         * Static predicted output content, such as the content of a text file that is being
-         * regenerated.
+         * Configuration for a
+         * [Predicted Output](https://developers.openai.com/api/docs/guides/predicted-outputs),
+         * which can greatly improve response times when large parts of the model response are known
+         * ahead of time. This is most common when you are regenerating a file with only minor
+         * changes to most of the content.
          */
         fun prediction(prediction: ChatCompletionPredictionContent?) = apply {
             body.prediction(prediction)
@@ -2509,8 +2515,11 @@ private constructor(
             parallelToolCalls.getOptional("parallel_tool_calls")
 
         /**
-         * Static predicted output content, such as the content of a text file that is being
-         * regenerated.
+         * Configuration for a
+         * [Predicted Output](https://developers.openai.com/api/docs/guides/predicted-outputs),
+         * which can greatly improve response times when large parts of the model response are known
+         * ahead of time. This is most common when you are regenerating a file with only minor
+         * changes to most of the content.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3817,8 +3826,11 @@ private constructor(
             }
 
             /**
-             * Static predicted output content, such as the content of a text file that is being
-             * regenerated.
+             * Configuration for a
+             * [Predicted Output](https://developers.openai.com/api/docs/guides/predicted-outputs),
+             * which can greatly improve response times when large parts of the model response are
+             * known ahead of time. This is most common when you are regenerating a file with only
+             * minor changes to most of the content.
              */
             fun prediction(prediction: ChatCompletionPredictionContent?) =
                 prediction(JsonField.ofNullable(prediction))

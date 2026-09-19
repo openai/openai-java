@@ -72,7 +72,8 @@ private constructor(
     fun name(): Optional<String> = body.name()
 
     /**
-     * Network access for an OpenAI-hosted environment.
+     * Network access policy for the environment. Defaults to disabled for GA requests and enabled
+     * for alpha/beta requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -80,7 +81,7 @@ private constructor(
     fun network(): Optional<Network> = body.network()
 
     /**
-     * Packages to install in an OpenAI-hosted environment.
+     * Packages to install in the environment. Defaults to empty package lists.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -311,7 +312,10 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        /** Network access for an OpenAI-hosted environment. */
+        /**
+         * Network access policy for the environment. Defaults to disabled for GA requests and
+         * enabled for alpha/beta requests.
+         */
         fun network(network: Network?) = apply { body.network(network) }
 
         /** Alias for calling [Builder.network] with `network.orElse(null)`. */
@@ -325,7 +329,7 @@ private constructor(
          */
         fun network(network: JsonField<Network>) = apply { body.network(network) }
 
-        /** Packages to install in an OpenAI-hosted environment. */
+        /** Packages to install in the environment. Defaults to empty package lists. */
         fun packages(packages: Packages?) = apply { body.packages(packages) }
 
         /** Alias for calling [Builder.packages] with `packages.orElse(null)`. */
@@ -657,7 +661,8 @@ private constructor(
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
-         * Network access for an OpenAI-hosted environment.
+         * Network access policy for the environment. Defaults to disabled for GA requests and
+         * enabled for alpha/beta requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -665,7 +670,7 @@ private constructor(
         fun network(): Optional<Network> = network.getOptional("network")
 
         /**
-         * Packages to install in an OpenAI-hosted environment.
+         * Packages to install in the environment. Defaults to empty package lists.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -922,7 +927,10 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
-            /** Network access for an OpenAI-hosted environment. */
+            /**
+             * Network access policy for the environment. Defaults to disabled for GA requests and
+             * enabled for alpha/beta requests.
+             */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
             /** Alias for calling [Builder.network] with `network.orElse(null)`. */
@@ -937,7 +945,7 @@ private constructor(
              */
             fun network(network: JsonField<Network>) = apply { this.network = network }
 
-            /** Packages to install in an OpenAI-hosted environment. */
+            /** Packages to install in the environment. Defaults to empty package lists. */
             fun packages(packages: Packages?) = packages(JsonField.ofNullable(packages))
 
             /** Alias for calling [Builder.packages] with `packages.orElse(null)`. */
@@ -1307,7 +1315,10 @@ private constructor(
         override fun toString() = "Env{additionalProperties=$additionalProperties}"
     }
 
-    /** Network access for an OpenAI-hosted environment. */
+    /**
+     * Network access policy for the environment. Defaults to disabled for GA requests and enabled
+     * for alpha/beta requests.
+     */
     class Network
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -1533,7 +1544,7 @@ private constructor(
 
             companion object {
 
-                /** Allows unrestricted network access, matching an omitted network policy. */
+                /** Allows unrestricted network access. */
                 @JvmField val ENABLED = of("enabled")
 
                 /** Disables network access. */
@@ -1547,7 +1558,7 @@ private constructor(
 
             /** An enum containing [Access]'s known values. */
             enum class Known {
-                /** Allows unrestricted network access, matching an omitted network policy. */
+                /** Allows unrestricted network access. */
                 ENABLED,
                 /** Disables network access. */
                 DISABLED,
@@ -1565,7 +1576,7 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
-                /** Allows unrestricted network access, matching an omitted network policy. */
+                /** Allows unrestricted network access. */
                 ENABLED,
                 /** Disables network access. */
                 DISABLED,
@@ -1694,7 +1705,7 @@ private constructor(
             "Network{access=$access, allowedDomains=$allowedDomains, additionalProperties=$additionalProperties}"
     }
 
-    /** Packages to install in an OpenAI-hosted environment. */
+    /** Packages to install in the environment. Defaults to empty package lists. */
     class Packages
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
