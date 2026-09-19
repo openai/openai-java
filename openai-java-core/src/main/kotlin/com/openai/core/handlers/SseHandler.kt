@@ -12,6 +12,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.SseMessage
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
+import com.openai.core.http.markBodyComplete
 import com.openai.errors.SseException
 import com.openai.models.ErrorObject
 
@@ -19,20 +20,13 @@ import com.openai.models.ErrorObject
 internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessage>> =
     streamHandler { response, lines ->
         val state = SseState(jsonMapper)
-        var done = false
         for (line in lines) {
-            // Stop emitting messages, but iterate through the full stream.
-            if (done) {
-                continue
-            }
-
             val message = state.decode(line) ?: continue
 
             if (message.data.startsWith("[DONE]")) {
-                // In this case we don't break because we still want to iterate through the full
-                // stream.
-                done = true
-                continue
+                response.markBodyComplete()
+                response.close()
+                break
             }
 
             val jsonNode =
