@@ -258,11 +258,11 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Transcription>())?.let {
                             TranscriptionCreateResponse(transcription = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<TranscriptionDiarized>())?.let {
-                            TranscriptionCreateResponse(diarized = it, _json = json)
-                        },
                         tryDeserialize(node, jacksonTypeRef<TranscriptionVerbose>())?.let {
                             TranscriptionCreateResponse(verbose = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<TranscriptionDiarized>())?.let {
+                            TranscriptionCreateResponse(diarized = it, _json = json)
                         },
                     )
                     .filterNotNull()
