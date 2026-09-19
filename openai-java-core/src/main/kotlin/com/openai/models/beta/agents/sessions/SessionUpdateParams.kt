@@ -522,7 +522,7 @@ private constructor(
         fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
 
         /**
-         * The service tier used for model requests.
+         * Omit to keep the current tier. Null resets it to auto.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -612,7 +612,7 @@ private constructor(
              */
             fun reasoning(reasoning: JsonField<Reasoning>) = apply { this.reasoning = reasoning }
 
-            /** The service tier used for model requests. */
+            /** Omit to keep the current tier. Null resets it to auto. */
             fun serviceTier(serviceTier: ServiceTier?) =
                 serviceTier(JsonField.ofNullable(serviceTier))
 
@@ -715,7 +715,7 @@ private constructor(
             ) : this(effort, mutableMapOf())
 
             /**
-             * The amount of reasoning effort the model should use.
+             * Omit to keep the current effort. Null selects the model's default effort.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -759,7 +759,7 @@ private constructor(
                     additionalProperties = reasoning.additionalProperties.toMutableMap()
                 }
 
-                /** The amount of reasoning effort the model should use. */
+                /** Omit to keep the current effort. Null selects the model's default effort. */
                 fun effort(effort: Effort?) = effort(JsonField.ofNullable(effort))
 
                 /** Alias for calling [Builder.effort] with `effort.orElse(null)`. */
@@ -842,7 +842,7 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int = (effort.asKnown().getOrNull()?.validity() ?: 0)
 
-            /** The amount of reasoning effort the model should use. */
+            /** Omit to keep the current effort. Null selects the model's default effort. */
             class Effort @JsonCreator private constructor(private val value: JsonField<String>) :
                 Enum {
 
@@ -1032,7 +1032,7 @@ private constructor(
                 "Reasoning{effort=$effort, additionalProperties=$additionalProperties}"
         }
 
-        /** The service tier used for model requests. */
+        /** Omit to keep the current tier. Null resets it to auto. */
         class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 

@@ -310,7 +310,7 @@ private constructor(
         fun expiresAt(): Optional<String> = expiresAt.getOptional("expires_at")
 
         /**
-         * Configuration for refreshing the access token of an MCP OAuth credential.
+         * Optional refresh configuration for an HTTPS OAuth token endpoint.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -453,7 +453,7 @@ private constructor(
              */
             fun expiresAt(expiresAt: JsonField<String>) = apply { this.expiresAt = expiresAt }
 
-            /** Configuration for refreshing the access token of an MCP OAuth credential. */
+            /** Optional refresh configuration for an HTTPS OAuth token endpoint. */
             fun refresh(refresh: Refresh?) = refresh(JsonField.ofNullable(refresh))
 
             /** Alias for calling [Builder.refresh] with `refresh.orElse(null)`. */
@@ -561,7 +561,7 @@ private constructor(
                 (if (expiresAt.asKnown().isPresent) 1 else 0) +
                 (refresh.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** Configuration for refreshing the access token of an MCP OAuth credential. */
+        /** Optional refresh configuration for an HTTPS OAuth token endpoint. */
         class Refresh
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(

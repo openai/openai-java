@@ -78,7 +78,10 @@ private constructor(
     fun agentId(): Optional<String> = body.agentId()
 
     /**
-     * Initial input submitted when creating a session.
+     * Initial input to submit when the session is created. A string is shorthand for a single user
+     * message. Required when `environment.type` is `none`, or when `stream` is `true` for an
+     * environment that is not `self_hosted`; optional for self-hosted and non-streaming execution
+     * environments.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -259,7 +262,12 @@ private constructor(
          */
         fun agentId(agentId: JsonField<String>) = apply { body.agentId(agentId) }
 
-        /** Initial input submitted when creating a session. */
+        /**
+         * Initial input to submit when the session is created. A string is shorthand for a single
+         * user message. Required when `environment.type` is `none`, or when `stream` is `true` for
+         * an environment that is not `self_hosted`; optional for self-hosted and non-streaming
+         * execution environments.
+         */
         fun input(input: Input?) = apply { body.input(input) }
 
         /** Alias for calling [Builder.input] with `input.orElse(null)`. */
@@ -522,7 +530,10 @@ private constructor(
         fun agentId(): Optional<String> = agentId.getOptional("agent_id")
 
         /**
-         * Initial input submitted when creating a session.
+         * Initial input to submit when the session is created. A string is shorthand for a single
+         * user message. Required when `environment.type` is `none`, or when `stream` is `true` for
+         * an environment that is not `self_hosted`; optional for self-hosted and non-streaming
+         * execution environments.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -710,7 +721,12 @@ private constructor(
              */
             fun agentId(agentId: JsonField<String>) = apply { this.agentId = agentId }
 
-            /** Initial input submitted when creating a session. */
+            /**
+             * Initial input to submit when the session is created. A string is shorthand for a
+             * single user message. Required when `environment.type` is `none`, or when `stream` is
+             * `true` for an environment that is not `self_hosted`; optional for self-hosted and
+             * non-streaming execution environments.
+             */
             fun input(input: Input?) = input(JsonField.ofNullable(input))
 
             /** Alias for calling [Builder.input] with `input.orElse(null)`. */
@@ -974,7 +990,7 @@ private constructor(
         fun model(): Optional<String> = model.getOptional("model")
 
         /**
-         * Explicit configuration for creating and coordinating subagents.
+         * Configuration for creating and coordinating subagents.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -982,7 +998,8 @@ private constructor(
         fun multiAgent(): Optional<MultiAgentConfigParam> = multiAgent.getOptional("multi_agent")
 
         /**
-         * Reasoning configuration for the agent.
+         * Configuration for model reasoning. Omit to keep the current settings; pass `null` to
+         * reset to the model's default effort.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1147,7 +1164,7 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
-            /** Explicit configuration for creating and coordinating subagents. */
+            /** Configuration for creating and coordinating subagents. */
             fun multiAgent(multiAgent: MultiAgentConfigParam?) =
                 multiAgent(JsonField.ofNullable(multiAgent))
 
@@ -1166,7 +1183,10 @@ private constructor(
                 this.multiAgent = multiAgent
             }
 
-            /** Reasoning configuration for the agent. */
+            /**
+             * Configuration for model reasoning. Omit to keep the current settings; pass `null` to
+             * reset to the model's default effort.
+             */
             fun reasoning(reasoning: AgentReasoningParam?) =
                 reasoning(JsonField.ofNullable(reasoning))
 
@@ -1566,7 +1586,12 @@ private constructor(
             "Agent{instructions=$instructions, model=$model, multiAgent=$multiAgent, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
     }
 
-    /** Initial input submitted when creating a session. */
+    /**
+     * Initial input to submit when the session is created. A string is shorthand for a single user
+     * message. Required when `environment.type` is `none`, or when `stream` is `true` for an
+     * environment that is not `self_hosted`; optional for self-hosted and non-streaming execution
+     * environments.
+     */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
     class Input

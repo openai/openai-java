@@ -3231,8 +3231,6 @@ private constructor(
 
             @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
-            @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
-
             @JvmField val O1_PRO = of("o1-pro")
 
             @JvmField val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
@@ -3361,7 +3359,6 @@ private constructor(
             GPT_3_5_TURBO_1106,
             GPT_3_5_TURBO_0125,
             GPT_3_5_TURBO_16K_0613,
-            GPT_5_1_MINI,
             O1_PRO,
             O1_PRO_2025_03_19,
             O3_PRO,
@@ -3478,7 +3475,6 @@ private constructor(
             GPT_3_5_TURBO_1106,
             GPT_3_5_TURBO_0125,
             GPT_3_5_TURBO_16K_0613,
-            GPT_5_1_MINI,
             O1_PRO,
             O1_PRO_2025_03_19,
             O3_PRO,
@@ -3596,7 +3592,6 @@ private constructor(
                 GPT_3_5_TURBO_1106 -> Value.GPT_3_5_TURBO_1106
                 GPT_3_5_TURBO_0125 -> Value.GPT_3_5_TURBO_0125
                 GPT_3_5_TURBO_16K_0613 -> Value.GPT_3_5_TURBO_16K_0613
-                GPT_5_1_MINI -> Value.GPT_5_1_MINI
                 O1_PRO -> Value.O1_PRO
                 O1_PRO_2025_03_19 -> Value.O1_PRO_2025_03_19
                 O3_PRO -> Value.O3_PRO
@@ -3715,7 +3710,6 @@ private constructor(
                 GPT_3_5_TURBO_1106 -> Known.GPT_3_5_TURBO_1106
                 GPT_3_5_TURBO_0125 -> Known.GPT_3_5_TURBO_0125
                 GPT_3_5_TURBO_16K_0613 -> Known.GPT_3_5_TURBO_16K_0613
-                GPT_5_1_MINI -> Known.GPT_5_1_MINI
                 O1_PRO -> Known.O1_PRO
                 O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
                 O3_PRO -> Known.O3_PRO

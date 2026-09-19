@@ -192,8 +192,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
-        @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
-
         @JvmStatic fun of(value: String) = ChatModel(JsonField.of(value))
     }
 
@@ -284,7 +282,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_3_5_TURBO_1106,
         GPT_3_5_TURBO_0125,
         GPT_3_5_TURBO_16K_0613,
-        GPT_5_1_MINI,
     }
 
     /**
@@ -382,7 +379,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_3_5_TURBO_1106,
         GPT_3_5_TURBO_0125,
         GPT_3_5_TURBO_16K_0613,
-        GPT_5_1_MINI,
         /** An enum member indicating that [ChatModel] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -481,7 +477,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_3_5_TURBO_1106 -> Value.GPT_3_5_TURBO_1106
             GPT_3_5_TURBO_0125 -> Value.GPT_3_5_TURBO_0125
             GPT_3_5_TURBO_16K_0613 -> Value.GPT_3_5_TURBO_16K_0613
-            GPT_5_1_MINI -> Value.GPT_5_1_MINI
             else -> Value._UNKNOWN
         }
 
@@ -580,7 +575,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_3_5_TURBO_1106 -> Known.GPT_3_5_TURBO_1106
             GPT_3_5_TURBO_0125 -> Known.GPT_3_5_TURBO_0125
             GPT_3_5_TURBO_16K_0613 -> Known.GPT_3_5_TURBO_16K_0613
-            GPT_5_1_MINI -> Known.GPT_5_1_MINI
             else -> throw OpenAIInvalidDataException("Unknown ChatModel: $value")
         }
 

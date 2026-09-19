@@ -66,7 +66,7 @@ private constructor(
     fun content(): List<OutputText> = content.getRequired("content")
 
     /**
-     * The phase of an assistant message.
+     * The phase of the assistant message.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -240,7 +240,7 @@ private constructor(
                 }
         }
 
-        /** The phase of an assistant message. */
+        /** The phase of the assistant message. */
         fun phase(phase: Phase?) = phase(JsonField.ofNullable(phase))
 
         /** Alias for calling [Builder.phase] with `phase.orElse(null)`. */
@@ -409,7 +409,7 @@ private constructor(
             (if (turnId.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("message")) 1 else 0 }
 
-    /** The phase of an assistant message. */
+    /** The phase of the assistant message. */
     class Phase @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

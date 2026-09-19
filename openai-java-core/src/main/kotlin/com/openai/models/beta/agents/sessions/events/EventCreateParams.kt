@@ -25,7 +25,10 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Submits message, cancellation, or tool-result events to a managed agent session. See
+ * Submits message, cancellation, or tool-result events to a managed agent session. Cancellation can
+ * recover a still-open turn whose backend execution has ended by marking it cancelled and
+ * abandoning unpublished outputs. Saved results, published files, and existing terminal outcomes
+ * are preserved. HTTP 202 confirms acceptance, not durable completion. See
  * [session events](https://developers.openai.com/api/docs/guides/agents-api/sessions/events).
  */
 class EventCreateParams

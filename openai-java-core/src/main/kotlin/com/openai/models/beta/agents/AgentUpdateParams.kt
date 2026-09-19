@@ -63,7 +63,7 @@ private constructor(
     fun model(): Optional<String> = body.model()
 
     /**
-     * Explicit configuration for creating and coordinating subagents.
+     * Configuration for creating and coordinating subagents.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -79,7 +79,8 @@ private constructor(
     fun name(): Optional<String> = body.name()
 
     /**
-     * Reasoning configuration for the agent.
+     * Configuration for model reasoning. Omit to keep the current settings; pass `null` to reset to
+     * the model's default effort.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -275,7 +276,7 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
-        /** Explicit configuration for creating and coordinating subagents. */
+        /** Configuration for creating and coordinating subagents. */
         fun multiAgent(multiAgent: MultiAgentConfigParam?) = apply { body.multiAgent(multiAgent) }
 
         /** Alias for calling [Builder.multiAgent] with `multiAgent.orElse(null)`. */
@@ -307,7 +308,10 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        /** Reasoning configuration for the agent. */
+        /**
+         * Configuration for model reasoning. Omit to keep the current settings; pass `null` to
+         * reset to the model's default effort.
+         */
         fun reasoning(reasoning: AgentReasoningParam?) = apply { body.reasoning(reasoning) }
 
         /** Alias for calling [Builder.reasoning] with `reasoning.orElse(null)`. */
@@ -625,7 +629,7 @@ private constructor(
         fun model(): Optional<String> = model.getOptional("model")
 
         /**
-         * Explicit configuration for creating and coordinating subagents.
+         * Configuration for creating and coordinating subagents.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -641,7 +645,8 @@ private constructor(
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
-         * Reasoning configuration for the agent.
+         * Configuration for model reasoning. Omit to keep the current settings; pass `null` to
+         * reset to the model's default effort.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -844,7 +849,7 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
-            /** Explicit configuration for creating and coordinating subagents. */
+            /** Configuration for creating and coordinating subagents. */
             fun multiAgent(multiAgent: MultiAgentConfigParam?) =
                 multiAgent(JsonField.ofNullable(multiAgent))
 
@@ -878,7 +883,10 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
-            /** Reasoning configuration for the agent. */
+            /**
+             * Configuration for model reasoning. Omit to keep the current settings; pass `null` to
+             * reset to the model's default effort.
+             */
             fun reasoning(reasoning: AgentReasoningParam?) =
                 reasoning(JsonField.ofNullable(reasoning))
 

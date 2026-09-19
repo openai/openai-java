@@ -37,7 +37,7 @@ private constructor(
     ) : this(format, verbosity, mutableMapOf())
 
     /**
-     * The output format for generated text.
+     * The output format. Omission uses ordinary text (`{"type": "text"}`).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -45,7 +45,7 @@ private constructor(
     fun format(): Optional<TextFormatParam> = format.getOptional("format")
 
     /**
-     * The amount of text the model should produce.
+     * The amount of text the model should produce. Defaults to `medium`, matching Responses.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -98,7 +98,7 @@ private constructor(
             additionalProperties = agentTextParam.additionalProperties.toMutableMap()
         }
 
-        /** The output format for generated text. */
+        /** The output format. Omission uses ordinary text (`{"type": "text"}`). */
         fun format(format: TextFormatParam?) = format(JsonField.ofNullable(format))
 
         /** Alias for calling [Builder.format] with `format.orElse(null)`. */
@@ -131,7 +131,9 @@ private constructor(
         fun jsonSchemaFormat(schema: TextFormatParam.JsonSchema.Schema) =
             format(TextFormatParam.JsonSchema.builder().schema(schema).build())
 
-        /** The amount of text the model should produce. */
+        /**
+         * The amount of text the model should produce. Defaults to `medium`, matching Responses.
+         */
         fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
 
         /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
@@ -212,7 +214,7 @@ private constructor(
         (format.asKnown().getOrNull()?.validity() ?: 0) +
             (verbosity.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** The amount of text the model should produce. */
+    /** The amount of text the model should produce. Defaults to `medium`, matching Responses. */
     class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
