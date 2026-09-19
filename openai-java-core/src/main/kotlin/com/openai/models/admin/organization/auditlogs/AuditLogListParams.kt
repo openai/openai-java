@@ -673,6 +673,10 @@ private constructor(
 
             @JvmField val EXTERNAL_KEY_REMOVED = of("external_key.removed")
 
+            @JvmField val EXTERNAL_STORAGE_REGISTERED = of("external_storage.registered")
+
+            @JvmField val EXTERNAL_STORAGE_REMOVED = of("external_storage.removed")
+
             @JvmField val GROUP_CREATED = of("group.created")
 
             @JvmField val GROUP_UPDATED = of("group.updated")
@@ -1032,6 +1036,8 @@ private constructor(
             CHECKPOINT_PERMISSION_DELETED,
             EXTERNAL_KEY_REGISTERED,
             EXTERNAL_KEY_REMOVED,
+            EXTERNAL_STORAGE_REGISTERED,
+            EXTERNAL_STORAGE_REMOVED,
             GROUP_CREATED,
             GROUP_UPDATED,
             GROUP_DELETED,
@@ -1191,6 +1197,8 @@ private constructor(
             CHECKPOINT_PERMISSION_DELETED,
             EXTERNAL_KEY_REGISTERED,
             EXTERNAL_KEY_REMOVED,
+            EXTERNAL_STORAGE_REGISTERED,
+            EXTERNAL_STORAGE_REMOVED,
             GROUP_CREATED,
             GROUP_UPDATED,
             GROUP_DELETED,
@@ -1353,6 +1361,8 @@ private constructor(
                 CHECKPOINT_PERMISSION_DELETED -> Value.CHECKPOINT_PERMISSION_DELETED
                 EXTERNAL_KEY_REGISTERED -> Value.EXTERNAL_KEY_REGISTERED
                 EXTERNAL_KEY_REMOVED -> Value.EXTERNAL_KEY_REMOVED
+                EXTERNAL_STORAGE_REGISTERED -> Value.EXTERNAL_STORAGE_REGISTERED
+                EXTERNAL_STORAGE_REMOVED -> Value.EXTERNAL_STORAGE_REMOVED
                 GROUP_CREATED -> Value.GROUP_CREATED
                 GROUP_UPDATED -> Value.GROUP_UPDATED
                 GROUP_DELETED -> Value.GROUP_DELETED
@@ -1541,6 +1551,8 @@ private constructor(
                 CHECKPOINT_PERMISSION_DELETED -> Known.CHECKPOINT_PERMISSION_DELETED
                 EXTERNAL_KEY_REGISTERED -> Known.EXTERNAL_KEY_REGISTERED
                 EXTERNAL_KEY_REMOVED -> Known.EXTERNAL_KEY_REMOVED
+                EXTERNAL_STORAGE_REGISTERED -> Known.EXTERNAL_STORAGE_REGISTERED
+                EXTERNAL_STORAGE_REMOVED -> Known.EXTERNAL_STORAGE_REMOVED
                 GROUP_CREATED -> Known.GROUP_CREATED
                 GROUP_UPDATED -> Known.GROUP_UPDATED
                 GROUP_DELETED -> Known.GROUP_DELETED
