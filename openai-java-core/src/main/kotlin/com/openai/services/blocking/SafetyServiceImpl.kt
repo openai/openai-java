@@ -5,6 +5,8 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.safety.AlertService
 import com.openai.services.blocking.safety.AlertServiceImpl
+import com.openai.services.blocking.safety.CaseService
+import com.openai.services.blocking.safety.CaseServiceImpl
 import java.util.function.Consumer
 
 class SafetyServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -16,6 +18,8 @@ class SafetyServiceImpl internal constructor(private val clientOptions: ClientOp
 
     private val alerts: AlertService by lazy { AlertServiceImpl(clientOptions) }
 
+    private val cases: CaseService by lazy { CaseServiceImpl(clientOptions) }
+
     override fun withRawResponse(): SafetyService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyService =
@@ -23,11 +27,17 @@ class SafetyServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun alerts(): AlertService = alerts
 
+    override fun cases(): CaseService = cases
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SafetyService.WithRawResponse {
 
         private val alerts: AlertService.WithRawResponse by lazy {
             AlertServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val cases: CaseService.WithRawResponse by lazy {
+            CaseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -38,5 +48,7 @@ class SafetyServiceImpl internal constructor(private val clientOptions: ClientOp
             )
 
         override fun alerts(): AlertService.WithRawResponse = alerts
+
+        override fun cases(): CaseService.WithRawResponse = cases
     }
 }
