@@ -7,6 +7,7 @@ import com.openai.services.async.admin.organization.AdminApiKeyServiceAsync
 import com.openai.services.async.admin.organization.AuditLogServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsync
 import com.openai.services.async.admin.organization.DataRetentionServiceAsync
+import com.openai.services.async.admin.organization.ExternalStorageServiceAsync
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import com.openai.services.async.admin.organization.InviteServiceAsync
 import com.openai.services.async.admin.organization.ProjectServiceAsync
@@ -30,6 +31,8 @@ interface OrganizationServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync
+
+    fun externalStorage(): ExternalStorageServiceAsync
 
     /** List user actions and configuration changes within this organization. */
     fun auditLogs(): AuditLogServiceAsync
@@ -70,6 +73,8 @@ interface OrganizationServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationServiceAsync.WithRawResponse
+
+        fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse
 
         /** List user actions and configuration changes within this organization. */
         fun auditLogs(): AuditLogServiceAsync.WithRawResponse

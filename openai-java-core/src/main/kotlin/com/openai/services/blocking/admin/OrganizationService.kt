@@ -7,6 +7,7 @@ import com.openai.services.blocking.admin.organization.AdminApiKeyService
 import com.openai.services.blocking.admin.organization.AuditLogService
 import com.openai.services.blocking.admin.organization.CertificateService
 import com.openai.services.blocking.admin.organization.DataRetentionService
+import com.openai.services.blocking.admin.organization.ExternalStorageService
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.InviteService
 import com.openai.services.blocking.admin.organization.ProjectService
@@ -30,6 +31,8 @@ interface OrganizationService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationService
+
+    fun externalStorage(): ExternalStorageService
 
     /** List user actions and configuration changes within this organization. */
     fun auditLogs(): AuditLogService
@@ -69,6 +72,8 @@ interface OrganizationService {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationService.WithRawResponse
+
+        fun externalStorage(): ExternalStorageService.WithRawResponse
 
         /** List user actions and configuration changes within this organization. */
         fun auditLogs(): AuditLogService.WithRawResponse
