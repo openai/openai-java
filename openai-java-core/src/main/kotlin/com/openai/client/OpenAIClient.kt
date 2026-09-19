@@ -120,6 +120,7 @@ interface OpenAIClient {
 
     fun admin(): AdminService
 
+    /** Create and manage model responses. */
     fun responses(): ResponseService
 
     fun live(): LiveService
@@ -214,6 +215,7 @@ interface OpenAIClient {
 
         fun admin(): AdminService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseService.WithRawResponse
 
         fun live(): LiveService.WithRawResponse

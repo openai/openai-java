@@ -24,6 +24,7 @@ import com.openai.services.async.responses.InputTokenServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseServiceAsync {
 
     /**
@@ -57,8 +58,10 @@ interface ResponseServiceAsync {
             "This service implementation does not support WebSockets"
         )
 
+    /** Create and manage model responses. */
     fun inputItems(): InputItemServiceAsync
 
+    /** Create and manage model responses. */
     fun inputTokens(): InputTokenServiceAsync
 
     /**
@@ -332,8 +335,10 @@ interface ResponseServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ResponseServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputItems(): InputItemServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputTokens(): InputTokenServiceAsync.WithRawResponse
 
         /**
