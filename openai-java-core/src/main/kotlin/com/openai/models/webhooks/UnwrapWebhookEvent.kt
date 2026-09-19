@@ -41,7 +41,9 @@ private constructor(
     private val responseFailed: ResponseFailedWebhookEvent? = null,
     private val responseIncomplete: ResponseIncompleteWebhookEvent? = null,
     private val safetyAlertCreated: SafetyAlertCreatedWebhookEvent? = null,
+    private val safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent? = null,
     private val safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent? = null,
+    private val safetyWarningIssued: SafetyWarningIssuedWebhookEvent? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -126,9 +128,17 @@ private constructor(
     fun safetyAlertCreated(): Optional<SafetyAlertCreatedWebhookEvent> =
         Optional.ofNullable(safetyAlertCreated)
 
+    /** Sent when a deactivation is issued for a safety identifier in your organization. */
+    fun safetyDeactivationIssued(): Optional<SafetyDeactivationIssuedWebhookEvent> =
+        Optional.ofNullable(safetyDeactivationIssued)
+
     /** Sent when an approved safety alert is available for an enterprise workspace. */
     fun safetyOrgAlertCreated(): Optional<SafetyOrgAlertCreatedWebhookEvent> =
         Optional.ofNullable(safetyOrgAlertCreated)
+
+    /** Sent when a warning is issued for a safety identifier in your organization. */
+    fun safetyWarningIssued(): Optional<SafetyWarningIssuedWebhookEvent> =
+        Optional.ofNullable(safetyWarningIssued)
 
     fun isBatchCancelled(): Boolean = batchCancelled != null
 
@@ -166,7 +176,11 @@ private constructor(
 
     fun isSafetyAlertCreated(): Boolean = safetyAlertCreated != null
 
+    fun isSafetyDeactivationIssued(): Boolean = safetyDeactivationIssued != null
+
     fun isSafetyOrgAlertCreated(): Boolean = safetyOrgAlertCreated != null
+
+    fun isSafetyWarningIssued(): Boolean = safetyWarningIssued != null
 
     /** Sent when a batch API request has been cancelled. */
     fun asBatchCancelled(): BatchCancelledWebhookEvent = batchCancelled.getOrThrow("batchCancelled")
@@ -249,9 +263,17 @@ private constructor(
     fun asSafetyAlertCreated(): SafetyAlertCreatedWebhookEvent =
         safetyAlertCreated.getOrThrow("safetyAlertCreated")
 
+    /** Sent when a deactivation is issued for a safety identifier in your organization. */
+    fun asSafetyDeactivationIssued(): SafetyDeactivationIssuedWebhookEvent =
+        safetyDeactivationIssued.getOrThrow("safetyDeactivationIssued")
+
     /** Sent when an approved safety alert is available for an enterprise workspace. */
     fun asSafetyOrgAlertCreated(): SafetyOrgAlertCreatedWebhookEvent =
         safetyOrgAlertCreated.getOrThrow("safetyOrgAlertCreated")
+
+    /** Sent when a warning is issued for a safety identifier in your organization. */
+    fun asSafetyWarningIssued(): SafetyWarningIssuedWebhookEvent =
+        safetyWarningIssued.getOrThrow("safetyWarningIssued")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -307,8 +329,11 @@ private constructor(
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
             responseIncomplete != null -> visitor.visitResponseIncomplete(responseIncomplete)
             safetyAlertCreated != null -> visitor.visitSafetyAlertCreated(safetyAlertCreated)
+            safetyDeactivationIssued != null ->
+                visitor.visitSafetyDeactivationIssued(safetyDeactivationIssued)
             safetyOrgAlertCreated != null ->
                 visitor.visitSafetyOrgAlertCreated(safetyOrgAlertCreated)
+            safetyWarningIssued != null -> visitor.visitSafetyWarningIssued(safetyWarningIssued)
             else -> visitor.unknown(_json)
         }
 
@@ -419,10 +444,22 @@ private constructor(
                     safetyAlertCreated.validate()
                 }
 
+                override fun visitSafetyDeactivationIssued(
+                    safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+                ) {
+                    safetyDeactivationIssued.validate()
+                }
+
                 override fun visitSafetyOrgAlertCreated(
                     safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
                 ) {
                     safetyOrgAlertCreated.validate()
+                }
+
+                override fun visitSafetyWarningIssued(
+                    safetyWarningIssued: SafetyWarningIssuedWebhookEvent
+                ) {
+                    safetyWarningIssued.validate()
                 }
             }
         )
@@ -509,9 +546,17 @@ private constructor(
                     safetyAlertCreated: SafetyAlertCreatedWebhookEvent
                 ) = safetyAlertCreated.validity()
 
+                override fun visitSafetyDeactivationIssued(
+                    safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+                ) = safetyDeactivationIssued.validity()
+
                 override fun visitSafetyOrgAlertCreated(
                     safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
                 ) = safetyOrgAlertCreated.validity()
+
+                override fun visitSafetyWarningIssued(
+                    safetyWarningIssued: SafetyWarningIssuedWebhookEvent
+                ) = safetyWarningIssued.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -541,7 +586,9 @@ private constructor(
             responseFailed == other.responseFailed &&
             responseIncomplete == other.responseIncomplete &&
             safetyAlertCreated == other.safetyAlertCreated &&
-            safetyOrgAlertCreated == other.safetyOrgAlertCreated
+            safetyDeactivationIssued == other.safetyDeactivationIssued &&
+            safetyOrgAlertCreated == other.safetyOrgAlertCreated &&
+            safetyWarningIssued == other.safetyWarningIssued
     }
 
     override fun hashCode(): Int =
@@ -564,7 +611,9 @@ private constructor(
             responseFailed,
             responseIncomplete,
             safetyAlertCreated,
+            safetyDeactivationIssued,
             safetyOrgAlertCreated,
+            safetyWarningIssued,
         )
 
     override fun toString(): String =
@@ -594,8 +643,12 @@ private constructor(
                 "UnwrapWebhookEvent{responseIncomplete=$responseIncomplete}"
             safetyAlertCreated != null ->
                 "UnwrapWebhookEvent{safetyAlertCreated=$safetyAlertCreated}"
+            safetyDeactivationIssued != null ->
+                "UnwrapWebhookEvent{safetyDeactivationIssued=$safetyDeactivationIssued}"
             safetyOrgAlertCreated != null ->
                 "UnwrapWebhookEvent{safetyOrgAlertCreated=$safetyOrgAlertCreated}"
+            safetyWarningIssued != null ->
+                "UnwrapWebhookEvent{safetyWarningIssued=$safetyWarningIssued}"
             _json != null -> "UnwrapWebhookEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
         }
@@ -707,10 +760,21 @@ private constructor(
         fun ofSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent) =
             UnwrapWebhookEvent(safetyAlertCreated = safetyAlertCreated)
 
+        /** Sent when a deactivation is issued for a safety identifier in your organization. */
+        @JvmStatic
+        fun ofSafetyDeactivationIssued(
+            safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+        ) = UnwrapWebhookEvent(safetyDeactivationIssued = safetyDeactivationIssued)
+
         /** Sent when an approved safety alert is available for an enterprise workspace. */
         @JvmStatic
         fun ofSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent) =
             UnwrapWebhookEvent(safetyOrgAlertCreated = safetyOrgAlertCreated)
+
+        /** Sent when a warning is issued for a safety identifier in your organization. */
+        @JvmStatic
+        fun ofSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent) =
+            UnwrapWebhookEvent(safetyWarningIssued = safetyWarningIssued)
     }
 
     /**
@@ -792,8 +856,16 @@ private constructor(
         /** Sent when an approved safety alert is available for an API project. */
         fun visitSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent): T
 
+        /** Sent when a deactivation is issued for a safety identifier in your organization. */
+        fun visitSafetyDeactivationIssued(
+            safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+        ): T
+
         /** Sent when an approved safety alert is available for an enterprise workspace. */
         fun visitSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent): T
+
+        /** Sent when a warning is issued for a safety identifier in your organization. */
+        fun visitSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent): T
 
         /**
          * Maps an unknown variant of [UnwrapWebhookEvent] to a value of type [T].
@@ -913,9 +985,22 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(safetyAlertCreated = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "safety.deactivation_issued" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<SafetyDeactivationIssuedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(safetyDeactivationIssued = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "safety.org_alert.created" -> {
                     return tryDeserialize(node, jacksonTypeRef<SafetyOrgAlertCreatedWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(safetyOrgAlertCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "safety.warning_issued" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SafetyWarningIssuedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(safetyWarningIssued = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
             }
@@ -955,8 +1040,12 @@ private constructor(
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)
                 value.responseIncomplete != null -> generator.writeObject(value.responseIncomplete)
                 value.safetyAlertCreated != null -> generator.writeObject(value.safetyAlertCreated)
+                value.safetyDeactivationIssued != null ->
+                    generator.writeObject(value.safetyDeactivationIssued)
                 value.safetyOrgAlertCreated != null ->
                     generator.writeObject(value.safetyOrgAlertCreated)
+                value.safetyWarningIssued != null ->
+                    generator.writeObject(value.safetyWarningIssued)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
             }
