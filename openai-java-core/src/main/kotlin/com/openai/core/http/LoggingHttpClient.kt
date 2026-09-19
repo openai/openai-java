@@ -363,7 +363,7 @@ private class LoggingHttpResponse(private val response: HttpResponse) : HttpResp
  * a streaming manner with minimal buffering.
  */
 private class LoggingInputStream(private val inputStream: InputStream, charset: Charset?) :
-    InputStream() {
+    InputStream(), StreamCompletionListener {
 
     private var isDone = false
     private val buffer = LoggingBuffer(charset)
@@ -409,7 +409,12 @@ private class LoggingInputStream(private val inputStream: InputStream, charset: 
         inputStream.close()
     }
 
+    override fun onComplete() = markDone()
+
     private fun markDone(closedEarly: Boolean = false) {
+        if (isDone) {
+            return
+        }
         isDone = true
         buffer.flush()
         val suffix = if (closedEarly) ", closed early" else ""

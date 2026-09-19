@@ -19,10 +19,14 @@ internal fun <T> streamHandler(
     object : Handler<StreamResponse<T>> {
 
         override fun handle(response: HttpResponse): StreamResponse<T> {
+            val body = response.body()
+            val isClosed = AtomicBoolean()
             // Terminal events and caller cleanup share ownership of the transport response.
             val closeOnceResponse =
                 object : HttpResponse by response {
                     private val closed = AtomicBoolean()
+
+                    override fun body() = body
 
                     override fun close() {
                         if (closed.compareAndSet(false, true)) {
@@ -30,7 +34,7 @@ internal fun <T> streamHandler(
                         }
                     }
                 }
-            val reader = response.body().bufferedReader()
+            val reader = body.bufferedReader()
             val sequence =
                 // Wrap in a `CloseableSequence` to avoid performing a read on the `reader`
                 // after it has been closed, which would throw an `IOException`.
@@ -42,11 +46,12 @@ internal fun <T> streamHandler(
                                     // We wrap the `lines` instead of the top-level sequence because
                                     // we only want to catch `IOException` from the reader; not from
                                     // the user's own code.
-                                    IOExceptionWrappingSequence(lines),
+                                    IOExceptionWrappingSequence(lines, isClosed),
                                 )
                             }
                         }
-                        .constrainOnce()
+                        .constrainOnce(),
+                    isClosed,
                 )
 
             return PhantomReachableClosingStreamResponse(
@@ -68,7 +73,10 @@ internal fun <T> streamHandler(
     }
 
 /** A sequence that catches, wraps, and rethrows [IOException] as [OpenAIIoException]. */
-private class IOExceptionWrappingSequence<T>(private val sequence: Sequence<T>) : Sequence<T> {
+private class IOExceptionWrappingSequence<T>(
+    private val sequence: Sequence<T>,
+    private val isClosed: AtomicBoolean,
+) : Sequence<T> {
 
     override fun iterator(): Iterator<T> {
         val iterator = sequence.iterator()
@@ -85,7 +93,8 @@ private class IOExceptionWrappingSequence<T>(private val sequence: Sequence<T>) 
                 try {
                     iterator.hasNext()
                 } catch (e: IOException) {
-                    throw OpenAIIoException("Stream failed", e)
+                    // Closing the transport may abort an in-flight read instead of returning EOF.
+                    if (isClosed.get()) false else throw OpenAIIoException("Stream failed", e)
                 }
         }
     }
@@ -97,9 +106,10 @@ private class IOExceptionWrappingSequence<T>(private val sequence: Sequence<T>) 
  * Once [close] is called, it will not yield more elements. It will also no longer consult the
  * underlying [Iterator.hasNext] method.
  */
-private class CloseableSequence<T>(private val sequence: Sequence<T>) : Sequence<T> {
-
-    private var isClosed: Boolean = false
+private class CloseableSequence<T>(
+    private val sequence: Sequence<T>,
+    private val isClosed: AtomicBoolean,
+) : Sequence<T> {
 
     override fun iterator(): Iterator<T> {
         val iterator = sequence.iterator()
@@ -107,11 +117,12 @@ private class CloseableSequence<T>(private val sequence: Sequence<T>) : Sequence
 
             override fun next(): T = iterator.next()
 
-            override fun hasNext(): Boolean = !isClosed && iterator.hasNext()
+            override fun hasNext(): Boolean =
+                !isClosed.get() && iterator.hasNext() && !isClosed.get()
         }
     }
 
     fun close() {
-        isClosed = true
+        isClosed.set(true)
     }
 }

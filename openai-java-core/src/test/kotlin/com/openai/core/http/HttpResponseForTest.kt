@@ -4,6 +4,8 @@ import com.openai.core.handlers.streamHandler
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.util.Optional
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -70,6 +72,58 @@ internal class HttpResponseForTest {
         assertThatThrownBy { raw.close() }.isSameAs(error)
 
         verify(response).close()
+    }
+
+    @Test
+    fun asyncCloseTreatsAbortedReadAsCancellation() {
+        val reading = CountDownLatch(1)
+        val releaseRead = CountDownLatch(1)
+        val response = mock<HttpResponse>()
+        whenever(response.body())
+            .thenReturn(
+                object : InputStream() {
+                    override fun read(): Int {
+                        reading.countDown()
+                        check(releaseRead.await(5, TimeUnit.SECONDS))
+                        throw IOException("Read aborted by close")
+                    }
+                }
+            )
+        doAnswer {
+                releaseRead.countDown()
+                null
+            }
+            .whenever(response)
+            .close()
+        val executor = Executors.newFixedThreadPool(2)
+        val completion = CompletableFuture<Optional<Throwable>>()
+        val stream =
+            CompletableFuture.completedFuture(
+                    streamHandler<String> { _, lines -> yieldAll(lines) }.handle(response)
+                )
+                .toAsync(executor)
+        try {
+            stream.subscribe(
+                object : AsyncStreamResponse.Handler<String> {
+                    override fun onNext(value: String) {
+                        error("Unexpected event")
+                    }
+
+                    override fun onComplete(error: Optional<Throwable>) {
+                        completion.complete(error)
+                    }
+                }
+            )
+            assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
+            executor.submit { stream.close() }.get(5, TimeUnit.SECONDS)
+            stream.onCompleteFuture().get(5, TimeUnit.SECONDS)
+            assertThat(completion.get(5, TimeUnit.SECONDS)).isEmpty()
+            verify(response).close()
+        } finally {
+            releaseRead.countDown()
+            executor.shutdownNow()
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+        }
     }
 
     @Test

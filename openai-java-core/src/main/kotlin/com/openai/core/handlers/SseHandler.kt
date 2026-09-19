@@ -12,6 +12,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.SseMessage
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
+import com.openai.core.http.markBodyComplete
 import com.openai.errors.SseException
 import com.openai.models.ErrorObject
 
@@ -23,6 +24,7 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
             val message = state.decode(line) ?: continue
 
             if (message.data.startsWith("[DONE]")) {
+                response.markBodyComplete()
                 response.close()
                 break
             }
