@@ -579,6 +579,7 @@ internal class UnwrapWebhookEventTest {
                                 .value("value")
                                 .build()
                         )
+                        .sipMediaSecurity(LiveCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                         .build()
                 )
                 .object_(LiveCallIncomingWebhookEvent.Object.EVENT)
@@ -624,6 +625,9 @@ internal class UnwrapWebhookEventTest {
                                     .value("value")
                                     .build()
                             )
+                            .sipMediaSecurity(
+                                LiveCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP
+                            )
                             .build()
                     )
                     .object_(LiveCallIncomingWebhookEvent.Object.EVENT)
@@ -653,6 +657,9 @@ internal class UnwrapWebhookEventTest {
                                 .name("name")
                                 .value("value")
                                 .build()
+                        )
+                        .sipMediaSecurity(
+                            LiveTransportIncomingWebhookEvent.Data.SipMediaSecurity.RTP
                         )
                         .build()
                 )
@@ -699,6 +706,9 @@ internal class UnwrapWebhookEventTest {
                                     .value("value")
                                     .build()
                             )
+                            .sipMediaSecurity(
+                                LiveTransportIncomingWebhookEvent.Data.SipMediaSecurity.RTP
+                            )
                             .build()
                     )
                     .object_(LiveTransportIncomingWebhookEvent.Object.EVENT)
@@ -728,6 +738,9 @@ internal class UnwrapWebhookEventTest {
                                 .name("name")
                                 .value("value")
                                 .build()
+                        )
+                        .sipMediaSecurity(
+                            RealtimeCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP
                         )
                         .build()
                 )
@@ -773,6 +786,9 @@ internal class UnwrapWebhookEventTest {
                                     .name("name")
                                     .value("value")
                                     .build()
+                            )
+                            .sipMediaSecurity(
+                                RealtimeCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP
                             )
                             .build()
                     )
