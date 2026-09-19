@@ -205,16 +205,18 @@ private constructor(
                     ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
                         retryAfter.toFloatOrNull()?.times(TimeUnit.SECONDS.toNanos(1))
                             ?: try {
-                                ChronoUnit.NANOS.between(
-                                    OffsetDateTime.now(clock),
+                                val now = OffsetDateTime.now(clock)
+                                val retryAt =
                                     OffsetDateTime.parse(
                                         retryAfter,
                                         DateTimeFormatter.RFC_1123_DATE_TIME,
-                                    ),
-                                )
+                                    )
+                                try {
+                                    ChronoUnit.NANOS.between(now, retryAt)
+                                } catch (e: ArithmeticException) {
+                                    null
+                                }
                             } catch (e: DateTimeParseException) {
-                                null
-                            } catch (e: ArithmeticException) {
                                 null
                             }
                     }

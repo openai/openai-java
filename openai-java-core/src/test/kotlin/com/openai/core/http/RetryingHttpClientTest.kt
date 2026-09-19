@@ -29,6 +29,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -626,15 +627,20 @@ internal class RetryingHttpClientTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun execute_closesResponseWhenDelayCalculationFails(async: Boolean) {
+    @CsvSource("false, false", "true, false", "false, true", "true, true")
+    fun execute_closesResponseWhenDelayCalculationFails(
+        async: Boolean,
+        arithmeticFailure: Boolean,
+    ) {
         stubFor(
             post(urlPathEqualTo("/something"))
                 .willReturn(
                     serviceUnavailable().withHeader("Retry-After", "Wed, 21 Oct 2015 07:28:00 GMT")
                 )
         )
-        val failure = IllegalStateException("Clock unavailable")
+        val failure =
+            if (arithmeticFailure) ArithmeticException("Clock unavailable")
+            else IllegalStateException("Clock unavailable")
         val clock = mock<Clock>()
         whenever(clock.zone).thenReturn(ZoneOffset.UTC)
         whenever(clock.instant()).thenThrow(failure)
