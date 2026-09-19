@@ -35,7 +35,7 @@ private constructor(
     fun vaultId(): Optional<String> = Optional.ofNullable(vaultId)
 
     /**
-     * The authentication method and secret values to store for the MCP server.
+     * The authentication method and write-only secret values to store.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -119,7 +119,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The authentication method and secret values to store for the MCP server. */
+        /** The authentication method and write-only secret values to store. */
         fun auth(auth: CredentialAuthCreateParam) = apply { body.auth(auth) }
 
         /**
@@ -139,6 +139,14 @@ private constructor(
          */
         fun auth(staticBearer: CredentialAuthCreateParam.StaticBearer) = apply {
             body.auth(staticBearer)
+        }
+
+        /**
+         * Alias for calling [auth] with
+         * `CredentialAuthCreateParam.ofEnvironmentVariable(environmentVariable)`.
+         */
+        fun auth(environmentVariable: CredentialAuthCreateParam.EnvironmentVariable) = apply {
+            body.auth(environmentVariable)
         }
 
         /**
@@ -305,7 +313,7 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** Parameters for storing a credential that authorizes access to an MCP server. */
+    /** Parameters for storing a credential for an MCP server or an OpenAI-hosted environment. */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -323,7 +331,7 @@ private constructor(
         ) : this(auth, name, mutableMapOf())
 
         /**
-         * The authentication method and secret values to store for the MCP server.
+         * The authentication method and write-only secret values to store.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -394,7 +402,7 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The authentication method and secret values to store for the MCP server. */
+            /** The authentication method and write-only secret values to store. */
             fun auth(auth: CredentialAuthCreateParam) = auth(JsonField.of(auth))
 
             /**
@@ -416,6 +424,13 @@ private constructor(
              */
             fun auth(staticBearer: CredentialAuthCreateParam.StaticBearer) =
                 auth(CredentialAuthCreateParam.ofStaticBearer(staticBearer))
+
+            /**
+             * Alias for calling [auth] with
+             * `CredentialAuthCreateParam.ofEnvironmentVariable(environmentVariable)`.
+             */
+            fun auth(environmentVariable: CredentialAuthCreateParam.EnvironmentVariable) =
+                auth(CredentialAuthCreateParam.ofEnvironmentVariable(environmentVariable))
 
             /**
              * The name is trimmed before storage. It must contain 1 to 256 UTF-8 bytes after
