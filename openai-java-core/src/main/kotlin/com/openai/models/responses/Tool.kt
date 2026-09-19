@@ -5133,10 +5133,9 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * Controls fidelity to the original input image(s). This parameter is supported for GPT
+         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+         * ignore this parameter.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5425,10 +5424,9 @@ private constructor(
             }
 
             /**
-             * Control how much effort the model will exert to match the style and features,
-             * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
-             * `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+             * Controls fidelity to the original input image(s). This parameter is supported for GPT
+             * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+             * ignore this parameter.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -6013,10 +6011,9 @@ private constructor(
         }
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * Controls fidelity to the original input image(s). This parameter is supported for GPT
+         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+         * ignore this parameter.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {

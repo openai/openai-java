@@ -300,7 +300,7 @@ private constructor(
         fun expiresAt(): Optional<String> = expiresAt.getOptional("expires_at")
 
         /**
-         * Updates to an MCP credential's existing OAuth refresh configuration.
+         * Optional write-only refresh-token and client-secret updates.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -416,7 +416,7 @@ private constructor(
              */
             fun expiresAt(expiresAt: JsonField<String>) = apply { this.expiresAt = expiresAt }
 
-            /** Updates to an MCP credential's existing OAuth refresh configuration. */
+            /** Optional write-only refresh-token and client-secret updates. */
             fun refresh(refresh: Refresh?) = refresh(JsonField.ofNullable(refresh))
 
             /** Alias for calling [Builder.refresh] with `refresh.orElse(null)`. */
@@ -507,7 +507,7 @@ private constructor(
                 (if (expiresAt.asKnown().isPresent) 1 else 0) +
                 (refresh.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** Updates to an MCP credential's existing OAuth refresh configuration. */
+        /** Optional write-only refresh-token and client-secret updates. */
         class Refresh
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -548,7 +548,7 @@ private constructor(
             fun scope(): Optional<String> = scope.getOptional("scope")
 
             /**
-             * Client-secret updates that preserve the credential's OAuth authentication method.
+             * Client-secret updates for the existing token endpoint authentication method.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -659,9 +659,7 @@ private constructor(
                  */
                 fun scope(scope: JsonField<String>) = apply { this.scope = scope }
 
-                /**
-                 * Client-secret updates that preserve the credential's OAuth authentication method.
-                 */
+                /** Client-secret updates for the existing token endpoint authentication method. */
                 fun tokenEndpointAuth(tokenEndpointAuth: McpOAuthTokenEndpointAuthRotateParam?) =
                     tokenEndpointAuth(JsonField.ofNullable(tokenEndpointAuth))
 

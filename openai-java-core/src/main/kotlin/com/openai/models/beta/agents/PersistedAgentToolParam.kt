@@ -1099,7 +1099,7 @@ private constructor(
         fun allowedTools(): Optional<List<String>> = allowedTools.getOptional("allowed_tools")
 
         /**
-         * Where outbound MCP HTTP connections originate.
+         * Selects where outbound MCP HTTP connections originate.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1343,7 +1343,7 @@ private constructor(
                     }
             }
 
-            /** Where outbound MCP HTTP connections originate. */
+            /** Selects where outbound MCP HTTP connections originate. */
             fun connectionOrigin(connectionOrigin: ConnectionOrigin?) =
                 connectionOrigin(JsonField.ofNullable(connectionOrigin))
 
@@ -1521,7 +1521,7 @@ private constructor(
                 (requestMetadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (required.asKnown().isPresent) 1 else 0)
 
-        /** Where outbound MCP HTTP connections originate. */
+        /** Selects where outbound MCP HTTP connections originate. */
         class ConnectionOrigin
         @JsonCreator
         private constructor(private val value: JsonField<String>) : Enum {
@@ -1871,7 +1871,7 @@ private constructor(
         fun allowedDomains(): Optional<List<String>> = allowedDomains.getOptional("allowed_domains")
 
         /**
-         * The amount of web search context made available to the model.
+         * The amount of search context made available to the model. Defaults to `medium`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1879,7 +1879,7 @@ private constructor(
         fun contextSize(): Optional<ContextSize> = contextSize.getOptional("context_size")
 
         /**
-         * Approximate user location used to localize web search results.
+         * Approximate location used to localize search results.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1887,7 +1887,7 @@ private constructor(
         fun location(): Optional<Location> = location.getOptional("location")
 
         /**
-         * The source used for web search results.
+         * The source used for web search results. Defaults to `live`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2010,7 +2010,7 @@ private constructor(
                     }
             }
 
-            /** The amount of web search context made available to the model. */
+            /** The amount of search context made available to the model. Defaults to `medium`. */
             fun contextSize(contextSize: ContextSize?) =
                 contextSize(JsonField.ofNullable(contextSize))
 
@@ -2029,7 +2029,7 @@ private constructor(
                 this.contextSize = contextSize
             }
 
-            /** Approximate user location used to localize web search results. */
+            /** Approximate location used to localize search results. */
             fun location(location: Location?) = location(JsonField.ofNullable(location))
 
             /** Alias for calling [Builder.location] with `location.orElse(null)`. */
@@ -2044,7 +2044,7 @@ private constructor(
              */
             fun location(location: JsonField<Location>) = apply { this.location = location }
 
-            /** The source used for web search results. */
+            /** The source used for web search results. Defaults to `live`. */
             fun mode(mode: Mode?) = mode(JsonField.ofNullable(mode))
 
             /** Alias for calling [Builder.mode] with `mode.orElse(null)`. */
@@ -2144,7 +2144,7 @@ private constructor(
                 (location.asKnown().getOrNull()?.validity() ?: 0) +
                 (mode.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** The amount of web search context made available to the model. */
+        /** The amount of search context made available to the model. Defaults to `medium`. */
         class ContextSize @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
@@ -2292,7 +2292,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        /** Approximate user location used to localize web search results. */
+        /** Approximate location used to localize search results. */
         class Location
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -2573,7 +2573,7 @@ private constructor(
                 "Location{city=$city, country=$country, region=$region, timezone=$timezone, additionalProperties=$additionalProperties}"
         }
 
-        /** The source used for web search results. */
+        /** The source used for web search results. Defaults to `live`. */
         class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**

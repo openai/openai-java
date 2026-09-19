@@ -1851,7 +1851,7 @@ private constructor(
         fun contextSize(): ContextSize = contextSize.getRequired("context_size")
 
         /**
-         * Approximate user location used to localize web search results.
+         * Approximate location used to localize search results, if provided.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2005,7 +2005,7 @@ private constructor(
                 this.contextSize = contextSize
             }
 
-            /** Approximate user location used to localize web search results. */
+            /** Approximate location used to localize search results, if provided. */
             fun location(location: Location?) = location(JsonField.ofNullable(location))
 
             /** Alias for calling [Builder.location] with `location.orElse(null)`. */
@@ -2289,7 +2289,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        /** Approximate user location used to localize web search results. */
+        /** Approximate location used to localize search results, if provided. */
         class Location
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
