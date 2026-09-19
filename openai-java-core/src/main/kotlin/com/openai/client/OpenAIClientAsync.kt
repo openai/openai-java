@@ -120,6 +120,7 @@ interface OpenAIClientAsync {
 
     fun admin(): AdminServiceAsync
 
+    /** Create and manage model responses. */
     fun responses(): ResponseServiceAsync
 
     fun live(): LiveServiceAsync
@@ -216,6 +217,7 @@ interface OpenAIClientAsync {
 
         fun admin(): AdminServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseServiceAsync.WithRawResponse
 
         fun live(): LiveServiceAsync.WithRawResponse

@@ -26,6 +26,7 @@ interface BetaService {
 
     fun agents(): AgentService
 
+    /** Create and manage model responses. */
     fun responses(): ResponseService
 
     fun chatkit(): ChatKitService
@@ -49,6 +50,7 @@ interface BetaService {
 
         fun agents(): AgentService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseService.WithRawResponse
 
         fun chatkit(): ChatKitService.WithRawResponse

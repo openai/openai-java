@@ -26,6 +26,7 @@ interface BetaServiceAsync {
 
     fun agents(): AgentServiceAsync
 
+    /** Create and manage model responses. */
     fun responses(): ResponseServiceAsync
 
     fun chatkit(): ChatKitServiceAsync
@@ -49,6 +50,7 @@ interface BetaServiceAsync {
 
         fun agents(): AgentServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseServiceAsync.WithRawResponse
 
         fun chatkit(): ChatKitServiceAsync.WithRawResponse
