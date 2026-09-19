@@ -37,6 +37,7 @@ internal class CredentialAuthRotateParamTest {
 
         assertThat(credentialAuthRotateParam.mcpOauth()).contains(mcpOauth)
         assertThat(credentialAuthRotateParam.staticBearer()).isEmpty
+        assertThat(credentialAuthRotateParam.environmentVariable()).isEmpty
     }
 
     @Test
@@ -78,6 +79,7 @@ internal class CredentialAuthRotateParamTest {
 
         assertThat(credentialAuthRotateParam.mcpOauth()).isEmpty
         assertThat(credentialAuthRotateParam.staticBearer()).contains(staticBearer)
+        assertThat(credentialAuthRotateParam.environmentVariable()).isEmpty
     }
 
     @Test
@@ -86,6 +88,36 @@ internal class CredentialAuthRotateParamTest {
         val credentialAuthRotateParam =
             CredentialAuthRotateParam.ofStaticBearer(
                 CredentialAuthRotateParam.StaticBearer.builder().token("token").build()
+            )
+
+        val roundtrippedCredentialAuthRotateParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(credentialAuthRotateParam),
+                jacksonTypeRef<CredentialAuthRotateParam>(),
+            )
+
+        assertThat(roundtrippedCredentialAuthRotateParam).isEqualTo(credentialAuthRotateParam)
+    }
+
+    @Test
+    fun ofEnvironmentVariable() {
+        val environmentVariable =
+            CredentialAuthRotateParam.EnvironmentVariable.builder().secretValue("x").build()
+
+        val credentialAuthRotateParam =
+            CredentialAuthRotateParam.ofEnvironmentVariable(environmentVariable)
+
+        assertThat(credentialAuthRotateParam.mcpOauth()).isEmpty
+        assertThat(credentialAuthRotateParam.staticBearer()).isEmpty
+        assertThat(credentialAuthRotateParam.environmentVariable()).contains(environmentVariable)
+    }
+
+    @Test
+    fun ofEnvironmentVariableRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val credentialAuthRotateParam =
+            CredentialAuthRotateParam.ofEnvironmentVariable(
+                CredentialAuthRotateParam.EnvironmentVariable.builder().secretValue("x").build()
             )
 
         val roundtrippedCredentialAuthRotateParam =

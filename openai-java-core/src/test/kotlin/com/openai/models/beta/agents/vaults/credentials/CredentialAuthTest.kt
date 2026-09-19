@@ -35,6 +35,7 @@ internal class CredentialAuthTest {
 
         assertThat(credentialAuth.mcpO()).contains(mcpO)
         assertThat(credentialAuth.staticBearer()).isEmpty
+        assertThat(credentialAuth.environmentVariable()).isEmpty
     }
 
     @Test
@@ -75,6 +76,7 @@ internal class CredentialAuthTest {
 
         assertThat(credentialAuth.mcpO()).isEmpty
         assertThat(credentialAuth.staticBearer()).contains(staticBearer)
+        assertThat(credentialAuth.environmentVariable()).isEmpty
     }
 
     @Test
@@ -83,6 +85,41 @@ internal class CredentialAuthTest {
         val credentialAuth =
             CredentialAuth.ofStaticBearer(
                 CredentialAuth.StaticBearer.builder().mcpServerUrl("mcp_server_url").build()
+            )
+
+        val roundtrippedCredentialAuth =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(credentialAuth),
+                jacksonTypeRef<CredentialAuth>(),
+            )
+
+        assertThat(roundtrippedCredentialAuth).isEqualTo(credentialAuth)
+    }
+
+    @Test
+    fun ofEnvironmentVariable() {
+        val environmentVariable =
+            CredentialAuth.EnvironmentVariable.builder()
+                .networkingUnrestricted()
+                .secretName("secret_name")
+                .build()
+
+        val credentialAuth = CredentialAuth.ofEnvironmentVariable(environmentVariable)
+
+        assertThat(credentialAuth.mcpO()).isEmpty
+        assertThat(credentialAuth.staticBearer()).isEmpty
+        assertThat(credentialAuth.environmentVariable()).contains(environmentVariable)
+    }
+
+    @Test
+    fun ofEnvironmentVariableRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val credentialAuth =
+            CredentialAuth.ofEnvironmentVariable(
+                CredentialAuth.EnvironmentVariable.builder()
+                    .networkingUnrestricted()
+                    .secretName("secret_name")
+                    .build()
             )
 
         val roundtrippedCredentialAuth =

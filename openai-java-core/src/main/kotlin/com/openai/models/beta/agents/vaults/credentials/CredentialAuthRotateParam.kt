@@ -27,13 +27,17 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Updates to a vault credential without changing its authentication method or MCP server. */
+/**
+ * Updates to a vault credential without changing its authentication method or destination
+ * configuration.
+ */
 @JsonDeserialize(using = CredentialAuthRotateParam.Deserializer::class)
 @JsonSerialize(using = CredentialAuthRotateParam.Serializer::class)
 class CredentialAuthRotateParam
 private constructor(
     private val mcpOauth: McpOAuth? = null,
     private val staticBearer: StaticBearer? = null,
+    private val environmentVariable: EnvironmentVariable? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -43,15 +47,31 @@ private constructor(
     /** Replace the bearer token for the credential's MCP server. */
     fun staticBearer(): Optional<StaticBearer> = Optional.ofNullable(staticBearer)
 
+    /**
+     * Replace the secret for an OpenAI-hosted environment credential. The environment variable name
+     * and networking configuration remain unchanged.
+     */
+    fun environmentVariable(): Optional<EnvironmentVariable> =
+        Optional.ofNullable(environmentVariable)
+
     fun isMcpOAuth(): Boolean = mcpOauth != null
 
     fun isStaticBearer(): Boolean = staticBearer != null
+
+    fun isEnvironmentVariable(): Boolean = environmentVariable != null
 
     /** Rotate an OAuth credential for an HTTPS MCP destination. */
     fun asMcpOAuth(): McpOAuth = mcpOauth.getOrThrow("mcpOauth")
 
     /** Replace the bearer token for the credential's MCP server. */
     fun asStaticBearer(): StaticBearer = staticBearer.getOrThrow("staticBearer")
+
+    /**
+     * Replace the secret for an OpenAI-hosted environment credential. The environment variable name
+     * and networking configuration remain unchanged.
+     */
+    fun asEnvironmentVariable(): EnvironmentVariable =
+        environmentVariable.getOrThrow("environmentVariable")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -88,6 +108,7 @@ private constructor(
         when {
             mcpOauth != null -> visitor.visitMcpOAuth(mcpOauth)
             staticBearer != null -> visitor.visitStaticBearer(staticBearer)
+            environmentVariable != null -> visitor.visitEnvironmentVariable(environmentVariable)
             else -> visitor.unknown(_json)
         }
 
@@ -115,6 +136,10 @@ private constructor(
                 override fun visitStaticBearer(staticBearer: StaticBearer) {
                     staticBearer.validate()
                 }
+
+                override fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable) {
+                    environmentVariable.validate()
+                }
             }
         )
         validated = true
@@ -141,6 +166,9 @@ private constructor(
 
                 override fun visitStaticBearer(staticBearer: StaticBearer) = staticBearer.validity()
 
+                override fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable) =
+                    environmentVariable.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -152,15 +180,18 @@ private constructor(
 
         return other is CredentialAuthRotateParam &&
             mcpOauth == other.mcpOauth &&
-            staticBearer == other.staticBearer
+            staticBearer == other.staticBearer &&
+            environmentVariable == other.environmentVariable
     }
 
-    override fun hashCode(): Int = Objects.hash(mcpOauth, staticBearer)
+    override fun hashCode(): Int = Objects.hash(mcpOauth, staticBearer, environmentVariable)
 
     override fun toString(): String =
         when {
             mcpOauth != null -> "CredentialAuthRotateParam{mcpOauth=$mcpOauth}"
             staticBearer != null -> "CredentialAuthRotateParam{staticBearer=$staticBearer}"
+            environmentVariable != null ->
+                "CredentialAuthRotateParam{environmentVariable=$environmentVariable}"
             _json != null -> "CredentialAuthRotateParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid CredentialAuthRotateParam")
         }
@@ -175,6 +206,14 @@ private constructor(
         @JvmStatic
         fun ofStaticBearer(staticBearer: StaticBearer) =
             CredentialAuthRotateParam(staticBearer = staticBearer)
+
+        /**
+         * Replace the secret for an OpenAI-hosted environment credential. The environment variable
+         * name and networking configuration remain unchanged.
+         */
+        @JvmStatic
+        fun ofEnvironmentVariable(environmentVariable: EnvironmentVariable) =
+            CredentialAuthRotateParam(environmentVariable = environmentVariable)
     }
 
     /**
@@ -188,6 +227,12 @@ private constructor(
 
         /** Replace the bearer token for the credential's MCP server. */
         fun visitStaticBearer(staticBearer: StaticBearer): T
+
+        /**
+         * Replace the secret for an OpenAI-hosted environment credential. The environment variable
+         * name and networking configuration remain unchanged.
+         */
+        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T
 
         /**
          * Maps an unknown variant of [CredentialAuthRotateParam] to a value of type [T].
@@ -222,6 +267,11 @@ private constructor(
                         CredentialAuthRotateParam(staticBearer = it, _json = json)
                     } ?: CredentialAuthRotateParam(_json = json)
                 }
+                "environment_variable" -> {
+                    return tryDeserialize(node, jacksonTypeRef<EnvironmentVariable>())?.let {
+                        CredentialAuthRotateParam(environmentVariable = it, _json = json)
+                    } ?: CredentialAuthRotateParam(_json = json)
+                }
             }
 
             return CredentialAuthRotateParam(_json = json)
@@ -239,6 +289,8 @@ private constructor(
             when {
                 value.mcpOauth != null -> generator.writeObject(value.mcpOauth)
                 value.staticBearer != null -> generator.writeObject(value.staticBearer)
+                value.environmentVariable != null ->
+                    generator.writeObject(value.environmentVariable)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid CredentialAuthRotateParam")
             }
@@ -1038,5 +1090,230 @@ private constructor(
 
         override fun toString() =
             "StaticBearer{token=$token, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Replace the secret for an OpenAI-hosted environment credential. The environment variable name
+     * and networking configuration remain unchanged.
+     */
+    class EnvironmentVariable
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val secretValue: JsonField<String>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("secret_value")
+            @ExcludeMissing
+            secretValue: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(secretValue, type, mutableMapOf())
+
+        /**
+         * The write-only replacement secret. Never returned in credential resources or supplied
+         * directly to sandbox code. Must be nonempty and must not contain carriage returns,
+         * newlines, or NUL bytes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun secretValue(): String = secretValue.getRequired("secret_value")
+
+        /**
+         * The type of the object. Always `environment_variable`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("environment_variable")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [secretValue].
+         *
+         * Unlike [secretValue], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("secret_value")
+        @ExcludeMissing
+        fun _secretValue(): JsonField<String> = secretValue
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [EnvironmentVariable].
+             *
+             * The following fields are required:
+             * ```java
+             * .secretValue()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [EnvironmentVariable]. */
+        class Builder internal constructor() {
+
+            private var secretValue: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("environment_variable")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(environmentVariable: EnvironmentVariable) = apply {
+                secretValue = environmentVariable.secretValue
+                type = environmentVariable.type
+                additionalProperties = environmentVariable.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The write-only replacement secret. Never returned in credential resources or supplied
+             * directly to sandbox code. Must be nonempty and must not contain carriage returns,
+             * newlines, or NUL bytes.
+             */
+            fun secretValue(secretValue: String) = secretValue(JsonField.of(secretValue))
+
+            /**
+             * Sets [Builder.secretValue] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.secretValue] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun secretValue(secretValue: JsonField<String>) = apply {
+                this.secretValue = secretValue
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("environment_variable")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [EnvironmentVariable].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .secretValue()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): EnvironmentVariable =
+                EnvironmentVariable(
+                    checkRequired("secretValue", secretValue),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): EnvironmentVariable = apply {
+            if (validated) {
+                return@apply
+            }
+
+            secretValue()
+            _type().let {
+                if (it != JsonValue.from("environment_variable")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (secretValue.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("environment_variable")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is EnvironmentVariable &&
+                secretValue == other.secretValue &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(secretValue, type, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "EnvironmentVariable{secretValue=$secretValue, type=$type, additionalProperties=$additionalProperties}"
     }
 }

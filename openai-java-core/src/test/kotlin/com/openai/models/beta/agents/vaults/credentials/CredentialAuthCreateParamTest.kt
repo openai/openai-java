@@ -37,6 +37,7 @@ internal class CredentialAuthCreateParamTest {
 
         assertThat(credentialAuthCreateParam.mcpOauth()).contains(mcpOauth)
         assertThat(credentialAuthCreateParam.staticBearer()).isEmpty
+        assertThat(credentialAuthCreateParam.environmentVariable()).isEmpty
     }
 
     @Test
@@ -82,6 +83,7 @@ internal class CredentialAuthCreateParamTest {
 
         assertThat(credentialAuthCreateParam.mcpOauth()).isEmpty
         assertThat(credentialAuthCreateParam.staticBearer()).contains(staticBearer)
+        assertThat(credentialAuthCreateParam.environmentVariable()).isEmpty
     }
 
     @Test
@@ -92,6 +94,44 @@ internal class CredentialAuthCreateParamTest {
                 CredentialAuthCreateParam.StaticBearer.builder()
                     .token("token")
                     .mcpServerUrl("mcp_server_url")
+                    .build()
+            )
+
+        val roundtrippedCredentialAuthCreateParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(credentialAuthCreateParam),
+                jacksonTypeRef<CredentialAuthCreateParam>(),
+            )
+
+        assertThat(roundtrippedCredentialAuthCreateParam).isEqualTo(credentialAuthCreateParam)
+    }
+
+    @Test
+    fun ofEnvironmentVariable() {
+        val environmentVariable =
+            CredentialAuthCreateParam.EnvironmentVariable.builder()
+                .networkingUnrestricted()
+                .secretName("x")
+                .secretValue("x")
+                .build()
+
+        val credentialAuthCreateParam =
+            CredentialAuthCreateParam.ofEnvironmentVariable(environmentVariable)
+
+        assertThat(credentialAuthCreateParam.mcpOauth()).isEmpty
+        assertThat(credentialAuthCreateParam.staticBearer()).isEmpty
+        assertThat(credentialAuthCreateParam.environmentVariable()).contains(environmentVariable)
+    }
+
+    @Test
+    fun ofEnvironmentVariableRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val credentialAuthCreateParam =
+            CredentialAuthCreateParam.ofEnvironmentVariable(
+                CredentialAuthCreateParam.EnvironmentVariable.builder()
+                    .networkingUnrestricted()
+                    .secretName("x")
+                    .secretValue("x")
                     .build()
             )
 

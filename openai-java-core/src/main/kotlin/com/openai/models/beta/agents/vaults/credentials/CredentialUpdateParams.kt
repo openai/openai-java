@@ -142,6 +142,26 @@ private constructor(
          */
         fun staticBearerAuth(token: String) = apply { body.staticBearerAuth(token) }
 
+        /**
+         * Alias for calling [auth] with
+         * `CredentialAuthRotateParam.ofEnvironmentVariable(environmentVariable)`.
+         */
+        fun auth(environmentVariable: CredentialAuthRotateParam.EnvironmentVariable) = apply {
+            body.auth(environmentVariable)
+        }
+
+        /**
+         * Alias for calling [auth] with the following:
+         * ```java
+         * CredentialAuthRotateParam.EnvironmentVariable.builder()
+         *     .secretValue(secretValue)
+         *     .build()
+         * ```
+         */
+        fun environmentVariableAuth(secretValue: String) = apply {
+            body.environmentVariableAuth(secretValue)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -397,6 +417,28 @@ private constructor(
              */
             fun staticBearerAuth(token: String) =
                 auth(CredentialAuthRotateParam.StaticBearer.builder().token(token).build())
+
+            /**
+             * Alias for calling [auth] with
+             * `CredentialAuthRotateParam.ofEnvironmentVariable(environmentVariable)`.
+             */
+            fun auth(environmentVariable: CredentialAuthRotateParam.EnvironmentVariable) =
+                auth(CredentialAuthRotateParam.ofEnvironmentVariable(environmentVariable))
+
+            /**
+             * Alias for calling [auth] with the following:
+             * ```java
+             * CredentialAuthRotateParam.EnvironmentVariable.builder()
+             *     .secretValue(secretValue)
+             *     .build()
+             * ```
+             */
+            fun environmentVariableAuth(secretValue: String) =
+                auth(
+                    CredentialAuthRotateParam.EnvironmentVariable.builder()
+                        .secretValue(secretValue)
+                        .build()
+                )
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
