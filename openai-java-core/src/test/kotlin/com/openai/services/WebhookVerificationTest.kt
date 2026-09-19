@@ -5,6 +5,7 @@ import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
+import com.openai.core.jsonMapper
 import com.openai.errors.InvalidWebhookSignatureException
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.webhooks.UnwrapWebhookEvent
@@ -133,6 +134,55 @@ internal class WebhookVerificationTest {
         assertThat(parseError)
             .hasMessage("Error parsing body")
             .hasCauseInstanceOf(Exception::class.java)
+    }
+
+    @ParameterizedTest
+    @EnumSource(ServiceMode::class)
+    fun unwrapPreservesSipMediaSecurity(mode: ServiceMode) = withOptions { options ->
+        val mapper = jsonMapper()
+        for ((type, idField) in
+            listOf(
+                "live.call.incoming" to "session_id",
+                "live.transport.incoming" to "session_id",
+                "realtime.call.incoming" to "call_id",
+            )) {
+            for (security in listOf(null, "rtp", "srtp", "future-security")) {
+                val mediaField = security?.let { """, "sip_media_security": "$it"""" }.orEmpty()
+                val transportField =
+                    if (type == "live.transport.incoming") """, "type": "sip"""" else ""
+                val payload =
+                    """{
+                        "id": "evt-sip-test", "created_at": 123, "object": "event",
+                        "type": "$type",
+                        "data": {
+                            "$idField": "sip-call-test",
+                            "sip_headers": [{"name": "X-Test", "value": "synthetic"}]
+                            $transportField
+                            $mediaField
+                        }
+                    }"""
+                val event = mode.unwrap(options, params(payload = payload))
+                val actual =
+                    when (type) {
+                        "live.call.incoming" ->
+                            event.asLiveCallIncoming().data().sipMediaSecurity().map {
+                                it.asString()
+                            }
+                        "live.transport.incoming" ->
+                            event.asLiveTransportIncoming().data().sipMediaSecurity().map {
+                                it.asString()
+                            }
+                        else ->
+                            event.asRealtimeCallIncoming().data().sipMediaSecurity().map {
+                                it.asString()
+                            }
+                    }
+                assertThat(actual).isEqualTo(Optional.ofNullable(security))
+                val serialized = mapper.writeValueAsString(event)
+                assertThat(mapper.readTree(serialized)).isEqualTo(mapper.readTree(payload))
+                assertThat(mode.unwrap(options, params(payload = serialized))).isEqualTo(event)
+            }
+        }
     }
 
     @ParameterizedTest
