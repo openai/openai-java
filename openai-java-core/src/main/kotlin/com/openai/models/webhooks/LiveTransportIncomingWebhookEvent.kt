@@ -325,6 +325,7 @@ private constructor(
         private val sessionId: JsonField<String>,
         private val sipHeaders: JsonField<List<SipHeader>>,
         private val type: JsonValue,
+        private val sipMediaSecurity: JsonField<SipMediaSecurity>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -337,7 +338,10 @@ private constructor(
             @ExcludeMissing
             sipHeaders: JsonField<List<SipHeader>> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(sessionId, sipHeaders, type, mutableMapOf())
+            @JsonProperty("sip_media_security")
+            @ExcludeMissing
+            sipMediaSecurity: JsonField<SipMediaSecurity> = JsonMissing.of(),
+        ) : this(sessionId, sipHeaders, type, sipMediaSecurity, mutableMapOf())
 
         /**
          * The `live_...` ID of the pending SIP session. Forward this value unchanged when accepting
@@ -371,6 +375,18 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * Media protection selected on the SIP leg during SDP negotiation. `srtp` indicates SRTP;
+         * `rtp` indicates unencrypted RTP. Omitted when unknown. This does not describe SIP
+         * signaling security or confirm that media has flowed. Clients should handle unrecognized
+         * values as unknown.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun sipMediaSecurity(): Optional<SipMediaSecurity> =
+            sipMediaSecurity.getOptional("sip_media_security")
+
+        /**
          * Returns the raw JSON value of [sessionId].
          *
          * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
@@ -385,6 +401,16 @@ private constructor(
         @JsonProperty("sip_headers")
         @ExcludeMissing
         fun _sipHeaders(): JsonField<List<SipHeader>> = sipHeaders
+
+        /**
+         * Returns the raw JSON value of [sipMediaSecurity].
+         *
+         * Unlike [sipMediaSecurity], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("sip_media_security")
+        @ExcludeMissing
+        fun _sipMediaSecurity(): JsonField<SipMediaSecurity> = sipMediaSecurity
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -418,6 +444,7 @@ private constructor(
             private var sessionId: JsonField<String>? = null
             private var sipHeaders: JsonField<MutableList<SipHeader>>? = null
             private var type: JsonValue = JsonValue.from("sip")
+            private var sipMediaSecurity: JsonField<SipMediaSecurity> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -425,6 +452,7 @@ private constructor(
                 sessionId = data.sessionId
                 sipHeaders = data.sipHeaders.map { it.toMutableList() }
                 type = data.type
+                sipMediaSecurity = data.sipMediaSecurity
                 additionalProperties = data.additionalProperties.toMutableMap()
             }
 
@@ -487,6 +515,35 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /**
+             * Media protection selected on the SIP leg during SDP negotiation. `srtp` indicates
+             * SRTP; `rtp` indicates unencrypted RTP. Omitted when unknown. This does not describe
+             * SIP signaling security or confirm that media has flowed. Clients should handle
+             * unrecognized values as unknown.
+             */
+            fun sipMediaSecurity(sipMediaSecurity: SipMediaSecurity) =
+                sipMediaSecurity(JsonField.of(sipMediaSecurity))
+
+            /**
+             * Sets [Builder.sipMediaSecurity] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sipMediaSecurity] with a well-typed
+             * [SipMediaSecurity] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun sipMediaSecurity(sipMediaSecurity: JsonField<SipMediaSecurity>) = apply {
+                this.sipMediaSecurity = sipMediaSecurity
+            }
+
+            /**
+             * Sets [sipMediaSecurity] to an arbitrary [String].
+             *
+             * You should usually call [sipMediaSecurity] with a well-typed [SipMediaSecurity]
+             * constant instead. This method is primarily for setting the field to an undocumented
+             * or not yet supported value.
+             */
+            fun sipMediaSecurity(value: String) = sipMediaSecurity(SipMediaSecurity.of(value))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -524,6 +581,7 @@ private constructor(
                     checkRequired("sessionId", sessionId),
                     checkRequired("sipHeaders", sipHeaders).map { it.toImmutable() },
                     type,
+                    sipMediaSecurity,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -551,6 +609,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            sipMediaSecurity()
             validated = true
         }
 
@@ -572,7 +631,8 @@ private constructor(
         internal fun validity(): Int =
             (if (sessionId.asKnown().isPresent) 1 else 0) +
                 (sipHeaders.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-                type.let { if (it == JsonValue.from("sip")) 1 else 0 }
+                type.let { if (it == JsonValue.from("sip")) 1 else 0 } +
+                (if (sipMediaSecurity.asKnown().isPresent) 1 else 0)
 
         /** A header from the SIP Invite. */
         class SipHeader
@@ -787,6 +847,155 @@ private constructor(
                 "SipHeader{name=$name, value=$value, additionalProperties=$additionalProperties}"
         }
 
+        /**
+         * Media protection selected on the SIP leg during SDP negotiation. `srtp` indicates SRTP;
+         * `rtp` indicates unencrypted RTP. Omitted when unknown. This does not describe SIP
+         * signaling security or confirm that media has flowed. Clients should handle unrecognized
+         * values as unknown.
+         */
+        class SipMediaSecurity
+        @JsonCreator
+        private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val RTP = of("rtp")
+
+                @JvmField val SRTP = of("srtp")
+
+                @JvmStatic fun of(value: String) = SipMediaSecurity(JsonField.of(value))
+            }
+
+            /** An enum containing [SipMediaSecurity]'s known values. */
+            enum class Known {
+                RTP,
+                SRTP,
+            }
+
+            /**
+             * An enum containing [SipMediaSecurity]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [SipMediaSecurity] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                RTP,
+                SRTP,
+                /**
+                 * An enum member indicating that [SipMediaSecurity] was instantiated with an
+                 * unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    RTP -> Value.RTP
+                    SRTP -> Value.SRTP
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    RTP -> Known.RTP
+                    SRTP -> Known.SRTP
+                    else -> throw OpenAIInvalidDataException("Unknown SipMediaSecurity: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): SipMediaSecurity = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is SipMediaSecurity && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -796,17 +1005,18 @@ private constructor(
                 sessionId == other.sessionId &&
                 sipHeaders == other.sipHeaders &&
                 type == other.type &&
+                sipMediaSecurity == other.sipMediaSecurity &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(sessionId, sipHeaders, type, additionalProperties)
+            Objects.hash(sessionId, sipHeaders, type, sipMediaSecurity, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Data{sessionId=$sessionId, sipHeaders=$sipHeaders, type=$type, additionalProperties=$additionalProperties}"
+            "Data{sessionId=$sessionId, sipHeaders=$sipHeaders, type=$type, sipMediaSecurity=$sipMediaSecurity, additionalProperties=$additionalProperties}"
     }
 
     /** The object of the event. Always `event`. */
