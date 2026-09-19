@@ -117,20 +117,30 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * Sets the file to upload from an InputStream with a default filename ("file.bin"). Use
+         * [file(InputStream, String)] for explicit control.
+         */
         fun file(file: InputStream) = apply { body.file(file) }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: InputStream, filename: String) = apply { body.file(file, filename) }
 
         /**
          * Sets [Builder.file] to an arbitrary multipart value.
          *
-         * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You would typically use this if you want to provide a custom filename or content type.
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * Sets the file to upload from a byte array with a default filename ("file.bin"). Use
+         * [file(ByteArray, String)] for explicit control.
+         */
         fun file(file: ByteArray) = apply { body.file(file) }
+
+        /** The File object (not file name) to be uploaded, with an explicit filename. */
+        fun file(file: ByteArray, filename: String) = apply { body.file(file, filename) }
 
         /** The File object (not file name) to be uploaded. */
         fun file(path: Path) = apply { body.file(path) }
@@ -361,20 +371,26 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: InputStream) = file(MultipartField.of(file))
+            /** Sets the file to upload from an InputStream with default filename "file.bin". */
+            fun file(file: InputStream) = file(file, "file.bin")
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: InputStream, filename: String) =
+                file(MultipartField.builder<InputStream>().value(file).filename(filename).build())
 
             /**
              * Sets [Builder.file] to an arbitrary multipart value.
              *
-             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You would typically use this if you want to provide a custom filename or content
+             * type.
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(file.inputStream())
+            /** Sets the file to upload from a byte array with default filename "file.bin". */
+            fun file(file: ByteArray) = file(file, "file.bin")
+
+            /** The File object (not file name) to be uploaded, with an explicit filename. */
+            fun file(file: ByteArray, filename: String) = file(file.inputStream(), filename)
 
             /** The File object (not file name) to be uploaded. */
             fun file(path: Path) =
