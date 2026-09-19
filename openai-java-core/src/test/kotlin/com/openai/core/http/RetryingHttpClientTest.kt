@@ -25,10 +25,14 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @WireMockTest
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
@@ -620,6 +624,45 @@ internal class RetryingHttpClientTest {
         assertThat(sleeper.durations).hasSize(1)
         assertThat(sleeper.durations[0]).isBetween(Duration.ofMillis(375), Duration.ofMillis(500))
         assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @CsvSource("false, false", "true, false", "false, true", "true, true")
+    fun execute_closesResponseWhenDelayCalculationFails(
+        async: Boolean,
+        arithmeticFailure: Boolean,
+    ) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .willReturn(
+                    serviceUnavailable().withHeader("Retry-After", "Wed, 21 Oct 2015 07:28:00 GMT")
+                )
+        )
+        val failure =
+            if (arithmeticFailure) ArithmeticException("Clock unavailable")
+            else IllegalStateException("Clock unavailable")
+        val clock = mock<Clock>()
+        whenever(clock.zone).thenReturn(ZoneOffset.UTC)
+        whenever(clock.instant()).thenThrow(failure)
+        val sleeper = RecordingSleeper()
+        val retryingClient = retryingHttpClientBuilder(sleeper, clock).maxRetries(1).build()
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl(baseUrl)
+                .addPathSegment("something")
+                .build()
+
+        if (async) {
+            val future = retryingClient.executeAsync(request)
+            assertThatThrownBy { future.get() }.hasCause(failure)
+        } else {
+            assertThatThrownBy { retryingClient.execute(request) }.isSameAs(failure)
+        }
+
+        assertThat(openResponseCount).isZero()
+        assertThat(sleeper.durations).isEmpty()
+        verify(1, postRequestedFor(urlPathEqualTo("/something")))
     }
 
     private fun retryingHttpClientBuilder(
