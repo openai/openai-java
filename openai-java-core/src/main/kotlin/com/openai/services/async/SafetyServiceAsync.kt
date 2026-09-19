@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.safety.AlertServiceAsync
+import com.openai.services.async.safety.CaseServiceAsync
 import java.util.function.Consumer
 
 interface SafetyServiceAsync {
@@ -22,6 +23,8 @@ interface SafetyServiceAsync {
 
     fun alerts(): AlertServiceAsync
 
+    fun cases(): CaseServiceAsync
+
     /**
      * A view of [SafetyServiceAsync] that provides access to raw HTTP responses for each method.
      */
@@ -37,5 +40,7 @@ interface SafetyServiceAsync {
         ): SafetyServiceAsync.WithRawResponse
 
         fun alerts(): AlertServiceAsync.WithRawResponse
+
+        fun cases(): CaseServiceAsync.WithRawResponse
     }
 }
