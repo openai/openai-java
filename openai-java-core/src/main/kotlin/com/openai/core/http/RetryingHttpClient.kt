@@ -93,7 +93,14 @@ private constructor(
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            val responseFuture =
+                try {
+                    httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                } catch (throwable: Throwable) {
+                    CompletableFuture<HttpResponse>().also {
+                        it.completeExceptionally(throwable)
+                    }
+                }
             if (!isRetryable(requestWithRetryCount)) {
                 return responseFuture
             }
