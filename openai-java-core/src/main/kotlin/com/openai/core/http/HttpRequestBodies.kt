@@ -11,6 +11,8 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.io.SequenceInputStream
+import java.util.Collections
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
@@ -20,6 +22,8 @@ internal inline fun <reified T> json(jsonMapper: JsonMapper, value: T): HttpRequ
         private val bytes: ByteArray by lazy { jsonMapper.writeValueAsBytes(value) }
 
         override fun writeTo(outputStream: OutputStream) = outputStream.write(bytes)
+
+        override fun content(): InputStream = bytes.inputStream()
 
         override fun contentType(): String = "application/json"
 
@@ -60,6 +64,8 @@ internal fun multipartFormData(
                                     outputStream.write(byteArray)
                                 }
 
+                                override fun content(): InputStream = byteArray.inputStream()
+
                                 override fun contentType(): String = field.contentType
 
                                 override fun contentLength(): Long = byteArray.size.toLong()
@@ -74,6 +80,8 @@ internal fun multipartFormData(
                                 override fun writeTo(outputStream: OutputStream) {
                                     bytes.copyTo(outputStream)
                                 }
+
+                                override fun content(): InputStream = bytes
 
                                 override fun contentType(): String = field.contentType
 
@@ -145,6 +153,36 @@ private constructor(private val boundary: String, private val parts: List<Part>)
         outputStream.write(boundaryBytes)
         outputStream.write(DASHDASH)
         outputStream.write(CRLF)
+    }
+
+    // This must remain in sync with `writeTo`.
+    override fun content(): InputStream {
+        val streams = mutableListOf<InputStream>()
+
+        parts.forEach { part ->
+            streams.add(DASHDASH.inputStream())
+            streams.add(boundaryBytes.inputStream())
+            streams.add(CRLF.inputStream())
+
+            streams.add(CONTENT_DISPOSITION.inputStream())
+            streams.add(part.contentDisposition.toByteArray().inputStream())
+            streams.add(CRLF.inputStream())
+
+            streams.add(CONTENT_TYPE.inputStream())
+            streams.add(part.contentType.toByteArray().inputStream())
+            streams.add(CRLF.inputStream())
+
+            streams.add(CRLF.inputStream())
+            streams.add(part.body.content())
+            streams.add(CRLF.inputStream())
+        }
+
+        streams.add(DASHDASH.inputStream())
+        streams.add(boundaryBytes.inputStream())
+        streams.add(DASHDASH.inputStream())
+        streams.add(CRLF.inputStream())
+
+        return SequenceInputStream(Collections.enumeration(streams))
     }
 
     override fun contentType(): String = contentType
