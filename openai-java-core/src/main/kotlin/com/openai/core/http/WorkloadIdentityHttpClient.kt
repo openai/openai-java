@@ -43,15 +43,17 @@ internal class WorkloadIdentityHttpClient(
             val requestWithAuth =
                 request.toBuilder().replaceHeaders("Authorization", "Bearer $token").build()
 
-            delegate.executeAsync(requestWithAuth, requestOptions).thenApply { response ->
-                if (response.statusCode() == 401) {
-                    response.close()
-                    workloadIdentityAuth.invalidateToken()
-                    throw OpenAIRetryableException("OAuth token is expired")
-                }
+            request.body
+                .beforeMultipartTransport { delegate.executeAsync(requestWithAuth, requestOptions) }
+                .thenApply { response ->
+                    if (response.statusCode() == 401) {
+                        response.close()
+                        workloadIdentityAuth.invalidateToken()
+                        throw OpenAIRetryableException("OAuth token is expired")
+                    }
 
-                response
-            }
+                    response
+                }
         }
     }
 

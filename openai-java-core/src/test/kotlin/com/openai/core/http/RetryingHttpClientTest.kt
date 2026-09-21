@@ -16,7 +16,9 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.openai.client.okhttp.OkHttpClient
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
+import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIRetryableException
+import com.openai.models.images.ImageEditParams
 import java.io.InputStream
 import java.time.Clock
 import java.time.Duration
@@ -24,19 +26,96 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @WireMockTest
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class RetryingHttpClientTest {
+
+    @Test
+    fun cancellingNonMultipartStreamCancelsTransport() {
+        val transportResult = CompletableFuture<HttpResponse>()
+        val delegate = mock<HttpClient>()
+        whenever(delegate.executeAsync(any(), any())).thenReturn(transportResult)
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl("https://example.test")
+                .body(mock<HttpRequestBody>())
+                .build()
+        RetryingHttpClient.builder().httpClient(delegate).maxRetries(0).build().use { client ->
+            assertThat(client.executeAsync(request).cancel(true)).isTrue()
+            assertThat(transportResult.isCancelled).isTrue()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun cancelledUploadClosesUndeliverableResponse(refusesCancellation: Boolean) {
+        val transportResult =
+            if (refusesCancellation)
+                object : CompletableFuture<HttpResponse>() {
+                    override fun cancel(mayInterruptIfRunning: Boolean) = false
+                }
+            else CompletableFuture<HttpResponse>()
+        val delegate = mock<HttpClient>()
+        whenever(delegate.executeAsync(any(), any())).thenReturn(transportResult)
+        val response = mock<HttpResponse>()
+        val streamCloses = AtomicInteger()
+        val stream =
+            object : InputStream() {
+                override fun read(): Int = error("Unexpected upload read")
+
+                override fun close() {
+                    streamCloses.incrementAndGet()
+                }
+            }
+        val params = ImageEditParams.builder().prompt("test").image(stream).build()
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl("https://example.test")
+                .body(multipartFormData(jsonMapper(), params._body()))
+                .build()
+        RetryingHttpClient.builder().httpClient(delegate).maxRetries(0).build().use { client ->
+            val result = client.executeAsync(request)
+            if (refusesCancellation) {
+                assertThat(result.cancel(true)).isTrue()
+                assertThat(transportResult.complete(response)).isTrue()
+            } else {
+                val completionEntered = CountDownLatch(1)
+                val releaseCompletion = CountDownLatch(1)
+                transportResult.whenComplete { _, _ ->
+                    completionEntered.countDown()
+                    check(releaseCompletion.await(5, TimeUnit.SECONDS))
+                }
+                val completing = CompletableFuture.runAsync { transportResult.complete(response) }
+                try {
+                    assertThat(completionEntered.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(result.cancel(true)).isTrue()
+                } finally {
+                    releaseCompletion.countDown()
+                }
+                completing.get(5, TimeUnit.SECONDS)
+            }
+            assertThat(result.isCancelled).isTrue()
+            org.mockito.kotlin.verify(response).close()
+            assertThat(streamCloses.get()).isEqualTo(1)
+        }
+    }
 
     private var openResponseCount = 0
     private lateinit var baseUrl: String

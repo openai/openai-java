@@ -9,6 +9,7 @@ import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketHandshakeException
+import com.openai.core.http.beforeMultipartTransport
 import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import java.time.DateTimeException
@@ -196,9 +197,9 @@ private class X509RefreshingHttpClient(
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         authenticator.authenticateForBoundTransportAsync(request).thenCompose { authenticated ->
-            delegate.executeAsync(authenticated, requestOptions).thenApply { response ->
-                checkResponse(authenticated, response)
-            }
+            request.body
+                .beforeMultipartTransport { delegate.executeAsync(authenticated, requestOptions) }
+                .thenApply { response -> checkResponse(authenticated, response) }
         }
 
     override fun connectWebSocket(
