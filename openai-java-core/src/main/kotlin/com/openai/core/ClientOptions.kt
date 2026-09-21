@@ -23,6 +23,7 @@ import com.openai.credential.Credential
 import com.openai.credential.WorkloadIdentityCredential
 import java.time.Clock
 import java.time.Duration
+import java.util.Locale
 import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
@@ -89,6 +90,7 @@ private constructor(
     private val dataResidencySelected: Boolean,
     /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
+    private val removedSecurityHeaders: Set<String>,
     /** Query params to send with the request. */
     @get:JvmName("queryParams") val queryParams: QueryParams,
     /**
@@ -210,7 +212,8 @@ private constructor(
                 when {
                     httpRequestAuthenticator != null ->
                         httpRequestAuthenticator.authenticateAsync(request)
-                    credential is WorkloadIdentityCredential ->
+                    credential is WorkloadIdentityCredential &&
+                        !isSecurityHeaderRemoved("Authorization") ->
                         credential.getAuth().getTokenAsync().thenApply {
                             request
                                 .toBuilder()
@@ -253,6 +256,7 @@ private constructor(
                             if (
                                 httpRequestAuthenticator == null &&
                                     credential is WorkloadIdentityCredential &&
+                                    !isSecurityHeaderRemoved("Authorization") &&
                                     error is com.openai.core.http.WebSocketHandshakeException &&
                                     error.statusCode == 401
                             ) {
@@ -316,6 +320,7 @@ private constructor(
         private var explicitDataResidency: Boolean = false
         private var inheritedAzureEndpoint: Boolean = false
         private var headers: Headers.Builder = Headers.builder()
+        private var removedSecurityHeaders: MutableSet<String> = mutableSetOf()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
         private var timeout: Timeout = Timeout.default()
@@ -348,6 +353,7 @@ private constructor(
                     AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
                 } ?: false
             headers = clientOptions.headers.toBuilder()
+            removedSecurityHeaders = clientOptions.removedSecurityHeaders.toMutableSet()
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
             timeout = clientOptions.timeout
@@ -617,9 +623,13 @@ private constructor(
             this.headers.replaceAll(headers)
         }
 
-        fun removeHeaders(name: String) = apply { headers.remove(name) }
+        fun removeHeaders(name: String) = apply {
+            headers.remove(name)
+            // Security headers are applied per route, after this builder has finished.
+            removedSecurityHeaders.add(name.lowercase(Locale.ROOT))
+        }
 
-        fun removeAllHeaders(names: Set<String>) = apply { headers.removeAll(names) }
+        fun removeAllHeaders(names: Set<String>) = apply { names.forEach(::removeHeaders) }
 
         fun queryParams(queryParams: QueryParams) = apply {
             this.queryParams.clear()
@@ -866,6 +876,7 @@ private constructor(
                     WorkloadIdentityHttpClient(
                         delegate = httpClient,
                         workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                        authorizationRemoved = "authorization" in removedSecurityHeaders,
                     )
 
             val loggingHttpClient =
@@ -903,6 +914,7 @@ private constructor(
                 baseUrl,
                 dataResidencySelected,
                 headers.build(),
+                removedSecurityHeaders.toSet(),
                 queryParams.build(),
                 responseValidation,
                 timeout,
@@ -941,6 +953,10 @@ private constructor(
     }
 
     @JvmSynthetic
+    internal fun isSecurityHeaderRemoved(name: String): Boolean =
+        name.lowercase(Locale.ROOT) in removedSecurityHeaders
+
+    @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {
         val headers = Headers.builder()
         var isSatisfied =
@@ -950,10 +966,14 @@ private constructor(
         if (security.bearerAuth) {
             when {
                 credential is BearerTokenCredential -> {
-                    val token = credential.token()
-                    if (!token.isEmpty()) {
-                        headers.replace("Authorization", "Bearer $token")
+                    if (isSecurityHeaderRemoved("Authorization")) {
                         isSatisfied = true
+                    } else {
+                        val token = credential.token()
+                        if (!token.isEmpty()) {
+                            headers.replace("Authorization", "Bearer $token")
+                            isSatisfied = true
+                        }
                     }
                 }
                 credential is AzureApiKeyCredential -> {
@@ -988,7 +1008,7 @@ private constructor(
             )
         }
 
-        return headers.build()
+        return headers.removeAll(removedSecurityHeaders).build()
     }
 }
 
