@@ -8,10 +8,11 @@ import java.util.concurrent.CompletableFuture
 internal class WorkloadIdentityHttpClient(
     private val delegate: HttpClient,
     private val workloadIdentityAuth: WorkloadIdentityAuth?,
+    private val authorizationRemoved: Boolean = false,
 ) : HttpClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
-        if (workloadIdentityAuth == null) {
+        if (workloadIdentityAuth == null || authorizationRemoved) {
             return delegate.execute(request, requestOptions)
         }
 
@@ -34,7 +35,7 @@ internal class WorkloadIdentityHttpClient(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
-        if (workloadIdentityAuth == null) {
+        if (workloadIdentityAuth == null || authorizationRemoved) {
             return delegate.executeAsync(request, requestOptions)
         }
 
