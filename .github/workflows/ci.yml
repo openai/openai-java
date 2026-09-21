@@ -39,6 +39,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify legacy release PR guard
+        run: node --test scripts/test-release-guard.cjs
+
       - name: Set up Java
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
