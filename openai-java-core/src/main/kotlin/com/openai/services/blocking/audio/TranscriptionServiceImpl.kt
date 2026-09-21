@@ -2,6 +2,7 @@
 
 package com.openai.services.blocking.audio
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.ClientOptions
 import com.openai.core.MultipartField
 import com.openai.core.RequestOptions
@@ -25,9 +26,10 @@ import com.openai.core.prepare
 import com.openai.models.audio.transcriptions.Transcription
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
+import com.openai.models.audio.transcriptions.TranscriptionDiarized
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
+import com.openai.models.audio.transcriptions.TranscriptionVerbose
 import java.util.function.Consumer
-import kotlin.jvm.optionals.getOrNull
 
 /** Turn audio into text or text into audio. */
 class TranscriptionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -71,6 +73,10 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
 
         private val createJsonHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
+        private val createDiarizedHandler =
+            jsonHandler<TranscriptionDiarized>(clientOptions.jsonMapper)
+        private val createVerboseHandler =
+            jsonHandler<TranscriptionVerbose>(clientOptions.jsonMapper)
         private val createStringHandler: Handler<TranscriptionCreateResponse> =
             object : Handler<TranscriptionCreateResponse> {
 
@@ -86,12 +92,17 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<TranscriptionCreateResponse> {
+            val body = params._body()
+            val responseFormat =
+                clientOptions.jsonMapper
+                    .valueToTree<JsonNode>(body["response_format"]?.value)
+                    .textValue()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
-                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .body(multipartFormData(clientOptions.jsonMapper, body))
                     .build()
                     .prepare(
                         clientOptions,
@@ -101,11 +112,23 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                val handler =
-                    if (params.responseFormat().getOrNull()?.isJson() != false) createJsonHandler
-                    else createStringHandler
                 response
-                    .use { handler.handle(it) }
+                    .use {
+                        when (responseFormat) {
+                            "diarized_json" ->
+                                TranscriptionCreateResponse.ofDiarized(
+                                    createDiarizedHandler.handle(it)
+                                )
+                            "verbose_json" ->
+                                TranscriptionCreateResponse.ofVerbose(
+                                    createVerboseHandler.handle(it)
+                                )
+                            "text",
+                            "srt",
+                            "vtt" -> createStringHandler.handle(it)
+                            else -> createJsonHandler.handle(it)
+                        }
+                    }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

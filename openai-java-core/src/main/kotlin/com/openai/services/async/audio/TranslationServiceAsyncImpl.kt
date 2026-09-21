@@ -2,12 +2,14 @@
 
 package com.openai.services.async.audio
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
+import com.openai.core.handlers.stringHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
@@ -16,6 +18,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.models.audio.translations.Translation
 import com.openai.models.audio.translations.TranslationCreateParams
 import com.openai.models.audio.translations.TranslationCreateResponse
 import java.util.concurrent.CompletableFuture
@@ -56,17 +59,39 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
 
         private val createHandler: Handler<TranslationCreateResponse> =
             jsonHandler<TranslationCreateResponse>(clientOptions.jsonMapper)
+        private val createStringHandler: Handler<TranslationCreateResponse> =
+            object : Handler<TranslationCreateResponse> {
+
+                private val stringHandler = stringHandler()
+
+                override fun handle(response: HttpResponse): TranslationCreateResponse =
+                    TranslationCreateResponse.ofTranslation(
+                        Translation.builder().text(stringHandler.handle(response)).build()
+                    )
+            }
 
         override fun create(
             params: TranslationCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<TranslationCreateResponse>> {
+            val body = params._body()
+            val responseFormat =
+                clientOptions.jsonMapper
+                    .valueToTree<JsonNode>(body["response_format"]?.value)
+                    .textValue()
+            val handler =
+                when (responseFormat) {
+                    "text",
+                    "srt",
+                    "vtt" -> createStringHandler
+                    else -> createHandler
+                }
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "translations")
-                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .body(multipartFormData(clientOptions.jsonMapper, body))
                     .build()
                     .prepareAsync(
                         clientOptions,
@@ -79,7 +104,7 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
-                            .use { createHandler.handle(it) }
+                            .use { handler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
