@@ -51,8 +51,7 @@ abstract class VerifyCoreCompilationArtifactTask : DefaultTask() {
             actual = binaryEntries.keys.filterTo(sortedSetOf()) { it.endsWith(".class") },
         )
 
-        val expectedSources =
-            relativeFiles(sourceDirectory.get().asFile, ".kt").mapTo(sortedSetOf()) { "main/$it" }
+        val expectedSources = relativeFiles(sourceDirectory.get().asFile, ".kt").toSortedSet()
         check(expectedSources.isNotEmpty()) { "The core source directory is empty." }
 
         val sourceEntries = zipEntryCounts(sourcesJar.get().asFile)
@@ -72,7 +71,7 @@ abstract class VerifyCoreCompilationArtifactTask : DefaultTask() {
                 "Public API class must appear exactly once in the core jar: $className"
             }
 
-            val sourceEntry = "main/${className.substringBefore('$').replace('.', '/')}.kt"
+            val sourceEntry = "${className.substringBefore('$').replace('.', '/')}.kt"
             check(sourceEntries[sourceEntry] == 1) {
                 "Public API source must appear exactly once in the core sources jar: $className"
             }
