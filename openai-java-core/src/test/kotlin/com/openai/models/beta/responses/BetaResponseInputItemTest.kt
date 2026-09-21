@@ -2047,7 +2047,6 @@ internal class BetaResponseInputItemTest {
         val localShellCallOutput =
             BetaResponseInputItem.LocalShellCallOutput.builder()
                 .id("id")
-                .callId("call_id")
                 .output("output")
                 .agent(
                     BetaResponseInputItem.LocalShellCallOutput.Agent.builder()
@@ -2105,7 +2104,6 @@ internal class BetaResponseInputItemTest {
             BetaResponseInputItem.ofLocalShellCallOutput(
                 BetaResponseInputItem.LocalShellCallOutput.builder()
                     .id("id")
-                    .callId("call_id")
                     .output("output")
                     .agent(
                         BetaResponseInputItem.LocalShellCallOutput.Agent.builder()
