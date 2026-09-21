@@ -19,8 +19,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * References an image [File](https://platform.openai.com/docs/api-reference/files) in the content
- * of a message.
+ * References an image [File](https://developers.openai.com/api/reference/resources/files) in the
+ * content of a message.
  */
 @JsonDeserialize(using = MessageContent.Deserializer::class)
 @JsonSerialize(using = MessageContent.Serializer::class)
@@ -34,8 +34,8 @@ private constructor(
 ) {
 
     /**
-     * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-     * content of a message.
+     * References an image [File](https://developers.openai.com/api/reference/resources/files) in
+     * the content of a message.
      */
     fun imageFile(): Optional<ImageFileContentBlock> = Optional.ofNullable(imageFile)
 
@@ -57,8 +57,8 @@ private constructor(
     fun isRefusal(): Boolean = refusal != null
 
     /**
-     * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-     * content of a message.
+     * References an image [File](https://developers.openai.com/api/reference/resources/files) in
+     * the content of a message.
      */
     fun asImageFile(): ImageFileContentBlock = imageFile.getOrThrow("imageFile")
 
@@ -204,8 +204,8 @@ private constructor(
     companion object {
 
         /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
+         * References an image [File](https://developers.openai.com/api/reference/resources/files)
+         * in the content of a message.
          */
         @JvmStatic
         fun ofImageFile(imageFile: ImageFileContentBlock) = MessageContent(imageFile = imageFile)
@@ -227,8 +227,8 @@ private constructor(
     interface Visitor<out T> {
 
         /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
+         * References an image [File](https://developers.openai.com/api/reference/resources/files)
+         * in the content of a message.
          */
         fun visitImageFile(imageFile: ImageFileContentBlock): T
 

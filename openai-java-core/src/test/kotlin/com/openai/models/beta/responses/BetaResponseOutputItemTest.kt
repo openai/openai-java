@@ -243,6 +243,7 @@ internal class BetaResponseOutputItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -296,6 +297,7 @@ internal class BetaResponseOutputItemTest {
                     .agent(
                         BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -316,7 +318,6 @@ internal class BetaResponseOutputItemTest {
         val functionCallOutput =
             BetaResponseFunctionToolCallOutputItem.builder()
                 .id("id")
-                .callId("call_id")
                 .output("string")
                 .status(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .agent(
@@ -324,6 +325,7 @@ internal class BetaResponseOutputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .callId("call_id")
                 .callerDirect()
                 .createdBy("created_by")
                 .name("name")
@@ -372,7 +374,6 @@ internal class BetaResponseOutputItemTest {
             BetaResponseOutputItem.ofFunctionCallOutput(
                 BetaResponseFunctionToolCallOutputItem.builder()
                     .id("id")
-                    .callId("call_id")
                     .output("string")
                     .status(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                     .agent(
@@ -380,6 +381,7 @@ internal class BetaResponseOutputItemTest {
                             .agentName("agent_name")
                             .build()
                     )
+                    .callId("call_id")
                     .callerDirect()
                     .createdBy("created_by")
                     .name("name")
@@ -1323,6 +1325,7 @@ internal class BetaResponseOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1393,6 +1396,7 @@ internal class BetaResponseOutputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1436,6 +1440,7 @@ internal class BetaResponseOutputItemTest {
                         )
                         .strict(true)
                         .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -1505,6 +1510,7 @@ internal class BetaResponseOutputItemTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -1607,11 +1613,17 @@ internal class BetaResponseOutputItemTest {
                 .id("id")
                 .result("result")
                 .status(BetaResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                .action(BetaResponseOutputItem.ImageGenerationCall.Action.GENERATE)
                 .agent(
                     BetaResponseOutputItem.ImageGenerationCall.Agent.builder()
                         .agentName("agent_name")
                         .build()
                 )
+                .background(BetaResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                .outputFormat(BetaResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
+                .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                .revisedPrompt("revised_prompt")
+                .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                 .build()
 
         val betaResponseOutputItem =
@@ -1659,11 +1671,17 @@ internal class BetaResponseOutputItemTest {
                     .id("id")
                     .result("result")
                     .status(BetaResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                    .action(BetaResponseOutputItem.ImageGenerationCall.Action.GENERATE)
                     .agent(
                         BetaResponseOutputItem.ImageGenerationCall.Agent.builder()
                             .agentName("agent_name")
                             .build()
                     )
+                    .background(BetaResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                    .outputFormat(BetaResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
+                    .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
+                    .revisedPrompt("revised_prompt")
+                    .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
                     .build()
             )
 
@@ -2644,6 +2662,7 @@ internal class BetaResponseOutputItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()
@@ -2696,6 +2715,7 @@ internal class BetaResponseOutputItemTest {
                     .agent(
                         BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build()
                     )
+                    .async(true)
                     .callerDirect()
                     .namespace("namespace")
                     .build()

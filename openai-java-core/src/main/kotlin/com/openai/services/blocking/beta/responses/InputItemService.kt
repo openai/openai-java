@@ -10,6 +10,7 @@ import com.openai.models.beta.responses.inputitems.InputItemListPage
 import com.openai.models.beta.responses.inputitems.InputItemListParams
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface InputItemService {
 
     /**

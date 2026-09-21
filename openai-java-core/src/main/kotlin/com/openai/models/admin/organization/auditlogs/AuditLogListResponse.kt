@@ -6,6 +6,15 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
@@ -13,8 +22,11 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.admin.organization.externalstorage.AwsExternalStorageProvider
+import com.openai.models.admin.organization.externalstorage.AzureExternalStorageProvider
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -40,6 +52,8 @@ private constructor(
     private val checkpointPermissionDeleted: JsonField<CheckpointPermissionDeleted>,
     private val externalKeyRegistered: JsonField<ExternalKeyRegistered>,
     private val externalKeyRemoved: JsonField<ExternalKeyRemoved>,
+    private val externalStorageRegistered: JsonField<ExternalStorageRegistered>,
+    private val externalStorageRemoved: JsonField<ExternalStorageRemoved>,
     private val groupCreated: JsonField<GroupCreated>,
     private val groupDeleted: JsonField<GroupDeleted>,
     private val groupUpdated: JsonField<GroupUpdated>,
@@ -134,6 +148,12 @@ private constructor(
         @JsonProperty("external_key.removed")
         @ExcludeMissing
         externalKeyRemoved: JsonField<ExternalKeyRemoved> = JsonMissing.of(),
+        @JsonProperty("external_storage.registered")
+        @ExcludeMissing
+        externalStorageRegistered: JsonField<ExternalStorageRegistered> = JsonMissing.of(),
+        @JsonProperty("external_storage.removed")
+        @ExcludeMissing
+        externalStorageRemoved: JsonField<ExternalStorageRemoved> = JsonMissing.of(),
         @JsonProperty("group.created")
         @ExcludeMissing
         groupCreated: JsonField<GroupCreated> = JsonMissing.of(),
@@ -287,6 +307,8 @@ private constructor(
         checkpointPermissionDeleted,
         externalKeyRegistered,
         externalKeyRemoved,
+        externalStorageRegistered,
+        externalStorageRemoved,
         groupCreated,
         groupDeleted,
         groupUpdated,
@@ -470,6 +492,24 @@ private constructor(
      */
     fun externalKeyRemoved(): Optional<ExternalKeyRemoved> =
         externalKeyRemoved.getOptional("external_key.removed")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalStorageRegistered(): Optional<ExternalStorageRegistered> =
+        externalStorageRegistered.getOptional("external_storage.registered")
+
+    /**
+     * The details for events with this `type`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalStorageRemoved(): Optional<ExternalStorageRemoved> =
+        externalStorageRemoved.getOptional("external_storage.removed")
 
     /**
      * The details for events with this `type`.
@@ -1008,6 +1048,27 @@ private constructor(
     fun _externalKeyRemoved(): JsonField<ExternalKeyRemoved> = externalKeyRemoved
 
     /**
+     * Returns the raw JSON value of [externalStorageRegistered].
+     *
+     * Unlike [externalStorageRegistered], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("external_storage.registered")
+    @ExcludeMissing
+    fun _externalStorageRegistered(): JsonField<ExternalStorageRegistered> =
+        externalStorageRegistered
+
+    /**
+     * Returns the raw JSON value of [externalStorageRemoved].
+     *
+     * Unlike [externalStorageRemoved], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("external_storage.removed")
+    @ExcludeMissing
+    fun _externalStorageRemoved(): JsonField<ExternalStorageRemoved> = externalStorageRemoved
+
+    /**
      * Returns the raw JSON value of [groupCreated].
      *
      * Unlike [groupCreated], this method doesn't throw if the JSON field has an unexpected type.
@@ -1458,6 +1519,9 @@ private constructor(
             JsonMissing.of()
         private var externalKeyRegistered: JsonField<ExternalKeyRegistered> = JsonMissing.of()
         private var externalKeyRemoved: JsonField<ExternalKeyRemoved> = JsonMissing.of()
+        private var externalStorageRegistered: JsonField<ExternalStorageRegistered> =
+            JsonMissing.of()
+        private var externalStorageRemoved: JsonField<ExternalStorageRemoved> = JsonMissing.of()
         private var groupCreated: JsonField<GroupCreated> = JsonMissing.of()
         private var groupDeleted: JsonField<GroupDeleted> = JsonMissing.of()
         private var groupUpdated: JsonField<GroupUpdated> = JsonMissing.of()
@@ -1533,6 +1597,8 @@ private constructor(
             checkpointPermissionDeleted = auditLogListResponse.checkpointPermissionDeleted
             externalKeyRegistered = auditLogListResponse.externalKeyRegistered
             externalKeyRemoved = auditLogListResponse.externalKeyRemoved
+            externalStorageRegistered = auditLogListResponse.externalStorageRegistered
+            externalStorageRemoved = auditLogListResponse.externalStorageRemoved
             groupCreated = auditLogListResponse.groupCreated
             groupDeleted = auditLogListResponse.groupDeleted
             groupUpdated = auditLogListResponse.groupUpdated
@@ -1811,6 +1877,37 @@ private constructor(
         fun externalKeyRemoved(externalKeyRemoved: JsonField<ExternalKeyRemoved>) = apply {
             this.externalKeyRemoved = externalKeyRemoved
         }
+
+        /** The details for events with this `type`. */
+        fun externalStorageRegistered(externalStorageRegistered: ExternalStorageRegistered) =
+            externalStorageRegistered(JsonField.of(externalStorageRegistered))
+
+        /**
+         * Sets [Builder.externalStorageRegistered] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalStorageRegistered] with a well-typed
+         * [ExternalStorageRegistered] value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
+        fun externalStorageRegistered(
+            externalStorageRegistered: JsonField<ExternalStorageRegistered>
+        ) = apply { this.externalStorageRegistered = externalStorageRegistered }
+
+        /** The details for events with this `type`. */
+        fun externalStorageRemoved(externalStorageRemoved: ExternalStorageRemoved) =
+            externalStorageRemoved(JsonField.of(externalStorageRemoved))
+
+        /**
+         * Sets [Builder.externalStorageRemoved] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalStorageRemoved] with a well-typed
+         * [ExternalStorageRemoved] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun externalStorageRemoved(externalStorageRemoved: JsonField<ExternalStorageRemoved>) =
+            apply {
+                this.externalStorageRemoved = externalStorageRemoved
+            }
 
         /** The details for events with this `type`. */
         fun groupCreated(groupCreated: GroupCreated) = groupCreated(JsonField.of(groupCreated))
@@ -2510,6 +2607,8 @@ private constructor(
                 checkpointPermissionDeleted,
                 externalKeyRegistered,
                 externalKeyRemoved,
+                externalStorageRegistered,
+                externalStorageRemoved,
                 groupCreated,
                 groupDeleted,
                 groupUpdated,
@@ -2589,6 +2688,8 @@ private constructor(
         checkpointPermissionDeleted().ifPresent { it.validate() }
         externalKeyRegistered().ifPresent { it.validate() }
         externalKeyRemoved().ifPresent { it.validate() }
+        externalStorageRegistered().ifPresent { it.validate() }
+        externalStorageRemoved().ifPresent { it.validate() }
         groupCreated().ifPresent { it.validate() }
         groupDeleted().ifPresent { it.validate() }
         groupUpdated().ifPresent { it.validate() }
@@ -2665,6 +2766,8 @@ private constructor(
             (checkpointPermissionDeleted.asKnown().getOrNull()?.validity() ?: 0) +
             (externalKeyRegistered.asKnown().getOrNull()?.validity() ?: 0) +
             (externalKeyRemoved.asKnown().getOrNull()?.validity() ?: 0) +
+            (externalStorageRegistered.asKnown().getOrNull()?.validity() ?: 0) +
+            (externalStorageRemoved.asKnown().getOrNull()?.validity() ?: 0) +
             (groupCreated.asKnown().getOrNull()?.validity() ?: 0) +
             (groupDeleted.asKnown().getOrNull()?.validity() ?: 0) +
             (groupUpdated.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2746,6 +2849,10 @@ private constructor(
             @JvmField val EXTERNAL_KEY_REGISTERED = of("external_key.registered")
 
             @JvmField val EXTERNAL_KEY_REMOVED = of("external_key.removed")
+
+            @JvmField val EXTERNAL_STORAGE_REGISTERED = of("external_storage.registered")
+
+            @JvmField val EXTERNAL_STORAGE_REMOVED = of("external_storage.removed")
 
             @JvmField val GROUP_CREATED = of("group.created")
 
@@ -2903,6 +3010,14 @@ private constructor(
             @JvmField val TENANT_ADMIN_API_KEY_DELETED = of("tenant.admin_api_key.deleted")
 
             @JvmField val TENANT_PROJECT_API_KEY_CREATED = of("tenant.project_api_key.created")
+
+            @JvmField
+            val TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED =
+                of("tenant.trusted_access.business_verification.started")
+
+            @JvmField
+            val TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED =
+                of("tenant.trusted_access.application.submitted")
 
             @JvmField
             val TENANT_CHATGPT_ACCESS_TOKEN_REVOKED = of("tenant.chatgpt_access_token.revoked")
@@ -3098,6 +3213,8 @@ private constructor(
             CHECKPOINT_PERMISSION_DELETED,
             EXTERNAL_KEY_REGISTERED,
             EXTERNAL_KEY_REMOVED,
+            EXTERNAL_STORAGE_REGISTERED,
+            EXTERNAL_STORAGE_REMOVED,
             GROUP_CREATED,
             GROUP_UPDATED,
             GROUP_DELETED,
@@ -3161,6 +3278,8 @@ private constructor(
             TENANT_ADMIN_API_KEY_UPDATED,
             TENANT_ADMIN_API_KEY_DELETED,
             TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED,
+            TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED,
             TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
             TENANT_MIGRATION_COMPLETED,
             TENANT_SSO_MIGRATED,
@@ -3255,6 +3374,8 @@ private constructor(
             CHECKPOINT_PERMISSION_DELETED,
             EXTERNAL_KEY_REGISTERED,
             EXTERNAL_KEY_REMOVED,
+            EXTERNAL_STORAGE_REGISTERED,
+            EXTERNAL_STORAGE_REMOVED,
             GROUP_CREATED,
             GROUP_UPDATED,
             GROUP_DELETED,
@@ -3318,6 +3439,8 @@ private constructor(
             TENANT_ADMIN_API_KEY_UPDATED,
             TENANT_ADMIN_API_KEY_DELETED,
             TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED,
+            TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED,
             TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
             TENANT_MIGRATION_COMPLETED,
             TENANT_SSO_MIGRATED,
@@ -3413,6 +3536,8 @@ private constructor(
                 CHECKPOINT_PERMISSION_DELETED -> Value.CHECKPOINT_PERMISSION_DELETED
                 EXTERNAL_KEY_REGISTERED -> Value.EXTERNAL_KEY_REGISTERED
                 EXTERNAL_KEY_REMOVED -> Value.EXTERNAL_KEY_REMOVED
+                EXTERNAL_STORAGE_REGISTERED -> Value.EXTERNAL_STORAGE_REGISTERED
+                EXTERNAL_STORAGE_REMOVED -> Value.EXTERNAL_STORAGE_REMOVED
                 GROUP_CREATED -> Value.GROUP_CREATED
                 GROUP_UPDATED -> Value.GROUP_UPDATED
                 GROUP_DELETED -> Value.GROUP_DELETED
@@ -3490,6 +3615,10 @@ private constructor(
                 TENANT_ADMIN_API_KEY_UPDATED -> Value.TENANT_ADMIN_API_KEY_UPDATED
                 TENANT_ADMIN_API_KEY_DELETED -> Value.TENANT_ADMIN_API_KEY_DELETED
                 TENANT_PROJECT_API_KEY_CREATED -> Value.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED ->
+                    Value.TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED
+                TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED ->
+                    Value.TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED
                 TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Value.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
                 TENANT_MIGRATION_COMPLETED -> Value.TENANT_MIGRATION_COMPLETED
                 TENANT_SSO_MIGRATED -> Value.TENANT_SSO_MIGRATED
@@ -3597,6 +3726,8 @@ private constructor(
                 CHECKPOINT_PERMISSION_DELETED -> Known.CHECKPOINT_PERMISSION_DELETED
                 EXTERNAL_KEY_REGISTERED -> Known.EXTERNAL_KEY_REGISTERED
                 EXTERNAL_KEY_REMOVED -> Known.EXTERNAL_KEY_REMOVED
+                EXTERNAL_STORAGE_REGISTERED -> Known.EXTERNAL_STORAGE_REGISTERED
+                EXTERNAL_STORAGE_REMOVED -> Known.EXTERNAL_STORAGE_REMOVED
                 GROUP_CREATED -> Known.GROUP_CREATED
                 GROUP_UPDATED -> Known.GROUP_UPDATED
                 GROUP_DELETED -> Known.GROUP_DELETED
@@ -3674,6 +3805,10 @@ private constructor(
                 TENANT_ADMIN_API_KEY_UPDATED -> Known.TENANT_ADMIN_API_KEY_UPDATED
                 TENANT_ADMIN_API_KEY_DELETED -> Known.TENANT_ADMIN_API_KEY_DELETED
                 TENANT_PROJECT_API_KEY_CREATED -> Known.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED ->
+                    Known.TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED
+                TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED ->
+                    Known.TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED
                 TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Known.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
                 TENANT_MIGRATION_COMPLETED -> Known.TENANT_MIGRATION_COMPLETED
                 TENANT_SSO_MIGRATED -> Known.TENANT_SSO_MIGRATED
@@ -8438,6 +8573,776 @@ private constructor(
 
         override fun toString() =
             "ExternalKeyRemoved{id=$id, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class ExternalStorageRegistered
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val data: JsonField<Data>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("data") @ExcludeMissing data: JsonField<Data> = JsonMissing.of(),
+        ) : this(id, data, mutableMapOf())
+
+        /**
+         * The ID of the external storage configuration.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The configuration for the external storage.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun data(): Optional<Data> = data.getOptional("data")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Data> = data
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [ExternalStorageRegistered].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ExternalStorageRegistered]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var data: JsonField<Data> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(externalStorageRegistered: ExternalStorageRegistered) = apply {
+                id = externalStorageRegistered.id
+                data = externalStorageRegistered.data
+                additionalProperties = externalStorageRegistered.additionalProperties.toMutableMap()
+            }
+
+            /** The ID of the external storage configuration. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The configuration for the external storage. */
+            fun data(data: Data) = data(JsonField.of(data))
+
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Data] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun data(data: JsonField<Data>) = apply { this.data = data }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ExternalStorageRegistered].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): ExternalStorageRegistered =
+                ExternalStorageRegistered(id, data, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ExternalStorageRegistered = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            data().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) + (data.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The configuration for the external storage. */
+        class Data
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val geography: JsonField<String>,
+            private val provider: JsonField<Provider>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("geography")
+                @ExcludeMissing
+                geography: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("provider")
+                @ExcludeMissing
+                provider: JsonField<Provider> = JsonMissing.of(),
+            ) : this(geography, provider, mutableMapOf())
+
+            /**
+             * The OpenAI geography derived from the storage region.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun geography(): Optional<String> = geography.getOptional("geography")
+
+            /**
+             * The external storage provider configuration.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun provider(): Optional<Provider> = provider.getOptional("provider")
+
+            /**
+             * Returns the raw JSON value of [geography].
+             *
+             * Unlike [geography], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("geography")
+            @ExcludeMissing
+            fun _geography(): JsonField<String> = geography
+
+            /**
+             * Returns the raw JSON value of [provider].
+             *
+             * Unlike [provider], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("provider")
+            @ExcludeMissing
+            fun _provider(): JsonField<Provider> = provider
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Data]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Data]. */
+            class Builder internal constructor() {
+
+                private var geography: JsonField<String> = JsonMissing.of()
+                private var provider: JsonField<Provider> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(data: Data) = apply {
+                    geography = data.geography
+                    provider = data.provider
+                    additionalProperties = data.additionalProperties.toMutableMap()
+                }
+
+                /** The OpenAI geography derived from the storage region. */
+                fun geography(geography: String) = geography(JsonField.of(geography))
+
+                /**
+                 * Sets [Builder.geography] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.geography] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun geography(geography: JsonField<String>) = apply { this.geography = geography }
+
+                /** The external storage provider configuration. */
+                fun provider(provider: Provider) = provider(JsonField.of(provider))
+
+                /**
+                 * Sets [Builder.provider] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.provider] with a well-typed [Provider] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun provider(provider: JsonField<Provider>) = apply { this.provider = provider }
+
+                /** Alias for calling [provider] with `Provider.ofAws(aws)`. */
+                fun provider(aws: AwsExternalStorageProvider) = provider(Provider.ofAws(aws))
+
+                /** Alias for calling [provider] with `Provider.ofAzure(azure)`. */
+                fun provider(azure: AzureExternalStorageProvider) =
+                    provider(Provider.ofAzure(azure))
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Data].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Data = Data(geography, provider, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Data = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                geography()
+                provider().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (geography.asKnown().isPresent) 1 else 0) +
+                    (provider.asKnown().getOrNull()?.validity() ?: 0)
+
+            /** The external storage provider configuration. */
+            @JsonDeserialize(using = Provider.Deserializer::class)
+            @JsonSerialize(using = Provider.Serializer::class)
+            class Provider
+            private constructor(
+                private val aws: AwsExternalStorageProvider? = null,
+                private val azure: AzureExternalStorageProvider? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                fun aws(): Optional<AwsExternalStorageProvider> = Optional.ofNullable(aws)
+
+                fun azure(): Optional<AzureExternalStorageProvider> = Optional.ofNullable(azure)
+
+                fun isAws(): Boolean = aws != null
+
+                fun isAzure(): Boolean = azure != null
+
+                fun asAws(): AwsExternalStorageProvider = aws.getOrThrow("aws")
+
+                fun asAzure(): AzureExternalStorageProvider = azure.getOrThrow("azure")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                /**
+                 * Maps this instance's current variant to a value of type [T] using the given
+                 * [visitor].
+                 *
+                 * Note that this method is _not_ forwards compatible with new variants from the
+                 * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not known
+                 * to this version of the SDK gracefully, consider overriding [Visitor.unknown]:
+                 * ```java
+                 * import com.openai.core.JsonValue;
+                 * import java.util.Optional;
+                 *
+                 * Optional<String> result = provider.accept(new Provider.Visitor<Optional<String>>() {
+                 *     @Override
+                 *     public Optional<String> visitAws(AwsExternalStorageProvider aws) {
+                 *         return Optional.of(aws.toString());
+                 *     }
+                 *
+                 *     // ...
+                 *
+                 *     @Override
+                 *     public Optional<String> unknown(JsonValue json) {
+                 *         // Or inspect the `json`.
+                 *         return Optional.empty();
+                 *     }
+                 * });
+                 * ```
+                 *
+                 * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                 *   [visitor] and the current variant is unknown.
+                 */
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        aws != null -> visitor.visitAws(aws)
+                        azure != null -> visitor.visitAzure(azure)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Provider = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitAws(aws: AwsExternalStorageProvider) {
+                                aws.validate()
+                            }
+
+                            override fun visitAzure(azure: AzureExternalStorageProvider) {
+                                azure.validate()
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitAws(aws: AwsExternalStorageProvider) = aws.validity()
+
+                            override fun visitAzure(azure: AzureExternalStorageProvider) =
+                                azure.validity()
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Provider && aws == other.aws && azure == other.azure
+                }
+
+                override fun hashCode(): Int = Objects.hash(aws, azure)
+
+                override fun toString(): String =
+                    when {
+                        aws != null -> "Provider{aws=$aws}"
+                        azure != null -> "Provider{azure=$azure}"
+                        _json != null -> "Provider{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Provider")
+                    }
+
+                companion object {
+
+                    @JvmStatic fun ofAws(aws: AwsExternalStorageProvider) = Provider(aws = aws)
+
+                    @JvmStatic
+                    fun ofAzure(azure: AzureExternalStorageProvider) = Provider(azure = azure)
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [Provider] to a value of
+                 * type [T].
+                 */
+                interface Visitor<out T> {
+
+                    fun visitAws(aws: AwsExternalStorageProvider): T
+
+                    fun visitAzure(azure: AzureExternalStorageProvider): T
+
+                    /**
+                     * Maps an unknown variant of [Provider] to a value of type [T].
+                     *
+                     * An instance of [Provider] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown Provider: $json")
+                    }
+                }
+
+                internal class Deserializer : BaseDeserializer<Provider>(Provider::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): Provider {
+                        val json = JsonValue.fromJsonNode(node)
+                        val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                        when (type) {
+                            "aws" -> {
+                                return tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<AwsExternalStorageProvider>(),
+                                    )
+                                    ?.let { Provider(aws = it, _json = json) }
+                                    ?: Provider(_json = json)
+                            }
+                            "azure" -> {
+                                return tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<AzureExternalStorageProvider>(),
+                                    )
+                                    ?.let { Provider(azure = it, _json = json) }
+                                    ?: Provider(_json = json)
+                            }
+                        }
+
+                        return Provider(_json = json)
+                    }
+                }
+
+                internal class Serializer : BaseSerializer<Provider>(Provider::class) {
+
+                    override fun serialize(
+                        value: Provider,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.aws != null -> generator.writeObject(value.aws)
+                            value.azure != null -> generator.writeObject(value.azure)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid Provider")
+                        }
+                    }
+                }
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Data &&
+                    geography == other.geography &&
+                    provider == other.provider &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(geography, provider, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Data{geography=$geography, provider=$provider, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ExternalStorageRegistered &&
+                id == other.id &&
+                data == other.data &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, data, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ExternalStorageRegistered{id=$id, data=$data, additionalProperties=$additionalProperties}"
+    }
+
+    /** The details for events with this `type`. */
+    class ExternalStorageRemoved
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of()
+        ) : this(id, mutableMapOf())
+
+        /**
+         * The ID of the external storage configuration.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ExternalStorageRemoved].
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ExternalStorageRemoved]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(externalStorageRemoved: ExternalStorageRemoved) = apply {
+                id = externalStorageRemoved.id
+                additionalProperties = externalStorageRemoved.additionalProperties.toMutableMap()
+            }
+
+            /** The ID of the external storage configuration. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ExternalStorageRemoved].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): ExternalStorageRemoved =
+                ExternalStorageRemoved(id, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ExternalStorageRemoved = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ExternalStorageRemoved &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ExternalStorageRemoved{id=$id, additionalProperties=$additionalProperties}"
     }
 
     /** The details for events with this `type`. */
@@ -20979,6 +21884,8 @@ private constructor(
             checkpointPermissionDeleted == other.checkpointPermissionDeleted &&
             externalKeyRegistered == other.externalKeyRegistered &&
             externalKeyRemoved == other.externalKeyRemoved &&
+            externalStorageRegistered == other.externalStorageRegistered &&
+            externalStorageRemoved == other.externalStorageRemoved &&
             groupCreated == other.groupCreated &&
             groupDeleted == other.groupDeleted &&
             groupUpdated == other.groupUpdated &&
@@ -21047,6 +21954,8 @@ private constructor(
             checkpointPermissionDeleted,
             externalKeyRegistered,
             externalKeyRemoved,
+            externalStorageRegistered,
+            externalStorageRemoved,
             groupCreated,
             groupDeleted,
             groupUpdated,
@@ -21098,5 +22007,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleBoundToResource=$roleBoundToResource, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUnboundFromResource=$roleUnboundFromResource, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, workloadIdentityProviderMappingCreated=$workloadIdentityProviderMappingCreated, workloadIdentityProviderMappingDeleted=$workloadIdentityProviderMappingDeleted, workloadIdentityProviderMappingUpdated=$workloadIdentityProviderMappingUpdated, workloadIdentityProviderCreated=$workloadIdentityProviderCreated, workloadIdentityProviderDeleted=$workloadIdentityProviderDeleted, workloadIdentityProviderUpdated=$workloadIdentityProviderUpdated, additionalProperties=$additionalProperties}"
+        "AuditLogListResponse{id=$id, effectiveAt=$effectiveAt, type=$type, actor=$actor, apiKeyCreated=$apiKeyCreated, apiKeyDeleted=$apiKeyDeleted, apiKeyUpdated=$apiKeyUpdated, certificateCreated=$certificateCreated, certificateDeleted=$certificateDeleted, certificateUpdated=$certificateUpdated, certificatesActivated=$certificatesActivated, certificatesDeactivated=$certificatesDeactivated, checkpointPermissionCreated=$checkpointPermissionCreated, checkpointPermissionDeleted=$checkpointPermissionDeleted, externalKeyRegistered=$externalKeyRegistered, externalKeyRemoved=$externalKeyRemoved, externalStorageRegistered=$externalStorageRegistered, externalStorageRemoved=$externalStorageRemoved, groupCreated=$groupCreated, groupDeleted=$groupDeleted, groupUpdated=$groupUpdated, inviteAccepted=$inviteAccepted, inviteDeleted=$inviteDeleted, inviteSent=$inviteSent, ipAllowlistConfigActivated=$ipAllowlistConfigActivated, ipAllowlistConfigDeactivated=$ipAllowlistConfigDeactivated, ipAllowlistCreated=$ipAllowlistCreated, ipAllowlistDeleted=$ipAllowlistDeleted, ipAllowlistUpdated=$ipAllowlistUpdated, loginFailed=$loginFailed, loginSucceeded=$loginSucceeded, logoutFailed=$logoutFailed, logoutSucceeded=$logoutSucceeded, organizationUpdated=$organizationUpdated, project=$project, projectArchived=$projectArchived, projectCreated=$projectCreated, projectDeleted=$projectDeleted, projectUpdated=$projectUpdated, rateLimitDeleted=$rateLimitDeleted, rateLimitUpdated=$rateLimitUpdated, roleAssignmentCreated=$roleAssignmentCreated, roleAssignmentDeleted=$roleAssignmentDeleted, roleBoundToResource=$roleBoundToResource, roleCreated=$roleCreated, roleDeleted=$roleDeleted, roleUnboundFromResource=$roleUnboundFromResource, roleUpdated=$roleUpdated, scimDisabled=$scimDisabled, scimEnabled=$scimEnabled, serviceAccountCreated=$serviceAccountCreated, serviceAccountDeleted=$serviceAccountDeleted, serviceAccountUpdated=$serviceAccountUpdated, userAdded=$userAdded, userDeleted=$userDeleted, userUpdated=$userUpdated, workloadIdentityProviderMappingCreated=$workloadIdentityProviderMappingCreated, workloadIdentityProviderMappingDeleted=$workloadIdentityProviderMappingDeleted, workloadIdentityProviderMappingUpdated=$workloadIdentityProviderMappingUpdated, workloadIdentityProviderCreated=$workloadIdentityProviderCreated, workloadIdentityProviderDeleted=$workloadIdentityProviderDeleted, workloadIdentityProviderUpdated=$workloadIdentityProviderUpdated, additionalProperties=$additionalProperties}"
 }

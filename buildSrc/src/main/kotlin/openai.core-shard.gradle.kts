@@ -2,11 +2,19 @@ import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShard
 import com.openai.gradle.CoreCompilationShardSpec
 import com.openai.gradle.CoreCompilationShards
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins { id("openai.kotlin") }
 
 val shard = CoreCompilationShards.shardForProject(project.name)
+val jacksonPublishedVersion =
+    extensions
+        .getByType(VersionCatalogsExtension::class.java)
+        .named("libs")
+        .findVersion("jacksonPublished")
+        .get()
+        .requiredVersion
 val coreSourceDirectory = rootProject.layout.projectDirectory.dir("openai-java-core/src/main/kotlin")
 
 kotlin.sourceSets.named("main") {
@@ -38,6 +46,7 @@ dependencies {
         // These are internal compilation projects, so exposing every external dependency here only
         // supplies downstream shards with the same compiler classpath as openai-java-core. The
         // projects are not published and never appear in openai-java-core's metadata.
-        CoreCompilationDependencies.compilerClasspathDependencies.forEach { api(it) }
+        CoreCompilationDependencies.compilerClasspathDependencies(jacksonPublishedVersion)
+            .forEach { api(it) }
     }
 }

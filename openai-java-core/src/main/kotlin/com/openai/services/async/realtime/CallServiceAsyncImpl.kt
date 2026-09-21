@@ -13,10 +13,13 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.encodeMultipartFields
 import com.openai.core.http.json
+import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.realtime.calls.CallAcceptParams
+import com.openai.models.realtime.calls.CallCreateParams
 import com.openai.models.realtime.calls.CallHangupParams
 import com.openai.models.realtime.calls.CallReferParams
 import com.openai.models.realtime.calls.CallRejectParams
@@ -35,6 +38,13 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CallServiceAsync =
         CallServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: CallCreateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> =
+        // post /realtime/calls
+        withRawResponse().create(params, requestOptions)
 
     override fun accept(
         params: CallAcceptParams,
@@ -76,6 +86,40 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
             CallServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun create(
+            params: CallCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("realtime", "calls")
+                    .body(
+                        multipartFormData(
+                            clientOptions.jsonMapper,
+                            encodeMultipartFields(
+                                clientOptions.jsonMapper,
+                                params._body(),
+                                mapOf(
+                                    "sdp" to ("application/sdp" to false),
+                                    "session" to ("application/json" to true),
+                                ),
+                            ),
+                        )
+                    )
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response -> errorHandler.handle(response) }
+        }
 
         private val acceptHandler: Handler<Void?> = emptyHandler()
 

@@ -41,6 +41,7 @@ private constructor(
     private val responseCodeInterpreterCallInterpreting:
         BetaResponseCodeInterpreterCallInterpretingEvent? =
         null,
+    private val responseCompactionCompacting: BetaResponseCompactionCompactingEvent? = null,
     private val responseCompleted: BetaResponseCompletedEvent? = null,
     private val responseContentPartAdded: BetaResponseContentPartAddedEvent? = null,
     private val responseContentPartDone: BetaResponseContentPartDoneEvent? = null,
@@ -146,6 +147,13 @@ private constructor(
         Optional<BetaResponseCodeInterpreterCallInterpretingEvent> =
         Optional.ofNullable(responseCodeInterpreterCallInterpreting)
 
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun responseCompactionCompacting(): Optional<BetaResponseCompactionCompactingEvent> =
+        Optional.ofNullable(responseCompactionCompacting)
+
     /** Emitted when the model response is complete. */
     fun responseCompleted(): Optional<BetaResponseCompletedEvent> =
         Optional.ofNullable(responseCompleted)
@@ -214,7 +222,13 @@ private constructor(
     /** An event that is emitted when a response fails. */
     fun responseFailed(): Optional<BetaResponseFailedEvent> = Optional.ofNullable(responseFailed)
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun responseIncomplete(): Optional<BetaResponseIncompleteEvent> =
         Optional.ofNullable(responseIncomplete)
 
@@ -370,6 +384,8 @@ private constructor(
     fun isResponseCodeInterpreterCallInterpreting(): Boolean =
         responseCodeInterpreterCallInterpreting != null
 
+    fun isResponseCompactionCompacting(): Boolean = responseCompactionCompacting != null
+
     fun isResponseCompleted(): Boolean = responseCompleted != null
 
     fun isResponseContentPartAdded(): Boolean = responseContentPartAdded != null
@@ -512,6 +528,13 @@ private constructor(
             "responseCodeInterpreterCallInterpreting"
         )
 
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun asResponseCompactionCompacting(): BetaResponseCompactionCompactingEvent =
+        responseCompactionCompacting.getOrThrow("responseCompactionCompacting")
+
     /** Emitted when the model response is complete. */
     fun asResponseCompleted(): BetaResponseCompletedEvent =
         responseCompleted.getOrThrow("responseCompleted")
@@ -578,7 +601,13 @@ private constructor(
     /** An event that is emitted when a response fails. */
     fun asResponseFailed(): BetaResponseFailedEvent = responseFailed.getOrThrow("responseFailed")
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun asResponseIncomplete(): BetaResponseIncompleteEvent =
         responseIncomplete.getOrThrow("responseIncomplete")
 
@@ -771,6 +800,8 @@ private constructor(
                 visitor.visitResponseCodeInterpreterCallInterpreting(
                     responseCodeInterpreterCallInterpreting
                 )
+            responseCompactionCompacting != null ->
+                visitor.visitResponseCompactionCompacting(responseCompactionCompacting)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
             responseContentPartAdded != null ->
                 visitor.visitResponseContentPartAdded(responseContentPartAdded)
@@ -945,6 +976,12 @@ private constructor(
                         BetaResponseCodeInterpreterCallInterpretingEvent
                 ) {
                     responseCodeInterpreterCallInterpreting.validate()
+                }
+
+                override fun visitResponseCompactionCompacting(
+                    responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+                ) {
+                    responseCompactionCompacting.validate()
                 }
 
                 override fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent) {
@@ -1294,6 +1331,10 @@ private constructor(
                         BetaResponseCodeInterpreterCallInterpretingEvent
                 ) = responseCodeInterpreterCallInterpreting.validity()
 
+                override fun visitResponseCompactionCompacting(
+                    responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+                ) = responseCompactionCompacting.validity()
+
                 override fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent) =
                     responseCompleted.validity()
 
@@ -1506,6 +1547,7 @@ private constructor(
             responseCodeInterpreterCallInProgress == other.responseCodeInterpreterCallInProgress &&
             responseCodeInterpreterCallInterpreting ==
                 other.responseCodeInterpreterCallInterpreting &&
+            responseCompactionCompacting == other.responseCompactionCompacting &&
             responseCompleted == other.responseCompleted &&
             responseContentPartAdded == other.responseContentPartAdded &&
             responseContentPartDone == other.responseContentPartDone &&
@@ -1569,6 +1611,7 @@ private constructor(
             responseCodeInterpreterCallCompleted,
             responseCodeInterpreterCallInProgress,
             responseCodeInterpreterCallInterpreting,
+            responseCompactionCompacting,
             responseCompleted,
             responseContentPartAdded,
             responseContentPartDone,
@@ -1640,6 +1683,8 @@ private constructor(
                 "BetaResponseStreamEvent{responseCodeInterpreterCallInProgress=$responseCodeInterpreterCallInProgress}"
             responseCodeInterpreterCallInterpreting != null ->
                 "BetaResponseStreamEvent{responseCodeInterpreterCallInterpreting=$responseCodeInterpreterCallInterpreting}"
+            responseCompactionCompacting != null ->
+                "BetaResponseStreamEvent{responseCompactionCompacting=$responseCompactionCompacting}"
             responseCompleted != null ->
                 "BetaResponseStreamEvent{responseCompleted=$responseCompleted}"
             responseContentPartAdded != null ->
@@ -1808,6 +1853,15 @@ private constructor(
                 responseCodeInterpreterCallInterpreting = responseCodeInterpreterCallInterpreting
             )
 
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         */
+        @JvmStatic
+        fun ofResponseCompactionCompacting(
+            responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+        ) = BetaResponseStreamEvent(responseCompactionCompacting = responseCompactionCompacting)
+
         /** Emitted when the model response is complete. */
         @JvmStatic
         fun ofResponseCompleted(responseCompleted: BetaResponseCompletedEvent) =
@@ -1924,7 +1978,13 @@ private constructor(
         fun ofResponseFailed(responseFailed: BetaResponseFailedEvent) =
             BetaResponseStreamEvent(responseFailed = responseFailed)
 
-        /** An event that is emitted when a response finishes as incomplete. */
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
         @JvmStatic
         fun ofResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent) =
             BetaResponseStreamEvent(responseIncomplete = responseIncomplete)
@@ -2200,6 +2260,16 @@ private constructor(
                 BetaResponseCodeInterpreterCallInterpretingEvent
         ): T
 
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         *
+         * Defaults to [unknown] so existing visitors can handle newly added progress events.
+         */
+        fun visitResponseCompactionCompacting(
+            responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+        ): T = unknown(JsonValue.from(responseCompactionCompacting))
+
         /** Emitted when the model response is complete. */
         fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent): T
 
@@ -2275,7 +2345,13 @@ private constructor(
         /** An event that is emitted when a response fails. */
         fun visitResponseFailed(responseFailed: BetaResponseFailedEvent): T
 
-        /** An event that is emitted when a response finishes as incomplete. */
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
         fun visitResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent): T
 
         /** Emitted when a new output item is added. */
@@ -2536,6 +2612,15 @@ private constructor(
                                 responseCodeInterpreterCallInterpreting = it,
                                 _json = json,
                             )
+                        } ?: BetaResponseStreamEvent(_json = json)
+                }
+                "response.compaction.compacting" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseCompactionCompactingEvent>(),
+                        )
+                        ?.let {
+                            BetaResponseStreamEvent(responseCompactionCompacting = it, _json = json)
                         } ?: BetaResponseStreamEvent(_json = json)
                 }
                 "response.completed" -> {
@@ -3024,6 +3109,8 @@ private constructor(
                     generator.writeObject(value.responseCodeInterpreterCallInProgress)
                 value.responseCodeInterpreterCallInterpreting != null ->
                     generator.writeObject(value.responseCodeInterpreterCallInterpreting)
+                value.responseCompactionCompacting != null ->
+                    generator.writeObject(value.responseCompactionCompacting)
                 value.responseCompleted != null -> generator.writeObject(value.responseCompleted)
                 value.responseContentPartAdded != null ->
                     generator.writeObject(value.responseContentPartAdded)

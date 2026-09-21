@@ -11,6 +11,8 @@ import com.openai.services.async.admin.organization.CertificateServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsyncImpl
 import com.openai.services.async.admin.organization.DataRetentionServiceAsync
 import com.openai.services.async.admin.organization.DataRetentionServiceAsyncImpl
+import com.openai.services.async.admin.organization.ExternalStorageServiceAsync
+import com.openai.services.async.admin.organization.ExternalStorageServiceAsyncImpl
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import com.openai.services.async.admin.organization.GroupServiceAsyncImpl
 import com.openai.services.async.admin.organization.InviteServiceAsync
@@ -34,6 +36,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     private val withRawResponse: OrganizationServiceAsync.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
+    }
+
+    private val externalStorage: ExternalStorageServiceAsync by lazy {
+        ExternalStorageServiceAsyncImpl(clientOptions)
     }
 
     private val auditLogs: AuditLogServiceAsync by lazy { AuditLogServiceAsyncImpl(clientOptions) }
@@ -75,6 +81,8 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync =
         OrganizationServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun externalStorage(): ExternalStorageServiceAsync = externalStorage
+
     /** List user actions and configuration changes within this organization. */
     override fun auditLogs(): AuditLogServiceAsync = auditLogs
 
@@ -102,6 +110,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationServiceAsync.WithRawResponse {
+
+        private val externalStorage: ExternalStorageServiceAsync.WithRawResponse by lazy {
+            ExternalStorageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val auditLogs: AuditLogServiceAsync.WithRawResponse by lazy {
             AuditLogServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -157,6 +169,9 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
             OrganizationServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse =
+            externalStorage
 
         /** List user actions and configuration changes within this organization. */
         override fun auditLogs(): AuditLogServiceAsync.WithRawResponse = auditLogs

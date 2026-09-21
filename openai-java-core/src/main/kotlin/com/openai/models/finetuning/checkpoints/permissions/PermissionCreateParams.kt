@@ -23,7 +23,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * **NOTE:** Calling this endpoint requires an [admin API key](../admin-api-keys).
+ * **NOTE:** Calling this endpoint requires an
+ * [admin API key](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys).
  *
  * This enables organization owners to share fine-tuned models with other projects in their
  * organization.

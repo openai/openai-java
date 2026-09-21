@@ -64,9 +64,12 @@ private constructor(
                     null
                 }
 
-            val backoffDuration = getRetryBackoffDuration(retries, response)
-            // All responses must be closed, so close the failed one before retrying.
-            response?.close()
+            val backoffDuration =
+                try {
+                    getRetryBackoffDuration(retries, response)
+                } finally {
+                    response?.close()
+                }
             sleeper.sleep(backoffDuration)
         }
     }
@@ -113,9 +116,12 @@ private constructor(
                             }
                         }
 
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
+                        val backoffDuration =
+                            try {
+                                getRetryBackoffDuration(retries, response)
+                            } finally {
+                                response?.close()
+                            }
                         return sleeper.sleepAsync(backoffDuration).thenCompose {
                             executeWithRetries(requestWithRetryCount, requestOptions)
                         }
@@ -210,13 +216,17 @@ private constructor(
                     ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
                         retryAfter.toFloatOrNull()?.times(TimeUnit.SECONDS.toNanos(1))
                             ?: try {
-                                ChronoUnit.NANOS.between(
-                                    OffsetDateTime.now(clock),
+                                val now = OffsetDateTime.now(clock)
+                                val retryAt =
                                     OffsetDateTime.parse(
                                         retryAfter,
                                         DateTimeFormatter.RFC_1123_DATE_TIME,
-                                    ),
-                                )
+                                    )
+                                try {
+                                    ChronoUnit.NANOS.between(now, retryAt)
+                                } catch (e: ArithmeticException) {
+                                    null
+                                }
                             } catch (e: DateTimeParseException) {
                                 null
                             }
@@ -224,7 +234,7 @@ private constructor(
             }
             ?.let { retryAfterNanos ->
                 // If the API asks us to wait a certain amount of time, do what it says.
-                return Duration.ofNanos(retryAfterNanos.toLong())
+                return Duration.ofNanos(retryAfterNanos.toLong().coerceAtLeast(0))
             }
 
         // Apply exponential backoff, but not more than the max.

@@ -28,7 +28,7 @@ plugins {
 }
 
 val jacksonCompatibilityVersion = CoreCompilationDependencies.JACKSON_COMPATIBILITY_VERSION
-val jacksonPublishedVersion = CoreCompilationDependencies.JACKSON_PUBLISHED_VERSION
+val jacksonPublishedVersion = libs.versions.jacksonPublished.get()
 val mockitoVersion = "5.14.2"
 val mockitoAgent by configurations.creating {
     isCanBeConsumed = false
@@ -158,20 +158,24 @@ configurations.matching {
         // we generally support 2.13.4, but test against 2.14.0 because 2.13.4 has some annoying (but
         // niche) bugs (users should upgrade if they encounter them). We publish with a higher version
         // (see below) to ensure users depend on a secure version by default.
-        force("com.fasterxml.jackson.core:jackson-core:$jacksonCompatibilityVersion")
-        force("com.fasterxml.jackson.core:jackson-databind:$jacksonCompatibilityVersion")
-        force("com.fasterxml.jackson.core:jackson-annotations:$jacksonCompatibilityVersion")
-        force("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonCompatibilityVersion")
-        force("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonCompatibilityVersion")
-        force("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonCompatibilityVersion")
+        // Keep compatibility-only constraints separate from upgradeable published dependencies.
+        listOf(
+                "com.fasterxml.jackson.core:jackson-core",
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.core:jackson-annotations",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
+                "com.fasterxml.jackson.module:jackson-module-kotlin",
+            )
+            .forEach { artifact -> force("$artifact:$jacksonCompatibilityVersion") }
     }
 }
 
 dependencies {
     coreCompilationShardProjects.forEach { compileOnly(it) }
 
-    CoreCompilationDependencies.publishedApiDependencies.forEach { api(it) }
-    CoreCompilationDependencies.publishedImplementationDependencies.forEach {
+    CoreCompilationDependencies.publishedApiDependencies(jacksonPublishedVersion).forEach { api(it) }
+    CoreCompilationDependencies.publishedImplementationDependencies(jacksonPublishedVersion).forEach {
         implementation(it)
     }
 

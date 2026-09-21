@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AgentService
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.RealtimeService
@@ -29,6 +30,9 @@ interface BetaService {
     )
     fun realtime(): RealtimeService
 
+    fun agents(): AgentService
+
+    /** Create and manage model responses. */
     fun responses(): ResponseService
 
     fun chatkit(): ChatKitService
@@ -55,6 +59,9 @@ interface BetaService {
         )
         fun realtime(): RealtimeService.WithRawResponse
 
+        fun agents(): AgentService.WithRawResponse
+
+        /** Create and manage model responses. */
         fun responses(): ResponseService.WithRawResponse
 
         fun chatkit(): ChatKitService.WithRawResponse

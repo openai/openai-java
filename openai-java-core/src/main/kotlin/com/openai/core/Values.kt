@@ -665,7 +665,12 @@ private constructor(
 
         fun value(value: T?) = value(JsonField.ofNullable(value))
 
-        fun contentType(contentType: String) = apply { this.contentType = contentType }
+        fun contentType(contentType: String) = apply {
+            require('\r' !in contentType && '\n' !in contentType) {
+                "Multipart content type must not contain line breaks"
+            }
+            this.contentType = contentType
+        }
 
         fun filename(filename: String?) = apply { this.filename = filename }
 

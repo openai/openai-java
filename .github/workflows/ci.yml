@@ -5,14 +5,24 @@ on:
     branches:
       - main
       - next
+  # GitHub's cache service confines this event's writes to refs/pull/<number>/merge,
+  # even when an untrusted PR changes this workflow or its cache policy tests.
   pull_request:
     branches:
       - main
       - next
+  merge_group:
+    types:
+      - checks_requested
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# Skip incremental-compiler bookkeeping in fresh CI checkouts. Keep Gradle's build cache enabled
+# and use the same compiler mode in every job so compiled outputs share cache keys.
+env:
+  JAVA_OPTS: -Dorg.gradle.project.kotlin.incremental=false
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
@@ -25,12 +35,12 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
@@ -39,22 +49,57 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
+
+      - name: Verify Maven Central credential transport
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/create-releases.yml
+
+          for mapping in \
+            mavenCentralUsername:OPENAI_SONATYPE_USERNAME \
+            mavenCentralPassword:OPENAI_SONATYPE_PASSWORD; do
+            property="ORG_GRADLE_PROJECT_${mapping%%:*}"
+            secret="${mapping#*:}"
+
+            if ! awk -v property="$property" -v secret="$secret" '
+              $1 == property ":" {
+                if ($2 == ("$" "{{") && $3 == "secrets." secret && $4 == "}}" && NF == 4) {
+                  valid++
+                } else {
+                  invalid = 1
+                }
+              }
+              END { exit !(valid == 1 && !invalid) }
+            ' "$workflow"; then
+              echo "::error::Invalid or missing protected Maven mapping: $property"
+              exit 1
+            fi
+          done
+
+          if grep -Eq '(^|[[:space:]])-PmavenCentral(Username|Password)(=|[[:space:]]|$)' "$workflow"; then
+            echo '::error::Maven Central credentials must not appear in Gradle arguments.'
+            exit 1
+          fi
 
       - name: Run lints
         run: ./scripts/lint
 
   build:
-    name: CI / build + Jackson compatibility
+    name: CI / build
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
+    outputs:
+      gradle-cache-artifact-id: ${{ steps.gradle-cache-artifact.outputs.artifact-id }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
@@ -63,11 +108,14 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
-      - name: Build SDK and run compatibility tests
+      - name: Build SDK
         env:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
-        run: ./scripts/build
+        # Release compiled outputs before running the older-Jackson suite in its own job.
+        run: ./scripts/build -x :openai-java-core:testJacksonCompatibility
 
       - name: Collect exact-run Gradle build cache
         env:
@@ -75,17 +123,55 @@ jobs:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: ./scripts/collect-gradle-build-cache "$CACHE_ARTIFACT_PATH"
 
-      # setup-gradle's cross-run cache is read-only on pull requests. Publish this run's local
-      # build cache explicitly so downstream jobs can restore the exact compilation that passed.
+      # Cross-run caches are read-only on pull requests and merge groups. Publish this run's local
+      # build cache as an immutable artifact for downstream jobs with the same trust boundary.
       - name: Upload exact-run Gradle build cache
+        id: gradle-cache-artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          name: ci-gradle-build-cache-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ci-gradle-build-cache
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
-          overwrite: true
+
+  jackson_compatibility:
+    name: CI / Jackson compatibility
+    needs: build
+    if: needs.build.result == 'success'
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
+
+      - name: Restore exact-run Gradle build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
+          path: ~/.gradle/caches/build-cache-1
+
+      - name: Test older Jackson compatibility
+        env:
+          GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
+        run: ./scripts/gradle :openai-java-core:testJacksonCompatibility
 
   test:
     name: CI / tests
@@ -95,12 +181,12 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
@@ -110,23 +196,29 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
         with:
-          cache-read-only: true
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Restore exact-run Gradle build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
           path: ~/.gradle/caches/build-cache-1
 
+      - name: Check concurrent Steady publication
+        run: node scripts/steady/publication.test.cjs
+
       - name: Run tests
-        run: ./scripts/test
+        # Reuse compilation/shrinker outputs, but exercise the mock server on every run.
+        run: ./scripts/test --rerun
 
   api_compatibility:
     name: CI / API compatibility
     needs: build
     if: >-
       needs.build.result == 'success' &&
-      github.event_name == 'pull_request'
+      (github.event_name == 'pull_request' || github.event_name == 'merge_group')
     permissions:
       contents: read
       pull-requests: read
@@ -134,13 +226,13 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
@@ -155,12 +247,14 @@ jobs:
       - name: Restore exact-run Gradle build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
           path: ~/.gradle/caches/build-cache-1
 
       - name: Compile previous tests against the proposed SDK
         env:
-          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+          BASE_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: |
           set -euo pipefail
@@ -191,18 +285,20 @@ jobs:
       runtime-matrix: ${{ steps.matrix.outputs.runtime-matrix }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: 21
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Read version support policy
         id: matrix
@@ -228,18 +324,18 @@ jobs:
         java: ${{ fromJSON(needs.version_support_matrix.outputs.runtime-matrix) }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
 
       - name: Set up consumer Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
 
       - name: Set up build Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: 21
@@ -247,13 +343,15 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
         with:
-          cache-read-only: ${{ needs.build.result == 'success' }}
+          cache-read-only: true
 
       - name: Restore exact-run Gradle build cache
         if: needs.build.result == 'success'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ci-gradle-build-cache-${{ github.run_id }}
+          artifact-ids: ${{ needs.build.outputs.gradle-cache-artifact-id }}
+          merge-multiple: true
+          digest-mismatch: error
           path: ~/.gradle/caches/build-cache-1
 
       - name: Run consumer compatibility smoke test
@@ -271,6 +369,7 @@ jobs:
       - lint
       - build
       - test
+      - jackson_compatibility
       - api_compatibility
       - runtime_compatibility
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
@@ -283,6 +382,7 @@ jobs:
           LINT_RESULT: ${{ needs.lint.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           TEST_RESULT: ${{ needs.test.result }}
+          JACKSON_COMPATIBILITY_RESULT: ${{ needs.jackson_compatibility.result }}
           API_COMPATIBILITY_RESULT: ${{ needs.api_compatibility.result }}
           RUNTIME_COMPATIBILITY_RESULT: ${{ needs.runtime_compatibility.result }}
         run: |
@@ -292,8 +392,10 @@ jobs:
           [[ "$LINT_RESULT" == "success" ]] || failed_jobs+=("lint: $LINT_RESULT")
           [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
           [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
+          [[ "$JACKSON_COMPATIBILITY_RESULT" == "success" ]] ||
+            failed_jobs+=("Jackson compatibility: $JACKSON_COMPATIBILITY_RESULT")
 
-          if [[ "$EVENT_NAME" == "pull_request" &&
+          if [[ ( "$EVENT_NAME" == "pull_request" || "$EVENT_NAME" == "merge_group" ) &&
                 "$API_COMPATIBILITY_RESULT" != "success" ]]; then
             failed_jobs+=("API compatibility: $API_COMPATIBILITY_RESULT")
           fi

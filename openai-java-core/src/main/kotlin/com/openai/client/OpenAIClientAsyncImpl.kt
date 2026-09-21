@@ -34,6 +34,8 @@ import com.openai.services.async.GraderServiceAsync
 import com.openai.services.async.GraderServiceAsyncImpl
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ImageServiceAsyncImpl
+import com.openai.services.async.LiveServiceAsync
+import com.openai.services.async.LiveServiceAsyncImpl
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModelServiceAsyncImpl
 import com.openai.services.async.ModerationServiceAsync
@@ -42,6 +44,8 @@ import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.RealtimeServiceAsyncImpl
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.ResponseServiceAsyncImpl
+import com.openai.services.async.SafetyServiceAsync
+import com.openai.services.async.SafetyServiceAsyncImpl
 import com.openai.services.async.SkillServiceAsync
 import com.openai.services.async.SkillServiceAsyncImpl
 import com.openai.services.async.UploadServiceAsync
@@ -115,6 +119,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         VectorStoreServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val safety: SafetyServiceAsync by lazy {
+        SafetyServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val webhooks: WebhookServiceAsync by lazy {
         WebhookServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -136,6 +144,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     private val responses: ResponseServiceAsync by lazy {
         ResponseServiceAsyncImpl(clientOptionsWithUserAgent)
     }
+
+    private val live: LiveServiceAsync by lazy { LiveServiceAsyncImpl(clientOptionsWithUserAgent) }
 
     private val realtime: RealtimeServiceAsync by lazy {
         RealtimeServiceAsyncImpl(clientOptionsWithUserAgent)
@@ -206,6 +216,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun vectorStores(): VectorStoreServiceAsync = vectorStores
 
+    override fun safety(): SafetyServiceAsync = safety
+
     override fun webhooks(): WebhookServiceAsync = webhooks
 
     override fun beta(): BetaServiceAsync = beta
@@ -218,7 +230,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun admin(): AdminServiceAsync = admin
 
+    /** Create and manage model responses. */
     override fun responses(): ResponseServiceAsync = responses
+
+    override fun live(): LiveServiceAsync = live
 
     override fun realtime(): RealtimeServiceAsync = realtime
 
@@ -288,6 +303,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             VectorStoreServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val safety: SafetyServiceAsync.WithRawResponse by lazy {
+            SafetyServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val webhooks: WebhookServiceAsync.WithRawResponse by lazy {
             WebhookServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -310,6 +329,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         private val responses: ResponseServiceAsync.WithRawResponse by lazy {
             ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val live: LiveServiceAsync.WithRawResponse by lazy {
+            LiveServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val realtime: RealtimeServiceAsync.WithRawResponse by lazy {
@@ -383,6 +406,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         override fun vectorStores(): VectorStoreServiceAsync.WithRawResponse = vectorStores
 
+        override fun safety(): SafetyServiceAsync.WithRawResponse = safety
+
         override fun webhooks(): WebhookServiceAsync.WithRawResponse = webhooks
 
         override fun beta(): BetaServiceAsync.WithRawResponse = beta
@@ -395,7 +420,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         override fun admin(): AdminServiceAsync.WithRawResponse = admin
 
+        /** Create and manage model responses. */
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
+
+        override fun live(): LiveServiceAsync.WithRawResponse = live
 
         override fun realtime(): RealtimeServiceAsync.WithRawResponse = realtime
 

@@ -24,6 +24,9 @@ internal class RealtimeCallIncomingWebhookEventTest {
                                 .value("value")
                                 .build()
                         )
+                        .sipMediaSecurity(
+                            RealtimeCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP
+                        )
                         .build()
                 )
                 .object_(RealtimeCallIncomingWebhookEvent.Object.EVENT)
@@ -41,6 +44,7 @@ internal class RealtimeCallIncomingWebhookEventTest {
                             .value("value")
                             .build()
                     )
+                    .sipMediaSecurity(RealtimeCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                     .build()
             )
         assertThat(realtimeCallIncomingWebhookEvent.object_())
@@ -62,6 +66,9 @@ internal class RealtimeCallIncomingWebhookEventTest {
                                 .name("name")
                                 .value("value")
                                 .build()
+                        )
+                        .sipMediaSecurity(
+                            RealtimeCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP
                         )
                         .build()
                 )

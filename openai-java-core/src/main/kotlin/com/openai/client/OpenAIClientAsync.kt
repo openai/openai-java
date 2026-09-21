@@ -18,10 +18,12 @@ import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FineTuningServiceAsync
 import com.openai.services.async.GraderServiceAsync
 import com.openai.services.async.ImageServiceAsync
+import com.openai.services.async.LiveServiceAsync
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.ResponseServiceAsync
+import com.openai.services.async.SafetyServiceAsync
 import com.openai.services.async.SkillServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
@@ -104,6 +106,8 @@ interface OpenAIClientAsync {
 
     fun vectorStores(): VectorStoreServiceAsync
 
+    fun safety(): SafetyServiceAsync
+
     fun webhooks(): WebhookServiceAsync
 
     fun beta(): BetaServiceAsync
@@ -116,7 +120,10 @@ interface OpenAIClientAsync {
 
     fun admin(): AdminServiceAsync
 
+    /** Create and manage model responses. */
     fun responses(): ResponseServiceAsync
+
+    fun live(): LiveServiceAsync
 
     fun realtime(): RealtimeServiceAsync
 
@@ -196,6 +203,8 @@ interface OpenAIClientAsync {
 
         fun vectorStores(): VectorStoreServiceAsync.WithRawResponse
 
+        fun safety(): SafetyServiceAsync.WithRawResponse
+
         fun webhooks(): WebhookServiceAsync.WithRawResponse
 
         fun beta(): BetaServiceAsync.WithRawResponse
@@ -208,7 +217,10 @@ interface OpenAIClientAsync {
 
         fun admin(): AdminServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseServiceAsync.WithRawResponse
+
+        fun live(): LiveServiceAsync.WithRawResponse
 
         fun realtime(): RealtimeServiceAsync.WithRawResponse
 

@@ -6,6 +6,32 @@ import org.junit.jupiter.api.Test
 internal class EmbeddingValueTest {
 
     @Test
+    fun create_setThenAdd() {
+        val embedding =
+            Embedding.builder()
+                .embedding(EmbeddingValue.ofFloats(listOf(1.0f, 2.0f)))
+                .addEmbedding(3.0f)
+                .index(0L)
+                .build()
+
+        assertThat(embedding.embedding()).containsExactly(1.0f, 2.0f, 3.0f)
+        assertThat(embedding.index()).isEqualTo(0L)
+    }
+
+    @Test
+    fun create_addThenSet() {
+        val embedding =
+            Embedding.builder()
+                .addEmbedding(3.0f)
+                .embedding(EmbeddingValue.ofFloats(listOf(1.0f, 2.0f)))
+                .index(0L)
+                .build()
+
+        assertThat(embedding.embedding()).containsExactly(1.0f, 2.0f)
+        assertThat(embedding.index()).isEqualTo(0L)
+    }
+
+    @Test
     fun ofFloats() {
         val floats = listOf(1.0f, 2.0f, 3.0f, 4.0f)
 
