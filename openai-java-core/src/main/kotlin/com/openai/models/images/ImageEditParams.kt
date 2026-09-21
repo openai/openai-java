@@ -33,7 +33,8 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates an edited or extended image given one or more source images and a prompt. This endpoint
- * supports GPT Image models and `dall-e-2`.
+ * supports GPT Image models. DALL·E 2 was retired from the API on May 12, 2026; see
+ * [deprecations](https://developers.openai.com/api/docs/deprecations).
  */
 class ImageEditParams
 private constructor(
@@ -51,17 +52,14 @@ private constructor(
      * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
      * images.
      *
-     * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-     * than 4MB.
-     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun image(): Image = body.image()
 
     /**
-     * A text description of the desired image(s). The maximum length is 1000 characters for
-     * `dall-e-2`, and 32000 characters for the GPT image models.
+     * A text description of the desired image(s). The maximum length is 32000 characters for the
+     * GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -84,9 +82,13 @@ private constructor(
     fun background(): Optional<Background> = body.background()
 
     /**
-     * Controls fidelity to the original input image(s). This parameter is supported for GPT image
-     * models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21` ignore this
-     * parameter.
+     * Control how much effort the model will exert to match the style and features, especially
+     * facial features, of input images. Models that accept both `high` and `low` include
+     * `gpt-image-1`, `gpt-image-1.5`, and `chatgpt-image-latest`. `gpt-image-1-mini` accepts only
+     * `low`. Defaults to `low` on models that support this parameter. Omit this parameter for
+     * `gpt-image-2`, `gpt-image-2-2026-04-21`, and other models that do not support it. See the
+     * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+     * for model-specific guidance.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -105,10 +107,11 @@ private constructor(
     fun mask(): Optional<InputStream> = body.mask()
 
     /**
-     * The model to use for image generation. One of `dall-e-2` or a GPT image model (`gpt-image-1`,
-     * `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`,
-     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-     * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+     * The GPT Image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+     * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+     * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`,
+     * or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`. DALL·E 2 was retired from the API on
+     * May 12, 2026; see [deprecations](https://developers.openai.com/api/docs/deprecations).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -165,10 +168,8 @@ private constructor(
     fun quality(): Optional<Quality> = body.quality()
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated. This parameter is only
-     * supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT image models always return
-     * base64-encoded images.
+     * Legacy response-format parameter (`url` or `b64_json`) for the retired `dall-e-2` model. GPT
+     * Image models always return base64-encoded images.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -184,8 +185,8 @@ private constructor(
      * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
      * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
      * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * models that allow automatic sizing. Legacy sizes for the retired `dall-e-2` model were
+     * `256x256`, `512x512`, and `1024x1024`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -365,9 +366,6 @@ private constructor(
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-         *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
          */
         fun image(image: Image) = apply { body.image(image) }
 
@@ -390,9 +388,6 @@ private constructor(
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-         *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
          */
         fun image(inputStream: ByteArray) = apply { body.image(inputStream) }
 
@@ -404,9 +399,6 @@ private constructor(
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-         *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
          */
         fun image(path: Path) = apply { body.image(path) }
 
@@ -416,8 +408,8 @@ private constructor(
         }
 
         /**
-         * A text description of the desired image(s). The maximum length is 1000 characters for
-         * `dall-e-2`, and 32000 characters for the GPT image models.
+         * A text description of the desired image(s). The maximum length is 32000 characters for
+         * the GPT image models.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -457,9 +449,14 @@ private constructor(
         }
 
         /**
-         * Controls fidelity to the original input image(s). This parameter is supported for GPT
-         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
-         * ignore this parameter.
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. Models that accept both `high` and `low` include
+         * `gpt-image-1`, `gpt-image-1.5`, and `chatgpt-image-latest`. `gpt-image-1-mini` accepts
+         * only `low`. Defaults to `low` on models that support this parameter. Omit this parameter
+         * for `gpt-image-2`, `gpt-image-2-2026-04-21`, and other models that do not support it. See
+         * the
+         * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+         * for model-specific guidance.
          */
         fun inputFidelity(inputFidelity: InputFidelity?) = apply {
             body.inputFidelity(inputFidelity)
@@ -514,11 +511,12 @@ private constructor(
         fun mask(path: Path) = apply { body.mask(path) }
 
         /**
-         * The model to use for image generation. One of `dall-e-2` or a GPT image model
-         * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
-         * Defaults to `gpt-image-1.5`.
+         * The GPT Image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to
+         * `gpt-image-1.5`. DALL·E 2 was retired from the API on May 12, 2026; see
+         * [deprecations](https://developers.openai.com/api/docs/deprecations).
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -667,10 +665,8 @@ private constructor(
         fun quality(quality: MultipartField<Quality>) = apply { body.quality(quality) }
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This
-         * parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT
-         * image models always return base64-encoded images.
+         * Legacy response-format parameter (`url` or `b64_json`) for the retired `dall-e-2` model.
+         * GPT Image models always return base64-encoded images.
          */
         fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
@@ -700,9 +696,8 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing. Legacy sizes for the retired
+         * `dall-e-2` model were `256x256`, `512x512`, and `1024x1024`.
          */
         fun size(size: Size?) = apply { body.size(size) }
 
@@ -925,17 +920,14 @@ private constructor(
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
-         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun image(): Image = image.value.getRequired("image")
 
         /**
-         * A text description of the desired image(s). The maximum length is 1000 characters for
-         * `dall-e-2`, and 32000 characters for the GPT image models.
+         * A text description of the desired image(s). The maximum length is 32000 characters for
+         * the GPT image models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -959,9 +951,14 @@ private constructor(
         fun background(): Optional<Background> = background.value.getOptional("background")
 
         /**
-         * Controls fidelity to the original input image(s). This parameter is supported for GPT
-         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
-         * ignore this parameter.
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. Models that accept both `high` and `low` include
+         * `gpt-image-1`, `gpt-image-1.5`, and `chatgpt-image-latest`. `gpt-image-1-mini` accepts
+         * only `low`. Defaults to `low` on models that support this parameter. Omit this parameter
+         * for `gpt-image-2`, `gpt-image-2-2026-04-21`, and other models that do not support it. See
+         * the
+         * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+         * for model-specific guidance.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -981,11 +978,12 @@ private constructor(
         fun mask(): Optional<InputStream> = mask.value.getOptional("mask")
 
         /**
-         * The model to use for image generation. One of `dall-e-2` or a GPT image model
-         * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
-         * Defaults to `gpt-image-1.5`.
+         * The GPT Image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to
+         * `gpt-image-1.5`. DALL·E 2 was retired from the API on May 12, 2026; see
+         * [deprecations](https://developers.openai.com/api/docs/deprecations).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1045,10 +1043,8 @@ private constructor(
         fun quality(): Optional<Quality> = quality.value.getOptional("quality")
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This
-         * parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT
-         * image models always return base64-encoded images.
+         * Legacy response-format parameter (`url` or `b64_json`) for the retired `dall-e-2` model.
+         * GPT Image models always return base64-encoded images.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1065,9 +1061,8 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing. Legacy sizes for the retired
+         * `dall-e-2` model were `256x256`, `512x512`, and `1024x1024`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1273,9 +1268,6 @@ private constructor(
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
              * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-             *
-             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
-             * less than 4MB.
              */
             fun image(image: Image) =
                 image(
@@ -1305,9 +1297,6 @@ private constructor(
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
              * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-             *
-             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
-             * less than 4MB.
              */
             fun image(inputStream: ByteArray) = image(inputStream.inputStream())
 
@@ -1319,9 +1308,6 @@ private constructor(
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
              * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-             *
-             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
-             * less than 4MB.
              */
             fun image(path: Path) =
                 image(
@@ -1337,8 +1323,8 @@ private constructor(
                 image(Image.ofInputStreams(inputStreams))
 
             /**
-             * A text description of the desired image(s). The maximum length is 1000 characters for
-             * `dall-e-2`, and 32000 characters for the GPT image models.
+             * A text description of the desired image(s). The maximum length is 32000 characters
+             * for the GPT image models.
              */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
@@ -1379,9 +1365,14 @@ private constructor(
             }
 
             /**
-             * Controls fidelity to the original input image(s). This parameter is supported for GPT
-             * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
-             * ignore this parameter.
+             * Control how much effort the model will exert to match the style and features,
+             * especially facial features, of input images. Models that accept both `high` and `low`
+             * include `gpt-image-1`, `gpt-image-1.5`, and `chatgpt-image-latest`.
+             * `gpt-image-1-mini` accepts only `low`. Defaults to `low` on models that support this
+             * parameter. Omit this parameter for `gpt-image-2`, `gpt-image-2-2026-04-21`, and other
+             * models that do not support it. See the
+             * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+             * for model-specific guidance.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(MultipartField.of(inputFidelity))
@@ -1441,12 +1432,12 @@ private constructor(
                 )
 
             /**
-             * The model to use for image generation. One of `dall-e-2` or a GPT image model
-             * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * The GPT Image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to
-             * `gpt-image-1.5`.
+             * `gpt-image-1.5`. DALL·E 2 was retired from the API on May 12, 2026; see
+             * [deprecations](https://developers.openai.com/api/docs/deprecations).
              */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
@@ -1603,10 +1594,8 @@ private constructor(
             fun quality(quality: MultipartField<Quality>) = apply { this.quality = quality }
 
             /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-             * This parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as
-             * GPT image models always return base64-encoded images.
+             * Legacy response-format parameter (`url` or `b64_json`) for the retired `dall-e-2`
+             * model. GPT Image models always return base64-encoded images.
              */
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(MultipartField.of(responseFormat))
@@ -1636,8 +1625,8 @@ private constructor(
              * is `3840x2160`. The requested size must also satisfy the model's current pixel and
              * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
              * supported by the GPT image models; `auto` is supported for models that allow
-             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+             * automatic sizing. Legacy sizes for the retired `dall-e-2` model were `256x256`,
+             * `512x512`, and `1024x1024`.
              */
             fun size(size: Size?) = size(MultipartField.of(size))
 
@@ -1827,9 +1816,6 @@ private constructor(
      * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
      * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
      * images.
-     *
-     * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-     * than 4MB.
      */
     @JsonSerialize(using = Image.Serializer::class)
     class Image
@@ -2145,9 +2131,13 @@ private constructor(
     }
 
     /**
-     * Controls fidelity to the original input image(s). This parameter is supported for GPT image
-     * models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21` ignore this
-     * parameter.
+     * Control how much effort the model will exert to match the style and features, especially
+     * facial features, of input images. Models that accept both `high` and `low` include
+     * `gpt-image-1`, `gpt-image-1.5`, and `chatgpt-image-latest`. `gpt-image-1-mini` accepts only
+     * `low`. Defaults to `low` on models that support this parameter. Omit this parameter for
+     * `gpt-image-2`, `gpt-image-2-2026-04-21`, and other models that do not support it. See the
+     * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+     * for model-specific guidance.
      */
     class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2604,10 +2594,8 @@ private constructor(
     }
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated. This parameter is only
-     * supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT image models always return
-     * base64-encoded images.
+     * Legacy response-format parameter (`url` or `b64_json`) for the retired `dall-e-2` model. GPT
+     * Image models always return base64-encoded images.
      */
     class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2756,8 +2744,8 @@ private constructor(
      * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
      * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
      * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * models that allow automatic sizing. Legacy sizes for the retired `dall-e-2` model were
+     * `256x256`, `512x512`, and `1024x1024`.
      */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

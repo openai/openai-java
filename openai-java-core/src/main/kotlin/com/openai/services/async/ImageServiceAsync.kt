@@ -32,7 +32,12 @@ interface ImageServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync
 
-    /** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
+    /**
+     * Legacy endpoint for creating variations with DALL·E 2, which was retired from the API on May
+     * 12, 2026. See [deprecations](https://developers.openai.com/api/docs/deprecations). For new
+     * integrations, use image edits with a supported GPT Image model; see the
+     * [image generation guide](https://developers.openai.com/api/docs/guides/image-generation).
+     */
     fun createVariation(params: ImageCreateVariationParams): CompletableFuture<ImagesResponse> =
         createVariation(params, RequestOptions.none())
 
@@ -44,7 +49,8 @@ interface ImageServiceAsync {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models and `dall-e-2`.
+     * endpoint supports GPT Image models. DALL·E 2 was retired from the API on May 12, 2026; see
+     * [deprecations](https://developers.openai.com/api/docs/deprecations).
      */
     fun edit(params: ImageEditParams): CompletableFuture<ImagesResponse> =
         edit(params, RequestOptions.none())
@@ -57,7 +63,8 @@ interface ImageServiceAsync {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models and `dall-e-2`.
+     * endpoint supports GPT Image models. DALL·E 2 was retired from the API on May 12, 2026; see
+     * [deprecations](https://developers.openai.com/api/docs/deprecations).
      */
     fun editStreaming(params: ImageEditParams): AsyncStreamResponse<ImageEditStreamEvent> =
         editStreaming(params, RequestOptions.none())
