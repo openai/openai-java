@@ -1592,6 +1592,7 @@ internal class ResponseItemTest {
         val localShellCallOutput =
             ResponseItem.LocalShellCallOutput.builder()
                 .id("id")
+                .callId("call_id")
                 .output("output")
                 .status(ResponseItem.LocalShellCallOutput.Status.IN_PROGRESS)
                 .build()
@@ -1637,6 +1638,7 @@ internal class ResponseItemTest {
             ResponseItem.ofLocalShellCallOutput(
                 ResponseItem.LocalShellCallOutput.builder()
                     .id("id")
+                    .callId("call_id")
                     .output("output")
                     .status(ResponseItem.LocalShellCallOutput.Status.IN_PROGRESS)
                     .build()
