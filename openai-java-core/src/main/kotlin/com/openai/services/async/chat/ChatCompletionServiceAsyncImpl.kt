@@ -146,7 +146,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -191,7 +191,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -230,7 +230,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -268,7 +268,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -302,7 +302,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -348,7 +348,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenCompose { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
