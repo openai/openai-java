@@ -34,7 +34,8 @@ private constructor(
 
     /**
      * A text description of the desired image(s). The maximum length is 32000 characters for the
-     * GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`.
+     * GPT image models. Legacy limits for the retired models were 1000 characters for `dall-e-2`
+     * and 4000 characters for `dall-e-3`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -57,11 +58,12 @@ private constructor(
     fun background(): Optional<Background> = body.background()
 
     /**
-     * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image model
-     * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`,
-     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-     * `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a parameter specific to the
-     * GPT image models is used.
+     * The GPT Image model to use for image generation. Specify a supported model explicitly, such
+     * as `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+     * `gpt-image-2.5-flare`, or `gpt-image-2.5-flare-2026-09-08`. DALL·E 2 (`dall-e-2`) and DALL·E
+     * 3 (`dall-e-3`) were retired from the API on May 12, 2026; see
+     * [deprecations](https://developers.openai.com/api/docs/deprecations).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -78,8 +80,8 @@ private constructor(
     fun moderation(): Optional<Moderation> = body.moderation()
 
     /**
-     * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-     * supported.
+     * The number of images to generate. Must be between 1 and 10. The retired `dall-e-3` model only
+     * supported `n=1`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -123,8 +125,8 @@ private constructor(
      * - `high`, `medium` and `low` are supported for the GPT image models.
      * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots,
      *   also support `xhigh` and `max`.
-     * - `hd` and `standard` are supported for `dall-e-3`.
-     * - `standard` is the only option for `dall-e-2`.
+     * - The retired `dall-e-3` model supported the legacy values `hd` and `standard`.
+     * - The retired `dall-e-2` model only supported the legacy value `standard`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -132,10 +134,9 @@ private constructor(
     fun quality(): Optional<Quality> = body.quality()
 
     /**
-     * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be one
-     * of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-     * generated. This parameter isn't supported for the GPT image models, which always return
-     * base64-encoded images.
+     * Legacy response format: `url` or `b64_json`, for the retired `dall-e-2` and `dall-e-3`
+     * models. Returned URLs were valid for 60 minutes after image generation. This parameter is not
+     * supported for the GPT image models, which always return base64-encoded images.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -151,8 +152,9 @@ private constructor(
      * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
      * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
      * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * models that allow automatic sizing. Legacy sizes for the retired `dall-e-2` model were
+     * `256x256`, `512x512`, and `1024x1024`. Legacy sizes for the retired `dall-e-3` model were
+     * `1024x1024`, `1792x1024`, and `1024x1792`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -160,10 +162,9 @@ private constructor(
     fun size(): Optional<Size> = body.size()
 
     /**
-     * The style of the generated images. This parameter is only supported for `dall-e-3`. Must be
-     * one of `vivid` or `natural`. Vivid causes the model to lean towards generating hyper-real and
-     * dramatic images. Natural causes the model to produce more natural, less hyper-real looking
-     * images.
+     * Legacy style options `vivid` and `natural` for the retired `dall-e-3` model. Vivid produced
+     * hyper-real and dramatic images; natural produced more natural, less hyper-real looking
+     * images. This parameter is not supported for the GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -325,7 +326,8 @@ private constructor(
 
         /**
          * A text description of the desired image(s). The maximum length is 32000 characters for
-         * the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`.
+         * the GPT image models. Legacy limits for the retired models were 1000 characters for
+         * `dall-e-2` and 4000 characters for `dall-e-3`.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -363,11 +365,12 @@ private constructor(
         fun background(background: JsonField<Background>) = apply { body.background(background) }
 
         /**
-         * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * The GPT Image model to use for image generation. Specify a supported model explicitly,
+         * such as `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a
-         * parameter specific to the GPT image models is used.
+         * `gpt-image-2.5-flare`, or `gpt-image-2.5-flare-2026-09-08`. DALL·E 2 (`dall-e-2`) and
+         * DALL·E 3 (`dall-e-3`) were retired from the API on May 12, 2026; see
+         * [deprecations](https://developers.openai.com/api/docs/deprecations).
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -410,8 +413,8 @@ private constructor(
         fun moderation(moderation: JsonField<Moderation>) = apply { body.moderation(moderation) }
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * The number of images to generate. Must be between 1 and 10. The retired `dall-e-3` model
+         * only supported `n=1`.
          */
         fun n(n: Long?) = apply { body.n(n) }
 
@@ -522,8 +525,8 @@ private constructor(
          * - `high`, `medium` and `low` are supported for the GPT image models.
          * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
          *   snapshots, also support `xhigh` and `max`.
-         * - `hd` and `standard` are supported for `dall-e-3`.
-         * - `standard` is the only option for `dall-e-2`.
+         * - The retired `dall-e-3` model supported the legacy values `hd` and `standard`.
+         * - The retired `dall-e-2` model only supported the legacy value `standard`.
          */
         fun quality(quality: Quality?) = apply { body.quality(quality) }
 
@@ -539,10 +542,9 @@ private constructor(
         fun quality(quality: JsonField<Quality>) = apply { body.quality(quality) }
 
         /**
-         * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be
-         * one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-         * generated. This parameter isn't supported for the GPT image models, which always return
-         * base64-encoded images.
+         * Legacy response format: `url` or `b64_json`, for the retired `dall-e-2` and `dall-e-3`
+         * models. Returned URLs were valid for 60 minutes after image generation. This parameter is
+         * not supported for the GPT image models, which always return base64-encoded images.
          */
         fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
@@ -572,9 +574,9 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing. Legacy sizes for the retired
+         * `dall-e-2` model were `256x256`, `512x512`, and `1024x1024`. Legacy sizes for the retired
+         * `dall-e-3` model were `1024x1024`, `1792x1024`, and `1024x1792`.
          */
         fun size(size: Size?) = apply { body.size(size) }
 
@@ -598,10 +600,9 @@ private constructor(
         fun size(value: String) = apply { body.size(value) }
 
         /**
-         * The style of the generated images. This parameter is only supported for `dall-e-3`. Must
-         * be one of `vivid` or `natural`. Vivid causes the model to lean towards generating
-         * hyper-real and dramatic images. Natural causes the model to produce more natural, less
-         * hyper-real looking images.
+         * Legacy style options `vivid` and `natural` for the retired `dall-e-3` model. Vivid
+         * produced hyper-real and dramatic images; natural produced more natural, less hyper-real
+         * looking images. This parameter is not supported for the GPT image models.
          */
         fun style(style: Style?) = apply { body.style(style) }
 
@@ -839,7 +840,8 @@ private constructor(
 
         /**
          * A text description of the desired image(s). The maximum length is 32000 characters for
-         * the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`.
+         * the GPT image models. Legacy limits for the retired models were 1000 characters for
+         * `dall-e-2` and 4000 characters for `dall-e-3`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -863,11 +865,12 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * The GPT Image model to use for image generation. Specify a supported model explicitly,
+         * such as `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a
-         * parameter specific to the GPT image models is used.
+         * `gpt-image-2.5-flare`, or `gpt-image-2.5-flare-2026-09-08`. DALL·E 2 (`dall-e-2`) and
+         * DALL·E 3 (`dall-e-3`) were retired from the API on May 12, 2026; see
+         * [deprecations](https://developers.openai.com/api/docs/deprecations).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -884,8 +887,8 @@ private constructor(
         fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * The number of images to generate. Must be between 1 and 10. The retired `dall-e-3` model
+         * only supported `n=1`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -930,8 +933,8 @@ private constructor(
          * - `high`, `medium` and `low` are supported for the GPT image models.
          * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
          *   snapshots, also support `xhigh` and `max`.
-         * - `hd` and `standard` are supported for `dall-e-3`.
-         * - `standard` is the only option for `dall-e-2`.
+         * - The retired `dall-e-3` model supported the legacy values `hd` and `standard`.
+         * - The retired `dall-e-2` model only supported the legacy value `standard`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -939,10 +942,9 @@ private constructor(
         fun quality(): Optional<Quality> = quality.getOptional("quality")
 
         /**
-         * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be
-         * one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-         * generated. This parameter isn't supported for the GPT image models, which always return
-         * base64-encoded images.
+         * Legacy response format: `url` or `b64_json`, for the retired `dall-e-2` and `dall-e-3`
+         * models. Returned URLs were valid for 60 minutes after image generation. This parameter is
+         * not supported for the GPT image models, which always return base64-encoded images.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -959,9 +961,9 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing. Legacy sizes for the retired
+         * `dall-e-2` model were `256x256`, `512x512`, and `1024x1024`. Legacy sizes for the retired
+         * `dall-e-3` model were `1024x1024`, `1792x1024`, and `1024x1792`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -969,10 +971,9 @@ private constructor(
         fun size(): Optional<Size> = size.getOptional("size")
 
         /**
-         * The style of the generated images. This parameter is only supported for `dall-e-3`. Must
-         * be one of `vivid` or `natural`. Vivid causes the model to lean towards generating
-         * hyper-real and dramatic images. Natural causes the model to produce more natural, less
-         * hyper-real looking images.
+         * Legacy style options `vivid` and `natural` for the retired `dall-e-3` model. Vivid
+         * produced hyper-real and dramatic images; natural produced more natural, less hyper-real
+         * looking images. This parameter is not supported for the GPT image models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1159,8 +1160,8 @@ private constructor(
 
             /**
              * A text description of the desired image(s). The maximum length is 32000 characters
-             * for the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for
-             * `dall-e-3`.
+             * for the GPT image models. Legacy limits for the retired models were 1000 characters
+             * for `dall-e-2` and 4000 characters for `dall-e-3`.
              */
             fun prompt(prompt: String) = prompt(JsonField.of(prompt))
 
@@ -1201,12 +1202,13 @@ private constructor(
             }
 
             /**
-             * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-             * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a parameter specific
-             * to the GPT image models is used.
+             * The GPT Image model to use for image generation. Specify a supported model
+             * explicitly, such as `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, or
+             * `gpt-image-2.5-flare-2026-09-08`. DALL·E 2 (`dall-e-2`) and DALL·E 3 (`dall-e-3`)
+             * were retired from the API on May 12, 2026; see
+             * [deprecations](https://developers.openai.com/api/docs/deprecations).
              */
             fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
@@ -1252,8 +1254,8 @@ private constructor(
             }
 
             /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
+             * The number of images to generate. Must be between 1 and 10. The retired `dall-e-3`
+             * model only supported `n=1`.
              */
             fun n(n: Long?) = n(JsonField.ofNullable(n))
 
@@ -1371,8 +1373,8 @@ private constructor(
              * - `high`, `medium` and `low` are supported for the GPT image models.
              * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
              *   snapshots, also support `xhigh` and `max`.
-             * - `hd` and `standard` are supported for `dall-e-3`.
-             * - `standard` is the only option for `dall-e-2`.
+             * - The retired `dall-e-3` model supported the legacy values `hd` and `standard`.
+             * - The retired `dall-e-2` model only supported the legacy value `standard`.
              */
             fun quality(quality: Quality?) = quality(JsonField.ofNullable(quality))
 
@@ -1389,10 +1391,10 @@ private constructor(
             fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
             /**
-             * The format in which generated images with `dall-e-2` and `dall-e-3` are returned.
-             * Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the
-             * image has been generated. This parameter isn't supported for the GPT image models,
-             * which always return base64-encoded images.
+             * Legacy response format: `url` or `b64_json`, for the retired `dall-e-2` and
+             * `dall-e-3` models. Returned URLs were valid for 60 minutes after image generation.
+             * This parameter is not supported for the GPT image models, which always return
+             * base64-encoded images.
              */
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(JsonField.ofNullable(responseFormat))
@@ -1422,8 +1424,9 @@ private constructor(
              * is `3840x2160`. The requested size must also satisfy the model's current pixel and
              * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
              * supported by the GPT image models; `auto` is supported for models that allow
-             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+             * automatic sizing. Legacy sizes for the retired `dall-e-2` model were `256x256`,
+             * `512x512`, and `1024x1024`. Legacy sizes for the retired `dall-e-3` model were
+             * `1024x1024`, `1792x1024`, and `1024x1792`.
              */
             fun size(size: Size?) = size(JsonField.ofNullable(size))
 
@@ -1448,10 +1451,9 @@ private constructor(
             fun size(value: String) = size(Size.of(value))
 
             /**
-             * The style of the generated images. This parameter is only supported for `dall-e-3`.
-             * Must be one of `vivid` or `natural`. Vivid causes the model to lean towards
-             * generating hyper-real and dramatic images. Natural causes the model to produce more
-             * natural, less hyper-real looking images.
+             * Legacy style options `vivid` and `natural` for the retired `dall-e-3` model. Vivid
+             * produced hyper-real and dramatic images; natural produced more natural, less
+             * hyper-real looking images. This parameter is not supported for the GPT image models.
              */
             fun style(style: Style?) = style(JsonField.ofNullable(style))
 
@@ -2087,8 +2089,8 @@ private constructor(
      * - `high`, `medium` and `low` are supported for the GPT image models.
      * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots,
      *   also support `xhigh` and `max`.
-     * - `hd` and `standard` are supported for `dall-e-3`.
-     * - `standard` is the only option for `dall-e-2`.
+     * - The retired `dall-e-3` model supported the legacy values `hd` and `standard`.
+     * - The retired `dall-e-2` model only supported the legacy value `standard`.
      */
     class Quality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2261,10 +2263,9 @@ private constructor(
     }
 
     /**
-     * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be one
-     * of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-     * generated. This parameter isn't supported for the GPT image models, which always return
-     * base64-encoded images.
+     * Legacy response format: `url` or `b64_json`, for the retired `dall-e-2` and `dall-e-3`
+     * models. Returned URLs were valid for 60 minutes after image generation. This parameter is not
+     * supported for the GPT image models, which always return base64-encoded images.
      */
     class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2413,8 +2414,9 @@ private constructor(
      * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
      * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
      * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * models that allow automatic sizing. Legacy sizes for the retired `dall-e-2` model were
+     * `256x256`, `512x512`, and `1024x1024`. Legacy sizes for the retired `dall-e-3` model were
+     * `1024x1024`, `1792x1024`, and `1024x1792`.
      */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2587,10 +2589,9 @@ private constructor(
     }
 
     /**
-     * The style of the generated images. This parameter is only supported for `dall-e-3`. Must be
-     * one of `vivid` or `natural`. Vivid causes the model to lean towards generating hyper-real and
-     * dramatic images. Natural causes the model to produce more natural, less hyper-real looking
-     * images.
+     * Legacy style options `vivid` and `natural` for the retired `dall-e-3` model. Vivid produced
+     * hyper-real and dramatic images; natural produced more natural, less hyper-real looking
+     * images. This parameter is not supported for the GPT image models.
      */
     class Style @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

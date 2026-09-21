@@ -5133,9 +5133,13 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         * Controls fidelity to the original input image(s). This parameter is supported for GPT
-         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
-         * ignore this parameter.
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. Supported models accept `high` and `low`, except
+         * `gpt-image-1-mini`, which accepts only `low`. Defaults to `low` on models that support
+         * this parameter. Omit this parameter for `gpt-image-2`, `gpt-image-2-2026-04-21`, and
+         * other models that do not support it. See the
+         * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+         * for model-specific guidance.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5424,9 +5428,13 @@ private constructor(
             }
 
             /**
-             * Controls fidelity to the original input image(s). This parameter is supported for GPT
-             * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
-             * ignore this parameter.
+             * Control how much effort the model will exert to match the style and features,
+             * especially facial features, of input images. Supported models accept `high` and
+             * `low`, except `gpt-image-1-mini`, which accepts only `low`. Defaults to `low` on
+             * models that support this parameter. Omit this parameter for `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, and other models that do not support it. See the
+             * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+             * for model-specific guidance.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -6011,9 +6019,13 @@ private constructor(
         }
 
         /**
-         * Controls fidelity to the original input image(s). This parameter is supported for GPT
-         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
-         * ignore this parameter.
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. Supported models accept `high` and `low`, except
+         * `gpt-image-1-mini`, which accepts only `low`. Defaults to `low` on models that support
+         * this parameter. Omit this parameter for `gpt-image-2`, `gpt-image-2-2026-04-21`, and
+         * other models that do not support it. See the
+         * [image input fidelity guide](https://developers.openai.com/api/docs/guides/image-generation#image-input-fidelity)
+         * for model-specific guidance.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {

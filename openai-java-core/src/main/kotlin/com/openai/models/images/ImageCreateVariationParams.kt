@@ -26,7 +26,12 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 import kotlin.jvm.optionals.getOrNull
 
-/** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
+/**
+ * Legacy endpoint for creating variations with DALL·E 2, which was retired from the API on May
+ * 12, 2026. See [deprecations](https://developers.openai.com/api/docs/deprecations). For new
+ * integrations, use image edits with a supported GPT Image model; see the
+ * [image generation guide](https://developers.openai.com/api/docs/guides/image-generation).
+ */
 class ImageCreateVariationParams
 private constructor(
     private val body: Body,
@@ -35,8 +40,8 @@ private constructor(
 ) : Params {
 
     /**
-     * The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB,
-     * and square.
+     * The input image for the legacy variations endpoint. The legacy format requires a valid PNG
+     * file, less than 4MB, and square.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -44,7 +49,10 @@ private constructor(
     fun image(): InputStream = body.image()
 
     /**
-     * The model to use for image generation. Only `dall-e-2` is supported at this time.
+     * Legacy model selection for the variations endpoint, which was designed for `dall-e-2`. DALL·E
+     * 2 was retired from the API on May 12, 2026; see
+     * [deprecations](https://developers.openai.com/api/docs/deprecations). Use image edits with a
+     * supported GPT Image model for new integrations.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -52,7 +60,7 @@ private constructor(
     fun model(): Optional<ImageModel> = body.model()
 
     /**
-     * The number of images to generate. Must be between 1 and 10.
+     * The number of images requested from the legacy variations endpoint. Must be between 1 and 10.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -60,8 +68,8 @@ private constructor(
     fun n(): Optional<Long> = body.n()
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated.
+     * The response format for the legacy variations endpoint: `url` or `b64_json`. Returned URLs
+     * were valid for 60 minutes after image generation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -69,7 +77,8 @@ private constructor(
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
-     * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+     * The requested image size for the legacy variations endpoint. Must be one of `256x256`,
+     * `512x512`, or `1024x1024`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -181,8 +190,8 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
-         * 4MB, and square.
+         * The input image for the legacy variations endpoint. The legacy format requires a valid
+         * PNG file, less than 4MB, and square.
          */
         fun image(image: InputStream) = apply { body.image(image) }
 
@@ -196,18 +205,23 @@ private constructor(
         fun image(image: MultipartField<InputStream>) = apply { body.image(image) }
 
         /**
-         * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
-         * 4MB, and square.
+         * The input image for the legacy variations endpoint. The legacy format requires a valid
+         * PNG file, less than 4MB, and square.
          */
         fun image(image: ByteArray) = apply { body.image(image) }
 
         /**
-         * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
-         * 4MB, and square.
+         * The input image for the legacy variations endpoint. The legacy format requires a valid
+         * PNG file, less than 4MB, and square.
          */
         fun image(path: Path) = apply { body.image(path) }
 
-        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+        /**
+         * Legacy model selection for the variations endpoint, which was designed for `dall-e-2`.
+         * DALL·E 2 was retired from the API on May 12, 2026; see
+         * [deprecations](https://developers.openai.com/api/docs/deprecations). Use image edits with
+         * a supported GPT Image model for new integrations.
+         */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -230,7 +244,10 @@ private constructor(
          */
         fun model(value: String) = apply { body.model(value) }
 
-        /** The number of images to generate. Must be between 1 and 10. */
+        /**
+         * The number of images requested from the legacy variations endpoint. Must be between 1
+         * and 10.
+         */
         fun n(n: Long?) = apply { body.n(n) }
 
         /**
@@ -252,8 +269,8 @@ private constructor(
         fun n(n: MultipartField<Long>) = apply { body.n(n) }
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         * The response format for the legacy variations endpoint: `url` or `b64_json`. Returned
+         * URLs were valid for 60 minutes after image generation.
          */
         fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
@@ -275,7 +292,8 @@ private constructor(
         }
 
         /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+         * The requested image size for the legacy variations endpoint. Must be one of `256x256`,
+         * `512x512`, or `1024x1024`.
          */
         fun size(size: Size?) = apply { body.size(size) }
 
@@ -469,8 +487,8 @@ private constructor(
     ) {
 
         /**
-         * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
-         * 4MB, and square.
+         * The input image for the legacy variations endpoint. The legacy format requires a valid
+         * PNG file, less than 4MB, and square.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -478,7 +496,10 @@ private constructor(
         fun image(): InputStream = image.value.getRequired("image")
 
         /**
-         * The model to use for image generation. Only `dall-e-2` is supported at this time.
+         * Legacy model selection for the variations endpoint, which was designed for `dall-e-2`.
+         * DALL·E 2 was retired from the API on May 12, 2026; see
+         * [deprecations](https://developers.openai.com/api/docs/deprecations). Use image edits with
+         * a supported GPT Image model for new integrations.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -486,7 +507,8 @@ private constructor(
         fun model(): Optional<ImageModel> = model.value.getOptional("model")
 
         /**
-         * The number of images to generate. Must be between 1 and 10.
+         * The number of images requested from the legacy variations endpoint. Must be between 1
+         * and 10.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -494,8 +516,8 @@ private constructor(
         fun n(): Optional<Long> = n.value.getOptional("n")
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         * The response format for the legacy variations endpoint: `url` or `b64_json`. Returned
+         * URLs were valid for 60 minutes after image generation.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -504,7 +526,8 @@ private constructor(
             responseFormat.value.getOptional("response_format")
 
         /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+         * The requested image size for the legacy variations endpoint. Must be one of `256x256`,
+         * `512x512`, or `1024x1024`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -614,8 +637,8 @@ private constructor(
             }
 
             /**
-             * The image to use as the basis for the variation(s). Must be a valid PNG file, less
-             * than 4MB, and square.
+             * The input image for the legacy variations endpoint. The legacy format requires a
+             * valid PNG file, less than 4MB, and square.
              */
             fun image(image: InputStream) = image(MultipartField.of(image))
 
@@ -629,14 +652,14 @@ private constructor(
             fun image(image: MultipartField<InputStream>) = apply { this.image = image }
 
             /**
-             * The image to use as the basis for the variation(s). Must be a valid PNG file, less
-             * than 4MB, and square.
+             * The input image for the legacy variations endpoint. The legacy format requires a
+             * valid PNG file, less than 4MB, and square.
              */
             fun image(image: ByteArray) = image(image.inputStream())
 
             /**
-             * The image to use as the basis for the variation(s). Must be a valid PNG file, less
-             * than 4MB, and square.
+             * The input image for the legacy variations endpoint. The legacy format requires a
+             * valid PNG file, less than 4MB, and square.
              */
             fun image(path: Path) =
                 image(
@@ -646,7 +669,12 @@ private constructor(
                         .build()
                 )
 
-            /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+            /**
+             * Legacy model selection for the variations endpoint, which was designed for
+             * `dall-e-2`. DALL·E 2 was retired from the API on May 12, 2026; see
+             * [deprecations](https://developers.openai.com/api/docs/deprecations). Use image edits
+             * with a supported GPT Image model for new integrations.
+             */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
             /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -670,7 +698,10 @@ private constructor(
              */
             fun model(value: String) = model(ImageModel.of(value))
 
-            /** The number of images to generate. Must be between 1 and 10. */
+            /**
+             * The number of images requested from the legacy variations endpoint. Must be between 1
+             * and 10.
+             */
             fun n(n: Long?) = n(MultipartField.of(n))
 
             /**
@@ -693,8 +724,8 @@ private constructor(
             fun n(n: MultipartField<Long>) = apply { this.n = n }
 
             /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+             * The response format for the legacy variations endpoint: `url` or `b64_json`. Returned
+             * URLs were valid for 60 minutes after image generation.
              */
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(MultipartField.of(responseFormat))
@@ -715,8 +746,8 @@ private constructor(
             }
 
             /**
-             * The size of the generated images. Must be one of `256x256`, `512x512`, or
-             * `1024x1024`.
+             * The requested image size for the legacy variations endpoint. Must be one of
+             * `256x256`, `512x512`, or `1024x1024`.
              */
             fun size(size: Size?) = size(MultipartField.of(size))
 
@@ -850,8 +881,8 @@ private constructor(
     }
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated.
+     * The response format for the legacy variations endpoint: `url` or `b64_json`. Returned URLs
+     * were valid for 60 minutes after image generation.
      */
     class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -991,7 +1022,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`. */
+    /**
+     * The requested image size for the legacy variations endpoint. Must be one of `256x256`,
+     * `512x512`, or `1024x1024`.
+     */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
