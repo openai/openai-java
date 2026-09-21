@@ -2758,46 +2758,48 @@ private constructor(
     interface Visitor<out T> {
 
         /** Emitted when there is a partial audio response. */
-        fun visitResponseAudioDelta(responseAudioDelta: BetaResponseAudioDeltaEvent): T
+        fun visitResponseAudioDelta(responseAudioDelta: BetaResponseAudioDeltaEvent): T =
+            unknown(JsonValue.from(responseAudioDelta))
 
         /** Emitted when the audio response is complete. */
-        fun visitResponseAudioDone(responseAudioDone: BetaResponseAudioDoneEvent): T
+        fun visitResponseAudioDone(responseAudioDone: BetaResponseAudioDoneEvent): T =
+            unknown(JsonValue.from(responseAudioDone))
 
         /** Emitted when there is a partial transcript of audio. */
         fun visitResponseAudioTranscriptDelta(
             responseAudioTranscriptDelta: BetaResponseAudioTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseAudioTranscriptDelta))
 
         /** Emitted when the full audio transcript is completed. */
         fun visitResponseAudioTranscriptDone(
             responseAudioTranscriptDone: BetaResponseAudioTranscriptDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseAudioTranscriptDone))
 
         /** Emitted when a partial code snippet is streamed by the code interpreter. */
         fun visitResponseCodeInterpreterCallCodeDelta(
             responseCodeInterpreterCallCodeDelta: BetaResponseCodeInterpreterCallCodeDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallCodeDelta))
 
         /** Emitted when the code snippet is finalized by the code interpreter. */
         fun visitResponseCodeInterpreterCallCodeDone(
             responseCodeInterpreterCallCodeDone: BetaResponseCodeInterpreterCallCodeDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallCodeDone))
 
         /** Emitted when the code interpreter call is completed. */
         fun visitResponseCodeInterpreterCallCompleted(
             responseCodeInterpreterCallCompleted: BetaResponseCodeInterpreterCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallCompleted))
 
         /** Emitted when a code interpreter call is in progress. */
         fun visitResponseCodeInterpreterCallInProgress(
             responseCodeInterpreterCallInProgress: BetaResponseCodeInterpreterCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallInProgress))
 
         /** Emitted when the code interpreter is actively interpreting the code snippet. */
         fun visitResponseCodeInterpreterCallInterpreting(
             responseCodeInterpreterCallInterpreting:
                 BetaResponseCodeInterpreterCallInterpretingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallInterpreting))
 
         /**
          * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
@@ -2810,76 +2812,80 @@ private constructor(
         ): T = unknown(JsonValue.from(responseCompactionCompacting))
 
         /** Emitted when the model response is complete. */
-        fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent): T
+        fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent): T =
+            unknown(JsonValue.from(responseCompleted))
 
         /** Emitted when a new content part is added. */
         fun visitResponseContentPartAdded(
             responseContentPartAdded: BetaResponseContentPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseContentPartAdded))
 
         /** Emitted when a content part is done. */
         fun visitResponseContentPartDone(
             responseContentPartDone: BetaResponseContentPartDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseContentPartDone))
 
         /** An event that is emitted when a response is created. */
-        fun visitResponseCreated(responseCreated: BetaResponseCreatedEvent): T
+        fun visitResponseCreated(responseCreated: BetaResponseCreatedEvent): T =
+            unknown(JsonValue.from(responseCreated))
 
         /** Emitted when a file search call is completed (results found). */
         fun visitResponseFileSearchCallCompleted(
             responseFileSearchCallCompleted: BetaResponseFileSearchCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFileSearchCallCompleted))
 
         /** Emitted when a file search call is initiated. */
         fun visitResponseFileSearchCallInProgress(
             responseFileSearchCallInProgress: BetaResponseFileSearchCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFileSearchCallInProgress))
 
         /** Emitted when a file search is currently searching. */
         fun visitResponseFileSearchCallSearching(
             responseFileSearchCallSearching: BetaResponseFileSearchCallSearchingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFileSearchCallSearching))
 
         /** Emitted when there is a partial function-call arguments delta. */
         fun visitResponseFunctionCallArgumentsDelta(
             responseFunctionCallArgumentsDelta: BetaResponseFunctionCallArgumentsDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFunctionCallArgumentsDelta))
 
         /** Emitted when function-call arguments are finalized. */
         fun visitResponseFunctionCallArgumentsDone(
             responseFunctionCallArgumentsDone: BetaResponseFunctionCallArgumentsDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFunctionCallArgumentsDone))
 
         /** A streaming event that indicated a shell command was added to a tool call. */
         fun visitResponseShellCallCommandAdded(
             responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallCommandAdded))
 
         /** A streaming event that indicated a shell command was incrementally updated. */
         fun visitResponseShellCallCommandDelta(
             responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallCommandDelta))
 
         /** A streaming event that indicated a shell command was completed. */
         fun visitResponseShellCallCommandDone(
             responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallCommandDone))
 
         /** A streaming event that indicated shell call output was incrementally added. */
         fun visitResponseShellCallOutputContentDelta(
             responseShellCallOutputContentDelta: BetaResponseShellCallOutputContentDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallOutputContentDelta))
 
         /** A streaming event that indicated shell call output was completed. */
         fun visitResponseShellCallOutputContentDone(
             responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallOutputContentDone))
 
         /** Emitted when the response is in progress. */
-        fun visitResponseInProgress(responseInProgress: BetaResponseInProgressEvent): T
+        fun visitResponseInProgress(responseInProgress: BetaResponseInProgressEvent): T =
+            unknown(JsonValue.from(responseInProgress))
 
         /** An event that is emitted when a response fails. */
-        fun visitResponseFailed(responseFailed: BetaResponseFailedEvent): T
+        fun visitResponseFailed(responseFailed: BetaResponseFailedEvent): T =
+            unknown(JsonValue.from(responseFailed))
 
         /**
          * An event that is emitted when a response finishes as incomplete.
@@ -2888,72 +2894,79 @@ private constructor(
          * set to `steered`, followed automatically by a successor `response.created` that commits
          * the queued steering input.
          */
-        fun visitResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent): T
+        fun visitResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent): T =
+            unknown(JsonValue.from(responseIncomplete))
 
         /** Emitted when a new output item is added. */
         fun visitResponseOutputItemAdded(
             responseOutputItemAdded: BetaResponseOutputItemAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseOutputItemAdded))
 
         /** Emitted when an output item is marked done. */
-        fun visitResponseOutputItemDone(responseOutputItemDone: BetaResponseOutputItemDoneEvent): T
+        fun visitResponseOutputItemDone(
+            responseOutputItemDone: BetaResponseOutputItemDoneEvent
+        ): T = unknown(JsonValue.from(responseOutputItemDone))
 
         /** Emitted when a new reasoning summary part is added. */
         fun visitResponseReasoningSummaryPartAdded(
             responseReasoningSummaryPartAdded: BetaResponseReasoningSummaryPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryPartAdded))
 
         /** Emitted when a reasoning summary part is completed. */
         fun visitResponseReasoningSummaryPartDone(
             responseReasoningSummaryPartDone: BetaResponseReasoningSummaryPartDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryPartDone))
 
         /** Emitted when a delta is added to a reasoning summary text. */
         fun visitResponseReasoningSummaryTextDelta(
             responseReasoningSummaryTextDelta: BetaResponseReasoningSummaryTextDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryTextDelta))
 
         /** Emitted when a reasoning summary text is completed. */
         fun visitResponseReasoningSummaryTextDone(
             responseReasoningSummaryTextDone: BetaResponseReasoningSummaryTextDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryTextDone))
 
         /** Emitted when a delta is added to a reasoning text. */
         fun visitResponseReasoningTextDelta(
             responseReasoningTextDelta: BetaResponseReasoningTextDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningTextDelta))
 
         /** Emitted when a reasoning text is completed. */
         fun visitResponseReasoningTextDone(
             responseReasoningTextDone: BetaResponseReasoningTextDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningTextDone))
 
         /** Emitted when there is a partial refusal text. */
-        fun visitResponseRefusalDelta(responseRefusalDelta: BetaResponseRefusalDeltaEvent): T
+        fun visitResponseRefusalDelta(responseRefusalDelta: BetaResponseRefusalDeltaEvent): T =
+            unknown(JsonValue.from(responseRefusalDelta))
 
         /** Emitted when refusal text is finalized. */
-        fun visitResponseRefusalDone(responseRefusalDone: BetaResponseRefusalDoneEvent): T
+        fun visitResponseRefusalDone(responseRefusalDone: BetaResponseRefusalDoneEvent): T =
+            unknown(JsonValue.from(responseRefusalDone))
 
         /** Emitted when there is an additional text delta. */
-        fun visitResponseOutputTextDelta(responseOutputTextDelta: BetaResponseTextDeltaEvent): T
+        fun visitResponseOutputTextDelta(responseOutputTextDelta: BetaResponseTextDeltaEvent): T =
+            unknown(JsonValue.from(responseOutputTextDelta))
 
         /** Emitted when text content is finalized. */
-        fun visitResponseOutputTextDone(responseOutputTextDone: BetaResponseTextDoneEvent): T
+        fun visitResponseOutputTextDone(responseOutputTextDone: BetaResponseTextDoneEvent): T =
+            unknown(JsonValue.from(responseOutputTextDone))
 
         /** Emitted when a web search call is completed. */
         fun visitResponseWebSearchCallCompleted(
             responseWebSearchCallCompleted: BetaResponseWebSearchCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseWebSearchCallCompleted))
 
         /** Emitted when a web search call is initiated. */
         fun visitResponseWebSearchCallInProgress(
             responseWebSearchCallInProgress: BetaResponseWebSearchCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseWebSearchCallInProgress))
 
         /** Emitted when a web search call is executing. */
         fun visitResponseWebSearchCallSearching(
             responseWebSearchCallSearching: BetaResponseWebSearchCallSearchingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseWebSearchCallSearching))
 
         /**
          * Emitted when an image generation tool call has completed and the final image is
@@ -2961,7 +2974,7 @@ private constructor(
          */
         fun visitResponseImageGenerationCallCompleted(
             responseImageGenerationCallCompleted: BetaResponseImageGenCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallCompleted))
 
         /**
          * Emitted when an image generation tool call is actively generating an image (intermediate
@@ -2969,78 +2982,80 @@ private constructor(
          */
         fun visitResponseImageGenerationCallGenerating(
             responseImageGenerationCallGenerating: BetaResponseImageGenCallGeneratingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallGenerating))
 
         /** Emitted when an image generation tool call is in progress. */
         fun visitResponseImageGenerationCallInProgress(
             responseImageGenerationCallInProgress: BetaResponseImageGenCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallInProgress))
 
         /** Emitted when a partial image is available during image generation streaming. */
         fun visitResponseImageGenerationCallPartialImage(
             responseImageGenerationCallPartialImage: BetaResponseImageGenCallPartialImageEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallPartialImage))
 
         /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
         fun visitResponseMcpCallArgumentsDelta(
             responseMcpCallArgumentsDelta: BetaResponseMcpCallArgumentsDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallArgumentsDelta))
 
         /** Emitted when the arguments for an MCP tool call are finalized. */
         fun visitResponseMcpCallArgumentsDone(
             responseMcpCallArgumentsDone: BetaResponseMcpCallArgumentsDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallArgumentsDone))
 
         /** Emitted when an MCP tool call has completed successfully. */
         fun visitResponseMcpCallCompleted(
             responseMcpCallCompleted: BetaResponseMcpCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallCompleted))
 
         /** Emitted when an MCP tool call has failed. */
-        fun visitResponseMcpCallFailed(responseMcpCallFailed: BetaResponseMcpCallFailedEvent): T
+        fun visitResponseMcpCallFailed(responseMcpCallFailed: BetaResponseMcpCallFailedEvent): T =
+            unknown(JsonValue.from(responseMcpCallFailed))
 
         /** Emitted when an MCP tool call is in progress. */
         fun visitResponseMcpCallInProgress(
             responseMcpCallInProgress: BetaResponseMcpCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallInProgress))
 
         /** Emitted when the list of available MCP tools has been successfully retrieved. */
         fun visitResponseMcpListToolsCompleted(
             responseMcpListToolsCompleted: BetaResponseMcpListToolsCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpListToolsCompleted))
 
         /** Emitted when the attempt to list available MCP tools has failed. */
         fun visitResponseMcpListToolsFailed(
             responseMcpListToolsFailed: BetaResponseMcpListToolsFailedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpListToolsFailed))
 
         /**
          * Emitted when the system is in the process of retrieving the list of available MCP tools.
          */
         fun visitResponseMcpListToolsInProgress(
             responseMcpListToolsInProgress: BetaResponseMcpListToolsInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpListToolsInProgress))
 
         /** Emitted when an annotation is added to output text content. */
         fun visitResponseOutputTextAnnotationAdded(
             responseOutputTextAnnotationAdded: BetaResponseOutputTextAnnotationAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseOutputTextAnnotationAdded))
 
         /** Emitted when a response is queued and waiting to be processed. */
-        fun visitResponseQueued(responseQueued: BetaResponseQueuedEvent): T
+        fun visitResponseQueued(responseQueued: BetaResponseQueuedEvent): T =
+            unknown(JsonValue.from(responseQueued))
 
         /** Event representing a delta (partial update) to the input of a custom tool call. */
         fun visitResponseCustomToolCallInputDelta(
             responseCustomToolCallInputDelta: BetaResponseCustomToolCallInputDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCustomToolCallInputDelta))
 
         /** Event indicating that input for a custom tool call is complete. */
         fun visitResponseCustomToolCallInputDone(
             responseCustomToolCallInputDone: BetaResponseCustomToolCallInputDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCustomToolCallInputDone))
 
         /** Emitted when an error occurs while processing a Responses WebSocket request. */
-        fun visitError(error: BetaResponseWsError): T
+        fun visitError(error: BetaResponseWsError): T = unknown(JsonValue.from(error))
 
         /**
          * Emitted when steering input has been validated and queued. Acceptance means the server
@@ -3053,7 +3068,8 @@ private constructor(
          * pending event's `required_input` stubs with saved results and send one matching explicit
          * `response.create` per parent. Do not resend accepted input while it is still queued.
          */
-        fun visitResponseSteerAccepted(responseSteerAccepted: BetaResponseSteerAcceptedEvent): T
+        fun visitResponseSteerAccepted(responseSteerAccepted: BetaResponseSteerAcceptedEvent): T =
+            unknown(JsonValue.from(responseSteerAccepted))
 
         /**
          * Emitted when accepted steering input remains queued after the target response completes.
@@ -3072,7 +3088,8 @@ private constructor(
          * for the same parent can report the same required inputs; they do not each require a
          * separate continuation.
          */
-        fun visitResponseSteerPending(responseSteerPending: BetaResponseSteerPendingEvent): T
+        fun visitResponseSteerPending(responseSteerPending: BetaResponseSteerPendingEvent): T =
+            unknown(JsonValue.from(responseSteerPending))
 
         /**
          * Emitted when steering input is rejected or cannot be committed to a successor response.
@@ -3083,19 +3100,22 @@ private constructor(
          * allocated omit `steer.id`. A lost connection or missing acknowledgement leaves the
          * outcome unknown; it is not proof that the input was rejected.
          */
-        fun visitResponseSteerFailed(responseSteerFailed: BetaResponseSteerFailedEvent): T
+        fun visitResponseSteerFailed(responseSteerFailed: BetaResponseSteerFailedEvent): T =
+            unknown(JsonValue.from(responseSteerFailed))
 
         /**
          * Emitted when all injected input items were validated and committed to the active
          * response.
          */
-        fun visitResponseInjectCreated(responseInjectCreated: BetaResponseInjectCreatedEvent): T
+        fun visitResponseInjectCreated(responseInjectCreated: BetaResponseInjectCreatedEvent): T =
+            unknown(JsonValue.from(responseInjectCreated))
 
         /**
          * Emitted when injected input could not be committed to a response. The event returns the
          * uncommitted raw input so the client can retry it in another response when appropriate.
          */
-        fun visitResponseInjectFailed(responseInjectFailed: BetaResponseInjectFailedEvent): T
+        fun visitResponseInjectFailed(responseInjectFailed: BetaResponseInjectFailedEvent): T =
+            unknown(JsonValue.from(responseInjectFailed))
 
         /**
          * Maps an unknown variant of [BetaResponsesServerEvent] to a value of type [T].
@@ -3104,6 +3124,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

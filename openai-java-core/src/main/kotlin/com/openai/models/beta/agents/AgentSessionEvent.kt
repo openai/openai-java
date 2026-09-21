@@ -25,6 +25,7 @@ class AgentSessionEvent
 private constructor(
     private val error: AgentSessionErrorEvent? = null,
     private val environmentReady: AgentSessionEnvironmentReadyEvent? = null,
+    private val environmentReset: AgentSessionEnvironmentResetEvent? = null,
     private val outputCommandExecutionOutputDelta: AgentOutputCommandExecutionOutputDeltaEvent? =
         null,
     private val created: AgentSessionCreatedEvent? = null,
@@ -65,6 +66,13 @@ private constructor(
     /** Emitted when a hosted session environment is ready to connect. */
     fun environmentReady(): Optional<AgentSessionEnvironmentReadyEvent> =
         Optional.ofNullable(environmentReady)
+
+    /**
+     * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
+     * previous sandbox's files and processes do not.
+     */
+    fun environmentReset(): Optional<AgentSessionEnvironmentResetEvent> =
+        Optional.ofNullable(environmentReset)
 
     /** Emitted when command execution produces an output delta. */
     fun outputCommandExecutionOutputDelta(): Optional<AgentOutputCommandExecutionOutputDeltaEvent> =
@@ -175,6 +183,8 @@ private constructor(
 
     fun isEnvironmentReady(): Boolean = environmentReady != null
 
+    fun isEnvironmentReset(): Boolean = environmentReset != null
+
     fun isOutputCommandExecutionOutputDelta(): Boolean = outputCommandExecutionOutputDelta != null
 
     fun isCreated(): Boolean = created != null
@@ -237,6 +247,13 @@ private constructor(
     /** Emitted when a hosted session environment is ready to connect. */
     fun asEnvironmentReady(): AgentSessionEnvironmentReadyEvent =
         environmentReady.getOrThrow("environmentReady")
+
+    /**
+     * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
+     * previous sandbox's files and processes do not.
+     */
+    fun asEnvironmentReset(): AgentSessionEnvironmentResetEvent =
+        environmentReset.getOrThrow("environmentReset")
 
     /** Emitted when command execution produces an output delta. */
     fun asOutputCommandExecutionOutputDelta(): AgentOutputCommandExecutionOutputDeltaEvent =
@@ -378,6 +395,7 @@ private constructor(
         when {
             error != null -> visitor.visitError(error)
             environmentReady != null -> visitor.visitEnvironmentReady(environmentReady)
+            environmentReset != null -> visitor.visitEnvironmentReset(environmentReset)
             outputCommandExecutionOutputDelta != null ->
                 visitor.visitOutputCommandExecutionOutputDelta(outputCommandExecutionOutputDelta)
             created != null -> visitor.visitCreated(created)
@@ -440,6 +458,12 @@ private constructor(
                     environmentReady: AgentSessionEnvironmentReadyEvent
                 ) {
                     environmentReady.validate()
+                }
+
+                override fun visitEnvironmentReset(
+                    environmentReset: AgentSessionEnvironmentResetEvent
+                ) {
+                    environmentReset.validate()
                 }
 
                 override fun visitOutputCommandExecutionOutputDelta(
@@ -609,6 +633,10 @@ private constructor(
                     environmentReady: AgentSessionEnvironmentReadyEvent
                 ) = environmentReady.validity()
 
+                override fun visitEnvironmentReset(
+                    environmentReset: AgentSessionEnvironmentResetEvent
+                ) = environmentReset.validity()
+
                 override fun visitOutputCommandExecutionOutputDelta(
                     outputCommandExecutionOutputDelta: AgentOutputCommandExecutionOutputDeltaEvent
                 ) = outputCommandExecutionOutputDelta.validity()
@@ -716,6 +744,7 @@ private constructor(
         return other is AgentSessionEvent &&
             error == other.error &&
             environmentReady == other.environmentReady &&
+            environmentReset == other.environmentReset &&
             outputCommandExecutionOutputDelta == other.outputCommandExecutionOutputDelta &&
             created == other.created &&
             turnCreated == other.turnCreated &&
@@ -750,6 +779,7 @@ private constructor(
         Objects.hash(
             error,
             environmentReady,
+            environmentReset,
             outputCommandExecutionOutputDelta,
             created,
             turnCreated,
@@ -784,6 +814,7 @@ private constructor(
         when {
             error != null -> "AgentSessionEvent{error=$error}"
             environmentReady != null -> "AgentSessionEvent{environmentReady=$environmentReady}"
+            environmentReset != null -> "AgentSessionEvent{environmentReset=$environmentReset}"
             outputCommandExecutionOutputDelta != null ->
                 "AgentSessionEvent{outputCommandExecutionOutputDelta=$outputCommandExecutionOutputDelta}"
             created != null -> "AgentSessionEvent{created=$created}"
@@ -837,6 +868,14 @@ private constructor(
         @JvmStatic
         fun ofEnvironmentReady(environmentReady: AgentSessionEnvironmentReadyEvent) =
             AgentSessionEvent(environmentReady = environmentReady)
+
+        /**
+         * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
+         * previous sandbox's files and processes do not.
+         */
+        @JvmStatic
+        fun ofEnvironmentReset(environmentReset: AgentSessionEnvironmentResetEvent) =
+            AgentSessionEvent(environmentReset = environmentReset)
 
         /** Emitted when command execution produces an output delta. */
         @JvmStatic
@@ -988,110 +1027,135 @@ private constructor(
     interface Visitor<out T> {
 
         /** Emitted when a turn or session fails. */
-        fun visitError(error: AgentSessionErrorEvent): T
+        fun visitError(error: AgentSessionErrorEvent): T = unknown(JsonValue.from(error))
 
         /** Emitted when a hosted session environment is ready to connect. */
-        fun visitEnvironmentReady(environmentReady: AgentSessionEnvironmentReadyEvent): T
+        fun visitEnvironmentReady(environmentReady: AgentSessionEnvironmentReadyEvent): T =
+            unknown(JsonValue.from(environmentReady))
+
+        /**
+         * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
+         * previous sandbox's files and processes do not.
+         */
+        fun visitEnvironmentReset(environmentReset: AgentSessionEnvironmentResetEvent): T =
+            unknown(JsonValue.from(environmentReset))
 
         /** Emitted when command execution produces an output delta. */
         fun visitOutputCommandExecutionOutputDelta(
             outputCommandExecutionOutputDelta: AgentOutputCommandExecutionOutputDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(outputCommandExecutionOutputDelta))
 
         /** Emitted when a session is created. */
-        fun visitCreated(created: AgentSessionCreatedEvent): T
+        fun visitCreated(created: AgentSessionCreatedEvent): T = unknown(JsonValue.from(created))
 
         /** Emitted when a turn is created. */
-        fun visitTurnCreated(turnCreated: AgentSessionTurnCreatedEvent): T
+        fun visitTurnCreated(turnCreated: AgentSessionTurnCreatedEvent): T =
+            unknown(JsonValue.from(turnCreated))
 
         /** Emitted when a turn starts running. */
-        fun visitTurnInProgress(turnInProgress: AgentSessionTurnInProgressEvent): T
+        fun visitTurnInProgress(turnInProgress: AgentSessionTurnInProgressEvent): T =
+            unknown(JsonValue.from(turnInProgress))
 
         /** Emitted when a turn completes. */
-        fun visitTurnCompleted(turnCompleted: AgentSessionTurnCompletedEvent): T
+        fun visitTurnCompleted(turnCompleted: AgentSessionTurnCompletedEvent): T =
+            unknown(JsonValue.from(turnCompleted))
 
         /** Emitted when a turn fails. */
-        fun visitTurnFailed(turnFailed: AgentSessionTurnFailedEvent): T
+        fun visitTurnFailed(turnFailed: AgentSessionTurnFailedEvent): T =
+            unknown(JsonValue.from(turnFailed))
 
         /** Emitted when a turn is cancelled. */
-        fun visitTurnCancelled(turnCancelled: AgentSessionTurnCancelledEvent): T
+        fun visitTurnCancelled(turnCancelled: AgentSessionTurnCancelledEvent): T =
+            unknown(JsonValue.from(turnCancelled))
 
         /** Emitted when an item is added to a turn. */
-        fun visitTurnItemAdded(turnItemAdded: AgentSessionTurnItemAddedEvent): T
+        fun visitTurnItemAdded(turnItemAdded: AgentSessionTurnItemAddedEvent): T =
+            unknown(JsonValue.from(turnItemAdded))
 
         /** Emitted when a session becomes idle. */
-        fun visitIdle(idle: AgentSessionIdleEvent): T
+        fun visitIdle(idle: AgentSessionIdleEvent): T = unknown(JsonValue.from(idle))
 
         /** Emitted when a session starts processing a turn. */
-        fun visitInProgress(inProgress: AgentSessionInProgressEvent): T
+        fun visitInProgress(inProgress: AgentSessionInProgressEvent): T =
+            unknown(JsonValue.from(inProgress))
 
         /** Emitted when a session is waiting for one or more required actions. */
-        fun visitRequiresAction(requiresAction: AgentSessionRequiresActionEvent): T
+        fun visitRequiresAction(requiresAction: AgentSessionRequiresActionEvent): T =
+            unknown(JsonValue.from(requiresAction))
 
         /** Emitted when a session fails. */
-        fun visitFailed(failed: AgentSessionFailedEvent): T
+        fun visitFailed(failed: AgentSessionFailedEvent): T = unknown(JsonValue.from(failed))
 
         /** Emitted while a session environment is being prepared. */
-        fun visitEnvironmentPending(environmentPending: AgentSessionEnvironmentPendingEvent): T
+        fun visitEnvironmentPending(environmentPending: AgentSessionEnvironmentPendingEvent): T =
+            unknown(JsonValue.from(environmentPending))
 
         /** Emitted when a session environment connects. */
         fun visitEnvironmentConnected(
             environmentConnected: AgentSessionEnvironmentConnectedEvent
-        ): T
+        ): T = unknown(JsonValue.from(environmentConnected))
 
         /** Emitted when a session environment disconnects. */
         fun visitEnvironmentDisconnected(
             environmentDisconnected: AgentSessionEnvironmentDisconnectedEvent
-        ): T
+        ): T = unknown(JsonValue.from(environmentDisconnected))
 
         /** Emitted when a session environment fails. */
-        fun visitEnvironmentFailed(environmentFailed: AgentSessionEnvironmentFailedEvent): T
+        fun visitEnvironmentFailed(environmentFailed: AgentSessionEnvironmentFailedEvent): T =
+            unknown(JsonValue.from(environmentFailed))
 
         /** Emitted when a subagent is created. */
-        fun visitSubagentCreated(subagentCreated: AgentSessionSubagentCreatedEvent): T
+        fun visitSubagentCreated(subagentCreated: AgentSessionSubagentCreatedEvent): T =
+            unknown(JsonValue.from(subagentCreated))
 
         /** Emitted when a closed subagent successfully resumes. */
-        fun visitSubagentActive(subagentActive: AgentSessionSubagentActiveEvent): T
+        fun visitSubagentActive(subagentActive: AgentSessionSubagentActiveEvent): T =
+            unknown(JsonValue.from(subagentActive))
 
         /** Emitted when a subagent is closed. */
-        fun visitSubagentClosed(subagentClosed: AgentSessionSubagentClosedEvent): T
+        fun visitSubagentClosed(subagentClosed: AgentSessionSubagentClosedEvent): T =
+            unknown(JsonValue.from(subagentClosed))
 
         /** Emitted when an output item is complete. */
-        fun visitTurnItemDone(turnItemDone: AgentSessionTurnItemDoneEvent): T
+        fun visitTurnItemDone(turnItemDone: AgentSessionTurnItemDoneEvent): T =
+            unknown(JsonValue.from(turnItemDone))
 
         /** Emitted when an output text content part is added. */
         fun visitTurnContentPartAdded(
             turnContentPartAdded: AgentSessionTurnContentPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(turnContentPartAdded))
 
         /** Emitted when an output content part is complete. */
-        fun visitTurnContentPartDone(turnContentPartDone: AgentSessionTurnContentPartDoneEvent): T
+        fun visitTurnContentPartDone(turnContentPartDone: AgentSessionTurnContentPartDoneEvent): T =
+            unknown(JsonValue.from(turnContentPartDone))
 
         /** Emitted when text is appended to an output text content part. */
-        fun visitTurnOutputTextDelta(turnOutputTextDelta: AgentSessionTurnOutputTextDeltaEvent): T
+        fun visitTurnOutputTextDelta(turnOutputTextDelta: AgentSessionTurnOutputTextDeltaEvent): T =
+            unknown(JsonValue.from(turnOutputTextDelta))
 
         /** Emitted when an output text content part is complete. */
-        fun visitTurnOutputTextDone(turnOutputTextDone: AgentSessionTurnOutputTextDoneEvent): T
+        fun visitTurnOutputTextDone(turnOutputTextDone: AgentSessionTurnOutputTextDoneEvent): T =
+            unknown(JsonValue.from(turnOutputTextDone))
 
         /** Emitted when a reasoning summary content part is added. */
         fun visitTurnReasoningSummaryPartAdded(
             turnReasoningSummaryPartAdded: AgentSessionTurnReasoningSummaryPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(turnReasoningSummaryPartAdded))
 
         /** Emitted when a reasoning summary part is complete. */
         fun visitTurnReasoningSummaryPartDone(
             turnReasoningSummaryPartDone: AgentSessionTurnReasoningSummaryPartDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(turnReasoningSummaryPartDone))
 
         /** Emitted when text is appended to a reasoning summary. */
         fun visitTurnReasoningSummaryTextDelta(
             turnReasoningSummaryTextDelta: AgentSessionTurnReasoningSummaryTextDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(turnReasoningSummaryTextDelta))
 
         /** Emitted when a reasoning summary content part is complete. */
         fun visitTurnReasoningSummaryTextDone(
             turnReasoningSummaryTextDone: AgentSessionTurnReasoningSummaryTextDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(turnReasoningSummaryTextDone))
 
         /**
          * Maps an unknown variant of [AgentSessionEvent] to a value of type [T].
@@ -1100,6 +1164,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -1123,6 +1190,11 @@ private constructor(
                 "agent.session.environment.ready" -> {
                     return tryDeserialize(node, jacksonTypeRef<AgentSessionEnvironmentReadyEvent>())
                         ?.let { AgentSessionEvent(environmentReady = it, _json = json) }
+                        ?: AgentSessionEvent(_json = json)
+                }
+                "agent.session.environment.reset" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionEnvironmentResetEvent>())
+                        ?.let { AgentSessionEvent(environmentReset = it, _json = json) }
                         ?: AgentSessionEvent(_json = json)
                 }
                 "agent.output.command_execution_output.delta" -> {
@@ -1323,6 +1395,7 @@ private constructor(
             when {
                 value.error != null -> generator.writeObject(value.error)
                 value.environmentReady != null -> generator.writeObject(value.environmentReady)
+                value.environmentReset != null -> generator.writeObject(value.environmentReset)
                 value.outputCommandExecutionOutputDelta != null ->
                     generator.writeObject(value.outputCommandExecutionOutputDelta)
                 value.created != null -> generator.writeObject(value.created)
