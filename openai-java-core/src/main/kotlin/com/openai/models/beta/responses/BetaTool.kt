@@ -5228,9 +5228,7 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5594,8 +5592,7 @@ private constructor(
              * is `3840x2160`. The requested size must also satisfy the model's current pixel and
              * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
              * supported by the GPT image models; `auto` is supported for models that allow
-             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+             * automatic sizing.
              */
             fun size(size: Size) = size(JsonField.of(size))
 
@@ -7043,9 +7040,7 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing.
          */
         class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

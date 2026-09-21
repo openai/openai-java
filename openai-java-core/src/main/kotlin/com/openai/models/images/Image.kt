@@ -35,8 +35,9 @@ private constructor(
     ) : this(b64Json, revisedPrompt, url, mutableMapOf())
 
     /**
-     * The base64-encoded JSON of the generated image. Returned by default for the GPT image models,
-     * and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`.
+     * The base64-encoded image data. Returned by default for the GPT image models. For the retired
+     * `dall-e-2` and `dall-e-3` models, this field was present only when `response_format` was set
+     * to `b64_json`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -44,7 +45,8 @@ private constructor(
     fun b64Json(): Optional<String> = b64Json.getOptional("b64_json")
 
     /**
-     * For `dall-e-3` only, the revised prompt that was used to generate the image.
+     * Legacy field for the retired `dall-e-3` model: the revised prompt that was used to generate
+     * the image.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -52,8 +54,9 @@ private constructor(
     fun revisedPrompt(): Optional<String> = revisedPrompt.getOptional("revised_prompt")
 
     /**
-     * When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is
-     * set to `url` (default value). Unsupported for the GPT image models.
+     * Legacy field for the retired `dall-e-2` and `dall-e-3` models: the URL of the generated image
+     * when `response_format` was set to `url`, the legacy default. Unsupported for the GPT image
+     * models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -118,9 +121,9 @@ private constructor(
         }
 
         /**
-         * The base64-encoded JSON of the generated image. Returned by default for the GPT image
-         * models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and
-         * `dall-e-3`.
+         * The base64-encoded image data. Returned by default for the GPT image models. For the
+         * retired `dall-e-2` and `dall-e-3` models, this field was present only when
+         * `response_format` was set to `b64_json`.
          */
         fun b64Json(b64Json: String) = b64Json(JsonField.of(b64Json))
 
@@ -132,7 +135,10 @@ private constructor(
          */
         fun b64Json(b64Json: JsonField<String>) = apply { this.b64Json = b64Json }
 
-        /** For `dall-e-3` only, the revised prompt that was used to generate the image. */
+        /**
+         * Legacy field for the retired `dall-e-3` model: the revised prompt that was used to
+         * generate the image.
+         */
         fun revisedPrompt(revisedPrompt: String) = revisedPrompt(JsonField.of(revisedPrompt))
 
         /**
@@ -147,8 +153,9 @@ private constructor(
         }
 
         /**
-         * When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format`
-         * is set to `url` (default value). Unsupported for the GPT image models.
+         * Legacy field for the retired `dall-e-2` and `dall-e-3` models: the URL of the generated
+         * image when `response_format` was set to `url`, the legacy default. Unsupported for the
+         * GPT image models.
          */
         fun url(url: String) = url(JsonField.of(url))
 
