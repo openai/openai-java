@@ -3591,6 +3591,8 @@ private constructor(
 
                 @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
 
+                @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
+
                 @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
 
                 @JvmField val GPT_5 = of("gpt-5")
@@ -3794,6 +3796,7 @@ private constructor(
                 GPT_5_1,
                 GPT_5_1_2025_11_13,
                 GPT_5_1_CODEX,
+                GPT_5_1_MINI,
                 GPT_5_1_CHAT_LATEST,
                 GPT_5,
                 GPT_5_MINI,
@@ -3910,6 +3913,7 @@ private constructor(
                 GPT_5_1,
                 GPT_5_1_2025_11_13,
                 GPT_5_1_CODEX,
+                GPT_5_1_MINI,
                 GPT_5_1_CHAT_LATEST,
                 GPT_5,
                 GPT_5_MINI,
@@ -4029,6 +4033,7 @@ private constructor(
                     GPT_5_1 -> Value.GPT_5_1
                     GPT_5_1_2025_11_13 -> Value.GPT_5_1_2025_11_13
                     GPT_5_1_CODEX -> Value.GPT_5_1_CODEX
+                    GPT_5_1_MINI -> Value.GPT_5_1_MINI
                     GPT_5_1_CHAT_LATEST -> Value.GPT_5_1_CHAT_LATEST
                     GPT_5 -> Value.GPT_5
                     GPT_5_MINI -> Value.GPT_5_MINI
@@ -4149,6 +4154,7 @@ private constructor(
                     GPT_5_1 -> Known.GPT_5_1
                     GPT_5_1_2025_11_13 -> Known.GPT_5_1_2025_11_13
                     GPT_5_1_CODEX -> Known.GPT_5_1_CODEX
+                    GPT_5_1_MINI -> Known.GPT_5_1_MINI
                     GPT_5_1_CHAT_LATEST -> Known.GPT_5_1_CHAT_LATEST
                     GPT_5 -> Known.GPT_5
                     GPT_5_MINI -> Known.GPT_5_MINI
