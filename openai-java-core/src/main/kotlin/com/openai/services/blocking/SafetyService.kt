@@ -21,9 +21,9 @@ interface SafetyService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyService
 
-    fun alerts(): AlertService
-
     fun cases(): CaseService
+
+    fun alerts(): AlertService
 
     /** A view of [SafetyService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -35,8 +35,8 @@ interface SafetyService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyService.WithRawResponse
 
-        fun alerts(): AlertService.WithRawResponse
-
         fun cases(): CaseService.WithRawResponse
+
+        fun alerts(): AlertService.WithRawResponse
     }
 }

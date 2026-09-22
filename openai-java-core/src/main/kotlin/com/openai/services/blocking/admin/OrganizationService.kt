@@ -32,8 +32,6 @@ interface OrganizationService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationService
 
-    fun externalStorage(): ExternalStorageService
-
     /** List user actions and configuration changes within this organization. */
     fun auditLogs(): AuditLogService
 
@@ -50,6 +48,8 @@ interface OrganizationService {
     fun roles(): RoleService
 
     fun dataRetention(): DataRetentionService
+
+    fun externalStorage(): ExternalStorageService
 
     fun spendLimit(): SpendLimitService
 
@@ -73,8 +73,6 @@ interface OrganizationService {
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationService.WithRawResponse
 
-        fun externalStorage(): ExternalStorageService.WithRawResponse
-
         /** List user actions and configuration changes within this organization. */
         fun auditLogs(): AuditLogService.WithRawResponse
 
@@ -91,6 +89,8 @@ interface OrganizationService {
         fun roles(): RoleService.WithRawResponse
 
         fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun externalStorage(): ExternalStorageService.WithRawResponse
 
         fun spendLimit(): SpendLimitService.WithRawResponse
 

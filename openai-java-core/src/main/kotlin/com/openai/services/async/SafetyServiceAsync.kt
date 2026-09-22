@@ -21,9 +21,9 @@ interface SafetyServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyServiceAsync
 
-    fun alerts(): AlertServiceAsync
-
     fun cases(): CaseServiceAsync
+
+    fun alerts(): AlertServiceAsync
 
     /**
      * A view of [SafetyServiceAsync] that provides access to raw HTTP responses for each method.
@@ -39,8 +39,8 @@ interface SafetyServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): SafetyServiceAsync.WithRawResponse
 
-        fun alerts(): AlertServiceAsync.WithRawResponse
-
         fun cases(): CaseServiceAsync.WithRawResponse
+
+        fun alerts(): AlertServiceAsync.WithRawResponse
     }
 }
